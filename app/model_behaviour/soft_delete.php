@@ -1,6 +1,6 @@
 <?php
 
-	class soft_delete_mb {
+	class mb_soft_delete {
 
 	}
 

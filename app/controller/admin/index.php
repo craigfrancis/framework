@@ -1,6 +1,6 @@
 <?php
 
-	class admin_index_c {
+	class c_admin_index {
 
 		function index() {
 		}

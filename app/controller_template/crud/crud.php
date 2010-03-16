@@ -1,6 +1,6 @@
 <?php
 
-	class crud_ct extends controller_template {
+	class ct_crud extends ct {
 
 		function render_pre() {
 		}
