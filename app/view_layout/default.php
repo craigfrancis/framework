@@ -67,7 +67,7 @@
 
 	</div>
 
-	<?= $GLOBALS['tplTrackingHtml'] ?>
+	<?= new ve_google_analytics(); ?>
 
 </body>
 </html>

@@ -5,17 +5,28 @@
 
 	class config {
 
-
 		function __construct() {
 		}
 
-		singleton
+		//singleton
+
+		function set() {
+			// Could be an array?
+		}
 
 		function get() {
 		}
 
-		function set() {
-			// Could be an array?
+		function get_object_config($class_name, $extra_config = NULL) {
+
+			$class_config = array();
+
+			if (is_array($extra_config)) {
+				$class_config = array_merge($class_config, $extra_config);
+			}
+exit($class_name); // e.g. ve_google_analytics
+			return $class_config;
+
 		}
 
 	}
@@ -30,22 +41,24 @@
 // Defaults
 
 	//--------------------------------------------------
-	// Web address
+	// URL details
 
-		$config['web_host'] = (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '');
-		$config['web_domain'] = 'http://' . $config['web_host'];
-		$config['web_domain_https'] = $config['web_domain'];
-		$config['web_address'] = '';
+		$config['url.host'] = (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '');
+		$config['url.domain'] = 'http://' . $config['url.host'];
+		$config['url.domain_https'] = $config['url.domain'];
+		$config['url.address'] = '';
 
 		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
-			$config['web_domain_https'] = preg_replace('/^http:\/\//', 'https://', $config['web_domain_https']);
+			$config['url.domain_https'] = preg_replace('/^http:\/\//', 'https://', $config['url.domain_https']);
 		}
 
 	//--------------------------------------------------
 	// Page encoding
 
-		$config['page_charset'] = 'UTF-8';
-		$config['page_mime_type'] = 'text/html';
+		$config['page.charset'] = 'UTF-8';
+		$config['page.mime_type'] = 'text/html';
+
+$GLOBALS['pageCharset'] = $config['page.charset'];
 
 	//--------------------------------------------------
 	// Server
@@ -63,8 +76,8 @@
 //--------------------------------------------------
 // Browser support for application/xhtml+xml
 
-	if ($config['page_mime_type'] == 'application/xhtml+xml' && (!isset($_SERVER['HTTP_ACCEPT']) || !stristr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml'))) {
-		$config['page_mime_type'] = 'application/xhtml+xml';
+	if ($config['page.mime_type'] == 'application/xhtml+xml' && (!isset($_SERVER['HTTP_ACCEPT']) || !stristr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml'))) {
+		$config['page.mime_type'] = 'application/xhtml+xml';
 	}
 
 //--------------------------------------------------
@@ -121,12 +134,12 @@
 // HTTPS connection
 
 	$GLOBALS['tplHttpsUsed'] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on');
-	$GLOBALS['tplHttpsAvailable'] = (substr($config['web_domain_https'], 0, 8) == 'https://');
+	$GLOBALS['tplHttpsAvailable'] = (substr($config['url.domain_https'], 0, 8) == 'https://');
 
 	if (isset($_SERVER['REQUEST_URI'])) { // Path including query string
 		$GLOBALS['tplPageUrl']  = $_SERVER['REQUEST_URI'];
-		$GLOBALS['tplHttpUrl']  = $config['web_domain']       . $GLOBALS['tplPageUrl'];
-		$GLOBALS['tplHttpsUrl'] = $config['web_domain_https'] . $GLOBALS['tplPageUrl'];
+		$GLOBALS['tplHttpUrl']  = $config['url.domain']       . $GLOBALS['tplPageUrl'];
+		$GLOBALS['tplHttpsUrl'] = $config['url.domain_https'] . $GLOBALS['tplPageUrl'];
 	} else {
 		$GLOBALS['tplPageUrl']  = './';
 		$GLOBALS['tplHttpUrl']  = './';

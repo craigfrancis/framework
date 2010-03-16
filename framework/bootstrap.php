@@ -28,4 +28,6 @@
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'debug.php');
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'router.php');
 
+	require_once(ROOT_FRAMEWORK . DS . 'class' . DS . 'url.php');
+
 ?>

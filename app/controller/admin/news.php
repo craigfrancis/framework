@@ -1,6 +1,6 @@
 <?php
 
-	class c_admin_news {
+	class c_admin_news extends c {
 
 		private $controller_template = 'crud';
 

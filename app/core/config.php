@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // Database
 
-	$config['db_prefix'] = 'tpl_';
+	$config['db.prefix'] = 'tpl_';
 
 //--------------------------------------------------
 // Server specific
@@ -13,30 +13,30 @@
 		//--------------------------------------------------
 		// Server
 
-			$config['server'] = 'stage';
+			$config['server'] = 'stage'; // Special / constant?
 
 		//--------------------------------------------------
 		// Database
 
-			$config['db_host'] = 'stage';
-			$config['db_user'] = 'stage';
-			$config['db_pass'] = 'st8ge';
-			$config['db_name'] = 's-company-project';
+			$config['db.host'] = 'stage';
+			$config['db.user'] = 'stage';
+			$config['db.pass'] = 'st8ge';
+			$config['db.name'] = 's-company-project';
 
-			$config['db_debug_mode'] = true;
+			$config['db.debug_mode'] = true;
 
 		//--------------------------------------------------
 		// Email
 
-			$config['email_from_name'] = 'Company Name';
-			$config['email_from_address'] = 'noreply@domain.com';
-			$config['email_error'] = array('admin@domain.com');
-			$config['email_contact_us'] = array('admin@domain.com');
+			$config['email.from_name'] = 'Company Name';
+			$config['email.from_address'] = 'noreply@domain.com';
+			$config['email.error'] = array('admin@domain.com');
+			$config['email.contact_us'] = array('admin@domain.com');
 
 		//--------------------------------------------------
 		// General
 
-			$config['page_mime_type'] = 'application/xhtml+xml';
+			$config['page.mime_type'] = 'application/xhtml+xml';
 
 	} else if (preg_match('/^\/www\/demo/i', realpath(__FILE__))) {
 
@@ -55,7 +55,7 @@
 		//--------------------------------------------------
 		// General
 
-			$config['google_analytics_code'] = 'GA-';
+			$config['ve_google_analytics.code'] = 'GA-';
 
 	}
 
