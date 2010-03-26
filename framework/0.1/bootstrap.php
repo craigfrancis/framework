@@ -1,6 +1,17 @@
 <?php
 
 //--------------------------------------------------
+// Version
+
+	if (defined('FRAMEWORK_VERSION')) {
+		if (FRAMEWORK_VERSION != 0.1) {
+			exit('Version "' . FRAMEWORK_VERSION . '" has been requested, but version "0.1" has been included.');
+		}
+	} else {
+		define('FRAMEWORK_VERSION', 0.1);
+	}
+
+//--------------------------------------------------
 // Default paths
 
 	if (!defined('DS')) {
@@ -15,7 +26,7 @@
 	if (!defined('ROOT_FILE'))      define('ROOT_FILE',      ROOT . DS . 'file');
 	if (!defined('ROOT_LIBRARY'))   define('ROOT_LIBRARY',   ROOT . DS . 'library');
 	if (!defined('ROOT_PUBLIC'))    define('ROOT_PUBLIC',    ROOT . DS . 'public');
-	if (!defined('ROOT_FRAMEWORK')) define('ROOT_FRAMEWORK', ROOT . DS . 'framework' . DS . '0.1');
+	if (!defined('ROOT_FRAMEWORK')) define('ROOT_FRAMEWORK', ROOT . DS . 'framework' . DS . FRAMEWORK_VERSION);
 
 //--------------------------------------------------
 // Scripts
