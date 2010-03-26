@@ -13,6 +13,6 @@
 //
 // require_once(ROOT_FRAMEWORK . DS . 'bootstrap.php');
 
-require_once('../framework/bootstrap.php');
+require_once('../framework/0.1/bootstrap.php');
 
 ?>
