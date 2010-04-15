@@ -28,7 +28,9 @@
 
 						$image = new image($path_original); // TODO: need a copy of the image, so it does not get scaled down, then up
 
-						// TODO: See below
+						// TODO: See below... but what happens if the aspect ratio of the image
+						// does not allow it to confirm to the boundaries... does it set a
+						// background colour, or crop the image?
 
 						$image->saveJpg($basePath . '/' . $size . '/' . $file_name . '.jpg');
 						$image->destroy();
@@ -71,10 +73,12 @@
 			'1-100xX-100',
 			'90-100xX-100',
 
-			'100x100',
+			'100x100', // Forces the size, either to distort or crop? perhaps 100x100_crop?
 			'X-100xX-100',
 			'1-100x1-100',
 			'90-100x90-100',
+
+			'100x0-200_000000', // Hex value for a background colour, so it does not crop the image.
 
 		);
 
