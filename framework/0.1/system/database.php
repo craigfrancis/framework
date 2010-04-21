@@ -21,4 +21,11 @@
 //				WHERE
 //					field = val');
 
+//	db::ex('SELECT
+//			FROM');
+//	$db->query('SELECT
+//				FROM');
+//	$this->query('SELECT
+//				FROM');
+
 ?>
