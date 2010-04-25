@@ -4,15 +4,26 @@
 // If this page requires a https connection
 
 	function https_required() {
-		if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' && $GLOBALS['tplHttpsAvailable'] && !$GLOBALS['tplHttpsUsed']) {
-			redirect($GLOBALS['tplHttpsUrl']);
+
+		$https_available = (substr(config::get('request.url_https'), 0, 8) == 'https://');
+
+		if ($https_available && !config::get('request.https') && config::get('request.method') == 'GET') {
+			redirect(config::get('request.url_https'));
 		}
+
+	}
+
+//--------------------------------------------------
+// Exit function
+
+	function exit_with_error($error) {
+		exit($error);
 	}
 
 //--------------------------------------------------
 // Get a submitted value
 
-	function get($variable, $method = 'request') {
+	function data($variable, $method = 'request') {
 
 		//--------------------------------------------------
 		// Get value
@@ -89,11 +100,11 @@
 // full native function in the script.
 
 	function html($text) {
-		return htmlentities($text, ENT_QUOTES, $GLOBALS['pageCharset']);
+		return htmlentities($text, ENT_QUOTES, config::get('output.charset'));
 	}
 
 	function html_decode($text) {
-		return html_entity_decode($text, ENT_QUOTES, $GLOBALS['pageCharset']);
+		return html_entity_decode($text, ENT_QUOTES, config::get('output.charset'));
 	}
 
 	function xml($text) {
@@ -121,22 +132,26 @@
 
 	function redirect($url, $httpResponseCode = 302) {
 
-		$htmlNext = '<p>Goto <a href="' . html($url) . '">next page</a></p>';
+		if (substr($url, 0, 1) == '/') {
+			$url = (config::get('request.https') ? config::get('request.domain_https') : config::get('request.domain_http')) . $url;
+		}
 
-		if (isset($GLOBALS['createDebugOutput']) && $GLOBALS['createDebugOutput'] && ob_get_length() > 0) {
+		$htmlNext = '<p>Goto <a href="' . html($url) . '">next page</a>.</p>';
+
+		if (ob_get_length() > 0) {
 			ob_end_flush();
 			exit($htmlNext);
 		}
 
-		if ($GLOBALS['tplHttpsUsed'] && substr($url, 0, 7) == 'http://') {
-			if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6') !== false) {
-				header('Refresh: 0; URL=' . head($url));
-				exit('<p><a href="' . html($url) . '">Loading...</a></p>');
-			}
-		}
+		config::set('output.mime', 'text/html');
 
-		header('Location: ' . head($url), true, $httpResponseCode);
-		exit($htmlNext);
+		if (substr($url, 0, 7) == 'http://' && config::get('request.https') && strpos(config::get('request.browser'), 'MSIE 6') !== false) {
+			header('Refresh: 0; URL=' . head($url));
+			exit('<p><a href="' . html($url) . '">Loading...</a></p>');
+		} else {
+			header('Location: ' . head($url), true, $httpResponseCode);
+			exit($htmlNext);
+		}
 
 	}
 

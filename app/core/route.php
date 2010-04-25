@@ -10,7 +10,7 @@ $routes[] = array(
 
 $routes[] = array(
 		'path' => '^/(home|work)/', // Could also be '/*/' for a wildcard match, where * just hits a dir [^/], but this needs an str_replace('/', '\\/')
-		'match' => 'preg', // prefix, suffix, exact, wildcard, preg
+		'match' => 'preg', // wildcard, prefix, suffix, exact, preg
 		'action' => 'rewrite',
 		'config' => array(
 				'replace' => '/item/',
