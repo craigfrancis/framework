@@ -1,0 +1,25 @@
+Model->get_field_name();
+Should "get_field" prefix?
+Magic method
+$form->add($model->get...);
+allows multiple models on a form?
+$form->set_method($method);
+$form->add_field('first_name');
+Could then call the method function.
+A model links to multiple tables, but by default the var which sets this is a string (not array)
+The magic method can determine filed type (text,check,date,number,select) based on database field type.
+The model does the validation, and saving... but again those methods are defined by base class, and extended when necessary (defaults, validation, save... see dcm cms)
+More than one model can exist for a table, or a model can be used for multiple different forms... it will keep an internal array of all the fields created, so it knows which ones to validate... that array can also keep other settings, like how a password field is required on reg, but not on edit profile.
+What about forms with a main edit section, but multiple children (e.g. Banham)
+And how about file/image uploads? Could the form know that it needs to add the mime type attribute?
+$form->start_html(array('class' => 'nane'));
+Array sets HTML attributes, can replace action?
+
+function load($class, $setup = array()) {
+ substr($class, 0, strpos('_'));
+ switch
+    Case 'c'
+      Return new controller(function args); -args as an array? perhaps only one? and call an extra init func, or is constrictor enough? also, is there anything else that should always be passed in? Like a db connection?
+
+
+On model init, could pass in a data array, so controller can SELECT *, and model does not need to collect data... could then have it's own private save method (used when you have a form for editing main, and children in a table)... or return data array to controller for it to do all the SQL.
