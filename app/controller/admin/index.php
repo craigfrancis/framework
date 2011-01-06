@@ -1,6 +1,6 @@
 <?php
 
-	class c_admin_index extends c {
+	class admin extends controller {
 
 		function index() {
 		}

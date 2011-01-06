@@ -1,10 +1,8 @@
 <?php
 
-	class c_admin_news extends c {
+	class admin_news extends crud_controller {
 
-		private $controller_template = 'crud';
-
-		private $controller_config = array(
+		private $crud_config = array(
 				'table' => 'news', // What about multiple tables
 				'index_list_size' => 30, // Default
 				'index_nav_variable' => 'offset',
@@ -42,9 +40,6 @@
 							),
 					),
 			);
-
-		function index() {
-		}
 
 	}
 

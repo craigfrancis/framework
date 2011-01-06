@@ -67,7 +67,7 @@
 
 	</div>
 
-	<?= new ve_google_analytics(); ?>
+	<?= view_element('google_analytics'); ?>
 
 </body>
 </html>
