@@ -3,7 +3,7 @@
 // Allow HTML/Text template to be created.
 // Add method so a simple table of name/value pairs can be sent (e.g. contact us email).
 // Allow the HTML/Text version to be returned as a string (good for debug).
-// Knows where to get view/layout files... from /view_email/ or /view/email/ folder? ... with sub files xxx/index.(html|txt)
+// Knows where to get view/layout files... from /view_email/, /view/email/, or /public/a/email/ folder? ... with sub files xxx/index.(html|txt)
 
 
 // From Cake:
@@ -23,6 +23,7 @@
 //    $email->subject('Company name: Contact us');
 //    $email->set($data_array); // array merge?
 //    $email->set('name' => $value);
+//    $email->setHtml('name', '<p>Text</p>'); // Not good for plain text version?
 //    $email->send('craig@craigfrancis.co.uk'); // or array
 
 

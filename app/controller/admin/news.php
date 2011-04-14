@@ -1,5 +1,7 @@
 <?php
 
+	// http://fuelphp.com/docs/general/controllers/rest.html - more thoughts?
+
 	class admin_news extends crud_controller {
 
 		private $crud_config = array(

@@ -16,4 +16,7 @@
 
 	}
 
+	// Should email addresses be stored in here? - the able approach
+	// is a bit difficult to manage.
+
 ?>

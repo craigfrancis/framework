@@ -1,3 +1,10 @@
+
+Setting values for view:
+	$view->set('var', $value);
+	$view->setHtml('var', '<p>Text</p>');
+	view::set() / view::setHtml()
+	<?= $var ?>
+
 Model->get_field_name();
 Should "get_field" prefix?
 Magic method
