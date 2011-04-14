@@ -20,4 +20,6 @@ $routes[] = array(
 			),
 	);
 
+// Switch to limit to GET/POST requests?
+
 ?>
