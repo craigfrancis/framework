@@ -1,5 +1,7 @@
 <?php
 
+	// See /app/controller/admin/index.php
+
 	class ct_crud extends ct {
 
 		function render_pre() {
