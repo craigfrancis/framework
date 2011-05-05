@@ -9,21 +9,21 @@
 		// Get value
 
 			$value = '';
-			$method = strtolower($method);
+			$method = strtoupper($method);
 
-			if ($method == 'post') {
+			if ($method == 'POST') {
 
 				if (isset($_POST[$variable])) {
 					$value = $_POST[$variable];
 				}
 
-			} else if ($method == 'cookie') {
+			} else if ($method == 'COOKIE') {
 
 				if (isset($_COOKIE[$variable])) {
 					$value = $_COOKIE[$variable];
 				}
 
-			} else if ($method == 'request') {
+			} else if ($method == 'REQUEST') {
 
 				if (isset($_REQUEST[$variable])) {
 					$value = $_REQUEST[$variable];
@@ -49,15 +49,6 @@
 
 			return $value;
 
-	}
-
-//--------------------------------------------------
-// Dump a variable
-
-	function dump($variable) {
-		echo '<pre>';
-		print_r($variable);
-		echo '</pre>';
 	}
 
 //--------------------------------------------------

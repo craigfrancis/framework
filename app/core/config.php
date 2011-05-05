@@ -36,7 +36,9 @@
 		//--------------------------------------------------
 		// General
 
-			$config['page.mime_type'] = 'application/xhtml+xml';
+			$config['output.mime'] = 'application/xhtml+xml';
+
+			$config['debug.run'] = true;
 
 	} else if (preg_match('/^\/www\/demo/i', realpath(__FILE__))) {
 

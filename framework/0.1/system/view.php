@@ -15,10 +15,6 @@
 // Sends the no cache headers?
 // Sends the cookie_check cookie?
 
-	function debug($var) {
-		echo '<pre>';
-		echo var_export($var, true); // view:add_debug() if were not in a view.
-		echo '</pre>';
-	}
+
 
 ?>

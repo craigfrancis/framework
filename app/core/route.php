@@ -2,22 +2,19 @@
 
 $routes[] = array(
 		'path' => '/blog/',
-		'action' => 'rewrite', // Default? - could there be other actions? - not going to allow matching direct to controller_template.
-		'config' => array(
-				'replace' => '/news/',
-			),
+		'replace' => '/news/',
 	);
 
 $routes[] = array(
-		'path' => '^/(home|work)/', // Could also be '/*/' for a wildcard match, where * just hits a dir [^/], but this needs an str_replace('/', '\\/')
-		'match' => 'preg', // wildcard, prefix, suffix, exact, preg
-		'action' => 'rewrite',
-		'config' => array(
-				'replace' => '/item/',
-				'matches' => array(
-						1 => 'area-name', // Stored in site config, can preg use labels?, 0 for full match, * in wildcard.
-					),
-			),
+		'path' => '/news/*/',
+		'replace' => '/news/item/',
+		'match' => 'wildcard', // wildcard, prefix, suffix, exact, regexp, preg
+	);
+
+$routes[] = array(
+		'path' => '^/(home|work)/',
+		'replace' => '/area-\1/',
+		'match' => 'regexp',
 	);
 
 // Switch to limit to GET/POST requests?

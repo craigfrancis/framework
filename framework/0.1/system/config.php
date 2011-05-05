@@ -98,10 +98,19 @@
 //--------------------------------------------------
 // App config
 
+	$config = array();
+
 	$config_path = ROOT_APP . DS . 'core' . DS . 'config.php';
+
 	if (is_file($config_path)) {
+
 		require_once($config_path);
+
+		config::set($config);
+
 	}
+
+	unset($config); // Must use config object
 
 //--------------------------------------------------
 // Defaults
@@ -110,13 +119,6 @@
 	// Server
 
 		config::set_default('server', 'live');
-
-	//--------------------------------------------------
-	// Debug
-
-		config::set_default('debug.run', false); // Check things during processing.
-		config::set_default('debug.show', true); // Only relevant when running.
-		config::set_default('debug.email', '');
 
 	//--------------------------------------------------
 	// URL
@@ -186,8 +188,8 @@
 		config::set_default('resource.file_url', config::get('resource.asset_url') . '/files');
 		config::set_default('resource.file_root', config::get('resource.asset_root') . '/files');
 
-		config::set_default('resource.favicon_url', config::get('resource.asset_url') . '/img/frame/favicon.ico');
-		config::set_default('resource.favicon_path', config::get('resource.asset_root') . '/img/frame/favicon.ico');
+		config::set_default('resource.favicon_url', config::get('resource.asset_url') . '/img/global/favicon.ico');
+		config::set_default('resource.favicon_path', config::get('resource.asset_root') . '/img/global/favicon.ico');
 
 	//--------------------------------------------------
 	// Output
@@ -197,23 +199,37 @@
 		config::set_default('output.charset', 'UTF-8');
 		config::set_default('output.error', false);
 		config::set_default('output.no_cache', false);
-		config::set_default('output.block_browsers', array());
 		config::set_default('output.title_prefix', '');
 		config::set_default('output.title_suffix', '');
 		config::set_default('output.title_divide', ' | ');
+		config::set_default('output.block_browsers', array(
+				'/MSIE [1-5]\./',
+				'/MSIE.*; Mac_PowerPC/',
+				'/Netscape\/[4-7]\./',
+			));
 
 //--------------------------------------------------
 // Constants
 
-	define('ASSET_URL',  config::get('resource.asset_url'));
-	define('ASSET_ROOT', config::get('resource.asset_root'));
-	define('FILE_URL',   config::get('resource.file_url'));
-	define('FILE_ROOT',  config::get('resource.file_root'));
+	define('DB_T_PREFIX', config::get('db.prefix'));
+
+	define('ASSET_URL',   config::get('resource.asset_url'));
+	define('ASSET_ROOT',  config::get('resource.asset_root'));
+
+	define('FILE_URL',    config::get('resource.file_url'));
+	define('FILE_ROOT',   config::get('resource.file_root'));
 
 //--------------------------------------------------
 // Generic output buffer
 
 	function output_buffer($buffer) {
+
+		//--------------------------------------------------
+		// Debug output
+
+			if (function_exists('debug_shutdown')) {
+				$buffer = debug_shutdown($buffer);
+			}
 
 		//--------------------------------------------------
 		// Mime
@@ -233,13 +249,6 @@
 		// Test cookie
 
 			setcookie('cookie_check', 'true', (time() + 60*60*24*80), '/');
-
-		//--------------------------------------------------
-		// Debug output
-
-			if (function_exists('debugShutdown') && config::get('debug.show')) {
-				$buffer = debugShutdown($buffer);
-			}
 
 		//--------------------------------------------------
 		// Return

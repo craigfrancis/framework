@@ -97,18 +97,7 @@
 //--------------------------------------------------
 // Process routes
 
-dump($routes);
-
-// explorer
-// -- Controllers
-// -- Models (public methods and properties)
-// -- Routes (rules, and text field test which rules it is effected by, and how it gets changed)
-// -- AMF
-// task - actions, ability to trigger individual action (needs attribute to see if an action can be run directly - e.g. LSPro)
-// email - template (text/html)
-
-
-echo 'Request: ' . $request_url . '<br />';
+	$request_matches = array();
 
 	foreach ($routes as $id => $route) {
 
@@ -116,43 +105,50 @@ echo 'Request: ' . $request_url . '<br />';
 			exit_with_error('Missing "path" on route "' . $id . '"');
 		}
 
-		switch (isset($cRoute['match']) ? $cRoute['match'] : 'wildcard') {
-			case 'wildcard':
+		if (!isset($route['replace'])) {
+			exit_with_error('Missing "replace" on route "' . $id . '"');
+		}
 
-				$route['path'] = '/^' . preg_quote($route['path'], '/') . '/';
-				$route['path'] = str_replace('\\*', '([^\/]+)', $route['path']);
+		$path = $route['path'];
+		$match = (isset($route['match']) ? $route['match'] : 'wildcard');
 
-			case 'prefix':
+		if ($match == 'wildcard') {
 
-				if (!isset($route['config']['replace'])) {
-					exit_with_error('Missing "config.replace" on route "' . $id . '"');
-				}
+			$preg_path = '/^' . preg_quote($path, '/') . '/';
+			$preg_path = str_replace('\\*', '([^\/]+)', $preg_path);
 
-				if (preg_match($route['path'], $request_url, $matches)) {
+		} else if ($match == 'prefix') {
 
-					preg_replace($route['path'], $request_url, $matches);
+			$preg_path = '/^' . preg_quote($path, '/') . '/';
 
-				}
+		} else if ($match == 'suffix') {
 
+			$preg_path = '/' . preg_quote($path, '/') . '$/';
+
+		} else if ($match == 'regexp') {
+
+			$preg_path = '/' . str_replace('/', '\/', $path) . '/';
+
+		} else if ($match == 'preg') {
+
+			$preg_path = $path;
+
+		} else {
+
+			exit_with_error('Invalid router match "' . $match . '" on route "' . $id . '"');
+
+		}
+
+		if (preg_match($preg_path, $request_url, $request_matches)) {
+			$request_url = preg_replace($preg_path, $route['replace'], $request_url);
 			break;
-			case 'suffix':
-
-			break;
-			case 'exact':
-
-			break;
-			case 'preg':
-
-
-
-			default:
-
-				exit_with_error('Invalid router match "' . $cRoute['match'] . '" on route "' . $id . '"');
-
 		}
 
 	}
 
-echo 'Request: ' . $request_url . '<br />';
+echo $request_url;
+
+//--------------------------------------------------
+// Find the controller
 
 ?>
