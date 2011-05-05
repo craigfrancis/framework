@@ -1,29 +1,6 @@
 <?php
 
 //--------------------------------------------------
-// If this page requires a https connection
-
-	function https_required() {
-
-		$https_available = (substr(config::get('request.url_https'), 0, 8) == 'https://');
-
-		if ($https_available && !config::get('request.https') && config::get('request.method') == 'GET') {
-			redirect(config::get('request.url_https'));
-		}
-
-	}
-
-//--------------------------------------------------
-// Error reporting
-
-	function exit_with_error($message, $hidden_info) {
-		exit($message);
-	}
-
-	function add_report($message, $type = 'notice') {
-	}
-
-//--------------------------------------------------
 // Get a submitted value
 
 	function data($variable, $method = 'request') {
@@ -75,11 +52,19 @@
 	}
 
 //--------------------------------------------------
-// A recursive function for running stripslashes
-// on all items of a variable / array.
+// Dump a variable
 
-	function strip_slashes_deep($value) {
-	 	return (is_array($value) ? array_map('strip_slashes_deep', $value) : stripslashes($value));
+	function dump($variable) {
+		echo '<pre>';
+		print_r($variable);
+		echo '</pre>';
+	}
+
+//--------------------------------------------------
+// Shortcut for url object
+
+	function url($url = NULL, $parameters = NULL, $format = NULL) { // Shortcut, to avoid saying 'new'.
+		return new url($url, $parameters, $format);
 	}
 
 //--------------------------------------------------
@@ -292,12 +277,34 @@
 	}
 
 //--------------------------------------------------
-// Dump a value
+// If this page requires a https connection
 
-	function dump($variable) {
-		echo '<pre>';
-		print_r($variable);
-		echo '</pre>';
+	function https_required() {
+
+		$https_available = (substr(config::get('request.url_https'), 0, 8) == 'https://');
+
+		if ($https_available && !config::get('request.https') && config::get('request.method') == 'GET') {
+			redirect(config::get('request.url_https'));
+		}
+
+	}
+
+//--------------------------------------------------
+// Error reporting
+
+	function exit_with_error($message, $hidden_info) {
+		exit($message);
+	}
+
+	function add_report($message, $type = 'notice') {
+	}
+
+//--------------------------------------------------
+// A recursive function for running stripslashes
+// on all items of a variable / array.
+
+	function strip_slashes_deep($value) {
+	 	return (is_array($value) ? array_map('strip_slashes_deep', $value) : stripslashes($value));
 	}
 
 ?>

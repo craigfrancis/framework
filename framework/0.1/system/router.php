@@ -16,12 +16,12 @@
 	//--------------------------------------------------
 	// Get from config
 
-		$request_url = config::get('request.url');
+		$request_url = config::get('request.path');
 
-		$request_url = preg_replace('/\?.*/', '', $request_url); // Remove query string
-
-		// TODO
-		//$request_url = preg_replace('/^' . preg_quote(PATH_URL, '/') . '/', '', $request_url);
+		$url_prefix = config::get('url.prefix');
+		if ($url_prefix != '') {
+			$request_url = preg_replace('/^' . preg_quote($url_prefix, '/') . '/', '', $request_url);
+		}
 
 		$request_url = str_replace('//', '/', $request_url);
 
@@ -83,7 +83,7 @@
 
 		if (substr($request_url, -1) != '/') {
 
-			$newUrl = PATH_URL . $request_url . '/';
+			$newUrl = config::get('url.prefix') . $request_url . '/';
 
 			$query = config::get('request.query');
 			if ($query) {

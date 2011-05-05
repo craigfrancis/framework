@@ -140,7 +140,7 @@
 				//--------------------------------------------------
 				// Current path
 
-					$current_path = config::get('request.url'); // TODO, check this works with query strings?
+					$current_path = config::get('request.path');
 
 				//--------------------------------------------------
 				// If path is relative to current_path
@@ -306,31 +306,35 @@
 
 	}
 
-	function url($url = NULL, $parameters = NULL, $format = NULL) { // Shortcut, to avoid saying 'new'.
-		return new url($url, $parameters, $format);
+	if (false) {
+
+		echo "<br />\n";
+		echo "URL Testing as function:<br />\n";
+		echo '&nbsp; ' . html(url()) . '<br />' . "\n";
+		echo '&nbsp; ' . html(url('thank-you/')) . '<br />' . "\n";
+		echo '&nbsp; ' . html(url('./thank-you/')) . '<br />' . "\n";
+		echo '&nbsp; ' . html(url('./')) . '<br />' . "\n";
+		echo '&nbsp; ' . html(url('/')) . '<br />' . "\n";
+		echo '&nbsp; ' . html(url('../news/')) . '<br />' . "\n";
+		echo '&nbsp; ' . html(url('/news/')) . '<br />' . "\n";
+		echo '&nbsp; ' . html(url(NULL, array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
+		echo '&nbsp; ' . html(url('/folder/#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
+		echo '&nbsp; ' . html(url('/folder/')->id(20)) . '<br />' . "\n";
+		echo '&nbsp; ' . html(url('http://user:pass@www.google.com:80/about/folder/?id=example#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
+
+		$example = new url('/news/?a=b&id=1');
+		echo "<br />\n<br />\n";
+		echo "URL Testing as object:<br />\n";
+		echo '&nbsp; ' . html($example) . '<br />' . "\n";
+		echo '&nbsp; ' . html($example->get('id', 15)) . '<br />' . "\n";
+		echo '&nbsp; ' . html($example->id(17)) . '<br />' . "\n";
+		echo '&nbsp; ' . html($example) . '<br />' . "\n";
+
+		$example->id = 6;
+		echo '&nbsp; ' . html($example) . '<br />' . "\n";
+
+		exit();
+
 	}
-
-	echo "\n";
-	echo html(url()) . '<br />' . "\n";
-	echo html(url('thank-you/')) . '<br />' . "\n";
-	echo html(url('./thank-you/')) . '<br />' . "\n";
-	echo html(url('./')) . '<br />' . "\n";
-	echo html(url('../news/')) . '<br />' . "\n";
-	echo html(url('/news/')) . '<br />' . "\n";
-	echo html(url(NULL, array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
-	echo html(url('/folder/#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
-	echo html(url('http://user:pass@www.google.com:80/about/folder/?id=example#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
-
-	$example = new url('/news/?a=b&id=1');
-	echo html($example) . '<br />' . "\n";
-	echo html($example->get('id', 15)) . '<br />' . "\n";
-	echo html($example->id(17)) . '<br />' . "\n";
-	echo html($example) . '<br />' . "\n";
-	echo html(url('/folder/')->id(20)) . '<br />' . "\n";
-
-	$example->id = 6;
-	echo html($example) . '<br />' . "\n";
-
-	exit();
 
 ?>

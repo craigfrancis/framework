@@ -119,6 +119,18 @@
 		config::set_default('debug.email', '');
 
 	//--------------------------------------------------
+	// URL
+
+		config::set_default('url.prefix', '');
+		config::set_default('url.default_format', 'absolute');
+
+	//--------------------------------------------------
+	// Email
+
+		config::set_default('email.from_name', 'Company Name');
+		config::set_default('email.from_address', 'noreply@domain.com');
+
+	//--------------------------------------------------
 	// Request
 
 		config::set_default('request.https', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'));
@@ -149,6 +161,14 @@
 			config::set_default('request.url_https', './');
 		}
 
+		$request_path = config::get('request.url');
+		$qs = strpos($request_path, '?');
+		if ($qs !== false) {
+			$request_path = substr($request_path, 0, $qs);
+		}
+
+		config::set_default('request.path', $request_path);
+
 		if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
 			config::set_default('request.ip', 'XForward=[' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ']');
 		} else if (isset($_SERVER['REMOTE_ADDR'])) {
@@ -160,11 +180,8 @@
 	//--------------------------------------------------
 	// Resource
 
-		config::set_default('resource.path_url', '');
-		config::set_default('resource.path_root', ROOT);
-
-		config::set_default('resource.asset_url', config::get('resource.path_url') . '/a');
-		config::set_default('resource.asset_root', config::get('resource.path_root') . '/a');
+		config::set_default('resource.asset_url', config::get('url.prefix') . '/a');
+		config::set_default('resource.asset_root', ROOT . '/a');
 
 		config::set_default('resource.file_url', config::get('resource.asset_url') . '/files');
 		config::set_default('resource.file_root', config::get('resource.asset_root') . '/files');
@@ -185,23 +202,9 @@
 		config::set_default('output.title_suffix', '');
 		config::set_default('output.title_divide', ' | ');
 
-	//--------------------------------------------------
-	// URL
-
-		config::set_default('url.prefix', '');
-		config::set_default('url.default_format', 'absolute');
-
-	//--------------------------------------------------
-	// Email
-
-		config::set_default('email.from_name', 'Company Name');
-		config::set_default('email.from_address', 'noreply@domain.com');
-
 //--------------------------------------------------
 // Constants
 
-	define('PATH_URL',   config::get('resource.path_url'));
-	define('PATH_ROOT',  config::get('resource.path_root'));
 	define('ASSET_URL',  config::get('resource.asset_url'));
 	define('ASSET_ROOT', config::get('resource.asset_root'));
 	define('FILE_URL',   config::get('resource.file_url'));
