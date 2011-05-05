@@ -1,8 +1,43 @@
 <?php
 
+/*--------------------------------------------------
+
+	Can be called statically or dynamically:
+
+		$rstA = db::query('
+			SELECT
+			FROM');
+
+		$rstA = $db->query('
+			SELECT
+			FROM');
+
+		$rstA = $this->db->query('
+			SELECT
+			FROM');
+
+	Useful for the form object which may need to
+	known which $link to use:
+
+		$form = new form(
+				'database_table' => array(DB_T_PREFIX . 'example_table', 'a', $db), // Alias and database connection
+			);
+
+		if ($db === NULL) {
+			$db = db; // ???
+		}
+
+	How about a generic
+
+		$rstA = db_query('SELECT
+							FROM');
+
+--------------------------------------------------*/
+
+
 //--------------------------------------------------
 //
-// $rs = DB::query('SELECT
+// $rs = db::query('SELECT
 // 					FROM');
 //
 // $rst = db:q('SELECT
