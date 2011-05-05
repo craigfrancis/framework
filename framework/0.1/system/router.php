@@ -104,7 +104,7 @@ dump($routes);
 // -- Models (public methods and properties)
 // -- Routes (rules, and text field test which rules it is effected by, and how it gets changed)
 // -- AMF
-// maintenance - actions, ability to trigger individual action (needs attribute to see if an action can be run directly - e.g. LSPro)
+// task - actions, ability to trigger individual action (needs attribute to see if an action can be run directly - e.g. LSPro)
 // email - template (text/html)
 
 
