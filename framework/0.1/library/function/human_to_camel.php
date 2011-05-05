@@ -1,7 +1,7 @@
 <?php
 
 //--------------------------------------------------
-// Quick function to convert camel case to human
+// Quick function to convert human to camel case
 
 	function human_to_camel($text) {
 
