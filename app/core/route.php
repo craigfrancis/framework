@@ -1,6 +1,15 @@
 <?php
 
 $routes[] = array(
+		'path' => '^/(home|work)/',
+		'replace' => '/',
+		'method' => 'regexp',
+		'variables' => array(
+				'area',
+			),
+	);
+
+$routes[] = array(
 		'path' => '/blog/',
 		'replace' => '/news/',
 	);
@@ -8,15 +17,17 @@ $routes[] = array(
 $routes[] = array(
 		'path' => '/news/*/',
 		'replace' => '/news/item/',
-		'match' => 'wildcard', // wildcard, prefix, suffix, exact, regexp, preg
+		'method' => 'wildcard', // wildcard, prefix, suffix, exact, regexp, preg
+		'variables' => array(
+				'ref',
+				'error',
+			),
 	);
 
 $routes[] = array(
-		'path' => '^/(home|work)/',
-		'replace' => '/area-\1/',
-		'match' => 'regexp',
+		'path' => '^/(desert|sea)/',
+		'replace' => '/location-\1/',
+		'method' => 'regexp',
 	);
-
-// Switch to limit to GET/POST requests?
 
 ?>

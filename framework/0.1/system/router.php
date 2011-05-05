@@ -97,58 +97,131 @@
 //--------------------------------------------------
 // Process routes
 
-	$request_matches = array();
+	$controller_variables = array();
 
 	foreach ($routes as $id => $route) {
 
-		if (!isset($route['path'])) {
-			exit_with_error('Missing "path" on route "' . $id . '"');
-		}
+		//--------------------------------------------------
+		// Setup
 
-		if (!isset($route['replace'])) {
-			exit_with_error('Missing "replace" on route "' . $id . '"');
-		}
+			if (!isset($route['path'])) {
+				exit_with_error('Missing "path" on route "' . $id . '"');
+			}
 
-		$path = $route['path'];
-		$match = (isset($route['match']) ? $route['match'] : 'wildcard');
+			if (!isset($route['replace'])) {
+				exit_with_error('Missing "replace" on route "' . $id . '"');
+			}
 
-		if ($match == 'wildcard') {
+			$path = $route['path'];
+			$method = (isset($route['method']) ? $route['method'] : 'wildcard');
 
-			$preg_path = '/^' . preg_quote($path, '/') . '/';
-			$preg_path = str_replace('\\*', '([^\/]+)', $preg_path);
+		//--------------------------------------------------
+		// Regexp version of path
 
-		} else if ($match == 'prefix') {
+			if ($method == 'wildcard') {
 
-			$preg_path = '/^' . preg_quote($path, '/') . '/';
+				$preg_path = '/^' . preg_quote($path, '/') . '/';
+				$preg_path = str_replace('\\*', '([^\/]+)', $preg_path);
 
-		} else if ($match == 'suffix') {
+			} else if ($method == 'prefix') {
 
-			$preg_path = '/' . preg_quote($path, '/') . '$/';
+				$preg_path = '/^' . preg_quote($path, '/') . '/';
 
-		} else if ($match == 'regexp') {
+			} else if ($method == 'suffix') {
 
-			$preg_path = '/' . str_replace('/', '\/', $path) . '/';
+				$preg_path = '/' . preg_quote($path, '/') . '$/';
 
-		} else if ($match == 'preg') {
+			} else if ($method == 'regexp') {
 
-			$preg_path = $path;
+				$preg_path = '/' . str_replace('/', '\/', $path) . '/';
 
-		} else {
+			} else if ($method == 'preg') {
 
-			exit_with_error('Invalid router match "' . $match . '" on route "' . $id . '"');
+				$preg_path = $path;
 
-		}
+			} else {
 
-		if (preg_match($preg_path, $request_url, $request_matches)) {
-			$request_url = preg_replace($preg_path, $route['replace'], $request_url);
-			break;
-		}
+				exit_with_error('Invalid router method "' . $method . '" on route "' . $id . '"');
+
+			}
+
+		//--------------------------------------------------
+		// Match
+
+			if (preg_match($preg_path, $request_url, $matches)) {
+
+				//--------------------------------------------------
+				// Request variables
+
+					if (isset($route['variables'])) {
+						foreach ($route['variables'] as $var_id => $var_name) {
+							$controller_variables[$var_name] = (isset($matches[$var_id + 1]) ? $matches[$var_id + 1] : NULL);
+						}
+					}
+
+				//--------------------------------------------------
+				// New url
+
+					$old_url = $request_url;
+
+					$request_url = preg_replace($preg_path, $route['replace'], $request_url);
+
+				//--------------------------------------------------
+				// Debug note
+
+					if (config::get('debug.run')) {
+
+						$note_html  = 'Route ' . html($id) . ':<br />';
+						$note_html .= '&nbsp; <strong>old</strong>: ' . html($old_url) . '<br />';
+						$note_html .= '&nbsp; <strong>new</strong>: ' . html($request_url) . '<br />';
+						$note_html .= '&nbsp; <strong>preg</strong>: ' . html($preg_path) . '<br />';
+						$note_html .= '&nbsp; <strong>matches</strong>: ' . html(var_export($matches, true)) . '<br />';
+
+						if (count($controller_variables) > 0) {
+							$note_html .= '&nbsp; <strong>variables</strong>: ' . html(var_export($controller_variables, true)) . '<br />';
+						}
+
+						debug_note_add_html($note_html, false);
+
+					}
+
+				//--------------------------------------------------
+				// Break
+
+					if (isset($route['break']) && $route['break']) {
+						break;
+					}
+
+			}
 
 	}
 
-echo $request_url;
+	config::set('request.controller_path', $request_url);
+	config::set('request.controller_variables', $controller_variables);
 
 //--------------------------------------------------
-// Find the controller
+// Main include
+
+	$mainPath = ROOT_APP . DS . 'core' . DS . 'main.php';
+	if (is_file($mainPath)) {
+		require_once($mainPath);
+	}
+
+//--------------------------------------------------
+// Controller
+
+	$controller_path = config::get('request.controller_path');
+	$controller_variables = config::get('request.controller_variables');
+
+	if (config::get('debug.run')) {
+
+		$note_html  = '<strong>request.controller_path</strong>: ' . html($controller_path) . '<br />';
+		$note_html .= '<strong>request.controller_variables</strong>: ' . html(var_export($controller_variables, true));
+
+		debug_note_add_html($note_html, false);
+
+	}
+
+echo $controller_path;
 
 ?>

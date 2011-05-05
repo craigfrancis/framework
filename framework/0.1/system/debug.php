@@ -42,19 +42,27 @@
 //--------------------------------------------------
 // Debug notes
 
-	function debug_note_add($note) {
-		debug_note_add_html(nl2br(str_replace(' ', '&nbsp;', html($note))));
+	function debug_note_add($note, $show_time = true) {
+		debug_note_add_html(nl2br(str_replace(' ', '&nbsp;', html($note))), $show_time);
 	}
 
-	function debug_note_add_html($note_html) {
+	function debug_note_add_html($note_html, $show_time = true) {
 
 		//--------------------------------------------------
 		// Time position
 
-			$time_end = explode(' ', microtime());
-			$time_end = ((float)$time_end[0] + (float)$time_end[1]);
+			if ($show_time) {
 
-			$time = round(($time_end - config::get('debug.start_time')), 3);
+				$time_end = explode(' ', microtime());
+				$time_end = ((float)$time_end[0] + (float)$time_end[1]);
+
+				$time = round(($time_end - config::get('debug.start_time')), 4);
+
+			} else {
+
+				$time = NULL;
+
+			}
 
 		//--------------------------------------------------
 		// Note
@@ -78,14 +86,12 @@
 
 			ksort($config);
 
-			$config_html = 'Configuration:<br />';
+			$config_html = array('Configuration:');
 			foreach ($config as $key => $value) {
-				$config_html .= '
-					&nbsp; <strong>' . html($key) . '</strong>: ' . html(var_export($value, true)) . '<br />';
+				$config_html[] = '&nbsp; <strong>' . html($key) . '</strong>: ' . html(var_export($value, true));
 			}
-			$config_html .= '<br />';
 
-			debug_note_add_html($config_html);
+			debug_note_add_html(implode($config_html, '<br />' . "\n"), false);
 
 	}
 
@@ -114,9 +120,9 @@
 			$time_end = explode(' ', microtime());
 			$time_end = ((float)$time_end[0] + (float)$time_end[1]);
 
-			$time = round(($time_end - config::get('debug.start_time')), 3);
+			$time = round(($time_end - config::get('debug.start_time')), 4);
 
-			$html_output = '
+			$output_html = '
 				<div style="' . html($css_block) . '">
 					<p style="' . html($css_para) . '">Time Elapsed: ' . html($time) . '</p>
 					<p style="' . html($css_para) . '">Query time: ' . html(config::get('debug.query_time')) . '</p>
@@ -128,21 +134,25 @@
 			$notes = config::get('debug.notes');
 
 			foreach ($notes as $note) {
-				$html_output .= '
+				$output_html .= '
 					<div style="' . html($css_block) . '">
-						<p style="' . html($css_para) . '">' . $note['html'] . '</p>
-						<p style="' . html($css_para) . '">Time Elapsed: ' . html($note['time']) . '</p>
+						<p style="' . html($css_para) . '">' . $note['html'] . '</p>';
+				if ($note['time'] !== NULL) {
+					$output_html .= '
+						<p style="' . html($css_para) . '">Time Elapsed: ' . html($note['time']) . '</p>';
+				}
+				$output_html .= '
 					</div>';
 			}
 
 		//--------------------------------------------------
 		// Wrapper
 
-			$html_output = "\n\n<!-- START OF DEBUG -->\n\n" . '
+			$output_html = "\n\n<!-- START OF DEBUG -->\n\n" . '
 				<div style="margin: 1em 1em 0 1em; padding: 0; clear: both;">
 					<p style="' . html($css_para) . '"><a href="#" style="color: #AAA; ' . html($css_text) . '" onclick="document.getElementById(\'htmlDebugOutput\').style.display = (document.getElementById(\'htmlDebugOutput\').style.display == \'block\' ? \'none\' : \'block\'); return false;">+</a></p>
-					<div style="display: none;" id="htmlDebugOutput">
-						' . $html_output . '
+					<div style="display: block;" id="htmlDebugOutput">
+						' . $output_html . '
 					</div>
 				</div>' . "\n\n<!-- END OF DEBUG -->\n\n";
 
@@ -152,7 +162,7 @@
 			$pos = strpos(strtolower($buffer), '</body>');
 			if ($pos !== false) {
 
-		 		return substr($buffer, 0, $pos) . $html_output . substr($buffer, $pos);
+		 		return substr($buffer, 0, $pos) . $output_html . substr($buffer, $pos);
 
 			} else {
 
@@ -160,7 +170,7 @@
 					config::set('output.mime', 'text/html');
 				}
 
-		 		return $buffer . $html_output;
+		 		return $buffer . $output_html;
 
 			}
 

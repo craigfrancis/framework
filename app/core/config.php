@@ -23,8 +23,6 @@
 			$config['db.pass'] = 'st8ge';
 			$config['db.name'] = 's-company-project';
 
-			$config['db.debug_mode'] = true;
-
 		//--------------------------------------------------
 		// Email
 
