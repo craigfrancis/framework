@@ -111,7 +111,7 @@
 		// Default CSS
 
 			$css_text = 'font-size: 12px; font-family: verdana; font-weight: normal; text-align: left; text-decoration: none;';
-			$css_block = 'margin: 1em 0; padding: 1em; background: #FFF; color: #000; border: 1px solid #000; clear: both;';
+			$css_block = 'margin: 5px 0; padding: 5px; background: #FFF; color: #000; border: 1px solid #000; clear: both;';
 			$css_para = 'text-align: left; padding: 0; margin: 0; ' . $css_text;
 
 		//--------------------------------------------------
@@ -124,7 +124,7 @@
 
 			$output_html = '
 				<div style="' . html($css_block) . '">
-					<p style="' . html($css_para) . '">Time Elapsed: ' . html($time) . '</p>
+					<p style="' . html($css_para) . '">Elapsed time: ' . html($time) . '</p>
 					<p style="' . html($css_para) . '">Query time: ' . html(config::get('debug.query_time')) . '</p>
 				</div>';
 
@@ -149,7 +149,7 @@
 		// Wrapper
 
 			$output_html = "\n\n<!-- START OF DEBUG -->\n\n" . '
-				<div style="margin: 1em 1em 0 1em; padding: 0; clear: both;">
+				<div style="margin: 10px 5px 0 5px; padding: 0; clear: both;">
 					<p style="' . html($css_para) . '"><a href="#" style="color: #AAA; ' . html($css_text) . '" onclick="document.getElementById(\'htmlDebugOutput\').style.display = (document.getElementById(\'htmlDebugOutput\').style.display == \'block\' ? \'none\' : \'block\'); return false;">+</a></p>
 					<div style="display: block;" id="htmlDebugOutput">
 						' . $output_html . '
