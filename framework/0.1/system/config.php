@@ -65,16 +65,32 @@
 			}
 		}
 
+		final public static function array_push($variable, $value) {
+			$obj = config::get_instance();
+			if (!isset($obj->store[$variable]) || !is_array($obj->store[$variable])) {
+				$obj->store[$variable] = array();
+			}
+			$obj->store[$variable][] = $value;
+		}
+
+		final public static function array_search($variable, $value) {
+			$obj = config::get_instance();
+			if (isset($obj->store[$variable]) && is_array($obj->store[$variable])) {
+				return array_search($value, $obj->store[$variable]);
+			}
+			return false;
+		}
+
 // 		function get_object_config($class_name, $extra_config = NULL) {
-// 
+//
 // 			$class_config = array();
-// 
+//
 // 			if (is_array($extra_config)) {
 // 				$class_config = array_merge($class_config, $extra_config);
 // 			}
 // exit($class_name); // e.g. ve_google_analytics
 // 			return $class_config;
-// 
+//
 // 		}
 
 	}
@@ -92,7 +108,7 @@
 
 	//--------------------------------------------------
 	// Server
-	
+
 		config::set_default('server', 'live');
 
 	//--------------------------------------------------
@@ -168,6 +184,18 @@
 		config::set_default('output.title_prefix', '');
 		config::set_default('output.title_suffix', '');
 		config::set_default('output.title_divide', ' | ');
+
+	//--------------------------------------------------
+	// URL
+
+		config::set_default('url.prefix', '');
+		config::set_default('url.default_format', 'absolute');
+
+	//--------------------------------------------------
+	// Email
+
+		config::set_default('email.from_name', 'Company Name');
+		config::set_default('email.from_address', 'noreply@domain.com');
 
 //--------------------------------------------------
 // Constants

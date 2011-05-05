@@ -4,9 +4,9 @@
 
 	<title>Website</title>
 
-	<meta http-equiv="content-type" content="<?= html($GLOBALS['pageMimeType']) ?>; charset=<?= html($GLOBALS['pageCharset']) ?>" />
+	<meta http-equiv="content-type" content="<?= html(config::get('output.mime')) ?>; charset=<?= html(config::get('output.charset')) ?>" />
 
-	<link rel="shortcut icon" type="image/x-icon" href="<?= html($GLOBALS['webAddress']) ?>/a/img/global/favicon.ico" />
+	<link rel="shortcut icon" type="image/x-icon" href="<?= html(config::get('url.prefix')) ?>/a/img/global/favicon.ico" />
 
 	<?= $GLOBALS['tplCssLinksHtml'] ?>
 

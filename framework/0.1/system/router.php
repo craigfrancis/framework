@@ -129,9 +129,9 @@ echo 'Request: ' . $request_url . '<br />';
 				}
 
 				if (preg_match($route['path'], $request_url, $matches)) {
-					
-					preg_replace($route['path'], $request_url, $matches)
-					
+
+					preg_replace($route['path'], $request_url, $matches);
+
 				}
 
 			break;

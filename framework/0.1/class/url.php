@@ -1,14 +1,7 @@
 <?php
 
-	// Config 'url.default_format' - absolute (default) / full (includes domain) / relative (not implemented)
-	// Config 'url.default_scheme' - e.g. 'https', default NULL (auto detect).
-	// Config 'url.current_path' - from SCRIPT_URL
-	// Config 'url.current_host' - from HTTP_HOST
-	// Config 'url.current_https' - from HTTPS
-	// Config 'url.current_query' - from QUERY_STRING
-	// Config 'url.path_prefix' - e.g. '/website', default NULL (not used).
-
-		// Latest version in tate
+	// config::get('url.default_format') - absolute (default) / full (includes domain) / relative (not implemented)
+	// config::get('url.prefix') - e.g. '/website' (not used).
 
 	class url {
 
@@ -18,78 +11,136 @@
 			private $data = NULL;
 			private $parameters = array();
 			private $format = NULL;
-			private $output_cache = NULL;
+			private $cache_base = NULL;
 
-			public function __construct($url = NULL, $parameters = NULL) {
+			public function __construct($url = NULL, $parameters = NULL, $format = NULL) {
 
-				if (is_string($url)) { // TODO: is null check?
-					$this->set_url($url);
+				if ($url !== NULL) {
+					$this->parse($url);
 				}
 
 				if (is_array($parameters)) {
-					$this->set_parameters($parameters);
+					$this->param($parameters);
 				}
 
-				//$this->format = config::get('url.default_format');
+
+				if ($format === NULL) {
+					$this->format = config::get('url.default_format');
+				} else {
+					$this->format = $format;
+				}
 
 			}
 
 		//--------------------------------------------------
 		// Update
 
-			public function set_format($format) {
+			public function format($format) {
 				$this->format = $format;
-				$this->output_cache = NULL;
+				$this->cache_base = NULL;
 			}
 
-			public function set_url($url) {
+			public function parse($url, $replace_parameters = true) {
 
 				$this->data = @parse_url($url); // Avoid E_WARNING
 
 				if (isset($this->data['query'])) {
+
 					parse_str($this->data['query'], $parameters);
-					$this->set_parameters($parameters);
+
+					unset($parameters['url']); // CakePHP support
+
+					foreach ($parameters as $key => $value) {
+						if ($value != '' && ($replace_parameters || !isset($this->parameters[$key]))) {
+							$this->parameters[$key] = $value;
+						}
+					}
+
 				}
 
-				$this->output_cache = NULL;
+				$this->cache_base = NULL;
 
 			}
 
-			public function set_parameters(array $parameters) {
-				foreach ($parameters as $key => $value) { // Cannot use array_merge, as numerical based indexes will be appended.
-					$this->parameters[$key] = $value;
-				}
-				$this->output_cache = NULL;
-			}
+			public function param($parameters, $value = '') {
 
-			public function set_parameter($variable, $value) {
-				$this->parameters[$variable] = $value;
-				$this->output_cache = NULL;
-			}
-
-			public function remove_parameter($variable) {
-				if (isset($this->parameters[$variable])) {
-					unset($this->parameters[$variable]);
+				if (is_array($parameters)) {
+					foreach ($parameters as $key => $value) { // Cannot use array_merge, as numerical based indexes will be appended.
+						if ($value == '') {
+							unset($this->parameters[$key]);
+						} else {
+							$this->parameters[$key] = $value;
+						}
+					}
+				} else if ($value == '') {
+					unset($this->parameters[$parameters]); // Remove
+				} else {
+					$this->parameters[$parameters] = $value;
 				}
-				$this->output_cache = NULL;
+
 			}
 
 		//--------------------------------------------------
-		// Return
+		// Get
 
-			public function __toString() {
+			public function get($parameters = NULL, $value = '') {
 
 				//--------------------------------------------------
-				// Cache
+				// Base - done as a separate call so it's output
+				// can be cached, as most of the time, only the
+				// parameters change on each call.
 
-					if ($this->output_cache !== NULL) {
-						return $this->output_cache;
+					if ($this->cache_base === NULL) {
+						$this->cache_base = $this->get_base();
 					}
+
+					$output = $this->cache_base;
+
+				//--------------------------------------------------
+				// Query string
+
+					$query = $this->parameters;
+
+					if ($parameters !== NULL) {
+						if (is_array($parameters)) {
+							foreach ($parameters as $key => $value) { // Cannot use array_merge, as numerical based indexes will be appended.
+								if ($value == '') {
+									unset($query[$key]);
+								} else {
+									$query[$key] = $value;
+								}
+							}
+						} else if ($value == '') {
+							unset($query[$parameters]); // Remove
+						} else {
+							$query[$parameters] = $value;
+						}
+					}
+
+					if (count($query) > 0) {
+						$output .= '?' . http_build_query($query);
+					}
+
+				//--------------------------------------------------
+				// Fragment
+
+					if (isset($this->data['fragment'])) {
+						$output .= '#' . $this->data['fragment'];
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $output;
+
+			}
+
+			private function get_base() {
 
 				//--------------------------------------------------
 				// Current path
 
-					$current_path = (isset($_SERVER['SCRIPT_URL']) ? $_SERVER['SCRIPT_URL'] : ''); // config::get('url.current_path');
+					$current_path = config::get('request.url'); // TODO, check this works with query strings?
 
 				//--------------------------------------------------
 				// If path is relative to current_path
@@ -107,12 +158,12 @@
 
 						$url = $current_path;
 
-						$query_string = (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ''); // config::get('url.current_query');
+						$query_string = config::get('request.query');
 						if ($query_string !== '' && $query_string !== NULL) {
 							$url .= '?' . $query_string;
 						}
 
-						$this->set_url($url);
+						$this->parse($url, false); // Already set parameters take priority (don't replace)
 
 					}
 
@@ -125,8 +176,8 @@
 						$format = 'full';
 					}
 
-					if ($this->format !== 'full') {
-						$this->format = 'absolute'; // Default
+					if ($format !== 'full') {
+						$format = 'absolute'; // Default
 					}
 
 				//--------------------------------------------------
@@ -148,11 +199,11 @@
 								if (isset($this->data['scheme'])) {
 									$scheme = $this->data['scheme'];
 								} else {
-									$scheme = NULL; // config::get('url.default_scheme')
+									$scheme = NULL;
 								}
 
 								if ($scheme === '' || $scheme === NULL) {
-									$scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http'); // config::get('url.current_https')
+									$scheme = (config::get('request.https') ? 'https' : 'http');
 								}
 
 								$output .= $scheme . '://';
@@ -174,7 +225,7 @@
 								if (isset($this->data['host'])) {
 									$output .= $this->data['host'];
 								} else {
-									$output .= (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''); // config::get('url.current_host')
+									$output .= config::get('request.domain');
 								}
 
 							//--------------------------------------------------
@@ -228,25 +279,6 @@
 
 							$output .= $path_new;
 
-					//--------------------------------------------------
-					// Query string
-
-						if (count($this->parameters) > 0) {
-							$output .= '?' . http_build_query($this->parameters);
-						}
-
-					//--------------------------------------------------
-					// Fragment
-
-						if (isset($this->data['fragment'])) {
-							$output .= '#' . $this->data['fragment'];
-						}
-
-				//--------------------------------------------------
-				// Cache
-
-					$this->output_cache = $output;
-
 				//--------------------------------------------------
 				// Return
 
@@ -254,10 +286,28 @@
 
 			}
 
+		//--------------------------------------------------
+		// Parameter set shorthand
+
+			public function __set($name, $value) { // (PHP 5.0)
+				$this->param($name, $value);
+			}
+
+			public function __call($name, $arguments) { // (PHP 5.0)
+				return $this->get($name, (isset($arguments[0]) ? $arguments[0] : NULL));
+			}
+
+		//--------------------------------------------------
+		// String shorthand
+
+			public function __toString() { // (PHP 5.2)
+				return $this->get();
+			}
+
 	}
 
-	function url($url = NULL, $parameters = NULL) { // Shortcut, to avoid saying 'new'.
-		return new url($url, $parameters);
+	function url($url = NULL, $parameters = NULL, $format = NULL) { // Shortcut, to avoid saying 'new'.
+		return new url($url, $parameters, $format);
 	}
 
 	echo "\n";
@@ -271,8 +321,14 @@
 	echo html(url('/folder/#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 	echo html(url('http://user:pass@www.google.com:80/about/folder/?id=example#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 
-	$example = url('/news/');
+	$example = new url('/news/?a=b&id=1');
 	echo html($example) . '<br />' . "\n";
+	echo html($example->get('id', 15)) . '<br />' . "\n";
+	echo html($example->id(17)) . '<br />' . "\n";
+	echo html($example) . '<br />' . "\n";
+	echo html(url('/folder/')->id(20)) . '<br />' . "\n";
+
+	$example->id = 6;
 	echo html($example) . '<br />' . "\n";
 
 	exit();

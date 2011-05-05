@@ -136,7 +136,7 @@
 			$url = (config::get('request.https') ? config::get('request.domain_https') : config::get('request.domain_http')) . $url;
 		}
 
-		$htmlNext = '<p>Goto <a href="' . html($url) . '">next page</a>.</p>';
+		$htmlNext = '<p>Go to <a href="' . html($url) . '">next page</a>.</p>';
 
 		if (ob_get_length() > 0) {
 			ob_end_flush();
