@@ -108,20 +108,28 @@
 
 	}
 
-	function human_to_id($text) {
+	function ref_to_human($text) {
+		return ucfirst(str_replace('_', ' ', $text));
+	}
+
+	function human_to_ref($text) {
 
 		$text = strtolower($text);
-		$text = preg_replace('/[^a-z0-9_]/i', '-', $text);
-		$text = preg_replace('/--+/', '-', $text);
-		$text = preg_replace('/-+$/', '', $text);
-		$text = preg_replace('/^-+/', '', $text);
+		$text = preg_replace('/[^a-z0-9_]/i', '_', $text);
+		$text = preg_replace('/__+/', '_', $text);
+		$text = preg_replace('/_+$/', '', $text);
+		$text = preg_replace('/^_+/', '', $text);
 
 		return $text;
 
 	}
 
+	function link_to_human($text) {
+		return ucfirst(str_replace('-', ' ', $text));
+	}
+
 	function human_to_link($text) {
-		return str_replace('_', '-', human_to_id($text));
+		return str_replace('_', '-', human_to_ref($text));
 	}
 
 	function file_size_to_human($size) {
@@ -184,6 +192,16 @@
 
 			return $output;
 
+	}
+
+	function path_to_array($path) {
+		$output = array();
+		foreach (explode('/', $path) as $name) {
+			if ($name != '' && substr($name, 0, 1) != '.') { // Ignore empty, "..", and hidden folders
+				$output[] = $name;
+			}
+		}
+		return $output;
 	}
 
 	function cut_to_words($text, $words) {
@@ -278,16 +296,6 @@
 			redirect(config::get('request.url_https'));
 		}
 
-	}
-
-//--------------------------------------------------
-// Error reporting
-
-	function exit_with_error($message, $hidden_info) {
-		exit($message);
-	}
-
-	function add_report($message, $type = 'notice') {
 	}
 
 //--------------------------------------------------

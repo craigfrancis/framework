@@ -1,8 +1,24 @@
 <?php
 
+	class admin_news_controller extends controller {
+
+		function route() {
+			return array(
+				'route_path_reset_prefix' => '/news/admin/'
+			);
+		}
+
+	}
+
+
+
+
 	// http://fuelphp.com/docs/general/controllers/rest.html - more thoughts?
 
-	class admin_news extends crud_controller {
+	class controller_crud {
+	}
+
+	class example extends controller_crud {
 
 		private $crud_config = array(
 				'table' => 'news', // What about multiple tables

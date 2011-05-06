@@ -28,6 +28,9 @@ $routes[] = array(
 		'path' => '^/(desert|sea)/',
 		'replace' => '/location-\1/',
 		'method' => 'regexp',
+		'variables' => array(
+				'location',
+			),
 	);
 
 ?>

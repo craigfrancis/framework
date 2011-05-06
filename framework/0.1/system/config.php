@@ -73,6 +73,14 @@
 			$obj->store[$variable][] = $value;
 		}
 
+		final public static function array_set($variable, $key, $value) {
+			$obj = config::get_instance();
+			if (!isset($obj->store[$variable]) || !is_array($obj->store[$variable])) {
+				$obj->store[$variable] = array();
+			}
+			$obj->store[$variable][$key] = $value;
+		}
+
 		final public static function array_search($variable, $value) {
 			$obj = config::get_instance();
 			if (isset($obj->store[$variable]) && is_array($obj->store[$variable])) {
@@ -131,6 +139,14 @@
 
 		config::set_default('email.from_name', 'Company Name');
 		config::set_default('email.from_address', 'noreply@domain.com');
+
+		config::set_default('email.error', array());
+
+	//--------------------------------------------------
+	// Debug
+
+		config::set_default('debug.run', false); // Check things during processing.
+		config::set_default('debug.show', true); // Only relevant when running.
 
 	//--------------------------------------------------
 	// Request
@@ -199,9 +215,10 @@
 		config::set_default('output.charset', 'UTF-8');
 		config::set_default('output.error', false);
 		config::set_default('output.no_cache', false);
-		config::set_default('output.title_prefix', '');
+		config::set_default('output.title_prefix', 'Company Name | ');
 		config::set_default('output.title_suffix', '');
 		config::set_default('output.title_divide', ' | ');
+		config::set_default('output.title_error', 'An error has occurred');
 		config::set_default('output.block_browsers', array(
 				'/MSIE [1-5]\./',
 				'/MSIE.*; Mac_PowerPC/',

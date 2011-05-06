@@ -25,6 +25,7 @@
 	if (!defined('ROOT_APP'))       define('ROOT_APP',       ROOT . DS . 'app');
 	if (!defined('ROOT_FILE'))      define('ROOT_FILE',      ROOT . DS . 'file');
 	if (!defined('ROOT_PUBLIC'))    define('ROOT_PUBLIC',    ROOT . DS . 'public');
+	if (!defined('ROOT_VENDOR'))    define('ROOT_VENDOR',    ROOT . DS . 'vendor');
 	if (!defined('ROOT_FRAMEWORK')) define('ROOT_FRAMEWORK', ROOT . DS . 'framework' . DS . FRAMEWORK_VERSION);
 
 //--------------------------------------------------
@@ -36,6 +37,6 @@
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'database.php');
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'view.php');
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'debug.php');
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'router.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'route.php');
 
 ?>

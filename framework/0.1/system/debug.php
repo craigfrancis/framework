@@ -1,13 +1,6 @@
 <?php
 
 //--------------------------------------------------
-// Default config
-
-	config::set_default('debug.run', false); // Check things during processing.
-	config::set_default('debug.show', true); // Only relevant when running.
-	config::set_default('debug.email', '');
-
-//--------------------------------------------------
 // Setup
 
 	//--------------------------------------------------
@@ -75,6 +68,46 @@
 	}
 
 //--------------------------------------------------
+// Error reporting
+
+	function exit_with_error($message, $hidden_info = NULL) {
+		exit($message);
+	}
+
+	function add_report($message, $type = 'notice') {
+
+		//--------------------------------------------------
+		// Email
+
+			$email = new email();
+			$email->send(config::get('email.error'));
+
+	}
+
+//--------------------------------------------------
+// Function to show configuration
+
+	function debug_show_config($prefix = '') {
+
+		$config = config::get_all($prefix);
+
+		ksort($config);
+
+		$config_html = array($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
+		foreach ($config as $key => $value) {
+			if (in_array($key, array('db.pass', 'debug.notes', 'view.variables'))) {
+				$value_html = '???';
+			} else {
+				$value_html = html(var_export($value, true));
+			}
+			$config_html[] = '&nbsp; <strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html;
+		}
+
+		debug_note_add_html(implode($config_html, '<br />' . "\n"), false);
+
+	}
+
+//--------------------------------------------------
 // Stage debugging
 
 	if (config::get('debug.run')) {
@@ -82,16 +115,7 @@
 		//--------------------------------------------------
 		// Config
 
-			$config = config::get_all();
-
-			ksort($config);
-
-			$config_html = array('Configuration:');
-			foreach ($config as $key => $value) {
-				$config_html[] = '&nbsp; <strong>' . html($key) . '</strong>: ' . html(var_export($value, true));
-			}
-
-			debug_note_add_html(implode($config_html, '<br />' . "\n"), false);
+			debug_show_config();
 
 	}
 

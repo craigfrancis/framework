@@ -15,7 +15,7 @@
 		$name = NULL;
 		$id = NULL;
 
-		$label_as_id = human_to_id($label);
+		$label_as_ref = human_to_ref($label);
 
 		if ($name === NULL) {
 
@@ -23,7 +23,7 @@
 
 			do {
 
-				$name = ($k++ > 0 ? $label_as_id . '_' . $k : $label_as_id);
+				$name = ($k++ > 0 ? $label_as_ref . '_' . $k : $label_as_ref);
 
 				$search = config::array_search('form.fields', $name);
 

@@ -8,14 +8,10 @@
 
 	<link rel="shortcut icon" type="image/x-icon" href="<?= html(config::get('url.prefix')) ?>/a/img/global/favicon.ico" />
 
-	<?= $GLOBALS['tplCssLinksHtml'] ?>
-
-	<?= $GLOBALS['tplJavaScriptHtml'] ?>
-
-	<?= $GLOBALS['tplExtraHeadHtml'] ?>
+	<?= config::get('output.head_html') ?>
 
 </head>
-<body id="<?= html($GLOBALS['tplPageId']) ?>">
+<body id="<?= html(config::get('output.page_id')) ?>">
 
 	<div id="pageWrapper">
 
@@ -42,6 +38,9 @@
 
 
 <!-- END OF PAGE TOP -->
+
+	<?= config::get('output.html') ?>
+
 <!-- START OF PAGE BOTTOM -->
 
 
@@ -67,7 +66,9 @@
 
 	</div>
 
-	<?= view_element('google_analytics'); ?>
+	<?php
+		//view_element('google_analytics');
+	?>
 
 </body>
 </html>
