@@ -1,7 +1,7 @@
 
 Setting values for view:
 	$view->set('var', $value);
-	$view->setHtml('var', '<p>Text</p>');
+	$view->set_html('var', '<p>Text</p>');
 	view::set() / view::setHtml()
 	<?= $var ?>
 

@@ -5,7 +5,7 @@
 	// form action url? or a section for hidden input fields? and what about
 	// forms that use a GET method?
 
-	// On validation, allow the calling of $form->getHtmlErrorList() to not return
+	// On validation, allow the calling of $form->get_html_error_list() to not return
 	// anything when this form has not been submitted.
 
 	//--------------------------------------------------
@@ -50,7 +50,7 @@
 //--------------------------------------------------
 // Form options
 
-	//$optTitles = $db->enumValues(DB_T_PREFIX . 'user', 'user_title');
+	//$opt_titles = $db->enum_values(DB_T_PREFIX . 'user', 'user_title');
 
 //--------------------------------------------------
 // Form setup
@@ -69,6 +69,10 @@
 			'error_csrf' => 'The request did not appear to come from a trusted source, please try again.',
 			'error_csrf_html' => 'The request did not appear to come from a trusted source, please try again.',
 		);
+
+	$field_text = $form->add_field('text', array( // Probably not useful, but if db field name provided (add_db_field), then type could be automatically chosen?
+			''
+		));
 
 	$field_name = new form_field_text($form, array(
 			'name' => 'name',
@@ -122,8 +126,8 @@
 				//--------------------------------------------------
 				// Email
 
-					$emailHtml = $form->data_as_html();
-					$emailText = $form->data_as_text();
+					$email_html = $form->data_as_html();
+					$email_text = $form->data_as_text();
 
 				//--------------------------------------------------
 				// Store
@@ -132,12 +136,12 @@
 
 					$form->database_save();
 
-					//$recordId = $db->insertId();
+					//$record_id = $db->insert_id();
 
 				//--------------------------------------------------
 				// Next page
 
-					redirect('./thankYou/');
+					redirect(url('./thank_you/'));
 
 			}
 
@@ -158,7 +162,7 @@
 
 	<!-- V2 -->
 
-		<?= $form->form_start_html() ?>
+		<?= $form->html_start(); ?>
 			<fieldset>
 
 				<?= $form->error_list_html() ?>
@@ -172,11 +176,11 @@
 				</div>
 
 			</fieldset>
-		<?= $form->form_end_html() ?> <!-- <div class="formHiddenFields"><input type="hidden" name="act" value="form1" /></div> -->
+		<?= $form->html_end() ?> <!-- <div class="form_hidden_fields"><input type="hidden" name="act" value="form1" /></div> -->
 
 	<!-- V3 -->
 
-		<?= $form->form_start_html() ?>
+		<?= $form->html_start(array('id' => 'my_id', 'class' => 'my_name')); ?>
 			<fieldset>
 
 				<?= $form->error_list_html() ?>
@@ -195,7 +199,7 @@
 				</div>
 
 			</fieldset>
-		<?= $form->form_end_html() ?>
+		<?= $form->html_end() ?>
 
 	<!-- END -->
 

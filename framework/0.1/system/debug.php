@@ -174,8 +174,8 @@
 
 			$output_html = "\n\n<!-- START OF DEBUG -->\n\n" . '
 				<div style="margin: 10px 5px 0 5px; padding: 0; clear: both;">
-					<p style="' . html($css_para) . '"><a href="#" style="color: #AAA; ' . html($css_text) . '" onclick="document.getElementById(\'htmlDebugOutput\').style.display = (document.getElementById(\'htmlDebugOutput\').style.display == \'block\' ? \'none\' : \'block\'); return false;">+</a></p>
-					<div style="display: block;" id="htmlDebugOutput">
+					<p style="' . html($css_para) . '"><a href="#" style="color: #AAA; ' . html($css_text) . '" onclick="document.getElementById(\'debug_output\').style.display = (document.getElementById(\'debug_output\').style.display == \'block\' ? \'none\' : \'block\'); return false;">+</a></p>
+					<div style="display: block;" id="debug_output">
 						' . $output_html . '
 					</div>
 				</div>' . "\n\n<!-- END OF DEBUG -->\n\n";

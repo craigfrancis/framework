@@ -32,7 +32,7 @@
 						// does not allow it to confirm to the boundaries... does it set a
 						// background colour, or crop the image?
 
-						$image->saveJpg($basePath . '/' . $size . '/' . $file_name . '.jpg');
+						$image->save_jpg($base_path . '/' . $size . '/' . $file_name . '.jpg');
 						$image->destroy();
 
 					}
@@ -82,63 +82,63 @@
 
 		);
 
-	foreach ($sizes as $cSize) {
-		echo $cSize . "\n";
-		if (preg_match('/^([0-9]+|X)((?:-[0-9]+)?)x([0-9]+|X)((?:-[0-9]+)?)$/', $cSize, $matches)) {
+	foreach ($sizes as $size) {
+		echo $size . "\n";
+		if (preg_match('/^([0-9]+|X)((?:-[0-9]+)?)x([0-9]+|X)((?:-[0-9]+)?)$/', $size, $matches)) {
 
-			list($cSize, $minWidth, $maxWidth, $minHeight, $maxHeight) = $matches;
+			list($size, $min_width, $max_width, $min_height, $max_height) = $matches;
 
-			$maxWidth = str_replace('-', '', $maxWidth);
-			$maxHeight = str_replace('-', '', $maxHeight);
+			$max_width = str_replace('-', '', $max_width);
+			$max_height = str_replace('-', '', $max_height);
 
-			if ($minWidth === 'X' && $maxWidth != '') $minWidth = 1;
-			if ($minHeight === 'X' && $maxHeight != '') $minHeight = 1;
+			if ($min_width === 'X' && $max_width != '') $min_width = 1;
+			if ($min_height === 'X' && $max_height != '') $min_height = 1;
 
-			if ($minWidth === 'X' && $minHeight === 'X') {
+			if ($min_width === 'X' && $min_height === 'X') {
 
 				echo '  No change' . "\n";
 
-			} else if ($minWidth === 'X') {
+			} else if ($min_width === 'X') {
 
-				if ($maxHeight === '') {
-					echo '  Fixed height = ' . $minHeight . "\n"; // scaleHeight
+				if ($max_height === '') {
+					echo '  Fixed height = ' . $min_height . "\n"; // scale_height
 				} else {
-					echo '  Min height = ' . $minHeight . "\n";
-					echo '  Max height = ' . $maxHeight . "\n";
+					echo '  Min height = ' . $min_height . "\n";
+					echo '  Max height = ' . $max_height . "\n";
 				}
 
-			} else if ($minHeight === 'X') {
+			} else if ($min_height === 'X') {
 
-				if ($maxWidth === '') {
-					echo '  Fixed width = ' . $minWidth . "\n"; // scaleWidth
+				if ($max_width === '') {
+					echo '  Fixed width = ' . $min_width . "\n"; // scale_width
 				} else {
-					echo '  Min width = ' . $minWidth . "\n";
-					echo '  Max width = ' . $maxWidth . "\n";
+					echo '  Min width = ' . $min_width . "\n";
+					echo '  Max width = ' . $max_width . "\n";
 				}
 
-			} else if ($maxHeight === '' && $maxWidth === '') {
+			} else if ($max_height === '' && $max_width === '') {
 
-				echo '  Fixed width = ' . $minWidth . "\n"; // forceSize($width, $height)
-				echo '  Fixed height = ' . $minHeight . "\n";
+				echo '  Fixed width = ' . $min_width . "\n"; // force_size($width, $height)
+				echo '  Fixed height = ' . $min_height . "\n";
 
-			} else if ($maxHeight === '') {
+			} else if ($max_height === '') {
 
-				echo '  Min width = ' . $minWidth . "\n";
-				echo '  Max width = ' . $maxWidth . "\n";
-				echo '  Fixed height = ' . $minHeight . "\n";
+				echo '  Min width = ' . $min_width . "\n";
+				echo '  Max width = ' . $max_width . "\n";
+				echo '  Fixed height = ' . $min_height . "\n";
 
-			} else if ($maxWidth === '') {
+			} else if ($max_width === '') {
 
-				echo '  Fixed width = ' . $minWidth . "\n";
-				echo '  Min height = ' . $minHeight . "\n";
-				echo '  Max height = ' . $maxHeight . "\n";
+				echo '  Fixed width = ' . $min_width . "\n";
+				echo '  Min height = ' . $min_height . "\n";
+				echo '  Max height = ' . $max_height . "\n";
 
 			} else {
 
-				echo '  Min width = ' . $minWidth . "\n";
-				echo '  Max width = ' . $maxWidth . "\n";
-				echo '  Min height = ' . $minHeight . "\n";
-				echo '  Max height = ' . $maxHeight . "\n";
+				echo '  Min width = ' . $min_width . "\n";
+				echo '  Max width = ' . $max_width . "\n";
+				echo '  Min height = ' . $min_height . "\n";
+				echo '  Max height = ' . $max_height . "\n";
 
 			}
 

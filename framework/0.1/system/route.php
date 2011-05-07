@@ -5,7 +5,7 @@
 
 	$routes = array();
 
-	$include_path = ROOT_APP . DS . 'core' . DS . 'route.php';
+	$include_path = ROOT_SITE . DS . 'core' . DS . 'route.php';
 	if (is_file($include_path)) {
 		require_once($include_path);
 	}
@@ -96,14 +96,14 @@
 
 		if (substr($route_path, -1) != '/') {
 
-			$newUrl = config::get('url.prefix') . $route_path . '/';
+			$new_url = config::get('url.prefix') . $route_path . '/';
 
 			$query = config::get('request.query');
 			if ($query) {
-				$newUrl .= '?' . $query;
+				$new_url .= '?' . $query;
 			}
 
-			redirect($newUrl, 301);
+			redirect($new_url, 301);
 
 		}
 
@@ -224,7 +224,7 @@
 //--------------------------------------------------
 // Main include
 
-	$include_path = ROOT_APP . DS . 'core' . DS . 'main.php';
+	$include_path = ROOT_SITE . DS . 'core' . DS . 'main.php';
 	if (is_file($include_path)) {
 		require_once($include_path);
 	}
@@ -235,7 +235,7 @@
 	//--------------------------------------------------
 	// Controller main class
 
-		$include_path = ROOT_APP . DS . 'core' . DS . 'controller.php';
+		$include_path = ROOT_SITE . DS . 'core' . DS . 'controller.php';
 		if (is_file($include_path)) {
 
 			require_once($include_path);
@@ -296,118 +296,143 @@
 				$building_name .= ($building_name == '' ? '' : '_') . $folder;
 				$building_stack[] = $folder;
 
-				$controller_path_full = ROOT_APP . '/controller' . $building_path . '.php';
+				$controller_path_full = ROOT_SITE . '/controller' . $building_path . '.php';
 				$controller_path_name = '/app/controller' . $building_path . '.php';
 
 				$controller_name = $building_name . '_controller';
 
-				if (is_file($controller_path_full)) {
+				if (!is_file($controller_path_full)) {
+					$controller_log[] = $controller_path_name . ': n/a';
+					continue;
+				}
 
-					require_once($controller_path_full);
+				require_once($controller_path_full);
 
-					if (class_exists($controller_name)) {
+				if (!class_exists($controller_name)) {
+					exit_with_error('Missing object "' . $controller_name . '" in "' . $controller_path_name . '"');
+				}
 
-						//--------------------------------------------------
-						// Initialise
+			//--------------------------------------------------
+			// Initialise
 
-							$controllers[$controller_id] = new $controller_name();
+				$controllers[$controller_id] = new $controller_name();
 
-						//--------------------------------------------------
-						// Route modification
+			//--------------------------------------------------
+			// Route modification
 
-							$results = $controllers[$controller_id]->route();
+				$results = $controllers[$controller_id]->route();
 
-							if (is_array($results)) {
+				if (is_array($results)) {
 
-								$controller_log[] = $controller_path_name . ': ' . $controller_name . '->route() - ' . var_export($results, true);
+					$controller_log[] = $controller_path_name . ': ' . $controller_name . '->route() - ' . var_export($results, true);
 
-								foreach ($results as $result_name => $result_value) {
+					foreach ($results as $result_name => $result_value) {
 
-									if ($result_name == 'route_path_reset_prefix') {
+						if ($result_name == 'route_path_reset') {
 
-										$building_path = '';
-										$building_name = '';
-										$building_stack = array();
-										$route_stack = array_merge(path_to_array($result_value), $route_stack);
+							$building_path = '';
+							$building_name = '';
+							$building_stack = array();
+							$route_stack = path_to_array($result_value);
 
-									} else if ($result_name == 'route_path_reset_replace') {
+						} else if ($result_name == 'route_path_reset_prefix') {
 
-										$building_path = '';
-										$building_name = '';
-										$building_stack = array();
-										$route_stack = path_to_array($result_value);
+							$building_path = '';
+							$building_name = '';
+							$building_stack = array();
+							$route_stack = array_merge(path_to_array($result_value), $route_stack);
 
-									} else if ($result_name == 'route_path_extend') {
+						} else if ($result_name == 'route_path_extend') {
 
-										$route_stack = array_merge($route_stack, path_to_array($result_value));
+							$route_stack = array_merge($route_stack, path_to_array($result_value));
 
-									} else {
+						} else if ($result_name == 'route_path_extend_prefix') {
 
-										exit_with_error('Unrecognised route result "' . $result_name . '" in "' . $controller_path_name . '"');
+							$route_stack = array_merge(path_to_array($result_value), $route_stack);
 
-									}
+						} else {
 
-								}
+							exit_with_error('Unrecognised route result "' . $result_name . '" in "' . $controller_path_name . '"');
 
-							} else {
-
-								$controller_log[] = $controller_path_name . ': ' . $controller_name . '->route() - no change';
-
-							}
-
-						//--------------------------------------------------
-						// Find action methods
-
-							$actions = array('action_index');
-
-							$next_action = reset($route_stack);
-							if ($next_action !== false) {
-								$actions[] = 'action_' . $next_action;
-							}
-
-							foreach ($actions as $method) {
-
-								if (method_exists($controllers[$controller_id], $method)) {
-
-									$action_controller_id = $controller_id;
-									$action_controller_path = $controller_path_name;
-									$action_controller_name = $controller_name;
-									$action_route_stack_used = $building_stack;
-									$action_route_stack_pending = $route_stack;
-									$action_method = $method;
-
-									$controller_log[] = $controller_path_name . ': ' . $controller_name . '->' . $method . '() - found';
-
-								} else {
-
-									$controller_log[] = $controller_path_name . ': ' . $controller_name . '->' . $method . '() - absent';
-
-								}
-
-							}
-
-					} else if ($folder == 'index') {
-
-						$action_method = NULL; // Controller was included as a simple script
-
-					} else {
-
-						exit_with_error('Missing object "' . $controller_name . '" in "' . $controller_path_name . '"');
+						}
 
 					}
 
 				} else {
 
-					$controller_log[] = $controller_path_name . ': n/a';
+					$controller_log[] = $controller_path_name . ': ' . $controller_name . '->route() - no change';
 
 				}
 
 			//--------------------------------------------------
-			// One last pass for an "index" controller/script
+			// Find action methods
 
-				if (count($route_stack) == 0 && $folder != 'index') {
-					$route_stack = array('index');
+				$actions = array('action_index');
+
+				$next_action = reset($route_stack);
+				if ($next_action !== false) {
+					$actions[] = 'action_' . $next_action;
 				}
+
+				foreach ($actions as $method) {
+
+					if (method_exists($controllers[$controller_id], $method)) {
+
+						$action_controller_id = $controller_id;
+						$action_controller_path = $controller_path_name;
+						$action_controller_name = $controller_name;
+						$action_route_stack_used = $building_stack;
+						$action_route_stack_pending = $route_stack;
+						$action_method = $method;
+
+						$controller_log[] = $controller_path_name . ': ' . $controller_name . '->' . $method . '() - found';
+
+					} else {
+
+						$controller_log[] = $controller_path_name . ': ' . $controller_name . '->' . $method . '() - absent';
+
+					}
+
+				}
+
+		}
+
+		if ($action_method === NULL) {
+
+			$building_path .= '/index';
+
+			$controller_path_full = ROOT_SITE . '/controller' . $building_path . '.php';
+			$controller_path_name = '/app/controller' . $building_path . '.php';
+
+			if (is_file($controller_path_full)) {
+
+				class controller_index extends controller {
+
+					public $action_index_path;
+
+					function action_index() {
+
+						require_once($this->action_index_path);
+
+					}
+
+				}
+
+				$controller_id++;
+
+				$controllers[$controller_id] = new controller_index();
+				$controllers[$controller_id]->action_index_path = $controller_path_full;
+
+				$action_controller_id = $controller_id;
+				$action_controller_path = $controller_path_name;
+				$action_controller_name = NULL;
+				$action_route_stack_used = $building_stack;
+				$action_route_stack_pending = $route_stack;
+				$action_method = 'action_index';
+
+				$controller_log[] = $controller_path_name . ': include found';
+
+			}
 
 		}
 
@@ -437,10 +462,14 @@
 		if (config::get('debug.run')) {
 
 			$note_html  = '<strong>Action</strong>: ' . html($action_controller_path) . '<br />';
-			$note_html .= '&nbsp; Calls:<br />';
-			$note_html .= '&nbsp; &nbsp; ' . html($action_controller_name) . '->before();<br />';
-			$note_html .= '&nbsp; &nbsp; ' . html($action_controller_name) . '->' . html($action_method) . '(' . var_export($action_route_stack_pending, true) . ');<br />';
-			$note_html .= '&nbsp; &nbsp; ' . html($action_controller_name) . '->after();<br />';
+
+			if ($action_controller_name !== NULL) {
+				$note_html .= '&nbsp; Calls:<br />';
+				$note_html .= '&nbsp; &nbsp; ' . html($action_controller_name) . '->before();<br />';
+				$note_html .= '&nbsp; &nbsp; ' . html($action_controller_name) . '->' . html($action_method) . '(' . var_export($action_route_stack_pending, true) . ');<br />';
+				$note_html .= '&nbsp; &nbsp; ' . html($action_controller_name) . '->after();<br />';
+			}
+
 			$note_html .= '&nbsp; Methods:<br />';
 
 			foreach (config::get('route.variables') as $id => $value) {
@@ -476,19 +505,19 @@
 
 	} else {
 
-		$title_default = config::get('output.title_prefix');
+		$title_default = config::get('output.title_default_prefix');
 
 		$k = 0;
 		foreach (config::get('output.title_folders') as $folder) {
 			if ($folder != '') {
 				if ($k++ > 0) {
-					$title_default .= config::get('output.title_divide');
+					$title_default .= config::get('output.title_default_divide');
 				}
 				$title_default .= $folder;
 			}
 		}
 
-		$title_default .= config::get('output.title_suffix');
+		$title_default .= config::get('output.title_default_suffix');
 
 	}
 
@@ -511,7 +540,7 @@
 // View
 
 	$view_path = implode('/', config::get('view.folders'));
-	$view_path_full = ROOT_APP . '/view/' . $view_path . '.php';
+	$view_path_full = ROOT_SITE . '/view/' . $view_path . '.php';
 	$view_path_name = '/app/view/' . $view_path . '.php';
 
 	config::set('view.path', $view_path_full);
@@ -521,7 +550,7 @@
 	}
 
 	if (!is_file($view_path_full)) {
-		$view_path_full = ROOT_APP . '/view/error/page_not_found.php';
+		$view_path_full = ROOT_SITE . '/view/error/page_not_found.php';
 	}
 
 	if (!is_file($view_path_full)) {
@@ -545,10 +574,27 @@
 	config::set('output.html', ob_get_clean());
 
 //--------------------------------------------------
+// Message
+
+	$message = '';
+
+	if ($message == '') {
+		$message_html = '';
+	} else {
+		$message_html = '
+			<div id="page_message">
+				<p>' . html($message) . '</p>
+			</div>';
+	}
+
+	config::set_default('output.message', $message);
+	config::set_default('output.message_html', $message_html);
+
+//--------------------------------------------------
 // Layout
 
 	$layout_path = 'default';
-	$layout_path_full = ROOT_APP . '/view_layout/' . $layout_path . '.php';
+	$layout_path_full = ROOT_SITE . '/view_layout/' . $layout_path . '.php';
 	$layout_path_name = '/app/view_layout/' . $layout_path . '.php';
 
 	if (config::get('debug.run')) {
@@ -560,7 +606,9 @@
 	}
 
 	config::set('output.head_html', ''); // Include CSS/JS/Extra
-	config::set('output.page_id', 'example'); // Include CSS/JS/Extra
+	config::set('output.page_ref_request', human_to_ref(config::get('request.path')));
+	config::set('output.page_ref_route', human_to_ref(config::get('route.path')));
+	config::set('output.page_ref_view', human_to_ref($view_path));
 
 	function layout_run() {
 

@@ -108,7 +108,7 @@
 
 	$config = array();
 
-	$config_path = ROOT_APP . DS . 'core' . DS . 'config.php';
+	$config_path = ROOT_SITE . DS . 'core' . DS . 'config.php';
 
 	if (is_file($config_path)) {
 
@@ -215,9 +215,9 @@
 		config::set_default('output.charset', 'UTF-8');
 		config::set_default('output.error', false);
 		config::set_default('output.no_cache', false);
-		config::set_default('output.title_prefix', 'Company Name | ');
-		config::set_default('output.title_suffix', '');
-		config::set_default('output.title_divide', ' | ');
+		config::set_default('output.title_default_prefix', 'Company Name | ');
+		config::set_default('output.title_default_suffix', '');
+		config::set_default('output.title_default_divide', ' | ');
 		config::set_default('output.title_error', 'An error has occurred');
 		config::set_default('output.block_browsers', array(
 				'/MSIE [1-5]\./',

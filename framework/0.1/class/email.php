@@ -9,7 +9,7 @@
 // From Cake:
 //   $this->to = null;
 //   $this->from = null;
-//   $this->replyTo = null;
+//   $this->reply_to = null;
 //   $this->return = null;
 //   $this->cc = array();
 //   $this->bcc = array();
@@ -38,62 +38,62 @@
 //    $email->form_values($form);
 //    $email->send('...');
 
-			// $boundary1 = '--MailBoundary--' . time() . '--' . rand(1000, 9999) . '-1';
-			// $boundary2 = '--MailBoundary--' . time() . '--' . rand(1000, 9999) . '-2';
+			// $boundary1 = '--mail_boundary--' . time() . '--' . rand(1000, 9999) . '-1';
+			// $boundary2 = '--mail_boundary--' . time() . '--' . rand(1000, 9999) . '-2';
 
-			// $emailHeaders  = 'From: "' . head(config::get('email.from_name')) . '" <' . head(config::get('email.from_address')) .'>' . "\n";
-			// $emailHeaders .= 'Reply-To: ' . head($requestEmail) . "\n";
-			// $emailHeaders .= 'MIME-Version: 1.0' . "\n";
-			// $emailHeaders .= 'Content-Type: multipart/mixed; boundary=' . head($boundary1);
+			// $email_headers  = 'From: "' . head(config::get('email.from_name')) . '" <' . head(config::get('email.from_address')) .'>' . "\n";
+			// $email_headers .= 'Reply-To: ' . head($request_email) . "\n";
+			// $email_headers .= 'MIME-Version: 1.0' . "\n";
+			// $email_headers .= 'Content-Type: multipart/mixed; boundary=' . head($boundary1);
 
-			// $emailContent  = '--' . $boundary1 . "\n";
-			// $emailContent .= 'Content-Type: multipart/alternative; boundary=' . head($boundary2) . "\n";
-			// $emailContent .= '' . "\n";
-			// $emailContent .= '--' . $boundary2 . "\n";
-			// $emailContent .= 'Content-Type: text/plain; charset="' . head(config::get('output.charset')) . '"' . "\n";
-			// $emailContent .= '' . "\n";
-			// $emailContent .= $emailText . "\n";
-			// $emailContent .= '' . "\n";
-			// $emailContent .= '--' . $boundary2 . "\n";
-			// $emailContent .= 'Content-Type: text/html; charset="' . head(config::get('output.charset')) . '"' . "\n";
-			// $emailContent .= '' . "\n";
-			// $emailContent .= $emailHtml . "\n";
-			// $emailContent .= '' . "\n";
-			// $emailContent .= '--' . $boundary2 . '--' . "\n";
-			// $emailContent .= '--' . $boundary1 . "\n";
-			// $emailContent .= 'Content-Type: text/plain; name="' . head($emailAttachmentName) . '"' . "\n";
-			// $emailContent .= 'Content-Disposition: attachment; filename="' . head($emailAttachmentName) . '"' . "\n";
-			// $emailContent .= 'Content-Transfer-Encoding: base64' . "\n";
-			// $emailContent .= 'X-Attachment-Id: ' . head($emailAttachmentId) . "\n";
-			// $emailContent .= '' . "\n";
-			// $emailContent .= chunk_split(base64_encode($emailAttachmentContent)) . "\n";
-			// $emailContent .= '--' . $boundary1 . '--';
+			// $email_content  = '--' . $boundary1 . "\n";
+			// $email_content .= 'Content-Type: multipart/alternative; boundary=' . head($boundary2) . "\n";
+			// $email_content .= '' . "\n";
+			// $email_content .= '--' . $boundary2 . "\n";
+			// $email_content .= 'Content-Type: text/plain; charset="' . head(config::get('output.charset')) . '"' . "\n";
+			// $email_content .= '' . "\n";
+			// $email_content .= $email_text . "\n";
+			// $email_content .= '' . "\n";
+			// $email_content .= '--' . $boundary2 . "\n";
+			// $email_content .= 'Content-Type: text/html; charset="' . head(config::get('output.charset')) . '"' . "\n";
+			// $email_content .= '' . "\n";
+			// $email_content .= $email_html . "\n";
+			// $email_content .= '' . "\n";
+			// $email_content .= '--' . $boundary2 . '--' . "\n";
+			// $email_content .= '--' . $boundary1 . "\n";
+			// $email_content .= 'Content-Type: text/plain; name="' . head($email_attachment_name) . '"' . "\n";
+			// $email_content .= 'Content-Disposition: attachment; filename="' . head($email_attachment_name) . '"' . "\n";
+			// $email_content .= 'Content-Transfer-Encoding: base64' . "\n";
+			// $email_content .= 'X-Attachment-Id: ' . head($email_attachment_id) . "\n";
+			// $email_content .= '' . "\n";
+			// $email_content .= chunk_split(base64_encode($email_attachment_content)) . "\n";
+			// $email_content .= '--' . $boundary1 . '--';
 
-// See /chrysalis.crm/a/api/brochureRequest/index.php for HTML and Plain text versions
+// See /chrysalis.crm/a/api/brochure_request/index.php for HTML and Plain text versions
 
 // And when a form is provided...
 
-// $emailValues = array();
-// $emailValues['Sent'] = date('l jS F Y, g:i:sa');
-// $emailValues['Website'] = config::get('request.domain_http') . config::get('url.prefix');
-// $emailValues['Remote'] = config::get('request.ip');
+// $email_values = array();
+// $email_values['Sent'] = date('l j_s F Y, g:i:sa');
+// $email_values['Website'] = config::get('request.domain_http') . config::get('url.prefix');
+// $email_values['Remote'] = config::get('request.ip');
 //
-// foreach ($form->getFields() as $cField) {
-// 	if ($cField->getQuickPrintType() == 'date') {
-// 		$emailValues[$cField->getTextLabel()] = date('d-m-Y', $cField->getValueTimeStamp());
+// foreach ($form->get_fields() as $c_field) {
+// 	if ($c_field->get_quick_print_type() == 'date') {
+// 		$email_values[$c_field->get_text_label()] = date('d-m-Y', $c_field->get_value_time_stamp());
 // 	} else {
-// 		$emailValues[$cField->getTextLabel()] = $cField->getValue();
+// 		$email_values[$c_field->get_text_label()] = $c_field->get_value();
 // 	}
 // }
 //
-// $emailBody  = '<html>' . "\n";
-// $emailBody .= ' <table cellspacing="0" cellpadding="3" border="1">' . "\n";
+// $email_body  = '<html>' . "\n";
+// $email_body .= ' <table cellspacing="0" cellpadding="3" border="1">' . "\n";
 //
-// foreach ($emailValues as $cField => $cValue) {
-// 	$emailBody .= '  <tr><th align="left" valign="top">' . html($cField) . '</th><td valign="top">' . nl2br($cValue == '' ? '&nbsp;' : html($cValue)) . '</td></tr>' . "\n";
+// foreach ($email_values as $c_field => $c_value) {
+// 	$email_body .= '  <tr><th align="left" valign="top">' . html($c_field) . '</th><td valign="top">' . nl2br($c_value == '' ? '&nbsp;' : html($c_value)) . '</td></tr>' . "\n";
 // }
 //
-// $emailBody .= ' </table>' . "\n";
-// $emailBody .= '</html>' . "\n";
+// $email_body .= ' </table>' . "\n";
+// $email_body .= '</html>' . "\n";
 
 ?>

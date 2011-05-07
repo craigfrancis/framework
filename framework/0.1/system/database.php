@@ -4,15 +4,15 @@
 
 	Can be called statically or dynamically:
 
-		$rstA = db::query('
+		$rst_a = db::query('
 			SELECT
 			FROM');
 
-		$rstA = $db->query('
+		$rst_a = $db->query('
 			SELECT
 			FROM');
 
-		$rstA = $this->db->query('
+		$rst_a = $this->db->query('
 			SELECT
 			FROM');
 
@@ -29,7 +29,7 @@
 
 	How about a generic
 
-		$rstA = db_query('SELECT
+		$rst_a = db_query('SELECT
 							FROM');
 
 --------------------------------------------------*/
@@ -43,7 +43,7 @@
 // $rst = db:q('SELECT
 // 			FROM');
 //
-// $rst = $myDb:q('SELECT
+// $rst = $my_db:q('SELECT
 // 				FROM');
 //
 // $rst = $this->db:q('SELECT
@@ -58,7 +58,7 @@
 // while ($rst->next()) {
 // 	$user[]['address'] = $rst->fetch_assoc();
 // 	$user[]['address'] = $rst->get('address');
-// 	$user[]['address'] = $rst->getAddress();
+// 	$user[]['address'] = $rst->get_address();
 // 	$user[]['address'] = $rst->address;
 // }
 //

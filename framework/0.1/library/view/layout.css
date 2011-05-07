@@ -1,0 +1,421 @@
+/*--------------------------------------------------*/
+/* General Setup                                    */
+
+	html, body, div, span, applet, object, iframe,
+	h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+	a, abbr, acronym, address, big, cite, code,
+	del, dfn, em, font, img, ins, kbd, q, s, samp,
+	small, strike, strong, sub, sup, tt, var,
+	dl, dt, dd, ol, ul, li,
+	fieldset, form, label, legend,
+	table, caption, tbody, tfoot, thead, tr, th, td {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		font-size: 100%;
+		vertical-align: baseline;
+		background: transparent;
+	}
+
+	html {
+		/* overflow-y: scroll; /* Force Scrollbar - Firefox2 and Safari */
+	}
+
+	body {
+		font-family: verdana, arial, helvetica, sans-serif;
+		font-size: 0.8em;
+		line-height: 1.2em;
+		color: #000;
+		background-color: #FFF;
+		text-align: center; /* IE5 Win: Thinks block level elements are aligned as text */
+	}
+
+	a {
+		color: #00F;
+	}
+
+	a img {
+		border: 0;
+	}
+
+	p,
+	h2,
+	h3 {
+		margin: 0 0 10px 0;
+	}
+
+	ul,
+	ol {
+		list-style: none;
+		margin: 0 0 10px 2em;
+	}
+
+	table {
+		font-size: 1em; /* IE5 WIN: does not inherit the font size correctly */
+		border-collapse: collapse;
+		border-spacing: 0;
+	}
+
+	table thead {
+		display: table-header-group; /* IE6: Wont repeat table headers over multiple printed pages */
+	}
+
+	input {
+		font-size: 1em; /* FF: keep font size consistent, by default it is increased by 0.1em */
+	}
+
+/*--------------------------------------------------*/
+/* Generic Classes                                  */
+
+	.off_screen {
+		position: absolute;
+		left: -5000px;
+	}
+
+/*--------------------------------------------------*/
+/* Skip Links                                       */
+
+	#skip_sinks,
+	#style_sheet_switcher {
+		padding: 0;
+		position: absolute;
+	 	right: 0px;
+	 	top: -500em; /* This needs a width, height and overflow hidden to stop IE5 MAC from doing horizontal scroll */
+	}
+
+	#skip_links a:active,
+	#skip_links a:focus,
+	#style_sheet_switcher a:active,
+	#style_sheet_switcher a:focus {
+		position: absolute;
+		top: 500.25em;
+		right: 0.25em;
+		z-index: 5;
+		white-space: nowrap;
+		color: #000;
+		background: #FFF;
+		border: 2px solid red;
+		padding: 3px;
+	}
+
+/*--------------------------------------------------*/
+/* Page Frame                                       */
+
+	/*--------------------------------------------------*/
+	/* Wrapper                                          */
+
+		#page_wrapper {
+			width: 760px;
+			margin: 0 auto;
+			text-align: left; /* IE5 Win: Correct the text-align fix */
+		}
+
+	/*--------------------------------------------------*/
+	/* Title                                            */
+
+		#page_title {
+			color: inherit;
+			background: #AAA;
+			padding: 10px;
+		}
+
+		#page_title h1 {
+			font-size: 1.5em;
+		}
+
+		#page_title h1 a {
+			color: #000;
+			text-decoration: none;
+		}
+
+	/*--------------------------------------------------*/
+	/* Container                                        */
+
+		#page_container {
+			position: relative;
+		}
+
+	/*--------------------------------------------------*/
+	/* Navigation                                       */
+
+		#page_navigation {
+			float: left;
+			width: 160px;
+			padding: 10px 0 0 0;
+			background: #E0E0E0;
+		}
+
+		#page_navigation h2 {
+			position: absolute;
+			left: -5000px;
+		}
+
+		#page_navigation h3 {
+			font-size: 1em;
+			margin: 0 0 0 10px;
+		}
+
+		#page_navigation ul {
+			list-style: none;
+			margin: 0 10px;
+		}
+
+		#page_navigation ul ul {
+			margin: 10px 0 0 20px;
+		}
+
+		#page_navigation li {
+			padding-bottom: 10px;
+			margin: 0;
+		}
+
+		#page_navigation ul a {
+			color: #000;
+			background: inherit;
+		}
+
+	/*--------------------------------------------------*/
+	/* Content                                          */
+
+		#page_content {
+			float: left;
+			width: 590px; /* (760 - 160 - 10) */
+			margin: 0 0 0 10px;
+			padding: 10px 0 0 0;
+		}
+
+		#page_content h2 {
+			font-size: 1.2em;
+		}
+
+		#page_content h3 {
+			font-size: 1em;
+		}
+
+	/*--------------------------------------------------*/
+	/* Footer                                           */
+
+		#page_footer {
+			clear: both;
+			padding: 10px 0 0 0;
+		}
+
+		#page_footer h2 {
+			position: absolute;
+			left: -5000px;
+		}
+
+		#page_footer ul {
+			margin: 0;
+		}
+
+		#page_footer ul li {
+			list-style: none;
+			float: right;
+			padding: 0 5px 0 0;
+			margin: 0 5px 0 0;
+			font-size: 0.8em;
+			border-right: 1px solid #000;
+		}
+
+		#page_footer ul li.copyright {
+			border-right: 0;
+			padding-right: 0;
+			margin-right: 0;
+		}
+
+/*--------------------------------------------------*/
+/* Basic Form                                       */
+
+	.basic_form fieldset {
+		padding: 10px 0 0 0;
+		margin: 0 0 10px 0;
+		border: 0;
+	}
+
+	.basic_form fieldset legend {
+		color: #000; /* IE6: defaults to using blue text */
+		font-weight: bold;
+		margin: 0 0 10px 0;
+		padding: 0;
+	}
+
+	.basic_form fieldset fieldset legend {
+		padding: 10px 0 0 0;
+		margin: 0;
+	}
+
+	.basic_form .error {
+		color: red;
+		background: inherit;
+		font-weight: bold;
+	}
+
+	.basic_form .row {
+		padding: 5px 0 0 11.5em;
+		clear: both;
+	}
+
+	.basic_form .row .label,
+	.basic_form .row.input_first .input {
+		float: left;
+		width: 11em;
+		margin: 3px 0 0 -11.5em;
+		text-align: right;
+	}
+
+	.basic_form .row .label abbr.required {
+		border: 0;
+	}
+
+	.basic_form .row.input_first .label {
+		float: none;
+		display: block;
+		width: auto;
+		margin: 3px 0 0 0;
+		text-align: left;
+	}
+
+	.basic_form .row.info .input,
+	.basic_form .row.radio .input,
+	.basic_form .row.check .input {
+		display: block;
+		padding: 3px 0 0 0;
+	}
+
+	.basic_form .row.date input {
+		text-align: center;
+	}
+
+	.basic_form .submit {
+		padding-bottom: 10px;
+	}
+
+/*--------------------------------------------------*/
+/* Single line form                                 */
+
+	.single_line_form fieldset {
+		margin: 0 0 10px 0;
+		border: 0;
+	}
+
+/*--------------------------------------------------*/
+/* Delete form                                      */
+
+	.delete_form fieldset {
+		margin: 0 0 10px 0;
+		border: 0;
+	}
+
+	.delete_form .error {
+		color: red;
+		background: inherit;
+		font-weight: bold;
+	}
+
+/*--------------------------------------------------*/
+/* Basic Table                                      */
+
+	.basic_table {
+		margin: 0 0 10px 0;
+		color: inherit;
+		background: #E0E0E0;
+		border-top: 1px solid #000;
+		border-right: 0;
+		border-bottom: 0;
+		border-left: 1px solid #000;
+	}
+
+	.basic_table.full_width {
+		width: 100%;
+	}
+
+	.basic_table tr.even {
+		background: #F5F5F5;
+	}
+
+	.basic_table tr.highlight td.name {
+		font-weight: bold;
+	}
+
+	.basic_table th {
+		color: inherit;
+		background: #AAA;
+	}
+
+	.basic_table th,
+	.basic_table td {
+		padding: 2px 4px;
+		border-top: 0;
+		border-right: 1px solid #000;
+		border-bottom: 1px solid #000;
+		border-left: 0;
+	}
+
+	.basic_table td.no_results {
+		text-align: center;
+	}
+
+	.basic_table td.view,
+	.basic_table td.delete {
+		text-align: center;
+		width: 4em;
+	}
+
+/*--------------------------------------------------*/
+/* Basic nav                                        */
+
+	.basic_nav {
+		margin: 0;
+		padding: 0;
+	}
+
+	.basic_nav li {
+		float: left;
+		list-style: none;
+		margin: 0 10px -1px 0;
+		position: relative; /* IE5/6 WIN: needs this the the issue_log_body sits under this li */
+		border-top: 1px solid #000;
+		border-right: 1px solid #000;
+		border-left: 1px solid #000;
+	}
+
+	.basic_nav li a {
+		text-decoration: none;
+	}
+
+	.basic_nav li span,
+	.basic_nav li strong {
+		display: block;
+		padding: 5px;
+		position: relative; /* IE5/6 WIN: needs this rule to apply the background colour */
+		color: #000;
+		background: #E0E0E0;
+		border-bottom: 1px solid #000;
+	}
+
+	.basic_nav li strong {
+		font-weight: normal;
+		color: #000;
+		background: #FFF;
+		border-bottom: 1px solid #FFF;
+	}
+
+	.basic_nav_child {
+		clear: both;
+		border: 1px solid #000;
+		padding: 10px 10px 0 10px;
+		margin: 0 0 10px 0;
+	}
+
+/*--------------------------------------------------*/
+/* Small nav                                        */
+
+	.small_nav {
+		margin: 0 0 10px 0;
+		list-style: none;
+	}
+
+	.small_nav li {
+		display: inline;
+	}

@@ -153,17 +153,17 @@
 			$sec = $unix % 60;
 			$unix -= $sec;
 
-			$minSeconds = $unix % 3600;
-			$unix -= $minSeconds;
-			$min = ($minSeconds / 60);
+			$min_seconds = $unix % 3600;
+			$unix -= $min_seconds;
+			$min = ($min_seconds / 60);
 
-			$hourSeconds = $unix % 86400;
-			$unix -= $hourSeconds;
-			$hour = ($hourSeconds / 3600);
+			$hour_seconds = $unix % 86400;
+			$unix -= $hour_seconds;
+			$hour = ($hour_seconds / 3600);
 
-			$daySeconds = $unix % 604800;
-			$unix -= $daySeconds;
-			$day = ($daySeconds / 86400);
+			$day_seconds = $unix % 604800;
+			$unix -= $day_seconds;
+			$day = ($day_seconds / 86400);
 
 			$week = ($unix / 604800);
 
@@ -208,7 +208,7 @@
 		$text = strip_tags($text);
 		$text = explode(' ', $text, $words + 1);
 		if (count($text) > $words) {
-			$dumpData = array_pop($text);
+			$dump_data = array_pop($text);
 		}
 		return implode(' ', $text);
 	}
@@ -260,17 +260,17 @@
 // redirecting from a HTTPS connection to the
 // standard HTTP
 
-	function redirect($url, $httpResponseCode = 302) {
+	function redirect($url, $http_response_code = 302) {
 
 		if (substr($url, 0, 1) == '/') {
 			$url = (config::get('request.https') ? config::get('request.domain_https') : config::get('request.domain_http')) . $url;
 		}
 
-		$htmlNext = '<p>Go to <a href="' . html($url) . '">next page</a>.</p>';
+		$html_next = '<p>Go to <a href="' . html($url) . '">next page</a>.</p>';
 
 		if (ob_get_length() > 0) {
 			ob_end_flush();
-			exit($htmlNext);
+			exit($html_next);
 		}
 
 		config::set('output.mime', 'text/html');
@@ -279,8 +279,8 @@
 			header('Refresh: 0; URL=' . head($url));
 			exit('<p><a href="' . html($url) . '">Loading...</a></p>');
 		} else {
-			header('Location: ' . head($url), true, $httpResponseCode);
-			exit($htmlNext);
+			header('Location: ' . head($url), true, $http_response_code);
+			exit($html_next);
 		}
 
 	}

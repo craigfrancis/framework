@@ -48,7 +48,7 @@
 
 					parse_str($this->data['query'], $parameters);
 
-					unset($parameters['url']); // CakePHP support
+					// unset($parameters['url']); // CakePHP support
 
 					foreach ($parameters as $key => $value) {
 						if ($value != '' && ($replace_parameters || !isset($this->parameters[$key]))) {
