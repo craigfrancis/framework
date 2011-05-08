@@ -5,7 +5,7 @@
 
 	$routes = array();
 
-	$include_path = ROOT_SITE . DS . 'core' . DS . 'route.php';
+	$include_path = ROOT_APP . DS . 'core' . DS . 'route.php';
 	if (is_file($include_path)) {
 		require_once($include_path);
 	}
@@ -224,7 +224,7 @@
 //--------------------------------------------------
 // Main include
 
-	$include_path = ROOT_SITE . DS . 'core' . DS . 'main.php';
+	$include_path = ROOT_APP . DS . 'core' . DS . 'main.php';
 	if (is_file($include_path)) {
 		require_once($include_path);
 	}
@@ -235,7 +235,7 @@
 	//--------------------------------------------------
 	// Controller main class
 
-		$include_path = ROOT_SITE . DS . 'core' . DS . 'controller.php';
+		$include_path = ROOT_APP . DS . 'core' . DS . 'controller.php';
 		if (is_file($include_path)) {
 
 			require_once($include_path);
@@ -296,7 +296,7 @@
 				$building_name .= ($building_name == '' ? '' : '_') . $folder;
 				$building_stack[] = $folder;
 
-				$controller_path_full = ROOT_SITE . '/controller' . $building_path . '.php';
+				$controller_path_full = ROOT_APP . '/controller' . $building_path . '.php';
 				$controller_path_name = '/app/controller' . $building_path . '.php';
 
 				$controller_name = $building_name . '_controller';
@@ -401,7 +401,7 @@
 
 			$building_path .= '/index';
 
-			$controller_path_full = ROOT_SITE . '/controller' . $building_path . '.php';
+			$controller_path_full = ROOT_APP . '/controller' . $building_path . '.php';
 			$controller_path_name = '/app/controller' . $building_path . '.php';
 
 			if (is_file($controller_path_full)) {
@@ -540,7 +540,7 @@
 // View
 
 	$view_path = implode('/', config::get('view.folders'));
-	$view_path_full = ROOT_SITE . '/view/' . $view_path . '.php';
+	$view_path_full = ROOT_APP . '/view/' . $view_path . '.php';
 	$view_path_name = '/app/view/' . $view_path . '.php';
 
 	config::set('view.path', $view_path_full);
@@ -550,7 +550,7 @@
 	}
 
 	if (!is_file($view_path_full)) {
-		$view_path_full = ROOT_SITE . '/view/error/page_not_found.php';
+		$view_path_full = ROOT_APP . '/view/error/page_not_found.php';
 	}
 
 	if (!is_file($view_path_full)) {
@@ -594,7 +594,7 @@
 // Layout
 
 	$layout_path = 'default';
-	$layout_path_full = ROOT_SITE . '/view_layout/' . $layout_path . '.php';
+	$layout_path_full = ROOT_APP . '/view_layout/' . $layout_path . '.php';
 	$layout_path_name = '/app/view_layout/' . $layout_path . '.php';
 
 	if (config::get('debug.run')) {

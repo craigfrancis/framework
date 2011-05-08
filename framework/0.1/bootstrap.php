@@ -22,7 +22,7 @@
 		define('ROOT', dirname(dirname(dirname(__FILE__))));
 	}
 
-	if (!defined('ROOT_SITE'))      define('ROOT_SITE',      ROOT . DS . 'app');
+	if (!defined('ROOT_APP'))       define('ROOT_APP',       ROOT . DS . 'app');
 	if (!defined('ROOT_FILE'))      define('ROOT_FILE',      ROOT . DS . 'file');
 	if (!defined('ROOT_PUBLIC'))    define('ROOT_PUBLIC',    ROOT . DS . 'public');
 	if (!defined('ROOT_VENDOR'))    define('ROOT_VENDOR',    ROOT . DS . 'vendor');

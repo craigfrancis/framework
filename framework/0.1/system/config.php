@@ -108,7 +108,7 @@
 
 	$config = array();
 
-	$config_path = ROOT_SITE . DS . 'core' . DS . 'config.php';
+	$config_path = ROOT_APP . DS . 'core' . DS . 'config.php';
 
 	if (is_file($config_path)) {
 

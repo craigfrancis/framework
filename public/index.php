@@ -11,7 +11,7 @@
 	//define('FRAMEWORK_VERSION', 0.1);
 
 	//define('ROOT', dirname(dirname(__FILE__)));
-	//define('ROOT_SITE',      ROOT . DIRECTORY_SEPARATOR . 'app');
+	//define('ROOT_APP',       ROOT . DIRECTORY_SEPARATOR . 'app');
 	//define('ROOT_FILE',      ROOT . DIRECTORY_SEPARATOR . 'file'); // What happens if you want to set this on a per server basis?
 	//define('ROOT_PUBLIC',    ROOT . DIRECTORY_SEPARATOR . 'public'); // This folder
 	//define('ROOT_VENDOR',    ROOT . DIRECTORY_SEPARATOR . 'vendor'); // Vendor folder
