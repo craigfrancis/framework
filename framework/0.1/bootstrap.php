@@ -45,7 +45,6 @@
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'controller.php');
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'view.php');
 
-debug_show_variables();
 debug_show_config();
 
 ?>

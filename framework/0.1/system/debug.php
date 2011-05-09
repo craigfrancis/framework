@@ -48,6 +48,13 @@
 	function debug_note_add_html($note_html) {
 
 		//--------------------------------------------------
+		// Suppression
+
+			if (!config::get('debug.run')) {
+				return;
+			}
+
+		//--------------------------------------------------
 		// Called from
 
 			$called_from = debug_backtrace();
@@ -139,12 +146,12 @@
 	}
 
 //--------------------------------------------------
-// Print global variables
+// Print variables
 
-	function debug_show_variables() {
+	function debug_show_array($array, $label = 'Array') {
 
-		$variables_html = array('Variables:');
-		foreach ($GLOBALS as $key => $value) {
+		$variables_html = array(html($label . ':'));
+		foreach ($array as $key => $value) {
 			if (substr($key, 0, 1) != '_' && substr($key, 0, 5) != 'HTTP_' && !in_array($key, array('GLOBALS'))) {
 				$variables_html[] = '&nbsp; <strong>' . html($key) . '</strong>: ' . html(print_r($value, true));
 			}

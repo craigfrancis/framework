@@ -6,28 +6,14 @@
 //--------------------------------------------------
 // View
 
-	$view_path = ROOT_APP . '/view/' . implode('/', config::get('view.folders')) . '.php';
-
-	config::set('view.path', $view_path);
-
-	if (config::get('debug.run')) {
-		debug_note_add_html('<strong>View</strong>: ' . html($view_path));
-	}
-
-	if (!is_file($view_path)) {
-		$view_path = ROOT_APP . '/view/error/page_not_found.php';
-	}
-
-	if (!is_file($view_path)) {
-		$view_path = ROOT_FRAMEWORK . '/library/view/error_page_not_found.php';
-	}
-
 	ob_start();
 
 	$view = new view();
-	$view->html($view_path);
+	$view->parse();
 
 	config::set('output.html', config::get('output.html') . ob_get_clean());
+
+	unset($view);
 
 //--------------------------------------------------
 // Output variables
@@ -57,14 +43,16 @@
 
 		}
 
+		config::set_default('output.title', $title_default);
+
 		config::set('output.title_default', $title_default);
 
-		config::set_default('output.title', $title_default);
+		unset($title_default, $k, $folder);
 
 	//--------------------------------------------------
 	// Page ref
 
-		$page_ref_mode = config::get('output.page_ref_mode', 'route');
+		$page_ref_mode = config::get('output.page_ref_mode');
 
 		if ($page_ref_mode == 'route') {
 
@@ -84,6 +72,8 @@
 
 		}
 
+		unset($page_ref_mode);
+
 	//--------------------------------------------------
 	// Message
 
@@ -101,28 +91,14 @@
 		config::set_default('output.message', $message);
 		config::set_default('output.message_html', $message_html);
 
+		unset($message, $message_html);
+
 //--------------------------------------------------
 // Layout
 
-	$layout_path = ROOT_APP . '/view_layout/' . config::get('view.layout', 'default') . '.php';
-
-	if (config::get('debug.run')) {
-		debug_note_add_html('<strong>Layout</strong>: ' . html($layout_path));
-	}
-
-	if (!is_file($layout_path)) {
-
-		$layout_path = ROOT_FRAMEWORK . '/library/view/layout.php';
-
-		$head_html = "\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(ROOT_FRAMEWORK . '/library/view/layout.css')) . "\n\t" . '</style>';
-
-		config::set('output.head_html', config::get('output.head_html') . $head_html);
-		
-		unset($head_html);
-
-	}
-
 	$layout = new layout();
-	$layout->html($layout_path);
+	$layout->parse();
+
+	unset($layout);
 
 ?>

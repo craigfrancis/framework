@@ -4,8 +4,11 @@
 // View variables
 
 	config::set('output.head_html', '');
+	config::set('output.head_css', array());
+	config::set('output.head_js', array());
 
 	config::set('view.variables', array());
+	config::set('view.layout', 'default');
 
 //--------------------------------------------------
 // Main include
@@ -133,6 +136,8 @@
 
 				}
 
+				unset($results);
+
 			//--------------------------------------------------
 			// Find action methods
 
@@ -163,6 +168,8 @@
 					}
 
 				}
+
+				unset($actions, $next_action, $method);
 
 		}
 
@@ -227,18 +234,20 @@
 	//--------------------------------------------------
 	// Cleanup
 
-		unset($route_stack, $building_path, $building_name, $building_stack, $folder);
+		unset($controller_id, $controller_path, $controller_name, $route_stack, $building_path, $building_name, $building_stack, $controller_log, $folder);
+
+		// debug_show_array(get_defined_vars(), 'Variables');
 
 //--------------------------------------------------
 // Action
+
+	ob_start();
 
 	if ($action_method !== NULL) {
 
 		if ($action_method != 'action_index') {
 			array_push($action_route_stack_used, array_shift($action_route_stack_pending));
 		}
-
-		config::set('view.folders', $action_route_stack_used);
 
 		if (config::get('debug.run')) {
 
@@ -254,16 +263,20 @@
 			$note_html .= '&nbsp; Methods:<br />';
 
 			foreach (config::get('route.variables') as $id => $value) {
-				$note_html .= '&nbsp; &nbsp; $this->route_variable(\'' . html($id) . '\') - \'' . html($value) . '\'<br />';
+				$note_html .= '&nbsp; &nbsp; $this->route_variable(\'' . html($id) . '\'); = \'<strong>' . html($value) . '</strong>\'<br />';
 			}
 
 			foreach (config::get('route.folders') as $id => $value) {
-				$note_html .= '&nbsp; &nbsp; $this->route_folder(' . html($id) . ') - \'' . html($value) . '\'<br />';
+				$note_html .= '&nbsp; &nbsp; $this->route_folder(' . html($id) . '); = \'<strong>' . html($value) . '</strong>\'<br />';
 			}
 
 			foreach (config::get('output.title_folders') as $id => $value) {
-				$note_html .= '&nbsp; &nbsp; $this->title_folder_name(' . html($id) . ', \'new_value\') - \'' . html($value) . '\'<br />';
+				$note_html .= '&nbsp; &nbsp; $this->title_folder_name(' . html($id) . ', \'new_value\'); = \'<strong>' . html($value) . '</strong>\'<br />';
 			}
+
+			$note_html .= '&nbsp; &nbsp; $this->head_add_html(\'&lt;html&gt;\');<br />';
+			$note_html .= '&nbsp; &nbsp; $this->head_add_css(\'/path/to/file.css\');<br />';
+			$note_html .= '&nbsp; &nbsp; $this->head_add_js(\'/path/to/file.js\');<br />';
 
 			debug_note_add_html($note_html);
 
@@ -271,20 +284,26 @@
 
 		}
 
-		ob_start();
-
 		$controllers[$action_controller_id]->before();
 		$controllers[$action_controller_id]->$action_method($action_route_stack_pending);
 		$controllers[$action_controller_id]->after();
 
-		config::set('output.html', ob_get_clean());
+		config::set('view.folders', $action_route_stack_used);
 
 	} else {
 
+		if (config::get('debug.run')) {
+			debug_note_add_html('<strong>Action</strong>: Missing');
+		}
+
 		config::set('view.folders', config::get('route.folders'));
 
-		debug_note_add_html('<strong>Action</strong>: Missing');
-
 	}
+
+	config::set('output.html', ob_get_clean());
+
+	unset($controllers, $action_method, $action_controller_id, $action_controller_name, $action_controller_path, $action_route_stack_used, $action_route_stack_pending);
+
+	// debug_show_array(get_defined_vars(), 'Variables');
 
 ?>

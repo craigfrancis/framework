@@ -221,6 +221,7 @@
 		config::set_default('output.title_suffix', '');
 		config::set_default('output.title_divide', ' | ');
 		config::set_default('output.title_error', 'An error has occurred');
+		config::set_default('output.page_ref_mode', 'route');
 		config::set_default('output.block_browsers', array(
 				'/MSIE [1-5]\./',
 				'/MSIE.*; Mac_PowerPC/',

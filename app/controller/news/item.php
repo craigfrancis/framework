@@ -5,10 +5,15 @@
 		function action_index() {
 
 			$this->head_add_html('<!-- Head comment -->');
+			$this->head_add_css('/a/js/scripts.js');
 
 			debug_note_add('Debug note' . "\n" . 'on multiple lines');
 
-			debug(array('a', 'b', 'c'));
+			$test_array = array('a', 'b', 'c');
+
+			debug($test_array);
+
+			debug_show_array(get_defined_vars(), 'Variables');
 
 		}
 
