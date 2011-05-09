@@ -31,19 +31,19 @@
 //--------------------------------------------------
 // Includes
 
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'function.php');
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'autoload.php');
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'config.php');
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'database.php');
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'debug.php');
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'objects.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '01.function.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '02.autoload.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '03.config.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '04.database.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '05.debug.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '06.objects.php');
 
 //--------------------------------------------------
 // Scripts
 
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'routes.php');
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'controller.php');
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'view.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '07.routes.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '08.controller.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '09.view.php');
 
 debug_show_config();
 
