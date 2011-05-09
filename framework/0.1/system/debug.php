@@ -27,24 +27,49 @@
 // Quick debug print of a variable
 
 	function debug($variable) {
+
+		$called_from = debug_backtrace();
+		echo '<strong>' . substr(str_replace(ROOT, '', $called_from[0]['file']), 1) . '</strong>';
+		echo ' (line <strong>' . $called_from[0]['line'] . '</strong>)';
+
 		echo '<pre>';
-		echo var_export($variable, true); // view:add_debug() if were not in a view.
+		echo print_r($variable, true); // view:add_debug() if were not in a view.
 		echo '</pre>';
+
 	}
 
 //--------------------------------------------------
 // Debug notes
 
-	function debug_note_add($note, $show_time = true) {
-		debug_note_add_html(nl2br(str_replace(' ', '&nbsp;', html($note))), $show_time);
+	function debug_note_add($note) {
+		debug_note_add_html(nl2br(str_replace(' ', '&nbsp;', html($note))));
 	}
 
-	function debug_note_add_html($note_html, $show_time = true) {
+	function debug_note_add_html($note_html) {
+
+		//--------------------------------------------------
+		// Called from
+
+			$called_from = debug_backtrace();
+
+			if (substr($called_from[0]['file'], -30) == 'framework/0.1/system/debug.php') {
+				$called_from_id = 1;
+			} else {
+				$called_from_id = 0;
+			}
+
+			$call_from_file = $called_from[$called_from_id]['file'];
+			$call_from_line = $called_from[$called_from_id]['line'];
+
+			$system_call = (substr($call_from_file, 0, strlen(ROOT_FRAMEWORK)) == ROOT_FRAMEWORK);
 
 		//--------------------------------------------------
 		// Time position
 
-			if ($show_time) {
+			if (!$system_call) {
+
+				$note_html = '&nbsp; ' . str_replace("\n", "\n&nbsp; ", $note_html);
+				$note_html = '<strong>' . str_replace(ROOT, '', $call_from_file) . '</strong> (line ' . $call_from_line . '):<br />' . $note_html;
 
 				$time_end = explode(' ', microtime());
 				$time_end = ((float)$time_end[0] + (float)$time_end[1]);
@@ -52,6 +77,12 @@
 				$time = round(($time_end - config::get('debug.start_time')), 4);
 
 			} else {
+
+				$note_html = str_replace(ROOT_APP, '/app', $note_html);
+				$note_html = str_replace(ROOT_FILE, '/file', $note_html);
+				$note_html = str_replace(ROOT_PUBLIC, '/public', $note_html);
+				$note_html = str_replace(ROOT_VENDOR, '/vendor', $note_html);
+				$note_html = str_replace(ROOT_FRAMEWORK, '/framework', $note_html);
 
 				$time = NULL;
 
@@ -85,7 +116,7 @@
 	}
 
 //--------------------------------------------------
-// Function to show configuration
+// Show configuration
 
 	function debug_show_config($prefix = '') {
 
@@ -95,15 +126,31 @@
 
 		$config_html = array($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
 		foreach ($config as $key => $value) {
-			if (in_array($key, array('db.pass', 'debug.notes', 'view.variables'))) {
+			if (in_array($key, array('db.pass', 'debug.notes', 'view.variables', 'output.html', 'output.head_html'))) {
 				$value_html = '???';
 			} else {
-				$value_html = html(var_export($value, true));
+				$value_html = html(print_r($value, true));
 			}
 			$config_html[] = '&nbsp; <strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html;
 		}
 
-		debug_note_add_html(implode($config_html, '<br />' . "\n"), false);
+		debug_note_add_html(implode($config_html, '<br />' . "\n"));
+
+	}
+
+//--------------------------------------------------
+// Print global variables
+
+	function debug_show_variables() {
+
+		$variables_html = array('Variables:');
+		foreach ($GLOBALS as $key => $value) {
+			if (substr($key, 0, 1) != '_' && substr($key, 0, 5) != 'HTTP_' && !in_array($key, array('GLOBALS'))) {
+				$variables_html[] = '&nbsp; <strong>' . html($key) . '</strong>: ' . html(print_r($value, true));
+			}
+		}
+
+		debug_note_add_html(implode($variables_html, '<br />' . "\n"));
 
 	}
 

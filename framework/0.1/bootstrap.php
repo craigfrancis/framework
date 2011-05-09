@@ -29,14 +29,23 @@
 	if (!defined('ROOT_FRAMEWORK')) define('ROOT_FRAMEWORK', ROOT . DS . 'framework' . DS . FRAMEWORK_VERSION);
 
 //--------------------------------------------------
-// Scripts
+// Includes
 
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'function.php');
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'autoload.php');
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'config.php');
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'database.php');
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'view.php');
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'debug.php');
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'route.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'objects.php');
+
+//--------------------------------------------------
+// Scripts
+
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'routes.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'controller.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . 'view.php');
+
+debug_show_variables();
+debug_show_config();
 
 ?>

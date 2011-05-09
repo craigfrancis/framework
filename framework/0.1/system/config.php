@@ -108,11 +108,11 @@
 
 	$config = array();
 
-	$config_path = ROOT_APP . DS . 'core' . DS . 'config.php';
+	$include_path = ROOT_APP . DS . 'core' . DS . 'config.php';
 
-	if (is_file($config_path)) {
+	if (is_file($include_path)) {
 
-		require_once($config_path);
+		require_once($include_path);
 
 		config::set($config);
 
@@ -180,9 +180,9 @@
 		}
 
 		$request_path = config::get('request.url');
-		$qs = strpos($request_path, '?');
-		if ($qs !== false) {
-			$request_path = substr($request_path, 0, $qs);
+		$pos = strpos($request_path, '?');
+		if ($pos !== false) {
+			$request_path = substr($request_path, 0, $pos);
 		}
 
 		config::set_default('request.path', $request_path);
@@ -194,6 +194,8 @@
 		} else {
 			config::set_default('request.ip', '127.0.0.1');
 		}
+
+		unset($url_http, $url_https, $request_path, $pos);
 
 	//--------------------------------------------------
 	// Resource
@@ -215,9 +217,9 @@
 		config::set_default('output.charset', 'UTF-8');
 		config::set_default('output.error', false);
 		config::set_default('output.no_cache', false);
-		config::set_default('output.title_default_prefix', 'Company Name | ');
-		config::set_default('output.title_default_suffix', '');
-		config::set_default('output.title_default_divide', ' | ');
+		config::set_default('output.title_prefix', 'Company Name | ');
+		config::set_default('output.title_suffix', '');
+		config::set_default('output.title_divide', ' | ');
 		config::set_default('output.title_error', 'An error has occurred');
 		config::set_default('output.block_browsers', array(
 				'/MSIE [1-5]\./',
