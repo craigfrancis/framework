@@ -13,6 +13,8 @@
 //--------------------------------------------------
 // Main include
 
+	// debug_show_array(get_defined_vars(), 'Variables');
+
 	$include_path = ROOT_APP . DS . 'core' . DS . 'main.php';
 	if (is_file($include_path)) {
 		require_once($include_path);
