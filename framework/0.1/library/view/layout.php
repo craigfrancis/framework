@@ -10,6 +10,7 @@
 <html lang="<?= config::get('output.lang') ?>" xml:lang="<?= config::get('output.lang') ?>" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
+	<?php $this->css_version(1); ?>
 	<?= $this->head_html() ?>
 
 </head>
@@ -70,9 +71,9 @@
 
 	</div>
 
-	<?php
-		//view_element('google_analytics');
-	?>
+	<?= $this->tracking_html(); ?>
+
+	<?php //view_element('google_analytics'); ?>
 
 </body>
 </html>

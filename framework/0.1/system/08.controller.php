@@ -3,12 +3,38 @@
 //--------------------------------------------------
 // View variables
 
-	config::set('output.head_html', '');
-	config::set('output.head_css', array());
-	config::set('output.head_js', array());
-
 	config::set('view.variables', array());
 	config::set('view.layout', 'default');
+
+	config::set('output.head_html', '');
+	config::set('output.js_files', array());
+	config::set('output.css_files_main', array());
+	config::set('output.css_files_alternate', array());
+
+	config::set_default('output.css_name', '');
+	config::set_default('output.css_types', array(
+			'core' => array(
+					'media_normal' => 'all',
+					'media_selected' => 'all',
+					'default' => true,
+					'alt_title' => '',
+					'alt_sticky' => false,
+				),
+			'print' => array(
+					'media_normal' => 'print',
+					'media_selected' => 'print,screen',
+					'default' => true,
+					'alt_title' => 'Print',
+					'alt_sticky' => false,
+				),
+			'high' => array(
+					'media_normal' => 'screen,screen',
+					'media_selected' => 'screen,screen',
+					'default' => false,
+					'alt_title' => 'High Contrast',
+					'alt_sticky' => true,
+				),
+		));
 
 //--------------------------------------------------
 // Main include
@@ -276,9 +302,12 @@
 				$note_html .= '&nbsp; &nbsp; $this->title_folder_name(' . html($id) . ', \'new_value\'); = \'<strong>' . html($value) . '</strong>\'<br />';
 			}
 
+			$note_html .= '&nbsp; &nbsp; $this->view_path(ROOT_APP . \'/view/file.php\');<br />';
+			$note_html .= '&nbsp; &nbsp; $this->js_add(\'/path/to/file.js\');<br />';
+			$note_html .= '&nbsp; &nbsp; $this->css_add(\'/path/to/file.css\');<br />';
+			$note_html .= '&nbsp; &nbsp; $this->css_version(1);<br />';
 			$note_html .= '&nbsp; &nbsp; $this->head_add_html(\'&lt;html&gt;\');<br />';
-			$note_html .= '&nbsp; &nbsp; $this->head_add_css(\'/path/to/file.css\');<br />';
-			$note_html .= '&nbsp; &nbsp; $this->head_add_js(\'/path/to/file.js\');<br />';
+			$note_html .= '&nbsp; &nbsp; $this->page_ref(\'example_ref\');<br />';
 
 			debug_note_add_html($note_html);
 

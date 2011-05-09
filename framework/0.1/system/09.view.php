@@ -9,7 +9,7 @@
 	ob_start();
 
 	$view = new view();
-	$view->parse();
+	$view->render();
 
 	config::set('output.html', config::get('output.html') . ob_get_clean());
 
@@ -77,7 +77,7 @@
 	//--------------------------------------------------
 	// Message
 
-		$message = '';
+		$message = ''; // TODO: From cookie
 
 		if ($message == '') {
 			$message_html = '';
@@ -97,7 +97,7 @@
 // Layout
 
 	$layout = new layout();
-	$layout->parse();
+	$layout->render();
 
 	unset($layout);
 

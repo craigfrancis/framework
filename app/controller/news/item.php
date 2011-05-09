@@ -5,7 +5,7 @@
 		function action_index() {
 
 			$this->head_add_html('<!-- Head comment -->');
-			$this->head_add_css('/a/js/scripts.js');
+			$this->js_add('/a/js/scripts.js');
 
 			debug_note_add('Debug note' . "\n" . 'on multiple lines');
 

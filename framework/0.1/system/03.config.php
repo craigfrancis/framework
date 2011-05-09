@@ -104,6 +104,55 @@
 	}
 
 //--------------------------------------------------
+// Request defaults
+
+	config::set('request.https', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'));
+	config::set('request.method', (isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET'));
+	config::set('request.domain', (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''));
+	config::set('request.query', (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ''));
+	config::set('request.browser', (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''));
+	config::set('request.accept', (isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : ''));
+
+	$url_http = 'http://' . config::get('request.domain');
+
+	if (config::get('request.https')) {
+		$url_https = substr_replace($url_http, 'https://', 0, 7);
+	} else {
+		$url_https = $url_http;
+	}
+
+	config::set('request.domain_http',  $url_http);
+	config::set('request.domain_https', $url_https);
+
+	if (isset($_SERVER['REQUEST_URI'])) { // Path including query string
+		config::set('request.url',                    $_SERVER['REQUEST_URI']);
+		config::set('request.url_http',  $url_http  . $_SERVER['REQUEST_URI']);
+		config::set('request.url_https', $url_https . $_SERVER['REQUEST_URI']);
+	} else {
+		config::set('request.url',       './');
+		config::set('request.url_http',  './');
+		config::set('request.url_https', './');
+	}
+
+	$request_path = config::get('request.url');
+	$pos = strpos($request_path, '?');
+	if ($pos !== false) {
+		$request_path = substr($request_path, 0, $pos);
+	}
+
+	config::set('request.path', $request_path);
+
+	if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+		config::set('request.ip', 'XForward=[' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ']');
+	} else if (isset($_SERVER['REMOTE_ADDR'])) {
+		config::set('request.ip', $_SERVER['REMOTE_ADDR']);
+	} else {
+		config::set('request.ip', '127.0.0.1');
+	}
+
+	unset($url_http, $url_https, $request_path, $pos);
+
+//--------------------------------------------------
 // App config
 
 	$config = array();
@@ -149,59 +198,10 @@
 		config::set_default('debug.show', true); // Only relevant when running.
 
 	//--------------------------------------------------
-	// Request
-
-		config::set_default('request.https', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'));
-		config::set_default('request.method', (isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET'));
-		config::set_default('request.domain', (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''));
-		config::set_default('request.query', (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ''));
-		config::set_default('request.browser', (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''));
-		config::set_default('request.accept', (isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : ''));
-
-		$url_http = 'http://' . config::get('request.domain');
-
-		if (config::get('request.https')) {
-			$url_https = substr_replace($url_http, 'https://', 0, 7);
-		} else {
-			$url_https = $url_http;
-		}
-
-		config::set_default('request.domain_http',  $url_http);
-		config::set_default('request.domain_https', $url_https);
-
-		if (isset($_SERVER['REQUEST_URI'])) { // Path including query string
-			config::set_default('request.url',                    $_SERVER['REQUEST_URI']);
-			config::set_default('request.url_http',  $url_http  . $_SERVER['REQUEST_URI']);
-			config::set_default('request.url_https', $url_https . $_SERVER['REQUEST_URI']);
-		} else {
-			config::set_default('request.url',       './');
-			config::set_default('request.url_http',  './');
-			config::set_default('request.url_https', './');
-		}
-
-		$request_path = config::get('request.url');
-		$pos = strpos($request_path, '?');
-		if ($pos !== false) {
-			$request_path = substr($request_path, 0, $pos);
-		}
-
-		config::set_default('request.path', $request_path);
-
-		if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-			config::set_default('request.ip', 'XForward=[' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ']');
-		} else if (isset($_SERVER['REMOTE_ADDR'])) {
-			config::set_default('request.ip', $_SERVER['REMOTE_ADDR']);
-		} else {
-			config::set_default('request.ip', '127.0.0.1');
-		}
-
-		unset($url_http, $url_https, $request_path, $pos);
-
-	//--------------------------------------------------
 	// Resource
 
 		config::set_default('resource.asset_url', config::get('url.prefix') . '/a');
-		config::set_default('resource.asset_root', ROOT . '/a');
+		config::set_default('resource.asset_root', ROOT_PUBLIC . '/a');
 
 		config::set_default('resource.file_url', config::get('resource.asset_url') . '/files');
 		config::set_default('resource.file_root', config::get('resource.asset_root') . '/files');
@@ -221,6 +221,7 @@
 		config::set_default('output.title_suffix', '');
 		config::set_default('output.title_divide', ' | ');
 		config::set_default('output.title_error', 'An error has occurred');
+		config::set_default('output.css_version', 0);
 		config::set_default('output.page_ref_mode', 'route');
 		config::set_default('output.block_browsers', array(
 				'/MSIE [1-5]\./',
@@ -252,11 +253,6 @@
 			}
 
 		//--------------------------------------------------
-		// Mime
-
-			header('Content-type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
-
-		//--------------------------------------------------
 		// No-cache headers
 
 			if (config::get('output.no_cache', false)) {
@@ -269,6 +265,21 @@
 		// Test cookie
 
 			setcookie('cookie_check', 'true', (time() + 60*60*24*80), '/');
+
+		//--------------------------------------------------
+		// Mime
+
+			$mime_xml = 'application/xhtml+xml';
+
+			if (config::get('output.mime') == $mime_xml && stripos(config::get('request.accept'), $mime_xml) === false) {
+				config::set('output.mime', 'text/html');
+			}
+
+			if (config::get('output.mime') == $mime_xml) {
+				$buffer = '<?xml version="1.0" encoding="' . html(config::get('output.charset')) . '" ?>' . "\n" . $buffer;
+			}
+
+			header('Content-type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
 
 		//--------------------------------------------------
 		// Return
