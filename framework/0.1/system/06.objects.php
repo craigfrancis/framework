@@ -26,8 +26,16 @@
 				}
 			}
 
-			public function title_folder_name($id, $name) {
-				config::array_set('output.title_folders', $id, $name);
+			public function title_folder_name($id, $name = NULL) {
+				if ($name !== NULL) {
+					config::array_set('output.title_folders', $id, $name);
+				} else {
+					$title_folders = config::get('output.title_folders');
+					if (isset($title_folders[$id])) {
+						$name = $title_folders[$id];
+					}
+				}
+				return $name;
 			}
 
 			public function head_add_html($html) {

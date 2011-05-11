@@ -15,9 +15,12 @@
 			// echo '$this->route_variable(\'area\') = ' . $this->route_variable('area') . '<br />';
 			// echo '$this->route_folder(3) = ' . $this->route_folder(4) . '<br />';
 
-			$this->title_folder_name(5, 'Article title');
+			$article_id = $this->route_folder(3);
 
-			$this->set('field', 'val');
+			echo html($article_id) . "\n";
+			echo html($this->title_folder_name(4)) . "\n";
+
+			$this->title_folder_name(4, 'XXX');
 
 		}
 

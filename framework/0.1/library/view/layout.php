@@ -1,16 +1,37 @@
 <?php
 
 //--------------------------------------------------
+// Example CSS version set
+
+	$this->css_version(1); // TODO: Remove
+
+//--------------------------------------------------
 // Navigation
 
-	// Loop though files and folders in ROOT_APP . '/view/'
+	$root_path = ROOT_APP . '/view/';
+	$root_folders = array();
+	if ($handle = opendir($root_path)) {
+		while (false !== ($file = readdir($handle))) {
+			if (substr($file, 0, 1) != '.' && is_dir($root_path . $file)) {
+				$root_folders[] = $file;
+			}
+		}
+		closedir($handle);
+	}
+	sort($root_folders);
+
+	$nav = new nav();
+	$nav->add_link(config::get('url.prefix') . '/', 'Home');
+
+	foreach ($root_folders as $folder) {
+		$nav->add_link(config::get('url.prefix') . '/' . urlencode($folder) . '/', link_to_human($folder));
+	}
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html lang="<?= config::get('output.lang') ?>" xml:lang="<?= config::get('output.lang') ?>" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
-	<?php $this->css_version(1); ?>
 	<?= $this->head_html() ?>
 
 </head>
@@ -27,6 +48,8 @@
 			<div id="page_navigation">
 
 				<h2>Site Navigation</h2>
+
+				<?= $nav ?>
 
 			</div>
 
