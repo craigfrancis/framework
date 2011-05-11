@@ -18,7 +18,6 @@
 			$article_id = $this->route_folder(3);
 
 			echo html($article_id) . "\n";
-			echo html($this->title_folder_name(4)) . "\n";
 
 			$this->title_folder_name(4, 'XXX');
 
