@@ -27,19 +27,24 @@
 
 		} else {
 
-			$title_default = config::get('output.title_prefix');
+			$title_prefix = config::get('output.title_prefix');
+			$title_suffix = config::get('output.title_suffix');
+			$title_divide = config::get('output.title_divide');
+
+			$title_default = '';
 
 			$k = 0;
 			foreach (config::get('output.title_folders') as $folder) {
 				if ($folder != '') {
 					if ($k++ > 0) {
-						$title_default .= config::get('output.title_divide');
+						$title_default .= $title_divide;
 					}
 					$title_default .= $folder;
 				}
 			}
 
-			$title_default .= config::get('output.title_suffix');
+			$title_default = $title_prefix . ($title_prefix != '' && $k > 0 ? $title_divide : '') . $title_default;
+			$title_default = $title_default . ($title_suffix != '' && $k > 0 ? $title_divide : '') . $title_suffix;
 
 		}
 
@@ -47,7 +52,7 @@
 
 		config::set('output.title_default', $title_default);
 
-		unset($title_default, $k, $folder);
+		unset($title_default, $title_prefix, $title_divide, $title_suffix, $k, $folder);
 
 	//--------------------------------------------------
 	// Page ref
