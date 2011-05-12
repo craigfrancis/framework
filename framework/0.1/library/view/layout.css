@@ -46,7 +46,6 @@
 
 	ul,
 	ol {
-		list-style: none;
 		margin: 0 0 10px 2em;
 	}
 
@@ -245,6 +244,7 @@
 		margin: 0;
 	}
 
+	.basic_form .error_list,
 	.basic_form .error {
 		color: red;
 		background: inherit;
@@ -307,6 +307,7 @@
 		border: 0;
 	}
 
+	.delete_form .error_list,
 	.delete_form .error {
 		color: red;
 		background: inherit;

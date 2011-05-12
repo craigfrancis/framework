@@ -169,7 +169,7 @@
 
 		class layout_base extends base {
 
-			private $view_html_got = false;
+			private $view_processed = false;
 
 			public function title() {
 				return config::get('output.title');
@@ -362,7 +362,7 @@
 
 			private function view_html() {
 
-				$this->view_html_got = true;
+				$this->view_processed = true;
 
 				return config::get('output.html');
 
@@ -444,7 +444,7 @@
 
 				require_once($this->layout_path());
 
-				if (!$this->view_html_got) {
+				if (!$this->view_processed) {
 					echo $this->view_html();
 				}
 

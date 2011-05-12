@@ -2,23 +2,22 @@
 
 	class nav {
 
-		var $current_group;
-		var $current_index;
+		private $current_group;
+		private $current_index;
 
-		var $navigation;
+		private $navigation;
 
-		var $indent;
-		var $main_class;
+		private $indent;
+		private $main_class;
 
-		var $expand_all_children;
-		var $automatically_expand_children;
-		var $automatically_select_link;
-		var $allow_html_encoding_skip;
-		var $include_white_space;
+		private $expand_all_children;
+		private $automatically_expand_children;
+		private $automatically_select_link;
+		private $include_white_space;
 
-		var $path;
-		var $selected_id;
-		var $selected_len;
+		private $path;
+		private $selected_id;
+		private $selected_len;
 
 		function nav() {
 
@@ -36,7 +35,6 @@
 				$this->expand_all_children = false;
 				$this->automatically_expand_children = true;
 				$this->automatically_select_link = true;
-				$this->allow_html_encoding_skip = false;
 				$this->include_white_space = true;
 
 				$this->selected_id = NULL;
@@ -78,10 +76,6 @@
 
 		function automatically_select_link($do) {
 			$this->automatically_select_link = $do;
-		}
-
-		function allow_html_encoding_skip($do) {
-			$this->allow_html_encoding_skip = $do;
 		}
 
 		function include_white_space($do) {
@@ -179,7 +173,7 @@
 			//--------------------------------------------------
 			// Start
 
-				$html_output = ($this->include_white_space ? "\n" : '');
+				$html = ($this->include_white_space ? "\n" : '');
 
 			//--------------------------------------------------
 			// Pre-process the child navigation bars - need
@@ -224,7 +218,7 @@
 
 										$child_nav->set_indent(strlen($this->indent) + 1);
 
-										$child_html = $child_nav->get_html_nav($level + 1);
+										$child_html = $child_nav->html($level + 1);
 
 										if ($child_nav->include_white_space == true) {
 											$child_html .= $this->indent . ($this->include_white_space ? "\t" : '');
@@ -259,14 +253,14 @@
 
 							if (isset($this->navigation[$group_id]['name_html']) && $this->navigation[$group_id]['name_html'] != '') {
 
-								$html_output .= $this->indent . '<h3>' . $this->navigation[$group_id]['name_html'] . '</h3>';
+								$html .= $this->indent . '<h3>' . $this->navigation[$group_id]['name_html'] . '</h3>';
 
 							}
 
 						//--------------------------------------------------
 						// Group links
 
-							$html_output .= $this->indent . '<ul' . ($this->main_class == '' ? '' : ' class="' . html($this->main_class) . '"') . '>';
+							$html .= $this->indent . '<ul' . ($this->main_class == '' ? '' : ' class="' . html($this->main_class) . '"') . '>';
 
 							$k = 0;
 							$links_count = count($this->navigation[$group_id]['links']);
@@ -298,7 +292,7 @@
 										$this->selected_link_found = true; // For any parents
 									}
 
-									$html_wrapper = ($selected ? 'strong' : 'span');
+									$wrapper_html = ($selected ? 'strong' : 'span');
 
 								//--------------------------------------------------
 								// Class
@@ -335,11 +329,11 @@
 								//--------------------------------------------------
 								// Build
 
-									$html_output .= $this->indent . ($this->include_white_space ? "\t" : '') . '<li' . ($class != '' ? ' class="' . trim($class) . '"' : '') . '><' . $html_wrapper . ' class="link_level' . html($level) . '"><a href="' . html($link_url) . '"' . $link_attributes_html . '>' . ($link_html ? $link_name : html($link_name)) . '</a></' . $html_wrapper . '>' . $child_html . '</li>';
+									$html .= $this->indent . ($this->include_white_space ? "\t" : '') . '<li' . ($class != '' ? ' class="' . trim($class) . '"' : '') . '><' . $wrapper_html . ' class="link_level' . html($level) . '"><a href="' . html($link_url) . '"' . $link_attributes_html . '>' . ($link_html ? $link_name : html($link_name)) . '</a></' . $wrapper_html . '>' . $child_html . '</li>';
 
 							}
 
-							$html_output .= $this->indent . '</ul>' . ($this->include_white_space ? "\n" : '');
+							$html .= $this->indent . '</ul>' . ($this->include_white_space ? "\n" : '');
 
 					}
 				}
@@ -347,7 +341,7 @@
 			//--------------------------------------------------
 			// Return
 
-				return $html_output;
+				return $html;
 
 		}
 

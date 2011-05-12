@@ -21,7 +21,7 @@
 			$config['db.host'] = 'stage';
 			$config['db.user'] = 'stage';
 			$config['db.pass'] = 'st8ge';
-			$config['db.name'] = 's-company-project';
+			$config['db.name'] = 's-cpoets-framework';
 
 		//--------------------------------------------------
 		// Email

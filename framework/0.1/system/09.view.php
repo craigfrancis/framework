@@ -1,17 +1,16 @@
 <?php
 
-// Singleton version for the main page, but could an instance be created for email sending?
-// See BBC pregnancy version.
-
 //--------------------------------------------------
 // View
 
 	ob_start();
 
+	echo config::get('output.html');
+
 	$view = new view();
 	$view->render();
 
-	config::set('output.html', config::get('output.html') . ob_get_clean());
+	config::set('output.html', ob_get_clean());
 
 	unset($view);
 

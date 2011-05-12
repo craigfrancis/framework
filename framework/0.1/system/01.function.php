@@ -17,12 +17,6 @@
 					$value = $_POST[$variable];
 				}
 
-			} else if ($method == 'COOKIE') {
-
-				if (isset($_COOKIE[$variable])) {
-					$value = $_COOKIE[$variable];
-				}
-
 			} else if ($method == 'REQUEST') {
 
 				if (isset($_REQUEST[$variable])) {
@@ -266,11 +260,11 @@
 			$url = (config::get('request.https') ? config::get('request.domain_https') : config::get('request.domain_http')) . $url;
 		}
 
-		$html_next = '<p>Go to <a href="' . html($url) . '">next page</a>.</p>';
+		$next_html = '<p>Go to <a href="' . html($url) . '">next page</a>.</p>';
 
 		if (ob_get_length() > 0) {
 			ob_end_flush();
-			exit($html_next);
+			exit($next_html);
 		}
 
 		config::set('output.mime', 'text/html');
@@ -280,7 +274,7 @@
 			exit('<p><a href="' . html($url) . '">Loading...</a></p>');
 		} else {
 			header('Location: ' . head($url), true, $http_response_code);
-			exit($html_next);
+			exit($next_html);
 		}
 
 	}

@@ -12,8 +12,18 @@
 	$root_folders = array();
 	if ($handle = opendir($root_path)) {
 		while (false !== ($file = readdir($handle))) {
-			if (substr($file, 0, 1) != '.' && is_dir($root_path . $file)) {
-				$root_folders[] = $file;
+			if (substr($file, 0, 1) != '.') {
+
+				if (is_file($root_path . $file) && substr($file, -4) == '.php') {
+
+					$root_folders[] = substr($file, 0, -4);
+
+				} else if (is_dir($root_path . $file)) {
+
+					$root_folders[] = $file;
+
+				}
+
 			}
 		}
 		closedir($handle);
