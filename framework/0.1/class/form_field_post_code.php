@@ -4,7 +4,7 @@
 
 		protected $format_error_set;
 
-		function form_field_post_code(&$form, $label, $name = NULL) {
+		public function __construct(&$form, $label, $name = NULL) {
 
 			//--------------------------------------------------
 			// Perform the standard field setup
@@ -16,13 +16,13 @@
 
 				$this->max_length = 8; // Bypass required set_max_length call, and to set the <input maxlength="" />
 				$this->format_error_set = false;
-				$this->quick_print_type = 'postcode';
+				$this->type = 'postcode';
 
 		}
 
-		function set_format_error($error) {
+		public function set_format_error($error) {
 
-			if ($this->value != '') {
+			if ($this->form_submitted && $this->value != '') {
 				$postcode_clean = format_british_postcode($this->value);
 				if ($postcode_clean === NULL) {
 					$this->form->_field_error_set_html($this->form_field_uid, $error);
@@ -33,9 +33,9 @@
 
 		}
 
-		function set_required_error($error) {
+		public function set_required_error($error) {
 
-			if ($this->value == '') {
+			if ($this->form_submitted && $this->value == '') {
 				$this->form->_field_error_set_html($this->form_field_uid, $error);
 			}
 
@@ -43,13 +43,13 @@
 
 		}
 
-		function get_value() {
+		public function get_value() {
 			return format_british_postcode($this->value);
 		}
 
-		function _error_check() {
+		private function _post_validation() {
 
-			parent::_error_check();
+			parent::_post_validation();
 
 			if ($this->format_error_set == false) {
 				exit('<p>You need to call "set_format_error", on the field "' . $this->label_html . '"</p>');

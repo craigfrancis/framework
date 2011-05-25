@@ -1,25 +1,6 @@
 <?php
 
-// TODO: Notes
-
-	// Update system to be aware of GET/POST modes, rather than using 'act'...
-	// although we will need to handle multiple forms, so maybe though the
-	// form action url? or a section for hidden input fields? and what about
-	// forms that use a GET method?
-
-	// On validation, allow the calling of $form->html_error_list() to not return
-	// anything when this form has not been submitted.
-
-	//--------------------------------------------------
-
-// TODO: Use a method on the form object to store hidden fields (not using formFieldHidden)...
-// should also be able to return values from individual fields.
-
-
-//--------------------------------------------------
-// Master form class
-
-	class form {
+	class form extends check { // TODO: Remove check
 
 		//--------------------------------------------------
 		// Variables
@@ -28,28 +9,60 @@
 			private $form_action;
 			private $form_method;
 			private $form_class;
+			private $form_attributes;
+			private $form_submitted;
+			private $hidden_values;
 			private $fields;
 			private $field_count;
 			private $required_mark_html;
 			private $required_mark_position;
-			private $label_suffix;
+			private $label_suffix_html;
 			private $label_override_function;
 			private $errors_html;
 			private $error_override_function;
-			private $error_check_done;
+			private $post_validation;
 			private $db_link;
-			private $db_table_name;
-			private $db_table_alias;
+			private $db_table_name_sql;
+			private $db_table_alias_sql;
 			private $db_select_sql;
+			private $db_select_values;
+			private $db_select_done;
 			private $db_fields;
-			private $db_field_values;
+			private $db_values;
 			private $csrf_token;
 			private $csrf_error_html;
 
 		//--------------------------------------------------
 		// Setup
 
-			function __construct() {
+			public function __construct() {
+
+				//--------------------------------------------------
+				// Defaults
+
+					$this->form_action = config::get('request.url_https');
+					$this->form_method = 'POST';
+					$this->form_class = '';
+					$this->form_attributes = array();
+					$this->form_submitted = false;
+					$this->hidden_values = array();
+					$this->fields = array();
+					$this->field_count = 0;
+					$this->required_mark_html = NULL;
+					$this->required_mark_position = 'left';
+					$this->label_suffix_html = ':';
+					$this->label_override_function = config::get('form.label_override_function', NULL);
+					$this->errors_html = array();
+					$this->error_override_function = config::get('form.error_override_function', NULL);
+					$this->post_validation = false;
+					$this->db_link = NULL;
+					$this->db_table_name_sql = NULL;
+					$this->db_table_alias_sql = NULL;
+					$this->db_select_sql = NULL;
+					$this->db_select_values = array();
+					$this->db_select_done = false;
+					$this->db_fields = array();
+					$this->db_values = array();
 
 				//--------------------------------------------------
 				// Internal form ID
@@ -59,29 +72,6 @@
 					config::set('form.count', ($form_id + 1));
 
 					$this->set_form_id('form_' . $form_id);
-
-				//--------------------------------------------------
-				// Defaults
-
-					$this->form_action = config::get('request.url_https');
-					$this->form_method = 'POST';
-					$this->form_class = '';
-					$this->form_submitted = false;
-					$this->fields = array();
-					$this->field_count = 0;
-					$this->required_mark_html = NULL;
-					$this->required_mark_position = 'left';
-					$this->label_suffix = ':';
-					$this->label_override_function = config::get('form.label_override_function', NULL);
-					$this->errors_html = array();
-					$this->error_override_function = config::get('form.error_override_function', NULL);
-					$this->error_check_done = false;
-					$this->db_link = NULL;
-					$this->db_table_name_sql = NULL;
-					$this->db_table_alias_sql = NULL;
-					$this->db_select_sql = NULL;
-					$this->db_fields = array();
-					$this->db_field_values = array();
 
 				//--------------------------------------------------
 				// Generate a csrf_token if one does not exist
@@ -97,44 +87,69 @@
 
 			}
 
-			function set_form_id($form_id) {
+			public function set_form_id($form_id) {
 				$this->form_id = $form_id;
-				$this->form_submitted = (data('act') == $form_id);
+				$this->_is_submitted();
 			}
 
-			function get_form_id() {
+			public function get_form_id() {
 				return $this->form_id;
 			}
 
-			function set_form_action($form_action) {
+			public function set_form_action($form_action) {
 				$this->form_action = $form_action;
 			}
 
-			function get_form_action() {
+			public function get_form_action() {
 				return $this->form_action;
 			}
 
-			function set_form_method($form_method) {
-				$this->form_method = $form_method;
+			public function set_form_method($form_method) {
+				$this->form_method = strtoupper($form_method);
+				$this->_is_submitted();
 			}
 
-			function get_form_method() {
+			public function get_form_method() {
 				return $this->form_method;
 			}
 
-			function set_form_class($form_class) {
+			public function set_form_class($form_class) {
 				$this->form_class = $form_class;
 			}
 
-			function get_form_class() {
+			public function get_form_class() {
 				return $this->form_class;
 			}
 
-			function set_required_mark_html($value) {
+			public function set_form_attribute($attribute, $value) {
+				if ($value == '') {
+					unset($this->form_attributes[$attribute]);
+				} else {
+					$this->form_attributes[$attribute] = $value;
+				}
+			}
+
+			public function set_hidden_value($name, $value = NULL) {
+				if ($value === NULL) {
+					unset($this->hidden_values[$name]);
+				} else {
+					$this->hidden_values[$name] = $value;
+				}
+			}
+
+			public function get_hidden_value($name) {
+				if (isset($this->hidden_values[$name])) {
+					return $this->hidden_values[$name];
+				} else {
+					return urldecode(data($name));
+				}
+			}
+
+			public function set_required_mark_html($value) {
 				$this->required_mark_html = $value;
 			}
 
-			function get_required_mark_html($required_mark_position = 'left') {
+			public function get_required_mark_html($required_mark_position = 'left') {
 				if ($this->required_mark_html !== NULL) {
 					return $this->required_mark_html;
 				} else if ($required_mark_position == 'right') {
@@ -144,7 +159,7 @@
 				}
 			}
 
-			function set_required_mark_position($value) {
+			public function set_required_mark_position($value) {
 				if ($value == 'left' || $value == 'right' || $value == 'none') {
 					$this->required_mark_position = $value;
 				} else {
@@ -152,47 +167,39 @@
 				}
 			}
 
-			function get_required_mark_position() {
+			public function get_required_mark_position() {
 				return $this->required_mark_position;
 			}
 
-			function set_label_suffix($label_suffix) {
-				$this->label_suffix = $label_suffix;
+			public function set_label_suffix($suffix) {
+				$this->set_label_suffix_html(html($suffix));
 			}
 
-			function get_label_suffix() {
-				return $this->label_suffix;
+			public function set_label_suffix_html($suffix_html) {
+				$this->label_suffix_html = $suffix_html;
 			}
 
-			function set_label_override_function($function) {
+			public function get_label_suffix_html() {
+				return $this->label_suffix_html;
+			}
+
+			public function set_label_override_function($function) {
 				$this->label_override_function = $function;
 			}
 
-			function get_label_override_function() {
+			public function get_label_override_function() {
 				return $this->label_override_function;
 			}
 
-			function set_error_override_function($function) {
+			public function set_error_override_function($function) {
 				$this->error_override_function = $function;
 			}
 
-			function get_error_override_function() {
+			public function get_error_override_function() {
 				return $this->error_override_function;
 			}
 
-			function set_error_csrf($error) {
-				$this->set_error_csrf_html(html($error));
-			}
-
-			function set_error_csrf_html($error_html) {
-				$this->csrf_error_html = $error_html;
-			}
-
-			function get_error_csrf_html() {
-				return $this->csrf_error_html;
-			}
-
-			function set_db_table_sql($table_sql, $alias_sql = NULL, $db = NULL) {
+			public function set_db_table_sql($table_sql, $alias_sql = NULL, $db = NULL) {
 
 				//--------------------------------------------------
 				// Store
@@ -248,15 +255,15 @@
 
 			}
 
-			function get_db_table_name_sql() {
+			public function get_db_table_name_sql() {
 				return $this->db_table_name_sql;
 			}
 
-			function get_db_table_alias_sql() {
+			public function get_db_table_alias_sql() {
 				return $this->db_table_alias_sql;
 			}
 
-			function get_db_field($field) {
+			public function get_db_field($field) {
 				if (isset($this->db_fields[$field])) {
 					return $this->db_fields[$field];
 				} else {
@@ -264,101 +271,149 @@
 				}
 			}
 
-			function get_db_fields() {
+			public function get_db_fields() {
 				return $this->db_fields;
 			}
 
-			function set_db_select_sql($where_sql) {
+			public function set_db_select_sql($where_sql) {
 				$this->db_select_sql = $where_sql;
+			}
+
+			public function set_db_value($name, $value) {
+				$this->db_values[$name] = $value;
+			}
+
+			public function get_db_select_value($field) {
+
+				//--------------------------------------------------
+				// Not used
+
+					if ($this->db_select_sql === NULL) {
+						return '';
+					}
+
+				//--------------------------------------------------
+				// Get values
+
+					if (!$this->db_select_done) {
+
+						//--------------------------------------------------
+						// Validation
+
+							if ($this->db_table_name_sql === NULL) exit('<p>You need to call "set_db_table_sql" on the form object</p>');
+							if ($this->db_select_sql === NULL) exit('<p>You need to call "set_db_select_sql" on the form object</p>');
+
+						//--------------------------------------------------
+						// Fields
+
+							if ($this->field_count == 0) {
+								return false;
+							}
+
+							$fields = array();
+							for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
+								$field_name = $this->fields[$field_id]->get_db_field_name();
+								if ($field_name !== NULL) {
+									$fields[$field_id] = $field_name;
+								}
+							}
+
+						//--------------------------------------------------
+						// Select
+
+							$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
+
+							$this->db_link->select($table_sql, $fields, $this->db_select_sql);
+
+							if ($row = $this->db_link->fetch_assoc()) {
+								$this->db_select_values = $row;
+							}
+
+						//--------------------------------------------------
+						// Done
+
+							$this->db_select_done = true;
+
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					if (isset($this->db_select_values[$field])) {
+
+						return $this->db_select_values[$field];
+
+					} else {
+
+						exit('<p>Could not find field "' . html($field) . '" - have you called "set_db_table_sql" and "set_db_select_sql" on the form object</p>');
+
+					}
+
 			}
 
 		//--------------------------------------------------
 		// Status
 
-			function submitted() {
+			public function submitted() {
 				return $this->form_submitted;
 			}
 
-			function valid() {
-				$this->_error_check();
+			private function _is_submitted() {
+				$this->form_submitted = (data('act') == $this->form_id && config::get('request.method') == $this->form_method);
+			}
+
+			public function valid() {
+				$this->_post_validation();
 				return (count($this->errors_html) == 0);
-			}
-
-		//--------------------------------------------------
-		// Field support
-
-			function get_field($id) {
-				return $this->fields[$id];
-			}
-
-			function get_fields() {
-				return $this->fields;
-			}
-
-			function _field_add(&$field_obj) {
-				$field_id = $this->field_count++;
-				$this->fields[$field_id] =& $field_obj;
-				return $field_id;
-			}
-
-			function _field_error_add_html($field_id, $error_html, $hidden_info = NULL) {
-
-				if ($this->error_override_function !== NULL) {
-					$function = $this->error_override_function;
-					if ($field_id == -1) {
-						$error_html = $function($error_html, $this, NULL);
-					} else {
-						$error_html = $function($error_html, $this, $this->get_field($field_id));
-					}
-				}
-
-				if (!isset($this->errors_html[$field_id])) {
-					$this->errors_html[$field_id] = array();
-				}
-
-				if ($hidden_info !== NULL) {
-					$error_html .= ' <!-- ' . html($hidden_info) . ' -->';
-				}
-
-				$this->errors_html[$field_id][] = $error_html;
-
-			}
-
-			function _field_error_set_html($field_id, $error_html, $hidden_info = NULL) {
-				$this->errors_html[$field_id] = array();
-				$this->_field_error_add_html($field_id, $error_html, $hidden_info);
-			}
-
-			function _field_errors_get_html($field_id) {
-				if ($this->form_submitted && isset($this->errors_html[$field_id])) {
-					return $this->errors_html[$field_id];
-				} else {
-					return array();
-				}
-			}
-
-			function _field_valid($field_id) {
-				return (!$this->form_submitted || !isset($this->errors_html[$field_id]));
 			}
 
 		//--------------------------------------------------
 		// Errors
 
-			function error_reset() {
+			public function set_csrf_error($error) {
+				$this->set_csrf_error_html(html($error));
+			}
+
+			public function set_csrf_error_html($error_html) {
+
+				//--------------------------------------------------
+				// Store
+
+					$this->csrf_error_html = $error_html;
+
+				//--------------------------------------------------
+				// CSRF check
+
+					$csrf_token = data('csrf', $this->form_method);
+
+					if ($this->form_submitted && $this->csrf_token != $csrf_token) {
+
+						$note = 'COOKIE:' . $this->csrf_token . ' != ' . $this->form_method . ':' . $csrf_token;
+
+						$this->_field_error_add_html(-1, $this->csrf_error_html, $note);
+
+					}
+
+			}
+
+		//--------------------------------------------------
+		// Error support
+
+			public function error_reset() {
 				$this->errors_html = array();
 			}
 
-			function error_add($error) {
+			public function error_add($error) {
 				$this->error_add_html(html($error));
 			}
 
-			function error_add_html($error_html) {
+			public function error_add_html($error_html) {
 				$this->_field_error_add_html(-1, $error_html); // -1 is for general errors, not really linked to a field
 			}
 
-			function errors_html() {
+			public function errors_html() {
 
-				$this->_error_check();
+				$this->_post_validation();
 
 				$errors_flat_html = array();
 
@@ -376,94 +431,33 @@
 
 			}
 
-			function _error_check() {
-				if (!$this->error_check_done) {
-
-					//--------------------------------------------------
-					// CSRF check
-
-						$csrf_token = data('csrf', $this->form_method);
-
-						if ($this->csrf_token != $csrf_token) {
-
-							$note = 'COOKIE:' . $this->csrf_token . ' != ' . $this->form_method . ':' . $csrf_token;
-
-							$this->_field_error_add_html(-1, $this->csrf_error_html, $note);
-
-						}
-
-					//--------------------------------------------------
-					// Fields
-
-						for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
-							$this->fields[$field_id]->_error_check();
-						}
-
-					//--------------------------------------------------
-					// Remember this has been done
-
-						$this->error_check_done = true;
-
-				}
-			}
-
-		//--------------------------------------------------
-		// Database functionality
-
-			function db_get_values() {
+			private function _post_validation() {
 
 				//--------------------------------------------------
-				// Validation
+				// Already done
 
-					if ($this->db_table_name_sql === NULL) exit('<p>You need to set the "db_table", on the form object</p>');
-					if ($this->db_select_sql === NULL) exit('<p>You need to set the "db_select_sql", on the form object</p>');
+					if (!$this->post_validation) {
+						return true;
+					}
 
 				//--------------------------------------------------
 				// Fields
 
-					if ($this->field_count == 0) {
-						return false;
-					}
-
-					$fields = array();
 					for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
-						if ($this->fields[$field_id]->db_field_name !== NULL) {
-							$fields[$field_id] = $this->fields[$field_id]->db_field_name;
-						}
+						$this->fields[$field_id]->_post_validation();
 					}
 
 				//--------------------------------------------------
-				// Get
+				// Remember this has been done
 
-					$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
-
-					$this->db_link->select($table_sql, $fields, $this->db_select_sql);
-
-					if ($row = $this->db_link->fetch_assoc()) {
-						foreach ($row as $c_field => $c_value) {
-							$key = array_search($c_field, $fields);
-							if ($key !== false) {
-								if ($this->fields[$key]->db_field_key == 'key') {
-									$this->fields[$key]->set_value_key($c_value);
-								} else {
-									$this->fields[$key]->set_value($c_value);
-								}
-							}
-						}
-					}
+					$this->post_validation = true;
 
 			}
 
-			function db_field_value($name, $value) {
-				$this->db_field_values[$name] = $value;
-			}
+		//--------------------------------------------------
+		// Data output
 
-			function db_save() {
-
-				//--------------------------------------------------
-				// Validation
-
-					if ($this->db_table_name_sql === NULL) exit('<p>You need to set the "db_table", on the form object</p>');
+			public function data_as_array() {
 
 				//--------------------------------------------------
 				// Values
@@ -471,10 +465,49 @@
 					$values = array();
 
 					for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
-						if ($this->fields[$field_id]->db_field_name !== NULL) {
 
-							$field_name = $this->fields[$field_id]->db_field_name;
-							$field_key = $this->fields[$field_id]->db_field_key;
+						$field_name = $this->fields[$field_id]->get_label_text();
+						$field_type = $this->fields[$field_id]->get_type();
+
+						if ($field_type == 'date') {
+							$value = $this->fields[$field_id]->get_value_date();
+						} else if ($field_type == 'file' || $field_type == 'image') {
+							$value = $this->fields[$field_id]->get_file_name() . ' (' . file_size_to_human($this->fields[$field_id]->get_file_size()) . ')';
+						} else {
+							$value = $this->fields[$field_id]->get_value();
+						}
+
+						$values[] = array(
+								'name' => $field_name,
+								'value' => $value,
+							);
+
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $values;
+
+			}
+
+			public function db_save() {
+
+				//--------------------------------------------------
+				// Validation
+
+					if ($this->db_table_name_sql === NULL) exit('<p>You need to call "set_db_table_sql" on the form object</p>');
+
+				//--------------------------------------------------
+				// Values
+
+					$values = array();
+
+					for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
+						$field_name = $this->fields[$field_id]->get_db_field_name();
+						if ($field_name !== NULL) {
+
+							$field_key = $this->fields[$field_id]->get_db_field_key();
 							$field_type = $this->db_fields[$field_name]['type'];
 
 							if ($field_type == 'datetime' || $field_type == 'date') {
@@ -488,8 +521,8 @@
 						}
 					}
 
-					foreach ($this->db_field_values as $c_name => $c_value) { // More reliable array_merge at keeping keys
-						$values[$c_name] = $c_value;
+					foreach ($this->db_values as $name => $value) { // More reliable than array_merge at keeping keys
+						$values[$name] = $value;
 					}
 
 					if (isset($this->db_fields['edited'])) {
@@ -514,25 +547,117 @@
 			}
 
 		//--------------------------------------------------
-		// HTML output
+		// Field support
 
-			function html_start($config = NULL) {
+			public function get_field($id) {
+				return $this->fields[$id];
+			}
 
-				if (!is_array($config)) {
-					$config = array();
+			public function get_fields() {
+				return $this->fields;
+			}
+
+			public function _field_add(&$field_obj) { // Public for form_field_base to call
+				$field_id = $this->field_count++;
+				$this->fields[$field_id] =& $field_obj;
+				return $field_id;
+			}
+
+			public function _field_error_add_html($field_id, $error_html, $hidden_info = NULL) {
+
+				if ($this->error_override_function !== NULL) {
+					$function = $this->error_override_function;
+					if ($field_id == -1) {
+						$error_html = call_user_func($function, $error_html, $this, NULL);
+					} else {
+						$error_html = call_user_func($function, $error_html, $this, $this->get_field($field_id));
+					}
 				}
 
-				if (!isset($config['id'])) $config['id'] = $this->form_id;
-				if (!isset($config['class'])) $config['class'] = $this->form_class;
-				if (!isset($config['hidden'])) $config['hidden'] = true;
+				if (!isset($this->errors_html[$field_id])) {
+					$this->errors_html[$field_id] = array();
+				}
 
-				// TODO: enctype="multipart/form-data"
+				if ($hidden_info !== NULL) {
+					$error_html .= ' <!-- ' . html($hidden_info) . ' -->';
+				}
 
-				return '<form' . ($config['id'] == '' ? '' : ' id="' . html($config['id']) . '"') . ' action="' . html($this->form_action) . '" method="' . html($this->form_method) . '"' . ($config['class'] == '' ? '' : ' class="' . html($config['class']) . '"') . '>' . ($config['hidden'] ? $this->html_hidden() : '');
+				$this->errors_html[$field_id][] = $error_html;
 
 			}
 
-			function html_hidden($config = NULL) {
+			public function _field_error_set_html($field_id, $error_html, $hidden_info = NULL) {
+				$this->errors_html[$field_id] = array();
+				$this->_field_error_add_html($field_id, $error_html, $hidden_info);
+			}
+
+			public function _field_errors_get_html($field_id) {
+				if (isset($this->errors_html[$field_id])) {
+					return $this->errors_html[$field_id];
+				} else {
+					return array();
+				}
+			}
+
+			public function _field_valid($field_id) {
+				return (!isset($this->errors_html[$field_id]));
+			}
+
+		//--------------------------------------------------
+		// HTML output
+
+			public function html_start($config = NULL) {
+
+				//--------------------------------------------------
+				// Config
+
+					if (!is_array($config)) {
+						$config = array();
+					}
+
+				//--------------------------------------------------
+				// Hidden fields
+
+					if (!isset($config['hidden']) || $config['hidden'] !== true) {
+						$hidden_fields_html = $this->html_hidden();
+					} else {
+						$hidden_fields_html = '';
+					}
+
+					unset($config['hidden']);
+
+				//--------------------------------------------------
+				// Attributes
+
+					$attributes = array(
+						'id' => $this->form_id,
+						'action' => $this->form_action,
+						'method' => $this->form_method,
+						'class' => $this->form_class,
+					);
+
+					$attributes = array_merge($attributes, $this->form_attributes);
+					$attributes = array_merge($attributes, $config);
+
+				//--------------------------------------------------
+				// HTML
+
+					$html = '<form';
+					foreach ($attributes as $name => $value) {
+						if ($value != '') {
+							$html .= ' ' . html($name) . '="' . html($value) . '"';
+						}
+					}
+					$html .= '>' . $hidden_fields_html;
+
+				//--------------------------------------------------
+				// Return
+
+					return $html;
+
+			}
+
+			public function html_hidden($config = NULL) {
 
 				if (!is_array($config)) {
 					$config = array();
@@ -540,6 +665,12 @@
 
 				if (!isset($config['wrapper'])) $config['wrapper'] = 'div';
 				if (!isset($config['class'])) $config['class'] = 'form_hidden_fields';
+
+				foreach ($this->fields as $field_id => $field) {
+					if ($field->get_print_hidden()) {
+						$this->hidden_values[$field->get_name()] = $field->get_hidden_value();
+					}
+				}
 
 				$html = '';
 
@@ -550,6 +681,10 @@
 				$html .= '<input type="hidden" name="act" value="' . html($this->form_id) . '" />';
 				$html .= '<input type="hidden" name="csrf" value="' . html($this->csrf_token) . '" />';
 
+				foreach ($this->hidden_values as $name => $value) {
+					$html .= '<input type="hidden" name="' . html($name) . '" value="' . html(urlencode($value)) . '" />'; // URL encode allows newline characters to exist in hidden (one line) input fields.
+				}
+
 				if ($config['wrapper'] !== NULL) {
 					$html .= '</' . html($config['wrapper']) . '>' . "\n";
 				}
@@ -558,52 +693,44 @@
 
 			}
 
-			function html_error_list($config = NULL) {
+			public function html_error_list($config = NULL) {
 
-				if ($this->submitted()) {
+				$errors_flat_html = $this->errors_html();
 
-					$errors_flat_html = $this->errors_html();
-
-					$html = '';
-					if (count($errors_flat_html) > 0) {
-						$html = '<ul' . (isset($config['id']) ? ' id="' . html($config['id']) . '"' : '') . ' class="' . html($config['class'] ? $config['class'] : 'error_list') . '">';
-						foreach ($errors_flat_html as $err) $html .= '<li>' . $err . '</li>';
-						$html .= '</ul>';
-					}
-
-					return $html;
-
-				} else {
-
-					return '';
-
+				$html = '';
+				if (count($errors_flat_html) > 0) {
+					$html = '<ul' . (isset($config['id']) ? ' id="' . html($config['id']) . '"' : '') . ' class="' . html($config['class'] ? $config['class'] : 'error_list') . '">';
+					foreach ($errors_flat_html as $err) $html .= '<li>' . $err . '</li>';
+					$html .= '</ul>';
 				}
+
+				return $html;
 
 			}
 
-			function html_fields($group = NULL) {
+			public function html_fields($group = NULL) {
 
 				$k = 0;
 				$html = '';
 
 				foreach ($this->fields as $field_id => $field) {
 
-					if ($field->quick_print_show()) {
+					if ($field->get_print_show() && !$field->get_print_hidden()) {
 
-						$field_group = $field->get_quick_print_group();
+						$field_group = $field->get_print_group();
 
 						if (($group === NULL && $field_group ===  NULL) || ($group !== NULL && $group == $field_group)) {
 
-							$quick_print_type = $field->get_quick_print_type();
+							$type = $field->get_type();
 
 							$k++;
 
 							if ($k == 1) {
-								$field->add_quick_print_css_class('first_child odd');
+								$field->add_class_row('first_child odd');
 							} else if ($k % 2) {
-								$field->add_quick_print_css_class('odd');
+								$field->add_class_row('odd');
 							} else {
-								$field->add_quick_print_css_class('even');
+								$field->add_class_row('even');
 							}
 
 							$html .= $field->html();
@@ -618,11 +745,11 @@
 
 			}
 
-			function html_end() {
+			public function html_end() {
 				return '</form>' . "\n";
 			}
 
-			function html() {
+			public function html() {
 				return '
 					' . rtrim($this->html_start()) . '
 						<fieldset>

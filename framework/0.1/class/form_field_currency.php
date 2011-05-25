@@ -5,7 +5,7 @@
 		protected $format_error_set;
 		protected $currency_char;
 
-		function form_field_currency(&$form, $label, $name = NULL) {
+		public function __construct(&$form, $label, $name = NULL) {
 
 			//--------------------------------------------------
 			// Perform the standard field setup
@@ -15,7 +15,9 @@
 			//--------------------------------------------------
 			// Strip currency symbol from input value
 
-				$this->set_value($this->value);
+				if ($this->form_submitted) {
+					$this->set_value($this->value); // TODO: Test
+				}
 
 			//--------------------------------------------------
 			// Additional field configuration
@@ -23,13 +25,13 @@
 				$this->format_error_set = false;
 				$this->set_zero_to_blank = false;
 				$this->currency_char = '£';
-				$this->quick_print_type = 'currency';
+				$this->type = 'currency';
 
 		}
 
-		function set_min_value($error, $value) {
+		public function set_min_value($error, $value) {
 
-			if (floatval($this->value) < $value) {
+			if ($this->form_submitted && floatval($this->value) < $value) {
 
 				if ($value < 0) {
 					$value_text = '-' . $this->currency_char . number_format(floatval(0 - $value), 2);
@@ -45,9 +47,9 @@
 
 		}
 
-		function set_max_value($error, $value) {
+		public function set_max_value($error, $value) {
 
-			if (floatval($this->value) > $value) {
+			if ($this->form_submitted && floatval($this->value) > $value) {
 
 				if ($value < 0) {
 					$value_text = '-' . $this->currency_char . number_format(floatval(0 - $value), 2);
@@ -71,22 +73,26 @@
 
 		}
 
-		function set_currency_char($char) {
+		public function set_currency_char($char) {
 			$this->currency_char = $char;
 		}
 
-		function set_value($value) {
+		public function set_value($value) {
 			$this->value = preg_replace('/[^0-9\-\.]+/', '', $value); // Deletes commas (thousand separators) and currency symbols
 		}
 
-		function get_value_formatted($decimal_places = 2) {
-			if ($this->value == 0 && $this->set_zero_to_blank) {
+		public function get_value_print($decimal_places = 2) {
+
+			$value = parent::get_value_print();
+
+			if ($value == 0 && $this->set_zero_to_blank) {
 				return '';
-			} else if ($this->value < 0) {
-				return '-' . $this->currency_char . number_format(floatval(0 - $this->value), $decimal_places);
+			} else if ($value < 0) {
+				return '-' . $this->currency_char . number_format(floatval(0 - $value), $decimal_places);
 			} else {
-				return $this->currency_char . number_format(floatval($this->value), $decimal_places);
+				return $this->currency_char . number_format(floatval($value), $decimal_places);
 			}
+
 		}
 
 	}

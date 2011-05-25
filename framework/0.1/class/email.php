@@ -1,19 +1,151 @@
 <?php
 
-// Allow HTML/Text template to be created.
-// Add method so a simple table of name/value pairs can be sent (e.g. contact us email).
-// Allow the HTML/Text version to be returned as a string (good for debug).
-// Knows where to get view/layout files... from /view_email/, /view/email/, or /public/a/email/ folder? ... with sub files xxx/index.(html|txt)
-// Add support for attached files
+	class email extends check { // TODO: Remove check
 
-// From Cake:
-//   $this->to = null;
-//   $this->from = null;
-//   $this->reply_to = null;
-//   $this->return = null;
-//   $this->cc = array();
-//   $this->bcc = array();
-//   $this->subject = null;
+		//--------------------------------------------------
+		// Variables
+
+			private $subject;
+			private $from_name;
+			private $from_email;
+			private $reply_to;
+			private $return;
+			private $headers;
+			private $attachments;
+			private $values;
+			private $content_text;
+			private $content_html;
+
+		//--------------------------------------------------
+		// Setup
+
+			public function __construct() {
+
+				//--------------------------------------------------
+				// Defaults
+
+					$this->subject = NULL;
+					$this->from_name = config::get('email.from_name');
+					$this->from_email = config::get('email.from_email');
+					$this->reply_to = NULL;
+					$this->return = NULL;
+					$this->headers = array();
+					$this->attachments = array();
+					$this->values = array();
+					$this->content_text = '';
+					$this->content_html = '';
+
+			}
+
+			public function set_subject($subject) {
+				$this->subject = $subject;
+			}
+
+			public function get_subject() {
+				return $this->subject;
+			}
+
+//    $email->set_from('craig@craigfrancis.co.uk');
+//    $email->set_from('craig@craigfrancis.co.uk', 'Craig Francis');
+//    $email->set_reply_to('craig@craigfrancis.co.uk');
+//    $email->set_return('craig@craigfrancis.co.uk');
+// CC
+// BCC?
+//    $email->set_header('Example', 'Value');
+//    $email->set('name', $value); // Don't do a set_html() method, as this does not work for plain text version
+//    $email->set($data_array); // array merge?
+//    $email->attachment_add($content, $filename, $mime, $id = NULL);
+//    $email->template('');
+//    $email->set_send('craig@craigfrancis.co.uk'); // or array
+
+		//--------------------------------------------------
+		// Content
+
+			public function use_template() {
+				// Create local variables for this->values, include template (function argument offset number) like the view/layout, and append output to html/text variables.
+			}
+
+			public function add_values_table($values) {
+
+				//--------------------------------------------------
+				// Extra details
+
+					// TODO
+					// $email_values = array();
+					// $email_values['Sent'] = date('l j_s F Y, g:i:sa');
+					// $email_values['Website'] = config::get('request.domain_http') . config::get('url.prefix');
+					// $email_values['Remote'] = config::get('request.ip');
+
+				//--------------------------------------------------
+				// Field length
+
+					$field_length = 0;
+					foreach ($values as $value) {
+						$len = strlen($value['name']);
+						if ($len > $field_length) {
+							$field_length = $len;
+						}
+					}
+
+				//--------------------------------------------------
+				// Content
+
+					$this->content_html .= '<html>' . "\n";
+					$this->content_html .= ' <table cellspacing="0" cellpadding="3" border="1">' . "\n";
+
+					foreach ($values as $value) {
+
+						$this->content_html .= '  <tr><th align="left" valign="top">' . html($value['name']) . '</th><td valign="top">' . nl2br($value['value'] == '' ? '&nbsp;' : html($value['value'])) . '</td></tr>' . "\n";
+
+						if (strpos($value['value'], "\n") === false) {
+							$this->content_text .= str_pad($value['name'] . ':', ($field_length + 2)) . $value['value'] . "\n";
+						} else {
+							$this->content_text .= $value['name'] . ':-' . "\n\n" . preg_replace('/^/m', '  ', preg_replace('/\r\n?/', "\n", wordwrap($value['value'], 70, "\n"))) . "\n\n";
+						}
+
+					}
+
+					$this->content_html .= ' </table>' . "\n";
+					$this->content_html .= '</html>' . "\n";
+
+			}
+
+		//--------------------------------------------------
+		// Send
+
+			public function send($recipients) {
+
+				//--------------------------------------------------
+				// Send
+
+					if (!is_array($recipients)) {
+						$recipients = array($recipients);
+					}
+
+					foreach ($recipients as $email) {
+					}
+
+			}
+
+		//--------------------------------------------------
+		// Text and HTML output
+
+			public function text() {
+				return $this->content_text;
+			}
+
+			public function html() {
+				return $this->content_html;
+			}
+
+			public function __toString() { // (PHP 5.2)
+				return $this->html();
+			}
+
+	}
+
+// Allow HTML/Text template to be created.
+// Knows where to get view/layout files... from /view_email/, /view/email/, or /public/a/email/ folder? ... with sub files xxx/index.(html|txt)
 
 // Content type and character set? - automatic
 
@@ -34,14 +166,10 @@
 //    $email->set(array('name' => 'Craig'));
 //    $email->send('...');
 
-//    $email = new email();
-//    $email->form_values($form);
-//    $email->send('...');
-
 			// $boundary1 = '--mail_boundary--' . time() . '--' . rand(1000, 9999) . '-1';
 			// $boundary2 = '--mail_boundary--' . time() . '--' . rand(1000, 9999) . '-2';
 
-			// $email_headers  = 'From: "' . head(config::get('email.from_name')) . '" <' . head(config::get('email.from_address')) .'>' . "\n";
+			// $email_headers  = 'From: "' . head(config::get('email.from_name')) . '" <' . head(config::get('email.from_email')) .'>' . "\n";
 			// $email_headers .= 'Reply-To: ' . head($request_email) . "\n";
 			// $email_headers .= 'MIME-Version: 1.0' . "\n";
 			// $email_headers .= 'Content-Type: multipart/mixed; boundary=' . head($boundary1);
@@ -68,32 +196,5 @@
 			// $email_content .= '' . "\n";
 			// $email_content .= chunk_split(base64_encode($email_attachment_content)) . "\n";
 			// $email_content .= '--' . $boundary1 . '--';
-
-// See /chrysalis.crm/a/api/brochure_request/index.php for HTML and Plain text versions
-
-// And when a form is provided...
-
-// $email_values = array();
-// $email_values['Sent'] = date('l j_s F Y, g:i:sa');
-// $email_values['Website'] = config::get('request.domain_http') . config::get('url.prefix');
-// $email_values['Remote'] = config::get('request.ip');
-//
-// foreach ($form->get_fields() as $c_field) {
-// 	if ($c_field->get_quick_print_type() == 'date') {
-// 		$email_values[$c_field->get_text_label()] = date('d-m-Y', $c_field->get_value_time_stamp());
-// 	} else {
-// 		$email_values[$c_field->get_text_label()] = $c_field->get_value();
-// 	}
-// }
-//
-// $email_body  = '<html>' . "\n";
-// $email_body .= ' <table cellspacing="0" cellpadding="3" border="1">' . "\n";
-//
-// foreach ($email_values as $c_field => $c_value) {
-// 	$email_body .= '  <tr><th align="left" valign="top">' . html($c_field) . '</th><td valign="top">' . nl2br($c_value == '' ? '&nbsp;' : html($c_value)) . '</td></tr>' . "\n";
-// }
-//
-// $email_body .= ' </table>' . "\n";
-// $email_body .= '</html>' . "\n";
 
 ?>

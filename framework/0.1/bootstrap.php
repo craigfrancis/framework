@@ -41,10 +41,25 @@
 //--------------------------------------------------
 // Scripts
 
+	// debug_note_html(debug_run_time() . ' - Routes');
+
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '07.routes.php');
+
+	// debug_note_html(debug_run_time() . ' - Controller');
+
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '08.controller.php');
+
+	// debug_note_html(debug_run_time() . ' - View');
+
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '09.view.php');
 
-debug_show_config();
+	// debug_note_html(debug_run_time() . ' - Done');
+
+//--------------------------------------------------
+// Final config
+
+	if (config::get('debug.level') >= 4) {
+		debug_show_config();
+	}
 
 ?>

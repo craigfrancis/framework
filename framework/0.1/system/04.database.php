@@ -2,12 +2,12 @@
 
 	// TODO: When called statically? - use variable from config?
 
-	class db {
+	class db extends check { // TODO: Remove check
 
 		private $result;
 		private $link;
 
-		function connect($name = NULL, $user = NULL, $pass = NULL, $host = NULL) {
+		public function connect($name = NULL, $user = NULL, $pass = NULL, $host = NULL) {
 
 			if (!$this->link) {
 
@@ -55,7 +55,7 @@
 
 		}
 
-		function error($query = 'N/A', $use_query_as_error = false) {
+		public function error($query = 'N/A', $use_query_as_error = false) {
 
 			if ($this->link) {
 				$extra = mysql_errno($this->link) . ': ' . mysql_error($this->link);
@@ -75,7 +75,7 @@
 
 		}
 
-		function escape($val) {
+		public function escape($val) {
 
 			$this->connect();
 
@@ -91,28 +91,28 @@
 
 		}
 
-		function escape_string($val) {
+		public function escape_string($val) {
 			return '"' . $this->escape($val) . '"';
 		}
 
-		function escape_like($val) {
+		public function escape_like($val) {
 			$val = $this->escape($val);
 			$val = str_replace('_', '\_', $val);
 			$val = str_replace('%', '\%', $val);
 			return $val;
 		}
 
-		function escape_reg_exp($val) {
+		public function escape_reg_exp($val) {
 			return $this->escape(preg_quote($val));
 		}
 
-		function escape_field($field) {
+		public function escape_field($field) {
 			$sql_field = '`' . str_replace('`', '', $field) . '`'; // Back tick is an illegal character
 			$sql_field = str_replace('.', '`.`', $sql_field); // Allow table definition
 			return $sql_field;
 		}
 
-		function query($query, $run_debug = true) {
+		public function query($query, $run_debug = true) {
 			$this->connect();
 			if ($run_debug && function_exists('debug_database')) {
 				$this->result = debug_database($this, $query);
@@ -122,35 +122,35 @@
 			return $this->result;
 		}
 
-		function num_rows($result = null) {
+		public function num_rows($result = null) {
 			if ($result === null) $result = $this->result;
 			return mysql_num_rows($result);
 		}
 
-		function fetch_assoc($result = null) {
+		public function fetch_assoc($result = null) {
 			if ($result === null) $result = $this->result;
 			return mysql_fetch_assoc($result);
 		}
 
-		function fetch_array($result = null) {
+		public function fetch_array($result = null) {
 			if ($result === null) $result = $this->result;
 			return mysql_fetch_array($result);
 		}
 
-		function result($row, $col, $result = null) {
+		public function result($row, $col, $result = null) {
 			if ($result === null) $result = $this->result;
 			return mysql_result($result, $row, $col);
 		}
 
-		function insert_id() {
+		public function insert_id() {
 			return mysql_insert_id($this->link);
 		}
 
-		function affected_rows() {
+		public function affected_rows() {
 			return mysql_affected_rows($this->link);
 		}
 
-		function enum_values($sql_table, $field) {
+		public function enum_values($sql_table, $field) {
 			$this->query('SHOW COLUMNS FROM ' . $sql_table . ' LIKE "' . $this->escape($field) . '"');
 			if ($row = $this->fetch_assoc()) {
 				return explode("','", preg_replace("/(enum|set)\('(.+?)'\)/", '\2', $row['Type']));
@@ -159,7 +159,7 @@
 			}
 		}
 
-		function insert($sql_table, $values, $on_duplicate = NULL) {
+		public function insert($sql_table, $values, $on_duplicate = NULL) {
 
 			$sql_fields = implode(', ', array_map(array($this, 'escape_field'), array_keys($values)));
 			$sql_values = implode(', ', array_map(array($this, 'escape_string'), $values));
@@ -188,7 +188,7 @@
 
 		}
 
-		function update($sql_table, $values, $sql_where) {
+		public function update($sql_table, $values, $sql_where) {
 
 			$sql_set = array();
 			foreach ($values as $field_name => $field_value) {
@@ -201,7 +201,7 @@
 
 		}
 
-		function select($sql_table, $fields, $sql_where, $limit = NULL) {
+		public function select($sql_table, $fields, $sql_where, $limit = NULL) {
 
 			if ($fields === 1) {
 				$sql_fields = '1';
@@ -218,7 +218,7 @@
 
 		}
 
-		function delete($sql_table, $sql_where) {
+		public function delete($sql_table, $sql_where) {
 
 			$this->result = $this->query('DELETE FROM ' . $sql_table . ' WHERE ' . $sql_where);
 			return $this->result; // affected_rows

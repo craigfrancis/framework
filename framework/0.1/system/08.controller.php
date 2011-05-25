@@ -1,6 +1,13 @@
 <?php
 
 //--------------------------------------------------
+// No local variables set
+
+	if (config::get('debug.level') >= 4) {
+		debug_show_array(get_defined_vars(), 'Variables');
+	}
+
+//--------------------------------------------------
 // View variables
 
 	config::set('view.variables', array());
@@ -38,8 +45,6 @@
 
 //--------------------------------------------------
 // Main include
-
-	// debug_show_array(get_defined_vars(), 'Variables');
 
 	$include_path = ROOT_APP . DS . 'core' . DS . 'main.php';
 	if (is_file($include_path)) {
@@ -124,7 +129,7 @@
 
 				if (is_array($results)) {
 
-					$controller_log[] = $controller_path . ': ' . $controller_name . '->route() - ' . print_r($results, true);
+					$controller_log[] = $controller_path . ': ' . $controller_name . '->route() - ' . html(print_r($results, true));
 
 					foreach ($results as $result_name => $result_value) {
 
@@ -218,7 +223,7 @@
 
 				public $action_index_path;
 
-				function action_index() {
+				public function action_index() {
 
 					require_once($this->action_index_path);
 
@@ -245,7 +250,7 @@
 	//--------------------------------------------------
 	// Debug
 
-		if (config::get('debug.run')) {
+		if (config::get('debug.level') >= 3) {
 
 			$note_html  = 'Controllers:<br />';
 
@@ -253,7 +258,7 @@
 				$note_html .= '&nbsp; ' . preg_replace('/^([^:]+):/', '<strong>\1</strong>:', html($log)) . '<br />';
 			}
 
-			debug_note_add_html($note_html);
+			debug_note_html($note_html);
 
 			unset($note_html, $log);
 
@@ -264,7 +269,9 @@
 
 		unset($controller_id, $controller_path, $controller_name, $route_stack, $building_path, $building_name, $building_stack, $controller_log, $folder);
 
-		// debug_show_array(get_defined_vars(), 'Variables');
+		if (config::get('debug.level') >= 4) {
+			debug_show_array(get_defined_vars(), 'Variables');
+		}
 
 //--------------------------------------------------
 // Action
@@ -277,14 +284,14 @@
 			array_push($action_route_stack_used, array_shift($action_route_stack_pending));
 		}
 
-		if (config::get('debug.run')) {
+		if (config::get('debug.level') >= 3) {
 
 			$note_html  = '<strong>Action</strong>: ' . html($action_controller_path) . '<br />';
 
 			if ($action_controller_name !== NULL) {
 				$note_html .= '&nbsp; Calls:<br />';
 				$note_html .= '&nbsp; &nbsp; ' . html($action_controller_name) . '->before();<br />';
-				$note_html .= '&nbsp; &nbsp; ' . html($action_controller_name) . '->' . html($action_method) . '(' . print_r($action_route_stack_pending, true) . ');<br />';
+				$note_html .= '&nbsp; &nbsp; ' . html($action_controller_name) . '->' . html($action_method) . '(' . html(print_r($action_route_stack_pending, true)) . ');<br />';
 				$note_html .= '&nbsp; &nbsp; ' . html($action_controller_name) . '->after();<br />';
 			}
 
@@ -309,7 +316,7 @@
 			$note_html .= '&nbsp; &nbsp; $this->head_add_html(\'&lt;html&gt;\');<br />';
 			$note_html .= '&nbsp; &nbsp; $this->page_ref(\'example_ref\');<br />';
 
-			debug_note_add_html($note_html);
+			debug_note_html($note_html);
 
 			unset($note_html, $id, $value);
 
@@ -323,8 +330,8 @@
 
 	} else {
 
-		if (config::get('debug.run')) {
-			debug_note_add_html('<strong>Action</strong>: Missing');
+		if (config::get('debug.level') >= 3) {
+			debug_note_html('<strong>Action</strong>: Missing');
 		}
 
 		config::set('view.folders', config::get('route.folders'));
@@ -335,6 +342,8 @@
 
 	unset($controllers, $action_method, $action_controller_id, $action_controller_name, $action_controller_path, $action_route_stack_used, $action_route_stack_pending);
 
-	// debug_show_array(get_defined_vars(), 'Variables');
+	if (config::get('debug.level') >= 4) {
+		debug_show_array(get_defined_vars(), 'Variables');
+	}
 
 ?>

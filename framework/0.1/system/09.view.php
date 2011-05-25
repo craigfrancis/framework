@@ -3,6 +3,8 @@
 //--------------------------------------------------
 // View
 
+	// debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - View pre render');
+
 	ob_start();
 
 	echo config::get('output.html');
@@ -13,6 +15,8 @@
 	config::set('output.html', ob_get_clean());
 
 	unset($view);
+
+	// debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - View post render');
 
 //--------------------------------------------------
 // Output variables
@@ -62,13 +66,13 @@
 
 			config::set_default('output.page_ref', human_to_ref(config::get('route.path')));
 
-		} else if ($page_ref_mode == 'request') {
-
-			config::set_default('output.page_ref', human_to_ref(config::get('request.path')));
-
 		} else if ($page_ref_mode == 'view') {
 
 			config::set_default('output.page_ref', human_to_ref(config::get('view.path')));
+
+		} else if ($page_ref_mode == 'request') {
+
+			config::set_default('output.page_ref', human_to_ref(urldecode(config::get('request.path'))));
 
 		} else {
 
@@ -100,8 +104,12 @@
 //--------------------------------------------------
 // Layout
 
+	// debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - Layout pre render');
+
 	$layout = new layout();
 	$layout->render();
+
+	// debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - Layout post render');
 
 	unset($layout);
 

@@ -13,7 +13,7 @@
 		protected $value_image_height;
 		protected $value_image_type;
 
-		function form_field_image(&$form, $label, $name = NULL) {
+		public function __construct(&$form, $label, $name = NULL) {
 
 			//--------------------------------------------------
 			// Perform the standard field setup
@@ -23,7 +23,7 @@
 			//--------------------------------------------------
 			// Additional field configuration
 
-				$this->quick_print_type = 'image';
+				$this->type = 'image';
 
 			//--------------------------------------------------
 			// Default validation configuration
@@ -55,11 +55,11 @@
 
 		}
 
-		function set_min_width($error, $size) {
+		public function set_min_width($error, $size) {
 
 			$size = intval($size);
 
-			if ($this->value_image_width !== NULL && $this->value_image_width < $size) {
+			if ($this->has_uploaded && $this->value_image_width !== NULL && $this->value_image_width < $size) {
 				$this->form->_field_error_add($this->form_field_uid, str_replace('XXX', $size . 'px', $error));
 			}
 
@@ -67,11 +67,11 @@
 
 		}
 
-		function set_max_width($error, $size) {
+		public function set_max_width($error, $size) {
 
 			$size = intval($size);
 
-			if ($this->value_image_width !== NULL && $this->value_image_width > $size) {
+			if ($this->has_uploaded && $this->value_image_width !== NULL && $this->value_image_width > $size) {
 				$this->form->_field_error_add($this->form_field_uid, str_replace('XXX', $size . 'px', $error));
 			}
 
@@ -79,11 +79,11 @@
 
 		}
 
-		function set_required_width($error, $size) {
+		public function set_required_width($error, $size) {
 
 			$size = intval($size);
 
-			if ($this->value_image_width !== NULL && $this->value_image_width != $size) {
+			if ($this->has_uploaded && $this->value_image_width !== NULL && $this->value_image_width != $size) {
 				$this->form->_field_error_add($this->form_field_uid, str_replace('XXX', $size . 'px', $error));
 			}
 
@@ -92,23 +92,23 @@
 
 		}
 
-		function get_required_width_min() {
+		public function get_required_width_min() {
 			return $this->min_width_size;
 		}
 
-		function get_required_width_max() {
+		public function get_required_width_max() {
 			return $this->max_width_size;
 		}
 
-		function get_required_width() {
+		public function get_required_width() {
 			return $this->min_width_size;
 		}
 
-		function set_min_height($error, $size) {
+		public function set_min_height($error, $size) {
 
 			$size = intval($size);
 
-			if ($this->value_image_height !== NULL && $this->value_image_height < $size) {
+			if ($this->has_uploaded && $this->value_image_height !== NULL && $this->value_image_height < $size) {
 				$this->form->_field_error_add($this->form_field_uid, str_replace('XXX', $size . 'px', $error));
 			}
 
@@ -116,11 +116,11 @@
 
 		}
 
-		function set_max_height($error, $size) {
+		public function set_max_height($error, $size) {
 
 			$size = intval($size);
 
-			if ($this->value_image_height !== NULL && $this->value_image_height > $size) {
+			if ($this->has_uploaded && $this->value_image_height !== NULL && $this->value_image_height > $size) {
 				$this->form->_field_error_add($this->form_field_uid, str_replace('XXX', $size . 'px', $error));
 			}
 
@@ -128,11 +128,11 @@
 
 		}
 
-		function set_required_height($error, $size) {
+		public function set_required_height($error, $size) {
 
 			$size = intval($size);
 
-			if ($this->value_image_height !== NULL && $this->value_image_height != $size) {
+			if ($this->has_uploaded && $this->value_image_height !== NULL && $this->value_image_height != $size) {
 				$this->form->_field_error_add($this->form_field_uid, str_replace('XXX', $size . 'px', $error));
 			}
 
@@ -141,19 +141,19 @@
 
 		}
 
-		function get_required_height_min() {
+		public function get_required_height_min() {
 			return $this->min_height_size;
 		}
 
-		function get_required_height_max() {
+		public function get_required_height_max() {
 			return $this->max_height_size;
 		}
 
-		function get_required_height() {
+		public function get_required_height() {
 			return $this->min_height_size;
 		}
 
-		function set_file_type_error($error, $types = NULL) {
+		public function set_file_type_error($error, $types = NULL) {
 
 			//--------------------------------------------------
 			// Types
@@ -214,21 +214,21 @@
 
 		}
 
-		function get_image_width() {
+		public function get_image_width() {
 			return $this->value_image_width;
 		}
 
-		function get_image_height() {
+		public function get_image_height() {
 			return $this->value_image_height;
 		}
 
-		function get_image_type() {
+		public function get_image_type() {
 			return $this->value_image_type;
 		}
 
-		function _error_check() {
+		private function _post_validation() {
 
-			parent::_error_check();
+			parent::_post_validation();
 
 			if ($this->file_type_error_set == false) {
 				exit('<p>You need to call "set_file_type_error", on the field "' . $this->label_html . '"</p>');

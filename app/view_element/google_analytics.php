@@ -5,12 +5,12 @@
 
 	class ve_google_analytics extends ve {
 
-		function __construct() {
+		public function __construct() {
 			// Could get the "ve_google_analytics.*" variables from config... so perhaps "ve_base" could have the __construct (final?), and this has a private "init" method?
 			// Need to be able to pull in config on init... e.g. new ve_calendar(array('full' => true));
 		}
 
-		function __toString() {
+		public function __toString() {
 			// Like construct, perhaps the __toString is in "ve_base" (final)... and then have a custom "print" method.
 		}
 

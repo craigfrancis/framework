@@ -1,10 +1,10 @@
 <?php
 
-	class image {
+	class image extends check { // TODO: Remove check
 
 		// ...
 
-		function save_to_size_folders($path, $file_name) {
+		public function save_to_size_folders($path, $file_name) {
 
 			//--------------------------------------------------
 			// Image type
@@ -40,7 +40,7 @@
 
 		}
 
-		function delete_from_size_folders($path, $file_name) {
+		public function delete_from_size_folders($path, $file_name) {
 		}
 
 	}

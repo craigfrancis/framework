@@ -2,7 +2,7 @@
 
 	class admin_controller extends controller {
 
-		function action_index() {
+		public function action_index() {
 		}
 
 	}

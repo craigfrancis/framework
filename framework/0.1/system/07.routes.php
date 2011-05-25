@@ -7,6 +7,7 @@
 	// Get from config
 
 		$route_path = config::get('request.path');
+		$route_path = urldecode($route_path);
 
 		$url_prefix = config::get('url.prefix');
 		if ($url_prefix != '') {
@@ -182,7 +183,7 @@
 				//--------------------------------------------------
 				// Debug note
 
-					if (config::get('debug.run')) {
+					if (config::get('debug.level') >= 3) {
 
 						$note_html  = 'Route ' . html($id) . ':<br />';
 						$note_html .= '&nbsp; <strong>old</strong>: ' . html($old_path) . '<br />';
@@ -195,7 +196,7 @@
 							$note_html .= '&nbsp; <strong>variables</strong>: ' . html(print_r($route_variables, true)) . '<br />';
 						}
 
-						debug_note_add_html($note_html);
+						debug_note_html($note_html);
 
 						unset($note_html);
 

@@ -4,7 +4,7 @@
 
 		protected $format_error_set;
 
-		function form_field_number(&$form, $label, $name = NULL) {
+		public function __construct(&$form, $label, $name = NULL) {
 
 			//--------------------------------------------------
 			// Perform the standard field setup
@@ -16,13 +16,13 @@
 
 				$this->format_error_set = false;
 				$this->set_zero_to_blank = false;
-				$this->quick_print_type = 'number';
+				$this->type = 'number';
 
 		}
 
-		function set_format_error($error) {
+		public function set_format_error($error) {
 
-			if ($this->value != '' && !is_numeric($this->value)) {
+			if ($this->form_submitted && $this->value != '' && !is_numeric($this->value)) {
 				$this->form->_field_error_set_html($this->form_field_uid, $error);
 			}
 
@@ -30,21 +30,21 @@
 
 		}
 
-		function set_required_error($error) {
+		public function set_required_error($error) {
 			$this->set_min_length($error);
 		}
 
-		function set_min_value($error, $value) {
+		public function set_min_value($error, $value) {
 
-			if (floatval($this->value) < $value) {
+			if ($this->form_submitted && floatval($this->value) < $value) {
 				$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $value, $error));
 			}
 
 		}
 
-		function set_max_value($error, $value) {
+		public function set_max_value($error, $value) {
 
-			if (floatval($this->value) > $value) {
+			if ($this->form_submitted && floatval($this->value) > $value) {
 				$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $value, $error));
 			}
 
@@ -56,21 +56,25 @@
 
 		}
 
-		function set_zero_to_blank($blank) {
+		public function set_zero_to_blank($blank) {
 			$this->set_zero_to_blank = ($blank == true);
 		}
 
-		function get_value_formatted($decimal_places = 2) {
-			if ($this->value == 0 && $this->set_zero_to_blank) {
+		public function get_value_print($decimal_places = 2) {
+
+			$value = parent::get_value_print();
+
+			if ($value == 0 && $this->set_zero_to_blank) {
 				return '';
 			} else {
-				return $this->value;
+				return $value;
 			}
+
 		}
 
-		function _error_check() {
+		private function _post_validation() {
 
-			parent::_error_check();
+			parent::_post_validation();
 
 			if ($this->format_error_set == false) {
 				exit('<p>You need to call "set_format_error", on the field "' . $this->label_html . '"</p>');

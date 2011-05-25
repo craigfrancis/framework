@@ -27,7 +27,7 @@
 		// Email
 
 			$config['email.from_name'] = 'Company Name';
-			$config['email.from_address'] = 'noreply@domain.com';
+			$config['email.from_email'] = 'noreply@domain.com';
 			$config['email.error'] = array('admin@domain.com');
 			$config['email.contact_us'] = array('admin@domain.com');
 
@@ -36,7 +36,7 @@
 
 			$config['output.mime'] = 'application/xhtml+xml';
 
-			$config['debug.run'] = true;
+			$config['debug.level'] = 3;
 
 	} else if (preg_match('/^\/www\/demo/i', realpath(__FILE__))) {
 

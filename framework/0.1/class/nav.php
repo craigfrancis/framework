@@ -1,6 +1,6 @@
 <?php
 
-	class nav {
+	class nav extends check { // TODO: Remove check
 
 		private $current_group;
 		private $current_index;
@@ -15,11 +15,13 @@
 		private $automatically_select_link;
 		private $include_white_space;
 
-		private $path;
 		private $selected_id;
 		private $selected_len;
+		private $selected_link_found;
 
-		function nav() {
+		private $path;
+
+		public function nav() {
 
 			//--------------------------------------------------
 			// Holder
@@ -56,36 +58,36 @@
 
 		}
 
-		function set_indent($indent) {
+		public function set_indent($indent) {
 			if ($this->include_white_space) {
 				$this->indent = "\n" . str_repeat("\t", intval($indent));
 			}
 		}
 
-		function set_main_class($class) {
+		public function set_main_class($class) {
 			$this->main_class = $class;
 		}
 
-		function expand_all_children($do) {
+		public function expand_all_children($do) {
 			$this->expand_all_children = $do;
 		}
 
-		function automatically_expand_children($do) {
+		public function automatically_expand_children($do) {
 			$this->automatically_expand_children = $do;
 		}
 
-		function automatically_select_link($do) {
+		public function automatically_select_link($do) {
 			$this->automatically_select_link = $do;
 		}
 
-		function include_white_space($do) {
+		public function include_white_space($do) {
 			$this->include_white_space = $do;
 			if ($do == false) {
 				$this->indent = '';
 			}
 		}
 
-		function _add_link($url, $name, $config, $child_nav = NULL, $child_open = NULL) {
+		private function _add_link($url, $name, $config, $child_nav = NULL, $child_open = NULL) {
 
 			//--------------------------------------------------
 			// Next!
@@ -145,15 +147,15 @@
 
 		}
 
-		function add_link($url, $name, $config = NULL) {
+		public function add_link($url, $name, $config = NULL) {
 			$this->_add_link($url, $name, $config);
 		}
 
-		function add_link_with_child($url, $name, &$child_nav, $config = NULL, $child_open = NULL) {
+		public function add_link_with_child($url, $name, &$child_nav, $config = NULL, $child_open = NULL) {
 			$this->_add_link($url, $name, $config, $child_nav, $child_open);
 		}
 
-		function add_group($name = '', $config = NULL) {
+		public function add_group($name = '', $config = NULL) {
 
 			if (count($this->navigation) > 0) {
 				$this->current_group++;
@@ -164,11 +166,11 @@
 
 		}
 
-		function link_count() {
+		public function link_count() {
 			return $this->current_index;
 		}
 
-		function html($level = 1) {
+		public function html($level = 1) {
 
 			//--------------------------------------------------
 			// Start

@@ -2,7 +2,7 @@
 
 	class form_field_radios extends form_field_select {
 
-		function form_field_radios(&$form, $label, $name = NULL) {
+		public function __construct(&$form, $label, $name = NULL) {
 
 			//--------------------------------------------------
 			// Perform the select field setup
@@ -12,14 +12,14 @@
 			//--------------------------------------------------
 			// Additional field configuration
 
-				$this->quick_print_type = 'radios';
+				$this->type = 'radios';
 
 		}
 
-		function html() {
+		public function html() {
 			$html = '
-				<div class="' . html($this->get_quick_print_css_class()) . '">
-					<span class="label">' . $this->html_label() . $this->quick_print_label_suffix . '</span>';
+				<div class="' . html($this->get_class_row()) . '">
+					<span class="label">' . $this->html_label() . $this->label_suffix_html . '</span>';
 			foreach ($this->option_keys as $id => $key) {
 				$html .= '
 					<span class="input ' . html('key_' . human2camel($key)) . ' ' . html('value_' . human2camel($this->option_values[$id])) . '">
@@ -27,12 +27,12 @@
 						' . $this->html_label_by_key($key) . '
 					</span>';
 			}
-			$html .= $this->get_quick_print_info_html(5) . '
+			$html .= $this->get_info_html(6) . '
 				</div>' . "\n";
 			return $html;
 		}
 
-		function html_label($label_html = NULL) {
+		public function html_label($label_html = NULL) {
 			if ($label_html === NULL) {
 				$label_html = parent::html_label();
 				$label_html = preg_replace('/^<label[^>]+>(.*)<\/label>$/', '$1', $label_html); // Ugly, but better than duplication
@@ -40,7 +40,7 @@
 			return $label_html;
 		}
 
-		function html_label_by_value($value, $label_html = NULL) {
+		public function html_label_by_value($value, $label_html = NULL) {
 			$id = array_search($value, $this->option_values);
 			if ($id !== false && $id !== NULL) {
 				return $this->_html_label_by_id($id, $label_html);
@@ -49,7 +49,7 @@
 			}
 		}
 
-		function html_label_by_key($key, $label_html = NULL) {
+		public function html_label_by_key($key, $label_html = NULL) {
 			$id = array_search($key, $this->option_keys);
 			if ($id !== false && $id !== NULL) {
 				return $this->_html_label_by_id($id, $label_html);
@@ -60,7 +60,7 @@
 			}
 		}
 
-		function _html_label_by_id($field_id, $label_html) {
+		private function _html_label_by_id($field_id, $label_html) {
 
 			if ($label_html === NULL) {
 
@@ -84,15 +84,15 @@
 				$input_id = $this->id . '_' . $this->option_keys[$field_id];
 			}
 
-			return '<label for="' . html($input_id) . '"' . ($this->css_class_label === NULL ? '' : ' class="' . html($this->css_class_label) . '"') . '>' . $label_html . '</label>';
+			return '<label for="' . html($input_id) . '"' . ($this->class_label === NULL ? '' : ' class="' . html($this->class_label) . '"') . '>' . $label_html . '</label>';
 
 		}
 
-		function html_field() {
+		public function html_field() {
 			return 'Please use html_field_by_value or html_field_by_key';
 		}
 
-		function html_field_by_value($value) {
+		public function html_field_by_value($value) {
 			$id = array_search($value, $this->option_values);
 			if ($id !== false && $id !== NULL) {
 				return $this->_html_field_by_id($id);
@@ -101,7 +101,7 @@
 			}
 		}
 
-		function html_field_by_key($key) {
+		public function html_field_by_key($key) {
 			$id = array_search($key, $this->option_keys);
 			if ($id !== false && $id !== NULL) {
 				return $this->_html_field_by_id($id);
@@ -112,7 +112,7 @@
 			}
 		}
 
-		function _html_field_by_id($field_id) {
+		private function _html_field_by_id($field_id) {
 
 			if ($this->re_index_keys_in_html) {
 				$input_id = $this->id . '_' . ($field_id + 1);
@@ -122,11 +122,11 @@
 				$input_value = $this->option_keys[$field_id];
 			}
 
-			return '<input type="radio" name="' . html($this->name) . '" id="' . html($input_id) . '" value="' . html($input_value) . '"' . ($input_value == $this->value ? ' checked="checked"' : '') . ($this->css_class_field === NULL ? '' : ' class="' . html($this->css_class_field) . '"') . ' />';
+			return '<input type="radio" name="' . html($this->name) . '" id="' . html($input_id) . '" value="' . html($input_value) . '"' . ($input_value == $this->value ? ' checked="checked"' : '') . ($this->class_field === NULL ? '' : ' class="' . html($this->class_field) . '"') . ' />';
 
 		}
 
-		function get_field_id_by_value($value) {
+		public function get_field_id_by_value($value) {
 			$id = array_search($value, $this->option_values);
 			if ($id !== false && $id !== NULL) {
 				if ($this->re_index_keys_in_html) {
@@ -139,7 +139,7 @@
 			}
 		}
 
-		function get_field_id_by_key($key) {
+		public function get_field_id_by_key($key) {
 			$id = array_search($key, $this->option_keys);
 			if ($id !== false && $id !== NULL) {
 				if ($this->re_index_keys_in_html) {
@@ -152,9 +152,9 @@
 			}
 		}
 
-		function _error_check() {
+		private function _post_validation() {
 
-			parent::_error_check();
+			parent::_post_validation();
 
 			if ($this->required_error_set == false && $this->label_option === NULL) {
 				exit('<p>You need to call "set_required_error" or "set_label_option", on the field "' . $this->label_html . '"</p>');

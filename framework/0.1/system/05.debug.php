@@ -11,17 +11,40 @@
 	//--------------------------------------------------
 	// Start time
 
-		$start_time = explode(' ', microtime());
-		$start_time = ((float)$start_time[0] + (float)$start_time[1]);
+		function debug_set_start_time($start_time = NULL) {
 
-		config::set('debug.start_time', $start_time);
+			if ($start_time === NULL) {
+				$start_time = explode(' ', microtime());
+				$start_time = ((float)$start_time[0] + (float)$start_time[1]);
+			}
 
-		unset($start_time);
+			config::set('debug.start_time', $start_time);
+
+		}
+
+		debug_set_start_time();
 
 	//--------------------------------------------------
 	// Query time
 
 		config::set('debug.query_time', 0);
+
+//--------------------------------------------------
+// Error reporting
+
+	function exit_with_error($message, $hidden_info = NULL) {
+		exit($message);
+	}
+
+	function add_report($message, $type = 'notice') {
+
+		//--------------------------------------------------
+		// Email
+
+			$email = new email();
+			$email->send(config::get('email.error'));
+
+	}
 
 //--------------------------------------------------
 // Quick debug print of a variable
@@ -33,24 +56,39 @@
 		echo ' (line <strong>' . $called_from[0]['line'] . '</strong>)';
 
 		echo '<pre>';
-		echo print_r($variable, true); // view:add_debug() if were not in a view.
+		echo html(print_r($variable, true)); // view:add_debug() if were not in a view.
 		echo '</pre>';
+
+	}
+
+//--------------------------------------------------
+// Debug run time
+
+	function debug_run_time() {
+
+		$time_end = explode(' ', microtime());
+		$time_end = ((float)$time_end[0] + (float)$time_end[1]);
+
+		$time = round(($time_end - config::get('debug.start_time')), 4);
+		$time = str_pad($time, 6, '0');
+
+		return $time;
 
 	}
 
 //--------------------------------------------------
 // Debug notes
 
-	function debug_note_add($note) {
-		debug_note_add_html(nl2br(str_replace(' ', '&nbsp;', html($note))));
+	function debug_note($note) {
+		debug_note_html(nl2br(str_replace(' ', '&nbsp;', html(trim(print_r($note, true))))));
 	}
 
-	function debug_note_add_html($note_html) {
+	function debug_note_html($note_html) {
 
 		//--------------------------------------------------
 		// Suppression
 
-			if (!config::get('debug.run')) {
+			if (config::get('debug.level') == 0) {
 				return;
 			}
 
@@ -59,7 +97,7 @@
 
 			$called_from = debug_backtrace();
 
-			if (substr($called_from[0]['file'], -30) == 'framework/0.1/system/debug.php') {
+			if ($called_from[0]['file'] == __FILE__) {
 				$called_from_id = 1;
 			} else {
 				$called_from_id = 0;
@@ -78,10 +116,7 @@
 				$note_html = '&nbsp; ' . str_replace("\n", "\n&nbsp; ", $note_html);
 				$note_html = '<strong>' . str_replace(ROOT, '', $call_from_file) . '</strong> (line ' . $call_from_line . '):<br />' . $note_html;
 
-				$time_end = explode(' ', microtime());
-				$time_end = ((float)$time_end[0] + (float)$time_end[1]);
-
-				$time = round(($time_end - config::get('debug.start_time')), 4);
+				$time = debug_run_time();
 
 			} else {
 
@@ -106,42 +141,38 @@
 	}
 
 //--------------------------------------------------
-// Error reporting
-
-	function exit_with_error($message, $hidden_info = NULL) {
-		exit($message);
-	}
-
-	function add_report($message, $type = 'notice') {
-
-		//--------------------------------------------------
-		// Email
-
-			$email = new email();
-			$email->send(config::get('email.error'));
-
-	}
-
-//--------------------------------------------------
 // Show configuration
 
 	function debug_show_config($prefix = '') {
 
-		$config = config::get_all($prefix);
+		//--------------------------------------------------
+		// Suppression
 
-		ksort($config);
-
-		$config_html = array($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
-		foreach ($config as $key => $value) {
-			if (in_array($key, array('db.pass', 'debug.notes', 'view.variables', 'output.html', 'output.css_types', 'output.head_html'))) {
-				$value_html = '???';
-			} else {
-				$value_html = html(print_r($value, true));
+			if (config::get('debug.level') == 0) {
+				return;
 			}
-			$config_html[] = '&nbsp; <strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html;
-		}
 
-		debug_note_add_html(implode($config_html, '<br />' . "\n"));
+		//--------------------------------------------------
+		// Config
+
+			$config = config::get_all($prefix);
+
+			ksort($config);
+
+			$config_html = array($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
+			foreach ($config as $key => $value) {
+				if (in_array($key, array('db.pass', 'debug.notes', 'view.variables', 'output.html', 'output.css_types', 'output.head_html'))) {
+					$value_html = '???';
+				} else {
+					$value_html = html(print_r($value, true));
+				}
+				$config_html[] = '&nbsp; <strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html;
+			}
+
+		//--------------------------------------------------
+		// Add note
+
+			debug_note_html(implode($config_html, '<br />' . "\n"));
 
 	}
 
@@ -150,21 +181,34 @@
 
 	function debug_show_array($array, $label = 'Array') {
 
-		$variables_html = array(html($label . ':'));
-		foreach ($array as $key => $value) {
-			if (substr($key, 0, 1) != '_' && substr($key, 0, 5) != 'HTTP_' && !in_array($key, array('GLOBALS'))) {
-				$variables_html[] = '&nbsp; <strong>' . html($key) . '</strong>: ' . html(print_r($value, true));
-			}
-		}
+		//--------------------------------------------------
+		// Suppression
 
-		debug_note_add_html(implode($variables_html, '<br />' . "\n"));
+			if (config::get('debug.level') == 0) {
+				return;
+			}
+
+		//--------------------------------------------------
+		// HTML
+
+			$variables_html = array(html($label . ':'));
+			foreach ($array as $key => $value) {
+				if (substr($key, 0, 1) != '_' && substr($key, 0, 5) != 'HTTP_' && !in_array($key, array('GLOBALS'))) {
+					$variables_html[] = '&nbsp; <strong>' . html($key) . '</strong>: ' . html(print_r($value, true));
+				}
+			}
+
+		//--------------------------------------------------
+		// Add note
+
+			debug_note_html(implode($variables_html, '<br />' . "\n"));
 
 	}
 
 //--------------------------------------------------
-// Stage debugging
+// Show config
 
-	if (config::get('debug.run')) {
+	if (config::get('debug.level') >= 3) {
 
 		//--------------------------------------------------
 		// Config
@@ -181,7 +225,7 @@
 		//--------------------------------------------------
 		// Suppression
 
-			if (!config::get('debug.run') || !config::get('debug.show')) {
+			if (config::get('debug.level') == 0 || !config::get('debug.show')) {
 				return $buffer;
 			}
 
@@ -195,10 +239,7 @@
 		//--------------------------------------------------
 		// Time taken
 
-			$time_end = explode(' ', microtime());
-			$time_end = ((float)$time_end[0] + (float)$time_end[1]);
-
-			$time = round(($time_end - config::get('debug.start_time')), 4);
+			$time = debug_run_time();
 
 			$output_html = '
 				<div style="' . html($css_block) . '">

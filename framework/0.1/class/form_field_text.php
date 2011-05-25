@@ -2,107 +2,134 @@
 
 	class form_field_text extends form_field_base {
 
-		protected $value;
-		protected $min_length;
-		protected $max_length;
+		//--------------------------------------------------
+		// Variables
 
-		function __construct(&$form, $label, $name = NULL) {
-			$this->_setup_text($form, $label, $name);
-		}
+			protected $value;
+			protected $min_length;
+			protected $max_length;
+			protected $size;
 
-		function _setup_text(&$form, $label, $name = NULL) {
+		//--------------------------------------------------
+		// Setup
 
-			//--------------------------------------------------
-			// Perform the standard field setup
-
-				$this->_setup($form, $label, $name);
-
-			//--------------------------------------------------
-			// Value
-
-				$this->value = data($this->name, $form->get_form_method());
-
-			//--------------------------------------------------
-			// Default configuration
-
-				$this->min_length = NULL;
-				$this->max_length = NULL;
-				$this->size = NULL;
-				$this->quick_print_type = 'text';
-
-		}
-
-		function set_min_length($error, $size = 1) { // Default is "required"
-
-			if (strlen($this->value) < $size) {
-				$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $size, $error));
+			public function __construct(&$form, $label, $name = NULL) {
+				$this->_setup_text($form, $label, $name);
 			}
 
-			$this->min_length = $size;
-			$this->required = ($size > 0);
+			protected function _setup_text(&$form, $label, $name = NULL) {
 
-		}
+				//--------------------------------------------------
+				// Perform the standard field setup
 
-		function set_max_length($error, $size = NULL) {
+					$this->_setup($form, $label, $name);
 
-			if ($size === NULL) {
+				//--------------------------------------------------
+				// Value
 
-				if ($this->db_field_name === NULL) {
-					exit('<p>You need to call "set_db_field", on the field "' . $this->label_html . '"</p>');
+					$this->value = NULL;
+
+					if ($this->form_submitted) {
+						$this->value = data($this->name, $this->form->get_form_method());
+					}
+
+				//--------------------------------------------------
+				// Default configuration
+
+					$this->min_length = NULL;
+					$this->max_length = NULL;
+					$this->size = NULL;
+					$this->type = 'text';
+
+			}
+
+			public function set_size($size) {
+				$this->size = $size;
+			}
+
+		//--------------------------------------------------
+		// Value
+
+			public function set_value($value) {
+				$this->value = $value;
+			}
+
+			public function get_value() {
+				return $this->value;
+			}
+
+			public function get_value_print() {
+				if ($this->value === NULL) {
+					return $this->form->get_db_select_value($this->db_field_name);
+				}
+				return $this->value;
+			}
+
+		//--------------------------------------------------
+		// Errors
+
+			public function set_min_length($error, $size = 1) { // Default is "required"
+
+				if ($this->form_submitted && strlen($this->value) < $size) {
+					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $size, $error));
 				}
 
-				$field_setup = $this->form->get_db_field($this->db_field_name);
-				if ($field_setup) {
-					$size = $field_setup['length'];
-				} else {
-					$size = 0; // Should not happen
+				$this->min_length = $size;
+				$this->required = ($size > 0);
+
+			}
+
+			public function set_max_length($error, $size = NULL) {
+
+				if ($size === NULL) {
+
+					if ($this->db_field_name === NULL) {
+						exit('<p>You need to call "set_db_field", on the field "' . $this->label_html . '"</p>');
+					}
+
+					$field_setup = $this->form->get_db_field($this->db_field_name);
+					if ($field_setup) {
+						$size = $field_setup['length'];
+					} else {
+						$size = 0; // Should not happen
+					}
+
+				}
+
+				if ($this->form_submitted && strlen($this->value) > $size) {
+					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $size, $error));
+				}
+
+				$this->max_length = $size;
+
+			}
+
+		//--------------------------------------------------
+		// Validation
+
+			private function _post_validation() {
+
+				parent::_post_validation();
+
+				if ($this->max_length === NULL) {
+					exit('<p>You need to call "set_max_length", on the field "' . $this->label_html . '"</p>');
 				}
 
 			}
 
-			if (strlen($this->value) > $size) {
-				$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $size, $error));
+		//--------------------------------------------------
+		// Status
+
+			public function get_hidden_value() {
+				return $this->get_value_print();
 			}
 
-			$this->max_length = $size;
+		//--------------------------------------------------
+		// HTML output
 
-		}
-
-		function set_size($size) {
-			$this->size = $size;
-		}
-
-		function set_value($value) {
-			$this->value = $value;
-		}
-
-		function get_value() {
-			return $this->value;
-		}
-
-		function get_value_formatted() {
-			return $this->value;
-		}
-
-		function html_field() {
-			return '<input type="text" name="' . html($this->name) . '" id="' . html($this->id) . '" maxlength="' . html($this->max_length) . '" value="' . html($this->get_value_formatted()) . '"' . ($this->size === NULL ? '' : ' size="' . intval($this->size) . '"') . ($this->css_class_field === NULL ? '' : ' class="' . html($this->css_class_field) . '"') . ' />';
-		}
-
-		function html_field_hidden_with_value($value) {
-			return '<input type="hidden" name="' . html($this->name) . '" value="' . html($value) . '" />';
-		}
-
-		function html_field_hidden() {
-			return $this->html_field_hidden_with_value($this->value);
-		}
-
-		function _error_check() {
-
-			if ($this->max_length === NULL) {
-				exit('<p>You need to call "set_max_length", on the field "' . $this->label_html . '"</p>');
+			public function html_field() {
+				return '<input type="text" name="' . html($this->name) . '" id="' . html($this->id) . '" maxlength="' . html($this->max_length) . '" value="' . html($this->get_value_print()) . '"' . ($this->size === NULL ? '' : ' size="' . intval($this->size) . '"') . ($this->class_field === NULL ? '' : ' class="' . html($this->class_field) . '"') . ' />';
 			}
-
-		}
 
 	}
 

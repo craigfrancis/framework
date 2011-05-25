@@ -4,7 +4,7 @@
 
 		protected $format_error_set;
 
-		function form_field_email(&$form, $label, $name = NULL) {
+		public function __construct(&$form, $label, $name = NULL) {
 
 			//--------------------------------------------------
 			// Perform the standard field setup
@@ -15,13 +15,13 @@
 			// Additional field configuration
 
 				$this->format_error_set = false;
-				$this->quick_print_type = 'email';
+				$this->type = 'email';
 
 		}
 
-		function set_format_error($error) {
+		public function set_format_error($error) {
 
-			if ($this->value != '' && !isemail($this->value)) {
+			if ($this->form_submitted && $this->value != '' && !is_email($this->value)) {
 				$this->form->_field_error_set_html($this->form_field_uid, $error);
 			}
 
@@ -29,9 +29,9 @@
 
 		}
 
-		function _error_check() {
+		private function _post_validation() {
 
-			parent::_error_check();
+			parent::_post_validation();
 
 			if ($this->format_error_set == false) {
 				exit('<p>You need to call "set_format_error", on the field "' . $this->label_html . '"</p>');

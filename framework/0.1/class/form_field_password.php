@@ -2,7 +2,7 @@
 
 	class form_field_password extends form_field_text {
 
-		function __construct(&$form, $label, $name = NULL) {
+		public function __construct(&$form, $label, $name = NULL) {
 
 			//--------------------------------------------------
 			// Perform the standard field setup
@@ -12,12 +12,12 @@
 			//--------------------------------------------------
 			// Additional field configuration
 
-				$this->quick_print_type = 'password'; // TODO: Remove word 'quick print'
+				$this->type = 'password'; // TODO: Remove word 'quick print'
 
 		}
 
-		function html_field() {
-			return '<input type="password" name="' . html($this->name) . '" id="' . html($this->id) . '" maxlength="' . html($this->max_length) . '"' . ($this->size === NULL ? '' : ' size="' . intval($this->size) . '"') . ($this->css_class_field === NULL ? '' : ' class="' . html($this->css_class_field) . '"') . ' />';
+		public function html_field() {
+			return '<input type="password" name="' . html($this->name) . '" id="' . html($this->id) . '" maxlength="' . html($this->max_length) . '"' . ($this->size === NULL ? '' : ' size="' . intval($this->size) . '"') . ($this->class_field === NULL ? '' : ' class="' . html($this->class_field) . '"') . ' />';
 		}
 
 	}

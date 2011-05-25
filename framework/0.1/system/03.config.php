@@ -3,25 +3,9 @@
 //--------------------------------------------------
 // Site configuration
 
-	class config {
+	class config extends check { // TODO: Remove check
 
 		private $store = array();
-
-		final private function __construct() {
-			// Being private prevents direct creation of object.
-		}
-
-		final private function __clone() {
-			trigger_error('Clone of config object is not allowed.', E_USER_ERROR);
-		}
-
-		final private static function get_instance() {
-			static $instance = NULL;
-			if (!$instance) {
-				$instance = new config();
-			}
-			return $instance;
-		}
 
 		final public static function set($variable, $value = NULL) {
 			$obj = config::get_instance();
@@ -100,6 +84,22 @@
 // 			return $class_config;
 //
 // 		}
+
+		final private static function get_instance() {
+			static $instance = NULL;
+			if (!$instance) {
+				$instance = new config();
+			}
+			return $instance;
+		}
+
+		final private function __construct() {
+			// Being private prevents direct creation of object.
+		}
+
+		final private function __clone() {
+			trigger_error('Clone of config object is not allowed.', E_USER_ERROR);
+		}
 
 	}
 
@@ -187,14 +187,14 @@
 	// Email
 
 		config::set_default('email.from_name', 'Company Name');
-		config::set_default('email.from_address', 'noreply@domain.com');
+		config::set_default('email.from_email', 'noreply@domain.com');
 
 		config::set_default('email.error', array());
 
 	//--------------------------------------------------
 	// Debug
 
-		config::set_default('debug.run', false); // Check things during processing.
+		config::set_default('debug.level', 0); // 0 not running, 1 or 2 for application debug, 3 to also include framework details
 		config::set_default('debug.show', true); // Only relevant when running.
 
 	//--------------------------------------------------
@@ -222,7 +222,7 @@
 		config::set_default('output.title_divide', ' | ');
 		config::set_default('output.title_error', 'An error has occurred');
 		config::set_default('output.css_version', 0);
-		config::set_default('output.page_ref_mode', 'route');
+		config::set_default('output.page_ref_mode', 'request');
 		config::set_default('output.block_browsers', array(
 				'/MSIE [1-5]\./',
 				'/MSIE.*; Mac_PowerPC/',

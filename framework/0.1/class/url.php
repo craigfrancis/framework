@@ -3,7 +3,7 @@
 	// config::get('url.default_format') - absolute (default) / full (includes domain) / relative (not implemented)
 	// config::get('url.prefix') - e.g. '/website' (not used).
 
-	class url {
+	class url extends check { // TODO: Remove check
 
 		//--------------------------------------------------
 		// Setup
@@ -83,7 +83,7 @@
 		//--------------------------------------------------
 		// Get
 
-			public function get($parameters = NULL, $value = '') {
+			public function get($parameters = NULL) {
 
 				//--------------------------------------------------
 				// Base - done as a separate call so it's output
@@ -101,19 +101,13 @@
 
 					$query = $this->parameters;
 
-					if ($parameters !== NULL) {
-						if (is_array($parameters)) {
-							foreach ($parameters as $key => $value) { // Cannot use array_merge, as numerical based indexes will be appended.
-								if ($value == '') {
-									unset($query[$key]);
-								} else {
-									$query[$key] = $value;
-								}
+					if (is_array($parameters)) {
+						foreach ($parameters as $key => $value) { // Cannot use array_merge, as numerical based indexes will be appended.
+							if ($value == '') {
+								unset($query[$key]);
+							} else {
+								$query[$key] = $value;
 							}
-						} else if ($value == '') {
-							unset($query[$parameters]); // Remove
-						} else {
-							$query[$parameters] = $value;
 						}
 					}
 
@@ -294,7 +288,7 @@
 			}
 
 			public function __call($name, $arguments) { // (PHP 5.0)
-				return $this->get($name, (isset($arguments[0]) ? $arguments[0] : NULL));
+				return $this->get(array($name => (isset($arguments[0]) ? $arguments[0] : '')));
 			}
 
 		//--------------------------------------------------
@@ -320,13 +314,14 @@
 		echo '&nbsp; ' . html(url(NULL, array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 		echo '&nbsp; ' . html(url('/folder/#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 		echo '&nbsp; ' . html(url('/folder/')->id(20)) . '<br />' . "\n";
+		echo '&nbsp; ' . html(url('/folder/')->get(array('id' => 54))) . '<br />' . "\n";
 		echo '&nbsp; ' . html(url('http://user:pass@www.google.com:80/about/folder/?id=example#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 
 		$example = new url('/news/?a=b&id=1');
 		echo "<br />\n<br />\n";
 		echo "URL Testing as object:<br />\n";
 		echo '&nbsp; ' . html($example) . '<br />' . "\n";
-		echo '&nbsp; ' . html($example->get('id', 15)) . '<br />' . "\n";
+		echo '&nbsp; ' . html($example->get(array('id' => 15))) . '<br />' . "\n";
 		echo '&nbsp; ' . html($example->id(17)) . '<br />' . "\n";
 		echo '&nbsp; ' . html($example) . '<br />' . "\n";
 

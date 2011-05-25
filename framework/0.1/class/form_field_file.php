@@ -15,11 +15,11 @@
 		protected $value_size;
 		protected $value_mime;
 
-		function form_field_file(&$form, $label, $name = NULL) {
+		public function __construct(&$form, $label, $name = NULL) {
 			$this->_setup_file($form, $label, $name);
 		}
 
-		function _setup_file(&$form, $label, $name = NULL) {
+		protected function _setup_file(&$form, $label, $name = NULL) {
 
 			//--------------------------------------------------
 			// Perform the standard field setup
@@ -27,9 +27,14 @@
 				$this->_setup($form, $label, $name);
 
 			//--------------------------------------------------
+			// Form encoding
+
+				$this->form->set_form_attribute('enctype', 'multipart/form-data');
+
+			//--------------------------------------------------
 			// Additional field configuration
 
-				$this->quick_print_type = 'file';
+				$this->type = 'file';
 
 			//--------------------------------------------------
 			// Default validation configuration
@@ -43,7 +48,7 @@
 			//--------------------------------------------------
 			// If uploaded
 
-				$this->has_uploaded = (isset($_FILES[$this->name]) && $_FILES[$this->name]['error'] != 4); // 4 = No file was uploaded (UPLOAD_ERR_NO_FILE)
+				$this->has_uploaded = ($this->form_submitted && isset($_FILES[$this->name]) && $_FILES[$this->name]['error'] != 4); // 4 = No file was uploaded (UPLOAD_ERR_NO_FILE)
 
 			//--------------------------------------------------
 			// File values
@@ -67,9 +72,9 @@
 
 		}
 
-		function set_required_error($error) {
+		public function set_required_error($error) {
 
-			if (!$this->has_uploaded) {
+			if ($this->form_submitted && !$this->has_uploaded) {
 				$this->form->_field_error_set_html($this->form_field_uid, $error);
 			}
 
@@ -77,13 +82,13 @@
 
 		}
 
-		function set_max_size($error, $size) {
+		public function set_max_size($error, $size) {
 
 			$this->max_size = intval($size);
 
 			if ($this->has_uploaded) {
 
-				$error = str_replace('XXX', file_size2human($this->max_size), $error);
+				$error = str_replace('XXX', file_size_to_human($this->max_size), $error);
 
 				if ($_FILES[$this->name]['error'] == 1) $this->form->_field_error_set_html($this->form_field_uid, $error, 'ERROR: Exceeds "upload_max_filesize" ' . ini_get('upload_max_filesize'));
 				if ($_FILES[$this->name]['error'] == 2) $this->form->_field_error_set_html($this->form_field_uid, $error, 'ERROR: Exceeds "MAX_FILE_SIZE" specified in the html form');
@@ -96,11 +101,11 @@
 
 		}
 
-		function get_max_size() {
+		public function get_max_size() {
 			return $this->max_size;
 		}
 
-		function set_partial_file_error($error) {
+		public function set_partial_file_error($error) {
 
 			if ($this->has_uploaded) {
 				if ($_FILES[$this->name]['error'] == 3) $this->form->_field_error_set_html($this->form_field_uid, $error);
@@ -110,7 +115,7 @@
 
 		}
 
-		function set_allowed_file_types_mime($error, $types) {
+		public function set_allowed_file_types_mime($error, $types) {
 
 			if ($this->has_uploaded && !in_array($this->value_mime, $types)) {
 				$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $this->value_mime, $error), 'MIME: ' . $this->value_mime);
@@ -118,7 +123,7 @@
 
 		}
 
-		function set_allowed_file_types_ext($error, $types) {
+		public function set_allowed_file_types_ext($error, $types) {
 
 			if ($this->has_uploaded && !in_array($this->value_ext, $types)) {
 				$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $this->value_ext, $error), 'EXT: ' . $this->value_ext);
@@ -126,7 +131,7 @@
 
 		}
 
-		function set_empty_file_error($error) {
+		public function set_empty_file_error($error) {
 
 			if ($this->has_uploaded && $_FILES[$this->name]['size'] == 0) {
 				$this->form->_field_error_set_html($this->form_field_uid, $error);
@@ -136,7 +141,7 @@
 
 		}
 
-		function set_blank_name_error($error) {
+		public function set_blank_name_error($error) {
 
 			if ($this->has_uploaded && $_FILES[$this->name]['name'] == '') {
 				$this->form->_field_error_set_html($this->form_field_uid, $error);
@@ -146,46 +151,48 @@
 
 		}
 
-		function get_has_uploaded() {
+		public function get_has_uploaded() {
 			return $this->has_uploaded;
 		}
 
-		function get_value() {
+		public function get_value() {
 			exit('<p>Do you mean get_file_path?</p>');
 		}
 
-		function get_file_path() {
+		public function get_file_path() {
 			return (!$this->has_uploaded ? NULL: $_FILES[$this->name]['tmp_name']);
 		}
 
-		function get_file_ext() {
+		public function get_file_ext() {
 			return (!$this->has_uploaded ? NULL: $this->value_ext);
 		}
 
-		function get_file_name() {
+		public function get_file_name() {
 			return (!$this->has_uploaded ? NULL: $this->value_name);
 		}
 
-		function get_file_size() {
+		public function get_file_size() {
 			return (!$this->has_uploaded ? NULL: $this->value_size);
 		}
 
-		function get_file_mime() {
+		public function get_file_mime() {
 			return (!$this->has_uploaded ? NULL: $this->value_mime);
 		}
 
-		function html_field() {
-			return '<input type="file" name="' . html($this->name) . '" id="' . html($this->id) . '"' . ($this->css_class_field === NULL ? '' : ' class="' . html($this->css_class_field) . '"') . ' />';
+		public function html_field() {
+			return '<input type="file" name="' . html($this->name) . '" id="' . html($this->id) . '"' . ($this->class_field === NULL ? '' : ' class="' . html($this->class_field) . '"') . ' />';
 		}
 
-		function save_file_to($path) {
+		public function save_file_to($path) {
 			if ($this->has_uploaded && is_writable(dirname($path))) {
 				return move_uploaded_file($_FILES[$this->name]['tmp_name'], $path);
 			}
 			return false;
 		}
 
-		function _error_check() {
+		private function _post_validation() {
+
+			parent::_post_validation();
 
 			if ($this->max_size == 0) {
 				exit('<p>You need to call "set_max_size", on the field "' . $this->label_html . '"</p>');

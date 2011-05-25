@@ -2,11 +2,11 @@
 
 	class news_admin_controller extends controller {
 
-		function action_index() {
+		public function action_index() {
 			echo 'Hi';
 		}
 
-		function action_edit($params) {
+		public function action_edit($params) {
 
 			// if (isset($params[0])) {
 			// 	echo 'Folder 0 = ' . html($params[0]) . '<br />';

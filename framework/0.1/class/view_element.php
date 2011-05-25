@@ -1,10 +1,10 @@
 <?php
 
-	class ve_base {
+	class ve_base extends check { // TODO: Remove check
 
 		private $config;
 
-		function __construct($config = NULL) {
+		public function __construct($config = NULL) {
 			$this->config = config::get_object_config(__CLASS__, $config);
 		}
 

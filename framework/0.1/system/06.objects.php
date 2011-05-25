@@ -6,7 +6,7 @@
 	//--------------------------------------------------
 	// Main
 
-		class base {
+		class base extends check { // TODO: Remove check
 
 			public function route_folder($id) {
 				$folders = config::get('route.folders');
@@ -138,8 +138,8 @@
 
 					$view_path = config::get('view.path');
 
-					if (config::get('debug.run')) {
-						debug_note_add_html('<strong>View</strong>: ' . html($view_path));
+					if (config::get('debug.level') >= 3) {
+						debug_note_html('<strong>View</strong>: ' . html($view_path));
 					}
 
 				//--------------------------------------------------
@@ -259,7 +259,7 @@
 				//--------------------------------------------------
 				// Debug
 
-					if (config::get('debug.run')) {
+					if (config::get('debug.level') >= 3) {
 
 						$note_html  = '<strong>Styles</strong>:<br />';
 
@@ -269,7 +269,7 @@
 							}
 						}
 
-						debug_note_add_html($note_html);
+						debug_note_html($note_html);
 
 						unset($note_html, $log);
 
@@ -454,8 +454,8 @@
 
 				$layout_path = ROOT_APP . '/view_layout/' . preg_replace('/[^a-zA-Z0-9_]/', '', config::get('view.layout')) . '.php';
 
-				if (config::get('debug.run')) {
-					debug_note_add_html('<strong>Layout</strong>: ' . html($layout_path));
+				if (config::get('debug.level') >= 3) {
+					debug_note_html('<strong>Layout</strong>: ' . html($layout_path));
 				}
 
 				if (!is_file($layout_path)) {
