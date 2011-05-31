@@ -261,7 +261,7 @@
 
 					if (config::get('debug.level') >= 3) {
 
-						$note_html  = '<strong>Styles</strong>:<br />';
+						$note_html = '<strong>Styles</strong>:<br />';
 
 						foreach ($css_types as $css_type_name => $css_type_info) {
 							foreach ($css_type_info['log'] as $log) {

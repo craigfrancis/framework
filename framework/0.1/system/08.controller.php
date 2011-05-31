@@ -252,7 +252,7 @@
 
 		if (config::get('debug.level') >= 3) {
 
-			$note_html  = 'Controllers:<br />';
+			$note_html = 'Controllers:<br />';
 
 			foreach ($controller_log as $log) {
 				$note_html .= '&nbsp; ' . preg_replace('/^([^:]+):/', '<strong>\1</strong>:', html($log)) . '<br />';
