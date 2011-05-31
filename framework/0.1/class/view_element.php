@@ -1,6 +1,6 @@
 <?php
 
-	class ve_base extends check { // TODO: Remove check
+	class view_element extends check { // TODO: Remove check
 
 		private $config;
 
