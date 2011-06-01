@@ -371,6 +371,13 @@
 			public function head_html($config = NULL) {
 
 				//--------------------------------------------------
+				// Debug
+
+					if (config::get('debug.level') >= 4) {
+						debug_progress('Start head', 2);
+					}
+
+				//--------------------------------------------------
 				// Content type
 
 					$html = "\n\t" . '<meta charset="' . html(config::get('output.charset')) . '" />';
@@ -390,6 +397,13 @@
 					}
 
 				//--------------------------------------------------
+				// Debug
+
+					if (config::get('debug.level') >= 4) {
+						debug_progress('Meta, title, and favicon', 3);
+					}
+
+				//--------------------------------------------------
 				// Browser on black list (no css/js)
 
 					$browser = config::get('request.browser');
@@ -401,18 +415,24 @@
 						}
 					}
 
+					if (config::get('debug.level') >= 4) {
+						debug_progress('Browser blacklist', 3);
+					}
+
 				//--------------------------------------------------
 				// Javascript
 
 					$js_paths = config::get('output.js_files');
 
-					$js_disable = data('js_disable', 'COOKIE');
-
-					if ($js_disable != 'true' && count($js_paths) > 0) {
+					if (count($js_paths) > 0 && cookie::get('js_disable') != 'true') {
 						$html .= "\n";
 						foreach (array_unique($js_paths) as $file) {
 							$html .= "\n\t" . '<script type="text/javascript" src="' . html($file) . '"></script>';
 						}
+					}
+
+					if (config::get('debug.level') >= 4) {
+						debug_progress('JavaScript', 3);
 					}
 
 				//--------------------------------------------------
@@ -424,10 +444,18 @@
 						$html .= "\n\t" . $css_html;
 					}
 
+					if (config::get('debug.level') >= 4) {
+						debug_progress('CSS', 3);
+					}
+
 				//--------------------------------------------------
 				// Extra head HTML
 
 					$html .= config::get('output.head_html') . "\n\n";
+
+					if (config::get('debug.level') >= 4) {
+						debug_progress('Extra HTML', 3);
+					}
 
 				//--------------------------------------------------
 				// Return
@@ -452,6 +480,10 @@
 
 			private function layout_path() {
 
+				if (config::get('debug.level') >= 4) {
+					debug_progress('Find layout', 2);
+				}
+
 				$layout_path = ROOT_APP . '/view_layout/' . preg_replace('/[^a-zA-Z0-9_]/', '', config::get('view.layout')) . '.php';
 
 				if (config::get('debug.level') >= 3) {
@@ -466,6 +498,10 @@
 
 					config::set('output.head_html', config::get('output.head_html') . $head_html);
 
+				}
+
+				if (config::get('debug.level') >= 4) {
+					debug_progress('Done', 3);
 				}
 
 				return $layout_path;

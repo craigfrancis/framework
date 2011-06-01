@@ -1,9 +1,20 @@
 <?php
 
 //--------------------------------------------------
+// Debug
+
+	if (config::get('debug.level') >= 4) {
+		debug_progress('Start view', 2);
+	}
+
+//--------------------------------------------------
 // Example CSS version set
 
 	$this->css_version(1); // TODO: Remove
+
+	if (config::get('debug.level') >= 4) {
+		debug_progress('CSS Version', 2);
+	}
 
 //--------------------------------------------------
 // Navigation
@@ -35,6 +46,10 @@
 
 	foreach ($root_folders as $folder) {
 		$nav->add_link(config::get('url.prefix') . '/' . urlencode($folder) . '/', link_to_human($folder));
+	}
+
+	if (config::get('debug.level') >= 4) {
+		debug_progress('Navigation', 2);
 	}
 
 //--------------------------------------------------

@@ -77,6 +77,16 @@
 	}
 
 //--------------------------------------------------
+// Debug progress
+
+	function debug_progress($label, $indent = 0) {
+		$debug_run_time = debug_run_time();
+		$debug_diff = round(($debug_run_time - config::get('debug.progress')), 4);
+		debug_note_html(str_repeat('&nbsp; &nbsp; ', $indent) . $debug_run_time . ' / ' . str_pad($debug_diff, 6, '0') . ' - ' . ($debug_diff > 0.0005 ? '<strong style="color: #F00;">' : '') . $label . ($debug_diff >= 0.0005 ? '</strong>' : ''));
+		config::set('debug.progress', $debug_run_time);
+	}
+
+//--------------------------------------------------
 // Debug notes
 
 	function debug_note($note) {

@@ -54,40 +54,39 @@
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '01.function.php');
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '02.config.php');
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '03.debug.php');
-
-	debug_note_html(debug_run_time() . ' - Autoload');
-
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '04.autoload.php');
-
-	debug_note_html(debug_run_time() . ' - Database');
-
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '05.database.php');
-
-	debug_note_html(debug_run_time() . ' - Objects');
-
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '06.objects.php');
 
 //--------------------------------------------------
 // Scripts
 
-	debug_note_html(debug_run_time() . ' - Routes');
+	if (config::get('debug.level') >= 4) {
+		debug_progress('Start');
+	}
 
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '07.routes.php');
 
-	debug_note_html(debug_run_time() . ' - Controller');
+	if (config::get('debug.level') >= 4) {
+		debug_progress('Routes');
+	}
 
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '08.controller.php');
 
-	debug_note_html(debug_run_time() . ' - View');
+	if (config::get('debug.level') >= 4) {
+		debug_progress('Controller');
+	}
 
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '09.view.php');
 
-	debug_note_html(debug_run_time() . ' - Done');
+	if (config::get('debug.level') >= 4) {
+		debug_progress('Done');
+	}
 
 //--------------------------------------------------
 // Final config
 
-	if (config::get('debug.level') >= 4) {
+	if (config::get('debug.level') >= 5) {
 		debug_show_config();
 	}
 

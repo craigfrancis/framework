@@ -3,8 +3,6 @@
 //--------------------------------------------------
 // View
 
-	debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - View pre render');
-
 	ob_start();
 
 	echo config::get('output.html');
@@ -16,7 +14,9 @@
 
 	unset($view);
 
-	debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - View post render');
+	if (config::get('debug.level') >= 4) {
+		debug_progress('View render', 1);
+	}
 
 //--------------------------------------------------
 // Output variables
@@ -101,6 +101,13 @@
 
 		unset($message, $message_html);
 
+	//--------------------------------------------------
+	// Debug
+
+		if (config::get('debug.level') >= 4) {
+			debug_progress('Layout variables', 1);
+		}
+
 //--------------------------------------------------
 // Headers
 
@@ -124,16 +131,23 @@
 
 		header('Content-type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
 
+	//--------------------------------------------------
+	// Debug
+
+		if (config::get('debug.level') >= 4) {
+			debug_progress('Layout headers', 1);
+		}
+
 //--------------------------------------------------
 // Layout
-
-	debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - Layout pre render');
 
 	$layout = new layout();
 	$layout->render();
 
-	debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - Layout post render');
-
 	unset($layout);
+
+	if (config::get('debug.level') >= 4) {
+		debug_progress('Layout render', 1);
+	}
 
 ?>

@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // No local variables set
 
-	if (config::get('debug.level') >= 4) {
+	if (config::get('debug.level') >= 5) {
 		debug_show_array(get_defined_vars(), 'Variables');
 	}
 
@@ -269,7 +269,7 @@
 
 		unset($controller_id, $controller_path, $controller_name, $route_stack, $building_path, $building_name, $building_stack, $controller_log, $folder);
 
-		if (config::get('debug.level') >= 4) {
+		if (config::get('debug.level') >= 5) {
 			debug_show_array(get_defined_vars(), 'Variables');
 		}
 
@@ -342,7 +342,7 @@
 
 	unset($controllers, $action_method, $action_controller_id, $action_controller_name, $action_controller_path, $action_route_stack_used, $action_route_stack_pending);
 
-	if (config::get('debug.level') >= 4) {
+	if (config::get('debug.level') >= 5) {
 		debug_show_array(get_defined_vars(), 'Variables');
 	}
 
