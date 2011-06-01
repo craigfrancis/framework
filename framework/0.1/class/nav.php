@@ -87,7 +87,7 @@
 			}
 		}
 
-		private function _add_link($url, $name, $config, $child_nav = NULL, $child_open = NULL) {
+		private function _link_add($url, $name, $config, $child_nav = NULL, $child_open = NULL) {
 
 			//--------------------------------------------------
 			// Next!
@@ -147,12 +147,12 @@
 
 		}
 
-		public function add_link($url, $name, $config = NULL) {
-			$this->_add_link($url, $name, $config);
+		public function link_add($url, $name, $config = NULL) {
+			$this->_link_add($url, $name, $config);
 		}
 
-		public function add_link_with_child($url, $name, &$child_nav, $config = NULL, $child_open = NULL) {
-			$this->_add_link($url, $name, $config, $child_nav, $child_open);
+		public function link_with_child_add($url, $name, &$child_nav, $config = NULL, $child_open = NULL) {
+			$this->_link_add($url, $name, $config, $child_nav, $child_open);
 		}
 
 		public function add_group($name = '', $config = NULL) {

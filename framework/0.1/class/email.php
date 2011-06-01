@@ -65,7 +65,7 @@
 				// Create local variables for this->values, include template (function argument offset number) like the view/layout, and append output to html/text variables.
 			}
 
-			public function add_values_table($values) {
+			public function values_table_add($values) {
 
 				//--------------------------------------------------
 				// Extra details

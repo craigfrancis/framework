@@ -5,7 +5,7 @@ Setting values for view:
 	view::set() / view::setHtml()
 	<?= $var ?>
 
-Model->get_field_name();
+Model->field_name_get();
 Should "get_field" prefix?
 Magic method
 $form->add($model->get...);

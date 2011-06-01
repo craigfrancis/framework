@@ -36,7 +36,7 @@
 		exit($message);
 	}
 
-	function add_report($message, $type = 'notice') {
+	function report_add($message, $type = 'notice') {
 
 		//--------------------------------------------------
 		// Email

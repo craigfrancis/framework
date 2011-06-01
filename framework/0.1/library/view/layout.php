@@ -42,10 +42,10 @@
 	sort($root_folders);
 
 	$nav = new nav();
-	$nav->add_link(config::get('url.prefix') . '/', 'Home');
+	$nav->link_add(config::get('url.prefix') . '/', 'Home');
 
 	foreach ($root_folders as $folder) {
-		$nav->add_link(config::get('url.prefix') . '/' . urlencode($folder) . '/', link_to_human($folder));
+		$nav->link_add(config::get('url.prefix') . '/' . urlencode($folder) . '/', link_to_human($folder));
 	}
 
 	if (config::get('debug.level') >= 4) {
