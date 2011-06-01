@@ -35,31 +35,54 @@
 	}
 
 //--------------------------------------------------
+// TODO: Remove check object
+
+	class check {
+
+		function __set($name, $value) {
+			if (!isset($this->$name)) {
+				exit('Property "' . html($name) . '" not set on form object.');
+			}
+			$this->$name = $value;
+		}
+
+	}
+
+//--------------------------------------------------
 // Includes
 
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '01.function.php');
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '02.autoload.php');
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '03.config.php');
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '04.database.php');
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '05.debug.php');
+
+	debug_note_html(debug_run_time() . ' - Autoload');
+
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '02.autoload.php');
+
+	debug_note_html(debug_run_time() . ' - Database');
+
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '04.database.php');
+
+	debug_note_html(debug_run_time() . ' - Objects');
+
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '06.objects.php');
 
 //--------------------------------------------------
 // Scripts
 
-	// debug_note_html(debug_run_time() . ' - Routes');
+	debug_note_html(debug_run_time() . ' - Routes');
 
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '07.routes.php');
 
-	// debug_note_html(debug_run_time() . ' - Controller');
+	debug_note_html(debug_run_time() . ' - Controller');
 
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '08.controller.php');
 
-	// debug_note_html(debug_run_time() . ' - View');
+	debug_note_html(debug_run_time() . ' - View');
 
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '09.view.php');
 
-	// debug_note_html(debug_run_time() . ' - Done');
+	debug_note_html(debug_run_time() . ' - Done');
 
 //--------------------------------------------------
 // Final config

@@ -34,7 +34,7 @@
 		//--------------------------------------------------
 		// General
 
-			$config['output.mime'] = 'application/xhtml+xml';
+			//$config['output.mime'] = 'application/xhtml+xml';
 
 			$config['debug.level'] = 3;
 

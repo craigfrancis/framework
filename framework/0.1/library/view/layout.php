@@ -37,9 +37,16 @@
 		$nav->add_link(config::get('url.prefix') . '/' . urlencode($folder) . '/', link_to_human($folder));
 	}
 
+//--------------------------------------------------
+// XML Prolog
+
+	if (config::get('output.mime') == 'application/xhtml+xml') {
+		echo '<?xml version="1.0" encoding="' . html(config::get('output.charset')) . '" ?>' . "\n";
+	}
+
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html lang="<?= config::get('output.lang') ?>" xml:lang="<?= config::get('output.lang') ?>" xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="<?= config::get('output.lang') ?>">
 <head>
 
 	<?= $this->head_html() ?>

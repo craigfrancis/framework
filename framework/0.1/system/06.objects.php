@@ -373,7 +373,7 @@
 				//--------------------------------------------------
 				// Content type
 
-					$html  = "\n\t" . '<meta http-equiv="content-type" content="' . html(config::get('output.mime')) . '; charset=' . html(config::get('output.charset')) . '" />';
+					$html = "\n\t" . '<meta charset="' . html(config::get('output.charset')) . '" />';
 
 				//--------------------------------------------------
 				// Page title

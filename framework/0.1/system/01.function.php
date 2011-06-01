@@ -1,20 +1,6 @@
 <?php
 
 //--------------------------------------------------
-// TODO: Remove check object
-
-	class check {
-
-		function __set($name, $value) {
-			if (!isset($this->$name)) {
-				exit('Property "' . html($name) . '" not set on form object.');
-			}
-			$this->$name = $value;
-		}
-
-	}
-
-//--------------------------------------------------
 // Get a submitted value
 
 	function data($variable, $method = 'request') {

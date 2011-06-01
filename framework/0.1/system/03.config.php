@@ -240,49 +240,4 @@
 	define('FILE_URL',    config::get('resource.file_url'));
 	define('FILE_ROOT',   config::get('resource.file_root'));
 
-//--------------------------------------------------
-// Generic output buffer
-
-	function output_buffer($buffer) {
-
-		//--------------------------------------------------
-		// Debug output
-
-			if (function_exists('debug_shutdown')) {
-				$buffer = debug_shutdown($buffer);
-			}
-
-		//--------------------------------------------------
-		// No-cache headers
-
-			if (config::get('output.no_cache', false)) {
-				header('Cache-control: private, no-cache, must-revalidate');
-				header('Expires: Mon, 26 Jul 1997 01:00:00 GMT');
-				header('Pragma: no-cache');
-			}
-
-		//--------------------------------------------------
-		// Mime
-
-			$mime_xml = 'application/xhtml+xml';
-
-			if (config::get('output.mime') == $mime_xml && stripos(config::get('request.accept'), $mime_xml) === false) {
-				config::set('output.mime', 'text/html');
-			}
-
-			if (config::get('output.mime') == $mime_xml) {
-				$buffer = '<?xml version="1.0" encoding="' . html(config::get('output.charset')) . '" ?>' . "\n" . $buffer;
-			}
-
-			header('Content-type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
-
-		//--------------------------------------------------
-		// Return
-
-			return $buffer;
-
-	}
-
-	ob_start('output_buffer');
-
 ?>

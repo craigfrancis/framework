@@ -295,4 +295,8 @@
 
 	}
 
+	if (config::get('debug.level') > 0) {
+		ob_start('debug_shutdown');
+	}
+
 ?>

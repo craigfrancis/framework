@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // View
 
-	// debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - View pre render');
+	debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - View pre render');
 
 	ob_start();
 
@@ -16,7 +16,7 @@
 
 	unset($view);
 
-	// debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - View post render');
+	debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - View post render');
 
 //--------------------------------------------------
 // Output variables
@@ -102,14 +102,37 @@
 		unset($message, $message_html);
 
 //--------------------------------------------------
+// Headers
+
+	//--------------------------------------------------
+	// No-cache headers
+
+		if (config::get('output.no_cache', false)) {
+			header('Cache-control: private, no-cache, must-revalidate');
+			header('Expires: Mon, 26 Jul 1997 01:00:00 GMT');
+			header('Pragma: no-cache');
+		}
+
+	//--------------------------------------------------
+	// Mime
+
+		$mime_xml = 'application/xhtml+xml';
+
+		if (config::get('output.mime') == $mime_xml && stripos(config::get('request.accept'), $mime_xml) === false) {
+			config::set('output.mime', 'text/html');
+		}
+
+		header('Content-type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
+
+//--------------------------------------------------
 // Layout
 
-	// debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - Layout pre render');
+	debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - Layout pre render');
 
 	$layout = new layout();
 	$layout->render();
 
-	// debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - Layout post render');
+	debug_note_html('&nbsp; &nbsp; ' . debug_run_time() . ' - Layout post render');
 
 	unset($layout);
 
