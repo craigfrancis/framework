@@ -315,6 +315,7 @@
 			$note_html .= '&nbsp; &nbsp; $this->css_version(1);<br />';
 			$note_html .= '&nbsp; &nbsp; $this->head_add_html(\'&lt;html&gt;\');<br />';
 			$note_html .= '&nbsp; &nbsp; $this->page_ref_set(\'example_ref\');<br />';
+			$note_html .= '&nbsp; &nbsp; $this->message_set(\'The item has been updated.\');<br />';
 
 			debug_note_html($note_html);
 

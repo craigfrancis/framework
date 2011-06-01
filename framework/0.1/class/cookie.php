@@ -49,7 +49,9 @@
 				$expiration = strtotime($expiration);
 			}
 
-			$value = cookie::salt($variable, $value) . '~' . $value; // Add the salt to the cookie value
+			if ($value !== NULL) {
+				$value = cookie::salt($variable, $value) . '~' . $value; // Add the salt to the cookie value
+			}
 
 			if ($variable != 'cookie_check') {
 				$_COOKIE[$variable] = $value;
@@ -65,7 +67,7 @@
 
 		public static function delete($variable) {
 			unset($_COOKIE[$variable]);
-			return cookie::set($variable, NULL, -86400);
+			return cookie::set($variable, NULL, '-24 hours');
 		}
 
 		public static function salt($variable, $value) {
