@@ -37,11 +37,11 @@
 
 			}
 
-			public function set_subject($subject) {
+			public function subject_set($subject) {
 				$this->subject = $subject;
 			}
 
-			public function get_subject() {
+			public function subject_get() {
 				return $this->subject;
 			}
 

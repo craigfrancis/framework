@@ -77,11 +77,11 @@ class paginator {
 
 			if (is_array($config)) {
 
-				$this->config_set($config);
+				$this->config($config);
 
 			} else if (is_int($config)) {
 
-				$this->config_set(array(
+				$this->config(array(
 						'items_count' => $config,
 					));
 
@@ -89,7 +89,7 @@ class paginator {
 
 	}
 
-	public function config_set($config, $value = NULL) {
+	public function config($config, $value = NULL) {
 
 		//--------------------------------------------------
 		// Set

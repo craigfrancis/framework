@@ -67,7 +67,7 @@
 	<?= $this->head_html() ?>
 
 </head>
-<body id="p_<?= html($this->page_ref()) ?>">
+<body id="p_<?= html($this->page_ref_get()) ?>">
 
 	<div id="page_wrapper">
 

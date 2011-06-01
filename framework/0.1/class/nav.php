@@ -46,7 +46,7 @@
 			//--------------------------------------------------
 			// Default indent
 
-				$this->set_indent(3);
+				$this->indent_set(3);
 
 			//--------------------------------------------------
 			// Current path
@@ -58,13 +58,13 @@
 
 		}
 
-		public function set_indent($indent) {
+		public function indent_set($indent) {
 			if ($this->include_white_space) {
 				$this->indent = "\n" . str_repeat("\t", intval($indent));
 			}
 		}
 
-		public function set_main_class($class) {
+		public function main_class_set($class) {
 			$this->main_class = $class;
 		}
 
@@ -218,7 +218,7 @@
 											$child_nav->include_white_space($this->include_white_space); // Only inherit when parent disables it (one case could be parent enabled, child disabled).
 										}
 
-										$child_nav->set_indent(strlen($this->indent) + 1);
+										$child_nav->indent_set(strlen($this->indent) + 1);
 
 										$child_html = $child_nav->html($level + 1);
 

@@ -71,14 +71,46 @@
 				config::set('output.css_version', $version);
 			}
 
-			public function page_ref($page_ref = NULL) {
+			public function page_ref_set($page_ref) {
+				config::set('output.page_ref', $page_ref);
+			}
 
-				if ($page_ref !== NULL) {
+			public function page_ref_get() {
+
+				$page_ref = config::get('output.page_ref', NULL);
+
+				if ($page_ref === NULL) {
+
+					$page_ref_mode = config::get('output.page_ref_mode');
+
+					if ($page_ref_mode == 'route') {
+
+						$page_ref = human_to_ref(config::get('route.path'));
+
+					} else if ($page_ref_mode == 'view') {
+
+						$page_ref = human_to_ref(config::get('view.path'));
+
+					} else if ($page_ref_mode == 'request') {
+
+						$page_ref = human_to_ref(urldecode(config::get('request.path')));
+
+					} else {
+
+						exit_with_error('Unrecognised page ref mode "' . $page_ref_mode . '"');
+
+					}
+
 					config::set('output.page_ref', $page_ref);
+
 				}
 
-				return config::get('output.page_ref');
+				return $page_ref;
 
+			}
+
+			public function message_set($message) {
+				cookie::set('message', $message);
 			}
 
 		}
@@ -176,11 +208,21 @@
 			}
 
 			public function message() {
-				return config::get('output.message');
+				$message = cookie::get('message');
+				cookie::delete('message');
+				return $message;
 			}
 
 			public function message_html() {
-				return config::get('output.message_html');
+				$message = $this->message();
+				if ($message == '') {
+					return '';
+				} else {
+					return '
+						<div id="page_message">
+							<p>' . html($message) . '</p>
+						</div>';
+				}
 			}
 
 			public function tracking_html() {
@@ -200,13 +242,13 @@
 
 						if ($css_name != '' && isset($css_types[$css_name])) {
 
-							setcookie('style', $css_name, 0, '/');
+							cookie::set('style', $css_name);
 
 							$style_set = true;
 
 						} else {
 
-							$css_name = data('style', 'COOKIE');
+							$css_name = cookie::get('style');
 
 						}
 

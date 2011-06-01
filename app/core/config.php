@@ -36,7 +36,7 @@
 
 			//$config['output.mime'] = 'application/xhtml+xml';
 
-			$config['debug.level'] = 3;
+			$config['debug.level'] = 4;
 
 	} else if (preg_match('/^\/www\/demo/i', realpath(__FILE__))) {
 
