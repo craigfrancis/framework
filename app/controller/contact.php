@@ -71,7 +71,6 @@ exit('Updated?');
 								// Thank you message
 
 									$this->message_set('The item has been updated.');
-									// TODO
 
 								//--------------------------------------------------
 								// Next page
