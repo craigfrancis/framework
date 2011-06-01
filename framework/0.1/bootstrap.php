@@ -52,16 +52,16 @@
 // Includes
 
 	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '01.function.php');
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '03.config.php');
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '05.debug.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '02.config.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '03.debug.php');
 
 	debug_note_html(debug_run_time() . ' - Autoload');
 
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '02.autoload.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '04.autoload.php');
 
 	debug_note_html(debug_run_time() . ' - Database');
 
-	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '04.database.php');
+	require_once(ROOT_FRAMEWORK . DS . 'system' . DS . '05.database.php');
 
 	debug_note_html(debug_run_time() . ' - Objects');
 
