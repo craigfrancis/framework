@@ -10,7 +10,7 @@
 //--------------------------------------------------
 // Example CSS version set
 
-	$this->css_version(1); // TODO: Remove
+	$this->css_version_set(1); // TODO: Remove
 
 	if (config::get('debug.level') >= 4) {
 		debug_progress('CSS Version', 2);

@@ -10,8 +10,8 @@ Should "get_field" prefix?
 Magic method
 $form->add($model->get...);
 allows multiple models on a form?
-$form->set_method($method);
-$form->add_field('first_name');
+$form->method_set($method);
+$form->field_add('first_name');
 Could then call the method function.
 A model links to multiple tables, but by default the var which sets this is a string (not array)
 The magic method can determine filed type (text,check,date,number,select) based on database field type.

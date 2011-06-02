@@ -195,7 +195,7 @@
 			parent::_post_validation();
 
 			if ($this->max_size == 0) {
-				exit('<p>You need to call "set_max_size", on the field "' . $this->label_html . '"</p>');
+				exit('<p>You need to call "max_size_set", on the field "' . $this->label_html . '"</p>');
 			}
 
 			if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/x-www-form-urlencoded') { // If not set, assume its correct

@@ -67,7 +67,7 @@
 				}
 			}
 
-			public function css_version($version) {
+			public function css_version_set($version) {
 				config::set('output.css_version', $version);
 			}
 
@@ -124,7 +124,7 @@
 				config::array_set('view.variables', $name, $value);
 			}
 
-			public function view_path($view_path) {
+			public function view_path_set($view_path) {
 				config::set('view.path', $view_path);
 			}
 
@@ -150,11 +150,11 @@
 					$$name = $value;
 				}
 
-				require_once($this->view_path());
+				require_once($this->view_path_get());
 
 			}
 
-			private function view_path() {
+			private function view_path_get() {
 
 				//--------------------------------------------------
 				// Default

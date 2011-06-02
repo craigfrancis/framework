@@ -49,7 +49,7 @@
 			parent::_post_validation();
 
 			if ($this->format_error_set == false) {
-				exit('<p>You need to call "set_format_error", on the field "' . $this->label_html . '"</p>');
+				exit('<p>You need to call "format_error_set", on the field "' . $this->label_html . '"</p>');
 			}
 
 		}

@@ -157,7 +157,7 @@
 			parent::_post_validation();
 
 			if ($this->required_error_set == false && $this->label_option === NULL) {
-				exit('<p>You need to call "set_required_error" or "set_label_option", on the field "' . $this->label_html . '"</p>');
+				exit('<p>You need to call "required_error_set" or "label_option_set", on the field "' . $this->label_html . '"</p>');
 			}
 
 		}

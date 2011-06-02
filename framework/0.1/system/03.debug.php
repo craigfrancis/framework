@@ -56,7 +56,7 @@
 		echo ' (line <strong>' . $called_from[0]['line'] . '</strong>)';
 
 		echo '<pre>';
-		echo html(print_r($variable, true)); // view:add_debug() if were not in a view.
+		echo html(print_r($variable, true));
 		echo '</pre>';
 
 	}

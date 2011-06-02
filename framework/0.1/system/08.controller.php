@@ -309,10 +309,10 @@
 				$note_html .= '&nbsp; &nbsp; $this->title_folder_name(' . html($id) . ', \'new_value\'); = \'<strong>' . html($value) . '</strong>\'<br />';
 			}
 
-			$note_html .= '&nbsp; &nbsp; $this->view_path(ROOT_APP . \'/view/file.php\');<br />';
+			$note_html .= '&nbsp; &nbsp; $this->view_path_set(ROOT_APP . \'/view/file.php\');<br />';
 			$note_html .= '&nbsp; &nbsp; $this->js_add(\'/path/to/file.js\');<br />';
 			$note_html .= '&nbsp; &nbsp; $this->css_add(\'/path/to/file.css\');<br />';
-			$note_html .= '&nbsp; &nbsp; $this->css_version(1);<br />';
+			$note_html .= '&nbsp; &nbsp; $this->css_version_set(1);<br />';
 			$note_html .= '&nbsp; &nbsp; $this->head_add_html(\'&lt;html&gt;\');<br />';
 			$note_html .= '&nbsp; &nbsp; $this->page_ref_set(\'example_ref\');<br />';
 			$note_html .= '&nbsp; &nbsp; $this->message_set(\'The item has been updated.\');<br />';

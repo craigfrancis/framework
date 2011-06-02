@@ -84,7 +84,7 @@
 				if ($size === NULL) {
 
 					if ($this->db_field_name === NULL) {
-						exit('<p>You need to call "set_db_field", on the field "' . $this->label_html . '"</p>');
+						exit('<p>You need to call "db_field_set", on the field "' . $this->label_html . '"</p>');
 					}
 
 					$field_setup = $this->form->db_field_get($this->db_field_name);
@@ -112,7 +112,7 @@
 				parent::_post_validation();
 
 				if ($this->max_length === NULL) {
-					exit('<p>You need to call "set_max_length", on the field "' . $this->label_html . '"</p>');
+					exit('<p>You need to call "max_length_set", on the field "' . $this->label_html . '"</p>');
 				}
 
 			}

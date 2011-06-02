@@ -102,7 +102,7 @@
 							$this->value = '';
 						}
 					} else {
-						exit('Not supported - set_value_key');
+						exit('Not supported - value_key_set');
 					}
 				} else {
 					$key = array_search($value, $this->option_keys);
@@ -114,7 +114,7 @@
 								$this->value = $value;
 							}
 						} else {
-							exit('Not supported - set_value_key');
+							exit('Not supported - value_key_set');
 						}
 					}
 				}

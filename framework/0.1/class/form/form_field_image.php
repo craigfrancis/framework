@@ -181,7 +181,7 @@
 					$mime_types[] = 'image/x-png'; // The wonderful world of IE
 				}
 
-				parent::set_allowed_file_types_mime($error, $mime_types);
+				parent::allowed_file_types_mime_set($error, $mime_types);
 
 			//--------------------------------------------------
 			// Could not use getimagesize
@@ -231,7 +231,7 @@
 			parent::_post_validation();
 
 			if ($this->file_type_error_set == false) {
-				exit('<p>You need to call "set_file_type_error", on the field "' . $this->label_html . '"</p>');
+				exit('<p>You need to call "file_type_error_set", on the field "' . $this->label_html . '"</p>');
 			}
 
 		}

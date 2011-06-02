@@ -14,7 +14,7 @@
 			//--------------------------------------------------
 			// Additional field configuration
 
-				$this->max_length = 8; // Bypass required set_max_length call, and to set the <input maxlength="" />
+				$this->max_length = 8; // Bypass required "max_length_set" call, and to set the <input maxlength="" />
 				$this->format_error_set = false;
 				$this->type = 'postcode';
 
@@ -52,7 +52,7 @@
 			parent::_post_validation();
 
 			if ($this->format_error_set == false) {
-				exit('<p>You need to call "set_format_error", on the field "' . $this->label_html . '"</p>');
+				exit('<p>You need to call "format_error_set", on the field "' . $this->label_html . '"</p>');
 			}
 
 		}
