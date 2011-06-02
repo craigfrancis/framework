@@ -119,7 +119,7 @@
 				return $this->type;
 			}
 
-			public function label_html_set($label_html) { // No need for 'set_label' as this is called on init
+			public function label_html_set($label_html) { // No need for 'label_set' as this is called on init
 				$this->label_html = $label_html;
 			}
 

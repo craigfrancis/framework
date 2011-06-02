@@ -99,7 +99,7 @@
 				if ($part == 'D' || $part == 'M' || $part == 'Y') {
 					return $this->value[$part];
 				} else {
-					return 'The date part must be set to "D", "M" or "Y"... or you could use get_value_date() or get_value_time_stamp()';
+					return 'The date part must be set to "D", "M" or "Y"... or you could use value_date_get() or value_time_stamp_get()';
 				}
 			}
 

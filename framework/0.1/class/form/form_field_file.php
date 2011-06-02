@@ -156,7 +156,7 @@
 		}
 
 		public function value_get() {
-			exit('<p>Do you mean get_file_path?</p>');
+			exit('<p>Do you mean file_path_get?</p>');
 		}
 
 		public function file_path_get() {

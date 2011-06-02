@@ -45,18 +45,18 @@
 				return $this->subject;
 			}
 
-//    $email->set_from('craig@craigfrancis.co.uk');
-//    $email->set_from('craig@craigfrancis.co.uk', 'Craig Francis');
-//    $email->set_reply_to('craig@craigfrancis.co.uk');
-//    $email->set_return('craig@craigfrancis.co.uk');
+//    $email->from_set('craig@craigfrancis.co.uk');
+//    $email->from_set('craig@craigfrancis.co.uk', 'Craig Francis');
+//    $email->reply_to_set('craig@craigfrancis.co.uk');
+//    $email->return_set('craig@craigfrancis.co.uk');
 // CC
 // BCC?
-//    $email->set_header('Example', 'Value');
+//    $email->header_set('Example', 'Value');
 //    $email->set('name', $value); // Don't do a set_html() method, as this does not work for plain text version
 //    $email->set($data_array); // array merge?
 //    $email->attachment_add($content, $filename, $mime, $id = NULL);
 //    $email->template('');
-//    $email->set_send('craig@craigfrancis.co.uk'); // or array
+//    $email->send('craig@craigfrancis.co.uk'); // or array
 
 		//--------------------------------------------------
 		// Content

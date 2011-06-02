@@ -157,7 +157,7 @@
 						}
 					}
 				} else {
-					exit('Not supported - get_value_key');
+					exit('Not supported - value_key_get');
 				}
 			}
 

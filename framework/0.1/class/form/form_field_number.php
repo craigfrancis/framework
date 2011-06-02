@@ -62,7 +62,7 @@
 
 		public function value_print_get($decimal_places = 2) {
 
-			$value = parent::get_value_print();
+			$value = parent::value_print_get();
 
 			if ($value == 0 && $this->zero_to_blank_set) {
 				return '';

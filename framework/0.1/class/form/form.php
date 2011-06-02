@@ -300,8 +300,8 @@
 						//--------------------------------------------------
 						// Validation
 
-							if ($this->db_table_name_sql === NULL) exit('<p>You need to call "set_db_table_sql" on the form object</p>');
-							if ($this->db_select_sql === NULL) exit('<p>You need to call "set_db_select_sql" on the form object</p>');
+							if ($this->db_table_name_sql === NULL) exit('<p>You need to call "db_table_set_sql" on the form object</p>');
+							if ($this->db_select_sql === NULL) exit('<p>You need to call "db_select_set_sql" on the form object</p>');
 
 						//--------------------------------------------------
 						// Fields
@@ -345,7 +345,7 @@
 
 					} else {
 
-						exit('<p>Could not find field "' . html($field) . '" - have you called "set_db_table_sql" and "set_db_select_sql" on the form object</p>');
+						exit('<p>Could not find field "' . html($field) . '" - have you called "db_table_set_sql" and "db_select_set_sql" on the form object</p>');
 
 					}
 
@@ -496,7 +496,7 @@
 				//--------------------------------------------------
 				// Validation
 
-					if ($this->db_table_name_sql === NULL) exit('<p>You need to call "set_db_table_sql" on the form object</p>');
+					if ($this->db_table_name_sql === NULL) exit('<p>You need to call "db_table_set_sql" on the form object</p>');
 
 				//--------------------------------------------------
 				// Values
