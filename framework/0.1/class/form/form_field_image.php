@@ -44,7 +44,7 @@
 
 				if ($this->has_uploaded) {
 
-					$dimensions = getimagesize($this->get_file_path());
+					$dimensions = getimagesize($this->file_path_get());
 					if ($dimensions !== false) {
 						$this->value_image_width = $dimensions[0];
 						$this->value_image_height = $dimensions[1];
@@ -55,7 +55,7 @@
 
 		}
 
-		public function set_min_width($error, $size) {
+		public function min_width_set($error, $size) {
 
 			$size = intval($size);
 
@@ -67,7 +67,7 @@
 
 		}
 
-		public function set_max_width($error, $size) {
+		public function max_width_set($error, $size) {
 
 			$size = intval($size);
 
@@ -79,7 +79,7 @@
 
 		}
 
-		public function set_required_width($error, $size) {
+		public function required_width_set($error, $size) {
 
 			$size = intval($size);
 
@@ -92,19 +92,19 @@
 
 		}
 
-		public function get_required_width_min() {
+		public function required_width_min_get() {
 			return $this->min_width_size;
 		}
 
-		public function get_required_width_max() {
+		public function required_width_max_get() {
 			return $this->max_width_size;
 		}
 
-		public function get_required_width() {
+		public function required_width_get() {
 			return $this->min_width_size;
 		}
 
-		public function set_min_height($error, $size) {
+		public function min_height_set($error, $size) {
 
 			$size = intval($size);
 
@@ -116,7 +116,7 @@
 
 		}
 
-		public function set_max_height($error, $size) {
+		public function max_height_set($error, $size) {
 
 			$size = intval($size);
 
@@ -128,7 +128,7 @@
 
 		}
 
-		public function set_required_height($error, $size) {
+		public function required_height_set($error, $size) {
 
 			$size = intval($size);
 
@@ -141,19 +141,19 @@
 
 		}
 
-		public function get_required_height_min() {
+		public function required_height_min_get() {
 			return $this->min_height_size;
 		}
 
-		public function get_required_height_max() {
+		public function required_height_max_get() {
 			return $this->max_height_size;
 		}
 
-		public function get_required_height() {
+		public function required_height_get() {
 			return $this->min_height_size;
 		}
 
-		public function set_file_type_error($error, $types = NULL) {
+		public function file_type_error_set($error, $types = NULL) {
 
 			//--------------------------------------------------
 			// Types
@@ -214,15 +214,15 @@
 
 		}
 
-		public function get_image_width() {
+		public function image_width_get() {
 			return $this->value_image_width;
 		}
 
-		public function get_image_height() {
+		public function image_height_get() {
 			return $this->value_image_height;
 		}
 
-		public function get_image_type() {
+		public function image_type_get() {
 			return $this->value_image_type;
 		}
 

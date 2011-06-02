@@ -30,7 +30,7 @@
 					$this->value = NULL;
 
 					if ($this->form_submitted) {
-						$this->value = data($this->name, $this->form->get_form_method());
+						$this->value = data($this->name, $this->form->form_method_get());
 					}
 
 				//--------------------------------------------------
@@ -43,24 +43,24 @@
 
 			}
 
-			public function set_size($size) {
+			public function size_set($size) {
 				$this->size = $size;
 			}
 
 		//--------------------------------------------------
 		// Value
 
-			public function set_value($value) {
+			public function value_set($value) {
 				$this->value = $value;
 			}
 
-			public function get_value() {
+			public function value_get() {
 				return $this->value;
 			}
 
-			public function get_value_print() {
+			public function value_print_get() {
 				if ($this->value === NULL) {
-					return $this->form->get_db_select_value($this->db_field_name);
+					return $this->form->db_select_value_get($this->db_field_name);
 				}
 				return $this->value;
 			}
@@ -68,7 +68,7 @@
 		//--------------------------------------------------
 		// Errors
 
-			public function set_min_length($error, $size = 1) { // Default is "required"
+			public function min_length_set($error, $size = 1) { // Default is "required"
 
 				if ($this->form_submitted && strlen($this->value) < $size) {
 					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $size, $error));
@@ -79,7 +79,7 @@
 
 			}
 
-			public function set_max_length($error, $size = NULL) {
+			public function max_length_set($error, $size = NULL) {
 
 				if ($size === NULL) {
 
@@ -87,7 +87,7 @@
 						exit('<p>You need to call "set_db_field", on the field "' . $this->label_html . '"</p>');
 					}
 
-					$field_setup = $this->form->get_db_field($this->db_field_name);
+					$field_setup = $this->form->db_field_get($this->db_field_name);
 					if ($field_setup) {
 						$size = $field_setup['length'];
 					} else {
@@ -120,15 +120,15 @@
 		//--------------------------------------------------
 		// Status
 
-			public function get_hidden_value() {
-				return $this->get_value_print();
+			public function hidden_value_get() {
+				return $this->value_print_get();
 			}
 
 		//--------------------------------------------------
 		// HTML output
 
 			public function html_field() {
-				return '<input type="text" name="' . html($this->name) . '" id="' . html($this->id) . '" maxlength="' . html($this->max_length) . '" value="' . html($this->get_value_print()) . '"' . ($this->size === NULL ? '' : ' size="' . intval($this->size) . '"') . ($this->class_field === NULL ? '' : ' class="' . html($this->class_field) . '"') . ' />';
+				return '<input type="text" name="' . html($this->name) . '" id="' . html($this->id) . '" maxlength="' . html($this->max_length) . '" value="' . html($this->value_print_get()) . '"' . ($this->size === NULL ? '' : ' size="' . intval($this->size) . '"') . ($this->class_field === NULL ? '' : ' class="' . html($this->class_field) . '"') . ' />';
 			}
 
 	}

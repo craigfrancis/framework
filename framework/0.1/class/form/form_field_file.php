@@ -29,7 +29,7 @@
 			//--------------------------------------------------
 			// Form encoding
 
-				$this->form->set_form_attribute('enctype', 'multipart/form-data');
+				$this->form->form_attribute_set('enctype', 'multipart/form-data');
 
 			//--------------------------------------------------
 			// Additional field configuration
@@ -72,7 +72,7 @@
 
 		}
 
-		public function set_required_error($error) {
+		public function required_error_set($error) {
 
 			if ($this->form_submitted && !$this->has_uploaded) {
 				$this->form->_field_error_set_html($this->form_field_uid, $error);
@@ -82,7 +82,7 @@
 
 		}
 
-		public function set_max_size($error, $size) {
+		public function max_size_set($error, $size) {
 
 			$this->max_size = intval($size);
 
@@ -101,11 +101,11 @@
 
 		}
 
-		public function get_max_size() {
+		public function max_size_get() {
 			return $this->max_size;
 		}
 
-		public function set_partial_file_error($error) {
+		public function partial_file_error_set($error) {
 
 			if ($this->has_uploaded) {
 				if ($_FILES[$this->name]['error'] == 3) $this->form->_field_error_set_html($this->form_field_uid, $error);
@@ -115,7 +115,7 @@
 
 		}
 
-		public function set_allowed_file_types_mime($error, $types) {
+		public function allowed_file_types_mime_set($error, $types) {
 
 			if ($this->has_uploaded && !in_array($this->value_mime, $types)) {
 				$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $this->value_mime, $error), 'MIME: ' . $this->value_mime);
@@ -123,7 +123,7 @@
 
 		}
 
-		public function set_allowed_file_types_ext($error, $types) {
+		public function allowed_file_types_ext_set($error, $types) {
 
 			if ($this->has_uploaded && !in_array($this->value_ext, $types)) {
 				$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $this->value_ext, $error), 'EXT: ' . $this->value_ext);
@@ -131,7 +131,7 @@
 
 		}
 
-		public function set_empty_file_error($error) {
+		public function empty_file_error_set($error) {
 
 			if ($this->has_uploaded && $_FILES[$this->name]['size'] == 0) {
 				$this->form->_field_error_set_html($this->form_field_uid, $error);
@@ -141,7 +141,7 @@
 
 		}
 
-		public function set_blank_name_error($error) {
+		public function blank_name_error_set($error) {
 
 			if ($this->has_uploaded && $_FILES[$this->name]['name'] == '') {
 				$this->form->_field_error_set_html($this->form_field_uid, $error);
@@ -151,31 +151,31 @@
 
 		}
 
-		public function get_has_uploaded() {
+		public function has_uploaded() {
 			return $this->has_uploaded;
 		}
 
-		public function get_value() {
+		public function value_get() {
 			exit('<p>Do you mean get_file_path?</p>');
 		}
 
-		public function get_file_path() {
+		public function file_path_get() {
 			return (!$this->has_uploaded ? NULL: $_FILES[$this->name]['tmp_name']);
 		}
 
-		public function get_file_ext() {
+		public function file_ext_get() {
 			return (!$this->has_uploaded ? NULL: $this->value_ext);
 		}
 
-		public function get_file_name() {
+		public function file_name_get() {
 			return (!$this->has_uploaded ? NULL: $this->value_name);
 		}
 
-		public function get_file_size() {
+		public function file_size_get() {
 			return (!$this->has_uploaded ? NULL: $this->value_size);
 		}
 
-		public function get_file_mime() {
+		public function file_mime_get() {
 			return (!$this->has_uploaded ? NULL: $this->value_mime);
 		}
 
@@ -204,15 +204,15 @@
 			}
 
 			if ($this->empty_file_error_set == false) { // Provide default
-				$this->set_empty_file_error('The uploaded file for "' . strtolower($this->label_html) . '" is empty');
+				$this->empty_file_error_set('The uploaded file for "' . strtolower($this->label_html) . '" is empty');
 			}
 
 			if ($this->partial_file_error_set == false) { // Provide default
-				$this->set_partial_file_error('The uploaded file for "' . strtolower($this->label_html) . '" was only partially uploaded');
+				$this->partial_file_error_set('The uploaded file for "' . strtolower($this->label_html) . '" was only partially uploaded');
 			}
 
 			if ($this->blank_name_error_set == false) { // Provide default
-				$this->set_blank_name_error('The uploaded file for "' . strtolower($this->label_html) . '" does not have a filename');
+				$this->blank_name_error_set('The uploaded file for "' . strtolower($this->label_html) . '" does not have a filename');
 			}
 
 		}

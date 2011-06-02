@@ -52,7 +52,7 @@
 
 					$label_html = html($label);
 
-					$function = $form->get_label_override_function();
+					$function = $form->label_override_get_function();
 					if ($function !== NULL) {
 						$label_html = call_user_func($function, $label_html, $form, $this);
 					}
@@ -84,7 +84,7 @@
 					$this->name = $name;
 					$this->type = 'unknown';
 					$this->label_html = $label_html;
-					$this->label_suffix_html = $form->get_label_suffix_html();
+					$this->label_suffix_html = $form->label_suffix_get_html();
 					$this->info_html = '';
 					$this->required = false;
 					$this->required_mark_html = NULL;
@@ -103,47 +103,47 @@
 
 			}
 
-			public function set_id($id) {
+			public function id_set($id) {
 				$this->id = $id;
 			}
 
-			public function get_id() {
+			public function id_get() {
 				return $this->id;
 			}
 
-			public function get_name() {
+			public function name_get() {
 				return $this->name;
 			}
 
-			public function get_type() {
+			public function type_get() {
 				return $this->type;
 			}
 
-			public function set_label_html($label_html) { // No need for 'set_label' as this is called on init
+			public function label_html_set($label_html) { // No need for 'set_label' as this is called on init
 				$this->label_html = $label_html;
 			}
 
-			public function get_label_text() {
+			public function label_text_get() {
 				return html_decode(strip_tags($this->label_html));
 			}
 
-			public function set_label_suffix($suffix) {
-				$this->set_label_suffix_html(html($suffix));
+			public function label_suffix_set($suffix) {
+				$this->label_suffix_set_html(html($suffix));
 			}
 
-			public function set_label_suffix_html($suffix_html) {
+			public function label_suffix_set_html($suffix_html) {
 				$this->label_suffix_html = $suffix_html;
 			}
 
-			public function set_info($info) {
-				$this->set_info_html(html($info));
+			public function info_set($info) {
+				$this->info_set_html(html($info));
 			}
 
-			public function set_info_html($info_html) {
+			public function info_set_html($info_html) {
 				$this->info_html = $info_html;
 			}
 
-			public function get_info_html($indent = 0) {
+			public function info_get_html($indent = 0) {
 				if ($this->info_html == '') {
 					return '';
 				} else {
@@ -151,11 +151,11 @@
 				}
 			}
 
-			public function set_required_mark_html($html) {
+			public function required_mark_set_html($html) {
 				$this->required_mark_html = $html;
 			}
 
-			public function set_required_mark_position($position) {
+			public function required_mark_position_set($position) {
 				if ($position == 'left' || $position == 'right' || $position == 'none') {
 					$this->required_mark_position = $position;
 				} else {
@@ -163,15 +163,15 @@
 				}
 			}
 
-			public function set_class_row($class) {
+			public function class_row_set($class) {
 				$this->class_row = $class;
 			}
 
-			public function add_class_row($class) {
+			public function class_row_add($class) {
 				$this->class_row .= ($this->class_row == '' ? '' : ' ') . $class;
 			}
 
-			public function get_class_row() {
+			public function class_row_get() {
 
 				$class = 'row ';
 				$class .= $this->type . ' ';
@@ -186,53 +186,53 @@
 
 			}
 
-			public function set_class_label($class) {
+			public function class_label_set($class) {
 				$this->class_label = $class;
 			}
 
-			public function set_class_label_span($class) { // TOOD
+			public function class_label_span_set($class) { // TOOD
 				$this->class_label_span = $class;
 			}
 
-			public function set_class_field($class) {
+			public function class_field_set($class) {
 				$this->class_field = $class;
 			}
 
-			public function set_class_field_span($class) { // TODO
+			public function class_field_span_set($class) { // TODO
 				$this->class_field_span = $class;
 			}
 
-			public function set_class_info($class) { // TODO
+			public function class_info_set($class) { // TODO
 				$this->class_info = $class;
 			}
 
-			public function set_print_show($show) { // Print on main form automatically
+			public function print_show_set($show) { // Print on main form automatically
 				$this->print_show = ($show == true);
 			}
 
-			public function get_print_show() {
+			public function print_show_get() {
 				return $this->print_show;
 			}
 
-			public function set_print_hidden($hidden) { // Won't print on main form automatically, but will preserve value in a hidden field
+			public function print_hidden_set($hidden) { // Won't print on main form automatically, but will preserve value in a hidden field
 				$this->print_hidden = ($hidden == true);
 			}
 
-			public function get_print_hidden() {
+			public function print_hidden_get() {
 				return $this->print_hidden;
 			}
 
-			public function get_print_group() {
+			public function print_group_get() {
 				return $this->print_group;
 			}
 
-			public function set_print_group($group) {
+			public function print_group_set($group) {
 				$this->print_group = $group;
 			}
 
-			protected function _set_db_field($field_name, $field_key = 'value') {
+			protected function _db_field_set($field_name, $field_key = 'value') {
 
-				if ($this->form->get_db_field($field_name) === false) {
+				if ($this->form->db_field_get($field_name) === false) {
 					exit('<p>Invalid db field "' . html($field_name) . '" set for field "' . $this->label_html . '"</p>');
 				}
 
@@ -241,15 +241,15 @@
 
 			}
 
-			public function set_db_field($field) {
-				$this->_set_db_field($field);
+			public function db_field_set($field) {
+				$this->_db_field_set($field);
 			}
 
-			public function get_db_field_name() {
+			public function db_field_name_get() {
 				return $this->db_field_name;
 			}
 
-			public function get_db_field_key() {
+			public function db_field_key_get() {
 				return $this->db_field_key;
 			}
 
@@ -283,7 +283,7 @@
 				return $this->form->_field_valid($this->form_field_uid);
 			}
 
-			public function get_hidden_value() {
+			public function hidden_value_get() {
 				return '';
 			}
 
@@ -303,7 +303,7 @@
 
 					$required_mark_position = $this->required_mark_position;
 					if ($required_mark_position === NULL) {
-						$required_mark_position = $this->form->get_required_mark_position();
+						$required_mark_position = $this->form->required_mark_position_get();
 					}
 
 				//--------------------------------------------------
@@ -315,7 +315,7 @@
 						$required_mark_html = $this->required_mark_html;
 
 						if ($required_mark_html === NULL) {
-							$required_mark_html = $this->form->get_required_mark_html($required_mark_position);
+							$required_mark_html = $this->form->required_mark_get_html($required_mark_position);
 						}
 
 					} else {
@@ -341,9 +341,9 @@
 
 			public function html() {
 				return '
-					<div class="' . html($this->get_class_row()) . '">
+					<div class="' . html($this->class_row_get()) . '">
 						<span class="label">' . $this->html_label() . $this->label_suffix_html . '</span>
-						<span class="input">' . $this->html_field() . '</span>' . $this->get_info_html(6) . '
+						<span class="input">' . $this->html_field() . '</span>' . $this->info_get_html(6) . '
 					</div>' . "\n";
 			}
 

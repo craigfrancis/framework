@@ -30,14 +30,14 @@
 
 			}
 
-			public function set_db_field($field, $field_key = 'value') {
+			public function db_field_set($field, $field_key = 'value') {
 
-				$this->_set_db_field($field, $field_key);
+				$this->_db_field_set($field, $field_key);
 
-				$field_setup = $this->form->get_db_field($field);
+				$field_setup = $this->form->db_field_get($field);
 
 				if ($field_setup['type'] == 'enum' || $field_setup['type'] == 'set') {
-					$this->set_options($field_setup['values']);
+					$this->options_set($field_setup['values']);
 				}
 
 			}
@@ -46,7 +46,7 @@
 				$this->re_index_keys_in_html = ($re_index == true);
 			}
 
-			public function set_options($options) {
+			public function options_set($options) {
 
 				//--------------------------------------------------
 				// Store
@@ -78,9 +78,9 @@
 						}
 
 						if (count($this->values) == 0) {
-							$value = $this->form->get_hidden_value($this->name);
+							$value = $this->form->hidden_value_get($this->name);
 							if ($value != '') {
-								$this->set_value_key($value);
+								$this->value_key_set($value);
 							}
 						}
 
@@ -91,11 +91,11 @@
 		//--------------------------------------------------
 		// Value
 
-			public function set_value($value) {
-				return $this->set_values(explode(',', $value));
+			public function value_set($value) {
+				return $this->values_set(explode(',', $value));
 			}
 
-			public function set_values($values) {
+			public function values_set($values) {
 				$this->values = array();
 				foreach ($values as $c_value) {
 					$key = array_search($c_value, $this->option_values);
@@ -105,11 +105,11 @@
 				}
 			}
 
-			public function set_value_key($value) {
-				return $this->set_values_key(explode(',', $value));
+			public function value_key_set($value) {
+				return $this->values_key_set(explode(',', $value));
 			}
 
-			public function set_values_key($values) {
+			public function values_key_set($values) {
 				$this->values = array();
 				foreach ($values as $c_value) {
 					$key = array_search($c_value, $this->option_keys);
@@ -119,11 +119,11 @@
 				}
 			}
 
-			public function get_value() {
-				return implode(',', $this->get_values());
+			public function value_get() {
+				return implode(',', $this->values_get());
 			}
 
-			public function get_values() {
+			public function values_get() {
 				$return = array();
 				foreach ($this->values as $c_id) {
 					$return[$this->option_keys[$c_id]] = $this->option_values[$c_id];
@@ -131,11 +131,11 @@
 				return $return;
 			}
 
-			public function get_value_key() {
-				return implode(',', $this->get_values_key());
+			public function value_key_get() {
+				return implode(',', $this->values_key_get());
 			}
 
-			public function get_values_key() {
+			public function values_key_get() {
 				$return = array();
 				foreach ($this->values as $c_id) {
 					$return[] = $this->option_keys[$c_id];
@@ -146,8 +146,8 @@
 		//--------------------------------------------------
 		// Status
 
-			public function get_hidden_value() {
-				return $this->get_value_key();
+			public function hidden_value_get() {
+				return $this->value_key_get();
 			}
 
 		//--------------------------------------------------
@@ -155,7 +155,7 @@
 
 			public function html() {
 				$html = '
-					<div class="' . html($this->get_class_row()) . '">
+					<div class="' . html($this->class_row_get()) . '">
 						<span class="label">' . $this->html_label() . $this->label_suffix_html . '</span>';
 				foreach ($this->option_keys as $key) {
 					$html .= '
@@ -164,7 +164,7 @@
 							' . $this->html_label_by_key($key) . '
 						</span>';
 				}
-				$html .= $this->get_info_html(6) . '
+				$html .= $this->info_get_html(6) . '
 					</div>' . "\n";
 				return $html;
 			}
@@ -263,7 +263,7 @@
 
 			}
 
-			public function get_field_id_by_value($value) {
+			public function field_id_by_value_get($value) {
 				$id = array_search($value, $this->option_values);
 				if ($id !== false && $id !== NULL) {
 					if ($this->re_index_keys_in_html) {
@@ -276,7 +276,7 @@
 				}
 			}
 
-			public function get_field_id_by_key($key) {
+			public function field_id_by_key_get($key) {
 				$id = array_search($key, $this->option_keys);
 				if ($id !== false && $id !== NULL) {
 					if ($this->re_index_keys_in_html) {

@@ -71,7 +71,7 @@
 
 					config::set('form.count', ($form_id + 1));
 
-					$this->set_form_id('form_' . $form_id);
+					$this->form_id_set('form_' . $form_id);
 
 				//--------------------------------------------------
 				// Generate a csrf_token if one does not exist
@@ -87,41 +87,41 @@
 
 			}
 
-			public function set_form_id($form_id) {
+			public function form_id_set($form_id) {
 				$this->form_id = $form_id;
 				$this->_is_submitted();
 			}
 
-			public function get_form_id() {
+			public function form_id_get() {
 				return $this->form_id;
 			}
 
-			public function set_form_action($form_action) {
+			public function form_action_set($form_action) {
 				$this->form_action = $form_action;
 			}
 
-			public function get_form_action() {
+			public function form_action_get() {
 				return $this->form_action;
 			}
 
-			public function set_form_method($form_method) {
+			public function form_method_set($form_method) {
 				$this->form_method = strtoupper($form_method);
 				$this->_is_submitted();
 			}
 
-			public function get_form_method() {
+			public function form_method_get() {
 				return $this->form_method;
 			}
 
-			public function set_form_class($form_class) {
+			public function form_class_set($form_class) {
 				$this->form_class = $form_class;
 			}
 
-			public function get_form_class() {
+			public function form_class_get() {
 				return $this->form_class;
 			}
 
-			public function set_form_attribute($attribute, $value) {
+			public function form_attribute_set($attribute, $value) {
 				if ($value == '') {
 					unset($this->form_attributes[$attribute]);
 				} else {
@@ -129,7 +129,7 @@
 				}
 			}
 
-			public function set_hidden_value($name, $value = NULL) {
+			public function hidden_value_set($name, $value = NULL) {
 				if ($value === NULL) {
 					unset($this->hidden_values[$name]);
 				} else {
@@ -137,7 +137,7 @@
 				}
 			}
 
-			public function get_hidden_value($name) {
+			public function hidden_value_get($name) {
 				if (isset($this->hidden_values[$name])) {
 					return $this->hidden_values[$name];
 				} else {
@@ -145,11 +145,11 @@
 				}
 			}
 
-			public function set_required_mark_html($value) {
+			public function required_mark_set_html($value) {
 				$this->required_mark_html = $value;
 			}
 
-			public function get_required_mark_html($required_mark_position = 'left') {
+			public function required_mark_get_html($required_mark_position = 'left') {
 				if ($this->required_mark_html !== NULL) {
 					return $this->required_mark_html;
 				} else if ($required_mark_position == 'right') {
@@ -159,7 +159,7 @@
 				}
 			}
 
-			public function set_required_mark_position($value) {
+			public function required_mark_position_set($value) {
 				if ($value == 'left' || $value == 'right' || $value == 'none') {
 					$this->required_mark_position = $value;
 				} else {
@@ -167,39 +167,39 @@
 				}
 			}
 
-			public function get_required_mark_position() {
+			public function required_mark_position_get() {
 				return $this->required_mark_position;
 			}
 
-			public function set_label_suffix($suffix) {
-				$this->set_label_suffix_html(html($suffix));
+			public function label_suffix_set($suffix) {
+				$this->label_suffix_set_html(html($suffix));
 			}
 
-			public function set_label_suffix_html($suffix_html) {
+			public function label_suffix_set_html($suffix_html) {
 				$this->label_suffix_html = $suffix_html;
 			}
 
-			public function get_label_suffix_html() {
+			public function label_suffix_get_html() {
 				return $this->label_suffix_html;
 			}
 
-			public function set_label_override_function($function) {
+			public function label_override_set_function($function) {
 				$this->label_override_function = $function;
 			}
 
-			public function get_label_override_function() {
+			public function label_override_get_function() {
 				return $this->label_override_function;
 			}
 
-			public function set_error_override_function($function) {
+			public function error_override_set_function($function) {
 				$this->error_override_function = $function;
 			}
 
-			public function get_error_override_function() {
+			public function error_override_get_function() {
 				return $this->error_override_function;
 			}
 
-			public function set_db_table_sql($table_sql, $alias_sql = NULL, $db = NULL) {
+			public function db_table_set_sql($table_sql, $alias_sql = NULL, $db = NULL) {
 
 				//--------------------------------------------------
 				// Store
@@ -255,15 +255,15 @@
 
 			}
 
-			public function get_db_table_name_sql() {
+			public function db_table_name_get_sql() {
 				return $this->db_table_name_sql;
 			}
 
-			public function get_db_table_alias_sql() {
+			public function db_table_alias_get_sql() {
 				return $this->db_table_alias_sql;
 			}
 
-			public function get_db_field($field) {
+			public function db_field_get($field) {
 				if (isset($this->db_fields[$field])) {
 					return $this->db_fields[$field];
 				} else {
@@ -271,19 +271,19 @@
 				}
 			}
 
-			public function get_db_fields() {
+			public function db_field_gets() {
 				return $this->db_fields;
 			}
 
-			public function set_db_select_sql($where_sql) {
+			public function db_select_set_sql($where_sql) {
 				$this->db_select_sql = $where_sql;
 			}
 
-			public function set_db_value($name, $value) {
+			public function db_value_set($name, $value) {
 				$this->db_values[$name] = $value;
 			}
 
-			public function get_db_select_value($field) {
+			public function db_select_value_get($field) {
 
 				//--------------------------------------------------
 				// Not used
@@ -312,7 +312,7 @@
 
 							$fields = array();
 							for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
-								$field_name = $this->fields[$field_id]->get_db_field_name();
+								$field_name = $this->fields[$field_id]->db_field_name_get();
 								if ($field_name !== NULL) {
 									$fields[$field_id] = $field_name;
 								}
@@ -370,11 +370,11 @@
 		//--------------------------------------------------
 		// Errors
 
-			public function set_csrf_error($error) {
-				$this->set_csrf_error_html(html($error));
+			public function csrf_error_set($error) {
+				$this->csrf_error_set_html(html($error));
 			}
 
-			public function set_csrf_error_html($error_html) {
+			public function csrf_error_set_html($error_html) {
 
 				//--------------------------------------------------
 				// Store
@@ -466,15 +466,15 @@
 
 					for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
 
-						$field_name = $this->fields[$field_id]->get_label_text();
-						$field_type = $this->fields[$field_id]->get_type();
+						$field_name = $this->fields[$field_id]->label_text_get();
+						$field_type = $this->fields[$field_id]->type_get();
 
 						if ($field_type == 'date') {
-							$value = $this->fields[$field_id]->get_value_date();
+							$value = $this->fields[$field_id]->value_date_get();
 						} else if ($field_type == 'file' || $field_type == 'image') {
-							$value = $this->fields[$field_id]->get_file_name() . ' (' . file_size_to_human($this->fields[$field_id]->get_file_size()) . ')';
+							$value = $this->fields[$field_id]->file_name_get() . ' (' . file_size_to_human($this->fields[$field_id]->file_size_get()) . ')';
 						} else {
-							$value = $this->fields[$field_id]->get_value();
+							$value = $this->fields[$field_id]->value_get();
 						}
 
 						$values[] = array(
@@ -504,18 +504,18 @@
 					$values = array();
 
 					for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
-						$field_name = $this->fields[$field_id]->get_db_field_name();
+						$field_name = $this->fields[$field_id]->db_field_name_get();
 						if ($field_name !== NULL) {
 
-							$field_key = $this->fields[$field_id]->get_db_field_key();
+							$field_key = $this->fields[$field_id]->db_field_key_get();
 							$field_type = $this->db_fields[$field_name]['type'];
 
 							if ($field_type == 'datetime' || $field_type == 'date') {
-								$values[$field_name] = $this->fields[$field_id]->get_value_date();
+								$values[$field_name] = $this->fields[$field_id]->value_date_get();
 							} else if ($field_key == 'key') {
-								$values[$field_name] = $this->fields[$field_id]->get_value_key();
+								$values[$field_name] = $this->fields[$field_id]->value_key_get();
 							} else {
-								$values[$field_name] = $this->fields[$field_id]->get_value();
+								$values[$field_name] = $this->fields[$field_id]->value_get();
 							}
 
 						}
@@ -549,11 +549,11 @@
 		//--------------------------------------------------
 		// Field support
 
-			public function get_field($id) {
+			public function field_get($id) {
 				return $this->fields[$id];
 			}
 
-			public function get_fields() {
+			public function fields_get() {
 				return $this->fields;
 			}
 
@@ -570,7 +570,7 @@
 					if ($field_id == -1) {
 						$error_html = call_user_func($function, $error_html, $this, NULL);
 					} else {
-						$error_html = call_user_func($function, $error_html, $this, $this->get_field($field_id));
+						$error_html = call_user_func($function, $error_html, $this, $this->field_get($field_id));
 					}
 				}
 
@@ -667,8 +667,8 @@
 				if (!isset($config['class'])) $config['class'] = 'form_hidden_fields';
 
 				foreach ($this->fields as $field_id => $field) {
-					if ($field->get_print_hidden()) {
-						$this->hidden_values[$field->get_name()] = $field->get_hidden_value();
+					if ($field->print_hidden_get()) {
+						$this->hidden_values[$field->name_get()] = $field->hidden_value_get();
 					}
 				}
 
@@ -715,22 +715,22 @@
 
 				foreach ($this->fields as $field_id => $field) {
 
-					if ($field->get_print_show() && !$field->get_print_hidden()) {
+					if ($field->print_show_get() && !$field->print_hidden_get()) {
 
-						$field_group = $field->get_print_group();
+						$field_group = $field->print_group_get();
 
 						if (($group === NULL && $field_group ===  NULL) || ($group !== NULL && $group == $field_group)) {
 
-							$type = $field->get_type();
+							$type = $field->type_get();
 
 							$k++;
 
 							if ($k == 1) {
-								$field->add_class_row('first_child odd');
+								$field->class_row_add('first_child odd');
 							} else if ($k % 2) {
-								$field->add_class_row('odd');
+								$field->class_row_add('odd');
 							} else {
-								$field->add_class_row('even');
+								$field->class_row_add('even');
 							}
 
 							$html .= $field->html();

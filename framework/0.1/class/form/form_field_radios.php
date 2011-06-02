@@ -18,7 +18,7 @@
 
 		public function html() {
 			$html = '
-				<div class="' . html($this->get_class_row()) . '">
+				<div class="' . html($this->class_row_get()) . '">
 					<span class="label">' . $this->html_label() . $this->label_suffix_html . '</span>';
 			foreach ($this->option_keys as $id => $key) {
 				$html .= '
@@ -27,7 +27,7 @@
 						' . $this->html_label_by_key($key) . '
 					</span>';
 			}
-			$html .= $this->get_info_html(6) . '
+			$html .= $this->info_get_html(6) . '
 				</div>' . "\n";
 			return $html;
 		}
@@ -126,7 +126,7 @@
 
 		}
 
-		public function get_field_id_by_value($value) {
+		public function field_id_by_value_get($value) {
 			$id = array_search($value, $this->option_values);
 			if ($id !== false && $id !== NULL) {
 				if ($this->re_index_keys_in_html) {
@@ -139,7 +139,7 @@
 			}
 		}
 
-		public function get_field_id_by_key($key) {
+		public function field_id_by_key_get($key) {
 			$id = array_search($key, $this->option_keys);
 			if ($id !== false && $id !== NULL) {
 				if ($this->re_index_keys_in_html) {

@@ -20,7 +20,7 @@
 
 		}
 
-		public function set_format_error($error) {
+		public function format_error_set($error) {
 
 			if ($this->form_submitted && $this->value != '') {
 				$postcode_clean = format_british_postcode($this->value);
@@ -33,7 +33,7 @@
 
 		}
 
-		public function set_required_error($error) {
+		public function required_error_set($error) {
 
 			if ($this->form_submitted && $this->value == '') {
 				$this->form->_field_error_set_html($this->form_field_uid, $error);
@@ -43,7 +43,7 @@
 
 		}
 
-		public function get_value() {
+		public function value_get() {
 			return format_british_postcode($this->value);
 		}
 

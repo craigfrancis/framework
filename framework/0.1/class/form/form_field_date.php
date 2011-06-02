@@ -30,22 +30,22 @@
 						if ($this->form_submitted) {
 
 							$this->value = array(
-									'D' => intval(data($this->name . '_D', $form->get_form_method())),
-									'M' => intval(data($this->name . '_M', $form->get_form_method())),
-									'Y' => intval(data($this->name . '_Y', $form->get_form_method())),
+									'D' => intval(data($this->name . '_D', $form->form_method_get())),
+									'M' => intval(data($this->name . '_M', $form->form_method_get())),
+									'Y' => intval(data($this->name . '_Y', $form->form_method_get())),
 								);
 
 						} else if ($this->db_field_name !== NULL) {
 
-							$value = $this->form->get_db_value($this->db_field_name); // TODO
+							$value = $this->form->db_value_get($this->db_field_name); // TODO
 
 						}
 
 						// TODO: What happens when this field is hidden
 
-						// $value = $this->form->get_hidden_value($this->name);
+						// $value = $this->form->hidden_value_get($this->name);
 						// if ($value != '') {
-						// 	$this->set_value_key($value);
+						// 	$this->value_key_set($value);
 						// }
 
 					}
@@ -68,7 +68,7 @@
 				return $this->value_provided;
 			}
 
-			public function set_value($value, $month = NULL, $year = NULL) {
+			public function value_set($value, $month = NULL, $year = NULL) {
 				if ($month === NULL && $year === NULL) {
 
 					if (!is_numeric($value)) {
@@ -95,7 +95,7 @@
 				}
 			}
 
-			public function get_value($part = NULL) {
+			public function value_get($part = NULL) {
 				if ($part == 'D' || $part == 'M' || $part == 'Y') {
 					return $this->value[$part];
 				} else {
@@ -103,11 +103,11 @@
 				}
 			}
 
-			public function get_value_date() {
+			public function value_date_get() {
 				return str_pad(intval($this->value['Y']), 4, '0', STR_PAD_LEFT) . '-' . str_pad(intval($this->value['M']), 2, '0', STR_PAD_LEFT) . '-' . str_pad(intval($this->value['D']), 2, '0', STR_PAD_LEFT);
 			}
 
-			public function get_value_time_stamp() {
+			public function value_time_stamp_get() {
 				if ($this->value['M'] == 0 && $this->value['D'] == 0 && $this->value['Y'] == 0) {
 					$timestamp = false;
 				} else {
@@ -122,7 +122,7 @@
 		//--------------------------------------------------
 		// Errors
 
-			public function set_required_error($error) {
+			public function required_error_set($error) {
 
 				if ($this->form_submitted && !$this->value_provided) {
 					$this->form->_field_error_set_html($this->form_field_uid, $error);
@@ -132,9 +132,9 @@
 
 			}
 
-			public function set_invalid_error($error) {
+			public function invalid_error_set($error) {
 
-				$value = $this->get_value_time_stamp(); // Check upper bound to time-stamp, 2037 on 32bit systems
+				$value = $this->value_time_stamp_get(); // Check upper bound to time-stamp, 2037 on 32bit systems
 
 				if ($this->form_submitted && $this->value_provided && (!checkdate($this->value['M'], $this->value['D'], $this->value['Y']) || $value === false)) {
 
@@ -148,11 +148,11 @@
 
 			}
 
-			public function set_min_date($error, $timestamp) {
+			public function min_date_set($error, $timestamp) {
 
 				if ($this->form_submitted && $this->value_provided && $this->invalid_error_found == false) {
 
-					$value = $this->get_value_time_stamp();
+					$value = $this->value_time_stamp_get();
 
 					if ($value !== false && $value < intval($timestamp)) {
 						$this->form->_field_error_set_html($this->form_field_uid, $error);
@@ -162,11 +162,11 @@
 
 			}
 
-			public function set_max_date($error, $timestamp) {
+			public function max_date_set($error, $timestamp) {
 
 				if ($this->form_submitted && $this->value_provided && $this->invalid_error_found == false) {
 
-					$value = $this->get_value_time_stamp();
+					$value = $this->value_time_stamp_get();
 
 					if ($value !== false && $value > intval($timestamp)) {
 						$this->form->_field_error_set_html($this->form_field_uid, $error);
@@ -192,8 +192,8 @@
 		//--------------------------------------------------
 		// Status
 
-			public function get_hidden_value() {
-				return $this->get_value_date(); // TODO: Database support, $this->get_value_print() ?
+			public function hidden_value_get() {
+				return $this->value_date_get(); // TODO: Database support, $this->value_print_get() ?
 			}
 
 		//--------------------------------------------------
@@ -213,7 +213,7 @@
 
 					$required_mark_position = $this->required_mark_position;
 					if ($required_mark_position === NULL) {
-						$required_mark_position = $this->get_required_mark_position();
+						$required_mark_position = $this->required_mark_position_get();
 					}
 
 				//--------------------------------------------------
@@ -225,7 +225,7 @@
 						$required_mark_html = $this->required_mark_html;
 
 						if ($required_mark_html === NULL) {
-							$required_mark_html = $this->form->get_required_mark_html($required_mark_position);
+							$required_mark_html = $this->form->required_mark_get_html($required_mark_position);
 						}
 
 					} else {
@@ -255,14 +255,14 @@
 
 			public function html() {
 				return '
-					<div class="' . html($this->get_class_row()) . '">
+					<div class="' . html($this->class_row_get()) . '">
 						<span class="label">' . $this->html_label() . $this->label_suffix_html . '</span>
 						<span class="input">
 							' . $this->html_field('D') . '
 							' . $this->html_field('M') . '
 							' . $this->html_field('Y') . '
 						</span>
-						<span class="help">' . $this->html_label_for_date() . '</span>' . $this->get_info_html(6) . '
+						<span class="help">' . $this->html_label_for_date() . '</span>' . $this->info_get_html(6) . '
 					</div>' . "\n";
 			}
 

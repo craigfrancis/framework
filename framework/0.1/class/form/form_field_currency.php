@@ -16,20 +16,20 @@
 			// Strip currency symbol from input value
 
 				if ($this->form_submitted) {
-					$this->set_value($this->value); // TODO: Test
+					$this->value_set($this->value); // TODO: Test
 				}
 
 			//--------------------------------------------------
 			// Additional field configuration
 
 				$this->format_error_set = false;
-				$this->set_zero_to_blank = false;
+				$this->zero_to_blank_set = false;
 				$this->currency_char = '£';
 				$this->type = 'currency';
 
 		}
 
-		public function set_min_value($error, $value) {
+		public function min_value_set($error, $value) {
 
 			if ($this->form_submitted && floatval($this->value) < $value) {
 
@@ -47,7 +47,7 @@
 
 		}
 
-		public function set_max_value($error, $value) {
+		public function max_value_set($error, $value) {
 
 			if ($this->form_submitted && floatval($this->value) > $value) {
 
@@ -73,19 +73,19 @@
 
 		}
 
-		public function set_currency_char($char) {
+		public function currency_char_set($char) {
 			$this->currency_char = $char;
 		}
 
-		public function set_value($value) {
+		public function value_set($value) {
 			$this->value = preg_replace('/[^0-9\-\.]+/', '', $value); // Deletes commas (thousand separators) and currency symbols
 		}
 
-		public function get_value_print($decimal_places = 2) {
+		public function value_print_get($decimal_places = 2) {
 
 			$value = parent::get_value_print();
 
-			if ($value == 0 && $this->set_zero_to_blank) {
+			if ($value == 0 && $this->zero_to_blank_set) {
 				return '';
 			} else if ($value < 0) {
 				return '-' . $this->currency_char . number_format(floatval(0 - $value), $decimal_places);

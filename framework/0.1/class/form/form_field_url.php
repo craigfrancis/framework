@@ -19,7 +19,7 @@
 
 		}
 
-		public function set_format_error($error) {
+		public function format_error_set($error) {
 
 			if ($this->form_submitted && $this->value != '') {
 				$parts = @parse_url($this->value);
@@ -32,7 +32,7 @@
 
 		}
 
-		public function set_allowed_schemes($error, $schemes) {
+		public function allowed_schemes_set($error, $schemes) {
 
 			if ($this->form_submitted && $this->value != '') {
 				$parts = @parse_url($this->value);

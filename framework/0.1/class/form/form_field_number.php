@@ -15,12 +15,12 @@
 			// Additional field configuration
 
 				$this->format_error_set = false;
-				$this->set_zero_to_blank = false;
+				$this->zero_to_blank_set = false;
 				$this->type = 'number';
 
 		}
 
-		public function set_format_error($error) {
+		public function format_error_set($error) {
 
 			if ($this->form_submitted && $this->value != '' && !is_numeric($this->value)) {
 				$this->form->_field_error_set_html($this->form_field_uid, $error);
@@ -30,11 +30,11 @@
 
 		}
 
-		public function set_required_error($error) {
-			$this->set_min_length($error);
+		public function required_error_set($error) {
+			$this->min_length_set($error);
 		}
 
-		public function set_min_value($error, $value) {
+		public function min_value_set($error, $value) {
 
 			if ($this->form_submitted && floatval($this->value) < $value) {
 				$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $value, $error));
@@ -42,7 +42,7 @@
 
 		}
 
-		public function set_max_value($error, $value) {
+		public function max_value_set($error, $value) {
 
 			if ($this->form_submitted && floatval($this->value) > $value) {
 				$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $value, $error));
@@ -56,15 +56,15 @@
 
 		}
 
-		public function set_zero_to_blank($blank) {
-			$this->set_zero_to_blank = ($blank == true);
+		public function zero_to_blank_set($blank) {
+			$this->zero_to_blank_set = ($blank == true);
 		}
 
-		public function get_value_print($decimal_places = 2) {
+		public function value_print_get($decimal_places = 2) {
 
 			$value = parent::get_value_print();
 
-			if ($value == 0 && $this->set_zero_to_blank) {
+			if ($value == 0 && $this->zero_to_blank_set) {
 				return '';
 			} else {
 				return $value;

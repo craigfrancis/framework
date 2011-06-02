@@ -19,7 +19,7 @@
 
 		}
 
-		public function set_format_error($error) {
+		public function format_error_set($error) {
 
 			if ($this->form_submitted && $this->value != '' && !is_email($this->value)) {
 				$this->form->_field_error_set_html($this->form_field_uid, $error);

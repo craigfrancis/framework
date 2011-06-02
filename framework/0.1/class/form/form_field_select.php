@@ -46,14 +46,14 @@
 
 			}
 
-			public function set_db_field($field, $field_key = 'value') {
+			public function db_field_set($field, $field_key = 'value') {
 
-				$this->_set_db_field($field, $field_key);
+				$this->_db_field_set($field, $field_key);
 
-				$field_setup = $this->form->get_db_field($field);
+				$field_setup = $this->form->db_field_get($field);
 
 				if ($field_setup['type'] == 'enum') {
-					$this->set_options($field_setup['values']);
+					$this->options_set($field_setup['values']);
 				}
 
 			}
@@ -66,34 +66,34 @@
 				$this->re_index_keys_in_html = ($re_index == true);
 			}
 
-			public function set_label_option($text = NULL) {
+			public function label_option_set($text = NULL) {
 				$this->label_option = $text;
 			}
 
-			public function set_options($options) {
+			public function options_set($options) {
 				$this->option_values = array_values($options);
 				$this->option_keys = array_keys($options);
 			}
 
-			public function set_opt_groups($opt_groups) {
+			public function opt_groups_set($opt_groups) {
 				$this->opt_groups = $opt_groups;
 			}
 
-			public function set_size($size) {
+			public function size_set($size) {
 				$this->select_size = $size;
 			}
 
 		//--------------------------------------------------
 		// Value
 
-			public function set_value($value) {
-				$print_key = $this->_get_ref($value, 'value');
+			public function value_set($value) {
+				$print_key = $this->_ref_get($value, 'value');
 				if ($print_key !== NULL) {
 					$this->value = $print_key;
 				}
 			}
 
-			public function set_value_key($value) {
+			public function value_key_set($value) {
 				if ($value === NULL) {
 					if ($this->select_option_by_key) {
 						if ($this->re_index_keys_in_html) {
@@ -120,7 +120,7 @@
 				}
 			}
 
-			public function get_value() {
+			public function value_get() {
 				if ($this->select_option_by_key) {
 					if ($this->re_index_keys_in_html) {
 						$key = (intval($this->value) - 1);
@@ -143,7 +143,7 @@
 				}
 			}
 
-			public function get_value_key() {
+			public function value_key_get() {
 				if ($this->select_option_by_key) {
 					if ($this->re_index_keys_in_html) {
 						$key = (intval($this->value) - 1);
@@ -161,11 +161,11 @@
 				}
 			}
 
-			public function get_value_ref() {
+			public function value_ref_get() {
 				return $this->value;
 			}
 
-			private function _get_ref($value, $mode) {
+			private function _ref_get($value, $mode) {
 				$key = array_search($value, ($mode == 'key' ? $this->option_keys : $this->option_values));
 				if ($key !== false && $key !== NULL) {
 					if ($this->select_option_by_key) {
@@ -181,9 +181,9 @@
 				return NULL;
 			}
 
-			public function get_value_print() {
+			public function value_print_get() {
 				if ($this->value === NULL) {
-					return $this->_get_ref($this->form->get_db_select_value($this->db_field_name), $this->db_field_key);
+					return $this->_ref_get($this->form->db_select_value_get($this->db_field_name), $this->db_field_key);
 				}
 				return $this->value;
 			}
@@ -191,7 +191,7 @@
 		//--------------------------------------------------
 		// Errors
 
-			public function set_required_error($error) {
+			public function required_error_set($error) {
 
 				if ($this->select_option_by_key && $this->re_index_keys_in_html) {
 					$is_label = (intval($this->value) == 0);
@@ -208,7 +208,7 @@
 
 			}
 
-			public function set_invalid_error($error) {
+			public function invalid_error_set($error) {
 
 				if ($this->select_option_by_key) {
 					if ($this->re_index_keys_in_html) {
@@ -239,7 +239,7 @@
 				parent::_post_validation();
 
 				if ($this->invalid_error_set == false) {
-					$this->set_invalid_error('An invalid option has been selected for "' . strtolower($this->label_html) . '"');
+					$this->invalid_error_set('An invalid option has been selected for "' . strtolower($this->label_html) . '"');
 				}
 
 			}
@@ -247,11 +247,11 @@
 		//--------------------------------------------------
 		// Status
 
-			public function get_hidden_value() {
+			public function hidden_value_get() {
 				if ($this->label_option === NULL && $this->value === NULL && count($this->option_values) > 0) {
-					return $this->_get_ref(reset($this->option_values), 'value'); // Don't have a label or value, default to the first option to avoid validation error
+					return $this->_ref_get(reset($this->option_values), 'value'); // Don't have a label or value, default to the first option to avoid validation error
 				}
-				return $this->get_value_print();
+				return $this->value_print_get();
 			}
 
 		//--------------------------------------------------
@@ -259,7 +259,7 @@
 
 			public function html_field() {
 
-				$value = $this->get_value_print();
+				$value = $this->value_print_get();
 
 				$html = '
 							<select name="' . html($this->name) . '" id="' . html($this->id) . '"' . ($this->select_size <= 1 ? '' : ' size="' . intval($this->select_size) . '"') . ($this->class_field === NULL ? '' : ' class="' . html($this->class_field) . '"') . '>';

@@ -21,11 +21,11 @@
 
 		}
 
-		public function set_rows($rows) {
+		public function rows_set($rows) {
 			$this->textarea_rows = $rows;
 		}
 
-		public function set_cols($cols) {
+		public function cols_set($cols) {
 			$this->textarea_cols = $cols;
 		}
 

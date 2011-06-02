@@ -43,12 +43,12 @@
 
 		}
 
-		public function set_text_values($true, $false) {
+		public function text_values_set($true, $false) {
 			$this->text_value_true = $true;
 			$this->text_value_false = $false;
 		}
 
-		public function set_required_error($error) {
+		public function required_error_set($error) {
 
 			if ($this->form_submitted && $this->value !== true) {
 				$this->form->_field_error_set_html($this->form_field_uid, $error);
@@ -65,21 +65,21 @@
 		public function html() {
 			if ($this->quick_print_input_first) {
 				$html = '
-				<div class="' . html($this->get_class_row()) . ' input_first">
+				<div class="' . html($this->class_row_get()) . ' input_first">
 					<span class="input">' . $this->html_field() . '</span>
-					<span class="label">' . $this->html_label() . $this->label_suffix_html . '</span>' . $this->get_info_html(6) . '
+					<span class="label">' . $this->html_label() . $this->label_suffix_html . '</span>' . $this->info_get_html(6) . '
 				</div>' . "\n";
 			} else {
 				$html = '
-				<div class="' . html($this->get_class_row()) . '">
+				<div class="' . html($this->class_row_get()) . '">
 					<span class="label">' . $this->html_label() . $this->label_suffix_html . '</span>
-					<span class="input">' . $this->html_field() . '</span>' . $this->get_info_html(6) . '
+					<span class="input">' . $this->html_field() . '</span>' . $this->info_get_html(6) . '
 				</div>' . "\n";
 			}
 			return $html;
 		}
 
-		public function set_value($value) {
+		public function value_set($value) {
 			if ($this->text_value_true !== NULL) {
 				$this->value = ($value == $this->text_value_true);
 			} else {
@@ -87,7 +87,7 @@
 			}
 		}
 
-		public function get_value() {
+		public function value_get() {
 			if ($this->text_value_true !== NULL) {
 				return ($this->value ? $this->text_value_true : $this->text_value_false);
 			} else {
