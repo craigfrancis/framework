@@ -11,7 +11,7 @@
 	//--------------------------------------------------
 	// Start time
 
-		function debug_set_start_time($start_time = NULL) {
+		function debug_start_time_set($start_time = NULL) {
 
 			if ($start_time === NULL) {
 				$start_time = explode(' ', microtime());
@@ -22,7 +22,7 @@
 
 		}
 
-		debug_set_start_time();
+		debug_start_time_set();
 
 	//--------------------------------------------------
 	// Query time

@@ -155,7 +155,7 @@
 			$this->_link_add($url, $name, $config, $child_nav, $child_open);
 		}
 
-		public function add_group($name = '', $config = NULL) {
+		public function group_add($name = '', $config = NULL) {
 
 			if (count($this->navigation) > 0) {
 				$this->current_group++;

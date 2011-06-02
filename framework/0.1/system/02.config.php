@@ -8,7 +8,7 @@
 		private $store = array();
 
 		final public static function set($variable, $value = NULL) {
-			$obj = config::get_instance();
+			$obj = config::instance_get();
 			if (is_array($variable) && $value === NULL) {
 				$obj->store = array_merge($obj->store, $variable);
 			} else {
@@ -17,14 +17,14 @@
 		}
 
 		final public static function set_default($variable, $value) {
-			$obj = config::get_instance();
+			$obj = config::instance_get();
 			if (!isset($obj->store[$variable])) {
 				$obj->store[$variable] = $value;
 			}
 		}
 
 		final public static function get($variable, $default = NULL) {
-			$obj = config::get_instance();
+			$obj = config::instance_get();
 			if (isset($obj->store[$variable])) {
 				return $obj->store[$variable];
 			} else {
@@ -33,7 +33,7 @@
 		}
 
 		final public static function get_all($prefix = '') {
-			$obj = config::get_instance();
+			$obj = config::instance_get();
 			$prefix .= '.';
 			$prefix_length = strlen($prefix);
 			if ($prefix_length <= 1) {
@@ -50,7 +50,7 @@
 		}
 
 		final public static function array_push($variable, $value) {
-			$obj = config::get_instance();
+			$obj = config::instance_get();
 			if (!isset($obj->store[$variable]) || !is_array($obj->store[$variable])) {
 				$obj->store[$variable] = array();
 			}
@@ -58,7 +58,7 @@
 		}
 
 		final public static function array_set($variable, $key, $value) {
-			$obj = config::get_instance();
+			$obj = config::instance_get();
 			if (!isset($obj->store[$variable]) || !is_array($obj->store[$variable])) {
 				$obj->store[$variable] = array();
 			}
@@ -66,14 +66,14 @@
 		}
 
 		final public static function array_search($variable, $value) {
-			$obj = config::get_instance();
+			$obj = config::instance_get();
 			if (isset($obj->store[$variable]) && is_array($obj->store[$variable])) {
 				return array_search($value, $obj->store[$variable]);
 			}
 			return false;
 		}
 
-// 		function get_object_config($class_name, $extra_config = NULL) {
+// 		function object_config($class_name, $extra_config = NULL) {
 //
 // 			$class_config = array();
 //
@@ -85,7 +85,7 @@
 //
 // 		}
 
-		final private static function get_instance() {
+		final private static function instance_get() {
 			static $instance = NULL;
 			if (!$instance) {
 				$instance = new config();

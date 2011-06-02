@@ -45,7 +45,7 @@
 					));
 			}
 
-			public function css_add_alternate($path, $media, $title) {
+			public function css_alternate_add($path, $media, $title) {
 				config::array_push('output.css_files_alternate', array(
 						'path' => $path,
 						'media' => $media,
@@ -335,7 +335,7 @@
 						if ($css_type_info['alt_title'] != '' && $css_name != $css_type_name) {
 							foreach ($css_type_info['files'] as $path) {
 
-								$this->css_add_alternate($path, 'all', $css_type_info['alt_title']);
+								$this->css_alternate_add($path, 'all', $css_type_info['alt_title']);
 
 							}
 						}
