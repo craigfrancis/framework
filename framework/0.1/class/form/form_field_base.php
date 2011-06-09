@@ -1,6 +1,7 @@
 <?php
 
 // TODO: Move into form.php, as this does not need a separate file
+// TODO: Autofocus Attribute?
 
 	class form_field_base extends check { // TODO: Remove check
 
