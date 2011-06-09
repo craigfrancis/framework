@@ -23,8 +23,8 @@
 			protected $class_row;
 			protected $class_label;
 			protected $class_label_span;
-			protected $class_field;
-			protected $class_field_span;
+			protected $class_input;
+			protected $class_input_span;
 			protected $class_info;
 			protected $print_show;
 			protected $print_hidden;
@@ -91,10 +91,10 @@
 					$this->required_mark_position = NULL;
 					$this->class_row = '';
 					$this->class_label = NULL;
-					$this->class_label_span = NULL;
-					$this->class_field = NULL;
-					$this->class_field_span = NULL;
-					$this->class_info = NULL;
+					$this->class_label_span = 'label';
+					$this->class_input = NULL;
+					$this->class_input_span = 'input';
+					$this->class_info = 'info';
 					$this->print_show = true;
 					$this->print_hidden = false;
 					$this->print_group = NULL;
@@ -147,7 +147,7 @@
 				if ($this->info_html == '') {
 					return '';
 				} else {
-					return ($indent > 0 ? "\n" : '') . str_repeat("\t", $indent) . '<span class="info">' . $this->info_html . '</span>';
+					return ($indent > 0 ? "\n" : '') . str_repeat("\t", $indent) . '<span class="' . html($this->class_info) . '">' . $this->info_html . '</span>';
 				}
 			}
 
@@ -190,19 +190,19 @@
 				$this->class_label = $class;
 			}
 
-			public function class_label_span_set($class) { // TOOD
+			public function class_label_span_set($class) {
 				$this->class_label_span = $class;
 			}
 
-			public function class_field_set($class) {
-				$this->class_field = $class;
+			public function class_input_set($class) {
+				$this->class_input = $class;
 			}
 
-			public function class_field_span_set($class) { // TODO
-				$this->class_field_span = $class;
+			public function class_input_span_set($class) {
+				$this->class_input_span = $class;
 			}
 
-			public function class_info_set($class) { // TODO
+			public function class_info_set($class) {
 				$this->class_info = $class;
 			}
 
@@ -277,14 +277,17 @@
 			}
 
 		//--------------------------------------------------
+		// Value
+
+			public function value_hidden_get() {
+				return '';
+			}
+
+		//--------------------------------------------------
 		// Status
 
 			public function valid() {
 				return $this->form->_field_valid($this->form_field_uid);
-			}
-
-			public function hidden_value_get() {
-				return '';
 			}
 
 		//--------------------------------------------------
@@ -294,7 +297,7 @@
 			}
 
 		//--------------------------------------------------
-		// HTML output
+		// HTML
 
 			public function html_label($label_html = NULL) {
 
@@ -335,15 +338,39 @@
 
 			}
 
-			public function html_field() {
+			protected function _html_input($attributes_custom) {
+
+				$attributes_base = array(
+						'type' => 'text',
+						'name' => $this->name,
+						'id' => $this->id,
+					);
+
+				if ($this->required) {
+					$attributes_base['required'] = 'required';
+				}
+
+				if ($this->class_input !== NULL) {
+					$attributes_base['class'] = $this->class_input;
+				}
+
+				$html = '<input';
+				foreach (array_merge($attributes_base, $attributes_custom) as $name => $value) {
+					$html .= ' ' . $name . '="' . html($value) . '"';
+				}
+				return $html . ' />';
+
+			}
+
+			public function html_input() {
 				return 'ERROR';
 			}
 
 			public function html() {
 				return '
 					<div class="' . html($this->class_row_get()) . '">
-						<span class="label">' . $this->html_label() . $this->label_suffix_html . '</span>
-						<span class="input">' . $this->html_field() . '</span>' . $this->info_get_html(6) . '
+						<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>
+						<span class="' . html($this->class_input_span) . '">' . $this->html_input() . '</span>' . $this->info_get_html(6) . '
 					</div>' . "\n";
 			}
 

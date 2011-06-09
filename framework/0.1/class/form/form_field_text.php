@@ -9,6 +9,7 @@
 			protected $min_length;
 			protected $max_length;
 			protected $size;
+			protected $placeholder;
 
 		//--------------------------------------------------
 		// Setup
@@ -39,6 +40,7 @@
 					$this->min_length = NULL;
 					$this->max_length = NULL;
 					$this->size = NULL;
+					$this->placeholder = NULL;
 					$this->type = 'text';
 
 			}
@@ -47,22 +49,8 @@
 				$this->size = $size;
 			}
 
-		//--------------------------------------------------
-		// Value
-
-			public function value_set($value) {
-				$this->value = $value;
-			}
-
-			public function value_get() {
-				return $this->value;
-			}
-
-			public function value_print_get() {
-				if ($this->value === NULL) {
-					return $this->form->db_select_value_get($this->db_field_name);
-				}
-				return $this->value;
+			public function placeholder_set($placeholder) {
+				$this->placeholder = $placeholder;
 			}
 
 		//--------------------------------------------------
@@ -105,6 +93,28 @@
 			}
 
 		//--------------------------------------------------
+		// Value
+
+			public function value_set($value) {
+				$this->value = $value;
+			}
+
+			public function value_get() {
+				return $this->value;
+			}
+
+			public function value_print_get() {
+				if ($this->value === NULL) {
+					return $this->form->db_select_value_get($this->db_field_name);
+				}
+				return $this->value;
+			}
+
+			public function value_hidden_get() {
+				return $this->value_print_get();
+			}
+
+		//--------------------------------------------------
 		// Validation
 
 			private function _post_validation() {
@@ -118,17 +128,33 @@
 			}
 
 		//--------------------------------------------------
-		// Status
+		// HTML
 
-			public function hidden_value_get() {
-				return $this->value_print_get();
+			protected function _input_attributes() {
+
+				$attributes = array(
+						'type' => 'text',
+						'value' => $this->value_print_get(),
+					);
+
+				if ($this->size !== NULL) {
+					$attributes['size'] = intval($this->size);
+				}
+
+				if ($this->max_length !== NULL) {
+					$attributes['maxlength'] = intval($this->max_length);
+				}
+
+				if ($this->placeholder !== NULL) {
+					$attributes['placeholder'] = $this->placeholder;
+				}
+
+				return $attributes;
+
 			}
 
-		//--------------------------------------------------
-		// HTML output
-
-			public function html_field() {
-				return '<input type="text" name="' . html($this->name) . '" id="' . html($this->id) . '" maxlength="' . html($this->max_length) . '" value="' . html($this->value_print_get()) . '"' . ($this->size === NULL ? '' : ' size="' . intval($this->size) . '"') . ($this->class_field === NULL ? '' : ' class="' . html($this->class_field) . '"') . ' />';
+			public function html_input() {
+				return $this->_html_input($this->_input_attributes());
 			}
 
 	}

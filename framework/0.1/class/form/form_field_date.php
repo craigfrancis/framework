@@ -29,10 +29,12 @@
 					if ($this->value === NULL) {
 						if ($this->form_submitted) {
 
+							$form_method = $form->form_method_get();
+
 							$this->value = array(
-									'D' => intval(data($this->name . '_D', $form->form_method_get())),
-									'M' => intval(data($this->name . '_M', $form->form_method_get())),
-									'Y' => intval(data($this->name . '_Y', $form->form_method_get())),
+									'D' => intval(data($this->name . '_D', $form_method)),
+									'M' => intval(data($this->name . '_M', $form_method)),
+									'Y' => intval(data($this->name . '_Y', $form_method)),
 								);
 
 						} else if ($this->db_field_name !== NULL) {
@@ -59,64 +61,11 @@
 					$this->invalid_error_found = false;
 					$this->type = 'date';
 
-			}
+				//--------------------------------------------------
+				// Info
 
-		//--------------------------------------------------
-		// Value
+					$this->info_set_html($this->html_date_info());
 
-			public function value_provided() {
-				return $this->value_provided;
-			}
-
-			public function value_set($value, $month = NULL, $year = NULL) {
-				if ($month === NULL && $year === NULL) {
-
-					if (!is_numeric($value)) {
-						if ($value == '0000-00-00' || $value == '0000-00-00 00:00:00') {
-							$value = NULL;
-						} else {
-							$value = strtotime($value);
-							if ($value == 943920000) { // "1999-11-30 00:00:00", same as the database "0000-00-00 00:00:00"
-								$value = NULL;
-							}
-						}
-					}
-
-					if (is_numeric($value)) {
-						$this->value['D'] = date('j', $value);
-						$this->value['M'] = date('n', $value);
-						$this->value['Y'] = date('Y', $value);
-					}
-
-				} else {
-					$this->value['D'] = intval($value);
-					$this->value['M'] = intval($month);
-					$this->value['Y'] = intval($year);
-				}
-			}
-
-			public function value_get($part = NULL) {
-				if ($part == 'D' || $part == 'M' || $part == 'Y') {
-					return $this->value[$part];
-				} else {
-					return 'The date part must be set to "D", "M" or "Y"... or you could use value_date_get() or value_time_stamp_get()';
-				}
-			}
-
-			public function value_date_get() {
-				return str_pad(intval($this->value['Y']), 4, '0', STR_PAD_LEFT) . '-' . str_pad(intval($this->value['M']), 2, '0', STR_PAD_LEFT) . '-' . str_pad(intval($this->value['D']), 2, '0', STR_PAD_LEFT);
-			}
-
-			public function value_time_stamp_get() {
-				if ($this->value['M'] == 0 && $this->value['D'] == 0 && $this->value['Y'] == 0) {
-					$timestamp = false;
-				} else {
-					$timestamp = mktime(0, 0, 0, $this->value['M'], $this->value['D'], $this->value['Y']);
-					if ($timestamp === -1) {
-						$timestamp = false; // If the arguments are invalid, the function returns FALSE (before PHP 5.1 it returned -1).
-					}
-				}
-				return $timestamp;
 			}
 
 		//--------------------------------------------------
@@ -177,6 +126,64 @@
 			}
 
 		//--------------------------------------------------
+		// Value
+
+			public function value_set($value, $month = NULL, $year = NULL) {
+				if ($month === NULL && $year === NULL) {
+
+					if (!is_numeric($value)) {
+						if ($value == '0000-00-00' || $value == '0000-00-00 00:00:00') {
+							$value = NULL;
+						} else {
+							$value = strtotime($value);
+							if ($value == 943920000) { // "1999-11-30 00:00:00", same as the database "0000-00-00 00:00:00"
+								$value = NULL;
+							}
+						}
+					}
+
+					if (is_numeric($value)) {
+						$this->value['D'] = date('j', $value);
+						$this->value['M'] = date('n', $value);
+						$this->value['Y'] = date('Y', $value);
+					}
+
+				} else {
+					$this->value['D'] = intval($value);
+					$this->value['M'] = intval($month);
+					$this->value['Y'] = intval($year);
+				}
+			}
+
+			public function value_get($part = NULL) {
+				if ($part == 'D' || $part == 'M' || $part == 'Y') {
+					return $this->value[$part];
+				} else {
+					return 'The date part must be set to "D", "M" or "Y"... or you could use value_date_get() or value_time_stamp_get()';
+				}
+			}
+
+			public function value_date_get() {
+				return str_pad(intval($this->value['Y']), 4, '0', STR_PAD_LEFT) . '-' . str_pad(intval($this->value['M']), 2, '0', STR_PAD_LEFT) . '-' . str_pad(intval($this->value['D']), 2, '0', STR_PAD_LEFT);
+			}
+
+			public function value_time_stamp_get() {
+				if ($this->value['M'] == 0 && $this->value['D'] == 0 && $this->value['Y'] == 0) {
+					$timestamp = false;
+				} else {
+					$timestamp = mktime(0, 0, 0, $this->value['M'], $this->value['D'], $this->value['Y']);
+					if ($timestamp === -1) {
+						$timestamp = false; // If the arguments are invalid, the function returns FALSE (before PHP 5.1 it returned -1).
+					}
+				}
+				return $timestamp;
+			}
+
+			public function value_hidden_get() {
+				return $this->value_date_get(); // TODO: Database support, $this->value_print_get() ?
+			}
+
+		//--------------------------------------------------
 		// Validation
 
 			private function _post_validation() {
@@ -190,14 +197,7 @@
 			}
 
 		//--------------------------------------------------
-		// Status
-
-			public function hidden_value_get() {
-				return $this->value_date_get(); // TODO: Database support, $this->value_print_get() ?
-			}
-
-		//--------------------------------------------------
-		// HTML output
+		// HTML
 
 			public function html_label($part = 'D', $label_html = NULL) {
 
@@ -213,7 +213,7 @@
 
 					$required_mark_position = $this->required_mark_position;
 					if ($required_mark_position === NULL) {
-						$required_mark_position = $this->required_mark_position_get();
+						$required_mark_position = $this->form->required_mark_position_get();
 					}
 
 				//--------------------------------------------------
@@ -237,17 +237,25 @@
 				//--------------------------------------------------
 				// Return the HTML for the label
 
-					return '<label for="' . html($this->id) . '_' . html($part) . '"' . ($this->class_label === NULL ? '' : ' class="' . html($this->class_label) . '"') . '>' . ($required_mark_position == FORM_REQ_MARK_POS_LEFT && $required_mark_html !== NULL ? $required_mark_html : '') . ($label_html !== NULL ? $label_html : $this->label_html) . ($required_mark_position == FORM_REQ_MARK_POS_RIGHT && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>';
+					return '<label for="' . html($this->id) . '_' . html($part) . '"' . ($this->class_label === NULL ? '' : ' class="' . html($this->class_label) . '"') . '>' . ($required_mark_position == 'left' && $required_mark_html !== NULL ? $required_mark_html : '') . ($label_html !== NULL ? $label_html : $this->label_html) . ($required_mark_position == 'right' && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>';
 
 			}
 
-			public function html_label_for_date($separator_html = '/', $day_html = 'DD', $month_html = 'MM', $year_html = 'YYYY') {
+			public function html_date_info($separator_html = '/', $day_html = 'DD', $month_html = 'MM', $year_html = 'YYYY') {
 				return '<label for="' . html($this->id) . '_D">' . $day_html . '</label>' . $separator_html . '<label for="' . html($this->id) . '_M">' . $month_html . '</label>' . $separator_html . '<label for="' . html($this->id) . '_Y">' . $year_html . '</label>';
 			}
 
-			public function html_field($part = NULL) {
+			public function html_input($part = NULL) {
 				if ($part == 'D' || $part == 'M' || $part == 'Y') {
-					return '<input type="text" name="' . html($this->name) . '_' . html($part) . '" id="' . html($this->id) . '_' . html($part) . '" maxlength="' . ($part == 'Y' ? 4 : 2) . '" size="' . ($part == 'Y' ? 4 : 2) . '" value="' . html($this->value[$part] == 0 ? '' : $this->value[$part]) . '"' . ($this->class_field === NULL ? '' : ' class="' . html($this->class_field) . '"') . ' />';
+
+					return $this->_html_input(array(
+								'name' => $this->name . '_' . $part,
+								'id' => $this->id . '_' . $part,
+								'maxlength' => ($part == 'Y' ? 4 : 2),
+								'size' => ($part == 'Y' ? 4 : 2),
+								'value' => ($this->value[$part] == 0 ? '' : $this->value[$part]),
+							));
+
 				} else {
 					return 'The date part must be set to "D", "M" or "Y"';
 				}
@@ -256,13 +264,12 @@
 			public function html() {
 				return '
 					<div class="' . html($this->class_row_get()) . '">
-						<span class="label">' . $this->html_label() . $this->label_suffix_html . '</span>
-						<span class="input">
-							' . $this->html_field('D') . '
-							' . $this->html_field('M') . '
-							' . $this->html_field('Y') . '
-						</span>
-						<span class="help">' . $this->html_label_for_date() . '</span>' . $this->info_get_html(6) . '
+						<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>
+						<span class="' . html($this->class_input_span) . '">
+							' . $this->html_input('D') . '
+							' . $this->html_input('M') . '
+							' . $this->html_input('Y') . '
+						</span>' . $this->info_get_html(6) . '
 					</div>' . "\n";
 			}
 

@@ -271,7 +271,7 @@
 				}
 			}
 
-			public function db_field_gets() {
+			public function db_fields_get() {
 				return $this->db_fields;
 			}
 
@@ -604,7 +604,7 @@
 			}
 
 		//--------------------------------------------------
-		// HTML output
+		// HTML
 
 			public function html_start($config = NULL) {
 
@@ -668,7 +668,7 @@
 
 				foreach ($this->fields as $field_id => $field) {
 					if ($field->print_hidden_get()) {
-						$this->hidden_values[$field->name_get()] = $field->hidden_value_get();
+						$this->hidden_values[$field->name_get()] = $field->value_hidden_get();
 					}
 				}
 

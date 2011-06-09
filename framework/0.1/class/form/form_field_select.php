@@ -12,8 +12,8 @@
 			protected $label_option;
 			protected $required_error_set;
 			protected $invalid_error_set;
-			protected $select_option_by_key;
-			protected $re_index_keys_in_html;
+			protected $key_select;
+			protected $re_index_keys;
 
 		//--------------------------------------------------
 		// Setup
@@ -40,8 +40,8 @@
 					$this->label_option = NULL;
 					$this->required_error_set = false;
 					$this->invalid_error_set = false;
-					$this->select_option_by_key = true;
-					$this->re_index_keys_in_html = true;
+					$this->key_select = true;
+					$this->re_index_keys = true;
 					$this->type = 'select';
 
 			}
@@ -58,12 +58,12 @@
 
 			}
 
-			public function select_option_by_key($by_key) { // Use the values of the array, rather than the keys
-				$this->select_option_by_key = ($by_key == true);
+			public function key_select_set($by_key) { // Use the values of the array, rather than the keys
+				$this->key_select = ($by_key == true);
 			}
 
-			public function re_index_keys_in_html($re_index) { // Doing this makes detection of the label option more error prone
-				$this->re_index_keys_in_html = ($re_index == true);
+			public function re_index_keys_set($re_index) { // Doing this makes detection of the label option more error prone
+				$this->re_index_keys = ($re_index == true);
 			}
 
 			public function label_option_set($text = NULL) {
@@ -84,6 +84,49 @@
 			}
 
 		//--------------------------------------------------
+		// Errors
+
+			public function required_error_set($error) {
+
+				if ($this->key_select && $this->re_index_keys) {
+					$is_label = (intval($this->value) == 0);
+				} else {
+					$is_label = ($this->value == ''); // Best guess
+				}
+
+				if ($this->form_submitted && $is_label) {
+					$this->form->_field_error_set_html($this->form_field_uid, $error);
+				}
+
+				$this->required = ($error !== NULL);
+				$this->required_error_set = true;
+
+			}
+
+			public function invalid_error_set($error) {
+
+				if ($this->key_select) {
+					if ($this->re_index_keys) {
+						$is_label = (intval($this->value) == 0);
+						$is_value = isset($this->option_values[(intval($this->value) - 1)]);
+					} else {
+						$is_label = ($this->value == ''); // Best guess
+						$is_value = array_search($this->value, $this->option_keys);
+					}
+				} else {
+					$is_label = ($this->value == ''); // Best guess
+					$is_value = array_search($this->value, $this->option_values);
+				}
+
+				if ($this->form_submitted && !$is_label && ($is_value === false || $is_value === NULL)) {
+					$this->form->_field_error_set_html($this->form_field_uid, $error);
+				}
+
+				$this->invalid_error_set = true;
+
+			}
+
+		//--------------------------------------------------
 		// Value
 
 			public function value_set($value) {
@@ -95,8 +138,8 @@
 
 			public function value_key_set($value) {
 				if ($value === NULL) {
-					if ($this->select_option_by_key) {
-						if ($this->re_index_keys_in_html) {
+					if ($this->key_select) {
+						if ($this->re_index_keys) {
 							$this->value = 0;
 						} else {
 							$this->value = '';
@@ -107,8 +150,8 @@
 				} else {
 					$key = array_search($value, $this->option_keys);
 					if ($key !== false && $key !== NULL) {
-						if ($this->select_option_by_key) {
-							if ($this->re_index_keys_in_html) {
+						if ($this->key_select) {
+							if ($this->re_index_keys) {
 								$this->value = ($key + 1);
 							} else {
 								$this->value = $value;
@@ -121,8 +164,8 @@
 			}
 
 			public function value_get() {
-				if ($this->select_option_by_key) {
-					if ($this->re_index_keys_in_html) {
+				if ($this->key_select) {
+					if ($this->re_index_keys) {
 						$key = (intval($this->value) - 1);
 						return (isset($this->option_values[$key]) ? $this->option_values[$key] : NULL);
 					} else {
@@ -144,8 +187,8 @@
 			}
 
 			public function value_key_get() {
-				if ($this->select_option_by_key) {
-					if ($this->re_index_keys_in_html) {
+				if ($this->key_select) {
+					if ($this->re_index_keys) {
 						$key = (intval($this->value) - 1);
 						return (isset($this->option_keys[$key]) ? $this->option_keys[$key] : NULL);
 					} else {
@@ -168,8 +211,8 @@
 			private function _ref_get($value, $mode) {
 				$key = array_search($value, ($mode == 'key' ? $this->option_keys : $this->option_values));
 				if ($key !== false && $key !== NULL) {
-					if ($this->select_option_by_key) {
-						if ($this->re_index_keys_in_html) {
+					if ($this->key_select) {
+						if ($this->re_index_keys) {
 							return ($key + 1);
 						} else {
 							return $this->option_keys[$key];
@@ -188,47 +231,11 @@
 				return $this->value;
 			}
 
-		//--------------------------------------------------
-		// Errors
-
-			public function required_error_set($error) {
-
-				if ($this->select_option_by_key && $this->re_index_keys_in_html) {
-					$is_label = (intval($this->value) == 0);
-				} else {
-					$is_label = ($this->value == ''); // Best guess
+			public function value_hidden_get() {
+				if ($this->label_option === NULL && $this->value === NULL && count($this->option_values) > 0) {
+					return $this->_ref_get(reset($this->option_values), 'value'); // Don't have a label or value, default to the first option to avoid validation error
 				}
-
-				if ($this->form_submitted && $is_label) {
-					$this->form->_field_error_set_html($this->form_field_uid, $error);
-				}
-
-				$this->required = ($error !== NULL);
-				$this->required_error_set = true;
-
-			}
-
-			public function invalid_error_set($error) {
-
-				if ($this->select_option_by_key) {
-					if ($this->re_index_keys_in_html) {
-						$is_label = (intval($this->value) == 0);
-						$is_value = isset($this->option_values[(intval($this->value) - 1)]);
-					} else {
-						$is_label = ($this->value == ''); // Best guess
-						$is_value = array_search($this->value, $this->option_keys);
-					}
-				} else {
-					$is_label = ($this->value == ''); // Best guess
-					$is_value = array_search($this->value, $this->option_values);
-				}
-
-				if ($this->form_submitted && !$is_label && ($is_value === false || $is_value === NULL)) {
-					$this->form->_field_error_set_html($this->form_field_uid, $error);
-				}
-
-				$this->invalid_error_set = true;
-
+				return $this->value_print_get();
 			}
 
 		//--------------------------------------------------
@@ -245,36 +252,26 @@
 			}
 
 		//--------------------------------------------------
-		// Status
+		// HTML
 
-			public function hidden_value_get() {
-				if ($this->label_option === NULL && $this->value === NULL && count($this->option_values) > 0) {
-					return $this->_ref_get(reset($this->option_values), 'value'); // Don't have a label or value, default to the first option to avoid validation error
-				}
-				return $this->value_print_get();
-			}
-
-		//--------------------------------------------------
-		// HTML output
-
-			public function html_field() {
+			public function html_input() {
 
 				$value = $this->value_print_get();
 
 				$html = '
-							<select name="' . html($this->name) . '" id="' . html($this->id) . '"' . ($this->select_size <= 1 ? '' : ' size="' . intval($this->select_size) . '"') . ($this->class_field === NULL ? '' : ' class="' . html($this->class_field) . '"') . '>';
+							<select name="' . html($this->name) . '" id="' . html($this->id) . '"' . ($this->select_size <= 1 ? '' : ' size="' . intval($this->select_size) . '"') . ($this->class_input === NULL ? '' : ' class="' . html($this->class_input) . '"') . '>';
 
 				if ($this->label_option !== NULL) {
 					$html .= '
-								<option value="' . ($this->re_index_keys_in_html ? '0' : '') . '">' . ($this->label_option === '' ? '&nbsp;' : html($this->label_option)) . '</option>';
+								<option value="' . ($this->re_index_keys ? '0' : '') . '">' . ($this->label_option === '' ? '&nbsp;' : html($this->label_option)) . '</option>';
 				}
 
 				if ($this->opt_groups === NULL) {
 
 					foreach ($this->option_values as $key => $option) {
 
-						if ($this->select_option_by_key) {
-							if ($this->re_index_keys_in_html) {
+						if ($this->key_select) {
+							if ($this->re_index_keys) {
 								$key++; // 0 represents the label_option
 							} else {
 								$key = $this->option_keys[$key];
@@ -304,8 +301,8 @@
 								$value = '?';
 							}
 
-							if ($this->select_option_by_key) {
-								if ($this->re_index_keys_in_html) {
+							if ($this->key_select) {
+								if ($this->re_index_keys) {
 									$value_key++; // 0 represents the label_option
 								} else {
 									$value_key = $key;

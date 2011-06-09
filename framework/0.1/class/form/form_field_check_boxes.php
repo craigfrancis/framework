@@ -7,7 +7,10 @@
 		//--------------------------------------------------
 		// Variables
 
-
+			protected $values;
+			protected $option_values;
+			protected $option_keys;
+			protected $re_index_keys;
 
 		//--------------------------------------------------
 		// Setup
@@ -25,7 +28,7 @@
 					$this->values = array();
 					$this->option_values = array();
 					$this->option_keys = array();
-					$this->re_index_keys_in_html = true;
+					$this->re_index_keys = true;
 					$this->type = 'checkboxes';
 
 			}
@@ -42,8 +45,8 @@
 
 			}
 
-			public function re_index_keys_in_html($re_index) { // Doing this makes detection of the label option more error prone
-				$this->re_index_keys_in_html = ($re_index == true);
+			public function re_index_keys_set($re_index) { // Doing this makes detection of the label option more error prone
+				$this->re_index_keys = ($re_index == true);
 			}
 
 			public function options_set($options) {
@@ -63,13 +66,13 @@
 
 						foreach ($this->option_keys as $field_id => $c_key) {
 
-							if ($this->re_index_keys_in_html) {
+							if ($this->re_index_keys) {
 								$name = $this->name . '_'  . $field_id;
 							} else {
 								$name = $this->name . '_'  . $c_key;
 							}
 
-							$selected = (data($name, $this->form->form_method) == 'true');
+							$selected = (data($name, $this->form->form_method_get()) == 'true');
 
 							if ($selected) {
 								$this->values[] = $field_id;
@@ -143,24 +146,47 @@
 				return $return;
 			}
 
-		//--------------------------------------------------
-		// Status
-
-			public function hidden_value_get() {
+			public function value_hidden_get() {
 				return $this->value_key_get();
 			}
 
+			public function field_id_by_value_get($value) {
+				$id = array_search($value, $this->option_values);
+				if ($id !== false && $id !== NULL) {
+					if ($this->re_index_keys) {
+						return $this->id . '_' . $id;
+					} else {
+						return $this->id . '_' . $this->option_keys[$id];
+					}
+				} else {
+					return 'Unknown value "' . html($value) . '"';
+				}
+			}
+
+			public function field_id_by_key_get($key) {
+				$id = array_search($key, $this->option_keys);
+				if ($id !== false && $id !== NULL) {
+					if ($this->re_index_keys) {
+						return $this->id . '_' . $id;
+					} else {
+						return $this->id . '_' . $key;
+					}
+				} else {
+					return 'Unknown key "' . html($key) . '"';
+				}
+			}
+
 		//--------------------------------------------------
-		// HTML output
+		// HTML
 
 			public function html() {
 				$html = '
 					<div class="' . html($this->class_row_get()) . '">
-						<span class="label">' . $this->html_label() . $this->label_suffix_html . '</span>';
+						<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>';
 				foreach ($this->option_keys as $key) {
 					$html .= '
-						<span class="input">
-							' . $this->html_field_by_key($key) . '
+						<span class="' . html($this->class_input_span) . '">
+							' . $this->html_input_by_key($key) . '
 							' . $this->html_label_by_key($key) . '
 						</span>';
 				}
@@ -215,7 +241,7 @@
 
 				}
 
-				if ($this->re_index_keys_in_html) {
+				if ($this->re_index_keys) {
 					$input_id = $this->id . '_' . $field_id;
 				} else {
 					$input_id = $this->id . '_' . $this->option_keys[$field_id];
@@ -225,68 +251,51 @@
 
 			}
 
-			public function html_field() {
-				return 'Please use html_field_by_value or html_field_by_key';
+			public function html_input() {
+				return 'Please use html_input_by_value or html_input_by_key';
 			}
 
-			public function html_field_by_value($value) {
+			public function html_input_by_value($value) {
 				$id = array_search($value, $this->option_values);
 				if ($id !== false && $id !== NULL) {
-					return $this->_html_field_by_id($id);
+					return $this->_html_input_by_id($id);
 				} else {
 					return 'Unknown value "' . html($value) . '"';
 				}
 			}
 
-			public function html_field_by_key($key) {
+			public function html_input_by_key($key) {
 				$id = array_search($key, $this->option_keys);
 				if ($id !== false && $id !== NULL) {
-					return $this->_html_field_by_id($id);
+					return $this->_html_input_by_id($id);
 				} else if ($key === NULL) {
-					return $this->_html_field_by_id(-1); // label_option
+					return $this->_html_input_by_id(-1); // label_option
 				} else {
 					return 'Unknown key "' . html($key) . '"';
 				}
 			}
 
-			private function _html_field_by_id($field_id) {
+			private function _html_input_by_id($field_id) {
 
-				if ($this->re_index_keys_in_html) {
-					$input_id = $this->id . '_' . $field_id;
-					$input_name = $this->name . '_' . $field_id;
+				$attributes = array(
+						'type' => 'checkbox',
+						'value' => 'true',
+					);
+
+				if ($this->re_index_keys) {
+					$attributes['id'] = $this->id . '_' . $field_id;
+					$attributes['name'] = $this->name . '_' . $field_id;
 				} else {
-					$input_id = $this->id . '_' . $this->option_keys[$field_id];
-					$input_name = $this->name . '_' . $this->option_keys[$field_id];
+					$attributes['id'] = $this->id . '_' . $this->option_keys[$field_id];
+					$attributes['name'] = $this->name . '_' . $this->option_keys[$field_id];
 				}
 
-				return '<input type="checkbox" name="' . html($input_name) . '" id="' . html($input_id) . '" value="true"' . (in_array($field_id, $this->values) ? ' checked="checked"' : '') . ($this->class_field === NULL ? '' : ' class="' . html($this->class_field) . '"') . ' />';
-
-			}
-
-			public function field_id_by_value_get($value) {
-				$id = array_search($value, $this->option_values);
-				if ($id !== false && $id !== NULL) {
-					if ($this->re_index_keys_in_html) {
-						return $this->id . '_' . $id;
-					} else {
-						return $this->id . '_' . $this->option_keys[$id];
-					}
-				} else {
-					return 'Unknown value "' . html($value) . '"';
+				if (in_array($field_id, $this->values)) {
+					$attributes['checked'] = 'checked';
 				}
-			}
 
-			public function field_id_by_key_get($key) {
-				$id = array_search($key, $this->option_keys);
-				if ($id !== false && $id !== NULL) {
-					if ($this->re_index_keys_in_html) {
-						return $this->id . '_' . $id;
-					} else {
-						return $this->id . '_' . $key;
-					}
-				} else {
-					return 'Unknown key "' . html($key) . '"';
-				}
+				return $this->_html_input($attributes);
+
 			}
 
 	}

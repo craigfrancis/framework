@@ -9,6 +9,7 @@
 
 	<!-- V3 -->
 
+<!--
 		<?= $form->html_start() ?>
 			<fieldset>
 
@@ -24,9 +25,11 @@
 
 			</fieldset>
 		<?= $form->html_end() ?>
+-->
 
 	<!-- V4 -->
 
+<!--
 		<?= $form->html_start(array('id' => 'my_id', 'class' => 'basic_form example_classes')) ?>
 			<fieldset>
 
@@ -38,7 +41,7 @@
 
 				<div class="row<?= ($field_message->valid() ? '' : ' error') ?>">
 					<span class="label"><?= $field_message->html_label() ?></span>
-					<span class="input"><?= $field_message->html_field() ?></span>
+					<span class="input"><?= $field_message->html_input() ?></span>
 				</div>
 
 				<div class="row submit">
@@ -47,5 +50,6 @@
 
 			</fieldset>
 		<?= $form->html_end() ?>
+-->
 
 	<!-- END -->

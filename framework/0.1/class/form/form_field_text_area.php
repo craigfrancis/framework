@@ -2,36 +2,70 @@
 
 	class form_field_text_area extends form_field_text {
 
-		protected $textarea_rows;
-		protected $textarea_cols;
+		//--------------------------------------------------
+		// Variables
 
-		public function __construct(&$form, $label, $name = NULL) {
+			protected $textarea_rows;
+			protected $textarea_cols;
 
-			//--------------------------------------------------
-			// Perform the standard field setup
+		//--------------------------------------------------
+		// Setup
 
-				$this->_setup_text($form, $label, $name);
+			public function __construct(&$form, $label, $name = NULL) {
 
-			//--------------------------------------------------
-			// Additional field configuration
+				//--------------------------------------------------
+				// Perform the standard field setup
 
-				$this->textarea_rows = 5;
-				$this->textarea_cols = 40;
-				$this->type = 'textarea';
+					$this->_setup_text($form, $label, $name);
 
-		}
+				//--------------------------------------------------
+				// Additional field configuration
 
-		public function rows_set($rows) {
-			$this->textarea_rows = $rows;
-		}
+					$this->textarea_rows = 5;
+					$this->textarea_cols = 40;
+					$this->type = 'textarea';
 
-		public function cols_set($cols) {
-			$this->textarea_cols = $cols;
-		}
+			}
 
-		public function html_field() {
-			return '<textarea name="' . html($this->name) . '" id="' . html($this->id) . '" rows="' . intval($this->textarea_rows) . '" cols="' . intval($this->textarea_cols) . '"' . ($this->class_field === NULL ? '' : ' class="' . html($this->class_field) . '"') . '>' . html($this->value) . '</textarea>';
-		}
+			public function rows_set($rows) {
+				$this->textarea_rows = $rows;
+			}
+
+			public function cols_set($cols) {
+				$this->textarea_cols = $cols;
+			}
+
+		//--------------------------------------------------
+		// HTML
+
+			public function html_input() {
+
+				$attributes = array(
+						'name' => $this->name,
+						'id' => $this->id,
+						'rows' => intval($this->textarea_rows),
+						'cols' => intval($this->textarea_cols),
+					);
+
+				if ($this->required) {
+					$attributes['required'] = 'required';
+				}
+
+				if ($this->class_input !== NULL) {
+					$attributes['class'] = $this->class_input;
+				}
+
+				if ($this->placeholder !== NULL) {
+					$attributes['placeholder'] = $this->placeholder;
+				}
+
+				$html = '<textarea';
+				foreach ($attributes as $name => $value) {
+					$html .= ' ' . $name . '="' . html($value) . '"';
+				}
+				return $html . '>' . html($this->value) . '</textarea>';
+
+			}
 
 	}
 
