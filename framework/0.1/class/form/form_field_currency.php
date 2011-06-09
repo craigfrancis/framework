@@ -22,7 +22,7 @@
 				// Strip currency symbol from input value
 
 					if ($this->form_submitted) {
-						$this->value_set($this->value); // TODO: Test
+						$this->value_set($this->value);
 					}
 
 				//--------------------------------------------------
