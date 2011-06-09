@@ -47,6 +47,10 @@
 						'cols' => intval($this->textarea_cols),
 					);
 
+				if ($this->max_length !== NULL) {
+					$attributes['maxlength'] = intval($this->max_length);
+				}
+
 				if ($this->required) {
 					$attributes['required'] = 'required';
 				}
