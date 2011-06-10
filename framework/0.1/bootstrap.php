@@ -23,7 +23,7 @@
 	}
 
 	if (!defined('ROOT_APP'))       define('ROOT_APP',       ROOT . DS . 'app');
-	if (!defined('ROOT_FILE'))      define('ROOT_FILE',      ROOT . DS . 'file');
+	if (!defined('ROOT_FILE'))      define('ROOT_FILE',      ROOT . DS . 'file'); // TODO: What happens if you want to set this on a per server basis?
 	if (!defined('ROOT_PUBLIC'))    define('ROOT_PUBLIC',    ROOT . DS . 'public');
 	if (!defined('ROOT_VENDOR'))    define('ROOT_VENDOR',    ROOT . DS . 'vendor');
 

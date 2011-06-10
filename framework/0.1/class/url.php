@@ -90,7 +90,7 @@
 				// parameters change on each call.
 
 					if ($this->cache_base === NULL) {
-						$this->cache_base = $this->base_get();
+						$this->cache_base = $this->_base_get();
 					}
 
 					$output = $this->cache_base;
@@ -128,7 +128,7 @@
 
 			}
 
-			private function base_get() {
+			private function _base_get() {
 
 				//--------------------------------------------------
 				// Current path

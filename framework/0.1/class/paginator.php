@@ -205,8 +205,8 @@ class paginator extends check {
 		//--------------------------------------------------
 		// Return links
 
-			$nav_links_html = $this->html_nav_links();
-			$page_links_html = $this->html_page_links();
+			$nav_links_html = $this->_html_nav_links();
+			$page_links_html = $this->_html_page_links();
 
 		//--------------------------------------------------
 		// Extra
@@ -226,7 +226,7 @@ class paginator extends check {
 
 	}
 
-	private function html_nav_links() {
+	private function _html_nav_links() {
 
 		//--------------------------------------------------
 		// Defaults
@@ -280,7 +280,7 @@ class paginator extends check {
 
 	}
 
-	private function html_page_links() {
+	private function _html_page_links() {
 
 		//--------------------------------------------------
 		// Range of page numbers

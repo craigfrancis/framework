@@ -7,7 +7,7 @@
 
 		private $store = array();
 
-		final public static function set($variable, $value = NULL) {
+		public static function set($variable, $value = NULL) {
 			$obj = config::instance_get();
 			if (is_array($variable) && $value === NULL) {
 				$obj->store = array_merge($obj->store, $variable);
@@ -16,14 +16,14 @@
 			}
 		}
 
-		final public static function set_default($variable, $value) {
+		public static function set_default($variable, $value) {
 			$obj = config::instance_get();
 			if (!isset($obj->store[$variable])) {
 				$obj->store[$variable] = $value;
 			}
 		}
 
-		final public static function get($variable, $default = NULL) {
+		public static function get($variable, $default = NULL) {
 			$obj = config::instance_get();
 			if (isset($obj->store[$variable])) {
 				return $obj->store[$variable];
@@ -32,7 +32,7 @@
 			}
 		}
 
-		final public static function get_all($prefix = '') {
+		public static function get_all($prefix = '') {
 			$obj = config::instance_get();
 			$prefix .= '.';
 			$prefix_length = strlen($prefix);
@@ -49,7 +49,7 @@
 			}
 		}
 
-		final public static function array_push($variable, $value) {
+		public static function array_push($variable, $value) {
 			$obj = config::instance_get();
 			if (!isset($obj->store[$variable]) || !is_array($obj->store[$variable])) {
 				$obj->store[$variable] = array();
@@ -57,7 +57,7 @@
 			$obj->store[$variable][] = $value;
 		}
 
-		final public static function array_set($variable, $key, $value) {
+		public static function array_set($variable, $key, $value) {
 			$obj = config::instance_get();
 			if (!isset($obj->store[$variable]) || !is_array($obj->store[$variable])) {
 				$obj->store[$variable] = array();
@@ -65,7 +65,7 @@
 			$obj->store[$variable][$key] = $value;
 		}
 
-		final public static function array_search($variable, $value) {
+		public static function array_search($variable, $value) {
 			$obj = config::instance_get();
 			if (isset($obj->store[$variable]) && is_array($obj->store[$variable])) {
 				return array_search($value, $obj->store[$variable]);
@@ -85,7 +85,7 @@
 //
 // 		}
 
-		final private static function instance_get() {
+		private static function instance_get() {
 			static $instance = NULL;
 			if (!$instance) {
 				$instance = new config();

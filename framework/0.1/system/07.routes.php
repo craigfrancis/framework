@@ -37,19 +37,19 @@
 
 		if (substr($route_path, 0, 11) == '/robots.txt') {
 
-			$robots_path = ROOT . '/robots.txt'; // TODO
+			$robots_path = ROOT_APP . '/view/robots.txt';
 
-			if (is_file($robots_path)) {
-
-				config::set('output.mime', 'text/plain');
-
-				config::set('debug.show', false);
-
-				readfile($robots_path);
-
-				exit();
-
+			if (!is_file($robots_path)) {
+				$robots_path = ROOT_FRAMEWORK . '/library/view/robots.txt';
 			}
+
+			header('Content-type: text/plain; charset=' . head(config::get('output.charset')));
+
+			config::set('debug.show', false);
+
+			readfile($robots_path);
+
+			exit();
 
 		}
 
@@ -58,19 +58,19 @@
 
 		if (substr($route_path, 0, 12) == '/favicon.ico') {
 
-			$favicon_path = config::get('resource.favicon_path'); // TODO
+			$favicon_path = config::get('resource.favicon_path');
 
-			if (is_file($favicon_path)) {
-
-				config::set('output.mime', 'image/vnd.microsoft.icon');
-
-				config::set('debug.show', false);
-
-				readfile($favicon_path);
-
-				exit();
-
+			if (!is_file($favicon_path)) {
+				$favicon_path = ROOT_FRAMEWORK . '/library/view/favicon.ico';
 			}
+
+			header('Content-type: image/vnd.microsoft.icon; charset=' . head(config::get('output.charset')));
+
+			config::set('debug.show', false);
+
+			readfile($favicon_path);
+
+			exit();
 
 		}
 
@@ -79,7 +79,17 @@
 
 		if (substr($route_path, 0, 12) == '/sitemap.xml') {
 
-			require_once(ROOT . '/a/inc/global/sitemap.php'); // TODO
+			$sitemap_path = ROOT_APP . DS . 'core' . DS . 'sitemap.php';
+
+			if (!is_file($sitemap_path)) {
+				$sitemap_path = ROOT_FRAMEWORK . '/library/view/sitemap.php';
+			}
+
+			header('Content-type: application/xml; charset=' . head(config::get('output.charset')));
+
+			config::set('debug.show', false);
+
+			require_once($sitemap_path);
 
 			exit();
 
