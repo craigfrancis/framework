@@ -1,6 +1,6 @@
 <?php
 
-	class form extends check { // TODO: Remove check
+	class form extends check {
 
 		//--------------------------------------------------
 		// Variables

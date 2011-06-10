@@ -1,6 +1,6 @@
 <?php
 
-	class email extends check { // TODO: Remove check
+	class email extends check {
 
 		//--------------------------------------------------
 		// Variables

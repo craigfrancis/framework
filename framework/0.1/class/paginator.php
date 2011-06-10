@@ -44,7 +44,7 @@
 // End of example setup
 ***************************************************/
 
-class paginator {
+class paginator extends check {
 
 	private $config = array();
 	private $url = NULL;

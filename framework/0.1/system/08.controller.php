@@ -309,7 +309,7 @@
 				$note_html .= '&nbsp; &nbsp; $this->title_folder_name(' . html($id) . ', \'new_value\'); = \'<strong>' . html($value) . '</strong>\'<br />';
 			}
 
-			$note_html .= '&nbsp; &nbsp; $this->view_path_set(ROOT_APP . \'/view/file.php\');<br />';
+			$note_html .= '&nbsp; &nbsp; $this->view_path_set(ROOT_APP . \'/view/file.ctp\');<br />';
 			$note_html .= '&nbsp; &nbsp; $this->js_add(\'/path/to/file.js\');<br />';
 			$note_html .= '&nbsp; &nbsp; $this->css_add(\'/path/to/file.css\');<br />';
 			$note_html .= '&nbsp; &nbsp; $this->css_version_set(1);<br />';

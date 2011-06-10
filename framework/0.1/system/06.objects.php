@@ -6,7 +6,7 @@
 	//--------------------------------------------------
 	// Main
 
-		class base extends check { // TODO: Remove check
+		class base extends check {
 
 			public function route_folder($id) {
 				$folders = config::get('route.folders');
@@ -159,7 +159,7 @@
 				//--------------------------------------------------
 				// Default
 
-					$view_path_default = ROOT_APP . '/view/' . implode('/', config::get('view.folders')) . '.php';
+					$view_path_default = ROOT_APP . '/view/' . implode('/', config::get('view.folders')) . '.ctp';
 
 					config::set_default('view.path', $view_path_default);
 
@@ -179,10 +179,10 @@
 
 					if (!is_file($view_path)) {
 
-						$view_path = ROOT_APP . '/view/error/page_not_found.php';
+						$view_path = ROOT_APP . '/view/error/page_not_found.ctp';
 
 						if (!is_file($view_path)) {
-							$view_path = ROOT_FRAMEWORK . '/library/view/error_page_not_found.php';
+							$view_path = ROOT_FRAMEWORK . '/library/view/error_page_not_found.ctp';
 						}
 
 					}
@@ -278,7 +278,7 @@
 					}
 
 					$build_up_address = '/css/';
-					foreach (array('testing') as $f) { // TODO
+					foreach (path_to_array(config::get('route.path')) as $f) {
 						if ($f != '') {
 
 							$build_up_address .= $f . '/';
@@ -526,7 +526,7 @@
 					debug_progress('Find layout', 2);
 				}
 
-				$layout_path = ROOT_APP . '/view_layout/' . preg_replace('/[^a-zA-Z0-9_]/', '', config::get('view.layout')) . '.php';
+				$layout_path = ROOT_APP . '/view_layout/' . preg_replace('/[^a-zA-Z0-9_]/', '', config::get('view.layout')) . '.ctp';
 
 				if (config::get('debug.level') >= 3) {
 					debug_note_html('<strong>Layout</strong>: ' . html($layout_path));
@@ -534,7 +534,7 @@
 
 				if (!is_file($layout_path)) {
 
-					$layout_path = ROOT_FRAMEWORK . '/library/view/layout.php';
+					$layout_path = ROOT_FRAMEWORK . '/library/view/layout.ctp';
 
 					$head_html = "\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(ROOT_FRAMEWORK . '/library/view/layout.css')) . "\n\t" . '</style>';
 

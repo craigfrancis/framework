@@ -1,6 +1,6 @@
 <?php
 
-	class image extends check { // TODO: Remove check
+	class image extends check {
 
 		// ...
 

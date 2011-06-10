@@ -3,7 +3,7 @@
 	// config::get('url.default_format') - absolute (default) / full (includes domain) / relative (not implemented)
 	// config::get('url.prefix') - e.g. '/website' (not used).
 
-	class url extends check { // TODO: Remove check
+	class url extends check {
 
 		//--------------------------------------------------
 		// Setup
@@ -22,7 +22,6 @@
 				if (is_array($parameters)) {
 					$this->param($parameters);
 				}
-
 
 				if ($format === NULL) {
 					$this->format = config::get('url.default_format');

@@ -15,7 +15,7 @@
 
 	// http://fuelphp.com/docs/general/controllers/rest.html - more thoughts?
 
-	class controller_crud {
+	class controller_crud extends check {
 	}
 
 	class example extends controller_crud {

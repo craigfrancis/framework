@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // Site configuration
 
-	class config extends check { // TODO: Remove check
+	class config extends check {
 
 		private $store = array();
 
@@ -222,7 +222,7 @@
 		config::set_default('output.title_divide', ' | ');
 		config::set_default('output.title_error', 'An error has occurred');
 		config::set_default('output.css_version', 0);
-		config::set_default('output.page_ref_mode', 'request');
+		config::set_default('output.page_ref_mode', 'route');
 		config::set_default('output.block_browsers', array(
 				'/MSIE [1-5]\./',
 				'/MSIE.*; Mac_PowerPC/',

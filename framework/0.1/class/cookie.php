@@ -4,7 +4,7 @@
 // Based on code from Kohana cookie helper
 //--------------------------------------------------
 
-	class cookie {
+	class cookie extends check {
 
 		public static $salt = ROOT;
 

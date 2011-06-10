@@ -2,7 +2,7 @@
 
 	// TODO: When called statically? - use variable from config?
 
-	class db extends check { // TODO: Remove check
+	class db extends check {
 
 		private $result;
 		private $link;

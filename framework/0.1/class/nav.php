@@ -1,6 +1,6 @@
 <?php
 
-	class nav extends check { // TODO: Remove check
+	class nav extends check {
 
 		private $current_group;
 		private $current_index;

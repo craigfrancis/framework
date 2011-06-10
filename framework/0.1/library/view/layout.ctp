@@ -25,7 +25,7 @@
 		while (false !== ($file = readdir($handle))) {
 			if (substr($file, 0, 1) != '.') {
 
-				if (is_file($root_path . $file) && substr($file, -4) == '.php') {
+				if (is_file($root_path . $file) && substr($file, -4) == '.ctp') {
 
 					$root_folders[] = substr($file, 0, -4);
 

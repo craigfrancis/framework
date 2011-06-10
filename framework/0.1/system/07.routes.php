@@ -6,8 +6,7 @@
 	//--------------------------------------------------
 	// Get from config
 
-		$route_path = config::get('request.path');
-		$route_path = urldecode($route_path);
+		$route_path = urldecode(config::get('request.path'));
 
 		$url_prefix = config::get('url.prefix');
 		if ($url_prefix != '') {
