@@ -269,6 +269,8 @@
 
 		config::set('output.mime', 'text/html');
 
+		header('Content-type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
+
 		if (substr($url, 0, 7) == 'http://' && config::get('request.https') && strpos(config::get('request.browser'), 'MSIE 6') !== false) {
 			header('Refresh: 0; URL=' . head($url));
 			exit('<p><a href="' . html($url) . '">Loading...</a></p>');

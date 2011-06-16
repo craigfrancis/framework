@@ -296,7 +296,11 @@
 			} else {
 
 				if (config::get('output.mime') == 'application/xhtml+xml') {
+
 					config::set('output.mime', 'text/html');
+
+					header('Content-type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
+
 				}
 
 		 		return $buffer . $output_html;

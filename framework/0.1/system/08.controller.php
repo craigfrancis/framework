@@ -174,35 +174,60 @@
 			//--------------------------------------------------
 			// Find action methods
 
-				$actions = array('action_index');
+				$actions = array('action_index' => $route_stack);
 
-				$next_action = reset($route_stack);
+				$next_action = str_replace('-', '_', reset($route_stack));
 				if ($next_action !== false) {
-					$actions[] = 'action_' . $next_action;
+					$actions['action_' . $next_action] = $route_stack;
+					array_shift($actions['action_' . $next_action]);
 				}
 
-				foreach ($actions as $method) {
+				foreach ($actions as $method => $parameters) {
 
-					if (method_exists($controllers[$controller_id], $method)) {
+					$controller_log_prefix = $controller_path . ': ' . $controller_name . '->' . $method . '(' . implode(', ', $parameters) . ') - ';
+
+					$valid = true;
+
+					if (!method_exists($controllers[$controller_id], $method)) {
+						$controller_log[] = $controller_log_prefix . 'absent';
+						$valid = false;
+					}
+
+					if ($valid) {
+
+						$reflection_method = new ReflectionMethod($controller_name, $method);
+						$reflection_parameters = $reflection_method->getParameters();
+
+						foreach ($reflection_parameters as $id => $reflection_parameter) {
+							if (!$reflection_parameter->isOptional() && !isset($parameters[$id])) {
+								$controller_log[] = $controller_log_prefix . 'n/a';
+								$valid = false;
+							}
+						}
+
+					}
+
+					if ($valid && count($parameters) > count($reflection_parameters)) {
+						$controller_log[] = $controller_log_prefix . 'n/a';
+						$valid = false;
+					}
+
+					if ($valid) {
 
 						$action_controller_id = $controller_id;
 						$action_controller_path = $controller_path;
 						$action_controller_name = $controller_name;
 						$action_route_stack_used = $building_stack;
-						$action_route_stack_pending = $route_stack;
+						$action_route_stack_pending = $route_stack; // Don't use $parameters, as this non "action_index" method will move to $action_route_stack_used
 						$action_method = $method;
 
-						$controller_log[] = $controller_path . ': ' . $controller_name . '->' . $method . '() - found';
-
-					} else {
-
-						$controller_log[] = $controller_path . ': ' . $controller_name . '->' . $method . '() - absent';
+						$controller_log[] = $controller_log_prefix . 'found';
 
 					}
 
 				}
 
-				unset($actions, $next_action, $method);
+				unset($actions, $next_action, $method, $parameters, $controller_log_prefix, $valid, $reflection_method, $reflection_parameters, $reflection_parameter);
 
 		}
 

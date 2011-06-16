@@ -179,10 +179,10 @@
 
 					if (!is_file($view_path)) {
 
-						$view_path = ROOT_APP . '/view/error/page_not_found.ctp';
+						$view_path = ROOT_APP . DS . 'view' . DS . 'error' . DS . 'page_not_found.ctp';
 
 						if (!is_file($view_path)) {
-							$view_path = ROOT_FRAMEWORK . '/library/view/error_page_not_found.ctp';
+							$view_path = ROOT_FRAMEWORK . DS . 'library' . DS . 'view' . DS . 'error_page_not_found.ctp';
 						}
 
 					}

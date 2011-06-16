@@ -327,7 +327,8 @@ exit();
 
 		}
 
-		public function action_thank_you() {
+		public function action_thank_you($sub_page) {
+			print_r($sub_page);
 		}
 
 	}
