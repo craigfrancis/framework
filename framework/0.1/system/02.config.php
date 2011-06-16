@@ -155,19 +155,11 @@
 //--------------------------------------------------
 // App config
 
-	$config = array();
-
 	$include_path = ROOT_APP . DS . 'core' . DS . 'config.php';
 
 	if (is_file($include_path)) {
-
 		require_once($include_path);
-
-		config::set($config);
-
 	}
-
-	unset($config); // Must use config object
 
 //--------------------------------------------------
 // Defaults
