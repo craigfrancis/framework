@@ -153,9 +153,9 @@
 				if ($this->required_mark_html !== NULL) {
 					return $this->required_mark_html;
 				} else if ($required_mark_position == 'right') {
-					return '&nbsp;<abbr class="required" title="Required">*</abbr>';
+					return '&#xA0;<abbr class="required" title="Required">*</abbr>';
 				} else {
-					return '<abbr class="required" title="Required">*</abbr>&nbsp;';
+					return '<abbr class="required" title="Required">*</abbr>&#xA0;';
 				}
 			}
 
@@ -466,7 +466,7 @@
 
 					for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
 
-						$field_name = $this->fields[$field_id]->label_text_get();
+						$field_name = $this->fields[$field_id]->label_get_text();
 						$field_type = $this->fields[$field_id]->type_get();
 
 						if ($field_type == 'date') {

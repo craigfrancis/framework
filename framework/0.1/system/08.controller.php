@@ -280,7 +280,7 @@
 			$note_html = 'Controllers:<br />';
 
 			foreach ($controller_log as $log) {
-				$note_html .= '&nbsp; ' . preg_replace('/^([^:]+):/', '<strong>\1</strong>:', html($log)) . '<br />';
+				$note_html .= '&#xA0; ' . preg_replace('/^([^:]+):/', '<strong>\1</strong>:', html($log)) . '<br />';
 			}
 
 			debug_note_html($note_html);
@@ -314,33 +314,33 @@
 			$note_html  = '<strong>Action</strong>: ' . html($action_controller_path) . '<br />';
 
 			if ($action_controller_name !== NULL) {
-				$note_html .= '&nbsp; Calls:<br />';
-				$note_html .= '&nbsp; &nbsp; ' . html($action_controller_name) . '->before();<br />';
-				$note_html .= '&nbsp; &nbsp; ' . html($action_controller_name) . '->' . html($action_method) . '(' . html(print_r($action_route_stack_pending, true)) . ');<br />';
-				$note_html .= '&nbsp; &nbsp; ' . html($action_controller_name) . '->after();<br />';
+				$note_html .= '&#xA0; Calls:<br />';
+				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->before();<br />';
+				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->' . html($action_method) . '(' . html(print_r($action_route_stack_pending, true)) . ');<br />';
+				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->after();<br />';
 			}
 
-			$note_html .= '&nbsp; Methods:<br />';
+			$note_html .= '&#xA0; Methods:<br />';
 
 			foreach (config::get('route.variables') as $id => $value) {
-				$note_html .= '&nbsp; &nbsp; $this->route_variable(\'' . html($id) . '\'); = \'<strong>' . html($value) . '</strong>\'<br />';
+				$note_html .= '&#xA0; &#xA0; $this->route_variable(\'' . html($id) . '\'); = \'<strong>' . html($value) . '</strong>\'<br />';
 			}
 
 			foreach (config::get('route.folders') as $id => $value) {
-				$note_html .= '&nbsp; &nbsp; $this->route_folder(' . html($id) . '); = \'<strong>' . html($value) . '</strong>\'<br />';
+				$note_html .= '&#xA0; &#xA0; $this->route_folder(' . html($id) . '); = \'<strong>' . html($value) . '</strong>\'<br />';
 			}
 
 			foreach (config::get('output.title_folders') as $id => $value) {
-				$note_html .= '&nbsp; &nbsp; $this->title_folder_name(' . html($id) . ', \'new_value\'); = \'<strong>' . html($value) . '</strong>\'<br />';
+				$note_html .= '&#xA0; &#xA0; $this->title_folder_name(' . html($id) . ', \'new_value\'); = \'<strong>' . html($value) . '</strong>\'<br />';
 			}
 
-			$note_html .= '&nbsp; &nbsp; $this->view_path_set(ROOT_APP . \'/view/file.ctp\');<br />';
-			$note_html .= '&nbsp; &nbsp; $this->js_add(\'/path/to/file.js\');<br />';
-			$note_html .= '&nbsp; &nbsp; $this->css_add(\'/path/to/file.css\');<br />';
-			$note_html .= '&nbsp; &nbsp; $this->css_version_set(1);<br />';
-			$note_html .= '&nbsp; &nbsp; $this->head_add_html(\'&lt;html&gt;\');<br />';
-			$note_html .= '&nbsp; &nbsp; $this->page_ref_set(\'example_ref\');<br />';
-			$note_html .= '&nbsp; &nbsp; $this->message_set(\'The item has been updated.\');<br />';
+			$note_html .= '&#xA0; &#xA0; $this->view_path_set(ROOT_APP . \'/view/file.ctp\');<br />';
+			$note_html .= '&#xA0; &#xA0; $this->js_add(\'/path/to/file.js\');<br />';
+			$note_html .= '&#xA0; &#xA0; $this->css_add(\'/path/to/file.css\');<br />';
+			$note_html .= '&#xA0; &#xA0; $this->css_version_set(1);<br />';
+			$note_html .= '&#xA0; &#xA0; $this->head_add_html(\'&lt;html&gt;\');<br />';
+			$note_html .= '&#xA0; &#xA0; $this->page_ref_set(\'example_ref\');<br />';
+			$note_html .= '&#xA0; &#xA0; $this->message_set(\'The item has been updated.\');<br />';
 
 			debug_note_html($note_html);
 

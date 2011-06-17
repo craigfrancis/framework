@@ -82,7 +82,7 @@
 	function debug_progress($label, $indent = 0) {
 		$debug_run_time = debug_run_time();
 		$debug_diff = round(($debug_run_time - config::get('debug.progress')), 4);
-		debug_note_html(str_repeat('&nbsp; &nbsp; ', $indent) . $debug_run_time . ' / ' . str_pad($debug_diff, 6, '0') . ' - ' . ($debug_diff > 0.0005 ? '<strong style="color: #F00;">' : '') . $label . ($debug_diff > 0.0005 ? '</strong>' : ''));
+		debug_note_html(str_repeat('&#xA0; &#xA0; ', $indent) . $debug_run_time . ' / ' . str_pad($debug_diff, 6, '0') . ' - ' . ($debug_diff > 0.0005 ? '<strong style="color: #F00;">' : '') . $label . ($debug_diff > 0.0005 ? '</strong>' : ''));
 		config::set('debug.progress', $debug_run_time);
 	}
 
@@ -90,7 +90,7 @@
 // Debug notes
 
 	function debug_note($note) {
-		debug_note_html(nl2br(str_replace(' ', '&nbsp;', html(trim(print_r($note, true))))));
+		debug_note_html(nl2br(str_replace(' ', '&#xA0;', html(trim(print_r($note, true))))));
 	}
 
 	function debug_note_html($note_html) {
@@ -123,7 +123,7 @@
 
 			if (!$system_call) {
 
-				$note_html = '&nbsp; ' . str_replace("\n", "\n&nbsp; ", $note_html);
+				$note_html = '&#xA0; ' . str_replace("\n", "\n&#xA0; ", $note_html);
 				$note_html = '<strong>' . str_replace(ROOT, '', $call_from_file) . '</strong> (line ' . $call_from_line . '):<br />' . $note_html;
 
 				$time = debug_run_time();
@@ -176,7 +176,7 @@
 				} else {
 					$value_html = html(print_r($value, true));
 				}
-				$config_html[] = '&nbsp; <strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html;
+				$config_html[] = '&#xA0; <strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html;
 			}
 
 		//--------------------------------------------------
@@ -204,7 +204,7 @@
 			$variables_html = array(html($label . ':'));
 			foreach ($array as $key => $value) {
 				if (substr($key, 0, 1) != '_' && substr($key, 0, 5) != 'HTTP_' && !in_array($key, array('GLOBALS'))) {
-					$variables_html[] = '&nbsp; <strong>' . html($key) . '</strong>: ' . html(print_r($value, true));
+					$variables_html[] = '&#xA0; <strong>' . html($key) . '</strong>: ' . html(print_r($value, true));
 				}
 			}
 

@@ -303,29 +303,29 @@
 
 		echo "<br />\n";
 		echo "URL Testing as function:<br />\n";
-		echo '&nbsp; ' . html(url()) . '<br />' . "\n";
-		echo '&nbsp; ' . html(url('thank-you/')) . '<br />' . "\n";
-		echo '&nbsp; ' . html(url('./thank-you/')) . '<br />' . "\n";
-		echo '&nbsp; ' . html(url('./')) . '<br />' . "\n";
-		echo '&nbsp; ' . html(url('/')) . '<br />' . "\n";
-		echo '&nbsp; ' . html(url('../news/')) . '<br />' . "\n";
-		echo '&nbsp; ' . html(url('/news/')) . '<br />' . "\n";
-		echo '&nbsp; ' . html(url(NULL, array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
-		echo '&nbsp; ' . html(url('/folder/#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
-		echo '&nbsp; ' . html(url('/folder/')->id(20)) . '<br />' . "\n";
-		echo '&nbsp; ' . html(url('/folder/')->get(array('id' => 54))) . '<br />' . "\n";
-		echo '&nbsp; ' . html(url('http://user:pass@www.google.com:80/about/folder/?id=example#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url()) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('thank-you/')) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('./thank-you/')) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('./')) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('/')) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('../news/')) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('/news/')) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url(NULL, array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('/folder/#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('/folder/')->id(20)) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('/folder/')->get(array('id' => 54))) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('http://user:pass@www.google.com:80/about/folder/?id=example#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 
 		$example = new url('/news/?a=b&id=1');
 		echo "<br />\n<br />\n";
 		echo "URL Testing as object:<br />\n";
-		echo '&nbsp; ' . html($example) . '<br />' . "\n";
-		echo '&nbsp; ' . html($example->get(array('id' => 15))) . '<br />' . "\n";
-		echo '&nbsp; ' . html($example->id(17)) . '<br />' . "\n";
-		echo '&nbsp; ' . html($example) . '<br />' . "\n";
+		echo '&#xA0; ' . html($example) . '<br />' . "\n";
+		echo '&#xA0; ' . html($example->get(array('id' => 15))) . '<br />' . "\n";
+		echo '&#xA0; ' . html($example->id(17)) . '<br />' . "\n";
+		echo '&#xA0; ' . html($example) . '<br />' . "\n";
 
 		$example->id = 6;
-		echo '&nbsp; ' . html($example) . '<br />' . "\n";
+		echo '&#xA0; ' . html($example) . '<br />' . "\n";
 
 		exit();
 

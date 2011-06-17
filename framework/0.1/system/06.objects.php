@@ -101,6 +101,10 @@
 
 					}
 
+					if ($page_ref == '') {
+						$page_ref = 'home';
+					}
+
 					config::set('output.page_ref', $page_ref);
 
 				}
@@ -307,7 +311,7 @@
 
 						foreach ($css_types as $css_type_name => $css_type_info) {
 							foreach ($css_type_info['log'] as $log) {
-								$note_html .= '&nbsp; ' . str_replace(' - found', ' - <strong>found</strong>', html($log)) . '<br />';
+								$note_html .= '&#xA0; ' . str_replace(' - found', ' - <strong>found</strong>', html($log)) . '<br />';
 							}
 						}
 
@@ -344,7 +348,7 @@
 
 			}
 
-			public function css_html() {
+			public function css_get($mode) {
 
 				//--------------------------------------------------
 				// Process types
@@ -365,9 +369,9 @@
 					$css_alternate = config::get('output.css_files_alternate');
 
 				//--------------------------------------------------
-				// HTML
+				// Return
 
-					$css_html = '';
+					$return = '';
 
 					foreach ($css_main as $css) {
 
@@ -375,13 +379,19 @@
 							$css['path'] .= '?v=' . urlencode($css_version);
 						}
 
-						$css_html .= "\n\t" . '<link rel="stylesheet" type="text/css" href="' . html($css['path']) . '" media="' . html($css['media']) . '" />';
+						if ($mode == 'html') {
+							$return .= "\n\t" . '<link rel="stylesheet" type="text/css" href="' . html($css['path']) . '" media="' . html($css['media']) . '" />';
+						} else if ($mode == 'xml') {
+							$return .= "\n" . '<?xml-stylesheet href="' . xml($css['path']) . '" media="' . xml($css['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
+						}
 
 					}
 
 					if (count($css_alternate) > 0) {
 
-						$css_html .= "\n\t";
+						if ($mode == 'html') {
+							$return .= "\n\t";
+						}
 
 						foreach ($css_alternate as $css) {
 
@@ -389,7 +399,11 @@
 								$css['path'] .= '?v=' . urlencode($css_version);
 							}
 
-							$css_html .= "\n\t" . '<link rel="alternate stylesheet" type="text/css" href="' . html($css['path']) . '" media="' . html($css['media']) . '" title="' . html($css['title']) . '" />';
+							if ($mode == 'html') {
+								$return .= "\n\t" . '<link rel="alternate stylesheet" type="text/css" href="' . html($css['path']) . '" media="' . html($css['media']) . '" title="' . html($css['title']) . '" />';
+							} else if ($mode == 'xml') {
+								$return .= "\n" . '<?xml-stylesheet href="' . html($css['path']) . '" alternate="yes" title="' . html($css['title']) . '" media="' . html($css['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
+							}
 
 						}
 
@@ -398,7 +412,7 @@
 				//--------------------------------------------------
 				// Return
 
-					return $css_html;
+					return $return;
 
 			}
 
@@ -480,7 +494,7 @@
 				//--------------------------------------------------
 				// CSS
 
-					$css_html = $this->css_html();
+					$css_html = $this->css_get('html');
 
 					if ($css_html !== '') {
 						$html .= "\n\t" . $css_html;
@@ -510,6 +524,11 @@
 
 				foreach (config::get('view.variables') as $name => $value) {
 					$$name = $value;
+				}
+
+				if (config::get('output.mime') == 'application/xhtml+xml') {
+					echo '<?xml version="1.0" encoding="' . html(config::get('output.charset')) . '" ?' . '>';
+					echo $this->css_get('xml') . "\n";
 				}
 
 				require_once($this->layout_path());
@@ -549,7 +568,6 @@
 				return $layout_path;
 
 			}
-
 
 		}
 

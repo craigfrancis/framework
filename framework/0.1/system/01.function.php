@@ -58,7 +58,7 @@
 // full native function in the script.
 
 	function html($text) {
-		return htmlentities($text, ENT_QUOTES, config::get('output.charset'));
+		return htmlspecialchars($text, ENT_QUOTES, config::get('output.charset')); // htmlentities does not work for HTML5+XML
 	}
 
 	function html_decode($text) {

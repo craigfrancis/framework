@@ -195,14 +195,14 @@
 					if (config::get('debug.level') >= 3) {
 
 						$note_html  = 'Route ' . html($id) . ':<br />';
-						$note_html .= '&nbsp; <strong>old</strong>: ' . html($old_path) . '<br />';
-						$note_html .= '&nbsp; <strong>new</strong>: ' . html($route_path) . '<br />';
-						$note_html .= '&nbsp; <strong>preg</strong>: ' . html($preg_path) . '<br />';
-						$note_html .= '&nbsp; <strong>replace</strong>: ' . html($route['replace']) . '<br />';
-						$note_html .= '&nbsp; <strong>matches</strong>: ' . html(print_r($matches, true)) . '<br />';
+						$note_html .= '&#xA0; <strong>old</strong>: ' . html($old_path) . '<br />';
+						$note_html .= '&#xA0; <strong>new</strong>: ' . html($route_path) . '<br />';
+						$note_html .= '&#xA0; <strong>preg</strong>: ' . html($preg_path) . '<br />';
+						$note_html .= '&#xA0; <strong>replace</strong>: ' . html($route['replace']) . '<br />';
+						$note_html .= '&#xA0; <strong>matches</strong>: ' . html(print_r($matches, true)) . '<br />';
 
 						if (count($route_variables) > 0) {
-							$note_html .= '&nbsp; <strong>variables</strong>: ' . html(print_r($route_variables, true)) . '<br />';
+							$note_html .= '&#xA0; <strong>variables</strong>: ' . html(print_r($route_variables, true)) . '<br />';
 						}
 
 						debug_note_html($note_html);

@@ -95,7 +95,7 @@
 
 					foreach ($values as $value) {
 
-						$this->content_html .= '  <tr><th align="left" valign="top">' . html($value['name']) . '</th><td valign="top">' . nl2br($value['value'] == '' ? '&nbsp;' : html($value['value'])) . '</td></tr>' . "\n";
+						$this->content_html .= '  <tr><th align="left" valign="top">' . html($value['name']) . '</th><td valign="top">' . nl2br($value['value'] == '' ? '&#xA0;' : html($value['value'])) . '</td></tr>' . "\n";
 
 						if (strpos($value['value'], "\n") === false) {
 							$this->content_text .= str_pad($value['name'] . ':', ($field_length + 2)) . $value['value'] . "\n";

@@ -120,11 +120,15 @@
 				return $this->type;
 			}
 
-			public function label_html_set($label_html) { // No need for 'label_set' as this is called on init
+			public function label_set_html($label_html) { // No need for 'label_set' as this is called on init
 				$this->label_html = $label_html;
 			}
 
-			public function label_text_get() {
+			public function label_get_html() {
+				return $this->label_html;
+			}
+
+			public function label_get_text() { // Text suffix used as it's processed data
 				return html_decode(strip_tags($this->label_html));
 			}
 

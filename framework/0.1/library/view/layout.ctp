@@ -52,13 +52,6 @@
 		debug_progress('Navigation', 2);
 	}
 
-//--------------------------------------------------
-// XML Prolog
-
-	if (config::get('output.mime') == 'application/xhtml+xml') {
-		echo '<?xml version="1.0" encoding="' . html(config::get('output.charset')) . '" ?>' . "\n";
-	}
-
 ?>
 <!DOCTYPE html>
 <html lang="<?= config::get('output.lang') ?>">

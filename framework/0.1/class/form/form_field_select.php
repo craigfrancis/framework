@@ -263,7 +263,7 @@
 
 				if ($this->label_option !== NULL) {
 					$html .= '
-								<option value="' . ($this->re_index_keys ? '0' : '') . '">' . ($this->label_option === '' ? '&nbsp;' : html($this->label_option)) . '</option>';
+								<option value="' . ($this->re_index_keys ? '0' : '') . '">' . ($this->label_option === '' ? '&#xA0;' : html($this->label_option)) . '</option>';
 				}
 
 				if ($this->opt_groups === NULL) {
@@ -281,7 +281,7 @@
 						}
 
 						$html .= '
-								<option value="' . html($key) . '"' . ($key == $value ? ' selected="selected"' : '') . '>' . ($option === '' ? '&nbsp;' : html($option)) . '</option>';
+								<option value="' . html($key) . '"' . ($key == $value ? ' selected="selected"' : '') . '>' . ($option === '' ? '&#xA0;' : html($option)) . '</option>';
 
 					}
 
@@ -312,7 +312,7 @@
 							}
 
 							$html .= '
-									<option value="' . html($value_key) . '"' . ($value_key == $value ? ' selected="selected"' : '') . '>' . ($value === '' ? '&nbsp;' : html($value)) . '</option>';
+									<option value="' . html($value_key) . '"' . ($value_key == $value ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 						}
 

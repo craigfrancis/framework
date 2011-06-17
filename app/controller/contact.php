@@ -107,7 +107,7 @@ exit('Updated?');
 					$form->form_method_set('POST');
 					$form->form_class_set('basic_form'); // Default not set
 					$form->hidden_value_set('message', 'This is my' . "\n" . 'message.');
-					$form->required_mark_set_html('&nbsp;<abbr class="required" title="Required">*</abbr>');
+					$form->required_mark_set_html('&#xA0;<abbr class="required" title="Required">*</abbr>');
 					$form->required_mark_position_set('left');
 					$form->label_suffix_set('>');
 					$form->label_override_set_function(array($this, 'label_override')); // If you want to get the text translated
@@ -135,7 +135,7 @@ exit('Updated?');
 					$field_name->max_length_set('Your name cannot be longer than XXX characters.');
 					// $field_name->name_set('name');
 					$field_name->id_set('field_custom_id');
-					$field_name->label_html_set('Your <strong>name</strong>');
+					$field_name->label_set_html('Your <strong>name</strong>');
 					$field_name->label_suffix_set('::');
 					$field_name->size_set(10);
 					$field_name->info_set(' - Extra details');
