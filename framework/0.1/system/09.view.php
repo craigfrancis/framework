@@ -21,42 +21,61 @@
 //--------------------------------------------------
 // Page title
 
-	if (config::get('output.error')) {
+	//--------------------------------------------------
+	// Default
 
-		$title_default = config::get('output.title_error');
+		if (config::get('output.error')) {
 
-	} else {
+			$title_default = config::get('output.title_error');
 
-		$title_prefix = config::get('output.title_prefix');
-		$title_suffix = config::get('output.title_suffix');
-		$title_divide = config::get('output.title_divide');
+		} else {
 
-		$title_default = '';
+			$title_default = '';
 
-		$k = 0;
-		foreach (config::get('output.title_folders') as $folder) {
-			if ($folder != '') {
-				if ($k++ > 0) {
-					$title_default .= $title_divide;
+			$title_prefix = config::get('output.title_prefix');
+			$title_suffix = config::get('output.title_suffix');
+			$title_divide = config::get('output.title_divide');
+
+			$k = 0;
+			foreach (config::get('output.title_folders') as $folder) {
+				if ($folder != '') {
+					if ($k++ > 0) {
+						$title_default .= $title_divide;
+					}
+					$title_default .= $folder;
 				}
-				$title_default .= $folder;
 			}
+
+			$title_default = $title_prefix  . ($title_prefix != '' && $k > 0 ? $title_divide : '') . $title_default;
+			$title_default = $title_default . ($title_suffix != '' && $k > 0 ? $title_divide : '') . $title_suffix;
+
 		}
 
-		$title_default = $title_prefix . ($title_prefix != '' && $k > 0 ? $title_divide : '') . $title_default;
-		$title_default = $title_default . ($title_suffix != '' && $k > 0 ? $title_divide : '') . $title_suffix;
+		config::set('output.title_default', $title_default);
 
-	}
+	//--------------------------------------------------
+	// Main
 
-	config::set_default('output.title', $title_default);
+		$title = config::get('output.title');
 
-	config::set('output.title_default', $title_default);
+		if ($title === NULL) {
 
-	unset($title_default, $title_prefix, $title_divide, $title_suffix, $k, $folder);
+			config::set('output.title', $title_default);
 
-	if (config::get('debug.level') >= 4) {
-		debug_progress('Page title', 1);
-	}
+		} else {
+			
+			config::set('output.title', config::get('output.title_prefix') . $title . config::get('output.title_suffix'));
+
+		}
+
+	//--------------------------------------------------
+	// Debug
+
+		unset($title, $title_default, $title_prefix, $title_suffix, $title_divide, $k, $folder);
+
+		if (config::get('debug.level') >= 4) {
+			debug_progress('Page title', 1);
+		}
 
 //--------------------------------------------------
 // Headers
