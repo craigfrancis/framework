@@ -34,7 +34,7 @@
 		//--------------------------------------------------
 		// General
 
-			//config::set('output.mime', 'application/xhtml+xml');
+			config::set('output.mime', 'application/xhtml+xml');
 
 			config::set('debug.level', 4);
 

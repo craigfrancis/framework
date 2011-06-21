@@ -97,6 +97,8 @@
 			//--------------------------------------------------
 			// Config
 
+				$url = strval($url); // Handle url object
+
 				if (!is_array($config)) {
 					if (is_bool($config)) { // Backwards config
 						$config = array(

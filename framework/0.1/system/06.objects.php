@@ -526,10 +526,10 @@
 					$$name = $value;
 				}
 
-				if (config::get('output.mime') == 'application/xhtml+xml') {
-					echo '<?xml version="1.0" encoding="' . html(config::get('output.charset')) . '" ?' . '>';
-					echo $this->css_get('xml') . "\n";
-				}
+				// if (config::get('output.mime') == 'application/xml') {
+				// 	echo '<?xml version="1.0" encoding="' . html(config::get('output.charset')) . '" ?' . '>';
+				// 	echo $this->css_get('xml') . "\n";
+				// }
 
 				require_once($this->layout_path());
 

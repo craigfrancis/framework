@@ -1,7 +1,7 @@
 <?php
 
 	// config::get('url.default_format') - absolute (default) / full (includes domain) / relative (not implemented)
-	// config::get('url.prefix') - e.g. '/website' (not used).
+	// config::get('url.prefix') - e.g. '/website' will be prefixed onto any absolute urls, so url('/contact/') == '/website/contact/'
 
 	class url extends check {
 
@@ -40,6 +40,10 @@
 			}
 
 			public function parse($url, $replace_parameters = true) {
+
+				if (substr($url, 0, 1) == '/') {
+					$url = config::get('url.prefix') . $url;
+				}
 
 				$this->data = @parse_url($url); // Avoid E_WARNING
 
