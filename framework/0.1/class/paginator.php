@@ -1,7 +1,5 @@
 <?php
 
-	// TODO: use set/get methods, rather than config array, like form object?
-
 //--------------------------------------------------
 // Restricted nav creation, makes a navigation
 // bar like:
@@ -21,21 +19,10 @@
 	// $paginator = new paginator(array(
 	// 		'items_per_page' => 3,
 	// 		'items_count' => $result_count,
-	// 		'base_url' => NULL,
-	// 		'variable' => 'page',
-	// 		'first_html' => 'First',
-	// 		'back_html' => 'Back',
-	// 		'next_html' => 'Next',
-	// 		'last_html' => 'Last',
-	// 		'extra' => 'Page [PAGE] of [COUNT]',
-	// 		'num_padd' => 0,
-	// 		'wrapper_element' => 'p',
-	// 		'wrapper_class' => 'pagination',
-	// 		'link_wrapper_element' => 'span',
 	// 	));
 
 	$limit = $paginator->page_size(),
-	$offset => $paginator->page_number(),
+	$offset = $paginator->page_number(),
 
 	<?= $paginator ?>
 	<?= $paginator->html() ?>
@@ -61,30 +48,36 @@ class paginator extends check {
 
 			$this->config['base_url'] = NULL;
 			$this->config['variable'] = 'page';
+			$this->config['elements'] = array('<p class="pagination">', 'first', 'back', 'links', 'next', 'last', 'extra', '</p>' . "\n");
+			$this->config['indent_html'] = "\n\t\t\t\t";
 			$this->config['first_html'] = 'First';
 			$this->config['back_html'] = 'Back';
 			$this->config['next_html'] = 'Next';
 			$this->config['last_html'] = 'Last';
-			$this->config['indent_html'] = "\n\t\t\t\t";
-			$this->config['extra'] = 'Page [PAGE] of [COUNT]';
-			$this->config['num_padd'] = 0;
-			$this->config['wrapper_element'] = 'p';
-			$this->config['wrapper_class'] = 'pagination';
+			$this->config['number_pad'] = 0;
 			$this->config['link_wrapper_element'] = 'span';
+			$this->config['extra_html'] = '<span class="pagination_extra">Page [PAGE] of [COUNT]</span>';
 
 		//--------------------------------------------------
 		// Set config
 
+			if (is_int($config)) {
+				$config = array(
+						'items_count' => $config
+					);
+			}
+
+			$site_config = config::get_all('paginator');
+			if (count($site_config) > 0) {
+				if (is_array($config)) {
+					$config = array_merge($site_config, $config);
+				} else {
+					$this->config($site_config);
+				}
+			}
+
 			if (is_array($config)) {
-
 				$this->config($config);
-
-			} else if (is_int($config)) {
-
-				$this->config(array(
-						'items_count' => $config,
-					));
-
 			}
 
 	}
@@ -163,7 +156,7 @@ class paginator extends check {
 		}
 
 		if ($page_number >= 1 && $page_number <= $this->page_count) {
-			return $this->url->get($this->config['variable'], $page_number);
+			return $this->url->get(array($this->config['variable'] => $page_number));
 		} else {
 			return NULL;
 		}
@@ -179,7 +172,7 @@ class paginator extends check {
 		$url = $this->page_url($page_number);
 
 		if ($link_html !== NULL) {
-			return ($url !== NULL ? '<a href="' . h($url) . '">' : '<span>') . $link_html . ($url !== NULL ? '</a>' : '</span>');
+			return ($url !== NULL ? '<a href="' . html($url) . '">' : '<span>') . $link_html . ($url !== NULL ? '</a>' : '</span>');
 		} else {
 			return $url;
 		}
@@ -203,26 +196,41 @@ class paginator extends check {
 			}
 
 		//--------------------------------------------------
-		// Return links
+		// Elements
 
 			$nav_links_html = $this->_html_nav_links();
-			$page_links_html = $this->_html_page_links();
 
-		//--------------------------------------------------
-		// Extra
-
-			$extra_html = '';
-
-			if ($this->config['extra'] !== '') {
-				$extra_html = $this->config['indent_html'] . "\t" . $this->config['extra'];
+			if ($this->config['extra_html'] !== '') {
+				$extra_html = $this->config['indent_html'] . "\t" . $this->config['extra_html'];
 				$extra_html = str_replace('[PAGE]', $this->page_number, $extra_html);
 				$extra_html = str_replace('[COUNT]', ($this->page_count == 0 ? 1 : $this->page_count), $extra_html);
+			} else {
+				$extra_html = '';
 			}
 
-		//--------------------------------------------------
-		// Return the navigation
+			$elements_html = array(
+				'first' => $nav_links_html['first'],
+				'back' => $nav_links_html['back'],
+				'links' => $this->_html_page_links(),
+				'next' => $nav_links_html['next'],
+				'last' => $nav_links_html['last'],
+				'extra' => $extra_html,
+			);
 
-			return $this->config['indent_html'] . '<' . h($this->config['wrapper_element']) . ' class="' . h($this->config['wrapper_class']) . '">' . $nav_links_html['first'] . $extra_html . $nav_links_html['back'] . $page_links_html . $nav_links_html['next'] . $nav_links_html['last'] . $this->config['indent_html'] . '</' . h($this->config['wrapper_element']) . '>' . "\n";
+		//--------------------------------------------------
+		// Return the html
+
+			$html = '';
+
+			foreach ($this->config['elements'] as $element) {
+				if (isset($elements_html[$element])) {
+					$html .= $elements_html[$element];
+				} else {
+					$html .= $this->config['indent_html'] . $element;
+				}
+			}
+
+			return $html;
 
 	}
 
@@ -245,7 +253,7 @@ class paginator extends check {
 
 				$link_html = ($this->page_number <= 1 ? '<span>' . $this->config['first_html'] . '</span>' : $this->page_link_html($this->config['first_html'], 1));
 
-				$nav_links_html['first'] = $this->config['indent_html'] . "\t" . '<' . h($this->config['link_wrapper_element']) . ' class="first">' . $link_html . '</' . h($this->config['link_wrapper_element']) . '>';
+				$nav_links_html['first'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_first">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
 			}
 
@@ -253,7 +261,7 @@ class paginator extends check {
 
 				$link_html = $this->page_link_html($this->config['back_html'], ($this->page_number - 1));
 
-				$nav_links_html['back'] = $this->config['indent_html'] . "\t" . '<' . h($this->config['link_wrapper_element']) . ' class="back">' . $link_html . '</' . h($this->config['link_wrapper_element']) . '>';
+				$nav_links_html['back'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_back">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
 			}
 
@@ -261,7 +269,7 @@ class paginator extends check {
 
 				$link_html = $this->page_link_html($this->config['next_html'], $this->page_number + 1);
 
-				$nav_links_html['next'] = $this->config['indent_html'] . "\t" . '<' . h($this->config['link_wrapper_element']) . ' class="next">' . $link_html . '</' . h($this->config['link_wrapper_element']) . '>';
+				$nav_links_html['next'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_next">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
 			}
 
@@ -269,7 +277,7 @@ class paginator extends check {
 
 				$link_html = ($this->page_number >= $this->page_count ? '<span>' . $this->config['last_html'] . '</span>' : $this->page_link_html($this->config['last_html'], $this->page_count));
 
-				$nav_links_html['last'] = $this->config['indent_html'] . "\t" . '<' . h($this->config['link_wrapper_element']) . ' class="last">' . $link_html . '</' . h($this->config['link_wrapper_element']) . '>';
+				$nav_links_html['last'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_last">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
 			}
 
@@ -293,7 +301,7 @@ class paginator extends check {
 
 			for ($i = 1; $start <= $this->page_count && $i <= 9; $i++, $start++) {
 				$c = ($start == $this->page_number);
-				$page_links_html .= $this->config['indent_html'] . "\t" . '<' . h($this->config['link_wrapper_element']) . ' class="page_link page_link_' . $i . ($c ? ' current' : '') . '">' . ($c ? '<strong>' : '') . '<a href="' . h($this->page_url($start)) . '">' . str_pad($start, $this->config['num_padd'], '0', STR_PAD_LEFT) . '</a>' . ($c ? '</strong>' : '') . '</' . h($this->config['link_wrapper_element']) . '>';
+				$page_links_html .= $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_page pagination_page_' . $i . ($c ? ' pagination_current' : '') . '">' . ($c ? '<strong>' : '') . '<a href="' . html($this->page_url($start)) . '">' . str_pad($start, $this->config['number_pad'], '0', STR_PAD_LEFT) . '</a>' . ($c ? '</strong>' : '') . '</' . html($this->config['link_wrapper_element']) . '>';
 			}
 
 		//--------------------------------------------------

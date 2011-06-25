@@ -116,7 +116,7 @@
 			<h2>Footer</h2>
 			<ul>
 
-				<li class="copyright">&copy; Company <?= html(date('Y')) ?></li>
+				<li class="copyright">© Company <?= html(date('Y')) ?></li>
 
 			</ul>
 		</div>

@@ -13,7 +13,7 @@
 		//--------------------------------------------------
 		// Server
 
-			config::set('server', 'stage'); // Special / constant?
+			define('SERVER', 'stage');
 
 		//--------------------------------------------------
 		// Database
@@ -43,14 +43,14 @@
 		//--------------------------------------------------
 		// Server
 
-			config::set('server', 'demo');
+			define('SERVER', 'demo');
 
 	} else {
 
 		//--------------------------------------------------
 		// Server
 
-			config::set('server', 'live');
+			define('SERVER', 'live');
 
 		//--------------------------------------------------
 		// General
@@ -58,5 +58,11 @@
 			config::set('ve_google_analytics.code', 'GA-');
 
 	}
+
+//--------------------------------------------------
+// Pagination
+
+	// config::set('paginator.elements', array('<ul class="pagination">', 'first', 'back', 'links', 'next', 'last', '</ul>', 'extra', "\n"));
+	// config::set('paginator.link_wrapper_element', 'li');
 
 ?>
