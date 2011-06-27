@@ -259,7 +259,7 @@
 				$value = $this->value_print_get();
 
 				$html = '
-							<select name="' . html($this->name) . '" id="' . html($this->id) . '"' . ($this->select_size <= 1 ? '' : ' size="' . intval($this->select_size) . '"') . ($this->class_input === NULL ? '' : ' class="' . html($this->class_input) . '"') . '>';
+							<select name="' . html($this->name) . '" id="' . html($this->id) . '"' . ($this->select_size <= 1 ? '' : ' size="' . intval($this->select_size) . '"') . ($this->class_input === NULL ? '' : ' class="' . html($this->class_input) . '"') . ($this->autofocus ? ' autofocus="autofocus"' : '') . '>';
 
 				if ($this->label_option !== NULL) {
 					$html .= '

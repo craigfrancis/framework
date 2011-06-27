@@ -1,7 +1,6 @@
 <?php
 
 // TODO: Move into form.php, as this does not need a separate file
-// TODO: Autofocus Attribute?
 
 	class form_field_base extends check {
 
@@ -21,6 +20,7 @@
 			protected $required;
 			protected $required_mark_html;
 			protected $required_mark_position;
+			protected $autofocus;
 			protected $class_row;
 			protected $class_label;
 			protected $class_label_span;
@@ -90,6 +90,7 @@
 					$this->required = false;
 					$this->required_mark_html = NULL;
 					$this->required_mark_position = NULL;
+					$this->autofocus = false;
 					$this->class_row = '';
 					$this->class_label = NULL;
 					$this->class_label_span = 'label';
@@ -166,6 +167,10 @@
 				} else {
 					exit('<p>Invalid required mark position specified (left/right/none)');
 				}
+			}
+
+			public function autofocus_set($autofocus) {
+				$this->autofocus = ($autofocus == true);
 			}
 
 			public function class_row_set($class) {
@@ -359,9 +364,15 @@
 					$attributes_base['class'] = $this->class_input;
 				}
 
+				if ($this->autofocus) {
+					$attributes_base['autofocus'] = 'autofocus';
+				}
+
 				$html = '<input';
 				foreach (array_merge($attributes_base, $attributes_custom) as $name => $value) {
-					$html .= ' ' . $name . '="' . html($value) . '"';
+					if ($value !== NULL) {
+						$html .= ' ' . $name . '="' . html($value) . '"';
+					}
 				}
 				return $html . ' />';
 

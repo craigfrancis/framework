@@ -254,6 +254,7 @@
 								'maxlength' => ($part == 'Y' ? 4 : 2),
 								'size' => ($part == 'Y' ? 4 : 2),
 								'value' => ($this->value[$part] == 0 ? '' : $this->value[$part]),
+								'autofocus' => ($this->autofocus && $part == 'D' ? 'autofocus' : NULL),
 							));
 
 				} else {
