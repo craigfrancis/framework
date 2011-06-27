@@ -25,7 +25,7 @@
 		while (false !== ($file = readdir($handle))) {
 			if (substr($file, 0, 1) != '.') {
 
-				if (is_file($root_path . $file) && substr($file, -4) == '.ctp') {
+				if (is_file($root_path . $file) && substr($file, -4) == '.ctp' && $file != 'home.ctp') {
 
 					$root_folders[] = substr($file, 0, -4);
 
@@ -116,7 +116,7 @@
 			<h2>Footer</h2>
 			<ul>
 
-				<li class="copyright">© Company <?= html(date('Y')) ?></li>
+				<li class="copyright">© <?= html(config::get('email.from_name', 'Company')) ?> <?= html(date('Y')) ?></li>
 
 			</ul>
 		</div>

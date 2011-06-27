@@ -131,10 +131,10 @@
 			} else {
 
 				$note_html = str_replace(ROOT_APP, '/app', $note_html);
-				$note_html = str_replace(ROOT_FILE, '/file', $note_html);
 				$note_html = str_replace(ROOT_PUBLIC, '/public', $note_html);
 				$note_html = str_replace(ROOT_VENDOR, '/vendor', $note_html);
 				$note_html = str_replace(ROOT_FRAMEWORK, '/framework', $note_html);
+				$note_html = str_replace(ROOT, '/', $note_html);
 
 				$time = NULL;
 

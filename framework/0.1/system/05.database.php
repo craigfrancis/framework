@@ -1,7 +1,5 @@
 <?php
 
-	// TODO: When called statically? - use variable from config?
-
 	class db extends check {
 
 		private $result;
@@ -228,7 +226,7 @@
 	}
 
 
-
+// TODO: When called statically? - use variable from config?
 
 /*--------------------------------------------------
 

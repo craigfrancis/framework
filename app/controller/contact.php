@@ -118,16 +118,12 @@ exit('Updated?');
 					$form->db_table_set_sql(DB_T_PREFIX . 'log_contact');
 					$form->db_table_set_sql(DB_T_PREFIX . 'log_contact', 'c', $db); // Alias and db connection
 
-					// $field_text = $form->field_add('text', array( // TODO: Probably not useful, but if db field name provided (db_field_add), then type could be automatically chosen?
-					// 		''
-					// 	));
-
-					// $field_text = $form->field_db_add('field_name', array( // TODO: Probably not useful, but if db field name provided (db_field_add), then type could be automatically chosen?
+					// $field_text = $form->field_db_add('text', array( // TODO: Probably not useful, but if db field name provided (db_field_add), then type could be automatically chosen?
 					// 		''
 					// 	));
 
 					$field_password = new form_field_password($form, 'Password');
-					$field_password->min_length_set('Your password is required.'); // TODO: Create "_html" versions
+					$field_password->min_length_set('Your password is required.');
 					$field_password->max_length_set('Your password cannot be longer than XXX characters.', 10);
 
 					$field_name = new form_field_text($form, 'Your name');
