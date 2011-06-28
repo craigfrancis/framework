@@ -124,6 +124,10 @@
 	config::set('request.domain_http',  $url_http);
 	config::set('request.domain_https', $url_https);
 
+	if (!isset($_SERVER['REQUEST_URI']) && isset($_SERVER['SCRIPT_FILENAME'])) {
+		$_SERVER['REQUEST_URI'] = '/' . preg_replace('/^' . preg_quote(ROOT, '/') . '\/?/', '', realpath($_SERVER['SCRIPT_FILENAME']));
+	}
+
 	if (isset($_SERVER['REQUEST_URI'])) { // Path including query string
 		config::set('request.url',                    $_SERVER['REQUEST_URI']);
 		config::set('request.url_http',  $url_http  . $_SERVER['REQUEST_URI']);
@@ -149,6 +153,8 @@
 	} else {
 		config::set('request.ip', '127.0.0.1');
 	}
+
+	config::set('request.referrer', str_replace($url_https . config::get('url.prefix'), '', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '')));
 
 	unset($url_http, $url_https, $request_path, $pos);
 
@@ -183,7 +189,7 @@
 		config::set_default('email.from_name', 'Company Name');
 		config::set_default('email.from_email', 'noreply@domain.com');
 
-		config::set_default('email.error', array());
+		config::set_default('email.error', NULL);
 
 	//--------------------------------------------------
 	// Debug
