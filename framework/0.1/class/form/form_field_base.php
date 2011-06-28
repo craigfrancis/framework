@@ -36,11 +36,11 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct(&$form, $label, $name = NULL) {
+			public function __construct($form, $label, $name = NULL) {
 				$this->_setup($form, $label, $name);
 			}
 
-			protected function _setup(&$form, $label, $name) {
+			protected function _setup($form, $label, $name) {
 
 				//--------------------------------------------------
 				// Add this field to the form, and return a "UID"
@@ -77,7 +77,7 @@
 				//--------------------------------------------------
 				// Field configuration
 
-					$this->form =& $form;
+					$this->form = $form;
 					$this->form_field_uid = $form_field_uid;
 					$this->form_submitted = $form->submitted();
 
@@ -103,6 +103,10 @@
 					$this->db_field_name = NULL;
 					$this->db_field_key = 'value';
 
+			}
+
+			public function form_get() {
+				return $this->form;
 			}
 
 			public function id_set($id) {

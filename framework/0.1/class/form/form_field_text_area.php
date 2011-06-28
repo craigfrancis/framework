@@ -11,7 +11,7 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct(&$form, $label, $name = NULL) {
+			public function __construct($form, $label, $name = NULL) {
 
 				//--------------------------------------------------
 				// Perform the standard field setup

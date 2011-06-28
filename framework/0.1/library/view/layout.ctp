@@ -39,7 +39,7 @@
 		}
 		closedir($handle);
 	}
-	sort($root_folders);
+	$root_folders = array_unique($root_folders, SORT_STRING);
 
 	$nav = new nav();
 	$nav->link_add(config::get('url.prefix') . '/', 'Home');

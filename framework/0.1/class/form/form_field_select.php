@@ -18,11 +18,11 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct(&$form, $label, $name = NULL) {
+			public function __construct($form, $label, $name = NULL) {
 				$this->_setup_select($form, $label, $name);
 			}
 
-			protected function _setup_select(&$form, $label, $name) {
+			protected function _setup_select($form, $label, $name) {
 
 				//--------------------------------------------------
 				// Perform the standard field setup

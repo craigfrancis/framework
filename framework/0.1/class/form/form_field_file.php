@@ -18,14 +18,14 @@
 			protected $value_size;
 			protected $value_mime;
 
-			public function __construct(&$form, $label, $name = NULL) {
+			public function __construct($form, $label, $name = NULL) {
 				$this->_setup_file($form, $label, $name);
 			}
 
 		//--------------------------------------------------
 		// Setup
 
-			protected function _setup_file(&$form, $label, $name = NULL) {
+			protected function _setup_file($form, $label, $name = NULL) {
 
 				//--------------------------------------------------
 				// Perform the standard field setup
@@ -217,7 +217,7 @@
 				}
 
 				if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/x-www-form-urlencoded') { // If not set, assume its correct
-					$GLOBALS['debug_show_output'] = false;
+					config::set('debug.show', false);
 					exit('<p>The form needs the attribute: <strong>enctype="multipart/form-data"</strong></p>');
 				}
 

@@ -14,11 +14,11 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct(&$form, $label, $name = NULL) {
+			public function __construct($form, $label, $name = NULL) {
 				$this->_setup_text($form, $label, $name);
 			}
 
-			protected function _setup_text(&$form, $label, $name = NULL) {
+			protected function _setup_text($form, $label, $name = NULL) {
 
 				//--------------------------------------------------
 				// Perform the standard field setup

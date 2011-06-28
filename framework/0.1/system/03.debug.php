@@ -33,7 +33,7 @@
 // Error reporting
 
 	function exit_with_error($message, $hidden_info = NULL) {
-		exit($message);
+		exit($message . '<br /><hr />' . $hidden_info); // TODO
 	}
 
 	function report_add($message, $type = 'notice') {

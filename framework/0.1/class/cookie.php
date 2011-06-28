@@ -38,10 +38,10 @@
 				$config = array();
 			}
 
-			if (!isset($config['path']))     $config['path']     = '/';
-			if (!isset($config['domain']))   $config['domain']   = NULL;
-			if (!isset($config['secure']))   $config['secure']   = false;
-			if (!isset($config['httpOnly'])) $config['httpOnly'] = true;
+			if (!isset($config['path']))      $config['path']      = '/';
+			if (!isset($config['domain']))    $config['domain']    = NULL;
+			if (!isset($config['secure']))    $config['secure']    = false;
+			if (!isset($config['http_only'])) $config['http_only'] = true;
 
 			if ($expiration === NULL) {
 				$expiration = 0; // Session cookie
@@ -58,7 +58,7 @@
 			}
 
 			if (floatval(phpversion()) >= 5.2) {
-				return setcookie($variable, $value, $expiration, $config['path'], $config['domain'], $config['secure'], $config['httpOnly']);
+				return setcookie($variable, $value, $expiration, $config['path'], $config['domain'], $config['secure'], $config['http_only']);
 			} else {
 				return setcookie($variable, $value, $expiration, $config['path'], $config['domain'], $config['secure']);
 			}

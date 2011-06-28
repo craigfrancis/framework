@@ -119,7 +119,7 @@
 				$this->navigation[$this->current_group]['links'][$this->current_index]['url'] = $url;
 				$this->navigation[$this->current_group]['links'][$this->current_index]['name'] = $name;
 				$this->navigation[$this->current_group]['links'][$this->current_index]['config'] = $config;
-				$this->navigation[$this->current_group]['links'][$this->current_index]['child_nav'] =& $child_nav;
+				$this->navigation[$this->current_group]['links'][$this->current_index]['child_nav'] = $child_nav;
 				$this->navigation[$this->current_group]['links'][$this->current_index]['child_open'] = $child_open;
 
 			//--------------------------------------------------
@@ -153,7 +153,7 @@
 			$this->_link_add($url, $name, $config);
 		}
 
-		public function link_with_child_add($url, $name, &$child_nav, $config = NULL, $child_open = NULL) {
+		public function link_with_child_add($url, $name, $child_nav, $config = NULL, $child_open = NULL) {
 			$this->_link_add($url, $name, $config, $child_nav, $child_open);
 		}
 
@@ -190,7 +190,7 @@
 							//--------------------------------------------------
 							// Quick variables
 
-								$child_nav =& $this->navigation[$group_id]['links'][$link_id]['child_nav'];
+								$child_nav = $this->navigation[$group_id]['links'][$link_id]['child_nav'];
 								$child_open = $this->navigation[$group_id]['links'][$link_id]['child_open'];
 
 							//--------------------------------------------------

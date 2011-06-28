@@ -9,11 +9,13 @@
 			private $form_action;
 			private $form_method;
 			private $form_class;
+			private $form_button;
 			private $form_attributes;
 			private $form_submitted;
 			private $hidden_values;
 			private $fields;
 			private $field_count;
+			private $field_autofocus;
 			private $required_mark_html;
 			private $required_mark_position;
 			private $label_suffix_html;
@@ -43,6 +45,7 @@
 					$this->form_action = config::get('request.url_https');
 					$this->form_method = 'POST';
 					$this->form_class = '';
+					$this->form_button = 'Save';
 					$this->form_attributes = array();
 					$this->form_submitted = false;
 					$this->hidden_values = array();
@@ -119,6 +122,14 @@
 
 			public function form_class_get() {
 				return $this->form_class;
+			}
+
+			public function form_button_set($text) {
+				$this->form_button = $text;
+			}
+
+			public function form_button_get() {
+				return $this->form_button;
 			}
 
 			public function form_attribute_set($attribute, $value) {
@@ -557,9 +568,13 @@
 				return $this->fields;
 			}
 
-			public function _field_add(&$field_obj) { // Public for form_field_base to call
+			public function field_autofocus_set($autofocus) {
+				$this->field_autofocus = $autofocus;
+			}
+
+			public function _field_add($field_obj) { // Public for form_field_base to call
 				$field_id = $this->field_count++;
-				$this->fields[$field_id] =& $field_obj;
+				$this->fields[$field_id] = $field_obj;
 				return $field_id;
 			}
 
@@ -713,6 +728,30 @@
 				$k = 0;
 				$html = '';
 
+				if ($this->field_autofocus) {
+
+					for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
+
+						$field_type = $this->fields[$field_id]->type_get();
+						if ($field_type == 'date') {
+							$autofocus = ($this->fields[$field_id]->value_date_get() == '0000-00-00');
+						} else if ($field_type != 'file' && $field_type != 'image') {
+							$autofocus = ($this->fields[$field_id]->value_get() == '');
+						}
+
+						if (!$this->_field_valid($field_id)) {
+							$autofocus = true;
+						}
+
+						if ($autofocus) {
+							$this->fields[$field_id]->autofocus_set(true);
+							break;
+						}
+
+					}
+
+				}
+
 				foreach ($this->fields as $field_id => $field) {
 
 					if ($field->print_show_get() && !$field->print_hidden_get()) {
@@ -756,7 +795,7 @@
 							' . $this->html_error_list() . '
 							' . $this->html_fields() . '
 							<div class="row submit">
-								<input type="submit" value="Save" />
+								<input type="submit" value="' . html($this->form_button) . '" />
 							</div>
 						</fieldset>
 					' . $this->html_end() . "\n";

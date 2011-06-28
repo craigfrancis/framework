@@ -5,7 +5,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			public function __construct(&$form, $label, $name = NULL) {
+			public function __construct($form, $label, $name = NULL) {
 
 				//--------------------------------------------------
 				// Perform the select field setup
