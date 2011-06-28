@@ -1,7 +1,5 @@
 <?php
 
-// TODO: Move into form.php, as this does not need a separate file
-
 	class form_field_base extends check {
 
 		//--------------------------------------------------
