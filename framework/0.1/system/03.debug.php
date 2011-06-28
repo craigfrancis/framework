@@ -32,17 +32,161 @@
 //--------------------------------------------------
 // Error reporting
 
-	function exit_with_error($message, $hidden_info = NULL) {
-		exit(nl2br(html($message)) . '<br /><hr />' . $hidden_info); // TODO
+	if (SERVER == 'stage') {
+
+		debug_require_db_table('report', '
+				CREATE TABLE [TABLE] (
+					id int(11) NOT NULL auto_increment,
+					type tinytext NOT NULL,
+					created datetime NOT NULL,
+					message text NOT NULL,
+					request tinytext NOT NULL,
+					referrer tinytext NOT NULL,
+					ip tinytext NOT NULL,
+					PRIMARY KEY  (id)
+				);');
+
 	}
 
 	function report_add($message, $type = 'notice') {
 
 		//--------------------------------------------------
-		// Email
+		// Send an email to the admin, if necessary
 
-			$email = new email();
-			$email->send(config::get('email.error'));
+			$error_email = config::get('email.error');
+
+			if (($type == 'error' || $type == 'notice') && $error_email !== NULL) {
+
+				$email = new email();
+				$email->subject_set('System ' . ucfirst($type) . ': ' . config::get('request.domain'));
+				$email->request_table_add(array(
+						'Message' => $message,
+					));
+
+				$email->send($error_email);
+
+			}
+
+		//--------------------------------------------------
+		// Add report to the database
+
+			$db = new db;
+
+			$db->query('INSERT INTO ' . DB_T_PREFIX . 'report (
+							id,
+							type,
+							created,
+							message,
+							request,
+							referrer,
+							ip
+						) VALUES (
+							"",
+							"' . $db->escape($type) . '",
+							"' . $db->escape(date('Y-m-d H:i:s')) . '",
+							"' . $db->escape($message) . '",
+							"' . $db->escape(config::get('request.url')) . '",
+							"' . $db->escape(config::get('request.referrer')) . '",
+							"' . $db->escape(config::get('request.ip')) . '"
+						)');
+
+	}
+
+	function exit_with_error($message, $hidden_info = NULL) {
+		exit(nl2br(html($message)) . '<br /><hr />' . $hidden_info); // TODO
+
+		//--------------------------------------------------
+		// Report the error
+
+			$errorReport = $message;
+
+			if ($hiddenInfo !== NULL) {
+				$errorReport .= "\n\n--------------------------------------------------\n\n";
+				$errorReport .= $hiddenInfo;
+			}
+
+			addReport($errorReport, 'error');
+
+		//--------------------------------------------------
+		// Return the primary contacts email address.
+
+			if (isset($GLOBALS['emailError'])) {
+				if (is_array($GLOBALS['emailError'])) {
+					$contactEmail = reset($GLOBALS['emailError']);
+				} else {
+					$contactEmail = $GLOBALS['emailError'];
+				}
+			} else {
+				$contactEmail = '';
+			}
+
+		//--------------------------------------------------
+		// Override the pageId... don't want page specific
+		// styles playing havoc!
+
+			$GLOBALS['tplPageId'] = 'pError';
+
+		//--------------------------------------------------
+		// Tell the user
+
+			if (php_sapi_name() == 'cli') {
+
+				echo "\n" . '--------------------------------------------------' . "\n\n";
+				echo 'Error:' . "\n\n";
+				echo $message . "\n\n";
+
+				if ($hiddenInfo !== NULL && $contactEmail == '') {
+					echo $hiddenInfo . "\n\n";
+				}
+
+				echo '--------------------------------------------------' . "\n\n";
+
+			} else {
+
+				if (!headers_sent()) {
+
+					header('HTTP/1.0 500 Internal Server Error');
+					setMimeType('text/html');
+
+				}
+
+				if (is_file(ROOT . '/a/inc/global/pageTop.php')) {
+
+					require_once(ROOT . '/a/inc/global/pageTop.php');
+
+				} else if (is_file(ROOT . '/a/inc/pageTop.php')) {
+
+					require_once(ROOT . '/a/inc/pageTop.php');
+
+				}
+
+				echo '
+					<h2>Error</h2>
+					<p>' . html($message) . '</p>
+					<p>Sorry, this should not have happened, and is not your fault. The admin has been informed, and will try to fix the problem soon' . ($contactEmail == '' ? '.' : ', but please can you help by sending an email to <a href="mailto:' . html($contactEmail) . '">' . html($contactEmail) . '</a> with details of what you were doing at the time.') . '</p>';
+
+				if ($hiddenInfo !== NULL && $contactEmail == '') {
+					echo '
+						<hr />
+						<p>' . nl2br(html($hiddenInfo)) . '</p>';
+				}
+
+				if (is_file(ROOT . '/a/inc/global/pageBottom.php')) {
+
+					require_once(ROOT . '/a/inc/global/pageBottom.php');
+
+				} else if (is_file(ROOT . '/a/inc/pageBottom.php')) {
+
+					require_once(ROOT . '/a/inc/pageBottom.php');
+
+				}
+
+			}
+
+		//--------------------------------------------------
+		// Exit script execution
+
+			exit();
 
 	}
 
