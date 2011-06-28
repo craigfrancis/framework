@@ -31,7 +31,6 @@
 					$this->return = NULL;
 					$this->headers = array();
 					$this->attachments = array();
-					$this->values = array();
 					$this->content_text = '';
 					$this->content_html = '';
 
@@ -62,26 +61,32 @@
 		// Content
 
 			public function use_template() {
-				// Create local variables for this->values, include template (function argument offset number) like the view/layout, and append output to html/text variables.
+
+				// Set $this->subject from <title>
+
+			}
+
+			public function request_table_add($values) {
+
+				$request_values = array();
+				$request_values['Sent'] = date('l jS F Y, g:i:sa');
+				$request_values['Website'] = config::get('request.domain_http') . config::get('url.prefix');
+				$request_values['Request'] = config::get('request.url');
+				$request_values['Remote'] = config::get('request.ip');
+				$request_values['Referrer'] = config::get('request.referrer');
+
+				$this->values_table_add(array_merge($request_values, $values));
+
 			}
 
 			public function values_table_add($values) {
 
 				//--------------------------------------------------
-				// Extra details
-
-					// TODO
-					// $email_values = array();
-					// $email_values['Sent'] = date('l j_s F Y, g:i:sa');
-					// $email_values['Website'] = config::get('request.domain_http') . config::get('url.prefix');
-					// $email_values['Remote'] = config::get('request.ip');
-
-				//--------------------------------------------------
 				// Field length
 
 					$field_length = 0;
-					foreach ($values as $value) {
-						$len = strlen($value['name']);
+					foreach ($values as $name => $value) {
+						$len = strlen($name);
 						if ($len > $field_length) {
 							$field_length = $len;
 						}
@@ -90,23 +95,21 @@
 				//--------------------------------------------------
 				// Content
 
-					$this->content_html .= '<html>' . "\n";
-					$this->content_html .= ' <table cellspacing="0" cellpadding="3" border="1">' . "\n";
+					$this->content_html .= '<table cellspacing="0" cellpadding="3" border="1">' . "\n";
 
-					foreach ($values as $value) {
+					foreach ($values as $name => $value) {
 
-						$this->content_html .= '  <tr><th align="left" valign="top">' . html($value['name']) . '</th><td valign="top">' . nl2br($value['value'] == '' ? '&#xA0;' : html($value['value'])) . '</td></tr>' . "\n";
+						$this->content_html .= ' <tr><th align="left" valign="top">' . html($name) . '</th><td valign="top">' . nl2br($value == '' ? '&#xA0;' : html($value)) . '</td></tr>' . "\n";
 
-						if (strpos($value['value'], "\n") === false) {
-							$this->content_text .= str_pad($value['name'] . ':', ($field_length + 2)) . $value['value'] . "\n";
+						if (strpos($value, "\n") === false) {
+							$this->content_text .= str_pad($name . ':', ($field_length + 2)) . $value . "\n";
 						} else {
-							$this->content_text .= $value['name'] . ':-' . "\n\n" . preg_replace('/^/m', '  ', preg_replace('/\r\n?/', "\n", wordwrap($value['value'], 70, "\n"))) . "\n\n";
+							$this->content_text .= $name . ':- ' . "\n\n" . preg_replace('/^/m', '  ', preg_replace('/\r\n?/', "\n", wordwrap($value, 70, "\n"))) . "\n\n";
 						}
 
 					}
 
-					$this->content_html .= ' </table>' . "\n";
-					$this->content_html .= '</html>' . "\n";
+					$this->content_html .= '</table>' . "\n";
 
 			}
 
@@ -122,7 +125,18 @@
 						$recipients = array($recipients);
 					}
 
+					$headers = 'Content-Type: text/html; charset="' . head(config::get('output.charset')) . '"' . "\n";
+
+					if ($this->from_name !== NULL && $this->from_email !== NULL) {
+						$headers .= 'From: "' . head($this->from_name) . '" <' . head($this->from_email) .'>' . "\n";
+					} else if ($this->from_email !== NULL) {
+						$headers .= 'From: ' . head($this->from_email) . "\n";
+					} else {
+						$headers .= 'From: noreply@domain.com' . "\n";
+					}
+
 					foreach ($recipients as $email) {
+						mail($email, $this->subject, $this->html(), trim($headers));
 					}
 
 			}
@@ -135,7 +149,13 @@
 			}
 
 			public function html() {
-				return $this->content_html;
+
+				// Use template... if not set, use put in simple <html> tags
+
+				$html = $this->content_html;
+
+				return $html;
+
 			}
 
 			public function __toString() { // (PHP 5.2)
