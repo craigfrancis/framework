@@ -324,11 +324,11 @@
 			$note_html .= '&#xA0; Methods:<br />';
 
 			foreach (config::get('route.variables') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->route_variable(\'' . html($id) . '\'); <span style="color: #999;">// ' . html($value) . '</span><br />';
+				$note_html .= '&#xA0; &#xA0; $this->route_variable_get(\'' . html($id) . '\'); <span style="color: #999;">// ' . html($value) . '</span><br />';
 			}
 
 			foreach (config::get('route.folders') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->route_folder(' . html($id) . '); <span style="color: #999;">// ' . html($value) . '</span><br />';
+				$note_html .= '&#xA0; &#xA0; $this->route_folder_get(' . html($id) . '); <span style="color: #999;">// ' . html($value) . '</span><br />';
 			}
 
 			foreach (config::get('output.title_folders') as $id => $value) {

@@ -8,7 +8,7 @@
 
 		class base extends check {
 
-			public function route_folder($id) {
+			public function route_folder_get($id) {
 				$folders = config::get('route.folders');
 				if (isset($folders[$id])) {
 					return $folders[$id];
@@ -17,7 +17,7 @@
 				}
 			}
 
-			public function route_variable($ref) {
+			public function route_variable_get($ref) {
 				$variables = config::get('route.variables');
 				if (isset($variables[$ref])) {
 					return $variables[$ref];
@@ -27,7 +27,7 @@
 			}
 
 			public function title_folder_set($id, $name) {
-				config::array_set('output.title_folders', $id, $name); // Use route_variable to return a value
+				config::array_set('output.title_folders', $id, $name);
 			}
 
 			public function head_add_html($html) {

@@ -12,10 +12,10 @@
 			// 	echo 'Folder 0 = ' . html($params[0]) . '<br />';
 			// }
 			//
-			// echo '$this->route_variable(\'area\') = ' . $this->route_variable('area') . '<br />';
-			// echo '$this->route_folder(3) = ' . $this->route_folder(4) . '<br />';
+			// echo '$this->route_variable_get(\'area\') = ' . $this->route_variable_get('area') . '<br />';
+			// echo '$this->route_folder_get(3) = ' . $this->route_folder_get(4) . '<br />';
 
-			$article_id = $this->route_folder(3);
+			$article_id = $this->route_folder_get(3);
 
 			echo html($article_id) . "\n";
 
