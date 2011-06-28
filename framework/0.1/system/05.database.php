@@ -226,7 +226,8 @@
 	}
 
 
-// TODO: When called statically? - use variable from config?
+// Notes...
+//   When called statically? - use variable from config?
 
 /*--------------------------------------------------
 

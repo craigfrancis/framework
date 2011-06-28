@@ -33,7 +33,7 @@
 // Error reporting
 
 	function exit_with_error($message, $hidden_info = NULL) {
-		exit($message . '<br /><hr />' . $hidden_info); // TODO
+		exit(nl2br(html($message)) . '<br /><hr />' . $hidden_info); // TODO
 	}
 
 	function report_add($message, $type = 'notice') {
@@ -212,6 +212,20 @@
 		// Add note
 
 			debug_note_html(implode($variables_html, '<br />' . "\n"));
+
+	}
+
+//--------------------------------------------------
+// Require database table
+
+	function debug_require_db_table($table, $sql) {
+
+		$db = new db;
+
+		$db->query('SHOW TABLES LIKE "' . $db->escape(DB_T_PREFIX . $table) . '"');
+		if ($db->num_rows() == 0) {
+			exit_with_error('Missing table "' . DB_T_PREFIX . $table . '":' . "\n" . str_replace('[TABLE]', DB_T_PREFIX . $table, $sql));
+		}
 
 	}
 

@@ -14,7 +14,7 @@
 		public function __construct($user) {
 			$this->_setup($user);
 		}
-		
+
 		protected function _setup($user) {
 
 			//--------------------------------------------------

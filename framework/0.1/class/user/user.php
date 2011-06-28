@@ -1,38 +1,5 @@
 <?php
 
-/***************************************************
-// Database table setup
-//--------------------------------------------------
-
-	CREATE TABLE prefix_user (
-		id int(11) NOT NULL AUTO_INCREMENT,
-		email varchar(100) NOT NULL,
-		pass_hash varchar(32) NOT NULL,
-		pass_salt varchar(10) NOT NULL,
-		created datetime NOT NULL,
-		edited datetime NOT NULL,
-		deleted datetime NOT NULL,
-		PRIMARY KEY (id),
-		UNIQUE KEY email (email)
-	);
-
-	CREATE TABLE prefix_user_session (
-		id int(11) NOT NULL AUTO_INCREMENT,
-		pass_hash varchar(32) NOT NULL,
-		pass_salt varchar(10) NOT NULL,
-		user_id int(11) NOT NULL,
-		ip tinytext NOT NULL,
-		created datetime NOT NULL,
-		last_used datetime NOT NULL,
-		deleted datetime NOT NULL,
-		PRIMARY KEY (id),
-		KEY user_id (user_id)
-	);
-
-//--------------------------------------------------
-// End of database table setup
-***************************************************/
-
 //--------------------------------------------------
 // Example user object
 
