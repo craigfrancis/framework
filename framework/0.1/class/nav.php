@@ -51,10 +51,7 @@
 			//--------------------------------------------------
 			// Current path
 
-				$this->path = (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '');
-
-				//$this->path = str_replace('\\', '/', realpath($_SERVER['SCRIPT_FILENAME']));
-				//$this->path = '/' . preg_replace('/^' . preg_quote(ROOT, '/') . '\/?/', '', $this->path);
+				$this->path = config::get('request.url');
 
 		}
 
