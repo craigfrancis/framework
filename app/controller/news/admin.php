@@ -19,7 +19,7 @@
 
 			echo html($article_id) . "\n";
 
-			$this->title_folder_name(4, 'XXX');
+			$this->title_folder_set(4, 'XXX');
 
 		}
 

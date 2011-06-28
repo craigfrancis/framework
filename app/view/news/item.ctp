@@ -1,6 +1,6 @@
 <?php
 
-	$this->title_folder_name(5, 'Testing');
+	$this->title_folder_set(5, 'Testing');
 
 ?>
 

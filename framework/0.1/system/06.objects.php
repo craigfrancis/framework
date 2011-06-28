@@ -26,7 +26,7 @@
 				}
 			}
 
-			public function title_folder_name($id, $name) {
+			public function title_folder_set($id, $name) {
 				config::array_set('output.title_folders', $id, $name); // Use route_variable to return a value
 			}
 

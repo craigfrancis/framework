@@ -324,21 +324,20 @@
 			$note_html .= '&#xA0; Methods:<br />';
 
 			foreach (config::get('route.variables') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->route_variable(\'' . html($id) . '\'); = \'<strong>' . html($value) . '</strong>\'<br />';
+				$note_html .= '&#xA0; &#xA0; $this->route_variable(\'' . html($id) . '\'); <span style="color: #999;">// ' . html($value) . '</span><br />';
 			}
 
 			foreach (config::get('route.folders') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->route_folder(' . html($id) . '); = \'<strong>' . html($value) . '</strong>\'<br />';
+				$note_html .= '&#xA0; &#xA0; $this->route_folder(' . html($id) . '); <span style="color: #999;">// ' . html($value) . '</span><br />';
 			}
 
 			foreach (config::get('output.title_folders') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->title_folder_name(' . html($id) . ', \'new_value\'); = \'<strong>' . html($value) . '</strong>\'<br />';
+				$note_html .= '&#xA0; &#xA0; $this->title_folder_set(' . html($id) . ', \'new_value\');<br />';
 			}
 
 			$note_html .= '&#xA0; &#xA0; $this->view_path_set(ROOT_APP . \'/view/file.ctp\');<br />';
 			$note_html .= '&#xA0; &#xA0; $this->js_add(\'/path/to/file.js\');<br />';
 			$note_html .= '&#xA0; &#xA0; $this->css_add(\'/path/to/file.css\');<br />';
-			$note_html .= '&#xA0; &#xA0; $this->css_version_set(1);<br />';
 			$note_html .= '&#xA0; &#xA0; $this->head_add_html(\'&lt;html&gt;\');<br />';
 			$note_html .= '&#xA0; &#xA0; $this->page_ref_set(\'example_ref\');<br />';
 			$note_html .= '&#xA0; &#xA0; $this->message_set(\'The item has been updated.\');<br />';
