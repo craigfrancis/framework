@@ -45,7 +45,7 @@
 
 ?>
 <!DOCTYPE html>
-<html lang="<?= config::get('output.lang') ?>" xml:lang="<?= config::get('output.lang') ?>" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="<?= html(config::get('output.lang')) ?>" xml:lang="<?= html(config::get('output.lang')) ?>" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
 	<?= $this->head_html() ?>

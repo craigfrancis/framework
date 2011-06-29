@@ -150,11 +150,36 @@
 
 			public function render() {
 
+				ob_start();
+
+				echo config::get('output.html');
+
 				foreach (config::get('view.variables') as $name => $value) {
 					$$name = $value;
 				}
 
 				require_once($this->view_path_get());
+
+				config::set('output.html', ob_get_clean());
+
+			}
+
+			public function render_error($error) {
+
+				$error_path = ROOT_APP . DS . 'view' . DS . 'error' . DS . $error . '.ctp';
+				if (!is_file($error_path)) {
+					$error_path = ROOT_FRAMEWORK . DS . 'library' . DS . 'view' . DS . 'error_' . $error . '.ctp';
+				}
+
+				config::set('view.path', $error_path);
+				config::set('view.folders', array('error', $error));
+
+				config::set('route.path', '/error/' . $error . '/');
+				config::set('route.variables', array());
+
+				config::set('output.page_ref', 'error_' . $error);
+
+				$this->render();
 
 			}
 

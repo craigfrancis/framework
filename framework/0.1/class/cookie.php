@@ -75,8 +75,24 @@
 			return sha1($variable . '-' . $value . '-' . cookie::$salt);
 		}
 
-		public static function cookie_check() {
+		public static function supported() {
 			return (cookie::get('cookie_check') == 'true');
+		}
+
+		public static function require_support() {
+
+			if (!cookie::supported()) {
+
+				config::set('output.title', config::get('output.title_error', 'An error has occurred'));
+
+				$view = new view();
+				$view->render_error('cookies');
+
+				$layout = new layout();
+				$layout->render();
+
+			}
+
 		}
 
 		final private function __construct() {

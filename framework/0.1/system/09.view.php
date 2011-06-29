@@ -3,14 +3,8 @@
 //--------------------------------------------------
 // View
 
-	ob_start();
-
-	echo config::get('output.html');
-
 	$view = new view();
 	$view->render();
-
-	config::set('output.html', ob_get_clean());
 
 	unset($view);
 
@@ -63,7 +57,7 @@
 			config::set('output.title', $title_default);
 
 		} else {
-			
+
 			config::set('output.title', config::get('output.title_prefix') . $title . config::get('output.title_suffix'));
 
 		}

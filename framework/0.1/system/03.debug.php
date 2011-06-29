@@ -93,38 +93,27 @@
 	}
 
 	function exit_with_error($message, $hidden_info = NULL) {
-		exit(nl2br(html($message)) . '<br /><hr />' . $hidden_info); // TODO
 
 		//--------------------------------------------------
 		// Report the error
 
-			$errorReport = $message;
+			$error_report = $message;
 
-			if ($hiddenInfo !== NULL) {
-				$errorReport .= "\n\n--------------------------------------------------\n\n";
-				$errorReport .= $hiddenInfo;
+			if ($hidden_info !== NULL) {
+				$error_report .= "\n\n--------------------------------------------------\n\n";
+				$error_report .= $hidden_info;
 			}
 
-			addReport($errorReport, 'error');
+			report_add($error_report, 'error');
 
 		//--------------------------------------------------
 		// Return the primary contacts email address.
 
-			if (isset($GLOBALS['emailError'])) {
-				if (is_array($GLOBALS['emailError'])) {
-					$contactEmail = reset($GLOBALS['emailError']);
-				} else {
-					$contactEmail = $GLOBALS['emailError'];
-				}
-			} else {
-				$contactEmail = '';
+			$contact_email = config::get('email.error');
+
+			if (is_array($contact_email)) {
+				$contact_email = reset($contact_email);
 			}
-
-		//--------------------------------------------------
-		// Override the pageId... don't want page specific
-		// styles playing havoc!
-
-			$GLOBALS['tplPageId'] = 'pError';
 
 		//--------------------------------------------------
 		// Tell the user
@@ -135,8 +124,8 @@
 				echo 'Error:' . "\n\n";
 				echo $message . "\n\n";
 
-				if ($hiddenInfo !== NULL && $contactEmail == '') {
-					echo $hiddenInfo . "\n\n";
+				if ($hidden_info !== NULL && $contact_email == '') {
+					echo $hidden_info . "\n\n";
 				}
 
 				echo '--------------------------------------------------' . "\n\n";
@@ -144,40 +133,37 @@
 			} else {
 
 				if (!headers_sent()) {
-
 					header('HTTP/1.0 500 Internal Server Error');
-					setMimeType('text/html');
-
+					config::set('output.mime', 'text/html');
 				}
 
-				if (is_file(ROOT . '/a/inc/global/pageTop.php')) {
+				if (class_exists('view') && class_exists('layout')) {
 
-					require_once(ROOT . '/a/inc/global/pageTop.php');
+					config::array_set('view.variables', 'message', $message);
+					config::array_set('view.variables', 'hidden_info', $hidden_info);
+					config::array_set('view.variables', 'contact_email', $contact_email);
 
-				} else if (is_file(ROOT . '/a/inc/pageTop.php')) {
+					config::set('output.title', config::get('output.title_error', 'An error has occurred'));
 
-					require_once(ROOT . '/a/inc/pageTop.php');
+					$view = new view();
+					$view->render_error('system');
 
-				}
+					$layout = new layout();
+					$layout->render();
 
-				echo '
-					<h2>Error</h2>
-					<p>' . html($message) . '</p>
-					<p>Sorry, this should not have happened, and is not your fault. The admin has been informed, and will try to fix the problem soon' . ($contactEmail == '' ? '.' : ', but please can you help by sending an email to <a href="mailto:' . html($contactEmail) . '">' . html($contactEmail) . '</a> with details of what you were doing at the time.') . '</p>';
+				} else {
 
-				if ($hiddenInfo !== NULL && $contactEmail == '') {
-					echo '
-						<hr />
-						<p>' . nl2br(html($hiddenInfo)) . '</p>';
-				}
-
-				if (is_file(ROOT . '/a/inc/global/pageBottom.php')) {
-
-					require_once(ROOT . '/a/inc/global/pageBottom.php');
-
-				} else if (is_file(ROOT . '/a/inc/pageBottom.php')) {
-
-					require_once(ROOT . '/a/inc/pageBottom.php');
+					echo '<!DOCTYPE html>
+						<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
+						<head>
+							<meta charset="' . html(config::get('output.charset')) . '" />
+							<title>' . html(config::get('output.title')) . '</title>
+						</head>
+						<body id="p_error">
+							<h1>System Error</h1>
+							<p>' . html($message) . '</p>
+						</body>
+						</html>';
 
 				}
 

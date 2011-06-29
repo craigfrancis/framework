@@ -39,14 +39,15 @@
 	}
 
 	p,
+	h1,
 	h2,
 	h3 {
-		margin: 0 0 10px 0;
+		margin: 0 0 1em 0;
 	}
 
 	ul,
 	ol {
-		margin: 0 0 10px 2em;
+		margin: 0 0 1em 2em;
 	}
 
 	table {
@@ -119,6 +120,7 @@
 		}
 
 		#page_title h1 {
+			margin: 0;
 			font-size: 1.5em;
 		}
 
@@ -228,19 +230,19 @@
 
 	.basic_form fieldset {
 		padding: 10px 0 0 0;
-		margin: 0 0 10px 0;
+		margin: 0 0 1em 0;
 		border: 0;
 	}
 
 	.basic_form fieldset legend {
 		color: #000; /* IE6: defaults to using blue text */
 		font-weight: bold;
-		margin: 0 0 10px 0;
+		margin: 0 0 1em 0;
 		padding: 0;
 	}
 
 	.basic_form fieldset fieldset legend {
-		padding: 10px 0 0 0;
+		padding: 1em 0 0 0;
 		margin: 0;
 	}
 
@@ -288,14 +290,14 @@
 	}
 
 	.basic_form .submit {
-		padding-bottom: 10px;
+		padding-bottom: 1em;
 	}
 
 /*--------------------------------------------------*/
 /* Single line form                                 */
 
 	.single_line_form fieldset {
-		margin: 0 0 10px 0;
+		margin: 0 0 1em 0;
 		border: 0;
 	}
 
@@ -303,7 +305,7 @@
 /* Delete form                                      */
 
 	.delete_form fieldset {
-		margin: 0 0 10px 0;
+		margin: 0 0 1em 0;
 		border: 0;
 	}
 
@@ -318,7 +320,7 @@
 /* Basic Table                                      */
 
 	.basic_table {
-		margin: 0 0 10px 0;
+		margin: 0 0 1em 0;
 		color: inherit;
 		background: #E0E0E0;
 		border-top: 1px solid #000;
@@ -413,7 +415,7 @@
 /* Small nav                                        */
 
 	.small_nav {
-		margin: 0 0 10px 0;
+		margin: 0 0 1em 0;
 		list-style: none;
 	}
 

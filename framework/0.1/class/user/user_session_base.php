@@ -14,7 +14,6 @@
 		protected $lock_to_ip;
 		protected $allow_multiple_sessions;
 		protected $old_session_history_length;
-		protected $cookie_error_url;
 		protected $session_id;
 
 		public function __construct($user) {
@@ -41,7 +40,6 @@
 				$this->length = (60*30); // How long a session lasts
 				$this->lock_to_ip = false; // By default this is disabled (AOL users)
 				$this->allow_multiple_sessions = false; // Close previous sessions on new session start
-				$this->cookie_error_url = config::get('url.prefix') . '/error/cookie/'; // Send the user to this page on cookie error
 				$this->session_id = 0;
 
 				$this->old_session_history_length = -1; // Keep session data indefinitely
@@ -66,18 +64,12 @@
 			$this->allow_multiple_sessions = $enable;
 		}
 
-		public function cookie_error_url_set($url) {
-			$this->cookie_error_url = $url;
-		}
-
 		public function start_session($user_id) {
 
 			//--------------------------------------------------
 			// Test cookie support
 
-				if (!cookie::cookie_check()) {
-					redirect($this->cookie_error_url);
-				}
+				cookie::require_support();
 
 			//--------------------------------------------------
 			// Process previous sessions
