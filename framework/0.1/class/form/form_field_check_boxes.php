@@ -1,13 +1,12 @@
 <?php
 
-// TODO: Test it works, and has "hidden" support
-
 	class form_field_check_boxes extends form_field_base {
 
 		//--------------------------------------------------
 		// Variables
 
 			protected $values;
+			protected $values_print;
 			protected $option_values;
 			protected $option_keys;
 			protected $re_index_keys;
@@ -25,7 +24,8 @@
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->values = array();
+					$this->values = NULL;
+					$this->values_print = NULL;
 					$this->option_values = array();
 					$this->option_keys = array();
 					$this->re_index_keys = true;
@@ -60,34 +60,48 @@
 				//--------------------------------------------------
 				// Update the values
 
-					$this->values = array();
-
 					if ($this->form_submitted) {
 
-						foreach ($this->option_keys as $field_id => $c_key) {
+						$hidden_value = $this->form->hidden_value_get($this->name);
 
-							if ($this->re_index_keys) {
-								$name = $this->name . '_'  . $field_id;
-							} else {
-								$name = $this->name . '_'  . $c_key;
+						if ($hidden_value !== NULL) {
+
+							$this->value_key_set($hidden_value);
+
+						} else {
+
+							$this->values = array();
+
+							foreach ($this->option_keys as $field_id => $c_key) {
+
+								if ($this->re_index_keys) {
+									$name = $this->name . '_'  . $field_id;
+								} else {
+									$name = $this->name . '_'  . $c_key;
+								}
+
+								if (data($name, $this->form->form_method_get()) == 'true') {
+									$this->values[] = $field_id;
+								}
+
 							}
 
-							$selected = (data($name, $this->form->form_method_get()) == 'true');
-
-							if ($selected) {
-								$this->values[] = $field_id;
-							}
-
-						}
-
-						if (count($this->values) == 0) {
-							$value = $this->form->hidden_value_get($this->name);
-							if ($value != '') {
-								$this->value_key_set($value);
-							}
 						}
 
 					}
+
+			}
+
+		//--------------------------------------------------
+		// Errors
+
+			public function required_error_set($error) {
+
+				if ($this->form_submitted && ($this->values === NULL || count($this->values) == 0)) {
+					$this->form->_field_error_set_html($this->form_field_uid, $error);
+				}
+
+				$this->required = ($error !== NULL);
 
 			}
 
@@ -128,8 +142,10 @@
 
 			public function values_get() {
 				$return = array();
-				foreach ($this->values as $c_id) {
-					$return[$this->option_keys[$c_id]] = $this->option_values[$c_id];
+				if (is_array($this->values)) {
+					foreach ($this->values as $c_id) {
+						$return[$this->option_keys[$c_id]] = $this->option_values[$c_id];
+					}
 				}
 				return $return;
 			}
@@ -140,10 +156,37 @@
 
 			public function values_key_get() {
 				$return = array();
-				foreach ($this->values as $c_id) {
-					$return[] = $this->option_keys[$c_id];
+				if (is_array($this->values)) {
+					foreach ($this->values as $c_id) {
+						$return[] = $this->option_keys[$c_id];
+					}
 				}
 				return $return;
+			}
+
+			public function value_print_get($field_id) {
+
+				if ($this->values_print === NULL) {
+					if ($this->values === NULL) {
+
+						$this->values_print = array();
+
+						foreach (explode(',', $this->form->db_select_value_get($this->db_field_name)) as $c_value) {
+							$key = array_search($c_value, ($this->db_field_key == 'key' ? $this->option_keys : $this->option_values));
+							if ($key !== false && $key !== NULL) {
+								$this->values_print[] = $key;
+							}
+						}
+
+					} else {
+
+						$this->values_print = $this->values;
+
+					}
+				}
+
+				return in_array($field_id, $this->values_print);
+
 			}
 
 			public function value_hidden_get() {
@@ -233,11 +276,12 @@
 						$label = $this->option_values[$field_id];
 					}
 
-					if (function_exists('form_radio_label_override')) { // TODO
-						$label = form_radio_label_override($label, $this);
-					}
+					$label_html = html($label);
 
-					$label_html = html($label); // TODO: Check
+					$function = $this->form->label_override_get_function();
+					if ($function !== NULL) {
+						$label_html = call_user_func($function, $label_html, $this->form, $this);
+					}
 
 				}
 
@@ -280,6 +324,7 @@
 				$attributes = array(
 						'type' => 'checkbox',
 						'value' => 'true',
+						'required' => NULL, // The set of check boxes may be required, but not all of them will be.
 					);
 
 				if ($this->re_index_keys) {
@@ -290,7 +335,7 @@
 					$attributes['name'] = $this->name . '_' . $this->option_keys[$field_id];
 				}
 
-				if (in_array($field_id, $this->values)) {
+				if ($this->value_print_get($field_id)) {
 					$attributes['checked'] = 'checked';
 				}
 

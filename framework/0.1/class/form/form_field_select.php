@@ -52,7 +52,7 @@
 
 				$field_setup = $this->form->db_field_get($field);
 
-				if ($field_setup['type'] == 'enum') {
+				if ($field_setup['type'] == 'enum' || $field_setup['type'] == 'set') {
 					$this->options_set($field_setup['values']);
 				}
 
@@ -232,10 +232,11 @@
 			}
 
 			public function value_hidden_get() {
-				if ($this->label_option === NULL && $this->value === NULL && count($this->option_values) > 0) {
+				$value = $this->value_print_get();
+				if ($value === NULL && $this->label_option === NULL && count($this->option_values) > 0) {
 					return $this->_ref_get(reset($this->option_values), 'value'); // Don't have a label or value, default to the first option to avoid validation error
 				}
-				return $this->value_print_get();
+				return $value;
 			}
 
 		//--------------------------------------------------

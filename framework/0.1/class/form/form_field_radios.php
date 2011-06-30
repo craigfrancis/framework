@@ -118,11 +118,12 @@
 						$label = $this->option_values[$field_id];
 					}
 
-					if (function_exists('form_radio_label_override')) { // TODO
-						$label = form_radio_label_override($label, $this);
-					}
+					$label_html = html($label);
 
-					$label_html = html($label); // TODO: Check
+					$function = $this->form->label_override_get_function();
+					if ($function !== NULL) {
+						$label_html = call_user_func($function, $label_html, $this->form, $this);
+					}
 
 				}
 
@@ -176,7 +177,8 @@
 						'value' => $input_value,
 					);
 
-				if ($input_value == $this->value) {
+
+				if ($input_value == $this->value_print_get()) {
 					$attributes['checked'] = 'checked';
 				}
 

@@ -152,7 +152,8 @@
 				if (isset($this->hidden_values[$name])) {
 					return $this->hidden_values[$name];
 				} else {
-					return urldecode(data($name));
+					$value = data('h-' . $name);
+					return ($value === NULL ? NULL : urldecode($value));
 				}
 			}
 
@@ -294,13 +295,24 @@
 				$this->db_values[$name] = $value;
 			}
 
+			public function db_select_fields() {
+				$fields = array();
+				for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
+					$field_name = $this->fields[$field_id]->db_field_name_get();
+					if ($field_name !== NULL) {
+						$fields[$field_id] = $field_name;
+					}
+				}
+				return $fields;
+			}
+
 			public function db_select_value_get($field) {
 
 				//--------------------------------------------------
 				// Not used
 
-					if ($this->db_select_sql === NULL) {
-						return '';
+					if ($this->db_select_sql === NULL || $field == '') {
+						return ''; // So the form_field_text->value_print_get has the more appropriate empty string.
 					}
 
 				//--------------------------------------------------
@@ -315,29 +327,20 @@
 							if ($this->db_select_sql === NULL) exit('<p>You need to call "db_select_set_sql" on the form object</p>');
 
 						//--------------------------------------------------
-						// Fields
-
-							if ($this->field_count == 0) {
-								return false;
-							}
-
-							$fields = array();
-							for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
-								$field_name = $this->fields[$field_id]->db_field_name_get();
-								if ($field_name !== NULL) {
-									$fields[$field_id] = $field_name;
-								}
-							}
-
-						//--------------------------------------------------
 						// Select
 
-							$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
+							$fields = $this->db_select_fields();
 
-							$this->db_link->select($table_sql, $fields, $this->db_select_sql);
+							if (count($fields) > 0) {
 
-							if ($row = $this->db_link->fetch_assoc()) {
-								$this->db_select_values = $row;
+								$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
+
+								$this->db_link->select($table_sql, $fields, $this->db_select_sql);
+
+								if ($row = $this->db_link->fetch_assoc()) {
+									$this->db_select_values = $row;
+								}
+
 							}
 
 						//--------------------------------------------------
@@ -468,7 +471,7 @@
 		//--------------------------------------------------
 		// Data output
 
-			public function data_as_array() {
+			public function data_array_get() {
 
 				//--------------------------------------------------
 				// Values
@@ -488,7 +491,7 @@
 							$value = $this->fields[$field_id]->value_get();
 						}
 
-						$values[] = array(
+						$values[] = array( // Allow multiple fields to have the same label
 								'name' => $field_name,
 								'value' => $value,
 							);
@@ -502,15 +505,10 @@
 
 			}
 
-			public function db_save() {
+			public function data_db_get() {
 
 				//--------------------------------------------------
-				// Validation
-
-					if ($this->db_table_name_sql === NULL) exit('<p>You need to call "db_table_set_sql" on the form object</p>');
-
-				//--------------------------------------------------
-				// Values
+				// Fields
 
 					$values = array();
 
@@ -532,9 +530,31 @@
 						}
 					}
 
+				//--------------------------------------------------
+				// DB Values
+
 					foreach ($this->db_values as $name => $value) { // More reliable than array_merge at keeping keys
 						$values[$name] = $value;
 					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $values;
+
+			}
+
+			public function db_save() {
+
+				//--------------------------------------------------
+				// Validation
+
+					if ($this->db_table_name_sql === NULL) exit('<p>You need to call "db_table_set_sql" on the form object</p>');
+
+				//--------------------------------------------------
+				// Values
+
+					$values = $this->data_db_get();
 
 					if (isset($this->db_fields['edited'])) {
 						$values['edited'] = date('Y-m-d H:i:s');
@@ -697,7 +717,7 @@
 				$html .= '<input type="hidden" name="csrf" value="' . html($this->csrf_token) . '" />';
 
 				foreach ($this->hidden_values as $name => $value) {
-					$html .= '<input type="hidden" name="' . html($name) . '" value="' . html(urlencode($value)) . '" />'; // URL encode allows newline characters to exist in hidden (one line) input fields.
+					$html .= '<input type="hidden" name="h-' . html($name) . '" value="' . html(urlencode($value)) . '" />'; // URL encode allows newline characters to exist in hidden (one line) input fields.
 				}
 
 				if ($config['wrapper'] !== NULL) {
@@ -806,43 +826,5 @@
 			}
 
 	}
-
-//--------------------------------------------------
-// Copyright (c) 2007, Craig Francis All rights
-// reserved.
-//
-// Redistribution and use in source and binary forms,
-// with or without modification, are permitted provided
-// that the following conditions are met:
-//
-//  * Redistributions of source code must retain the
-//    above copyright notice, this list of
-//    conditions and the following disclaimer.
-//  * Redistributions in binary form must reproduce
-//    the above copyright notice, this list of
-//    conditions and the following disclaimer in the
-//    documentation and/or other materials provided
-//    with the distribution.
-//  * Neither the name of the author nor the names
-//    of its contributors may be used to endorse or
-//    promote products derived from this software
-//    without specific prior written permission.
-//
-// This software is provided by the copyright holders
-// and contributors "as is" and any express or implied
-// warranties, including, but not limited to, the
-// implied warranties of merchantability and fitness
-// for a particular purpose are disclaimed. In no event
-// shall the copyright owner or contributors be liable
-// for any direct, indirect, incidental, special,
-// exemplary, or consequential damages (including, but
-// not limited to, procurement of substitute goods or
-// services; loss of use, data, or profits; or business
-// interruption) however caused and on any theory of
-// liability, whether in contract, strict liability, or
-// tort (including negligence or otherwise) arising in
-// any way out of the use of this software, even if
-// advised of the possibility of such damage.
-//--------------------------------------------------
 
 ?>

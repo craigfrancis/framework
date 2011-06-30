@@ -1,7 +1,5 @@
 <?php
 
-// TODO: Test it works, and has "hidden" support
-
 	class form_field_date extends form_field_base {
 
 		//--------------------------------------------------
@@ -25,9 +23,17 @@
 				//--------------------------------------------------
 				// Value
 
-					// TODO
-					if ($this->value === NULL) {
-						if ($this->form_submitted) {
+					$this->value = NULL;
+
+					if ($this->form_submitted) {
+
+						$hidden_value = $this->form->hidden_value_get($this->name);
+
+						if ($hidden_value !== NULL) {
+
+							$this->value_set($hidden_value);
+
+						} else {
 
 							$form_method = $form->form_method_get();
 
@@ -37,21 +43,10 @@
 									'Y' => intval(data($this->name . '_Y', $form_method)),
 								);
 
-						} else if ($this->db_field_name !== NULL) {
-
-							$value = $this->form->db_value_get($this->db_field_name); // TODO
-
 						}
 
-						// TODO: What happens when this field is hidden
-
-						// $value = $this->form->hidden_value_get($this->name);
-						// if ($value != '') {
-						// 	$this->value_key_set($value);
-						// }
-
 					}
-					// TODO: Fix
+
 					$this->value_provided = ($this->value['D'] != 0 || $this->value['M'] != 0 || $this->value['Y'] != 0);
 
 				//--------------------------------------------------
@@ -129,30 +124,7 @@
 		// Value
 
 			public function value_set($value, $month = NULL, $year = NULL) {
-				if ($month === NULL && $year === NULL) {
-
-					if (!is_numeric($value)) {
-						if ($value == '0000-00-00' || $value == '0000-00-00 00:00:00') {
-							$value = NULL;
-						} else {
-							$value = strtotime($value);
-							if ($value == 943920000) { // "1999-11-30 00:00:00", same as the database "0000-00-00 00:00:00"
-								$value = NULL;
-							}
-						}
-					}
-
-					if (is_numeric($value)) {
-						$this->value['D'] = date('j', $value);
-						$this->value['M'] = date('n', $value);
-						$this->value['Y'] = date('Y', $value);
-					}
-
-				} else {
-					$this->value['D'] = intval($value);
-					$this->value['M'] = intval($month);
-					$this->value['Y'] = intval($year);
-				}
+				$this->value = $this->_value_parse($value, $month, $year);
 			}
 
 			public function value_get($part = NULL) {
@@ -163,8 +135,8 @@
 				}
 			}
 
-			public function value_date_get() {
-				return str_pad(intval($this->value['Y']), 4, '0', STR_PAD_LEFT) . '-' . str_pad(intval($this->value['M']), 2, '0', STR_PAD_LEFT) . '-' . str_pad(intval($this->value['D']), 2, '0', STR_PAD_LEFT);
+			public function value_date_get($value = NULL) {
+				return $this->_value_date_format($this->value);
 			}
 
 			public function value_time_stamp_get() {
@@ -179,8 +151,56 @@
 				return $timestamp;
 			}
 
+			public function value_print_get() {
+				if ($this->value === NULL) {
+					return $this->_value_parse($this->form->db_select_value_get($this->db_field_name));
+				}
+				return $this->value;
+			}
+
 			public function value_hidden_get() {
-				return $this->value_date_get(); // TODO: Database support, $this->value_print_get() ?
+				return $this->_value_date_format($this->value_print_get());
+			}
+
+			private function _value_date_format($value) {
+				return str_pad(intval($value['Y']), 4, '0', STR_PAD_LEFT) . '-' . str_pad(intval($value['M']), 2, '0', STR_PAD_LEFT) . '-' . str_pad(intval($value['D']), 2, '0', STR_PAD_LEFT);
+			}
+
+			private function _value_parse($value, $month = NULL, $year = NULL) {
+
+				if ($month === NULL && $year === NULL) {
+
+					if (!is_numeric($value)) {
+						if ($value == '0000-00-00' || $value == '0000-00-00 00:00:00') {
+							$value = NULL;
+						} else {
+							$value = strtotime($value);
+							if ($value == 943920000) { // "1999-11-30 00:00:00", same as the database "0000-00-00 00:00:00"
+								$value = NULL;
+							}
+						}
+					}
+
+					if (is_numeric($value)) {
+						return array(
+								'D' => date('j', $value),
+								'M' => date('n', $value),
+								'Y' => date('Y', $value),
+							);
+					}
+
+				} else {
+
+					return array(
+							'D' => intval($value),
+							'M' => intval($month),
+							'Y' => intval($year),
+						);
+
+				}
+
+				return NULL;
+
 			}
 
 		//--------------------------------------------------
@@ -248,12 +268,14 @@
 			public function html_input($part = NULL) {
 				if ($part == 'D' || $part == 'M' || $part == 'Y') {
 
+					$value = $this->value_print_get();
+
 					return $this->_html_input(array(
 								'name' => $this->name . '_' . $part,
 								'id' => $this->id . '_' . $part,
 								'maxlength' => ($part == 'Y' ? 4 : 2),
 								'size' => ($part == 'Y' ? 4 : 2),
-								'value' => ($this->value[$part] == 0 ? '' : $this->value[$part]),
+								'value' => ($value[$part] == 0 ? '' : $value[$part]),
 								'autofocus' => ($this->autofocus && $part == 'D' ? 'autofocus' : NULL),
 							));
 

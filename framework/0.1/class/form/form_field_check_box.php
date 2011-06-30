@@ -23,7 +23,7 @@
 				// Value
 
 					if ($this->form_submitted) {
-						$this->value = ($this->value === true || $this->value == 'true');
+						$this->value = ($this->value == 'true');
 					}
 
 				//--------------------------------------------------
@@ -90,7 +90,20 @@
 				}
 			}
 
-			// TODO: value_print_get?
+			public function value_print_get() {
+				if ($this->value === NULL) {
+					if ($this->text_value_true) {
+						return ($this->form->db_select_value_get($this->db_field_name) == $this->text_value_true);
+					} else {
+						return ($this->form->db_select_value_get($this->db_field_name) == true);
+					}
+				}
+				return $this->value;
+			}
+
+			public function value_hidden_get() {
+				return ($this->value ? 'true' : 'false');
+			}
 
 		//--------------------------------------------------
 		// HTML
@@ -102,7 +115,7 @@
 						'value' => 'true',
 					);
 
-				if ($this->value) {
+				if ($this->value_print_get()) {
 					$attributes['checked'] = 'checked';
 				}
 

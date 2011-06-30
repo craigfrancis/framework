@@ -32,6 +32,9 @@
 
 					if ($this->form_submitted) {
 						$this->value = data($this->name, $this->form->form_method_get());
+						if ($this->value === NULL) {
+							$this->value = $this->form->hidden_value_get($this->name);
+						}
 					}
 
 				//--------------------------------------------------
