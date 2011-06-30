@@ -73,7 +73,7 @@
 		//--------------------------------------------------
 		// Add report to the database
 
-			$db = new db;
+			$db = new db();
 
 			$db->query('INSERT INTO ' . DB_T_PREFIX . 'report (
 							id,
@@ -354,7 +354,7 @@
 
 	function debug_require_db_table($table, $sql) {
 
-		$db = new db;
+		$db = new db();
 
 		$db->query('SHOW TABLES LIKE "' . $db->escape(DB_T_PREFIX . $table) . '"');
 		if ($db->num_rows() == 0) {

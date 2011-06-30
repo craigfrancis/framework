@@ -86,7 +86,7 @@
 
 			public function db_get() {
 				if ($this->db === NULL) {
-					$this->db = new db;
+					$this->db = new db();
 				}
 				return $this->db;
 			}
@@ -95,6 +95,7 @@
 				if ($this->form === NULL) {
 
 					$this->form = new form;
+					$this->form->db_save_disable();
 					$this->form->db_table_set_sql($this->details->db_table_get_sql());
 
 					if ($this->user_id > 0) {

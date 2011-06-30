@@ -31,6 +31,7 @@
 			private $db_select_done;
 			private $db_fields;
 			private $db_values;
+			private $db_save_disabled;
 			private $csrf_token;
 			private $csrf_error_html;
 
@@ -66,6 +67,7 @@
 					$this->db_select_done = false;
 					$this->db_fields = array();
 					$this->db_values = array();
+					$this->db_save_disabled = false;
 
 				//--------------------------------------------------
 				// Internal form ID
@@ -217,7 +219,7 @@
 				// Store
 
 					if ($db === NULL) {
-						$db = new db;
+						$db = new db();
 					}
 
 					$this->db_link = $db;
@@ -293,6 +295,10 @@
 
 			public function db_value_set($name, $value) {
 				$this->db_values[$name] = $value;
+			}
+
+			public function db_save_disable() {
+				$this->db_save_disabled = true;
 			}
 
 			public function db_select_fields() {
@@ -550,6 +556,10 @@
 				// Validation
 
 					if ($this->db_table_name_sql === NULL) exit('<p>You need to call "db_table_set_sql" on the form object</p>');
+
+					if ($this->db_save_disabled) {
+						exit_with_error('The "db_save" method has been disabled, you should probably be using an intermediate support object.');
+					}
 
 				//--------------------------------------------------
 				// Values
