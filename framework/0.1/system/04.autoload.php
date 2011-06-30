@@ -19,6 +19,8 @@
 			}
 
 			$paths = array(
+					ROOT_APP . '/class/' . $class_name . '.php',
+					ROOT_APP . '/class/' . $folder . '/' . $class_name . '.php',
 					ROOT_VENDOR . '/system/' . $class_name . '.php',
 					ROOT_VENDOR . '/system/' . $folder . '/' . $class_name . '.php',
 					ROOT_FRAMEWORK . '/class/' . $class_name . '.php',

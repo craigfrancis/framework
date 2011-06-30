@@ -354,7 +354,7 @@
 
 		$db->query('SHOW TABLES LIKE "' . $db->escape(DB_T_PREFIX . $table) . '"');
 		if ($db->num_rows() == 0) {
-			exit_with_error('Missing table "' . DB_T_PREFIX . $table . '":' . "\n" . str_replace('[TABLE]', DB_T_PREFIX . $table, $sql));
+			exit('Missing table <strong>' . html(DB_T_PREFIX . $table) . '</strong>:<br /><br />' . nl2br(html(trim(str_replace('[TABLE]', DB_T_PREFIX . $table, $sql)))));
 		}
 
 	}

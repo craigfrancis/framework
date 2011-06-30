@@ -8,7 +8,7 @@
 		//--------------------------------------------------
 		// Get value
 
-			$value = '';
+			$value = NULL;
 			$method = strtoupper($method);
 
 			if ($method == 'POST') {
@@ -34,7 +34,7 @@
 		//--------------------------------------------------
 		// Strip slashes (IF NESS)
 
-			if (ini_get('magic_quotes_gpc')) {
+			if ($value !== NULL && ini_get('magic_quotes_gpc')) {
 				$value = stripslashesdeep($value);
 			}
 
