@@ -86,7 +86,7 @@
 
 					$field_length = 0;
 					foreach ($values as $name => $value) {
-						$len = strlen($name);
+						$len = strlen(is_array($value) ? $value['name'] : $name);
 						if ($len > $field_length) {
 							$field_length = $len;
 						}
@@ -98,6 +98,11 @@
 					$this->content_html .= '<table cellspacing="0" cellpadding="3" border="1">' . "\n";
 
 					foreach ($values as $name => $value) {
+
+						if (is_array($value)) { // The form class will use an array just incase there are two fields with the same label
+							$name = $value['name'];
+							$value = $value['value'];
+						}
 
 						$this->content_html .= ' <tr><th align="left" valign="top">' . html($name) . '</th><td valign="top">' . nl2br($value == '' ? '&#xA0;' : html($value)) . '</td></tr>' . "\n";
 
