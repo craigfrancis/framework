@@ -212,7 +212,7 @@ exit('Updated?');
 
 					$field_items = new form_field_check_boxes($form, 'Items');
 					$field_items->db_field_set('items');
-					//$field_items->db_field_set('items', FORM_DATABASE_FIELD_KEY);
+					//$field_items->db_field_set('items', 'key');
 					//$field_items->options_set($opt_itemss);
 
 					$field_selection = new form_field_radios($form, 'Selection');
@@ -270,10 +270,10 @@ exit('Updated?');
 								//--------------------------------------------------
 								// Email
 
-									$values = $form->data_as_array();
+									$values = $form->data_array_get();
 
 									$email = new email();
-									$email->values_table_add($values);
+									$email->request_table_add($values);
 
 									exit($email);
 
