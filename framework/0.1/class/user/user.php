@@ -27,10 +27,11 @@
 		}
 
 		// function field_name_get($form) {
-		// 	$this->user_fields['name'] = new form_field_text($form, 'Name');
-		// 	$this->user_fields['name']->min_length_set('Your name is required.', 1);
-		// 	$this->user_fields['name']->max_length_set('Your name cannot be longer than XXX characters.', 250);
-		// 	return $this->user_fields['name'];
+		// 	$field_name = new form_field_text($form, 'Name');
+		// 	$field_name->db_field_set('name');
+		// 	$field_name->min_length_set('Your name is required.');
+		// 	$field_name->max_length_set('Your name cannot be longer than XXX characters.');
+		// 	return $field_name;
 		// }
 
 	}

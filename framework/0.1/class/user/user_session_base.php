@@ -74,7 +74,7 @@
 			//--------------------------------------------------
 			// Process previous sessions
 
-				$db = $this->user_obj->database_get();
+				$db = $this->user_obj->db_get();
 
 				if ($this->allow_multiple_sessions !== true) {
 					if ($this->old_session_history_length == 0) {
@@ -171,7 +171,7 @@
 			//--------------------------------------------------
 			// Create a new session
 
-				$db = $this->user_obj->database_get();
+				$db = $this->user_obj->db_get();
 
 				$db->query('INSERT INTO ' . $db->escape_field($this->db_table_name) . ' (
 								id,
@@ -255,7 +255,7 @@
 
 				if ($session_id > 0) {
 
-					$db = $this->user_obj->database_get();
+					$db = $this->user_obj->db_get();
 
 					$db->query('SELECT
 									user_id,
@@ -320,7 +320,7 @@
 
 				if ($this->session_id > 0) {
 
-					$db = $this->user_obj->database_get();
+					$db = $this->user_obj->db_get();
 
 					if ($this->old_session_history_length == 0) {
 

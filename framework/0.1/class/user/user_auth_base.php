@@ -49,12 +49,12 @@
 			$this->db_table_fields[$field] = $name;
 		}
 
-		public function user_id_get($identification) {
+		public function identification_id_get($identification) {
 
 			//--------------------------------------------------
 			// Get
 
-				$db = $this->user_obj->database_get();
+				$db = $this->user_obj->db_get();
 
 				$db->query('SELECT
 								' . $db->escape_field($this->db_table_fields['id']) . ' AS id
@@ -80,7 +80,7 @@
 			//--------------------------------------------------
 			// Get
 
-				$db = $this->user_obj->database_get();
+				$db = $this->user_obj->db_get();
 
 				$db->query('SELECT
 								' . $db->escape_field($this->db_table_fields['identification']) . ' AS identification
@@ -102,7 +102,7 @@
 		}
 
 		public function unique_identification($identification) {
-			return ($this->user_id_get($identification) === false);
+			return ($this->identification_id_get($identification) === false);
 		}
 
 		public function hash_password($user_id, $password, $db_salt = '') {
@@ -160,7 +160,7 @@
 			//--------------------------------------------------
 			// Throttle random passwords (forgotten password)
 
-				$db = $this->user_obj->database_get();
+				$db = $this->user_obj->db_get();
 
 				if ($new_password === NULL) {
 
@@ -229,7 +229,7 @@
 			//--------------------------------------------------
 			// Update
 
-				$db = $this->user_obj->database_get();
+				$db = $this->user_obj->db_get();
 
 				$db->query('UPDATE
 								' . $db->escape_field($this->db_table_name) . '
@@ -250,7 +250,7 @@
 			//--------------------------------------------------
 			// Account details
 
-				$db = $this->user_obj->database_get();
+				$db = $this->user_obj->db_get();
 
 				if ($identification === NULL) {
 					$sql_where = $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($this->user_obj->user_id) . '"';
@@ -338,7 +338,7 @@
 			//--------------------------------------------------
 			// Create the user record
 
-				$db = $this->user_obj->database_get();
+				$db = $this->user_obj->db_get();
 
 				$db->query('INSERT INTO ' . $db->escape_field($this->db_table_name) . ' (
 								' . $db->escape_field($this->db_table_fields['id']) . ',
