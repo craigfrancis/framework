@@ -5,84 +5,14 @@
 		private $result;
 		private $link;
 
-		public function connect($name = NULL, $user = NULL, $pass = NULL, $host = NULL) {
-
-			if (!$this->link) {
-
-				if ($name === NULL && $user === NULL && $pass === NULL && $host === NULL) {
-					$this->link = config::get('db.link');
-				}
-
-				if (!$this->link) {
-
-					if ($name === NULL) $name = config::get('db.name');
-					if ($user === NULL) $user = config::get('db.user');
-					if ($pass === NULL) $pass = config::get('db.pass');
-					if ($host === NULL) $host = config::get('db.host');
-
-					$this->link = @mysql_connect($host, $user, $pass, true);
-					if (!$this->link) {
-						$this->error('A connection could not be established with the database - ' . mysql_error(), true);
-					}
-
-					if (!@mysql_select_db($name, $this->link)) {
-						$this->error('Selecting the database failed', true);
-					}
-
-					if (config::get('output.charset') == 'UTF-8') {
-						$charset = 'utf8';
-					} else if (config::get('output.charset') == 'ISO-8859-1') {
-						$charset = 'latin1';
-					} else {
-						$charset = NULL;
-					}
-
-					if ($charset !== NULL) {
-						if (function_exists('mysql_set_charset')) {
-						 	mysql_set_charset($charset, $this->link);
-						} else {
-							mysql_query('SET NAMES ' . $charset);
-						}
-					}
-
-					config::set_default('db.link', $this->link);
-
-				}
-
-			}
-
-		}
-
-		public function error($query = 'N/A', $use_query_as_error = false) {
-
-			if ($this->link) {
-				$extra = mysql_errno($this->link) . ': ' . mysql_error($this->link);
-			} else if (mysql_errno() != 0) {
-				$extra = mysql_errno() . ': ' . mysql_error() . ' (no link)';
-			} else {
-				$extra = '';
-			}
-
-			if (function_exists('exit_with_error') && config::get('db.error_thrown') !== true) {
-				config::set('db.error_thrown', true);
-				exit_with_error('An error has occurred with the database', $query . "\n\n" . $extra);
-			} else {
-				header('HTTP/1.0 500 Internal Server Error');
-				exit('<p>I have an error: <br />' . htmlentities($use_query_as_error ? $query : $extra) . '</p>');
-			}
-
-		}
-
 		public function escape($val) {
 
-			$this->connect();
+			$this->_connect();
 
 			if (function_exists('mysql_real_escape_string')) {
 				return mysql_real_escape_string($val, $this->link);
-
 			} else if (function_exists('mysql_escape_string')) {
 				return mysql_escape_string($val);
-
 			} else {
 				return addslashes($val);
 			}
@@ -111,11 +41,11 @@
 		}
 
 		public function query($query, $run_debug = true) {
-			$this->connect();
+			$this->_connect();
 			if ($run_debug && function_exists('debug_database')) {
 				$this->result = debug_database($this, $query);
 			} else {
-				$this->result = mysql_query($query, $this->link) or $this->error($query);
+				$this->result = mysql_query($query, $this->link) or $this->_error($query);
 			}
 			return $this->result;
 		}
@@ -153,7 +83,7 @@
 			if ($row = $this->fetch_assoc()) {
 				return explode("','", preg_replace("/(enum|set)\('(.+?)'\)/", '\2', $row['Type']));
 			} else {
-				$this->error('Could not return enum values for field "' . $field . '"');
+				$this->_error('Could not return enum values for field "' . $field . '"');
 			}
 		}
 
@@ -220,6 +150,78 @@
 
 			$this->result = $this->query('DELETE FROM ' . $sql_table . ' WHERE ' . $sql_where);
 			return $this->result; // affected_rows
+
+		}
+
+		public function link_get() {
+			return $this->link;
+		}
+
+		private function _connect($name = NULL, $user = NULL, $pass = NULL, $host = NULL) {
+
+			if (!$this->link) {
+
+				if ($name === NULL && $user === NULL && $pass === NULL && $host === NULL) {
+					$this->link = config::get('db.link');
+				}
+
+				if (!$this->link) {
+
+					if ($name === NULL) $name = config::get('db.name');
+					if ($user === NULL) $user = config::get('db.user');
+					if ($pass === NULL) $pass = config::get('db.pass');
+					if ($host === NULL) $host = config::get('db.host');
+
+					$this->link = @mysql_connect($host, $user, $pass, true);
+					if (!$this->link) {
+						$this->_error('A connection could not be established with the database - ' . mysql_error(), true);
+					}
+
+					if (!@mysql_select_db($name, $this->link)) {
+						$this->_error('Selecting the database failed', true);
+					}
+
+					if (config::get('output.charset') == 'UTF-8') {
+						$charset = 'utf8';
+					} else if (config::get('output.charset') == 'ISO-8859-1') {
+						$charset = 'latin1';
+					} else {
+						$charset = NULL;
+					}
+
+					if ($charset !== NULL) {
+						if (function_exists('mysql_set_charset')) {
+						 	mysql_set_charset($charset, $this->link);
+						} else {
+							mysql_query('SET NAMES ' . $charset);
+						}
+					}
+
+					config::set_default('db.link', $this->link);
+
+				}
+
+			}
+
+		}
+
+		private function _error($query = 'N/A', $use_query_as_error = false) {
+
+			if ($this->link) {
+				$extra = mysql_errno($this->link) . ': ' . mysql_error($this->link);
+			} else if (mysql_errno() != 0) {
+				$extra = mysql_errno() . ': ' . mysql_error() . ' (no link)';
+			} else {
+				$extra = '';
+			}
+
+			if (function_exists('exit_with_error') && config::get('db.error_thrown') !== true) {
+				config::set('db.error_thrown', true);
+				exit_with_error('An error has occurred with the database', $query . "\n\n" . $extra);
+			} else {
+				header('HTTP/1.0 500 Internal Server Error');
+				exit('<p>I have an error: <br />' . htmlentities($use_query_as_error ? $query : $extra) . '</p>');
+			}
 
 		}
 

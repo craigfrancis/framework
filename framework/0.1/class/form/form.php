@@ -809,16 +809,58 @@
 			}
 
 			public function html() {
-				return '
-					' . rtrim($this->html_start()) . '
-						<fieldset>
-							' . $this->html_error_list() . '
-							' . $this->html_fields() . '
-							<div class="row submit">
-								<input type="submit" value="' . html($this->form_button) . '" />
-							</div>
-						</fieldset>
-					' . $this->html_end() . "\n";
+
+				//--------------------------------------------------
+				// Field groups
+
+					$fields_without_group = false;
+					$field_groups = array();
+
+					foreach ($this->fields as $field_id => $field) {
+						if ($field->print_show_get() && !$field->print_hidden_get()) {
+							$field_group = $field->print_group_get();
+							if ($field_group === NULL) {
+								$fields_without_group = true;
+								break;
+							} else {
+								$field_groups[] = $field_group;
+							}
+						}
+					}
+
+				//--------------------------------------------------
+				// Fields HTML
+
+					if ($fields_without_group == true) {
+
+						$fields_html = $this->html_fields();
+
+					} else {
+
+						$fields_html = '';
+
+						$field_groups = array_unique($field_groups);
+
+						foreach ($field_groups as $group) {
+							$fields_html .= "\n\t\t\t\t" . '<h2>' . html($group) . '</h2>' . "\n";
+							$fields_html .= $this->html_fields($group);
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return '
+						' . rtrim($this->html_start()) . '
+							<fieldset>
+								' . $this->html_error_list() . '
+								' . $fields_html . '
+								<div class="row submit">
+									<input type="submit" value="' . html($this->form_button) . '" />
+								</div>
+							</fieldset>
+						' . $this->html_end() . "\n";
 			}
 
 			public function __toString() { // (PHP 5.2)

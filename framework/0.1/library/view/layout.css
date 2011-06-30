@@ -246,6 +246,12 @@
 		margin: 0;
 	}
 
+	.basic_form div + h2 {
+		clear: both;
+		margin-top: 1em;
+		padding-top: 3px;
+	}
+
 	.basic_form .error_list,
 	.basic_form .error {
 		color: red;

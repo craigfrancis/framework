@@ -25,9 +25,12 @@
 		debug_start_time_set();
 
 	//--------------------------------------------------
-	// Query time
+	// DB variables
 
-		config::set('debug.query_time', 0);
+		config::set_default('debug.db', true);
+		config::set_default('debug.db_required_fields', array());
+
+		config::set('debug.db_time', 0);
 
 //--------------------------------------------------
 // Error reporting
@@ -274,6 +277,7 @@
 		// Note
 
 			config::array_push('debug.notes', array(
+					'colour' => ($system_call ? '#CCC' : '#CFC'),
 					'html' => $note_html,
 					'time' => $time,
 				));
@@ -346,7 +350,7 @@
 	}
 
 //--------------------------------------------------
-// Require database table
+// Database debug
 
 	function debug_require_db_table($table, $sql) {
 
@@ -356,6 +360,208 @@
 		if ($db->num_rows() == 0) {
 			exit('Missing table <strong>' . html(DB_T_PREFIX . $table) . '</strong>:<br /><br />' . nl2br(html(trim(str_replace('[TABLE]', DB_T_PREFIX . $table, $sql)))));
 		}
+
+	}
+
+	function debug_database($db, $query) {
+
+		//--------------------------------------------------
+		// Skip if disabled debugging
+
+			if (config::get('debug.db') !== true) {
+				return mysql_query($query, $db->link_get()) or $db->error($query);
+			}
+
+		//--------------------------------------------------
+		// Explain how the query is executed
+
+			$explain_html = '';
+
+			if (preg_match('/^\W*\(?\W*SELECT/i', $query)) {
+
+				$explain_html .= '
+					<table cellspacing="0" cellpadding="1" border="1" style="border-width: 0 1px 1px 0; border-style: solid; border-color: #000; margin: 1em 0 0 0;">';
+
+				$headers_printed = false;
+
+				$rst = @mysql_query('EXPLAIN ' . $query, $db->link_get());
+				if ($rst) {
+					while ($row = mysql_fetch_assoc($rst)) {
+
+						if ($headers_printed == false) {
+							$headers_printed = true;
+							$explain_html .= '
+								<tr>';
+							foreach ($row as $key => $value) {
+								$explain_html .= '
+									<th style="border-width: 1px 0 0 1px; border-style: solid; border-color: #000; padding: 0.2em;">' . html($key) . '</th>';
+							}
+							$explain_html .= '
+								</tr>';
+						}
+
+						$explain_html .= '
+							<tr>';
+						foreach ($row as $key => $value) {
+							$explain_html .= '
+								<td style="border-width: 1px 0 0 1px; border-style: solid; border-color: #000; padding: 0.2em;">' . ($key == 'type' ? '<a href="http://dev.mysql.com/doc/refman/5.0/en/explain.html#id2772158" style="color: #000; background: #CCF; text-decoration: none;">' : '') . ($value == '' ? '&#xA0;' : html($value)) . ($key == 'type' ? '</a>' : '') . '</td>';
+						}
+						$explain_html .= '
+							</tr>';
+
+					}
+				}
+
+				$explain_html .= '
+					</table>';
+
+			}
+
+		//--------------------------------------------------
+		// Get all the table references, and if any of them
+		// have a "deleted" column, make sure that it's
+		// being used
+
+			$text_html = '';
+
+			if (preg_match('/^(SELECT|UPDATE|DELETE)/i', ltrim($query))) {
+
+				$tables = array();
+
+				if (preg_match('/WHERE(.*)/ims', $query, $matches)) {
+					$where_sql = $matches[1];
+					$where_sql = preg_replace('/ORDER BY.*/ms', '', $where_sql);
+					$where_sql = preg_replace('/LIMIT\W+[0-9].*/ms', '', $where_sql);
+				} else {
+					$where_sql = '';
+				}
+
+				if (DB_T_PREFIX != '') {
+
+					preg_match_all('/\b(' . preg_quote(DB_T_PREFIX, '/') .'[a-z0-9_]+)( AS ([a-z0-9]+))?/', $query, $matches, PREG_SET_ORDER);
+
+				} else {
+
+					$matches = array();
+
+					preg_match_all('/(UPDATE|FROM)([^\(]*?)(WHERE|GROUP BY|HAVING|ORDER BY|LIMIT|$)/isD', $query, $from_matches, PREG_SET_ORDER);
+
+					foreach ($from_matches as $match) {
+						foreach (preg_split('/(,|(NATURAL\s+)?(LEFT|RIGHT|INNER|CROSS)\s+(OUTER\s+)?JOIN)/', $match[2]) as $table) {
+
+							if (preg_match('/([a-z0-9_]+)( AS ([a-z0-9]+))?/', $table, $ref)) {
+								$matches[] = $ref;
+							}
+
+						}
+					}
+
+				}
+
+				foreach ($matches as $table) {
+
+					$found = array();
+
+					foreach (config::get('debug.db_required_fields') as $required_field) {
+
+						$rst = @mysql_query('SHOW COLUMNS FROM ' . $table[1] . ' LIKE "' . $required_field . '"', $db->link_get());
+						if ($rst && $row = mysql_fetch_assoc($rst)) {
+
+							//--------------------------------------------------
+							// Found
+
+								$found[] = $required_field;
+
+							//--------------------------------------------------
+							// Table name
+
+								$required_clause = (isset($table[3]) ? '`' . $table[3] . '`.' : '') . '`' . $required_field . '`';
+
+							//--------------------------------------------------
+							// Test
+
+								if (!preg_match('/' . str_replace('`', '`?', preg_quote($required_clause, '/')) . ' (=|>|>=|<|<=|!=) /', $where_sql)) {
+
+									config::set('debug.show', false);
+
+									exit('
+										<div>
+											<h1>Error</h1>
+											<p>
+												Missing reference to "' . html($required_field) . '" column on the table "' . html($table[1]) . '".
+											</p>
+											<p>
+												' . html($query) . '
+											</p>
+										</div>');
+
+								}
+
+						}
+
+					}
+
+					$tables[] = $table[1] . ': ' . (count($found) > 0 ? implode(', ', $found) : 'N/A');
+
+				}
+
+				if (count($tables) > 0) {
+
+					$text_html .= '
+						<ul style="margin: 0; padding: 0; margin: 1em 0 1em 2em; background: #CCF; color: #000;">';
+
+					foreach ($tables as $table) {
+						$text_html .= '
+							<li style="padding: 0; margin: 0; background: #CCF; color: #000; text-align: left;">' . preg_replace('/: (.*)/', ': <strong>$1</strong>', html($table)) . '</li>';
+					}
+
+					$text_html .= '
+						</ul>';
+
+				}
+
+			}
+
+		//--------------------------------------------------
+		// Time start
+
+			$time_start = explode(' ', microtime());
+			$time_start = ((float)$time_start[0] + (float)$time_start[1]);
+
+		//--------------------------------------------------
+		// Run query
+
+			$result = mysql_query($query, $db->link_get()) or $db->error($query);
+
+		//--------------------------------------------------
+		// Time end
+
+			$time_end = explode(' ', microtime());
+			$time_end = ((float)$time_end[0] + (float)$time_end[1]);
+
+			$time_total = round(($time_end - $time_start), 3);
+
+			config::set('debug.db_time', (config::get('debug.db_time') + $time_total));
+
+		//--------------------------------------------------
+		// Create debug output
+
+			$query_html = nl2br(trim(preg_replace('/^[ \t]*(?! |\t|SELECT|UPDATE|DELETE|INSERT|SHOW|FROM|LEFT|SET|WHERE|GROUP|ORDER|LIMIT)/m', '&#xA0; &#xA0; \0', html($query))));
+			if (strpos($query_html, "\n") !== false) {
+				$query_html .= '<br /><br />';
+			}
+
+			config::array_push('debug.notes', array(
+					'colour' => '#CCF',
+					'html' => $query_html,
+					'time' => $time_total,
+					'extra_html' => $explain_html . $text_html,
+				));
+
+		//--------------------------------------------------
+		// Return the result
+
+			return $result;
 
 	}
 
@@ -387,7 +593,7 @@
 		// Default CSS
 
 			$css_text = 'font-size: 12px; font-family: verdana; font-weight: normal; text-align: left; text-decoration: none;';
-			$css_block = 'margin: 5px 0; padding: 5px; background: #FFF; color: #000; border: 1px solid #000; clear: both;';
+			$css_block = 'margin: 5px 0; padding: 5px; color: #000; border: 1px solid #000; clear: both;';
 			$css_para = 'text-align: left; padding: 0; margin: 0; ' . $css_text;
 
 		//--------------------------------------------------
@@ -396,9 +602,9 @@
 			$time = debug_run_time();
 
 			$output_html = '
-				<div style="' . html($css_block) . '">
+				<div style="' . html($css_block) . ' background: #FFF;">
 					<p style="' . html($css_para) . '">Elapsed time: ' . html($time) . '</p>
-					<p style="' . html($css_para) . '">Query time: ' . html(config::get('debug.query_time')) . '</p>
+					<p style="' . html($css_para) . '">Query time: ' . html(config::get('debug.db_time')) . '</p>
 				</div>';
 
 		//--------------------------------------------------
@@ -408,11 +614,14 @@
 
 			foreach ($notes as $note) {
 				$output_html .= '
-					<div style="' . html($css_block) . '">
+					<div style="' . html($css_block) . ' background: ' . html($note['colour']) . '">
 						<p style="' . html($css_para) . '">' . $note['html'] . '</p>';
 				if ($note['time'] !== NULL) {
 					$output_html .= '
 						<p style="' . html($css_para) . '">Time Elapsed: ' . html($note['time']) . '</p>';
+				}
+				if (isset($note['extra_html'])) {
+					$output_html .= $note['extra_html'];
 				}
 				$output_html .= '
 					</div>';
