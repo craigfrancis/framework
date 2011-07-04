@@ -531,7 +531,7 @@
 		//--------------------------------------------------
 		// Run query
 
-			$result = mysql_query($query, $db->link_get()) or $db->error($query);
+			$result = mysql_query($query, $db->link_get()) or $db->_error($query);
 
 		//--------------------------------------------------
 		// Time end

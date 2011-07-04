@@ -293,10 +293,6 @@
 				$this->db_select_sql = $where_sql;
 			}
 
-			public function db_value_set($name, $value) {
-				$this->db_values[$name] = $value;
-			}
-
 			public function db_save_disable() {
 				$this->db_save_disabled = true;
 			}
@@ -369,6 +365,10 @@
 
 					}
 
+			}
+
+			public function db_value_set($name, $value) {
+				$this->db_values[$name] = $value;
 			}
 
 		//--------------------------------------------------
@@ -497,10 +497,7 @@
 							$value = $this->fields[$field_id]->value_get();
 						}
 
-						$values[] = array( // Allow multiple fields to have the same label
-								'name' => $field_name,
-								'value' => $value,
-							);
+						$values[] = array($field_name, $value); // Allow multiple fields to have the same label
 
 					}
 

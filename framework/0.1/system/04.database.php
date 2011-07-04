@@ -205,7 +205,7 @@
 
 		}
 
-		private function _error($query = 'N/A', $use_query_as_error = false) {
+		public function _error($query = 'N/A', $use_query_as_error = false) { // Public so debug script can call
 
 			if ($this->link) {
 				$extra = mysql_errno($this->link) . ': ' . mysql_error($this->link);
