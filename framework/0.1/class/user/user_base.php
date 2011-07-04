@@ -34,7 +34,7 @@
 				//--------------------------------------------------
 				// Open the session
 
-					$this->user_id = $this->session->session_get();
+					$this->session_start();
 
 			}
 
@@ -99,7 +99,7 @@
 					$this->form->db_table_set_sql($this->details->db_table_get_sql());
 
 					if ($this->user_id > 0) {
-						$this->form->db_select_set_sql($this->details->db_where_get_sql($this->user_id));
+						$this->form->db_where_set_sql($this->details->db_where_get_sql($this->user_id));
 					}
 
 				}
@@ -137,8 +137,16 @@
 		//--------------------------------------------------
 		// Support functions
 
+			public function user_id_set($user_id) {
+				$this->user_id = $user_id;
+			}
+
 			public function user_id_get() {
 				return $this->user_id;
+			}
+
+			public function session_start() {
+				$this->user_id = $this->session->session_get();
 			}
 
 			public function session_token_get() {

@@ -21,7 +21,7 @@
 					$form_edit = new form();
 					$form_edit->form_class_set('basic_form');
 					$form_edit->db_table_set_sql(DB_T_PREFIX . 'user');
-					$form_edit->db_select_set_sql('id = 1');
+					$form_edit->db_where_set_sql('id = 1');
 
 					$field_name = new form_field_text($form_edit, 'Name');
 					$field_name->db_field_set('name');

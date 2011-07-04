@@ -26,7 +26,7 @@
 			private $db_link;
 			private $db_table_name_sql;
 			private $db_table_alias_sql;
-			private $db_select_sql;
+			private $db_where_sql;
 			private $db_select_values;
 			private $db_select_done;
 			private $db_fields;
@@ -62,7 +62,7 @@
 					$this->db_link = NULL;
 					$this->db_table_name_sql = NULL;
 					$this->db_table_alias_sql = NULL;
-					$this->db_select_sql = NULL;
+					$this->db_where_sql = NULL;
 					$this->db_select_values = array();
 					$this->db_select_done = false;
 					$this->db_fields = array();
@@ -289,8 +289,8 @@
 				return $this->db_fields;
 			}
 
-			public function db_select_set_sql($where_sql) {
-				$this->db_select_sql = $where_sql;
+			public function db_where_set_sql($where_sql) {
+				$this->db_where_sql = $where_sql;
 			}
 
 			public function db_save_disable() {
@@ -313,7 +313,7 @@
 				//--------------------------------------------------
 				// Not used
 
-					if ($this->db_select_sql === NULL || $field == '') {
+					if ($this->db_where_sql === NULL || $field == '') {
 						return ''; // So the form_field_text->value_print_get has the more appropriate empty string.
 					}
 
@@ -326,7 +326,7 @@
 						// Validation
 
 							if ($this->db_table_name_sql === NULL) exit('<p>You need to call "db_table_set_sql" on the form object</p>');
-							if ($this->db_select_sql === NULL) exit('<p>You need to call "db_select_set_sql" on the form object</p>');
+							if ($this->db_where_sql === NULL) exit('<p>You need to call "db_where_set_sql" on the form object</p>');
 
 						//--------------------------------------------------
 						// Select
@@ -337,7 +337,7 @@
 
 								$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
 
-								$this->db_link->select($table_sql, $fields, $this->db_select_sql);
+								$this->db_link->select($table_sql, $fields, $this->db_where_sql);
 
 								if ($row = $this->db_link->fetch_assoc()) {
 									$this->db_select_values = $row;
@@ -361,7 +361,7 @@
 
 					} else {
 
-						exit('<p>Could not find field "' . html($field) . '" - have you called "db_table_set_sql" and "db_select_set_sql" on the form object</p>');
+						exit('<p>Could not find field "' . html($field) . '" - have you called "db_table_set_sql" and "db_where_set_sql" on the form object</p>');
 
 					}
 
@@ -567,7 +567,7 @@
 						$values['edited'] = date('Y-m-d H:i:s');
 					}
 
-					if (isset($this->db_fields['created']) && $this->db_select_sql === NULL) {
+					if (isset($this->db_fields['created']) && $this->db_where_sql === NULL) {
 						$values['created'] = date('Y-m-d H:i:s');
 					}
 
@@ -576,10 +576,10 @@
 
 					$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
 
-					if ($this->db_select_sql === NULL) {
+					if ($this->db_where_sql === NULL) {
 						$this->db_link->insert($table_sql, $values);
 					} else {
-						$this->db_link->update($table_sql, $values, $this->db_select_sql);
+						$this->db_link->update($table_sql, $values, $this->db_where_sql);
 					}
 
 			}

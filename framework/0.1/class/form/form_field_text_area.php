@@ -67,7 +67,7 @@
 				foreach ($attributes as $name => $value) {
 					$html .= ' ' . $name . '="' . html($value) . '"';
 				}
-				return $html . '>' . html($this->value) . '</textarea>';
+				return $html . '>' . html($this->value_print_get()) . '</textarea>';
 
 			}
 
