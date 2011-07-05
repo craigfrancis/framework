@@ -6,13 +6,16 @@
 		// Variables
 
 			private $subject;
-			private $from_name;
 			private $from_email;
-			private $reply_to;
-			private $return;
+			private $from_name;
+			private $reply_to_email;
+			private $reply_to_name;
+			private $return_email;
+			private $return_name;
 			private $headers;
 			private $attachments;
-			private $values;
+			private $template_path;
+			private $template_values;
 			private $content_text;
 			private $content_html;
 
@@ -25,12 +28,16 @@
 				// Defaults
 
 					$this->subject = NULL;
-					$this->from_name = config::get('email.from_name');
 					$this->from_email = config::get('email.from_email');
-					$this->reply_to = NULL;
-					$this->return = NULL;
+					$this->from_name = config::get('email.from_name');
+					$this->reply_to_email = NULL;
+					$this->reply_to_name = NULL;
+					$this->return_email = NULL;
+					$this->return_name = NULL;
 					$this->headers = array();
 					$this->attachments = array();
+					$this->template_path = NULL;
+					$this->template_values = array();
 					$this->content_text = '';
 					$this->content_html = '';
 
@@ -44,27 +51,44 @@
 				return $this->subject;
 			}
 
-//    $email->from_set('craig@craigfrancis.co.uk');
-//    $email->from_set('craig@craigfrancis.co.uk', 'Craig Francis');
-//    $email->reply_to_set('craig@craigfrancis.co.uk');
-//    $email->return_set('craig@craigfrancis.co.uk');
-// CC
-// BCC?
-//    $email->header_set('Example', 'Value');
-//    $email->set('name', $value); // Don't do a set_html() method, as this does not work for plain text version
-//    $email->set($data_array); // array merge?
-//    $email->attachment_add($content, $filename, $mime, $id = NULL);
-//    $email->template('');
-//    $email->send('craig@craigfrancis.co.uk'); // or array
+			public function template_path_set($path) {
+				$this->template_path = $path;
+			}
+
+			public function template_value_set($name, $value) {
+				$this->template_values[$name] = $value;
+			}
+
+			public function from_set($email, $name = NULL) {
+				$this->from_email = $email;
+				$this->from_name = $name;
+			}
+
+			public function reply_to_set($email, $name = NULL) {
+				$this->reply_to_email = $email;
+				$this->reply_to_name = $name;
+			}
+
+			public function return_set($email, $name = NULL) {
+				$this->return_email = $email;
+				$this->return_name = $name;
+			}
+
+			public function header_set($name, $value) {
+				$this->headers[$name] = $value;
+			}
+
+			public function attachment_add($content, $filename, $mime, $id = NULL) {
+				$this->attachments[] = array(
+						'content' => $content,
+						'filename' => $filename,
+						'mime' => $mime,
+						'id' => $id,
+					);
+			}
 
 		//--------------------------------------------------
 		// Content
-
-			public function use_template() {
-
-				// Set $this->subject from <title>
-
-			}
 
 			public function request_table_add($values) {
 
@@ -121,14 +145,19 @@
 		//--------------------------------------------------
 		// Send
 
-			public function send($recipients) {
+			// TODO: CC and BCC support?
+
+			public function send($recipients, $content = NULL) {
 
 				//--------------------------------------------------
-				// Send
+				// Content
 
-					if (!is_array($recipients)) {
-						$recipients = array($recipients);
+					if ($content === NULL) {
+						$content = $this->_build();
 					}
+
+				//--------------------------------------------------
+				// Headers
 
 					$headers = 'Content-Type: text/html; charset="' . head(config::get('output.charset')) . '"' . "\n";
 
@@ -140,10 +169,54 @@
 						$headers .= 'From: noreply@domain.com' . "\n";
 					}
 
-					foreach ($recipients as $email) {
-						mail($email, $this->subject, $this->html(), trim($headers));
+				//--------------------------------------------------
+				// Send
+
+					if (!is_array($recipients)) {
+						$recipients = array($recipients);
 					}
 
+					foreach ($recipients as $recipient) {
+						mail($recipient, $this->subject, $content, trim($headers));
+					}
+
+			}
+
+			public function send_encrypted($recipients) {
+
+				//--------------------------------------------------
+				// Content
+
+					$content_plain = $this->_build();
+
+				//--------------------------------------------------
+				// Encryption setup
+
+					$gpg = new gpg();
+					$gpg->private_key_use($this->from_name, $this->from_email);
+
+				//--------------------------------------------------
+				// Send
+
+					if (!is_array($recipients)) {
+						$recipients = array($recipients);
+					}
+
+					foreach ($recipients as $recipient) {
+
+						$content_encrypted = $gpg->encrypt($content_plain, $recipient);
+
+						$this->send($recipient, $content_encrypted);
+
+					}
+
+			}
+
+		//--------------------------------------------------
+		// Build
+
+			private function _build() {
+				return 'Body';
 			}
 
 		//--------------------------------------------------
@@ -157,6 +230,8 @@
 
 				// Use template... if not set, use put in simple <html> tags
 
+				// If subject has not been set, try to get from <title> tags.
+
 				$html = $this->content_html;
 
 				return $html;
@@ -164,7 +239,7 @@
 			}
 
 			public function __toString() { // (PHP 5.2)
-				return $this->html();
+				return $this->_build();
 			}
 
 	}
