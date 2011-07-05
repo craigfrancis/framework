@@ -89,10 +89,10 @@
 		$mime_xml = 'application/xhtml+xml';
 
 		if (config::get('output.mime') == $mime_xml && stripos(config::get('request.accept'), $mime_xml) === false) {
-			config::set('output.mime', 'text/html');
+			mime_set('text/html');
+		} else {
+			mime_set();
 		}
-
-		header('Content-type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
 
 	//--------------------------------------------------
 	// Debug

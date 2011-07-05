@@ -137,7 +137,7 @@
 
 				if (!headers_sent()) {
 					header('HTTP/1.0 500 Internal Server Error');
-					config::set('output.mime', 'text/html');
+					mime_set('text/html');
 				}
 
 				if (class_exists('view') && class_exists('layout')) {
@@ -305,12 +305,14 @@
 
 			$config_html = array($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
 			foreach ($config as $key => $value) {
-				if (in_array($key, array('db.pass', 'debug.notes', 'view.variables', 'output.html', 'output.css_types', 'output.head_html'))) {
-					$value_html = '???';
-				} else {
-					$value_html = html(print_r($value, true));
+				if (!in_array($key, array('db.link'))) {
+					if (in_array($key, array('db.pass', 'debug.notes', 'view.variables', 'output.html', 'output.css_types', 'output.head_html'))) {
+						$value_html = '???';
+					} else {
+						$value_html = html(print_r($value, true));
+					}
+					$config_html[] = '&#xA0; <strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html;
 				}
-				$config_html[] = '&#xA0; <strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html;
 			}
 
 		//--------------------------------------------------
@@ -649,11 +651,7 @@
 			} else {
 
 				if (config::get('output.mime') == 'application/xhtml+xml') {
-
-					config::set('output.mime', 'text/html');
-
-					header('Content-type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
-
+					mime_set('text/html');
 				}
 
 		 		return $buffer . $output_html;

@@ -249,6 +249,19 @@
 	}
 
 //--------------------------------------------------
+// Set mime type
+
+	function mime_set($mime_type = NULL) {
+
+		if ($mime_type !== NULL) {
+			config::set('output.mime', $mime_type);
+		}
+
+		header('Content-type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
+
+	}
+
+//--------------------------------------------------
 // Function to send the user onto another page.
 // This takes into IE6 into consideration when
 // redirecting from a HTTPS connection to the
@@ -267,9 +280,7 @@
 			exit($next_html);
 		}
 
-		config::set('output.mime', 'text/html');
-
-		header('Content-type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
+		mime_set('text/html');
 
 		if (substr($url, 0, 7) == 'http://' && config::get('request.https') && strpos(config::get('request.browser'), 'MSIE 6') !== false) {
 			header('Refresh: 0; URL=' . head($url));
