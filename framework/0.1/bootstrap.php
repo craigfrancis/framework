@@ -40,7 +40,7 @@
 
 		function __set($name, $value) {
 			if (!isset($this->$name)) {
-				exit('Property "' . html($name) . '" not set on form object.');
+				exit('Property "' . html($name) . '" not set on ' . get_class($this) . ' object.');
 			}
 			$this->$name = $value;
 		}
