@@ -158,8 +158,6 @@
 		//--------------------------------------------------
 		// Send
 
-			// TODO: CC and BCC support?
-
 			public function send($recipients, $build = NULL) {
 
 				//--------------------------------------------------
