@@ -8,30 +8,6 @@
 
 		public static $salt = ROOT;
 
-		public static function get($variable, $default = NULL) {
-
-			if (!isset($_COOKIE[$variable])) {
-				return $default;
-			}
-
-			$cookie = $_COOKIE[$variable];
-
-			if (isset($cookie[40]) AND $cookie[40] === '~') { // sha1 length is 40 characters
-
-				list($hash, $value) = explode('~', $cookie, 2); // Separate the salt and the value
-
-				if (cookie::salt($variable, $value) === $hash) {
-					return $value; // Cookie signature is valid
-				} else {
-					cookie::delete($variable); // The cookie signature is invalid, delete it
-				}
-
-			}
-
-			return $default;
-
-		}
-
 		public static function set($variable, $value, $expiration = NULL, $config = NULL) {
 
 			if ($config === NULL) {
@@ -62,6 +38,30 @@
 			} else {
 				return setcookie($variable, $value, $expiration, $config['path'], $config['domain'], $config['secure']);
 			}
+
+		}
+
+		public static function get($variable, $default = NULL) {
+
+			if (!isset($_COOKIE[$variable])) {
+				return $default;
+			}
+
+			$cookie = $_COOKIE[$variable];
+
+			if (isset($cookie[40]) AND $cookie[40] === '~') { // sha1 length is 40 characters
+
+				list($hash, $value) = explode('~', $cookie, 2); // Separate the salt and the value
+
+				if (cookie::salt($variable, $value) === $hash) {
+					return $value; // Cookie signature is valid
+				} else {
+					cookie::delete($variable); // The cookie signature is invalid, delete it
+				}
+
+			}
+
+			return $default;
 
 		}
 
