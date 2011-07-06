@@ -142,6 +142,16 @@
 				}
 			}
 
+			public function hidden_value($name, $default = NULL) {
+				if ($this->form_submitted) {
+					$value = data('h-' . $name);
+					$value = ($value === NULL ? NULL : urldecode($value));
+				} else {
+					$value = $default;
+				}
+				$this->hidden_value_set($name, $value);
+			}
+
 			public function hidden_value_set($name, $value = NULL) {
 				if ($value === NULL) {
 					unset($this->hidden_values[$name]);
