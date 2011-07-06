@@ -6,7 +6,6 @@
 		// Variables
 
 			private $gpg_command;
-			private $home_path;
 			private $default_pass_phrase = '12345';
 			private $private_key_name = NULL;
 			private $private_key_email = NULL;
@@ -27,13 +26,16 @@
 				//--------------------------------------------------
 				// Home path
 
-					$this->home_path_set(ROOT_APP . '/support/gpg');
+					$this->config_path_set(ROOT . '/private/gpg');
 
 			}
 
-			public function home_path_set($path) {
-				$this->home_path = $path;
-				putenv('GNUPGHOME=' . $path);
+			public function config_path_set($path) {
+				if (is_dir($path)) {
+					putenv('GNUPGHOME=' . $path);
+				} else {
+					exit_with_error('Cannot find GPG configuration folder: ' . $path);
+				}
 			}
 
 			public function private_key_use($key_name, $key_email) {
@@ -133,7 +135,7 @@
 				$key_exists = $this->_key_exists($key);
 				if (!$key_exists) {
 
-					$public_key_path = ROOT_APP . '/support/gpg/import/' . $key . '.gpg';
+					$public_key_path = ROOT_APP . '/support/gpg/' . $key . '.key.pub';
 					if (is_file($public_key_path)) {
 						$result = $this->_exec('--import ' . escapeshellarg($public_key_path));
 						$result = $this->_exec('--batch --yes --passphrase ' . escapeshellarg($this->default_pass_phrase) . ' --local-user ' . escapeshellarg($this->private_key_email) . ' --sign-key ' . escapeshellarg($key));

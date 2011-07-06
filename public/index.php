@@ -20,7 +20,6 @@
 	// define('ROOT', dirname(dirname(__FILE__)));
 	// define('ROOT_APP',       ROOT . DIRECTORY_SEPARATOR . 'app');
 	// define('ROOT_PUBLIC',    ROOT . DIRECTORY_SEPARATOR . 'public');
-	// define('ROOT_VENDOR',    ROOT . DIRECTORY_SEPARATOR . 'vendor');
 	// define('ROOT_FRAMEWORK', ROOT . DIRECTORY_SEPARATOR . 'framework' . DIRECTORY_SEPARATOR . FRAMEWORK_VERSION);
 
 	// require_once(ROOT_FRAMEWORK . DIRECTORY_SEPARATOR . 'bootstrap.php');
