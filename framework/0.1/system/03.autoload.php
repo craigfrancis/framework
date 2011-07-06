@@ -12,18 +12,31 @@
 		//--------------------------------------------------
 		// Paths
 
-			if (($pos = strpos($class_name, '_')) !== false) {
-				$folder = substr($class_name, 0, $pos);
-			} else {
-				$folder = $class_name;
-			}
+			if (substr($class_name, 0, 10) == 'controller') {
 
-			$paths = array(
-					ROOT_APP . '/support/' . $class_name . '.php',
-					ROOT_APP . '/support/' . $folder . '/' . $class_name . '.php',
-					ROOT_FRAMEWORK . '/class/' . $class_name . '.php',
-					ROOT_FRAMEWORK . '/class/' . $folder . '/' . $class_name . '.php',
-				);
+				$controller_name = substr($class_name, 11);
+
+				$paths = array(
+						ROOT_APP . '/support/controller/' . $controller_name . '.php',
+						ROOT_FRAMEWORK . '/library/controller/' . $controller_name . '.php',
+					);
+
+			} else {
+
+				if (($pos = strpos($class_name, '_')) !== false) {
+					$folder = substr($class_name, 0, $pos);
+				} else {
+					$folder = $class_name;
+				}
+
+				$paths = array(
+						ROOT_APP . '/support/' . $class_name . '.php',
+						ROOT_APP . '/support/' . $folder . '/' . $class_name . '.php',
+						ROOT_FRAMEWORK . '/class/' . $class_name . '.php',
+						ROOT_FRAMEWORK . '/class/' . $folder . '/' . $class_name . '.php',
+					);
+
+			}
 
 		//--------------------------------------------------
 		// Run
