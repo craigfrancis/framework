@@ -187,7 +187,7 @@
 	// Email
 
 		config::set_default('email.from_name', 'Company Name');
-		config::set_default('email.from_email', 'noreply@domain.com');
+		config::set_default('email.from_email', 'noreply@example.com');
 
 		config::set_default('email.error', NULL);
 

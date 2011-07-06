@@ -175,7 +175,7 @@ exit('Updated?');
 					$field_homepage->allowed_schemes_set('Your homepage has an invalid scheme.', array('http', 'https'));
 					$field_homepage->min_length_set('Your homepage is required.');
 					$field_homepage->max_length_set('Your homepage cannot be longer than XXX characters.');
-					$field_homepage->placeholder_set('http://www.google.com');
+					$field_homepage->placeholder_set('http://www.example.com');
 					$field_homepage->info_set('Shown on your profile');
 
 					$field_file = new form_field_file($form, 'File');

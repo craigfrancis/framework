@@ -27,9 +27,9 @@
 		// Email
 
 			config::set('email.from_name', 'Company Name');
-			config::set('email.from_email', 'noreply@domain.com');
-			config::set('email.error', array('admin@domain.com'));
-			config::set('email.contact_us', array('admin@domain.com'));
+			config::set('email.from_email', 'noreply@example.com');
+			config::set('email.error', array('admin@example.com'));
+			config::set('email.contact_us', array('admin@example.com'));
 
 		//--------------------------------------------------
 		// General

@@ -318,7 +318,7 @@
 		echo '&#xA0; ' . html(url('/folder/#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('/folder/')->id(20)) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('/folder/')->get(array('id' => 54))) . '<br />' . "\n";
-		echo '&#xA0; ' . html(url('http://user:pass@www.google.com:80/about/folder/?id=example#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('http://user:pass@www.example.com:80/about/folder/?id=example#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 
 		$example = new url('/news/?a=b&id=1');
 		echo "<br />\n<br />\n";

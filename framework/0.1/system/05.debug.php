@@ -644,7 +644,7 @@
 		// Add
 
 			$pos = strpos(strtolower($buffer), '</body>');
-			if ($pos !== false) {
+			if ($pos !== false && config::get('output.mime') != 'text/plain') {
 
 		 		return substr($buffer, 0, $pos) . $output_html . substr($buffer, $pos);
 
