@@ -231,7 +231,6 @@
 	.basic_form fieldset {
 		padding: 1em 0 0 0;
 		margin: 0 0 1em 0;
-		border: 0;
 	}
 
 	.basic_form fieldset legend {
@@ -298,11 +297,14 @@
 	}
 
 /*--------------------------------------------------*/
-/* Single line form                                 */
+/* Search form                                      */
 
-	.single_line_form fieldset {
+	.search_form fieldset {
 		margin: 0 0 1em 0;
-		border: 0;
+	}
+
+	.search_form div {
+		display: inline;
 	}
 
 /*--------------------------------------------------*/
@@ -310,7 +312,6 @@
 
 	.delete_form fieldset {
 		margin: 0 0 1em 0;
-		border: 0;
 	}
 
 	.delete_form .error_list,
@@ -345,9 +346,11 @@
 		font-weight: bold;
 	}
 
-	.basic_table th {
+	.basic_table th,
+	.basic_table th a {
 		color: inherit;
 		background: #AAA;
+		text-decoration: none;
 	}
 
 	.basic_table th,
