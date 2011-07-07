@@ -305,7 +305,7 @@
 		//--------------------------------------------------
 		// Validation
 
-			private function _post_validation() {
+			public function _post_validation() {
 			}
 
 		//--------------------------------------------------

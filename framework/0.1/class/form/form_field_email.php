@@ -41,7 +41,7 @@
 		//--------------------------------------------------
 		// Validation
 
-			private function _post_validation() {
+			public function _post_validation() {
 
 				parent::_post_validation();
 

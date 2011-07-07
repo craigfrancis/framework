@@ -22,7 +22,7 @@
 			private $label_override_function;
 			private $errors_html;
 			private $error_override_function;
-			private $post_validation;
+			private $post_validation_done;
 			private $db_link;
 			private $db_table_name_sql;
 			private $db_table_alias_sql;
@@ -58,7 +58,7 @@
 					$this->label_override_function = config::get('form.label_override_function', NULL);
 					$this->errors_html = array();
 					$this->error_override_function = config::get('form.error_override_function', NULL);
-					$this->post_validation = false;
+					$this->post_validation_done = false;
 					$this->db_link = NULL;
 					$this->db_table_name_sql = NULL;
 					$this->db_table_alias_sql = NULL;
@@ -142,12 +142,12 @@
 				}
 			}
 
-			public function hidden_value($name, $default = NULL) {
+			public function hidden_value($name) {
 				if ($this->form_submitted) {
 					$value = data('h-' . $name);
 					$value = ($value === NULL ? NULL : urldecode($value));
 				} else {
-					$value = $default;
+					$value = '';
 				}
 				$this->hidden_value_set($name, $value);
 			}
@@ -405,25 +405,7 @@
 			}
 
 			public function csrf_error_set_html($error_html) {
-
-				//--------------------------------------------------
-				// Store
-
-					$this->csrf_error_html = $error_html;
-
-				//--------------------------------------------------
-				// CSRF check
-
-					$csrf_token = data('csrf', $this->form_method);
-
-					if ($this->form_submitted && $this->csrf_token != $csrf_token) {
-
-						$note = 'COOKIE:' . $this->csrf_token . ' != ' . $this->form_method . ':' . $csrf_token;
-
-						$this->_field_error_add_html(-1, $this->csrf_error_html, $note);
-
-					}
-
+				$this->csrf_error_html = $error_html;
 			}
 
 		//--------------------------------------------------
@@ -466,8 +448,21 @@
 				//--------------------------------------------------
 				// Already done
 
-					if (!$this->post_validation) {
+					if ($this->post_validation_done) {
 						return true;
+					}
+
+				//--------------------------------------------------
+				// CSRF check
+
+					$csrf_token = data('csrf', $this->form_method);
+
+					if ($this->form_submitted && $this->csrf_token != $csrf_token) {
+
+						$note = 'COOKIE:' . $this->csrf_token . ' != ' . $this->form_method . ':' . $csrf_token;
+
+						$this->_field_error_add_html(-1, $this->csrf_error_html, $note);
+
 					}
 
 				//--------------------------------------------------
@@ -480,7 +475,7 @@
 				//--------------------------------------------------
 				// Remember this has been done
 
-					$this->post_validation = true;
+					$this->post_validation_done = true;
 
 			}
 
