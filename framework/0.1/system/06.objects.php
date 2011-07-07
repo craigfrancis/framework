@@ -8,6 +8,15 @@
 
 		class base extends check {
 
+			private $db_link;
+
+			public function db_get() {
+				if ($this->db_link === NULL) {
+					$this->db_link = new db();
+				}
+				return $this->db_link;
+			}
+
 			public function route_folder_get($id) {
 				$folders = config::get('route.folders');
 				if (isset($folders[$id])) {

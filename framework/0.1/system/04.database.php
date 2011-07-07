@@ -7,7 +7,7 @@
 
 		public function escape($val) {
 
-			$this->_connect();
+			$this->connect();
 
 			if (function_exists('mysql_real_escape_string')) {
 				return mysql_real_escape_string($val, $this->link);
@@ -41,7 +41,7 @@
 		}
 
 		public function query($query, $run_debug = true) {
-			$this->_connect();
+			$this->connect();
 			if ($run_debug && function_exists('debug_database')) {
 				$this->result = debug_database($this, $query);
 			} else {
@@ -157,7 +157,7 @@
 			return $this->link;
 		}
 
-		private function _connect($name = NULL, $user = NULL, $pass = NULL, $host = NULL) {
+		public function connect($name = NULL, $user = NULL, $pass = NULL, $host = NULL) {
 
 			if (!$this->link) {
 
