@@ -10,38 +10,81 @@
 //--------------------------------------------------
 // Navigation
 
-	$root_path = ROOT_APP . '/view/';
-	$root_folders = array();
-	if ($handle = opendir($root_path)) {
-		while (false !== ($file = readdir($handle))) {
-			if (substr($file, 0, 1) != '.') {
+	//--------------------------------------------------
+	// Root folders
+
+		$root_path = ROOT_APP . '/view/';
+		$root_folders = array();
+		if ($handle = opendir($root_path)) {
+			while (false !== ($file = readdir($handle))) {
 
 				if (is_file($root_path . $file) && substr($file, -4) == '.ctp' && $file != 'home.ctp') {
-
 					$root_folders[] = substr($file, 0, -4);
-
-				} else if (is_dir($root_path . $file)) {
-
-					$root_folders[] = $file;
-
 				}
 
 			}
+			closedir($handle);
 		}
-		closedir($handle);
-	}
-	$root_folders = array_unique($root_folders, SORT_STRING);
+		$root_folders = array_unique($root_folders, SORT_STRING);
 
-	$nav = new nav();
-	$nav->link_add(config::get('url.prefix') . '/', 'Home');
+	//--------------------------------------------------
+	// Sub pages
 
-	foreach ($root_folders as $folder) {
-		$nav->link_add(config::get('url.prefix') . '/' . urlencode($folder) . '/', link_to_human($folder));
-	}
+		$sub_pages = array();
 
-	if (config::get('debug.level') >= 4) {
-		debug_progress('Navigation', 2);
-	}
+		foreach ($root_folders as $folder) {
+
+			$sub_pages[$folder] = array();
+
+			$folder_path = $root_path . $folder . '/';
+			if (is_dir($folder_path)) {
+
+				if ($handle = opendir($folder_path)) {
+					while (false !== ($file = readdir($handle))) {
+
+						if (is_file($folder_path . $file) && substr($file, -4) == '.ctp') {
+							$sub_pages[$folder][] = substr($file, 0, -4);
+						}
+
+					}
+					closedir($handle);
+				}
+
+			}
+
+		}
+
+	//--------------------------------------------------
+	// Build nav
+
+		$nav = new nav();
+		$nav->link_add(config::get('url.prefix') . '/', 'Home');
+
+		foreach ($root_folders as $folder) {
+
+			$root_url = config::get('url.prefix') . '/' . urlencode($folder) . '/';
+
+			if (count($sub_pages[$folder]) > 0) {
+
+				$sub_nav = new nav();
+
+				foreach ($sub_pages[$folder] as $sub_page) {
+					$sub_nav->link_add($root_url . $sub_page . '/', link_to_human($sub_page));
+				}
+
+				$nav->link_with_child_add($root_url, link_to_human($folder), $sub_nav);
+
+			} else {
+
+				$nav->link_add($root_url, link_to_human($folder));
+
+			}
+
+		}
+
+		if (config::get('debug.level') >= 4) {
+			debug_progress('Navigation', 2);
+		}
 
 ?>
 <!DOCTYPE html>
