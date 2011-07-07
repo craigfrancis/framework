@@ -249,13 +249,10 @@
 
 						if (strpos(mysql_field_flags($rst, $k), 'enum') !== false) {
 							$type = 'enum';
-							$values = $this->db_link->enum_values($this->db_table_name_sql, $mysql_field->name);
 						} else if (strpos(mysql_field_flags($rst, $k), 'set') !== false) {
 							$type = 'set';
-							$values = $this->db_link->enum_values($this->db_table_name_sql, $mysql_field->name);
 						} else {
 							$type = $mysql_field->type;
-							$values = NULL;
 						}
 
 						$length = mysql_field_len($rst, $k); // $mysql_field->max_length returns 0
@@ -273,7 +270,6 @@
 
 						$this->db_fields[$mysql_field->name]['length'] = $length;
 						$this->db_fields[$mysql_field->name]['type'] = $type;
-						$this->db_fields[$mysql_field->name]['values'] = $values;
 
 					}
 
@@ -297,6 +293,14 @@
 
 			public function db_fields_get() {
 				return $this->db_fields;
+			}
+
+			public function db_field_values_get($field) {
+				if (isset($this->db_fields[$field]) && ($this->db_fields[$field]['type'] == 'enum' || $this->db_fields[$field]['type'] == 'set')) {
+					return $this->db_link->enum_values($this->db_table_name_sql, $field);
+				} else {
+					return NULL;
+				}
 			}
 
 			public function db_where_set_sql($where_sql) {
@@ -769,6 +773,8 @@
 							$autofocus = ($this->fields[$field_id]->value_date_get() == '0000-00-00');
 						} else if ($field_type != 'file' && $field_type != 'image') {
 							$autofocus = ($this->fields[$field_id]->value_get() == '');
+						} else {
+							$autofocus = false;
 						}
 
 						if (!$this->_field_valid($field_id)) {
