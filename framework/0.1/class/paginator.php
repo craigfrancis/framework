@@ -21,8 +21,8 @@
 	// 		'items_count' => $result_count,
 	// 	));
 
-	$limit = $paginator->page_size(),
-	$offset = $paginator->page_number(),
+	$limit = $paginator->page_size();
+	$offset = $paginator->page_number();
 
 	<?= $paginator ?>
 	<?= $paginator->html() ?>
