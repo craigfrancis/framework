@@ -295,7 +295,7 @@
 				return $this->db_fields;
 			}
 
-			public function db_field_values_get($field) {
+			public function db_field_options_get($field) {
 				if (isset($this->db_fields[$field]) && ($this->db_fields[$field]['type'] == 'enum' || $this->db_fields[$field]['type'] == 'set')) {
 					return $this->db_link->enum_values($this->db_table_name_sql, $field);
 				} else {

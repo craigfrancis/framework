@@ -228,7 +228,7 @@
 				$col_count = 0;
 
 				$output_html = '
-					<table cellspacing="0" cellpadding="1" border="1" class="' . html($this->class_name) . '">
+					<table class="' . html($this->class_name) . '">
 						<thead>';
 
 				foreach ($this->headings as $c_heading_row) {

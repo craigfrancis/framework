@@ -28,7 +28,7 @@
 	// DB variables
 
 		config::set_default('debug.db', true);
-		config::set_default('debug.db_required_fields', array());
+		config::set_default('debug.db_required_fields', array('deleted'));
 
 		config::set('debug.db_time', 0);
 
@@ -374,6 +374,14 @@
 			}
 
 		//--------------------------------------------------
+		// HTML Format for the query
+
+			$query_html = nl2br(trim(preg_replace('/^[ \t]*(?! |\t|SELECT|UPDATE|DELETE|INSERT|SHOW|FROM|LEFT|SET|WHERE|GROUP|ORDER|LIMIT)/m', '&#xA0; &#xA0; \0', html($query))));
+			if (strpos($query_html, "\n") !== false) {
+				$query_html .= '<br /><br />';
+			}
+
+		//--------------------------------------------------
 		// Explain how the query is executed
 
 			$explain_html = '';
@@ -381,7 +389,7 @@
 			if (preg_match('/^\W*\(?\W*SELECT/i', $query)) {
 
 				$explain_html .= '
-					<table cellspacing="0" cellpadding="1" border="1" style="border-width: 0 1px 1px 0; border-style: solid; border-color: #000; margin: 1em 0 0 0;">';
+					<table style="border-spacing: 0; border-width: 0 1px 1px 0; border-style: solid; border-color: #000; margin: 1em 0 0 0;">';
 
 				$headers_printed = false;
 
@@ -485,16 +493,23 @@
 
 									config::set('debug.show', false);
 
-									exit('
+									$called_from = debug_backtrace();
+
+									if (substr($called_from[1]['file'], -23) == '/system/04.database.php') {
+										$level = 2;
+									} else {
+										$level = 1;
+									}
+
+									echo '
 										<div>
 											<h1>Error</h1>
-											<p>
-												Missing reference to "' . html($required_field) . '" column on the table "' . html($table[1]) . '".
-											</p>
-											<p>
-												' . html($query) . '
-											</p>
-										</div>');
+											<p><strong>' . str_replace(ROOT, '', $called_from[$level]['file']) . '</strong> (line ' . $called_from[$level]['line'] . ')</p>
+											<p>Missing reference to "' . html($required_field) . '" column on the table "' . html($table[1]) . '".</p>
+											<p style="padding: 0 0 0 1em;">' . $query_html . '</p>
+										</div>';
+
+									exit();
 
 								}
 
@@ -546,11 +561,6 @@
 
 		//--------------------------------------------------
 		// Create debug output
-
-			$query_html = nl2br(trim(preg_replace('/^[ \t]*(?! |\t|SELECT|UPDATE|DELETE|INSERT|SHOW|FROM|LEFT|SET|WHERE|GROUP|ORDER|LIMIT)/m', '&#xA0; &#xA0; \0', html($query))));
-			if (strpos($query_html, "\n") !== false) {
-				$query_html .= '<br /><br />';
-			}
 
 			config::array_push('debug.notes', array(
 					'colour' => '#CCF',

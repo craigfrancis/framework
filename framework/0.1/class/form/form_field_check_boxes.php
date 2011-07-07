@@ -40,7 +40,7 @@
 				$field_setup = $this->form->db_field_get($field);
 
 				if ($field_setup['type'] == 'enum' || $field_setup['type'] == 'set') {
-					$this->options_set($this->form->db_field_values_get($field));
+					$this->options_set($this->form->db_field_options_get($field));
 				}
 
 			}
