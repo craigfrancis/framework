@@ -81,7 +81,7 @@
 		public function enum_values($sql_table, $field) {
 			$this->query('SHOW COLUMNS FROM ' . $sql_table . ' LIKE "' . $this->escape($field) . '"');
 			if ($row = $this->fetch_assoc()) {
-				return explode("','", preg_replace("/(enum|set)\('(.+?)'\)/", '\2', $row['Type']));
+				return explode("','", preg_replace("/(enum|set)\('(.*?)'\)/", '\2', $row['Type']));
 			} else {
 				$this->_error('Could not return enum values for field "' . $field . '"');
 			}
