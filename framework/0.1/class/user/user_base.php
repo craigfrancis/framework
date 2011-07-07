@@ -12,7 +12,6 @@
 			protected $session = NULL;
 			protected $details = NULL;
 
-			protected $db = NULL;
 			protected $form = NULL;
 
 			protected $text = array();
@@ -20,6 +19,8 @@
 			protected $user_id = 0;
 			protected $cookie_prefix = 'user_'; // Allow different user log-in mechanics, e.g. "admin_"
 			protected $identification_type = 'email';
+
+			private $db_link;
 
 		//--------------------------------------------------
 		// Setup
@@ -85,10 +86,10 @@
 		// Configuration
 
 			public function db_get() {
-				if ($this->db === NULL) {
-					$this->db = new db();
+				if ($this->db_link === NULL) {
+					$this->db_link = new db();
 				}
-				return $this->db;
+				return $this->db_link;
 			}
 
 			public function form_get() {
