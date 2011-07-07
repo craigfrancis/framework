@@ -40,11 +40,11 @@
 
 		public static function destroy() {
 
-			if ($GLOBALS['sessionId'] !== NULL) {
+			if (config::get('session.id') !== NULL) {
 
 				session_destroy();
 
-				$GLOBALS['sessionId'] = NULL;
+				config::set('session.id', NULL);
 
 			}
 
@@ -52,11 +52,11 @@
 
 		public static function close() {
 
-			if ($GLOBALS['sessionId'] !== NULL) {
+			if (config::get('session.id') !== NULL) {
 
 				session_write_close();
 
-				$GLOBALS['sessionId'] = NULL;
+				config::set('session.id', NULL);
 
 			}
 
