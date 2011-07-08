@@ -184,7 +184,7 @@
 
 		}
 
-		public function get_task($task_file) {
+		public function task_get($task_file) {
 
 			//--------------------------------------------------
 			// Action object
@@ -204,7 +204,7 @@
 			//--------------------------------------------------
 			// Execute
 
-				$task = $this->get_task($task_file);
+				$task = $this->task_get($task_file);
 
 				return $task->run_wrapper('<p>No output.</p>');
 
@@ -343,7 +343,7 @@
 
 		}
 
-		public function get_report_emails() {
+		public function emails_get() {
 			return array();
 		}
 
@@ -467,7 +467,7 @@
 
 				if ($this->run_id > 0 && $this->halt_maintenance_run === false && $task_output_html != '') {
 
-					$emails = $this->get_report_emails();
+					$emails = $this->emails_get();
 
 					if (isset($emails[SERVER])) {
 						$emails = $emails[SERVER];
