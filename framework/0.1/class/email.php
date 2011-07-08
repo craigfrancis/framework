@@ -439,13 +439,23 @@
 						exit_with_error('Cannot find template file: ' . $template_file);
 					}
 
-				} else if ($this->subject !== NULL) {
-
-					$content_html = '<html><head><title>[SUBJECT]</title></head><body>[BODY]</body></html>';
-
 				} else {
 
-					$content_html = '<html><body>[BODY]</body></html>';
+					$content_html = '<!DOCTYPE html>
+							<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
+							<head>';
+
+					if ($this->subject !== NULL) {
+						$content_html .= '
+								<title>[SUBJECT]</title>';
+					}
+
+					$content_html .= '
+							</head>
+							<body>
+								[BODY]
+							</body>
+							</html>';
 
 				}
 
