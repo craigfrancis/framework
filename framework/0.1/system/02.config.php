@@ -178,26 +178,6 @@
 		}
 
 	//--------------------------------------------------
-	// URL
-
-		config::set_default('url.prefix', '');
-		config::set_default('url.default_format', 'absolute');
-
-	//--------------------------------------------------
-	// Email
-
-		config::set_default('email.from_name', 'Company Name');
-		config::set_default('email.from_email', 'noreply@example.com');
-
-		config::set_default('email.error', NULL);
-
-	//--------------------------------------------------
-	// Debug
-
-		config::set_default('debug.level', 0); // 0 not running, 1 or 2 for application debug, 3 to also include framework details
-		config::set_default('debug.show', true); // Only relevant when running.
-
-	//--------------------------------------------------
 	// Resource
 
 		config::set_default('resource.asset_url', config::get('url.prefix') . '/a');
@@ -212,12 +192,13 @@
 	//--------------------------------------------------
 	// Output
 
+		config::set_default('output.site_name', 'Company Name');
 		config::set_default('output.lang', 'en-GB');
 		config::set_default('output.mime', 'text/html');
 		config::set_default('output.charset', 'UTF-8');
 		config::set_default('output.error', false);
 		config::set_default('output.no_cache', false);
-		config::set_default('output.title_prefix', 'Company Name');
+		config::set_default('output.title_prefix', config::get('output.site_name'));
 		config::set_default('output.title_suffix', '');
 		config::set_default('output.title_divide', ' | ');
 		config::set_default('output.title_error', 'An error has occurred');
@@ -228,6 +209,32 @@
 				'/MSIE.*; Mac_PowerPC/',
 				'/Netscape\/[4-7]\./',
 			));
+
+	//--------------------------------------------------
+	// URL
+
+		config::set_default('url.prefix', '');
+		config::set_default('url.default_format', 'absolute');
+
+	//--------------------------------------------------
+	// Email
+
+		config::set_default('email.from_name', config::get('output.site_name'));
+		config::set_default('email.from_email', 'noreply@example.com');
+
+		config::set_default('email.error', NULL);
+
+	//--------------------------------------------------
+	// Debug
+
+		config::set_default('debug.level', 0); // 0 not running, 1 or 2 for application debug, 3 to also include framework details
+		config::set_default('debug.show', true); // Only relevant when running.
+
+	//--------------------------------------------------
+	// Maintenance
+
+		config::set_default('maintenance.active', true);
+		config::set_default('maintenance.url', '/maintenance/');
 
 //--------------------------------------------------
 // Constants

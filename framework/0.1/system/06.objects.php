@@ -192,6 +192,12 @@
 
 			}
 
+			public function render_html($html) {
+
+				config::set('output.html', $html);
+
+			}
+
 			private function view_path_get() {
 
 				//--------------------------------------------------
@@ -398,9 +404,9 @@
 				//--------------------------------------------------
 				// Configuration
 
-					$css_version = config::get('output.css_version');
-					$css_main = config::get('output.css_files_main');
-					$css_alternate = config::get('output.css_files_alternate');
+					$css_version = config::get('output.css_version', 0);
+					$css_main = config::get('output.css_files_main', array());
+					$css_alternate = config::get('output.css_files_alternate', array());
 
 				//--------------------------------------------------
 				// Return
@@ -556,7 +562,7 @@
 
 			public function render() {
 
-				foreach (config::get('view.variables') as $name => $value) {
+				foreach (config::get('view.variables', array()) as $name => $value) {
 					$$name = $value;
 				}
 

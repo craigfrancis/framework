@@ -226,6 +226,20 @@
 		}
 
 /*--------------------------------------------------*/
+/* Page message                                     */
+
+	#page_message {
+		background: #E0E0E0;
+		padding: 1em;
+		margin: 0 0 1em 0;
+		border: 1px solid #AAA;
+	}
+
+	#page_message p {
+		margin: 0;
+	}
+
+/*--------------------------------------------------*/
 /* Basic Form                                       */
 
 	.basic_form fieldset {

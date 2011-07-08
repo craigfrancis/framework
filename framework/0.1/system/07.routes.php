@@ -96,6 +96,43 @@
 		}
 
 	//--------------------------------------------------
+	// Maintenance
+
+		$maintenance_url = config::get('maintenance.url');
+
+		if ($maintenance_url !== NULL && substr($route_path, 0, strlen($maintenance_url)) == $maintenance_url) {
+
+			$maintenance = new maintenance();
+
+			$test_url = str_replace('//', '/', $maintenance_url . '/test/');
+
+			if (substr($route_path, 0, strlen($test_url)) == $test_url) {
+
+				$maintenance->test();
+
+				exit();
+
+			} else {
+
+				mime_set('text/plain');
+
+				$ran_tasks = $maintenance->run();
+
+				echo 'Done @ ' . date('Y-m-d H:i:s') . "\n\n";
+
+				foreach ($ran_tasks as $task) {
+					echo '- ' . $task . "\n";
+				}
+
+				exit();
+
+			}
+
+		}
+
+		unset($maintenance_url);
+
+	//--------------------------------------------------
 	// Reduce possibility of duplicate content issues
 
 		if (substr($route_path, -1) != '/') {
