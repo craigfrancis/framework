@@ -249,7 +249,7 @@
 			$call_from_file = $called_from[$called_from_id]['file'];
 			$call_from_line = $called_from[$called_from_id]['line'];
 
-			$system_call = (substr($call_from_file, 0, strlen(ROOT_FRAMEWORK)) == ROOT_FRAMEWORK);
+			$system_call = (substr($call_from_file, 0, strlen(FRAMEWORK_ROOT)) == FRAMEWORK_ROOT);
 
 		//--------------------------------------------------
 		// Time position
@@ -263,9 +263,9 @@
 
 			} else {
 
-				$note_html = str_replace(ROOT_APP, '/app', $note_html);
-				$note_html = str_replace(ROOT_PUBLIC, '/public', $note_html);
-				$note_html = str_replace(ROOT_FRAMEWORK, '/framework', $note_html);
+				$note_html = str_replace(APP_ROOT, '/app', $note_html);
+				$note_html = str_replace(PUBLIC_ROOT, '/public', $note_html);
+				$note_html = str_replace(FRAMEWORK_ROOT, '/framework', $note_html);
 				$note_html = str_replace(ROOT, '/', $note_html);
 
 				$time = NULL;

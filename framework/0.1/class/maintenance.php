@@ -22,7 +22,7 @@
 			//--------------------------------------------------
 			// Actions
 
-				$this->tasks_dir = ROOT_APP . '/task/';
+				$this->tasks_dir = APP_ROOT . '/task/';
 				$this->tasks_available = array();
 				$this->tasks_already_run = array();
 

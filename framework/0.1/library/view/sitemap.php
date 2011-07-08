@@ -9,7 +9,7 @@
 //--------------------------------------------------
 // Links
 
-	$root_path = ROOT_APP . '/view/';
+	$root_path = APP_ROOT . '/view/';
 	$root_folders = array();
 	if ($handle = opendir($root_path)) {
 		while (false !== ($file = readdir($handle))) {

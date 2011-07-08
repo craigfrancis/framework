@@ -53,7 +53,7 @@
 
 			public function template_set($name) {
 				$path = '/a/email/' . preg_replace('/[^a-zA-Z0-9_\-]/', '', $name) . '/';
-				$this->template_path_set(ROOT_PUBLIC . $path);
+				$this->template_path_set(PUBLIC_ROOT . $path);
 				$this->template_url_set(config::get('url.prefix') . $path);
 			}
 

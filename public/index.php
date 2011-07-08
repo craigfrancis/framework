@@ -18,10 +18,10 @@
 	// define('FRAMEWORK_VERSION', 0.1);
 
 	// define('ROOT', dirname(dirname(__FILE__)));
-	// define('ROOT_APP',       ROOT . DIRECTORY_SEPARATOR . 'app');
-	// define('ROOT_PUBLIC',    ROOT . DIRECTORY_SEPARATOR . 'public');
-	// define('ROOT_FRAMEWORK', ROOT . DIRECTORY_SEPARATOR . 'framework' . DIRECTORY_SEPARATOR . FRAMEWORK_VERSION);
+	// define('APP_ROOT',       ROOT . DIRECTORY_SEPARATOR . 'app');
+	// define('PUBLIC_ROOT',    ROOT . DIRECTORY_SEPARATOR . 'public');
+	// define('FRAMEWORK_ROOT', ROOT . DIRECTORY_SEPARATOR . 'framework' . DIRECTORY_SEPARATOR . FRAMEWORK_VERSION);
 
-	// require_once(ROOT_FRAMEWORK . DIRECTORY_SEPARATOR . 'bootstrap.php');
+	// require_once(FRAMEWORK_ROOT . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 ?>

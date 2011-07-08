@@ -161,7 +161,7 @@
 //--------------------------------------------------
 // App config
 
-	$include_path = ROOT_APP . DS . 'core' . DS . 'config.php';
+	$include_path = APP_ROOT . DS . 'core' . DS . 'config.php';
 
 	if (is_file($include_path)) {
 		require_once($include_path);
@@ -181,7 +181,7 @@
 	// Resource
 
 		config::set_default('resource.asset_url', config::get('url.prefix') . '/a');
-		config::set_default('resource.asset_root', ROOT_PUBLIC . '/a');
+		config::set_default('resource.asset_root', PUBLIC_ROOT . '/a');
 
 		config::set_default('resource.favicon_url', config::get('resource.asset_url') . '/img/global/favicon.ico');
 		config::set_default('resource.favicon_path', config::get('resource.asset_root') . '/img/global/favicon.ico'); // root is a path prefix

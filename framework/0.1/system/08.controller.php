@@ -46,7 +46,7 @@
 //--------------------------------------------------
 // Main include
 
-	$include_path = ROOT_APP . DS . 'core' . DS . 'main.php';
+	$include_path = APP_ROOT . DS . 'core' . DS . 'main.php';
 	if (is_file($include_path)) {
 		require_once($include_path);
 	}
@@ -103,7 +103,7 @@
 				$building_name .= ($building_name == '' ? '' : '_') . $folder;
 				$building_stack[] = $folder;
 
-				$controller_path = ROOT_APP . '/controller' . $building_path . '.php';
+				$controller_path = APP_ROOT . '/controller' . $building_path . '.php';
 				$controller_name = $building_name . '_controller';
 
 				if (!is_file($controller_path)) {
@@ -237,7 +237,7 @@
 
 		$building_path .= '/index';
 
-		$controller_path = ROOT_APP . '/controller' . $building_path . '.php';
+		$controller_path = APP_ROOT . '/controller' . $building_path . '.php';
 
 		if (!is_file($controller_path)) {
 
@@ -335,7 +335,7 @@
 				$note_html .= '&#xA0; &#xA0; $this->title_folder_set(' . html($id) . ', \'new_value\');<br />';
 			}
 
-			$note_html .= '&#xA0; &#xA0; $this->view_path_set(ROOT_APP . \'/view/file.ctp\');<br />';
+			$note_html .= '&#xA0; &#xA0; $this->view_path_set(APP_ROOT . \'/view/file.ctp\');<br />';
 			$note_html .= '&#xA0; &#xA0; $this->js_add(\'/path/to/file.js\');<br />';
 			$note_html .= '&#xA0; &#xA0; $this->css_add(\'/path/to/file.css\');<br />';
 			$note_html .= '&#xA0; &#xA0; $this->head_add_html(\'&lt;html&gt;\');<br />';

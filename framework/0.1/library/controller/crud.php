@@ -388,7 +388,7 @@
 			//--------------------------------------------------
 			// View path
 
-				$this->view_path_set(ROOT_FRAMEWORK . '/library/controller/crud/view_index.ctp');
+				$this->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view_index.ctp');
 
 		}
 
@@ -528,7 +528,7 @@
 			//--------------------------------------------------
 			// View path
 
-				$this->view_path_set(ROOT_FRAMEWORK . '/library/controller/crud/view_edit.ctp');
+				$this->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view_edit.ctp');
 
 		}
 
@@ -632,7 +632,7 @@
 			//--------------------------------------------------
 			// View path
 
-				$this->view_path_set(ROOT_FRAMEWORK . '/library/controller/crud/view_delete.ctp');
+				$this->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view_delete.ctp');
 
 		}
 

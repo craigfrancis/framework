@@ -175,9 +175,9 @@
 
 			public function render_error($error) {
 
-				$error_path = ROOT_APP . DS . 'view' . DS . 'error' . DS . $error . '.ctp';
+				$error_path = APP_ROOT . DS . 'view' . DS . 'error' . DS . $error . '.ctp';
 				if (!is_file($error_path)) {
-					$error_path = ROOT_FRAMEWORK . DS . 'library' . DS . 'view' . DS . 'error_' . $error . '.ctp';
+					$error_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'error_' . $error . '.ctp';
 				}
 
 				config::set('view.path', $error_path);
@@ -203,7 +203,7 @@
 				//--------------------------------------------------
 				// Default
 
-					$view_path_default = ROOT_APP . '/view/' . implode('/', config::get('view.folders')) . '.ctp';
+					$view_path_default = APP_ROOT . '/view/' . implode('/', config::get('view.folders')) . '.ctp';
 
 					config::set_default('view.path', $view_path_default);
 
@@ -223,10 +223,10 @@
 
 					if (!is_file($view_path)) {
 
-						$view_path = ROOT_APP . DS . 'view' . DS . 'error' . DS . 'page_not_found.ctp';
+						$view_path = APP_ROOT . DS . 'view' . DS . 'error' . DS . 'page_not_found.ctp';
 
 						if (!is_file($view_path)) {
-							$view_path = ROOT_FRAMEWORK . DS . 'library' . DS . 'view' . DS . 'error_page_not_found.ctp';
+							$view_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'error_page_not_found.ctp';
 						}
 
 					}
@@ -585,7 +585,7 @@
 					debug_progress('Find layout', 2);
 				}
 
-				$layout_path = ROOT_APP . '/view_layout/' . preg_replace('/[^a-zA-Z0-9_]/', '', config::get('view.layout')) . '.ctp';
+				$layout_path = APP_ROOT . '/view_layout/' . preg_replace('/[^a-zA-Z0-9_]/', '', config::get('view.layout')) . '.ctp';
 
 				if (config::get('debug.level') >= 3) {
 					debug_note_html('<strong>Layout</strong>: ' . html($layout_path));
@@ -593,9 +593,9 @@
 
 				if (!is_file($layout_path)) {
 
-					$layout_path = ROOT_FRAMEWORK . '/library/view/layout.ctp';
+					$layout_path = FRAMEWORK_ROOT . '/library/view/layout.ctp';
 
-					$head_html = "\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(ROOT_FRAMEWORK . '/library/view/layout.css')) . "\n\t" . '</style>';
+					$head_html = "\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(FRAMEWORK_ROOT . '/library/view/layout.css')) . "\n\t" . '</style>';
 
 					config::set('output.head_html', config::get('output.head_html') . $head_html);
 
@@ -617,7 +617,7 @@
 	//--------------------------------------------------
 	// Include
 
-		$include_path = ROOT_APP . DS . 'core' . DS . 'controller.php';
+		$include_path = APP_ROOT . DS . 'core' . DS . 'controller.php';
 		if (is_file($include_path)) {
 			require_once($include_path);
 		}

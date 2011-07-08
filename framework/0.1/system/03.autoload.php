@@ -17,8 +17,8 @@
 				$controller_name = substr($class_name, 11);
 
 				$paths = array(
-						ROOT_APP . '/support/controller/' . $controller_name . '.php',
-						ROOT_FRAMEWORK . '/library/controller/' . $controller_name . '.php',
+						APP_ROOT . '/support/controller/' . $controller_name . '.php',
+						FRAMEWORK_ROOT . '/library/controller/' . $controller_name . '.php',
 					);
 
 			} else {
@@ -30,10 +30,10 @@
 				}
 
 				$paths = array(
-						ROOT_APP . '/support/' . $class_name . '.php',
-						ROOT_APP . '/support/' . $folder . '/' . $class_name . '.php',
-						ROOT_FRAMEWORK . '/class/' . $class_name . '.php',
-						ROOT_FRAMEWORK . '/class/' . $folder . '/' . $class_name . '.php',
+						APP_ROOT . '/support/' . $class_name . '.php',
+						APP_ROOT . '/support/' . $folder . '/' . $class_name . '.php',
+						FRAMEWORK_ROOT . '/class/' . $class_name . '.php',
+						FRAMEWORK_ROOT . '/class/' . $folder . '/' . $class_name . '.php',
 					);
 
 			}
