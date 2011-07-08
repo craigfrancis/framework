@@ -3,12 +3,12 @@
 //--------------------------------------------------
 // Simple version
 
-	require_once('../framework/0.1/bootstrap.php');
+	require_once('../../framework/0.1/bootstrap.php');
 
 //--------------------------------------------------
 // Shared version
 
-	// define('ROOT', dirname(dirname(__FILE__)));
+	// define('ROOT', dirname(dirname(dirname(__FILE__))));
 
 	// require_once('/opt/prime/0.1/bootstrap.php');
 
