@@ -22,8 +22,10 @@
 		define('ROOT', dirname(dirname(dirname(__FILE__))));
 	}
 
-	if (!defined('APP_ROOT'))    define('APP_ROOT',    ROOT . DS . 'app');
-	if (!defined('PUBLIC_ROOT')) define('PUBLIC_ROOT', ROOT . DS . 'public');
+	if (!defined('APP_ROOT'))        define('APP_ROOT',        ROOT     . DS . 'app');
+	if (!defined('VIEW_ROOT'))       define('VIEW_ROOT',       APP_ROOT . DS . 'view');
+	if (!defined('PUBLIC_ROOT'))     define('PUBLIC_ROOT',     APP_ROOT . DS . 'public');
+	if (!defined('CONTROLLER_ROOT')) define('CONTROLLER_ROOT', APP_ROOT . DS . 'controller');
 
 //--------------------------------------------------
 // Framework path

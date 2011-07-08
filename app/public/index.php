@@ -19,7 +19,6 @@
 
 	// define('ROOT', dirname(dirname(__FILE__)));
 	// define('APP_ROOT',       ROOT . DIRECTORY_SEPARATOR . 'app');
-	// define('PUBLIC_ROOT',    ROOT . DIRECTORY_SEPARATOR . 'public');
 	// define('FRAMEWORK_ROOT', ROOT . DIRECTORY_SEPARATOR . 'framework' . DIRECTORY_SEPARATOR . FRAMEWORK_VERSION);
 
 	// require_once(FRAMEWORK_ROOT . DIRECTORY_SEPARATOR . 'bootstrap.php');

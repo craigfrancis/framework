@@ -203,7 +203,7 @@
 				//--------------------------------------------------
 				// Default
 
-					$view_path_default = APP_ROOT . '/view/' . implode('/', config::get('view.folders')) . '.ctp';
+					$view_path_default = VIEW_ROOT . '/' . implode('/', config::get('view.folders')) . '.ctp';
 
 					config::set_default('view.path', $view_path_default);
 

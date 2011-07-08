@@ -264,7 +264,6 @@
 			} else {
 
 				$note_html = str_replace(APP_ROOT, '/app', $note_html);
-				$note_html = str_replace(PUBLIC_ROOT, '/public', $note_html);
 				$note_html = str_replace(FRAMEWORK_ROOT, '/framework', $note_html);
 				$note_html = str_replace(ROOT, '/', $note_html);
 
