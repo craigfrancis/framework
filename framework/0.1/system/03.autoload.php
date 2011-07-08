@@ -30,8 +30,8 @@
 				}
 
 				$paths = array(
-						APP_ROOT . '/support/' . $class_name . '.php',
-						APP_ROOT . '/support/' . $folder . '/' . $class_name . '.php',
+						APP_ROOT . '/support/class/' . $class_name . '.php',
+						APP_ROOT . '/support/class/' . $folder . '/' . $class_name . '.php',
 						FRAMEWORK_ROOT . '/class/' . $class_name . '.php',
 						FRAMEWORK_ROOT . '/class/' . $folder . '/' . $class_name . '.php',
 					);
