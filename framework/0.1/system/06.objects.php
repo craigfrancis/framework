@@ -585,7 +585,7 @@
 					debug_progress('Find layout', 2);
 				}
 
-				$layout_path = APP_ROOT . '/view_layout/' . preg_replace('/[^a-zA-Z0-9_]/', '', config::get('view.layout')) . '.ctp';
+				$layout_path = APP_ROOT . '/layout/' . preg_replace('/[^a-zA-Z0-9_]/', '', config::get('view.layout')) . '.ctp';
 
 				if (config::get('debug.level') >= 3) {
 					debug_note_html('<strong>Layout</strong>: ' . html($layout_path));
