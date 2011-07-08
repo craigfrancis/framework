@@ -161,7 +161,7 @@
 //--------------------------------------------------
 // App config
 
-	$include_path = APP_ROOT . DS . 'core' . DS . 'config.php';
+	$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'config.php';
 
 	if (is_file($include_path)) {
 		require_once($include_path);

@@ -46,7 +46,7 @@
 //--------------------------------------------------
 // Main include
 
-	$include_path = APP_ROOT . DS . 'core' . DS . 'main.php';
+	$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'main.php';
 	if (is_file($include_path)) {
 		require_once($include_path);
 	}

@@ -79,7 +79,7 @@
 
 		if (substr($route_path, 0, 12) == '/sitemap.xml') {
 
-			$sitemap_path = APP_ROOT . DS . 'core' . DS . 'sitemap.php';
+			$sitemap_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'sitemap.php';
 
 			if (!is_file($sitemap_path)) {
 				$sitemap_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'sitemap.php';
@@ -154,7 +154,7 @@
 	$routes = array();
 	$route_variables = array();
 
-	$include_path = APP_ROOT . DS . 'core' . DS . 'routes.php';
+	$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'routes.php';
 	if (is_file($include_path)) {
 		require_once($include_path);
 	}
