@@ -193,7 +193,9 @@
 
 			public function file_save_to($path) {
 				if ($this->has_uploaded && is_writable(dirname($path))) {
-					return move_uploaded_file($_FILES[$this->name]['tmp_name'], $path);
+					$return = move_uploaded_file($_FILES[$this->name]['tmp_name'], $path);
+					@chmod($path, 0666); // Most websites use a generic apache user.
+					return $return;
 				}
 				return false;
 			}

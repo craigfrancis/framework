@@ -431,6 +431,11 @@
 				return $this->details->values_get($user_id, $fields);
 			}
 
+			public function value_get($field, $user_id = NULL) {
+				$values = $this->values_get(array($field), $user_id);
+				return $values[$field];
+			}
+
 			public function values_set($fields) {
 				$this->details->values_set($this->user_id, $fields);
 			}

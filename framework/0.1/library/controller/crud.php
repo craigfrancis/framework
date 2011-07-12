@@ -171,7 +171,7 @@
 								if ($this->db_fields[$field]['type'] == 'date') {
 									$this->index_table_fields[$field]['field_sql'] = 'DATE_FORMAT(' . $db->escape_field($field) . ', "%e %b %Y")';
 								} else if ($this->db_fields[$field]['type'] == 'datetime') {
-									$this->index_table_fields[$field]['field_sql'] = 'DATE_FORMAT(' . $db->escape_field($field) . ', "%e %b %Y")'; // TODO
+									$this->index_table_fields[$field]['field_sql'] = 'DATE_FORMAT(' . $db->escape_field($field) . ', "%e %b %Y, %k:%i")';
 								}
 							}
 

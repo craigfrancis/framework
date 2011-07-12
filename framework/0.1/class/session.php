@@ -1,6 +1,7 @@
 <?php
 
 	config::set('session.id', NULL);
+	config::set_default('session.name', 'session_name');
 
 	class session extends check {
 
@@ -66,7 +67,7 @@
 
 			if (config::get('session.id') === NULL) { // Cannot call session_id(), as this is not reset on session_write_close().
 
-				session_name('session_name'); // TODO: Get from config
+				session_name(config::get('session.name'));
 
 				$result = @session_start(); // May warn about headers already being sent, which happens in loading object.
 
