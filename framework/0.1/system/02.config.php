@@ -186,8 +186,8 @@
 		config::set_default('resource.favicon_url', config::get('resource.asset_url') . '/img/global/favicon.ico');
 		config::set_default('resource.favicon_path', config::get('resource.asset_root') . '/img/global/favicon.ico'); // root is a path prefix
 
-		config::set_default('resource.file_url', config::get('url.prefix') . '/a/file');
-		config::set_default('resource.file_root', ROOT . '/file');
+		config::set_default('resource.file_url', config::get('url.prefix') . '/a/files');
+		config::set_default('resource.file_root', ROOT . '/files');
 
 	//--------------------------------------------------
 	// Output
