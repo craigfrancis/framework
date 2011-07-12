@@ -13,6 +13,23 @@
 	// require_once('/opt/prime/0.1/bootstrap.php');
 
 //--------------------------------------------------
+// Selection of install locations
+
+	// define('ROOT', dirname(dirname(dirname(__FILE__))));
+	//
+	// $framework_paths = array(
+	// 		'/Volumes/WebServer/Projects/craig.framework/framework/0.1/bootstrap.php', // Development
+	// 		ROOT . '/framework/0.1/bootstrap.php', // Local install
+	// 	);
+	//
+	// foreach ($framework_paths as $framework_path) {
+	// 	if (is_file($framework_path)) {
+	// 		require_once($framework_path);
+	// 		exit();
+	// 	}
+	// }
+
+//--------------------------------------------------
 // Advanced version
 
 	// define('FRAMEWORK_VERSION', 0.1);

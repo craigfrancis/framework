@@ -95,7 +95,7 @@
 			public function form_get() {
 				if ($this->form === NULL) {
 
-					$this->form = new form;
+					$this->form = new form();
 					$this->form->db_save_disable();
 					$this->form->db_table_set_sql($this->details->db_table_get_sql());
 

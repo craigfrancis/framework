@@ -172,13 +172,17 @@
 					if ($pass === NULL) $pass = config::get('db.pass');
 					if ($host === NULL) $host = config::get('db.host');
 
+					if (!function_exists('mysql_connect')) {
+						$this->_error('Cannot find MySQL support', true);
+					}
+
 					$this->link = @mysql_connect($host, $user, $pass, true);
 					if (!$this->link) {
 						$this->_error('A connection could not be established with the database - ' . mysql_error(), true);
 					}
 
 					if (!@mysql_select_db($name, $this->link)) {
-						$this->_error('Selecting the database failed', true);
+						$this->_error('Selecting the database failed (' . $name . ')', true);
 					}
 
 					if (config::get('output.charset') == 'UTF-8') {
@@ -209,7 +213,7 @@
 
 			if ($this->link) {
 				$extra = mysql_errno($this->link) . ': ' . mysql_error($this->link);
-			} else if (mysql_errno() != 0) {
+			} else if (function_exists('mysql_errno') && mysql_errno() != 0) {
 				$extra = mysql_errno() . ': ' . mysql_error() . ' (no link)';
 			} else {
 				$extra = '';
