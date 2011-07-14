@@ -13,4 +13,4 @@
 
 	<?= $paginator ?>
 
-	<a href="http://ca.portal.emma.devcf.com/admin/students/edit/?id=2&amp;dest=referrer">Test</a>
+	<a href="<?= html(url('./edit/?id=2&dest=referrer')) ?>">Test</a> <!-- TODO: Remove -->

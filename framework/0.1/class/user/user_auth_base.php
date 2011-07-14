@@ -253,9 +253,9 @@
 				$db = $this->user_obj->db_get();
 
 				if ($identification === NULL) {
-					$sql_where = $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($this->user_obj->user_id) . '"';
+					$where_sql = $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($this->user_obj->user_id) . '"';
 				} else {
-					$sql_where = $db->escape_field($this->db_table_fields['identification']) . ' = "' . $db->escape($identification) . '"';
+					$where_sql = $db->escape_field($this->db_table_fields['identification']) . ' = "' . $db->escape($identification) . '"';
 				}
 
 				$db->query('SELECT
@@ -265,7 +265,7 @@
 							FROM
 								' . $db->escape_field($this->db_table_name) . '
 							WHERE
-								' . $sql_where . ' AND
+								' . $where_sql . ' AND
 								' . $this->db_where_sql . ' AND
 								' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"
 							LIMIT

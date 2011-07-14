@@ -150,6 +150,18 @@
 			public function after() {
 			}
 
+			public function render_error($error) {
+
+				$view = new view();
+				$view->render_error($error);
+
+				$layout = new layout();
+				$layout->render();
+
+				exit();
+
+			}
+
 		}
 
 	//--------------------------------------------------
@@ -174,6 +186,12 @@
 			}
 
 			public function render_error($error) {
+
+				if ($error == 'page_not_found') {
+					header('HTTP/1.0 404 Not Found');
+				} else if ($error == 'system') {
+					header('HTTP/1.0 500 Internal Server Error');
+				}
 
 				$error_path = APP_ROOT . DS . 'view' . DS . 'error' . DS . $error . '.ctp';
 				if (!is_file($error_path)) {
@@ -223,6 +241,8 @@
 
 					if (!is_file($view_path)) {
 
+						header('HTTP/1.0 404 Not Found');
+
 						$view_path = APP_ROOT . DS . 'view' . DS . 'error' . DS . 'page_not_found.ctp';
 
 						if (!is_file($view_path)) {
@@ -246,6 +266,60 @@
 		class layout_base extends base {
 
 			private $view_processed = false;
+
+			public function __construct() {
+
+				//--------------------------------------------------
+				// Title
+
+					//--------------------------------------------------
+					// Default
+
+						if (config::get('output.error')) {
+
+							$title_default = config::get('output.title_error');
+
+						} else {
+
+							$title_default = '';
+
+							$title_prefix = config::get('output.title_prefix');
+							$title_suffix = config::get('output.title_suffix');
+							$title_divide = config::get('output.title_divide');
+
+							$k = 0;
+							foreach (config::get('output.title_folders') as $folder) {
+								if ($folder != '') {
+									if ($k++ > 0) {
+										$title_default .= $title_divide;
+									}
+									$title_default .= $folder;
+								}
+							}
+
+						}
+
+						$title_default = $title_prefix  . ($title_prefix != '' && $k > 0 ? $title_divide : '') . $title_default;
+						$title_default = $title_default . ($title_suffix != '' && $k > 0 ? $title_divide : '') . $title_suffix;
+
+						config::set('output.title_default', $title_default);
+
+					//--------------------------------------------------
+					// Main
+
+						$title = config::get('output.title');
+
+						if ($title === NULL) {
+
+							config::set('output.title', $title_default);
+
+						} else {
+
+							config::set('output.title', config::get('output.title_prefix') . $title . config::get('output.title_suffix'));
+
+						}
+
+			}
 
 			public function title() {
 				return config::get('output.title');
@@ -562,20 +636,57 @@
 
 			public function render() {
 
-				foreach (config::get('view.variables', array()) as $name => $value) {
-					$$name = $value;
-				}
+				//--------------------------------------------------
+				// Headers
 
-				if (config::get('output.mime') == 'application/xml') {
-					echo '<?xml version="1.0" encoding="' . html(config::get('output.charset')) . '" ?' . '>';
-					echo $this->css_get('xml') . "\n";
-				}
+					//--------------------------------------------------
+					// No-cache headers
 
-				require_once($this->layout_path());
+						if (config::get('output.no_cache', false)) {
+							header('Cache-control: private, no-cache, must-revalidate');
+							header('Expires: Mon, 26 Jul 1997 01:00:00 GMT');
+							header('Pragma: no-cache');
+						}
 
-				if (!$this->view_processed) {
-					echo $this->view_html();
-				}
+					//--------------------------------------------------
+					// Mime
+
+						$mime_xml = 'application/xhtml+xml';
+
+						if (config::get('output.mime') == $mime_xml && stripos(config::get('request.accept'), $mime_xml) === false) {
+							mime_set('text/html');
+						} else {
+							mime_set();
+						}
+
+						unset($mime_xml);
+
+				//--------------------------------------------------
+				// Local variables
+
+					foreach (config::get('view.variables', array()) as $name => $value) {
+						$$name = $value;
+					}
+
+				//--------------------------------------------------
+				// XML Prolog
+
+					if (config::get('output.mime') == 'application/xml') {
+						echo '<?xml version="1.0" encoding="' . html(config::get('output.charset')) . '" ?' . '>';
+						echo $this->css_get('xml') . "\n";
+					}
+
+				//--------------------------------------------------
+				// Include
+
+					require_once($this->layout_path());
+
+				//--------------------------------------------------
+				// If view_html() was not called
+
+					if (!$this->view_processed) {
+						echo $this->view_html();
+					}
 
 			}
 

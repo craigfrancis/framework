@@ -14,7 +14,7 @@
 				$this->rows = array();
 
 				$this->class_name = 'basic_table';
-				$this->url_this_page = NULL;
+				$this->current_url = NULL;
 				$this->no_records_html = 'No records found';
 				$this->data_inherit_heading_class = true;
 				$this->footer_inherit_heading_class = false;
@@ -34,8 +34,8 @@
 
 		}
 
-		function this_page_url_set($url) {
-			$this->url_this_page = $url;
+		function current_url_set($url) {
+			$this->current_url = $url;
 		}
 
 		function class_set($class_name) {
@@ -75,20 +75,20 @@
 
 		}
 
-		function sort_sql_get() {
+		function sort_get_sql() {
 
-			$sql_order_by = $this->sort_field_get();
+			$order_by_sql = $this->sort_field_get();
 
-			if (preg_match('/^([^,]+)(,.*)$/', $sql_order_by, $matches)) {
+			if (preg_match('/^([^,]+)(,.*)$/', $order_by_sql, $matches)) {
 				return $matches[1] . ' ' . $this->sort_order_get() . $matches[2];
 			} else {
-				return $sql_order_by . ' ' . $this->sort_order_get();
+				return $order_by_sql . ' ' . $this->sort_order_get();
 			}
 
 		}
 
-		function sort_url_get($field, $order) {
-			$url = new url($this->url_this_page);
+		function sort_get_url($field, $order) {
+			$url = url($this->current_url);
 			$url->param($this->sort_name . '_name', $field);
 			$url->param($this->sort_name . '_order', $order);
 			return $url->get();
@@ -265,7 +265,7 @@
 
 						} else if ($current_sort == $c_heading['sort_name']) {
 
-							$url = $this->sort_url_get($c_heading['sort_name'], ($sort_asc ? 'desc' : 'asc'));
+							$url = $this->sort_get_url($c_heading['sort_name'], ($sort_asc ? 'desc' : 'asc'));
 
 							$output_html .= '
 								<th' . $attributes_html . '><a href="' . html($url) . '">' . ($sort_asc ? $this->sort_active_asc_prefix_html : $this->sort_active_desc_prefix_html) . $c_heading['html'] . ($sort_asc ? $this->sort_active_asc_suffix_html : $this->sort_active_desc_suffix_html) . '</a></th>';
@@ -274,7 +274,7 @@
 
 						} else {
 
-							$url = $this->sort_url_get($c_heading['sort_name'], 'asc');
+							$url = $this->sort_get_url($c_heading['sort_name'], 'asc');
 
 							$output_html .= '
 								<th' . $attributes_html . '><a href="' . html($url) . '">' . $this->sort_inactive_prefix_html . $c_heading['html'] . $this->sort_inactive_suffix_html . '</a></th>';

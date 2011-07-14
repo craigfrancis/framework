@@ -73,18 +73,6 @@
 			return false;
 		}
 
-// 		function object_config($class_name, $extra_config = NULL) {
-//
-// 			$class_config = array();
-//
-// 			if (is_array($extra_config)) {
-// 				$class_config = array_merge($class_config, $extra_config);
-// 			}
-// exit($class_name); // e.g. ve_google_analytics
-// 			return $class_config;
-//
-// 		}
-
 		private static function instance_get() {
 			static $instance = NULL;
 			if (!$instance) {
@@ -187,8 +175,8 @@
 		config::set_default('resource.favicon_url', config::get('resource.asset_url') . '/img/global/favicon.ico');
 		config::set_default('resource.favicon_path', config::get('resource.asset_root') . '/img/global/favicon.ico'); // root is a path prefix
 
-		config::set_default('resource.file_url', config::get('url.prefix') . '/a/file');
-		config::set_default('resource.file_root', ROOT . '/file');
+		config::set_default('resource.file_url', config::get('url.prefix') . '/a/files');
+		config::set_default('resource.file_root', ROOT . '/files');
 
 	//--------------------------------------------------
 	// Output

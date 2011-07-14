@@ -35,9 +35,9 @@
 		}
 
 		public function escape_field($field) {
-			$sql_field = '`' . str_replace('`', '', $field) . '`'; // Back tick is an illegal character
-			$sql_field = str_replace('.', '`.`', $sql_field); // Allow table definition
-			return $sql_field;
+			$field_sql = '`' . str_replace('`', '', $field) . '`'; // Back tick is an illegal character
+			$field_sql = str_replace('.', '`.`', $field_sql); // Allow table definition
+			return $field_sql;
 		}
 
 		public function query($query, $run_debug = true) {
@@ -78,8 +78,8 @@
 			return mysql_affected_rows($this->link);
 		}
 
-		public function enum_values($sql_table, $field) {
-			$this->query('SHOW COLUMNS FROM ' . $sql_table . ' LIKE "' . $this->escape($field) . '"');
+		public function enum_values($table_sql, $field) {
+			$this->query('SHOW COLUMNS FROM ' . $table_sql . ' LIKE "' . $this->escape($field) . '"');
 			if ($row = $this->fetch_assoc()) {
 				return explode("','", preg_replace("/(enum|set)\('(.*?)'\)/", '\2', $row['Type']));
 			} else {
@@ -87,28 +87,28 @@
 			}
 		}
 
-		public function insert($sql_table, $values, $on_duplicate = NULL) {
+		public function insert($table_sql, $values, $on_duplicate = NULL) {
 
-			$sql_fields = implode(', ', array_map(array($this, 'escape_field'), array_keys($values)));
-			$sql_values = implode(', ', array_map(array($this, 'escape_string'), $values));
+			$fields_sql = implode(', ', array_map(array($this, 'escape_field'), array_keys($values)));
+			$values_sql = implode(', ', array_map(array($this, 'escape_string'), $values));
 
 			if ($on_duplicate === NULL) {
 
-				$this->result = $this->query('INSERT INTO ' . $sql_table . ' ('. $sql_fields . ') VALUES (' . $sql_values . ')');
+				$this->result = $this->query('INSERT INTO ' . $table_sql . ' ('. $fields_sql . ') VALUES (' . $values_sql . ')');
 
 			} else if (!is_array($on_duplicate)) {
 
-				$this->result = $this->query('INSERT INTO ' . $sql_table . ' ('. $sql_fields . ') VALUES (' . $sql_values . ') ON DUPLICATE KEY UPDATE ' . $on_duplicate);
+				$this->result = $this->query('INSERT INTO ' . $table_sql . ' ('. $fields_sql . ') VALUES (' . $values_sql . ') ON DUPLICATE KEY UPDATE ' . $on_duplicate);
 
 			} else {
 
-				$sql_set = array();
+				$set_sql = array();
 				foreach ($on_duplicate as $field_name => $field_value) {
-					$sql_set[] = $this->escape_field($field_name) . ' = ' . $this->escape_string($field_value);
+					$set_sql[] = $this->escape_field($field_name) . ' = ' . $this->escape_string($field_value);
 				}
-				$sql_set = implode(', ', $sql_set);
+				$set_sql = implode(', ', $set_sql);
 
-				$this->result = $this->query('INSERT INTO ' . $sql_table . ' ('. $sql_fields . ') VALUES (' . $sql_values . ') ON DUPLICATE KEY UPDATE ' . $sql_set);
+				$this->result = $this->query('INSERT INTO ' . $table_sql . ' ('. $fields_sql . ') VALUES (' . $values_sql . ') ON DUPLICATE KEY UPDATE ' . $set_sql);
 
 			}
 
@@ -116,39 +116,39 @@
 
 		}
 
-		public function update($sql_table, $values, $sql_where) {
+		public function update($table_sql, $values, $where_sql) {
 
-			$sql_set = array();
+			$set_sql = array();
 			foreach ($values as $field_name => $field_value) {
-				$sql_set[] = $this->escape_field($field_name) . ' = ' . $this->escape_string($field_value);
+				$set_sql[] = $this->escape_field($field_name) . ' = ' . $this->escape_string($field_value);
 			}
-			$sql_set = implode(', ', $sql_set);
+			$set_sql = implode(', ', $set_sql);
 
-			$this->result = $this->query('UPDATE ' . $sql_table . ' SET '. $sql_set . ' WHERE ' . $sql_where);
+			$this->result = $this->query('UPDATE ' . $table_sql . ' SET '. $set_sql . ' WHERE ' . $where_sql);
 			return $this->result; // affected_rows
 
 		}
 
-		public function select($sql_table, $fields, $sql_where, $limit = NULL) {
+		public function select($table_sql, $fields, $where_sql, $limit = NULL) {
 
 			if ($fields === 1) {
-				$sql_fields = '1';
+				$fields_sql = '1';
 			} else if ($fields === NULL) {
-				$sql_fields = '*';
+				$fields_sql = '*';
 			} else {
-				$sql_fields = implode(', ', array_map(array($this, 'escape_field'), $fields));
+				$fields_sql = implode(', ', array_map(array($this, 'escape_field'), $fields));
 			}
 
-			$sql_limit = ($limit === NULL ? '' : ' LIMIT ' . intval($limit));
+			$limit_sql = ($limit === NULL ? '' : ' LIMIT ' . intval($limit));
 
-			$this->result = $this->query('SELECT ' . $sql_fields . ' FROM ' . $sql_table . ' WHERE ' . $sql_where . $sql_limit);
+			$this->result = $this->query('SELECT ' . $fields_sql . ' FROM ' . $table_sql . ' WHERE ' . $where_sql . $limit_sql);
 			return $this->result; // num_rows or fetch_assoc
 
 		}
 
-		public function delete($sql_table, $sql_where) {
+		public function delete($table_sql, $where_sql) {
 
-			$this->result = $this->query('DELETE FROM ' . $sql_table . ' WHERE ' . $sql_where);
+			$this->result = $this->query('DELETE FROM ' . $table_sql . ' WHERE ' . $where_sql);
 			return $this->result; // affected_rows
 
 		}

@@ -55,7 +55,7 @@
 		//--------------------------------------------------
 		// General
 
-			$config['ve_google_analytics.code'] = 'GA-';
+			$config['ve_google_analytics.code'] = 'GA-'; // TODO
 
 	}
 

@@ -21,8 +21,10 @@
 	// 		'items_count' => $result_count,
 	// 	));
 
-	$limit = $paginator->page_size();
-	$offset = $paginator->page_number();
+	$limit = $paginator->page_size_get();
+	$offset = $paginator->page_number_get();
+
+	$limit_sql = $paginator->limit_get_sql();
 
 	<?= $paginator ?>
 	<?= $paginator->html() ?>
@@ -107,7 +109,7 @@ class paginator extends check {
 			}
 
 			if ($this->page_number === NULL || $config == 'variable' || isset($config['variable'])) {
-				$this->page_number(isset($_REQUEST[$this->config['variable']]) ? $_REQUEST[$this->config['variable']] : 0);
+				$this->page_number_set(isset($_REQUEST[$this->config['variable']]) ? $_REQUEST[$this->config['variable']] : 0);
 			}
 
 	}
@@ -116,32 +118,28 @@ class paginator extends check {
 		return $this->config['items_count'];
 	}
 
-	public function page_size() {
+	public function limit_get_sql() {
+		return intval($this->page_number_get()) . ', ' . intval($this->page_size_get());
+	}
+
+	public function page_size_get() {
 		return $this->config['items_per_page'];
 	}
 
-	public function page_number($page_number = NULL) {
+	public function page_number_get() {
+		return $this->page_number;
+	}
 
-		//--------------------------------------------------
-		// Set page number
+	public function page_number_set($page_number) {
 
-			if ($page_number !== NULL) {
+		$this->page_number = intval($page_number);
 
-				$this->page_number = intval($page_number);
-
-				if ($this->page_number > $this->page_count) {
-					$this->page_number = $this->page_count;
-				}
-				if ($this->page_number < 1) {
-					$this->page_number = 1;
-				}
-
-			}
-
-		//--------------------------------------------------
-		// Return
-
-			return $this->page_number;
+		if ($this->page_number > $this->page_count) {
+			$this->page_number = $this->page_count;
+		}
+		if ($this->page_number < 1) {
+			$this->page_number = 1;
+		}
 
 	}
 
@@ -152,7 +150,7 @@ class paginator extends check {
 	public function page_url($page_number) {
 
 		if ($this->url === NULL) {
-			$this->url = new url($this->config['base_url']);
+			$this->url = url($this->config['base_url']);
 		}
 
 		if ($page_number >= 1 && $page_number <= $this->page_count) {
@@ -185,7 +183,7 @@ class paginator extends check {
 		// Page
 
 			if ($this->page_number === NULL) {
-				$this->page_number();
+				$this->page_number_set(1);
 			}
 
 		//--------------------------------------------------

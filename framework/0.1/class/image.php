@@ -28,7 +28,7 @@
 
 						$image = new image($path_original); // TODO: need a copy of the image, so it does not get scaled down, then up
 
-						// TODO: See below... but what happens if the aspect ratio of the image
+						// See below... but what happens if the aspect ratio of the image
 						// does not allow it to confirm to the boundaries... does it set a
 						// background colour, or crop the image?
 

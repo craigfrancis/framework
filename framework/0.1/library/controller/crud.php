@@ -207,8 +207,8 @@
 					//--------------------------------------------------
 					// Start
 
-						$sql_where = array();
-						$sql_where[] = $this->db_where_sql;
+						$where_sql = array();
+						$where_sql[] = $this->db_where_sql;
 
 					//--------------------------------------------------
 					// Keywords
@@ -219,12 +219,12 @@
 							foreach (preg_split('/\W+/', $search) as $word) {
 								if ($word != '') {
 
-									$sql_where_word = array();
+									$where_word_sql = array();
 									foreach ($this->index_search_fields as $field) {
-										$sql_where_word[] = $db->escape_field($field) . ' LIKE "%' . $db->escape_like($word) . '%"';
+										$where_word_sql[] = $db->escape_field($field) . ' LIKE "%' . $db->escape_like($word) . '%"';
 									}
 
-									$sql_where[] = implode(' OR ', $sql_where_word);
+									$where_sql[] = implode(' OR ', $where_word_sql);
 
 								}
 							}
@@ -234,13 +234,13 @@
 					//--------------------------------------------------
 					// Join
 
-						if (count($sql_where) > 0) {
+						if (count($where_sql) > 0) {
 
-							$sql_where = '(' . implode(') AND (', $sql_where) . ')';
+							$where_sql = '(' . implode(') AND (', $where_sql) . ')';
 
 						} else {
 
-							$sql_where = 'true';
+							$where_sql = 'true';
 
 						}
 
@@ -252,37 +252,34 @@
 							FROM
 								' . $this->db_table_name_sql . '
 							WHERE
-								' . $sql_where);
+								' . $where_sql);
 
 				$result_count = $db->result(0, 0);
 
 				$paginator = new paginator($result_count);
 
-				$limit = $paginator->page_size();
-				$offset = $paginator->page_number();
-
 			//--------------------------------------------------
 			// Query
 
-				$sql_fields = array();
+				$fields_sql = array();
 				foreach ($this->index_table_fields as $field => $info) {
-					$sql_fields[$field] = $info['field_sql'] . ' AS ' . $db->escape_field($field);
+					$fields_sql[$field] = $info['field_sql'] . ' AS ' . $db->escape_field($field);
 				}
-				if (!isset($sql_fields['id'])) {
-					$sql_fields['id'] = 'id';
+				if (!isset($fields_sql['id'])) {
+					$fields_sql['id'] = 'id';
 				}
-				$sql_fields = implode(', ', $sql_fields);
+				$fields_sql = implode(', ', $fields_sql);
 
 				$db->query('SELECT
-								' . $sql_fields . '
+								' . $fields_sql . '
 							FROM
 								' . $this->db_table_name_sql . '
 							WHERE
-								' . $sql_where . '
+								' . $where_sql . '
 							ORDER BY
-								' . $table->sort_sql_get() . '
+								' . $table->sort_get_sql() . '
 							LIMIT
-								' . intval($offset) . ', ' . intval($limit));
+								' . $paginator->limit_get_sql());
 
 				while ($row = $db->fetch_assoc()) {
 
@@ -373,7 +370,7 @@
 
 				if ($action_edit) {
 
-					$sql_where = '
+					$where_sql = '
 						id = "' . $db->escape($id) . '" AND
 						' . $this->db_where_sql;
 
@@ -382,7 +379,7 @@
 								FROM
 									' . $this->db_table_name_sql . '
 								WHERE
-									' . $sql_where);
+									' . $where_sql);
 
 					if ($row = $db->fetch_assoc()) {
 
@@ -398,7 +395,7 @@
 
 				} else {
 
-					$sql_where = NULL;
+					$where_sql = NULL;
 
 					if (!$this->feature_add) {
 						redirect('../');
@@ -412,7 +409,7 @@
 				$form = new form();
 				$form->form_class_set('basic_form');
 				$form->db_table_set_sql($this->db_table_name_sql);
-				$form->db_where_set_sql($sql_where);
+				$form->db_where_set_sql($where_sql);
 				$form->hidden_value('dest');
 
 				$this->setup_edit_form($form);
@@ -500,7 +497,7 @@
 			//--------------------------------------------------
 			// Details
 
-				$sql_where = '
+				$where_sql = '
 					id = "' . $db->escape($id) . '" AND
 					' . $this->db_where_sql;
 
@@ -509,7 +506,7 @@
 							FROM
 								' . $this->db_table_name_sql . '
 							WHERE
-								' . $sql_where);
+								' . $where_sql);
 
 				if ($row = $db->fetch_assoc()) {
 
@@ -553,7 +550,7 @@
 											SET
 												deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 											WHERE
-												' . $sql_where);
+												' . $where_sql);
 
 							//--------------------------------------------------
 							// Thank you message

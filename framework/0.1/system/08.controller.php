@@ -317,7 +317,7 @@
 			if ($action_controller_name !== NULL) {
 				$note_html .= '&#xA0; Calls:<br />';
 				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->before();<br />';
-				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->' . html($action_method) . '(' . html(print_r($action_route_stack_pending, true)) . ');<br />';
+				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->' . html($action_method) . '(' . html(implode(', ', $action_route_stack_pending)) . ');<br />';
 				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->after();<br />';
 			}
 
@@ -340,6 +340,7 @@
 			$note_html .= '&#xA0; &#xA0; $this->css_add(\'/path/to/file.css\');<br />';
 			$note_html .= '&#xA0; &#xA0; $this->head_add_html(\'&lt;html&gt;\');<br />';
 			$note_html .= '&#xA0; &#xA0; $this->page_ref_set(\'example_ref\');<br />';
+			$note_html .= '&#xA0; &#xA0; $this->render_error(\'page_not_found\');<br />';
 			$note_html .= '&#xA0; &#xA0; $this->message_set(\'The item has been updated.\');<br />';
 
 			debug_note_html($note_html);
@@ -349,7 +350,9 @@
 		}
 
 		$controllers[$action_controller_id]->before();
-		$controllers[$action_controller_id]->$action_method($action_route_stack_pending);
+
+		call_user_func_array(array($controllers[$action_controller_id], $action_method), $action_route_stack_pending);
+
 		$controllers[$action_controller_id]->after();
 
 		config::set('view.folders', $action_route_stack_used);
