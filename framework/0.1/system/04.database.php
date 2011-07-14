@@ -173,7 +173,7 @@
 					if ($host === NULL) $host = config::get('db.host');
 
 					if (!function_exists('mysql_connect')) {
-						$this->_error('Cannot find MySQL support', true);
+						$this->_error('PHP does not have MySQL support - http://www.php.net/mysql_connect', true);
 					}
 
 					$this->link = @mysql_connect($host, $user, $pass, true);
@@ -255,7 +255,7 @@
 	known which $link to use:
 
 		$form = new form(
-				'database_table' => array(DB_T_PREFIX . 'example_table', 'a', $db), // Alias and database connection
+				'database_table' => array(DB_PREFIX . 'example_table', 'a', $db), // Alias and database connection
 			);
 
 		if ($db === NULL) {
@@ -306,21 +306,21 @@
 //	db('SELECT
 //			*
 //		FROM
-//			' . DB_T_PREFIX . 'table_name
+//			' . DB_PREFIX . 'table_name
 //		WHERE
 //			field = val';
 //
 //	db::ex('SELECT
 //				*
 //			FROM
-//				' . DB_T_PREFIX . 'table_name
+//				' . DB_PREFIX . 'table_name
 //			WHERE
 //				field = val';
 //
 //	$db->query('SELECT
 //					*
 //				FROM
-//					' . DB_T_PREFIX . 'table_name
+//					' . DB_PREFIX . 'table_name
 //				WHERE
 //					field = val');
 //

@@ -61,7 +61,7 @@
 								id,
 								run_start
 							FROM
-								' . DB_T_PREFIX . 'maintenance
+								' . DB_PREFIX . 'maintenance
 							WHERE
 								run_end = "0000-00-00 00:00:00" AND
 								run_start < "' . $db->escape(date('Y-m-d H:i:s', strtotime('-2 hours'))) . '"');
@@ -69,7 +69,7 @@
 				if ($row = $db->fetch_assoc()) {
 
 					$db->query('DELETE FROM
-									' . DB_T_PREFIX . 'maintenance
+									' . DB_PREFIX . 'maintenance
 								WHERE
 									id = "' . $db->escape($row['id']) . '" AND
 									run_end = "0000-00-00 00:00:00"');
@@ -81,12 +81,12 @@
 			//--------------------------------------------------
 			// Create maintenance record (lock).
 
-				$db->query('SELECT 1 FROM ' . DB_T_PREFIX . 'maintenance WHERE run_end = "0000-00-00 00:00:00"');
+				$db->query('SELECT 1 FROM ' . DB_PREFIX . 'maintenance WHERE run_end = "0000-00-00 00:00:00"');
 				if ($db->num_rows() > 0) {
 					exit_with_error('Maintenance script is already running (A).');
 				}
 
-				$db->query('INSERT INTO ' . DB_T_PREFIX . 'maintenance (
+				$db->query('INSERT INTO ' . DB_PREFIX . 'maintenance (
 								run_start,
 								run_end
 							) VALUES (
@@ -96,7 +96,7 @@
 
 				$this->run_id = $db->insert_id();
 
-				$db->query('SELECT 1 FROM ' . DB_T_PREFIX . 'maintenance WHERE run_end = "0000-00-00 00:00:00"');
+				$db->query('SELECT 1 FROM ' . DB_PREFIX . 'maintenance WHERE run_end = "0000-00-00 00:00:00"');
 				if ($db->num_rows() != 1) {
 					exit_with_error('Maintenance script is already running (B).');
 				}
@@ -107,7 +107,7 @@
 				$rstM = $db->query('SELECT
 										id
 									FROM
-										' . DB_T_PREFIX . 'maintenance
+										' . DB_PREFIX . 'maintenance
 									WHERE
 										run_end != "0000-00-00 00:00:00" AND
 										run_end < "' . $db->escape(date('Y-m-d H:i:s', strtotime('-1 month'))) . '"');
@@ -115,12 +115,12 @@
 				while ($row = $db->fetch_assoc($rstM)) {
 
 					$db->query('DELETE FROM
-									' . DB_T_PREFIX . 'maintenance_task
+									' . DB_PREFIX . 'maintenance_task
 								WHERE
 									run_id = "' . $db->escape($row['id']) . '"');
 
 					$db->query('DELETE FROM
-									' . DB_T_PREFIX . 'maintenance
+									' . DB_PREFIX . 'maintenance
 								WHERE
 									id = "' . $db->escape($row['id']) . '"');
 
@@ -169,7 +169,7 @@
 			// Mark as done
 
 				$db->query('UPDATE
-								' . DB_T_PREFIX . 'maintenance
+								' . DB_PREFIX . 'maintenance
 							SET
 								run_end = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 							WHERE
@@ -322,7 +322,7 @@
 					$db->query('SELECT
 									created
 								FROM
-									' . DB_T_PREFIX . 'maintenance_task
+									' . DB_PREFIX . 'maintenance_task
 								WHERE
 									task = "' . $db->escape($this->task_name) . '"
 								ORDER BY
@@ -446,7 +446,7 @@
 
 				if ($this->run_id > 0 && $this->halt_maintenance_run === false) {
 
-					$db->query('INSERT INTO ' . DB_T_PREFIX . 'maintenance_task (
+					$db->query('INSERT INTO ' . DB_PREFIX . 'maintenance_task (
 									id,
 									task,
 									run_id,

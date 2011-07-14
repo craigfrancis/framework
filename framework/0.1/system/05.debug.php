@@ -75,7 +75,7 @@
 
 			$db = new db();
 
-			$db->query('INSERT INTO ' . DB_T_PREFIX . 'report (
+			$db->query('INSERT INTO ' . DB_PREFIX . 'report (
 							id,
 							type,
 							created,
@@ -356,9 +356,9 @@
 
 		$db = new db();
 
-		$db->query('SHOW TABLES LIKE "' . $db->escape(DB_T_PREFIX . $table) . '"');
+		$db->query('SHOW TABLES LIKE "' . $db->escape(DB_PREFIX . $table) . '"');
 		if ($db->num_rows() == 0) {
-			exit('Missing table <strong>' . html(DB_T_PREFIX . $table) . '</strong>:<br /><br />' . nl2br(html(trim(str_replace('[TABLE]', DB_T_PREFIX . $table, $sql)))));
+			exit('Missing table <strong>' . html(DB_PREFIX . $table) . '</strong>:<br /><br />' . nl2br(html(trim(str_replace('[TABLE]', DB_PREFIX . $table, $sql)))));
 		}
 
 	}
@@ -444,9 +444,9 @@
 					$where_sql = '';
 				}
 
-				if (DB_T_PREFIX != '') {
+				if (DB_PREFIX != '') {
 
-					preg_match_all('/\b(' . preg_quote(DB_T_PREFIX, '/') .'[a-z0-9_]+)( AS ([a-z0-9]+))?/', $query, $matches, PREG_SET_ORDER);
+					preg_match_all('/\b(' . preg_quote(DB_PREFIX, '/') .'[a-z0-9_]+)( AS ([a-z0-9]+))?/', $query, $matches, PREG_SET_ORDER);
 
 				} else {
 

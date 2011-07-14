@@ -20,7 +20,7 @@
 
 					$form_edit = new form();
 					$form_edit->form_class_set('basic_form');
-					$form_edit->db_table_set_sql(DB_T_PREFIX . 'user');
+					$form_edit->db_table_set_sql(DB_PREFIX . 'user');
 					$form_edit->db_where_set_sql('id = 1');
 
 					$field_name = new form_field_text($form_edit, 'Name');
@@ -94,7 +94,7 @@ exit('Updated?');
 				//--------------------------------------------------
 				// Form options
 
-					//$opt_titles = $db->enum_values(DB_T_PREFIX . 'user', 'user_title');
+					//$opt_titles = $db->enum_values(DB_PREFIX . 'user', 'user_title');
 
 				//--------------------------------------------------
 				// Form setup
@@ -114,8 +114,8 @@ exit('Updated?');
 					$form->csrf_error_set('The request did not appear to come from a trusted source, please try again.');
 					$form->csrf_error_set_html('The request did not appear to come from a trusted source, please try again.');
 					$form->error_override_set_function(array($this, 'error_override')); // If you want to get the text translated
-					$form->db_table_set_sql(DB_T_PREFIX . 'log_contact');
-					$form->db_table_set_sql(DB_T_PREFIX . 'log_contact', 'c', $db); // Alias and db connection
+					$form->db_table_set_sql(DB_PREFIX . 'log_contact');
+					$form->db_table_set_sql(DB_PREFIX . 'log_contact', 'c', $db); // Alias and db connection
 
 					$field_password = new form_field_password($form, 'Password');
 					$field_password->min_length_set('Your password is required.');

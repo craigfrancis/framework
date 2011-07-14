@@ -25,7 +25,7 @@
 			//--------------------------------------------------
 			// Table
 
-				$this->db_table_name = DB_T_PREFIX . 'user';
+				$this->db_table_name = DB_PREFIX . 'user';
 
 				$this->db_where_sql = 'true';
 

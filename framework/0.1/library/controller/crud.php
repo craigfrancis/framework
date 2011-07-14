@@ -30,7 +30,7 @@
 				$this->item_single = 'item';
 				$this->item_plural = 'items';
 
-				$this->db_table_name_sql = DB_T_PREFIX . 'user';
+				$this->db_table_name_sql = DB_PREFIX . 'user';
 				$this->db_where_sql = 'deleted = "0000-00-00 00:00:00"';
 				$this->db_title_sql = 'CONCAT(name_title, " ", name_first, " ", name_last)';
 

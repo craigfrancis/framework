@@ -161,21 +161,22 @@
 //--------------------------------------------------
 // App config
 
+	$config = array();
+
 	$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'config.php';
 
 	if (is_file($include_path)) {
 		require_once($include_path);
 	}
 
+	foreach ($config as $key => $value) { // Using an array so any project can include this file.
+		config::set($key, $value);
+	}
+
+	unset($config, $key, $value);
+
 //--------------------------------------------------
 // Defaults
-
-	//--------------------------------------------------
-	// Server
-
-		if (!defined('SERVER')) {
-			define('SERVER', 'live');
-		}
 
 	//--------------------------------------------------
 	// Resource
@@ -186,8 +187,8 @@
 		config::set_default('resource.favicon_url', config::get('resource.asset_url') . '/img/global/favicon.ico');
 		config::set_default('resource.favicon_path', config::get('resource.asset_root') . '/img/global/favicon.ico'); // root is a path prefix
 
-		config::set_default('resource.file_url', config::get('url.prefix') . '/a/files');
-		config::set_default('resource.file_root', ROOT . '/files');
+		config::set_default('resource.file_url', config::get('url.prefix') . '/a/file');
+		config::set_default('resource.file_root', ROOT . '/file');
 
 	//--------------------------------------------------
 	// Output
@@ -239,7 +240,11 @@
 //--------------------------------------------------
 // Constants
 
-	define('DB_T_PREFIX', config::get('db.prefix'));
+	if (!defined('SERVER')) {
+		define('SERVER', 'live');
+	}
+
+	define('DB_PREFIX', config::get('db.prefix'));
 
 	define('ASSET_URL',   config::get('resource.asset_url'));
 	define('ASSET_ROOT',  config::get('resource.asset_root'));

@@ -30,7 +30,7 @@
 			//--------------------------------------------------
 			// Table
 
-				$this->db_table_name = DB_T_PREFIX . 'user_session';
+				$this->db_table_name = DB_PREFIX . 'user_session';
 
 				$this->db_where_sql = 'true';
 
