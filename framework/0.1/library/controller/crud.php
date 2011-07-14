@@ -9,7 +9,6 @@
 		protected $db_table_name_sql;
 		protected $db_where_sql;
 		protected $db_title_sql;
-		protected $db_fields;
 		protected $feature_add;
 		protected $feature_edit;
 		protected $feature_delete;
@@ -30,9 +29,9 @@
 				$this->item_single = 'item';
 				$this->item_plural = 'items';
 
-				$this->db_table_name_sql = DB_PREFIX . 'user';
+				$this->db_table_name_sql = NULL;
 				$this->db_where_sql = 'deleted = "0000-00-00 00:00:00"';
-				$this->db_title_sql = 'CONCAT(name_title, " ", name_first, " ", name_last)';
+				$this->db_title_sql = 'title';
 
 				$this->feature_add = true;
 				$this->feature_edit = true;
@@ -43,66 +42,16 @@
 				$this->index_default_sort_field = 'created';
 				$this->index_default_sort_order = 'desc';
 
-			//--------------------------------------------------
-			// Database fields
-
-				$db = $this->db_get();
-
-				$this->db_fields = array();
-
-				$db->query('SHOW COLUMNS FROM ' .  $this->db_table_name_sql);
-				while ($row = $db->fetch_assoc()) {
-					$this->db_fields[$row['Field']] = array(
-							'type' => $row['Type'],
-							'name' => ucfirst(ref_to_human($row['Field'])),
-						);
-				}
-
 		}
 
-		protected function _setup_edit_form($form) {
+		protected function setup_edit_form($form) {
 			$this->_setup_edit_form_auto($form);
 		}
 
-		protected function _setup_edit_form_auto($form) {
+		protected function setup_edit_validate($form) {
+		}
 
-			foreach ($this->db_fields as $field => $info) {
-				if (!in_array($field, array('id', 'pass', 'pass_hash', 'pass_salt', 'created', 'edited', 'deleted'))) {
-
-					$name = ref_to_human($field);
-
-					if ($info['type'] == 'date' || $info['type'] == 'datetime') {
-
-						$field_ref = new form_field_date($form, ucfirst($name));
-						$field_ref->db_field_set($field);
-						$field_ref->invalid_error_set('The "' . $name . '" does not appear to be correct.');
-
-					} else if ($info['type'] == 'text') {
-
-						$field_ref = new form_field_text_area($form, ucfirst($name));
-						$field_ref->db_field_set($field);
-						$field_ref->max_length_set('The "' . $name . '" cannot be longer than XXX characters.');
-						$field_ref->cols_set(40);
-						$field_ref->rows_set(5);
-
-					} else if (substr($info['type'], 0, 4) == 'enum') {
-
-						$field_ref = new form_field_select($form, ucfirst($name));
-						$field_ref->db_field_set($field);
-						$field_ref->label_option_set('');
-						$field_ref->required_error_set('The "' . $name . '" is required.');
-
-					} else {
-
-						$field_ref = new form_field_text($form, ucfirst($name));
-						$field_ref->db_field_set($field);
-						$field_ref->max_length_set('The "' . $name . '" cannot be longer than XXX characters.');
-
-					}
-
-				}
-			}
-
+		protected function setup_delete_validate($form) {
 		}
 
 		public function action_index() {
@@ -111,6 +60,8 @@
 			// Database
 
 				$db = $this->db_get();
+
+				$db_fields = $this->_db_fields();
 
 			//--------------------------------------------------
 			// Index table fields
@@ -122,7 +73,7 @@
 
 						$k = 0;
 
-						foreach ($this->db_fields as $field => $info) {
+						foreach ($db_fields as $field => $info) {
 							if (!in_array($field, array('id', 'pass', 'pass_hash', 'pass_salt', 'edited', 'deleted'))) {
 								$this->index_table_fields[$field] = NULL;
 								if ($k++ > 3) {
@@ -131,7 +82,7 @@
 							}
 						}
 
-						if (isset($this->db_fields[$this->index_default_sort_field])) {
+						if (isset($db_fields[$this->index_default_sort_field])) {
 							$this->index_table_fields[$this->index_default_sort_field] = NULL; // So we show the sorting field, e.g. "created"
 						}
 
@@ -167,10 +118,10 @@
 
 							$this->index_table_fields[$field]['field_sql'] = $field;
 
-							if (isset($this->db_fields[$field]['type'])) {
-								if ($this->db_fields[$field]['type'] == 'date') {
+							if (isset($db_fields[$field]['type'])) {
+								if ($db_fields[$field]['type'] == 'date') {
 									$this->index_table_fields[$field]['field_sql'] = 'DATE_FORMAT(' . $db->escape_field($field) . ', "%e %b %Y")';
-								} else if ($this->db_fields[$field]['type'] == 'datetime') {
+								} else if ($db_fields[$field]['type'] == 'datetime') {
 									$this->index_table_fields[$field]['field_sql'] = 'DATE_FORMAT(' . $db->escape_field($field) . ', "%e %b %Y, %k:%i")';
 								}
 							}
@@ -178,8 +129,8 @@
 						}
 
 						if (!isset($this->index_table_fields[$field]['name'])) {
-							if (isset($this->db_fields[$field])) {
-								$this->index_table_fields[$field]['name'] = $this->db_fields[$field]['name'];
+							if (isset($db_fields[$field])) {
+								$this->index_table_fields[$field]['name'] = $db_fields[$field]['name'];
 							} else {
 								$this->index_table_fields[$field]['name'] = ucfirst(ref_to_human($field));
 							}
@@ -189,8 +140,8 @@
 							$this->index_table_fields[$field]['url_format'] = NULL;
 						}
 
-						if (!isset($this->index_table_fields[$field]['url_edit'])) {
-							$this->index_table_fields[$field]['url_edit'] = false;
+						if (!isset($this->index_table_fields[$field]['edit_url'])) {
+							$this->index_table_fields[$field]['edit_url'] = false;
 						} else {
 							$edit_url_found = true;
 						}
@@ -201,18 +152,20 @@
 				// If no edit field found, select the first
 
 					if (!$edit_url_found) {
-						$this->index_table_fields[$first_field]['url_edit'] = true;
+						$this->index_table_fields[$first_field]['edit_url'] = true;
 					}
 
 			//--------------------------------------------------
 			// Index search fields
 
 				if (count($this->index_search_fields) == 0) {
-					foreach ($this->db_fields as $field => $info) {
+
+					foreach ($db_fields as $field => $info) {
 						if (!in_array($field, array('id', 'pass', 'pass_hash', 'pass_salt'))) {
 							$this->index_search_fields[] = $field;
 						}
 					}
+
 				}
 
 			//--------------------------------------------------
@@ -336,8 +289,8 @@
 					//--------------------------------------------------
 					// Details
 
-						$url_edit = url('./edit/?id=' . urlencode($row['id']));
-						$url_delete = url('./delete/?id=' . urlencode($row['id']));
+						$edit_url = url('./edit/?id=' . urlencode($row['id']));
+						$delete_url = url('./delete/?id=' . urlencode($row['id']));
 
 					//--------------------------------------------------
 					// Add row
@@ -348,8 +301,8 @@
 
 							$url = '';
 
-							if ($info['url_edit']) {
-								$url = $url_edit;
+							if ($info['edit_url']) {
+								$url = $edit_url;
 							} else if ($info['url_format']) {
 								$url = str_replace('[ID]', urlencode($row['id']), $info['url_format']);
 							}
@@ -363,7 +316,7 @@
 						}
 
 						if ($this->feature_delete) {
-							$table_row->cell_add_html('<a href="' . html($url_delete) . '">Delete</a>', 'delete');
+							$table_row->cell_add_html('<a href="' . html($delete_url) . '">Delete</a>', 'delete');
 						}
 
 						$table->row_add($table_row);
@@ -439,7 +392,7 @@
 
 					} else {
 
-						exitWithError('Cannot find details for ' . $this->item_single . ' "' . $id . '"');
+						exit_with_error('Cannot find details for ' . $this->item_single . ' "' . $id . '"');
 
 					}
 
@@ -462,7 +415,7 @@
 				$form->db_where_set_sql($sql_where);
 				$form->hidden_value('dest');
 
-				$this->_setup_edit_form($form);
+				$this->setup_edit_form($form);
 
 			//--------------------------------------------------
 			// Form processing
@@ -472,7 +425,7 @@
 					//--------------------------------------------------
 					// Validation
 
-
+						$this->setup_edit_validate($form);
 
 					//--------------------------------------------------
 					// Form valid
@@ -566,7 +519,7 @@
 
 				} else {
 
-					exitWithError('Cannot find details for ' . $this->item_single . ' "' . $id . '"');
+					exit_with_error('Cannot find details for ' . $this->item_single . ' "' . $id . '"');
 
 				}
 
@@ -585,12 +538,7 @@
 					//--------------------------------------------------
 					// Validation
 
-						$db->query('UPDATE
-										' . $this->db_table_name_sql . '
-									SET
-										deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
-									WHERE
-										' . $sql_where);
+						$this->setup_delete_validate($form);
 
 					//--------------------------------------------------
 					// Form valid
@@ -600,7 +548,12 @@
 							//--------------------------------------------------
 							// Delete
 
-
+								$db->query('UPDATE
+												' . $this->db_table_name_sql . '
+											SET
+												deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+											WHERE
+												' . $sql_where);
 
 							//--------------------------------------------------
 							// Thank you message
@@ -633,6 +586,67 @@
 			// View path
 
 				$this->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view_delete.ctp');
+
+		}
+
+		protected function _setup_edit_form_auto($form) {
+
+			$db_fields = $this->_db_fields();
+
+			foreach ($db_fields as $field => $info) {
+				if (!in_array($field, array('id', 'pass', 'pass_hash', 'pass_salt', 'created', 'edited', 'deleted'))) {
+
+					$name = ref_to_human($field);
+
+					if ($info['type'] == 'date' || $info['type'] == 'datetime') {
+
+						$field_ref = new form_field_date($form, ucfirst($name));
+						$field_ref->db_field_set($field);
+						$field_ref->invalid_error_set('The "' . $name . '" does not appear to be correct.');
+
+					} else if ($info['type'] == 'text') {
+
+						$field_ref = new form_field_text_area($form, ucfirst($name));
+						$field_ref->db_field_set($field);
+						$field_ref->max_length_set('The "' . $name . '" cannot be longer than XXX characters.');
+						$field_ref->cols_set(40);
+						$field_ref->rows_set(5);
+
+					} else if (substr($info['type'], 0, 4) == 'enum') {
+
+						$field_ref = new form_field_select($form, ucfirst($name));
+						$field_ref->db_field_set($field);
+						$field_ref->label_option_set('');
+						$field_ref->required_error_set('The "' . $name . '" is required.');
+
+					} else {
+
+						$field_ref = new form_field_text($form, ucfirst($name));
+						$field_ref->db_field_set($field);
+						$field_ref->max_length_set('The "' . $name . '" cannot be longer than XXX characters.');
+
+					}
+
+				}
+			}
+
+		}
+
+		private function _db_fields() {
+
+			$db = $this->db_get();
+
+			$db_fields = array();
+
+			$db->query('SHOW COLUMNS FROM ' .  $this->db_table_name_sql);
+			while ($row = $db->fetch_assoc()) {
+				$db_fields[$row['Field']] = array(
+						'type' => $row['Type'],
+						'name' => ucfirst(ref_to_human($row['Field'])),
+					);
+			}
+
+			return $db_fields;
 
 		}
 

@@ -378,6 +378,7 @@
 
 	.basic_table td.no_results {
 		text-align: center;
+		padding: 2em;
 	}
 
 	.basic_table td.view,
