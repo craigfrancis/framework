@@ -133,6 +133,25 @@
 		unset($maintenance_url);
 
 	//--------------------------------------------------
+	// Gateway
+
+		$gateway_url = config::get('gateway.url');
+
+		if ($gateway_url !== NULL && substr($route_path, 0, strlen($gateway_url)) == $gateway_url) {
+
+			$api = substr($route_path, strlen($gateway_url));
+			$api = preg_replace('/^[\/]*(.*?)[\/]*$/', '$1', $api);
+
+			$gateway = new gateway();
+			$gateway->run($api);
+
+			exit();
+
+		}
+
+		unset($gateway_url);
+
+	//--------------------------------------------------
 	// Reduce possibility of duplicate content issues
 
 		if (substr($route_path, -1) != '/') {

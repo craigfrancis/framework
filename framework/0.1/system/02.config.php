@@ -220,6 +220,12 @@
 		config::set_default('debug.show', true); // Only relevant when running.
 
 	//--------------------------------------------------
+	// Gateway
+
+		config::set_default('gateway.active', true);
+		config::set_default('gateway.url', config::get('url.prefix') . '/a/api');
+
+	//--------------------------------------------------
 	// Maintenance
 
 		config::set_default('maintenance.active', true);
