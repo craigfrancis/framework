@@ -77,10 +77,28 @@
 		debug_progress('Controller');
 	}
 
-	require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '09.view.php');
+//--------------------------------------------------
+// View
+
+	$view = new view();
+	$view->render();
+
+	unset($view);
 
 	if (config::get('debug.level') >= 4) {
-		debug_progress('Done');
+		debug_progress('View render', 1);
+	}
+
+//--------------------------------------------------
+// Layout
+
+	$layout = new layout();
+	$layout->render();
+
+	unset($layout);
+
+	if (config::get('debug.level') >= 4) {
+		debug_progress('Layout render', 1);
 	}
 
 //--------------------------------------------------
@@ -88,6 +106,7 @@
 
 	if (config::get('debug.level') >= 5) {
 		debug_show_config();
+		debug_show_array(get_defined_vars(), 'Variables');
 	}
 
 ?>
