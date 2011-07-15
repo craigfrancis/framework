@@ -32,12 +32,12 @@
 
 					$this->config = array();
 
-					$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'gateway.default.ini';
+					$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'gateway' . DS . 'default.ini';
 					if (is_file($include_path)) {
 						$this->config = parse_ini_file($include_path, true);
 					}
 
-					$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'gateway.' . config::get('gateway.server') . '.ini';
+					$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'gateway' . DS . config::get('gateway.server') . '.ini';
 					if (is_file($include_path)) {
 
 						$config_extra = parse_ini_file($include_path, true);
@@ -201,7 +201,7 @@
 					$timeout_new = 2;
 					$timeout_old = ini_set('default_socket_timeout', $timeout_new);
 
-					$error_script = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'gateway.error.sh';
+					$error_script = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'gateway' . DS . 'error.sh';
 
 					for ($k = 1; $k <= 3; $k++) {
 
