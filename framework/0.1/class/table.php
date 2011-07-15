@@ -1,6 +1,6 @@
 <?php
 
-	class table {
+	class table extends check {
 
 		function table() {
 
@@ -633,7 +633,7 @@
 
 	}
 
-	class table_row {
+	class table_row extends check {
 
 		function table_row() {
 
