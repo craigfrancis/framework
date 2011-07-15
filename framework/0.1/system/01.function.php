@@ -35,7 +35,7 @@
 		// Strip slashes (IF NESS)
 
 			if ($value !== NULL && ini_get('magic_quotes_gpc')) {
-				$value = stripslashesdeep($value);
+				$value = strip_slashes_deep($value);
 			}
 
 		//--------------------------------------------------

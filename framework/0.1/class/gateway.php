@@ -107,7 +107,7 @@
 					parse_str($this->response_data, $this->response_data);
 
 					if (ini_get('magic_quotes_gpc')) {
-						$this->response_data = stripslashesdeep($this->response_data);
+						$this->response_data = strip_slashes_deep($this->response_data);
 					}
 
 					if (!is_array($this->response_data)) {
@@ -281,12 +281,12 @@
 
 					} else {
 
-						foreach ($data as $key => $value) {
-							$socket->value_add($key, $value);
+						foreach (config::get('gateway.default_values', array()) as $name => $value) {
+							$socket->value_add($name, $value);
 						}
 
-						if (defined('SYSTEM_SITE')) { // TODO
-							$socket->value_add('source-site', SYSTEM_SITE);
+						foreach ($data as $key => $value) {
+							$socket->value_add($key, $value);
 						}
 
 						$socket->post($gateway_url_pass);
@@ -657,10 +657,6 @@
 
 		//--------------------------------------------------
 		// Run
-
-			protected function should_run() {
-				return true; // This api should always run
-			}
 
 			public function run() {
 			}

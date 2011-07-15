@@ -346,6 +346,9 @@
 
 			}
 
+		//--------------------------------------------------
+		// Task setup functions
+
 			public function email_addresses_get() {
 				return array();
 			}
