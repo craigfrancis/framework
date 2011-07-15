@@ -139,13 +139,14 @@
 
 		if ($gateway_url !== NULL && substr($route_path, 0, strlen($gateway_url)) == $gateway_url) {
 
-			$api = substr($route_path, strlen($gateway_url));
-			$api = preg_replace('/^[\/]*(.*?)[\/]*$/', '$1', $api);
+			if (preg_match('/^[\/]*([^\/]*)[\/]*(.*)$/', substr($route_path, strlen($gateway_url)), $matches)) {
 
-			$gateway = new gateway();
-			$gateway->run($api);
+				$gateway = new gateway($matches[1], $matches[2]);
+				$gateway->run();
 
-			exit();
+				unset($gateway);
+
+			}
 
 		}
 

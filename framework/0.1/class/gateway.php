@@ -12,7 +12,45 @@
 
 	class gateway {
 
-		public function run($api) {
+		private $api;
+		private $sub_path;
+
+		public function __construct($api, $sub_path) {
+
+			//--------------------------------------------------
+			// Clean sub path
+
+				if ($sub_path != '') {
+					if (substr($sub_path, 1, 1) != '/') {
+						$sub_path = '/' . $sub_path;
+					}
+					if (substr($sub_path, -1) != '/') {
+						$sub_path .= '/';
+					}
+				}
+
+			//--------------------------------------------------
+			// API Path
+			
+				$api_path = 
+			
+				if () {
+				}
+
+			//--------------------------------------------------
+			// Store
+
+				$this->api = $api;
+				$this->sub_path = $sub_path;
+
+		}
+
+		public function sub_path_get() {
+		}
+
+		public function run() {
+
+
 
 			//--------------------------------------------------
 			// Hide debug output
@@ -24,7 +62,10 @@
 
 				ini_set('memory_limit', '1024M');
 
-exit($api);
+debug($api);
+debug($sub_path);
+
+exit();
 // TODO: Add support for password protection
 
 
