@@ -1,73 +1,78 @@
 <?php
 
-	class socket {
+	class socket extends check {
 
-		var $values;
-		var $headers;
-		var $request_full;
-		var $response_full;
-		var $response_headers;
-		var $response_data;
+		private $values;
+		private $headers;
+		private $cookies;
+		private $host_cookies;
+		private $preserve_cookies;
+		private $request_full;
+		private $response_full;
+		private $response_headers;
+		private $response_data;
+		private $exit_on_error;
+		private $error_string;
 
-		function socket() {
+		public function __construct() {
 			$this->values = array();
 			$this->headers = array();
 			$this->cookies = array();
 			$this->host_cookies = array();
+			$this->preserve_cookies = false;
 			$this->request_full = '';
 			$this->response_full = '';
 			$this->response_headers = '';
 			$this->response_data = '';
 			$this->exit_on_error = true;
-			$this->preserve_cookies = false;
 			$this->error_string = NULL;
 		}
 
-		function add_value($name, $value) {
+		public function value_add($name, $value) {
 			$this->values[$name] = $value;
 		}
 
-		function add_header($name, $value) {
+		public function header_add($name, $value) {
 			$this->headers[$name] = $value;
 		}
 
-		function add_cookie($name, $value) {
+		public function cookie_add($name, $value) {
 			$this->cookies[$name] = $value;
 		}
 
-		function set_preserve_cookies($preserve_cookies) {
+		public function preserve_cookies_set($preserve_cookies) {
 			$this->preserve_cookies = $preserve_cookies;
 		}
 
-		function set_exit_on_error($exit_on_error) {
+		public function exit_on_error_set($exit_on_error) {
 			$this->exit_on_error = $exit_on_error;
 		}
 
-		function get($url) {
+		public function get($url) {
 			return $this->_send($url, '', 'GET');
 		}
 
-		function post($url, $post_data = '') {
+		public function post($url, $post_data = '') {
 			return $this->_send($url, $post_data, 'POST');
 		}
 
-		function put($url, $post_data = '') {
+		public function put($url, $post_data = '') {
 			return $this->_send($url, $post_data, 'PUT');
 		}
 
-		function delete($url, $post_data = '') {
+		public function delete($url, $post_data = '') {
 			return $this->_send($url, $post_data, 'DELETE');
 		}
 
-		function get_request_full() {
+		public function request_full_get() {
 			return $this->request_full;
 		}
 
-		function get_response_full() {
+		public function response_full_get() {
 			return $this->response_full;
 		}
 
-		function get_response_code() {
+		public function response_code_get() {
 			if (preg_match('/^HTTP\/[0-9\.]+ ([0-9]+) /im', $this->response_headers, $matches)) {
 				return intval($matches[1]);
 			} else {
@@ -75,7 +80,7 @@
 			}
 		}
 
-		function get_response_mime() {
+		public function response_mime_get() {
 			if (preg_match('/^Content-Type: ("|)([^;]+)\1/im', $this->response_headers, $matches)) {
 				return $matches[2];
 			} else {
@@ -83,11 +88,11 @@
 			}
 		}
 
-		function get_response_headers() {
+		public function response_headers_get() {
 			return $this->response_headers;
 		}
 
-		function get_response_header($field) {
+		public function response_header_get($field) {
 			if (preg_match('/^' . preg_quote($field, '/') . ': ([^\n]*)/im', $this->response_headers, $matches)) {
 				return $matches[1];
 			} else {
@@ -95,15 +100,15 @@
 			}
 		}
 
-		function get_response_data() {
+		public function response_data_get() {
 			return $this->response_data;
 		}
 
-		function get_error_string() {
+		public function error_string_get() {
 			return $this->error_string;
 		}
 
-		function _send($url, $post_data = '', $method = 'POST') {
+		private function _send($url, $post_data = '', $method = 'POST') {
 
 			//--------------------------------------------------
 			// No error
