@@ -1,6 +1,6 @@
 <?php
 
-	// http://fuelphp.com/docs/general/controllers/rest.html - more thoughts?
+	// TODO: http://fuelphp.com/docs/general/controllers/rest.html - more thoughts?
 
 	class controller_crud extends controller {
 
@@ -338,7 +338,7 @@
 			//--------------------------------------------------
 			// View path
 
-				$this->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view_index.ctp');
+				$this->view_path_set(FRAMEWORK_ROOT . DS . 'library' . DS . 'controller' . DS . 'crud' . DS . 'view_index.ctp');
 
 		}
 
@@ -478,7 +478,7 @@
 			//--------------------------------------------------
 			// View path
 
-				$this->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view_edit.ctp');
+				$this->view_path_set(FRAMEWORK_ROOT . DS . 'library' . DS . 'controller' . DS . 'crud' . DS . 'view_edit.ctp');
 
 		}
 
@@ -582,7 +582,7 @@
 			//--------------------------------------------------
 			// View path
 
-				$this->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view_delete.ctp');
+				$this->view_path_set(FRAMEWORK_ROOT . DS . 'library' . DS . 'controller' . DS . 'crud' . DS . 'view_delete.ctp');
 
 		}
 

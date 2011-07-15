@@ -2,7 +2,32 @@
 
 	class table extends check {
 
-		function table() {
+		private $headings;
+		private $heading_row;
+		private $footers;
+		private $footer_row;
+		private $rows;
+
+		private $class_name;
+		private $current_url;
+		private $no_records_html;
+		private $data_inherit_heading_class;
+		private $footer_inherit_heading_class;
+
+		private $sort_name;
+		private $sort_field;
+		private $sort_default_field;
+		private $sort_default_order;
+		private $sort_fields;
+		private $sort_order;
+		private $sort_active_asc_prefix_html;
+		private $sort_active_asc_suffix_html;
+		private $sort_active_desc_prefix_html;
+		private $sort_active_desc_suffix_html;
+		private $sort_inactive_prefix_html;
+		private $sort_inactive_suffix_html;
+
+		public function __construct() {
 
 			//--------------------------------------------------
 			// Defaults
@@ -34,26 +59,26 @@
 
 		}
 
-		function current_url_set($url) {
+		public function current_url_set($url) {
 			$this->current_url = $url;
 		}
 
-		function class_set($class_name) {
+		public function class_set($class_name) {
 			$this->class_name = $class_name;
 		}
 
-		function sort_name_set($name) {
+		public function sort_name_set($name) {
 			$this->sort_name = $name;
 			$this->sort_field = data($this->sort_name . '_name');
 			$this->sort_order = data($this->sort_name . '_order');
 		}
 
-		function default_sort_set($field, $order = 'asc') {
+		public function default_sort_set($field, $order = 'asc') {
 			$this->sort_default_field = $field;
 			$this->sort_default_order = $order;
 		}
 
-		function sort_field_get() {
+		public function sort_field_get() {
 			if (in_array($this->sort_field, $this->sort_fields)) {
 				return $this->sort_field;
 			} else {
@@ -61,7 +86,7 @@
 			}
 		}
 
-		function sort_order_get() {
+		public function sort_order_get() {
 
 			if ($this->sort_order == 'desc' || $this->sort_order == 'asc') {
 				return $this->sort_order; // Stop bad values from GPC
@@ -75,7 +100,7 @@
 
 		}
 
-		function sort_get_sql() {
+		public function sort_get_sql() {
 
 			$order_by_sql = $this->sort_field_get();
 
@@ -87,66 +112,66 @@
 
 		}
 
-		function sort_get_url($field, $order) {
+		public function sort_get_url($field, $order) {
 			$url = url($this->current_url);
 			$url->param($this->sort_name . '_name', $field);
 			$url->param($this->sort_name . '_order', $order);
 			return $url->get();
 		}
 
-		function active_asc_prefix_set($content) {
+		public function active_asc_prefix_set($content) {
 			$this->sort_active_asc_prefix_html = html($content);
 		}
 
-		function active_asc_prefix_set_html($content_html) {
+		public function active_asc_prefix_set_html($content_html) {
 			$this->sort_active_asc_prefix_html = $content_html;
 		}
 
-		function active_asc_suffix_set($content) {
+		public function active_asc_suffix_set($content) {
 			$this->sort_active_asc_suffix_html = html($content);
 		}
 
-		function active_asc_suffix_set_html($content_html) {
+		public function active_asc_suffix_set_html($content_html) {
 			$this->sort_active_asc_suffix_html = $content_html;
 		}
 
-		function active_desc_prefix_set($content) {
+		public function active_desc_prefix_set($content) {
 			$this->sort_active_desc_prefix_html = html($content);
 		}
 
-		function active_desc_prefix_set_html($content_html) {
+		public function active_desc_prefix_set_html($content_html) {
 			$this->sort_active_desc_prefix_html = $content_html;
 		}
 
-		function active_desc_suffix_set($content) {
+		public function active_desc_suffix_set($content) {
 			$this->sort_active_desc_suffix_html = html($content);
 		}
 
-		function active_desc_suffix_set_html($content_html) {
+		public function active_desc_suffix_set_html($content_html) {
 			$this->sort_active_desc_suffix_html = $content_html;
 		}
 
-		function inactive_prefix_set($content) {
+		public function inactive_prefix_set($content) {
 			$this->sort_inactive_prefix_html = html($content);
 		}
 
-		function inactive_prefix_set_html($content_html) {
+		public function inactive_prefix_set_html($content_html) {
 			$this->sort_inactive_prefix_html = $content_html;
 		}
 
-		function inactive_suffix_set($content) {
+		public function inactive_suffix_set($content) {
 			$this->sort_inactive_suffix_html = html($content);
 		}
 
-		function inactive_suffix_set_html($content_html) {
+		public function inactive_suffix_set_html($content_html) {
 			$this->sort_inactive_suffix_html = $content_html;
 		}
 
-		function heading_add($heading, $sort_name = NULL, $class_name = '', $colspan = 1) {
+		public function heading_add($heading, $sort_name = NULL, $class_name = '', $colspan = 1) {
 			$this->heading_add_html(html($heading), $sort_name, $class_name, $colspan);
 		}
 
-		function heading_add_html($heading_html, $sort_name = NULL, $class_name = '', $colspan = 1) {
+		public function heading_add_html($heading_html, $sort_name = NULL, $class_name = '', $colspan = 1) {
 
 			if (!isset($this->headings[$this->heading_row])) {
 				$this->headings[$this->heading_row] = array();
@@ -165,15 +190,15 @@
 
 		}
 
-		function end_heading_row() {
+		public function end_heading_row() {
 			$this->heading_row++;
 		}
 
-		function footer_add($footer, $class_name = '', $colspan = 1) {
+		public function footer_add($footer, $class_name = '', $colspan = 1) {
 			$this->footer_add_html(html($footer), $class_name, $colspan);
 		}
 
-		function footer_add_html($footer_html, $class_name = '', $colspan = 1) {
+		public function footer_add_html($footer_html, $class_name = '', $colspan = 1) {
 
 			if (!isset($this->footers[$this->footer_row])) {
 				$this->footers[$this->footer_row] = array();
@@ -187,7 +212,7 @@
 
 		}
 
-		function end_footer_row() {
+		public function end_footer_row() {
 
 			if (!isset($this->footers[$this->footer_row])) {
 				$this->footers[$this->footer_row] = array();
@@ -197,22 +222,22 @@
 
 		}
 
-		function row_add($row = NULL, $class_name = '') {
+		public function row_add($row = NULL, $class_name = '') {
 			$this->rows[] = array(
 					'row' => $row,
 					'class_name' => $class_name
 				);
 		}
 
-		function no_records_message_set($no_records) {
+		public function no_records_message_set($no_records) {
 			$this->no_records_html = html($no_records);
 		}
 
-		function no_records_message_set_html($no_records_html) {
+		public function no_records_message_set_html($no_records_html) {
 			$this->no_records_html = $no_records_html;
 		}
 
-		function html() {
+		public function html() {
 
 			//--------------------------------------------------
 			// Current sort - inc support for defaults
@@ -457,7 +482,7 @@
 
 		}
 
-		function csv_data_get() {
+		public function csv_data_get() {
 
 			//--------------------------------------------------
 			// Headings
@@ -569,7 +594,7 @@
 
 		}
 
-		function csv_download($file_name, $inline = false) {
+		public function csv_download($file_name, $inline = false) {
 
 			//--------------------------------------------------
 			// Data
@@ -635,7 +660,9 @@
 
 	class table_row extends check {
 
-		function table_row() {
+		public $data;
+
+		public function __construct() {
 
 			//--------------------------------------------------
 			// Defaults
@@ -644,7 +671,7 @@
 
 		}
 
-		function cell_add($content, $class_name = '', $colspan = 1) {
+		public function cell_add($content, $class_name = '', $colspan = 1) {
 			$this->data[] = array(
 					'html' => html($content),
 					'class_name' => $class_name,
@@ -652,7 +679,7 @@
 				);
 		}
 
-		function cell_add_html($content_html, $class_name = '', $colspan = 1) {
+		public function cell_add_html($content_html, $class_name = '', $colspan = 1) {
 			$this->data[] = array(
 					'html' => $content_html,
 					'class_name' => $class_name,

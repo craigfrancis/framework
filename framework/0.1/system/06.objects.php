@@ -704,9 +704,9 @@
 
 				if (!is_file($layout_path)) {
 
-					$layout_path = FRAMEWORK_ROOT . '/library/view/layout.ctp';
+					$layout_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'layout.ctp';
 
-					$head_html = "\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(FRAMEWORK_ROOT . '/library/view/layout.css')) . "\n\t" . '</style>';
+					$head_html = "\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'layout.css')) . "\n\t" . '</style>';
 
 					config::set('output.head_html', config::get('output.head_html') . $head_html);
 
