@@ -10,7 +10,7 @@
 //--------------------------------------------------
 // Maintenance class
 
-	class maintenance {
+	class maintenance extends check {
 
 		private $tasks_dir;
 		private $tasks_available;
@@ -266,7 +266,7 @@
 						if ($task_path !== false) {
 							require_once($this->tasks_dir . $task_path);
 						} else {
-							return $this->fatal_error('Could not load task "' . $task_name . '"');
+							return $this->error_fatal('Could not load task "' . $task_name . '"');
 						}
 
 					}
@@ -290,7 +290,7 @@
 //--------------------------------------------------
 // Action class
 
-	class task {
+	class task extends check {
 
 		protected $task_name = NULL;
 		protected $last_run = NULL;
@@ -298,7 +298,7 @@
 		protected $maintenance = NULL;
 		protected $run_id = NULL;
 
-		public function __construct($maintenance, $run_id = NULL) {
+		public function __construct($maintenance, $run_id, $mode) {
 
 			//--------------------------------------------------
 			// Details
@@ -354,7 +354,7 @@
 			return $this->halt_maintenance_run;
 		}
 
-		protected function fatal_error($error = NULL) {
+		protected function error_fatal($error = NULL) {
 			$this->halt_maintenance_run = true;
 			if ($error !== NULL) {
 
@@ -369,7 +369,7 @@
 			return false;
 		}
 
-		protected function harmless_error($error = NULL) {
+		protected function error_harmless($error = NULL) {
 			if ($error !== NULL) {
 
 				report_add($error, 'error');
