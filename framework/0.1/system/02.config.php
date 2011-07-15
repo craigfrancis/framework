@@ -167,6 +167,13 @@
 // Defaults
 
 	//--------------------------------------------------
+	// Server
+
+		if (!defined('SERVER')) {
+			define('SERVER', 'live');
+		}
+
+	//--------------------------------------------------
 	// Resource
 
 		config::set_default('resource.asset_url', config::get('url.prefix') . '/a');
@@ -224,6 +231,8 @@
 
 		config::set_default('gateway.active', true);
 		config::set_default('gateway.url', config::get('url.prefix') . '/a/api');
+		config::set_default('gateway.server', SERVER);
+		config::set_default('gateway.error_url', NULL);
 
 	//--------------------------------------------------
 	// Maintenance
@@ -233,10 +242,6 @@
 
 //--------------------------------------------------
 // Constants
-
-	if (!defined('SERVER')) {
-		define('SERVER', 'live');
-	}
 
 	define('DB_PREFIX', config::get('db.prefix'));
 

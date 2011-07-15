@@ -5,7 +5,7 @@
 
 	class cleanup_task extends task {
 
-		public function emails_get() {
+		public function email_addresses_get() {
 			return array(
 					'stage' => array(
 							'craig@craigfrancis.co.uk',

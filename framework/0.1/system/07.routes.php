@@ -141,10 +141,15 @@
 
 			if (preg_match('/^[\/]*([^\/]*)[\/]*(.*)$/', substr($route_path, strlen($gateway_url)), $matches)) {
 
-				$gateway = new gateway($matches[1], $matches[2]);
-				$gateway->run();
+				$gateway = new gateway();
 
-				unset($gateway);
+				$success = $gateway->run($matches[1], $matches[2]);
+
+				if ($success) {
+					exit();
+				}
+
+				unset($gateway, $success);
 
 			}
 
