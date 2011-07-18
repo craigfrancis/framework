@@ -20,7 +20,7 @@
 			protected $cookie_prefix = 'user_'; // Allow different user log-in mechanics, e.g. "admin_"
 			protected $identification_type = 'email';
 
-			private $db_link;
+			protected $db_link;
 
 		//--------------------------------------------------
 		// Setup
@@ -138,8 +138,14 @@
 		//--------------------------------------------------
 		// Support functions
 
-			public function user_id_set($user_id) {
-				$this->user_id = $user_id;
+			public function user_set($user_id) {
+				$user_identification = $this->auth->user_identification_get($user_id);
+				if ($user_identification !== false) {
+					$this->user_id = $user_id;
+				} else {
+					exit_with_error('Cannot find user id "' . $user_id . '"');
+				}
+				return $user_identification;
 			}
 
 			public function user_id_get() {
@@ -424,15 +430,12 @@
 		//--------------------------------------------------
 		// Values
 
-			public function values_get($fields, $user_id = NULL) {
-				if ($user_id === NULL) {
-					$user_id = $this->user_id;
-				}
-				return $this->details->values_get($user_id, $fields);
+			public function values_get($fields) {
+				return $this->details->values_get($this->user_id, $fields);
 			}
 
-			public function value_get($field, $user_id = NULL) {
-				$values = $this->values_get(array($field), $user_id);
+			public function value_get($field) {
+				$values = $this->values_get(array($field));
 				return $values[$field];
 			}
 
@@ -488,11 +491,11 @@
 
 				}
 
-				public function field_verification_get($required = true, $name = NULL) {
+				public function field_verification_get($required = NULL, $name = NULL) {
 
 					$this->auth_fields['verification'] = new form_field_password($this->form_get(), $this->text['verification_label'], ($name === NULL ? 'verification' : $name));
 
-					if ($required) {
+					if ($required === NULL || $required === true) {  // Default required (register page, or re-confirm on profile page)
 						$this->auth_fields['verification']->min_length_set($this->text['verification_min_len'], 1);
 					}
 
@@ -502,11 +505,11 @@
 
 				}
 
-				public function field_verification_new_get($required = true) {
+				public function field_verification_new_get($required = NULL) {
 
 					$this->auth_fields['verification_new'] = new form_field_password($this->form_get(), $this->text['verification_new_label']);
 
-					if ($required) {
+					if ($required === true) { // Default not required (profile page)
 						$this->auth_fields['verification_new']->min_length_set($this->text['verification_new_min_len'], 1);
 					}
 
@@ -516,11 +519,19 @@
 
 				}
 
-				public function field_verification_repeat_get($required = true) {
+				public function field_verification_repeat_get($required = NULL) {
 
 					$this->auth_fields['verification_repeat'] = new form_field_password($this->form_get(), $this->text['verification_repeat_label']);
 
-					if ($required) {
+					if ($required === NULL) {
+						if (isset($this->auth_fields['verification_new'])) {
+							$required = false; // Profile page, with new verification field (will be used to check re-entry)
+						} else if (isset($this->auth_fields['verification'])) {
+							$required = true; // Register page, asking to repeat password.
+						}
+					}
+
+					if ($required === true) {
 						$this->auth_fields['verification_repeat']->min_length_set($this->text['verification_repeat_min_len'], 1);
 					}
 
@@ -606,7 +617,7 @@
 
 							$new_id = $this->auth->identification_id_get($new_identification);
 
-							if ($new_id !== $this->user_id && $new_id !== false) {
+							if ($new_id != $this->user_id && $new_id !== false) {
 								$this->auth_fields['identification_new']->error_add($this->text['save_details_invalid_new_identification']);
 							}
 
@@ -643,13 +654,12 @@
 			//--------------------------------------------------
 			// Save
 
-				private function _save() {
+				protected function _save() {
 
 					//--------------------------------------------------
 					// Update
 
 						$field_values = $this->form->data_db_get();
-
 						if (count($field_values) > 0) {
 							$this->details->values_set($this->user_id, $field_values);
 						}

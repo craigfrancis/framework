@@ -341,7 +341,7 @@
 	.basic_table {
 		margin: 0 0 1em 0;
 		color: inherit;
-		background: #E0E0E0;
+		background: #F5F5F5;
 		border-top: 1px solid #000;
 		border-right: 0;
 		border-bottom: 0;
@@ -353,7 +353,7 @@
 	}
 
 	.basic_table tr.even {
-		background: #F5F5F5;
+		background: #E0E0E0;
 	}
 
 	.basic_table tr.highlight td.name {

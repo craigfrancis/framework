@@ -321,7 +321,7 @@
 				}
 
 			//--------------------------------------------------
-			// Add page
+			// Page URLs
 
 				if ($this->feature_add) {
 					$this->set('add_url', url('./add/'));
@@ -462,7 +462,7 @@
 				}
 
 			//--------------------------------------------------
-			// Delete page
+			// Page URLs
 
 				if ($this->feature_delete) {
 					$this->set('delete_url', url('../delete/?id=' . urlencode($id)));
@@ -567,7 +567,7 @@
 				}
 
 			//--------------------------------------------------
-			// Delete page
+			// Page URLs
 
 				if ($this->feature_edit) {
 					$this->set('edit_url', url('../edit/?id=' . urlencode($id)));

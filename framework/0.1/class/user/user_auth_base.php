@@ -253,7 +253,7 @@
 				$db = $this->user_obj->db_get();
 
 				if ($identification === NULL) {
-					$where_sql = $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($this->user_obj->user_id) . '"';
+					$where_sql = $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($this->user_obj->user_id_get()) . '"';
 				} else {
 					$where_sql = $db->escape_field($this->db_table_fields['identification']) . ' = "' . $db->escape($identification) . '"';
 				}
