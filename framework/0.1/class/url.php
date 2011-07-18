@@ -41,6 +41,10 @@
 
 			public function parse($url, $replace_parameters = true) {
 
+				if (is_object($url) && (get_class($url) == 'url' || is_subclass_of($url, 'url'))) {
+					$url = $url->get();
+				}
+
 				if (substr($url, 0, 1) == '/') {
 					$url = config::get('url.prefix') . $url;
 				}
