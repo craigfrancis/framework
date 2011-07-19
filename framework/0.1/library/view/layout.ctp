@@ -25,8 +25,8 @@
 			}
 			closedir($handle);
 		}
-		$root_folders = array_unique($root_folders, SORT_STRING);
-print_r($root_folders);
+		$root_folders = array_unique($root_folders);
+
 	//--------------------------------------------------
 	// Sub pages
 
