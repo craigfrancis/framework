@@ -7,19 +7,19 @@
 		CustomLog /var/log/httpd/craig.framework_access_log combined
 		ErrorLog /var/log/httpd/craig.framework_error_log
 
-		<Location /svn>
-
-			DAV svn
-			SVNParentPath /opt/svn/demo/craig.framework/
-
-			AuthzSVNAccessFile /www/live/craig.framework/httpd/svn
-
-			AuthType Basic
-			AuthName "SVN"
-			AuthUserFile /www/live/craig.framework/httpd/htpasswd
-			Require valid-user
-
-		</Location>
+		# <Location /svn>
+        #
+		# 	DAV svn
+		# 	SVNParentPath /opt/svn/demo/craig.framework/
+        #
+		# 	AuthzSVNAccessFile /www/live/craig.framework/httpd/svn
+        #
+		# 	AuthType Basic
+		# 	AuthName "SVN"
+		# 	AuthUserFile /www/live/craig.framework/httpd/htpasswd
+		# 	Require valid-user
+        #
+		# </Location>
 
 	</VirtualHost>
 
