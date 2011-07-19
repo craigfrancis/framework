@@ -27,6 +27,8 @@
 
 		ServerName phpprime.com
 		ServerAlias *.phpprime.com
+		ServerAlias primeframework.com
+		ServerAlias *.primeframework.com
 
 		RewriteEngine on
 		RewriteRule  ^/(.*)  http://www.phpprime.com/$1  [R=301,L]
