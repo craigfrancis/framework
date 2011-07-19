@@ -7,6 +7,8 @@
 		CustomLog /var/log/httpd/craig.framework_access_log combined
 		ErrorLog /var/log/httpd/craig.framework_error_log
 
+		AllowOverride All
+
 		<Location /svn>
 
 			DAV svn
