@@ -66,7 +66,7 @@
 								$url = url('./thank-you/');
 								$url->id = $record_id;
 
-								redirect($url);
+								redirect($url->get());
 
 						}
 
