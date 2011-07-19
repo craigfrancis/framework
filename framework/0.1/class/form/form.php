@@ -593,6 +593,24 @@
 
 			}
 
+			public function db_insert() {
+
+				//--------------------------------------------------
+				// Cannot use a WHERE clause
+
+					if ($this->db_where_sql !== NULL) {
+						exit_with_error('The "db_insert" method does not work with a "db_where_sql" set.');
+					}
+
+				//--------------------------------------------------
+				// Save and return the ID
+
+					$this->db_save();
+
+					return $this->db_link->insert_id();
+
+			}
+
 		//--------------------------------------------------
 		// Field support
 

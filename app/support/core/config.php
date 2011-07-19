@@ -26,10 +26,8 @@
 		//--------------------------------------------------
 		// Email
 
-			$config['email.from_name'] = 'Company Name';
-			$config['email.from_email'] = 'noreply@example.com';
-			$config['email.error'] = array('admin@example.com');
-			$config['email.contact_us'] = array('admin@example.com');
+			$config['email.from_email'] = 'noreply@phpprime.com';
+			$config['email.contact_us'] = array('craig@craigfrancis.co.uk');
 
 		//--------------------------------------------------
 		// General
@@ -51,6 +49,21 @@
 		// Server
 
 			define('SERVER', 'live');
+
+		//--------------------------------------------------
+		// Database
+
+			$config['db.host'] = 'localhost';
+			$config['db.user'] = 'craig';
+			$config['db.pass'] = 'cr8ig';
+			$config['db.name'] = 'l-craig-framework';
+
+		//--------------------------------------------------
+		// Email
+
+			$config['email.from_email'] = 'noreply@phpprime.com';
+			$config['email.error'] = array('craig@craigfrancis.co.uk');
+			$config['email.contact_us'] = array('craig@craigfrancis.co.uk');
 
 		//--------------------------------------------------
 		// General
