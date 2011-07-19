@@ -10,7 +10,7 @@
 		<Location /svn>
 
 			DAV svn
-			SVNPath /opt/svn/demo/craig.framework/cwv/
+			SVNPath /opt/svn/demo/
 
 			AuthzSVNAccessFile /www/live/craig.framework/httpd/svn
 
