@@ -136,7 +136,7 @@
 
 
 
-
+<p><?= html(VIEW_ROOT) ?></p>
 
 
 

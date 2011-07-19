@@ -18,10 +18,10 @@
 		//--------------------------------------------------
 		// Database
 
-			$config['db.host'] = 'stage';
+			$config['db.host'] = 'localhost';
 			$config['db.user'] = 'stage';
 			$config['db.pass'] = 'st8ge';
-			$config['db.name'] = 's-cpoets-framework';
+			$config['db.name'] = 's-craig-framework';
 
 		//--------------------------------------------------
 		// Email
@@ -58,6 +58,11 @@
 			$config['ve_google_analytics.code'] = 'GA-'; // TODO
 
 	}
+
+//--------------------------------------------------
+// Output
+
+	$config['output.site_name'] = 'PHP Prime';
 
 //--------------------------------------------------
 // Pagination
