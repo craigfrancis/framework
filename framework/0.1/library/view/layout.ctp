@@ -26,7 +26,7 @@
 			closedir($handle);
 		}
 		$root_folders = array_unique($root_folders, SORT_STRING);
-
+print_r($root_folders);
 	//--------------------------------------------------
 	// Sub pages
 
@@ -136,7 +136,7 @@
 
 
 
-<p><?= html(VIEW_ROOT) ?></p>
+
 
 
 
