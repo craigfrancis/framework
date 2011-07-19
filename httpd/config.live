@@ -1,0 +1,34 @@
+
+	<VirtualHost *:80>
+
+		ServerName www.phpprime.com
+
+		DocumentRoot /www/live/craig.framework/app/public/
+		CustomLog /var/log/httpd/craig.framework_access_log combined
+		ErrorLog /var/log/httpd/craig.framework_error_log
+
+		<Location /svn>
+
+			DAV svn
+			SVNPath /opt/svn/demo/craig.framework/cwv/
+
+			AuthzSVNAccessFile /www/live/craig.framework/httpd/svn
+
+			AuthType Basic
+			AuthName "SVN"
+			AuthUserFile /www/live/craig.framework/httpd/htpasswd
+			Require valid-user
+
+		</Location>
+
+	</VirtualHost>
+
+	<VirtualHost *:80>
+
+		ServerName phpprime.com
+		ServerAlias *.phpprime.com
+
+		RewriteEngine on
+		RewriteRule  ^/(.*)  http://www.phpprime.com/$1  [R=301,L]
+
+	</VirtualHost>
