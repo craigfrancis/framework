@@ -8,7 +8,7 @@
 			protected $select_size;
 			protected $option_values;
 			protected $option_keys;
-			protected $opt_groups;
+			protected $option_groups;
 			protected $label_option;
 			protected $required_error_set;
 			protected $invalid_error_set;
@@ -36,7 +36,7 @@
 					$this->select_size = 1;
 					$this->option_values = array();
 					$this->option_keys = array();
-					$this->opt_groups = NULL;
+					$this->option_groups = NULL;
 					$this->label_option = NULL;
 					$this->required_error_set = false;
 					$this->invalid_error_set = false;
@@ -75,8 +75,8 @@
 				$this->option_keys = array_keys($options);
 			}
 
-			public function opt_groups_set($opt_groups) {
-				$this->opt_groups = $opt_groups;
+			public function option_groups_set($option_groups) {
+				$this->option_groups = $option_groups;
 			}
 
 			public function size_set($size) {
@@ -267,7 +267,7 @@
 								<option value="' . ($this->re_index_keys ? '0' : '') . '">' . ($this->label_option === '' ? '&#xA0;' : html($this->label_option)) . '</option>';
 				}
 
-				if ($this->opt_groups === NULL) {
+				if ($this->option_groups === NULL) {
 
 					foreach ($this->option_values as $key => $option) {
 
@@ -288,12 +288,12 @@
 
 				} else {
 
-					foreach (array_unique($this->opt_groups) as $opt_group) {
+					foreach (array_unique($this->option_groups) as $opt_group) {
 
 						$html .= '
 								<optgroup label="' . html($opt_group) . '">';
 
-						foreach (array_keys($this->opt_groups, $opt_group) as $key) {
+						foreach (array_keys($this->option_groups, $opt_group) as $key) {
 
 							$value_key = array_search($key, $this->option_keys);
 							if ($value_key !== false) {

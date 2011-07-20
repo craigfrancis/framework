@@ -1,6 +1,6 @@
 <?php
 
-	class form_field_post_code extends form_field_text {
+	class form_field_postcode extends form_field_text {
 
 		//--------------------------------------------------
 		// Variables
