@@ -237,7 +237,7 @@ exit('Updated?');
 					$field_amount->format_error_set('Your amount does not appear to be a number.');
 					$field_amount->required_error_set('Your amount is required.');
 
-					$field_postcode = new form_field_post_code($form, 'Postcode');
+					$field_postcode = new form_field_postcode($form, 'Postcode');
 					$field_postcode->db_field_set('postcode');
 					$field_postcode->required_error_set('Your postcode is required.');
 					$field_postcode->format_error_set('Your postcode does not appear to be correct.');

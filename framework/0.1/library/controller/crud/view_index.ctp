@@ -12,5 +12,3 @@
 	<?= $table ?>
 
 	<?= $paginator ?>
-
-	<a href="<?= html(url('./edit/?id=2&dest=referrer')) ?>">Test</a> <!-- TODO: Remove -->

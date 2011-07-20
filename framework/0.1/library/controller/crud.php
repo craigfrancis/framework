@@ -44,14 +44,26 @@
 
 		}
 
-		protected function setup_edit_form($form) {
-			$this->_setup_edit_form_auto($form);
+		protected function setup_edit_form($form, $id) {
+			$this->_setup_edit_form_auto($form, $id);
 		}
 
-		protected function setup_edit_validate($form) {
+		protected function setup_edit_validate($form, $id) {
 		}
 
-		protected function setup_delete_validate($form) {
+		protected function setup_edit_save($form, $id) {
+
+			if ($id > 0) {
+				$form->db_save();
+			} else {
+				$id = $form->db_insert();
+			}
+
+			return $id;
+
+		}
+
+		protected function setup_delete_validate($form, $id) {
 		}
 
 		public function action_index() {
@@ -412,7 +424,7 @@
 				$form->db_where_set_sql($where_sql);
 				$form->hidden_value('dest');
 
-				$this->setup_edit_form($form);
+				$this->setup_edit_form($form, $id);
 
 			//--------------------------------------------------
 			// Form processing
@@ -422,7 +434,7 @@
 					//--------------------------------------------------
 					// Validation
 
-						$this->setup_edit_validate($form);
+						$this->setup_edit_validate($form, $id);
 
 					//--------------------------------------------------
 					// Form valid
@@ -430,14 +442,28 @@
 						if ($form->valid()) {
 
 							//--------------------------------------------------
-							// Store
+							// Save
 
-								$form->db_save();
+								$new_id = $this->setup_edit_save($form, $id);
+
+								if (!is_numeric($new_id)) {
+									exit_with_error('Your setup_edit_save() method on "' . get_class($this) . '" should return the item id.');
+								}
+
+								if ($action_edit && $new_id != $id) {
+									exit_with_error('Your setup_edit_save() method on "' . get_class($this) . '" changed the item id on update.');
+								}
+
+								$id = $new_id;
 
 							//--------------------------------------------------
 							// Thank you message
 
-								$this->message_set('The ' . $this->item_single . ' has been updated.');
+								if ($action_edit) {
+									$this->message_set('The ' . $this->item_single . ' has been updated.');
+								} else {
+									$this->message_set('The ' . $this->item_single . ' has been created.');
+								}
 
 							//--------------------------------------------------
 							// Next page
@@ -447,7 +473,7 @@
 								if (substr($dest, 0, 1) == '/') {
 									redirect($dest);
 								} else {
-									redirect(url());
+									redirect(url('./?id=' . urlencode($id)));
 								}
 
 						}
@@ -586,7 +612,7 @@
 
 		}
 
-		protected function _setup_edit_form_auto($form) {
+		protected function _setup_edit_form_auto($form, $id) {
 
 			$db_fields = $this->_db_fields();
 
