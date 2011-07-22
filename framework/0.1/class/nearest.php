@@ -7,14 +7,14 @@
 	//--------------------------------------------------
 	// Simple
 
-		// config::set('nearest.sql_table', 'stores');
+		// config::set('nearest.table_sql', 'stores');
 
 		$nearest = new nearest();
 
 	//--------------------------------------------------
 	// Profile support
 
-		config::set('nearest.profile.sql_table', 'stores');
+		config::set('nearest.profile.table_sql', 'stores');
 
 		$nearest = new nearest('profile');
 
@@ -22,7 +22,7 @@
 	// Custom
 
 		$nearest = new nearest(array(
-				'sql_table' => 'stores',
+				'table_sql' => 'stores',
 				'max_results' => 10,
 			));
 
@@ -51,14 +51,15 @@
 				// Defaults
 
 					$this->config['profile'] = NULL;
-					$this->config['sql_table'] = DB_PREFIX . 'location';
-					$this->config['sql_where'] = 'true';
-					$this->config['sql_field_id'] = 'id';
-					$this->config['sql_field_latitude'] = 'latitude';
-					$this->config['sql_field_longitude'] = 'longitude';
-					$this->config['sql_field_address'] = array();
-					$this->config['sql_field_postcode'] = 'postcode';
-					$this->config['sql_field_country'] = NULL;
+					$this->config['table_sql'] = DB_PREFIX . 'location';
+					$this->config['where_sql'] = 'true';
+					$this->config['field_id_sql'] = 'id';
+					$this->config['field_latitude_sql'] = 'latitude';
+					$this->config['field_longitude_sql'] = 'longitude';
+					$this->config['field_address_sql'] = array();
+					$this->config['field_postcode_sql'] = 'postcode';
+					$this->config['field_country_sql'] = NULL;
+					$this->config['extra_fields_sql'] = array();
 					$this->config['max_results'] = 5;
 					$this->config['max_km'] = 40; // 25 miles
 					$this->config['min_results'] = 0;
@@ -110,8 +111,8 @@
 				// Get page variables to be re-calculated
 
 					foreach ($this->config as $key => $value) {
-						if (substr($key, 0, 9) == 'sql_field' && is_string($value)) {
-							$key_short = substr($key, 4);
+						if (substr($key, 0, 6) == 'field_' && substr($key, -4) == '_sql' && is_string($value)) {
+							$key_short = substr($key, 0, -4);
 							if (!isset($this->config[$key_short])) {
 								$this->config[$key_short] = preg_replace('/^[^\.]+\./', '', $value);
 							}
@@ -191,19 +192,21 @@
 					$locations = array();
 
 					$fields = array(
-							$this->config['sql_field_id'],
-							$this->config['sql_field_latitude'],
-							$this->config['sql_field_longitude'],
+							$this->config['field_id_sql'],
+							$this->config['field_latitude_sql'],
+							$this->config['field_longitude_sql'],
 						);
 
+					$fields = array_merge($fields, $this->config['extra_fields_sql']);
+
 					$sql_where = '
-						' . $this->config['sql_field_latitude'] . ' != 0 AND
-						' . $this->config['sql_field_longitude'] . ' != 0 AND
-						' . $this->config['sql_where'];
+						' . $this->config['field_latitude_sql'] . ' != 0 AND
+						' . $this->config['field_longitude_sql'] . ' != 0 AND
+						' . $this->config['where_sql'];
 
 					$db = $this->db_get();
 
-					$rst = $db->select($this->config['sql_table'], $fields, $sql_where);
+					$rst = $db->select($this->config['table_sql'], $fields, $sql_where);
 					while ($row = $db->fetch_assoc($rst)) {
 
 						$radians_lat2 = $row[$this->config['field_latitude']] * $pi / 180;
@@ -217,11 +220,17 @@
 						$c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 						$distance = $R * $c;
 
-						$locations[$row[$this->config['field_id']]] = array(
+						$info = array(
 								'latitude' => $row[$this->config['field_latitude']],
 								'longitude' => $row[$this->config['field_longitude']],
 								'distance' => $distance,
 							);
+
+						foreach ($this->config['extra_fields_sql'] as $field) {
+							$info[$field] = $row[$field];
+						}
+
+						$locations[$row[$this->config['field_id']]] = $info;
 
 					}
 
@@ -444,25 +453,25 @@
 				// For each record
 
 					$fields = array(
-							$this->config['sql_field_id'],
-							$this->config['sql_field_postcode'],
+							$this->config['field_id_sql'],
+							$this->config['field_postcode_sql'],
 						);
 
-					if ($this->config['sql_field_country'] !== NULL) {
-						$fields[] = $this->config['sql_field_country'];
+					if ($this->config['field_country_sql'] !== NULL) {
+						$fields[] = $this->config['field_country_sql'];
 					}
 
-					$fields = array_merge($fields, $this->config['sql_field_address']);
+					$fields = array_merge($fields, $this->config['field_address_sql']);
 
 					$db = $this->db_get();
 
-					$rst = $db->select($this->config['sql_table'], $fields, $this->config['sql_where']);
+					$rst = $db->select($this->config['table_sql'], $fields, $this->config['where_sql']);
 					while ($row = $db->fetch_assoc($rst)) {
 
 						//--------------------------------------------------
 						// Country
 
-							if ($this->config['sql_field_country'] !== NULL) {
+							if ($this->config['field_country_sql'] !== NULL) {
 								$country = $row[$this->config['field_country']];
 							} else {
 								$country = NULL;
@@ -472,7 +481,7 @@
 						// Full address search
 
 							$search = array();
-							foreach (array_merge($this->config['sql_field_address'], array($this->config['field_postcode'])) as $field) {
+							foreach (array_merge($this->config['field_address_sql'], array($this->config['field_postcode_sql'])) as $field) {
 								$val = trim($row[$field]);
 								if ($val != '') {
 									$search[] = $val;
@@ -499,10 +508,10 @@
 								$values[$this->config['field_longitude']] = $result['longitude'];
 
 								$sql_where = '
-									' . $this->config['sql_field_id'] . ' = "' . $db->escape($row[$this->config['field_id']]) . '" AND
-									' . $this->config['sql_where'];
+									' . $this->config['field_id'] . ' = "' . $db->escape($row[$this->config['field_id_sql']]) . '" AND
+									' . $this->config['where_sql'];
 
-								$db->update($this->config['sql_table'], $values, $sql_where);
+								$db->update($this->config['table_sql'], $values, $sql_where);
 
 							}
 
@@ -515,17 +524,17 @@
 				//--------------------------------------------------
 				// Update
 
-					$old_sql_where = $this->config['sql_where'];
+					$old_sql_where = $this->config['where_sql'];
 
 					$db = $this->db_get();
 
-					$this->config['sql_where'] = '
-						' . $this->config['sql_field_id'] . ' = "' . $db->escape($id) . '" AND
-						' . $this->config['sql_where'];
+					$this->config['where_sql'] = '
+						' . $this->config['field_id_sql'] . ' = "' . $db->escape($id) . '" AND
+						' . $this->config['where_sql'];
 
 					$this->update_locations();
 
-					$this->config['sql_where'] = $old_sql_where;
+					$this->config['where_sql'] = $old_sql_where;
 
 			}
 

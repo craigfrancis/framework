@@ -15,6 +15,11 @@
 
 			public function __construct($url = NULL, $parameters = NULL, $format = NULL) {
 
+				if (is_array($url) && $parameters === NULL) {
+					$parameters = $url;
+					$url = NULL;
+				}
+
 				if ($url !== NULL) {
 					$this->parse($url);
 				}
@@ -318,6 +323,7 @@
 		echo '&#xA0; ' . html(url('/')) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('../news/')) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('/news/')) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url(array('id' => 6))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url(NULL, array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('/folder/#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('/folder/')->id(20)) . '<br />' . "\n";
