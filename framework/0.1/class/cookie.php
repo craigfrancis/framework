@@ -33,6 +33,10 @@
 				$_COOKIE[$variable] = $value;
 			}
 
+			if (headers_sent($file, $line)) {
+				exit_with_error('Cannot set cookie - output already started by "' . $file . '" line "' . $line . '"');
+			}
+
 			if (floatval(phpversion()) >= 5.2) {
 				return setcookie($variable, $value, $expiration, $config['path'], $config['domain'], $config['secure'], $config['http_only']);
 			} else {

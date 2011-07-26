@@ -138,7 +138,7 @@
 		//--------------------------------------------------
 		// Support functions
 
-			public function user_set($user_id) {
+			public function user_id_set($user_id) {
 				$user_identification = $this->auth->user_identification_get($user_id);
 				if ($user_identification !== false) {
 					$this->user_id = $user_id;
