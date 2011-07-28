@@ -198,7 +198,7 @@ class paginator extends check {
 		//--------------------------------------------------
 		// Elements
 
-			$nav_links_html = $this->_html_nav_links();
+			$nav_links_html = $this->_nav_links_html();
 
 			if ($this->config['extra_html'] !== '') {
 				$extra_html = $this->config['indent_html'] . "\t" . $this->config['extra_html'];
@@ -211,7 +211,7 @@ class paginator extends check {
 			$elements_html = array(
 				'first' => $nav_links_html['first'],
 				'back' => $nav_links_html['back'],
-				'links' => $this->_html_page_links(),
+				'links' => $this->_page_links_html(),
 				'next' => $nav_links_html['next'],
 				'last' => $nav_links_html['last'],
 				'extra' => $extra_html,
@@ -234,7 +234,7 @@ class paginator extends check {
 
 	}
 
-	private function _html_nav_links() {
+	private function _nav_links_html() {
 
 		//--------------------------------------------------
 		// Defaults
@@ -288,7 +288,7 @@ class paginator extends check {
 
 	}
 
-	private function _html_page_links() {
+	private function _page_links_html() {
 
 		//--------------------------------------------------
 		// Range of page numbers
