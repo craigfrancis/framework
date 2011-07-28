@@ -145,11 +145,11 @@ class paginator extends check {
 
 	}
 
-	public function page_count() {
+	public function page_count_get() {
 		return $this->page_count;
 	}
 
-	public function page_url($page_number) {
+	public function page_url_get($page_number) {
 
 		if ($this->url === NULL) {
 			$this->url = url($this->config['base_url']);
@@ -163,13 +163,13 @@ class paginator extends check {
 
 	}
 
-	public function page_link_html($link_html, $page_number = NULL) {
+	public function page_link_get_html($link_html, $page_number = NULL) {
 
 		if ($page_number === NULL) {
 			$page_number = $this->page_number;
 		}
 
-		$url = $this->page_url($page_number);
+		$url = $this->page_url_get($page_number);
 
 		if ($link_html !== NULL) {
 			return ($url !== NULL ? '<a href="' . html($url) . '">' : '<span>') . $link_html . ($url !== NULL ? '</a>' : '</span>');
@@ -251,7 +251,7 @@ class paginator extends check {
 
 			if ($this->config['first_html'] !== '') {
 
-				$link_html = ($this->page_number <= 1 ? '<span>' . $this->config['first_html'] . '</span>' : $this->page_link_html($this->config['first_html'], 1));
+				$link_html = ($this->page_number <= 1 ? '<span>' . $this->config['first_html'] . '</span>' : $this->page_link_get_html($this->config['first_html'], 1));
 
 				$nav_links_html['first'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_first">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
@@ -259,7 +259,7 @@ class paginator extends check {
 
 			if ($this->config['back_html'] !== '') {
 
-				$link_html = $this->page_link_html($this->config['back_html'], ($this->page_number - 1));
+				$link_html = $this->page_link_get_html($this->config['back_html'], ($this->page_number - 1));
 
 				$nav_links_html['back'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_back">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
@@ -267,7 +267,7 @@ class paginator extends check {
 
 			if ($this->config['next_html'] !== '') {
 
-				$link_html = $this->page_link_html($this->config['next_html'], $this->page_number + 1);
+				$link_html = $this->page_link_get_html($this->config['next_html'], $this->page_number + 1);
 
 				$nav_links_html['next'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_next">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
@@ -275,7 +275,7 @@ class paginator extends check {
 
 			if ($this->config['last_html'] !== '') {
 
-				$link_html = ($this->page_number >= $this->page_count ? '<span>' . $this->config['last_html'] . '</span>' : $this->page_link_html($this->config['last_html'], $this->page_count));
+				$link_html = ($this->page_number >= $this->page_count ? '<span>' . $this->config['last_html'] . '</span>' : $this->page_link_get_html($this->config['last_html'], $this->page_count));
 
 				$nav_links_html['last'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_last">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
@@ -301,7 +301,7 @@ class paginator extends check {
 
 			for ($i = 1; $start <= $this->page_count && $i <= 9; $i++, $start++) {
 				$c = ($start == $this->page_number);
-				$page_links_html .= $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_page pagination_page_' . $i . ($c ? ' pagination_current' : '') . '">' . ($c ? '<strong>' : '') . '<a href="' . html($this->page_url($start)) . '">' . str_pad($start, $this->config['number_pad'], '0', STR_PAD_LEFT) . '</a>' . ($c ? '</strong>' : '') . '</' . html($this->config['link_wrapper_element']) . '>';
+				$page_links_html .= $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_page pagination_page_' . $i . ($c ? ' pagination_current' : '') . '">' . ($c ? '<strong>' : '') . '<a href="' . html($this->page_url_get($start)) . '">' . str_pad($start, $this->config['number_pad'], '0', STR_PAD_LEFT) . '</a>' . ($c ? '</strong>' : '') . '</' . html($this->config['link_wrapper_element']) . '>';
 			}
 
 		//--------------------------------------------------
