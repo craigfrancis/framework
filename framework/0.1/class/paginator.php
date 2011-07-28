@@ -63,7 +63,7 @@ class paginator extends check {
 		//--------------------------------------------------
 		// Set config
 
-			if (is_int($config)) {
+			if (is_numeric($config)) { // May be a string
 				$config = array(
 						'items_count' => $config
 					);
