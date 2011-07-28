@@ -21,8 +21,8 @@
 	// 		'items_count' => $result_count,
 	// 	));
 
-	$limit = $paginator->page_size_get();
-	$offset = $paginator->page_number_get();
+	$page_size = $paginator->page_size_get();
+	$page_number = $paginator->page_number_get();
 
 	$limit_sql = $paginator->limit_get_sql();
 
@@ -114,12 +114,14 @@ class paginator extends check {
 
 	}
 
-	public function items_count() {
+	public function items_count_get() {
 		return $this->config['items_count'];
 	}
 
 	public function limit_get_sql() {
-		return intval($this->page_number_get()) . ', ' . intval($this->page_size_get());
+		$page_number = $this->page_number_get();
+		$page_size = $this->page_size_get();
+		return intval(($page_number - 1) * $page_size) . ', ' . intval($page_size);
 	}
 
 	public function page_size_get() {
