@@ -322,6 +322,17 @@
 
 						}
 
+				//--------------------------------------------------
+				// Process types
+
+					$css_types = config::get('output.css_types');
+
+					if ($css_types !== NULL && count($css_types) > 0) {
+
+						$this->css_process_types($css_types);
+
+					}
+
 			}
 
 			public function title() {
@@ -356,6 +367,8 @@
 				// CSS name
 
 					$css_name = config::get('output.css_name');
+
+					$style_set = false;
 
 					if ($css_name == '') {
 
@@ -466,17 +479,6 @@
 			}
 
 			public function css_get($mode) {
-
-				//--------------------------------------------------
-				// Process types
-
-					$css_types = config::get('output.css_types');
-
-					if ($css_types !== NULL && count($css_types) > 0) {
-
-						$this->css_process_types($css_types);
-
-					}
 
 				//--------------------------------------------------
 				// Configuration
