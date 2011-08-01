@@ -341,7 +341,9 @@
 
 			public function message() {
 				$message = cookie::get('message');
-				cookie::delete('message');
+				if ($message !== NULL) {
+					cookie::delete('message');
+				}
 				return $message;
 			}
 
