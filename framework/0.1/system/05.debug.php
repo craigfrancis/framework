@@ -100,10 +100,10 @@
 		//--------------------------------------------------
 		// Called from
 
-			$called_from = debug_backtrace();
+			$called_from_stack = debug_backtrace();
 
-			for ($k = (count($called_from) - 1); $k > 0; $k--) {
-				if (substr($called_from[$k]['file'],0, strlen(FRAMEWORK_ROOT)) != FRAMEWORK_ROOT) {
+			foreach ($called_from_stack as $called_from) {
+				if (substr($called_from['file'],0, strlen(FRAMEWORK_ROOT)) != FRAMEWORK_ROOT) {
 
 					if ($hidden_info === NULL) {
 						$hidden_info = '';
@@ -111,7 +111,7 @@
 						$hidden_info .= "\n\n";
 					}
 
-					$hidden_info .= $called_from[$k]['file'] . ' (line ' . $called_from[$k]['line'] . ')';
+					$hidden_info .= $called_from['file'] . ' (line ' . $called_from['line'] . ')';
 
 					break;
 
