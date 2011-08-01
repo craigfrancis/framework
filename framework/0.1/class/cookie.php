@@ -34,7 +34,7 @@
 			}
 
 			if (headers_sent($file, $line)) {
-				exit_with_error('Cannot set cookie - output already started by "' . $file . '" line "' . $line . '"');
+				exit_with_error('Cannot set cookie "' . $variable . '" - output already started by "' . $file . '" line "' . $line . '"');
 			}
 
 			if (floatval(phpversion()) >= 5.2) {
