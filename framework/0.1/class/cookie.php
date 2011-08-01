@@ -87,7 +87,7 @@
 
 			if (!cookie::supported()) {
 
-				config::set('output.title', config::get('output.title_error', 'An error has occurred'));
+				config::set('output.error', true);
 
 				$view = new view();
 				$view->render_error('cookies');

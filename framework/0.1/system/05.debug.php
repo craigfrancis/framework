@@ -146,7 +146,7 @@
 					config::array_set('view.variables', 'hidden_info', $hidden_info);
 					config::array_set('view.variables', 'contact_email', $contact_email);
 
-					config::set('output.title', config::get('output.title_error', 'An error has occurred'));
+					config::set('output.error', true);
 
 					$view = new view();
 					$view->render_error('system');

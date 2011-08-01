@@ -275,19 +275,22 @@
 					//--------------------------------------------------
 					// Default
 
+						$k = 0;
+
+						$title_prefix = config::get('output.title_prefix');
+						$title_suffix = config::get('output.title_suffix');
+						$title_divide = config::get('output.title_divide');
+
 						if (config::get('output.error')) {
 
 							$title_default = config::get('output.title_error');
+
+							$k++;
 
 						} else {
 
 							$title_default = '';
 
-							$title_prefix = config::get('output.title_prefix');
-							$title_suffix = config::get('output.title_suffix');
-							$title_divide = config::get('output.title_divide');
-
-							$k = 0;
 							foreach (config::get('output.title_folders') as $folder) {
 								if ($folder != '') {
 									if ($k++ > 0) {
