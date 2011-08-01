@@ -98,6 +98,27 @@
 	function exit_with_error($message, $hidden_info = NULL) {
 
 		//--------------------------------------------------
+		// Called from
+
+			$called_from = debug_backtrace();
+
+			for ($k = (count($called_from) - 1); $k > 0; $k--) {
+				if (substr($called_from[$k]['file'],0, strlen(FRAMEWORK_ROOT)) != FRAMEWORK_ROOT) {
+
+					if ($hidden_info === NULL) {
+						$hidden_info = '';
+					} else {
+						$hidden_info .= "\n\n";
+					}
+
+					$hidden_info .= $called_from[$k]['file'] . ' (line ' . $called_from[$k]['line'] . ')';
+
+					break;
+
+				}
+			}
+
+		//--------------------------------------------------
 		// Report the error
 
 			$error_report = $message;
