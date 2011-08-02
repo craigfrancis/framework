@@ -12,8 +12,8 @@
 
 		protected $length;
 		protected $lock_to_ip;
-		protected $allow_multiple_sessions;
-		protected $old_session_history_length;
+		protected $allow_concurrent;
+		protected $history_length;
 		protected $session_id;
 
 		public function __construct($user) {
@@ -37,14 +37,11 @@
 			//--------------------------------------------------
 			// Miscellaneous
 
-				$this->length = (60*30); // How long a session lasts
+				$this->length = 0; // Indefinite length, otherwise set to seconds
+				$this->history_length = -1; // Default to keep session data indefinitely
+				$this->allow_concurrent = false; // Close previous sessions on new session start
 				$this->lock_to_ip = false; // By default this is disabled (AOL users)
-				$this->allow_multiple_sessions = false; // Close previous sessions on new session start
 				$this->session_id = 0;
-
-				$this->old_session_history_length = -1; // Keep session data indefinitely
-				$this->old_session_history_length = 0; // Delete session data as soon as its done with
-				$this->old_session_history_length = (60*60*24*30); // After 30 days, really delete old sessions (house cleaning)
 
 		}
 
@@ -56,12 +53,16 @@
 			$this->length = $length;
 		}
 
-		public function lock_to_ip($enable) {
+		public function history_length_set($length) {
+			$this->history_length = $length;
+		}
+
+		public function lock_to_ip_set($enable) {
 			$this->lock_to_ip = $enable;
 		}
 
-		public function allow_multiple_sessions($enable) {
-			$this->allow_multiple_sessions = $enable;
+		public function allow_concurrent_set($enable) {
+			$this->allow_concurrent = $enable;
 		}
 
 		public function start_session($user_id) {
@@ -76,8 +77,8 @@
 
 				$db = $this->user_obj->db_get();
 
-				if ($this->allow_multiple_sessions !== true) {
-					if ($this->old_session_history_length == 0) {
+				if ($this->allow_concurrent !== true) {
+					if ($this->history_length == 0) {
 
 						$db->query('DELETE FROM
 										' . $db->escape_field($this->db_table_name) . '
@@ -103,22 +104,25 @@
 			//--------------------------------------------------
 			// Delete old sessions (house cleaning)
 
-				if ($this->old_session_history_length > 0) {
+				if ($this->history_length >= 0) {
 
 					$db->query('DELETE FROM
 									' . $db->escape_field($this->db_table_name) . '
 								WHERE
-									(
-										' . $this->db_where_sql . ' AND
-										deleted != "0000-00-00 00:00:00" AND
-										deleted < "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->old_session_history_length))) . '"
-									)
-									OR
-									(
+									' . $this->db_where_sql . ' AND
+									deleted != "0000-00-00 00:00:00" AND
+									deleted < "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->history_length))) . '"');
+
+					if ($this->length > 0) {
+
+						$db->query('DELETE FROM
+										' . $db->escape_field($this->db_table_name) . '
+									WHERE
 										' . $this->db_where_sql . ' AND
 										deleted = "0000-00-00 00:00:00" AND
-										last_used < "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->length - $this->old_session_history_length))) . '"
-									)');
+										last_used < "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->length - $this->history_length))) . '"');
+
+					}
 
 				}
 
@@ -158,10 +162,16 @@
 			// computers internal clock (which is usually wrong)
 			// to decide when to delete persistent cookies.
 
-				$this->user_obj->_cookie_set('session_id_p', $session_id, (time() + $this->length));
+				if ($this->length > 0) {
+					$persistent_length = (time() + $this->length);
+				} else {
+					$persistent_length = strtotime('+10 years');
+				}
+
+				$this->user_obj->_cookie_set('session_id_p', $session_id, $persistent_length);
 				$this->user_obj->_cookie_set('session_id_s', $session_id);
 
-				$this->user_obj->_cookie_set('session_pass_p', $pass_orig, (time() + $this->length));
+				$this->user_obj->_cookie_set('session_pass_p', $pass_orig, $persistent_length);
 				$this->user_obj->_cookie_set('session_pass_s', $pass_orig);
 
 		}
@@ -257,6 +267,16 @@
 
 					$db = $this->user_obj->db_get();
 
+					$where_sql = '
+						' . $this->db_where_sql . ' AND
+						id = "' . $db->escape($session_id) . '" AND
+						deleted = "0000-00-00 00:00:00"';
+
+					if ($this->length > 0) {
+						$where_sql .= '
+							AND last_used > "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->length))) . '"';
+					}
+
 					$db->query('SELECT
 									user_id,
 									pass_hash,
@@ -265,10 +285,7 @@
 								FROM
 									' . $db->escape_field($this->db_table_name) . '
 								WHERE
-									' . $this->db_where_sql . ' AND
-									id = "' . $db->escape($session_id) . '" AND
-									deleted = "0000-00-00 00:00:00" AND
-									last_used > "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->length))) . '"');
+									' . $where_sql);
 
 					if ($row = $db->fetch_assoc()) {
 
@@ -322,7 +339,7 @@
 
 					$db = $this->user_obj->db_get();
 
-					if ($this->old_session_history_length == 0) {
+					if ($this->history_length == 0) {
 
 						$db->query('DELETE FROM
 										' . $db->escape_field($this->db_table_name) . '

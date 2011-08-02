@@ -49,6 +49,13 @@
 					if ($this->auth    === NULL) $this->auth = new user_auth_base($this);
 
 				//--------------------------------------------------
+				// Session defaults
+
+					$this->session->length_set(60*30); // How long a session lasts... 0 for indefinite length
+					$this->session->history_length_set(60*60*24*30); // How long a session history lasts... 0 to delete once expired, -1 to keep data indefinitely
+					$this->session->allow_concurrent_set(false); // If the user can login more than once at a time
+
+				//--------------------------------------------------
 				// Text
 
 					$this->text = array(
