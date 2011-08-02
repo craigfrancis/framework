@@ -363,9 +363,9 @@
 			//--------------------------------------------------
 			// Request
 
-				$id = intval(data('id'));
+				$id = intval(request('id'));
 
-				$dest = data('dest');
+				$dest = request('dest');
 				if ($dest == 'referrer') {
 					$dest = config::get('request.referrer');
 				}
@@ -513,7 +513,7 @@
 			//--------------------------------------------------
 			// Request
 
-				$id = intval(data('id'));
+				$id = intval(request('id'));
 
 			//--------------------------------------------------
 			// Database

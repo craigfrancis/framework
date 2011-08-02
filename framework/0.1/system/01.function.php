@@ -1,9 +1,9 @@
 <?php
 
 //--------------------------------------------------
-// Get a submitted value
+// Get a request value
 
-	function data($variable, $method = 'request') {
+	function request($variable, $method = 'REQUEST') {
 
 		//--------------------------------------------------
 		// Get value

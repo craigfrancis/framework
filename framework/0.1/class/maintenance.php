@@ -246,7 +246,7 @@
 				//--------------------------------------------------
 				// Execute task
 
-					$task_name = data('execute');
+					$task_name = request('execute');
 
 					if (isset($this->task_paths[$task_name])) {
 

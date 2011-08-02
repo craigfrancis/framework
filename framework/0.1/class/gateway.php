@@ -531,8 +531,8 @@
 				//--------------------------------------------------
 				// Return the required values for this script
 
-					$pass = data('pass');
-					$client = data('client');
+					$pass = request('pass');
+					$client = request('client');
 
 				//--------------------------------------------------
 				// Check tables
@@ -634,7 +634,7 @@
 
 					if ($name !== NULL) {
 
-						$data = data($name);
+						$data = request($name);
 
 					} else {
 

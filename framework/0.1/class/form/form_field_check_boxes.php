@@ -80,7 +80,7 @@
 									$name = $this->name . '_'  . $c_key;
 								}
 
-								if (data($name, $this->form->form_method_get()) == 'true') {
+								if (request($name, $this->form->form_method_get()) == 'true') {
 									$this->values[] = $field_id;
 								}
 

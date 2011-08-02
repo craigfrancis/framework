@@ -69,8 +69,8 @@
 
 		public function sort_name_set($name) {
 			$this->sort_name = $name;
-			$this->sort_field = data($this->sort_name . '_name');
-			$this->sort_order = data($this->sort_name . '_order');
+			$this->sort_field = request($this->sort_name . '_name');
+			$this->sort_order = request($this->sort_name . '_order');
 		}
 
 		public function default_sort_set($field, $order = 'asc') {

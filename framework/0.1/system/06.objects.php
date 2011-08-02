@@ -374,7 +374,7 @@
 
 					if ($css_name == '') {
 
-						$css_name = data('style', 'GET');
+						$css_name = request('style', 'GET');
 
 						if ($css_name != '' && isset($css_types[$css_name])) {
 

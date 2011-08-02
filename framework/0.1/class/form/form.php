@@ -144,7 +144,7 @@
 
 			public function hidden_value($name) {
 				if ($this->form_submitted) {
-					$value = data('h-' . $name);
+					$value = request('h-' . $name);
 					$value = ($value === NULL ? NULL : urldecode($value));
 				} else {
 					$value = '';
@@ -164,7 +164,7 @@
 				if (isset($this->hidden_values[$name])) {
 					return $this->hidden_values[$name];
 				} else {
-					$value = data('h-' . $name);
+					$value = request('h-' . $name);
 					return ($value === NULL ? NULL : urldecode($value));
 				}
 			}
@@ -393,7 +393,7 @@
 			}
 
 			private function _is_submitted() {
-				$this->form_submitted = (data('act') == $this->form_id && config::get('request.method') == $this->form_method);
+				$this->form_submitted = (request('act') == $this->form_id && config::get('request.method') == $this->form_method);
 			}
 
 			public function valid() {
@@ -459,7 +459,7 @@
 				//--------------------------------------------------
 				// CSRF check
 
-					$csrf_token = data('csrf', $this->form_method);
+					$csrf_token = request('csrf', $this->form_method);
 
 					if ($this->form_submitted && $this->csrf_token != $csrf_token) {
 

@@ -38,9 +38,9 @@
 							$form_method = $form->form_method_get();
 
 							$this->value = array(
-									'D' => intval(data($this->name . '_D', $form_method)),
-									'M' => intval(data($this->name . '_M', $form_method)),
-									'Y' => intval(data($this->name . '_Y', $form_method)),
+									'D' => intval(request($this->name . '_D', $form_method)),
+									'M' => intval(request($this->name . '_M', $form_method)),
+									'Y' => intval(request($this->name . '_Y', $form_method)),
 								);
 
 						}
