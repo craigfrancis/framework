@@ -10,7 +10,7 @@
 //--------------------------------------------------
 // Maintenance class
 
-	class maintenance extends check {
+	class maintenance extends base {
 
 		//--------------------------------------------------
 		// Variables
@@ -34,7 +34,7 @@
 
 					if ($handle = opendir($this->tasks_dir)) {
 						while (false !== ($file = readdir($handle))) {
-							if (is_file($this->tasks_dir . $file) && preg_match('/^([0-9]+\.)?([a-zA-Z0-9]+)\.php$/', $file, $matches)) {
+							if (is_file($this->tasks_dir . $file) && preg_match('/^([0-9]+\.)?([a-zA-Z0-9_]+)\.php$/', $file, $matches)) {
 
 								$this->task_paths[$matches[2]] = $this->tasks_dir . $file;
 
@@ -62,9 +62,17 @@
 					ini_set('memory_limit', '1024M');
 
 				//--------------------------------------------------
+				// Main include
+
+					$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'main.php';
+					if (is_file($include_path)) {
+						require_once($include_path);
+					}
+
+				//--------------------------------------------------
 				// Clear old locks
 
-					$db = new db();
+					$db = $this->db_get();
 
 					$db->query('SELECT
 									id,
@@ -148,7 +156,7 @@
 
 								$success = $task->run_wrapper();
 
-								if ($success) {
+								if ($success !== false) {
 									$this->tasks_run[] = $task_name;
 								}
 
@@ -290,7 +298,7 @@
 //--------------------------------------------------
 // Action class
 
-	class task extends check {
+	class task extends base {
 
 		//--------------------------------------------------
 		// Variables
@@ -318,7 +326,7 @@
 				//--------------------------------------------------
 				// Last run
 
-					$db = new db();
+					$db = $this->db_get();
 
 					if ($this->run_id > 0) {
 
@@ -512,7 +520,7 @@
 				//--------------------------------------------------
 				// Log
 
-					$db = new db();
+					$db = $this->db_get();
 
 					if ($this->run_id > 0 && $this->halt_maintenance_run === false) {
 
