@@ -402,6 +402,17 @@
 			}
 
 		//--------------------------------------------------
+		// Called from
+
+			$called_from = debug_backtrace();
+
+			if (substr($called_from[1]['file'], -23) == '/system/04.database.php') {
+				$called_from = $called_from[2];
+			} else {
+				$called_from = $called_from[1];
+			}
+
+		//--------------------------------------------------
 		// Explain how the query is executed
 
 			$explain_html = '';
@@ -509,22 +520,31 @@
 							//--------------------------------------------------
 							// Test
 
-								if (!preg_match('/' . str_replace('`', '`?', preg_quote($required_clause, '/')) . ' (=|>|>=|<|<=|!=) /', $where_sql)) {
+								$sql_conditions = array($where_sql);
+
+								if (preg_match('/' . preg_quote($table[1], '/') . (isset($table[3]) ? ' +AS +' . preg_quote($table[3], '/') . '' : '') . ' +ON +(.*?)(LEFT|RIGHT|INNER|CROSS|WHERE|GROUP BY|HAVING|ORDER BY|LIMIT)/ms', $query, $on_details)) {
+									$sql_conditions[] = $on_details[1];
+								}
+
+								$valid = false;
+								foreach ($sql_conditions as $sql_condition) {
+									if (preg_match('/' . str_replace('`', '`?', preg_quote($required_clause, '/')) . ' (=|>|>=|<|<=|!=) /', $sql_condition)) {
+										$valid = true;
+										break;
+									}
+								}
+
+							//--------------------------------------------------
+							// If missing
+
+								if (!$valid) {
 
 									config::set('debug.show', false);
-
-									$called_from = debug_backtrace();
-
-									if (substr($called_from[1]['file'], -23) == '/system/04.database.php') {
-										$level = 2;
-									} else {
-										$level = 1;
-									}
 
 									echo '
 										<div>
 											<h1>Error</h1>
-											<p><strong>' . str_replace(ROOT, '', $called_from[$level]['file']) . '</strong> (line ' . $called_from[$level]['line'] . ')</p>
+											<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>
 											<p>Missing reference to "' . html($required_field) . '" column on the table "' . html($table[1]) . '".</p>
 											<p style="padding: 0 0 0 1em;">' . $query_html . '</p>
 										</div>';
@@ -582,9 +602,11 @@
 		//--------------------------------------------------
 		// Create debug output
 
+			$html = '<strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')<br />' . (strpos($query_html, "\n") === false ? '' : '<br />') . $query_html;
+
 			config::array_push('debug.notes', array(
 					'colour' => '#CCF',
-					'html' => $query_html,
+					'html' => $html,
 					'time' => $time_total,
 					'extra_html' => $explain_html . $text_html,
 				));
