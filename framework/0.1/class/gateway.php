@@ -10,7 +10,7 @@
 //--------------------------------------------------
 // Gateway class
 
-	class gateway extends check {
+	class gateway extends base {
 
 		//--------------------------------------------------
 		// Variables
@@ -419,7 +419,7 @@
 //--------------------------------------------------
 // API Class
 
-	class api extends check {
+	class api extends base {
 
 		//--------------------------------------------------
 		// Variables
@@ -679,6 +679,14 @@
 				// Make sure we have plenty of memory
 
 					ini_set('memory_limit', '1024M');
+
+				//--------------------------------------------------
+				// Main include
+
+					$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'main.php';
+					if (is_file($include_path)) {
+						require_once($include_path);
+					}
 
 				//--------------------------------------------------
 				// Include the script

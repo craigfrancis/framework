@@ -211,7 +211,7 @@
 
 		echo '<pre>';
 		echo html(print_r($variable, true));
-		echo '</pre>';
+		echo '</pre>' . "\n";
 
 	}
 
@@ -528,7 +528,7 @@
 
 								$valid = false;
 								foreach ($sql_conditions as $sql_condition) {
-									if (preg_match('/' . str_replace('`', '`?', preg_quote($required_clause, '/')) . ' (=|>|>=|<|<=|!=) /', $sql_condition)) {
+									if (preg_match('/' . str_replace('`', '`?', preg_quote($required_clause, '/')) . ' (IS NULL|=|>|>=|<|<=|!=)/', $sql_condition)) {
 										$valid = true;
 										break;
 									}
@@ -545,7 +545,7 @@
 										<div>
 											<h1>Error</h1>
 											<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>
-											<p>Missing reference to "' . html($required_field) . '" column on the table "' . html($table[1]) . '".</p>
+											<p>Missing reference to "' . html(str_replace('`', '', $required_clause)) . '" column on the table "' . html($table[1]) . '".</p>
 											<p style="padding: 0 0 0 1em;">' . $query_html . '</p>
 										</div>';
 

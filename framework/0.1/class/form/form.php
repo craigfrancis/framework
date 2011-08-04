@@ -622,6 +622,19 @@
 				return $this->fields;
 			}
 
+			public function field_groups_get() {
+				$field_groups = array();
+				foreach ($this->fields as $field_id => $field) {
+					if ($field->print_show_get() && !$field->print_hidden_get()) {
+						$field_group = $field->print_group_get();
+						if ($field_group !== NULL) {
+							$field_groups[] = $field_group;
+						}
+					}
+				}
+				return array_unique($field_groups);
+			}
+
 			public function field_autofocus_set($autofocus) {
 				$this->field_autofocus = $autofocus;
 			}
