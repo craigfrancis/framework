@@ -792,64 +792,113 @@
 
 			public function html_fields($group = NULL) {
 
-				$k = 0;
-				$html = '';
+				//--------------------------------------------------
+				// Start
 
-				if ($this->field_autofocus) {
+					$k = 0;
+					$html = '';
 
-					for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
+				//--------------------------------------------------
+				// Auto focus
 
-						$field_type = $this->fields[$field_id]->type_get();
-						if ($field_type == 'date') {
-							$autofocus = ($this->fields[$field_id]->value_date_get() == '0000-00-00');
-						} else if ($field_type != 'file' && $field_type != 'image') {
-							$autofocus = ($this->fields[$field_id]->value_get() == '');
-						} else {
-							$autofocus = false;
-						}
+					if ($this->field_autofocus) {
 
-						if (!$this->_field_valid($field_id)) {
-							$autofocus = true;
-						}
+						for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
 
-						if ($autofocus) {
-							$this->fields[$field_id]->autofocus_set(true);
-							break;
-						}
-
-					}
-
-				}
-
-				foreach ($this->fields as $field_id => $field) {
-
-					if ($field->print_show_get() && !$field->print_hidden_get()) {
-
-						$field_group = $field->print_group_get();
-
-						if (($group === NULL && $field_group ===  NULL) || ($group !== NULL && $group == $field_group)) {
-
-							$type = $field->type_get();
-
-							$k++;
-
-							if ($k == 1) {
-								$field->class_row_add('first_child odd');
-							} else if ($k % 2) {
-								$field->class_row_add('odd');
+							$field_type = $this->fields[$field_id]->type_get();
+							if ($field_type == 'date') {
+								$autofocus = ($this->fields[$field_id]->value_date_get() == '0000-00-00');
+							} else if ($field_type != 'file' && $field_type != 'image') {
+								$autofocus = ($this->fields[$field_id]->value_get() == '');
 							} else {
-								$field->class_row_add('even');
+								$autofocus = false;
 							}
 
-							$html .= $field->html();
+							if (!$this->_field_valid($field_id)) {
+								$autofocus = true;
+							}
+
+							if ($autofocus) {
+								$this->fields[$field_id]->autofocus_set(true);
+								break;
+							}
 
 						}
 
 					}
 
-				}
+				//--------------------------------------------------
+				// Field groups
 
-				return $html;
+					$field_groups = array();
+
+					if ($group !== NULL) {
+
+						$field_groups = array($group);
+
+					} else {
+
+						foreach ($this->fields as $field_id => $field) {
+							if ($field->print_show_get() && !$field->print_hidden_get()) {
+								$field_group = $field->print_group_get();
+								if ($field_group === NULL) {
+									$field_groups = array(NULL);
+									break;
+								} else {
+									$field_groups[] = $field_group;
+								}
+							}
+						}
+
+					}
+
+					$field_groups = array_unique($field_groups);
+
+					$show_group_headings = (count($field_groups) > 1);
+
+				//--------------------------------------------------
+				// Fields HTML
+
+					$html = '';
+
+					foreach ($field_groups as $group) {
+
+						if ($show_group_headings) {
+							$html .= "\n\t\t\t\t" . '<h2>' . html($group) . '</h2>' . "\n";
+						}
+
+						foreach ($this->fields as $field_id => $field) {
+
+							if ($field->print_show_get() && !$field->print_hidden_get()) {
+
+								$field_group = $field->print_group_get();
+
+								if (($group === NULL && $field_group === NULL) || ($group !== NULL && $group == $field_group)) {
+
+									$k++;
+
+									if ($k == 1) {
+										$field->class_row_add('first_child odd');
+									} else if ($k % 2) {
+										$field->class_row_add('odd');
+									} else {
+										$field->class_row_add('even');
+									}
+
+									$html .= $field->html();
+
+								}
+
+							}
+
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $html;
 
 			}
 
@@ -858,58 +907,16 @@
 			}
 
 			public function html() {
-
-				//--------------------------------------------------
-				// Field groups
-
-					$fields_without_group = false;
-					$field_groups = array();
-
-					foreach ($this->fields as $field_id => $field) {
-						if ($field->print_show_get() && !$field->print_hidden_get()) {
-							$field_group = $field->print_group_get();
-							if ($field_group === NULL) {
-								$fields_without_group = true;
-								break;
-							} else {
-								$field_groups[] = $field_group;
-							}
-						}
-					}
-
-				//--------------------------------------------------
-				// Fields HTML
-
-					if ($fields_without_group == true) {
-
-						$fields_html = $this->html_fields();
-
-					} else {
-
-						$fields_html = '';
-
-						$field_groups = array_unique($field_groups);
-
-						foreach ($field_groups as $group) {
-							$fields_html .= "\n\t\t\t\t" . '<h2>' . html($group) . '</h2>' . "\n";
-							$fields_html .= $this->html_fields($group);
-						}
-
-					}
-
-				//--------------------------------------------------
-				// Return
-
-					return '
-						' . rtrim($this->html_start()) . '
-							<fieldset>
-								' . $this->html_error_list() . '
-								' . $fields_html . '
-								<div class="row submit">
-									<input type="submit" value="' . html($this->form_button) . '" />
-								</div>
-							</fieldset>
-						' . $this->html_end() . "\n";
+				return '
+					' . rtrim($this->html_start()) . '
+						<fieldset>
+							' . $this->html_error_list() . '
+							' . $this->html_fields() . '
+							<div class="row submit">
+								<input type="submit" value="' . html($this->form_button) . '" />
+							</div>
+						</fieldset>
+					' . $this->html_end() . "\n";
 			}
 
 			public function __toString() { // (PHP 5.2)

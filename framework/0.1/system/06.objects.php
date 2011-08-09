@@ -126,16 +126,16 @@
 				cookie::set('message', $message);
 			}
 
+			public function set($name, $value) {
+				config::array_set('view.variables', $name, $value);
+			}
+
 		}
 
 	//--------------------------------------------------
 	// Controller
 
 		class controller_base extends base {
-
-			public function set($name, $value) {
-				config::array_set('view.variables', $name, $value);
-			}
 
 			public function view_path_set($view_path) {
 				config::set('view.path', $view_path);

@@ -668,7 +668,7 @@
 
 						$field_values = $this->form->data_db_get();
 						if (count($field_values) > 0) {
-							$this->details->values_set($this->user_id, $field_values);
+							$this->values_set($field_values);
 						}
 
 						if (isset($this->auth_fields['verification_new']) && $this->auth_fields['verification_new']->value_get() != '') {

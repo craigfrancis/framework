@@ -50,6 +50,10 @@
 				$this->value_html = $html;
 			}
 
+			public function link_set($url, $text) {
+				$this->value_set_html('<a href="' . html($url) . '">' . $text . '</a>');
+			}
+
 			public function value_get() {
 				return $this->value;
 			}
