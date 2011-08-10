@@ -108,7 +108,11 @@
 
 			public function value_print_get() {
 				if ($this->value === NULL) {
-					return $this->form->db_select_value_get($this->db_field_name);
+					if ($this->form->saved_values_available()) {
+						return $this->form->saved_value_get($this->name);
+					} else {
+						return $this->form->db_select_value_get($this->db_field_name);
+					}
 				}
 				return $this->value;
 			}

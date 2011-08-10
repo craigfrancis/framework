@@ -34,6 +34,8 @@
 			private $db_save_disabled;
 			private $csrf_token;
 			private $csrf_error_html;
+			private $saved_values_data;
+			private $saved_values_used;
 
 		//--------------------------------------------------
 		// Setup
@@ -68,6 +70,8 @@
 					$this->db_fields = array();
 					$this->db_values = array();
 					$this->db_save_disabled = false;
+					$this->saved_values_data = NULL;
+					$this->saved_values_used = NULL;
 
 				//--------------------------------------------------
 				// Internal form ID
@@ -383,6 +387,48 @@
 
 			public function db_value_set($name, $value) {
 				$this->db_values[$name] = $value;
+			}
+
+			public function saved_values_available() {
+
+				if ($this->saved_values_used === NULL) {
+
+					$this->saved_values_used = false;
+
+					if (session::get('save_form_url') == config::get('request.url')) {
+
+						$data = session::get('save_form_data');
+
+						if (isset($data['act']) && $data['act'] == $this->form_id) {
+							$this->saved_values_data = $data;
+						}
+
+					}
+
+				}
+
+				return ($this->saved_values_data !== NULL);
+
+			}
+
+			public function saved_value_get($name) {
+
+				if ($this->saved_values_used == false) {
+
+					$this->saved_values_used = true;
+
+					session::delete('save_form_url');
+					session::delete('save_form_used');
+					session::delete('save_form_data');
+
+				}
+
+				if (isset($this->saved_values_data[$name])) {
+					return $this->saved_values_data[$name];
+				} else {
+					return NULL;
+				}
+
 			}
 
 		//--------------------------------------------------

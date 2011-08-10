@@ -153,7 +153,15 @@
 
 			public function value_print_get() {
 				if ($this->value === NULL) {
-					return $this->_value_parse($this->form->db_select_value_get($this->db_field_name));
+					if ($this->form->saved_values_available()) {
+						return array(
+								'D' => intval($this->form->saved_value_get($this->name . '_D')),
+								'M' => intval($this->form->saved_value_get($this->name . '_M')),
+								'Y' => intval($this->form->saved_value_get($this->name . '_Y')),
+							);
+					} else {
+						return $this->_value_parse($this->form->db_select_value_get($this->db_field_name));
+					}
 				}
 				return $this->value;
 			}

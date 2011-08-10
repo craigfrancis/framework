@@ -171,11 +171,32 @@
 
 						$this->values_print = array();
 
-						foreach (explode(',', $this->form->db_select_value_get($this->db_field_name)) as $c_value) {
-							$key = array_search($c_value, ($this->db_field_key == 'key' ? $this->option_keys : $this->option_values));
-							if ($key !== false && $key !== NULL) {
-								$this->values_print[] = $key;
+						if ($this->form->saved_values_available()) {
+
+							foreach ($this->option_keys as $field_id => $c_key) {
+
+								if ($this->re_index_keys) {
+									$name = $this->name . '_'  . $field_id;
+								} else {
+									$name = $this->name . '_'  . $c_key;
+								}
+
+								if ($this->form->saved_value_get($name) == 'true') {
+									$this->values_print[] = $field_id;
+								}
+
 							}
+
+						} else {
+
+
+							foreach (explode(',', $this->form->db_select_value_get($this->db_field_name)) as $c_value) {
+								$key = array_search($c_value, ($this->db_field_key == 'key' ? $this->option_keys : $this->option_values));
+								if ($key !== false && $key !== NULL) {
+									$this->values_print[] = $key;
+								}
+							}
+
 						}
 
 					} else {

@@ -293,6 +293,40 @@
 	}
 
 //--------------------------------------------------
+// Save form support functions - useful if the users
+// session has expired while filling out a long form
+
+	function save_form_redirect($url) {
+		$current_saved_url = session::get('save_form_url');
+		if ($current_saved_url === NULL || $current_saved_url !== config::get('request.url')) { // User hit login form, panicked and clicked back?
+			session::set('save_form_url', config::get('request.url'));
+			session::set('save_form_used', false);
+			session::set('save_form_data', $_REQUEST);
+		}
+		redirect($url);
+	}
+
+	function save_form_restore() {
+		$used = session::get('save_form_used');
+		if ($used === true) {
+
+			session::delete('save_form_url');
+			session::delete('save_form_used');
+			session::delete('save_form_data');
+
+		} else if ($used === false) {
+
+			session::set('save_form_used', true);
+
+			$next_url = session::get('save_form_url');
+			if (substr($next_url, 0, 1) == '/') {
+				redirect($next_url);
+			}
+
+		}
+	}
+
+//--------------------------------------------------
 // If this page requires a https connection
 
 	function https_required() {

@@ -234,7 +234,11 @@
 
 			public function value_print_get() {
 				if ($this->value === NULL) {
-					return $this->_ref_get($this->form->db_select_value_get($this->db_field_name), $this->db_field_key);
+					if ($this->form->saved_values_available()) {
+						return $this->form->saved_value_get($this->name);
+					} else {
+						return $this->_ref_get($this->form->db_select_value_get($this->db_field_name), $this->db_field_key);
+					}
 				}
 				return $this->value;
 			}
