@@ -297,11 +297,10 @@
 // session has expired while filling out a long form
 
 	function save_form_redirect($url) {
-		$current_saved_url = session::get('save_form_url');
-		if ($current_saved_url === NULL || $current_saved_url !== config::get('request.url')) { // User hit login form, panicked and clicked back?
-			session::set('save_form_url', config::get('request.url'));
-			session::set('save_form_used', false);
-			session::set('save_form_data', $_REQUEST);
+		session::set('save_form_url', config::get('request.url'));
+		session::set('save_form_used', false);
+		if (config::get('request.method') == 'POST') { // If user clicks back after seeing login form it might be as a GET request, so don't loose their POST data from before.
+			session::set('save_form_data', $_POST);
 		}
 		redirect($url);
 	}
@@ -319,7 +318,7 @@
 			session::set('save_form_used', true);
 
 			$next_url = session::get('save_form_url');
-			if (substr($next_url, 0, 1) == '/') {
+			if (substr($next_url, 0, 1) == '/') { // Shouldn't be an issue, but make sure we stay on this website
 				redirect($next_url);
 			}
 

@@ -395,7 +395,7 @@
 
 					$this->saved_values_used = false;
 
-					if (session::get('save_form_url') == config::get('request.url')) {
+					if (session::get('save_form_url') == config::get('request.url') && config::get('request.method') == 'GET' && $this->form_method == 'POST') {
 
 						$data = session::get('save_form_data');
 
