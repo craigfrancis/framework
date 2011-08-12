@@ -266,6 +266,7 @@
 		class layout_base extends base {
 
 			private $view_processed = false;
+			private $message = NULL;
 
 			public function __construct() {
 
@@ -333,6 +334,14 @@
 
 					}
 
+				//--------------------------------------------------
+				// Message
+
+					$this->message = cookie::get('message');
+					if ($this->message !== NULL) {
+						cookie::delete('message');
+					}
+
 			}
 
 			public function title() {
@@ -340,21 +349,16 @@
 			}
 
 			public function message() {
-				$message = cookie::get('message');
-				if ($message !== NULL) {
-					cookie::delete('message');
-				}
-				return $message;
+				return ;
 			}
 
 			public function message_html() {
-				$message = $this->message();
-				if ($message == '') {
+				if ($this->message == '') {
 					return '';
 				} else {
 					return '
 						<div id="page_message">
-							<p>' . html($message) . '</p>
+							<p>' . html($this->message) . '</p>
 						</div>';
 				}
 			}
