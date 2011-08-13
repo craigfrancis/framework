@@ -541,13 +541,17 @@
 
 									config::set('debug.show', false);
 
-									echo '
-										<div>
-											<h1>Error</h1>
-											<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>
-											<p>Missing reference to "' . html(str_replace('`', '', $required_clause)) . '" column on the table "' . html($table[1]) . '".</p>
-											<p style="padding: 0 0 0 1em;">' . $query_html . '</p>
-										</div>';
+									echo "\n";
+									echo '<div>' . "\n";
+									echo '	<h1>Error</h1>' . "\n";
+									echo '	<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>' . "\n";
+									echo '	<p>Missing reference to "' . html(str_replace('`', '', $required_clause)) . '" column on the table "' . html($table[1]) . '".</p>' . "\n";
+									echo '	<p style="padding: 0 0 0 1em;">' . "\n";
+									echo "\n\n";
+									echo $query_html . "\n";
+									echo "\n\n";
+									echo '	</p>' . "\n";
+									echo '</div>' . "\n";
 
 									exit();
 
