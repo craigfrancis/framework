@@ -66,8 +66,9 @@
 
 					if ($this->has_uploaded) {
 
-						if (preg_match('/\.([a-z0-9]+)$/i', $_FILES[$this->name]['name'], $matches)) {
-							$this->value_ext = strtolower($matches[1]);
+						$ext = pathinfo($_FILES[$this->name]['name'], PATHINFO_EXTENSION);
+						if ($ext) {
+							$this->value_ext = strtolower($ext);
 						}
 
 						$this->value_name = $_FILES[$this->name]['name'];

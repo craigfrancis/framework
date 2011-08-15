@@ -16,6 +16,8 @@
 
 			protected $text = array();
 			protected $auth_fields = array();
+			protected $detail_fields = array();
+			protected $save_values = array();
 			protected $user_id = 0;
 			protected $cookie_prefix = 'user_'; // Allow different user log-in mechanics, e.g. "admin_"
 			protected $identification_type = 'email';
@@ -399,7 +401,8 @@
 				$method = 'field_' . $field . '_get';
 
 				if (method_exists($this, $method)) {
-					return $this->$method($this->form_get(), $setup);
+					$this->detail_fields[$field] = $this->$method($this->form_get(), $setup);
+					return $this->detail_fields[$field];
 				} else {
 					exit_with_error('Missing the method "' . $method . '" on the user object.');
 				}
@@ -666,9 +669,9 @@
 					//--------------------------------------------------
 					// Update
 
-						$field_values = $this->form->data_db_get();
-						if (count($field_values) > 0) {
-							$this->values_set($field_values);
+						$values = array_merge($this->save_values, $this->form->data_db_get());
+						if (count($values) > 0) {
+							$this->values_set($values);
 						}
 
 						if (isset($this->auth_fields['verification_new']) && $this->auth_fields['verification_new']->value_get() != '') {
