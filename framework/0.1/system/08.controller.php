@@ -329,7 +329,7 @@
 			$note_html .= '&#xA0; &#xA0; $this->css_add(\'/path/to/file.css\');<br />';
 			$note_html .= '&#xA0; &#xA0; $this->head_add_html(\'&lt;html&gt;\');<br />';
 			$note_html .= '&#xA0; &#xA0; $this->page_ref_set(\'example_ref\');<br />';
-			$note_html .= '&#xA0; &#xA0; $this->show_error(\'page_not_found\');<br />';
+			$note_html .= '&#xA0; &#xA0; $this->error_show(\'page_not_found\');<br />';
 			$note_html .= '&#xA0; &#xA0; $this->message_set(\'The item has been updated.\');<br />';
 
 			debug_note_html($note_html);
