@@ -1,6 +1,6 @@
 <?php
 
-	class socket extends check {
+	class socket_base extends check {
 
 		private $values;
 		private $headers;

@@ -1,6 +1,6 @@
 <?php
 
-	class form_field_number extends form_field_text {
+	class form_field_number_base extends form_field_text {
 
 		//--------------------------------------------------
 		// Variables

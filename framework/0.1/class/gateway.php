@@ -10,7 +10,7 @@
 //--------------------------------------------------
 // Gateway class
 
-	class gateway extends base {
+	class gateway_base extends base {
 
 		//--------------------------------------------------
 		// Variables
@@ -419,7 +419,7 @@
 //--------------------------------------------------
 // API Class
 
-	class api extends base {
+	class api_base extends base {
 
 		//--------------------------------------------------
 		// Variables

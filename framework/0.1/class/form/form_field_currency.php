@@ -1,6 +1,6 @@
 <?php
 
-	class form_field_currency extends form_field_number {
+	class form_field_currency_base extends form_field_number {
 
 		//--------------------------------------------------
 		// Variables

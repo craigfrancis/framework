@@ -2,7 +2,7 @@
 
 	// TODO
 
-	class view_element extends check {
+	class view_element_base extends check {
 
 		private $config;
 

@@ -1,6 +1,6 @@
 <?php
 
-	class form_field_radios extends form_field_select {
+	class form_field_radios_base extends form_field_select {
 
 		//--------------------------------------------------
 		// Variables
@@ -63,22 +63,6 @@
 
 		//--------------------------------------------------
 		// HTML
-
-			public function html() {
-				$html = '
-					<div class="' . html($this->class_row_get()) . '">
-						<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>';
-				foreach ($this->option_keys as $id => $key) {
-					$html .= '
-						<span class="' . html($this->class_input_span) . ' ' . html('key_' . human_to_ref($key)) . ' ' . html('value_' . human_to_ref($this->option_values[$id])) . '">
-							' . $this->html_input_by_key($key) . '
-							' . $this->html_label_by_key($key) . '
-						</span>';
-				}
-				$html .= $this->info_get_html(6) . '
-					</div>' . "\n";
-				return $html;
-			}
 
 			public function html_label($label_html = NULL) {
 				if ($label_html === NULL) {

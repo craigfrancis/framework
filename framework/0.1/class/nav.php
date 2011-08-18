@@ -1,6 +1,6 @@
 <?php
 
-	class nav extends check {
+	class nav_base extends check {
 
 		private $current_group;
 		private $current_index;

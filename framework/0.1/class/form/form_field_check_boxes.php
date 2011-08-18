@@ -1,6 +1,6 @@
 <?php
 
-	class form_field_check_boxes extends form_field_base {
+	class form_field_check_boxes_base extends form_field {
 
 		//--------------------------------------------------
 		// Variables
@@ -242,22 +242,6 @@
 
 		//--------------------------------------------------
 		// HTML
-
-			public function html() {
-				$html = '
-					<div class="' . html($this->class_row_get()) . '">
-						<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>';
-				foreach ($this->option_keys as $key) {
-					$html .= '
-						<span class="' . html($this->class_input_span) . '">
-							' . $this->html_input_by_key($key) . '
-							' . $this->html_label_by_key($key) . '
-						</span>';
-				}
-				$html .= $this->info_get_html(6) . '
-					</div>' . "\n";
-				return $html;
-			}
 
 			public function html_label($label_html = NULL) {
 				if ($label_html === NULL) {

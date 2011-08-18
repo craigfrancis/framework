@@ -3,7 +3,7 @@
 	config::set('session.id', NULL);
 	config::set_default('session.name', 'session_name');
 
-	class session extends check {
+	class session_base extends check {
 
 		public static function set($variable, $value = NULL) {
 

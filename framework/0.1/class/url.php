@@ -3,7 +3,7 @@
 	// config::get('url.default_format') - absolute (default) / full (includes domain) / relative (not implemented)
 	// config::get('url.prefix') - e.g. '/website' will be prefixed onto any absolute urls, so url('/contact/') == '/website/contact/'
 
-	class url extends check {
+	class url_base extends check {
 
 		//--------------------------------------------------
 		// Setup
@@ -11,7 +11,7 @@
 			private $data = NULL;
 			private $parameters = array();
 			private $format = NULL;
-			private $cache_base = NULL;
+			private $cache = NULL;
 
 			public function __construct($url = NULL, $parameters = NULL, $format = NULL) {
 
@@ -41,7 +41,7 @@
 
 			public function format($format) {
 				$this->format = $format;
-				$this->cache_base = NULL;
+				$this->cache = NULL;
 			}
 
 			public function parse($url, $replace_parameters = true) {
@@ -70,7 +70,7 @@
 
 				}
 
-				$this->cache_base = NULL;
+				$this->cache = NULL;
 
 			}
 
@@ -102,11 +102,11 @@
 				// can be cached, as most of the time, only the
 				// parameters change on each call.
 
-					if ($this->cache_base === NULL) {
-						$this->cache_base = $this->_base_get();
+					if ($this->cache === NULL) {
+						$this->cache = $this->_default_parts_get();
 					}
 
-					$output = $this->cache_base;
+					$output = $this->cache;
 
 				//--------------------------------------------------
 				// Query string
@@ -141,7 +141,7 @@
 
 			}
 
-			private function _base_get() {
+			private function _default_parts_get() {
 
 				//--------------------------------------------------
 				// Current path

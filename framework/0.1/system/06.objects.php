@@ -150,7 +150,7 @@
 			public function after() {
 			}
 
-			public function render_error($error) {
+			public function error_show($error) {
 
 				$view = new view();
 				$view->render_error($error);

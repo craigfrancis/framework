@@ -1,6 +1,6 @@
 <?php
 
-	class email extends check {
+	class email_base extends check {
 
 		//--------------------------------------------------
 		// Variables

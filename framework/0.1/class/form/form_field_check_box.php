@@ -1,13 +1,12 @@
 <?php
 
-	class form_field_check_box extends form_field_text {
+	class form_field_check_box_base extends form_field_text {
 
 		//--------------------------------------------------
 		// Variables
 
 			protected $text_value_true;
 			protected $text_value_false;
-			protected $input_first;
 
 		//--------------------------------------------------
 		// Setup
@@ -31,7 +30,6 @@
 
 					$this->max_length = -1; // Bypass the _post_validation on the text field (not used)
 					$this->type = 'check';
-					$this->input_first = false;
 
 					$this->text_value_true = NULL;
 					$this->text_value_false = NULL;
@@ -131,23 +129,6 @@
 
 				return $this->_html_input($attributes);
 
-			}
-
-			public function html() {
-				if ($this->input_first) {
-					$html = '
-					<div class="' . html($this->class_row_get()) . ' input_first">
-						<span class="' . html($this->class_input_span) . '">' . $this->html_input() . '</span>
-						<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>' . $this->info_get_html(6) . '
-					</div>' . "\n";
-				} else {
-					$html = '
-					<div class="' . html($this->class_row_get()) . '">
-						<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>
-						<span class="' . html($this->class_input_span) . '">' . $this->html_input() . '</span>' . $this->info_get_html(6) . '
-					</div>' . "\n";
-				}
-				return $html;
 			}
 
 	}

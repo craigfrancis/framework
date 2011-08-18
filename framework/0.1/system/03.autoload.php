@@ -12,29 +12,43 @@
 		//--------------------------------------------------
 		// Paths
 
-			if (substr($class_name, 0, 10) == 'controller') {
+			if (substr($class_name, 0, 11) == 'controller_') {
 
-				$controller_name = substr($class_name, 11);
+				$class_file_name = substr($class_name, 11);
 
 				$paths = array(
-						APP_ROOT . '/support/controller/' . $controller_name . '.php',
-						FRAMEWORK_ROOT . '/library/controller/' . $controller_name . '.php',
+						APP_ROOT . '/support/controller/' . $class_file_name . '.php',
+						FRAMEWORK_ROOT . '/library/controller/' . $class_file_name . '.php',
 					);
 
 			} else {
 
-				if (($pos = strpos($class_name, '_')) !== false) {
-					$folder = substr($class_name, 0, $pos);
+				$base_mode = substr($class_name, -5) == '_base';
+
+				if ($base_mode) {
+
+					$class_file_name = substr($class_name, 0, -5); // Drop base suffix - no file name should use it
 				} else {
-					$folder = $class_name;
+					$class_file_name = $class_name;
 				}
 
-				$paths = array(
-						APP_ROOT . '/support/class/' . $class_name . '.php',
-						APP_ROOT . '/support/class/' . $folder . '/' . $class_name . '.php',
-						FRAMEWORK_ROOT . '/class/' . $class_name . '.php',
-						FRAMEWORK_ROOT . '/class/' . $folder . '/' . $class_name . '.php',
-					);
+				if (($pos = strpos($class_file_name, '_')) !== false) {
+					$folder = substr($class_file_name, 0, $pos);
+				} else {
+					$folder = $class_file_name;
+				}
+
+				if ($base_mode) {
+					$paths = array();
+				} else {
+					$paths = array(
+							APP_ROOT . '/support/class/' . $class_file_name . '.php',
+							APP_ROOT . '/support/class/' . $folder . '/' . $class_file_name . '.php',
+						);
+				}
+
+				$paths[] = FRAMEWORK_ROOT . '/class/' . $class_file_name . '.php';
+				$paths[] = FRAMEWORK_ROOT . '/class/' . $folder . '/' . $class_file_name . '.php';
 
 			}
 
@@ -43,9 +57,26 @@
 
 			foreach ($paths as $path) {
 				if (is_file($path)) {
+
 					require_once($path);
-					return true;
+
+					if (class_exists($class_name)) {
+						return true;
+					}
+
 				}
+			}
+
+		//--------------------------------------------------
+		// Base support
+
+			if (!class_exists($class_name) && class_exists($class_name . '_base')) {
+				if (function_exists('class_alias')) {
+					class_alias($class_name, $class_name . '_base');
+				} else {
+					eval('class ' . $class_name . ' extends ' . $class_name . '_base {}');
+				}
+				return true;
 			}
 
 		//--------------------------------------------------

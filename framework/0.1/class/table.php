@@ -1,6 +1,6 @@
 <?php
 
-	class table extends check {
+	class table_base extends check {
 
 		private $headings;
 		private $heading_row;
@@ -658,7 +658,7 @@
 
 	}
 
-	class table_row extends check {
+	class table_row_base extends check {
 
 		public $data;
 

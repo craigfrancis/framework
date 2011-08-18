@@ -1,6 +1,6 @@
 <?php
 
-	class form_field_select extends form_field_text {
+	class form_field_select_base extends form_field_text {
 
 		//--------------------------------------------------
 		// Variables
@@ -272,11 +272,11 @@
 				$value = $this->value_print_get();
 
 				$html = '
-							<select name="' . html($this->name) . '" id="' . html($this->id) . '"' . ($this->select_size <= 1 ? '' : ' size="' . intval($this->select_size) . '"') . ($this->class_input === NULL ? '' : ' class="' . html($this->class_input) . '"') . ($this->autofocus ? ' autofocus="autofocus"' : '') . '>';
+									<select name="' . html($this->name) . '" id="' . html($this->id) . '"' . ($this->select_size <= 1 ? '' : ' size="' . intval($this->select_size) . '"') . ($this->class_input === NULL ? '' : ' class="' . html($this->class_input) . '"') . ($this->autofocus ? ' autofocus="autofocus"' : '') . '>';
 
 				if ($this->label_option !== NULL) {
 					$html .= '
-								<option value="' . ($this->re_index_keys ? '0' : '') . '">' . ($this->label_option === '' ? '&#xA0;' : html($this->label_option)) . '</option>';
+										<option value="' . ($this->re_index_keys ? '0' : '') . '">' . ($this->label_option === '' ? '&#xA0;' : html($this->label_option)) . '</option>';
 				}
 
 				if ($this->option_groups === NULL) {
@@ -294,7 +294,7 @@
 						}
 
 						$html .= '
-								<option value="' . html($key) . '"' . ($key == $value ? ' selected="selected"' : '') . '>' . ($option === '' ? '&#xA0;' : html($option)) . '</option>';
+										<option value="' . html($key) . '"' . ($key == $value ? ' selected="selected"' : '') . '>' . ($option === '' ? '&#xA0;' : html($option)) . '</option>';
 
 					}
 
@@ -303,7 +303,7 @@
 					foreach (array_unique($this->option_groups) as $opt_group) {
 
 						$html .= '
-								<optgroup label="' . html($opt_group) . '">';
+										<optgroup label="' . html($opt_group) . '">';
 
 						foreach (array_keys($this->option_groups, $opt_group) as $key) {
 
@@ -325,19 +325,19 @@
 							}
 
 							$html .= '
-									<option value="' . html($value_key) . '"' . ($value_key == $value ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
+											<option value="' . html($value_key) . '"' . ($value_key == $value ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 						}
 
 						$html .= '
-								</optgroup>';
+										</optgroup>';
 
 					}
 
 				}
 
 				$html .= '
-							</select>' . "\n\t\t\t\t\t";
+									</select>' . "\n\t\t\t\t\t\t\t\t";
 
 				return $html;
 

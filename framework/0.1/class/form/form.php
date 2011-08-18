@@ -1,6 +1,6 @@
 <?php
 
-	class form extends check {
+	class form_base extends check {
 
 		//--------------------------------------------------
 		// Variables
@@ -685,7 +685,7 @@
 				$this->field_autofocus = $autofocus;
 			}
 
-			public function _field_add($field_obj) { // Public for form_field_base to call
+			public function _field_add($field_obj) { // Public for form_field to call
 				$field_id = $this->field_count++;
 				$this->fields[$field_id] = $field_obj;
 				return $field_id;

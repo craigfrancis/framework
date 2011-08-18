@@ -15,6 +15,7 @@
 			protected $label_html;
 			protected $label_suffix_html;
 			protected $info_html;
+			protected $input_first;
 			protected $required;
 			protected $required_mark_html;
 			protected $required_mark_position;
@@ -63,11 +64,11 @@
 						$name = human_to_ref($label);
 					}
 
-					$name_base = $name;
+					$name_original = $name;
 
 					$k = 1;
 					while (config::array_search('form.fields', $name) !== false) {
-						$name = $name_base . '_' . ++$k;
+						$name = $name_original . '_' . ++$k;
 					}
 
 					config::array_push('form.fields', $name);
@@ -85,6 +86,7 @@
 					$this->label_html = $label_html;
 					$this->label_suffix_html = $form->label_suffix_get_html();
 					$this->info_html = '';
+					$this->input_first = false;
 					$this->required = false;
 					$this->required_mark_html = NULL;
 					$this->required_mark_position = NULL;
@@ -348,26 +350,26 @@
 
 			protected function _html_input($attributes_custom) {
 
-				$attributes_base = array(
+				$attributes_default = array(
 						'type' => 'text',
 						'name' => $this->name,
 						'id' => $this->id,
 					);
 
 				if ($this->required) {
-					$attributes_base['required'] = 'required';
+					$attributes_default['required'] = 'required';
 				}
 
 				if ($this->class_input !== NULL) {
-					$attributes_base['class'] = $this->class_input;
+					$attributes_default['class'] = $this->class_input;
 				}
 
 				if ($this->autofocus) {
-					$attributes_base['autofocus'] = 'autofocus';
+					$attributes_default['autofocus'] = 'autofocus';
 				}
 
 				$html = '<input';
-				foreach (array_merge($attributes_base, $attributes_custom) as $name => $value) {
+				foreach (array_merge($attributes_default, $attributes_custom) as $name => $value) {
 					if ($value !== NULL) {
 						$html .= ' ' . $name . '="' . html($value) . '"';
 					}
@@ -381,11 +383,35 @@
 			}
 
 			public function html() {
-				return '
-					<div class="' . html($this->class_row_get()) . '">
-						<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>
-						<span class="' . html($this->class_input_span) . '">' . $this->html_input() . '</span>' . $this->info_get_html(6) . '
-					</div>' . "\n";
+				if (method_exists($this, 'html_input_by_key')) {
+					$html = '
+							<div class="' . html($this->class_row_get()) . '">
+								<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>';
+					foreach ($this->option_keys as $id => $key) {
+						$html .= '
+								<span class="' . html($this->class_input_span) . ' ' . html('key_' . human_to_ref($key)) . ' ' . html('value_' . human_to_ref($this->option_values[$id])) . '">
+									' . $this->html_input_by_key($key) . '
+									' . $this->html_label_by_key($key) . '
+								</span>';
+					}
+					$html .= $this->info_get_html(8) . '
+							</div>' . "\n";
+				} else {
+					if ($this->input_first) {
+						$html = '
+							<div class="' . html($this->class_row_get()) . ' input_first">
+								<span class="' . html($this->class_input_span) . '">' . $this->html_input() . '</span>
+								<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>' . $this->info_get_html(8) . '
+							</div>' . "\n";
+					} else {
+						$html = '
+							<div class="' . html($this->class_row_get()) . '">
+								<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>
+								<span class="' . html($this->class_input_span) . '">' . $this->html_input() . '</span>' . $this->info_get_html(8) . '
+							</div>' . "\n";
+					}
+				}
+				return $html;
 			}
 
 			public function __toString() { // (PHP 5.2)

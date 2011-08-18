@@ -1,6 +1,6 @@
 <?php
 
-	class image extends check {
+	class image_base extends check {
 
 		// ...
 

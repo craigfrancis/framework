@@ -30,7 +30,7 @@
 // End of example setup
 ***************************************************/
 
-	class nearest extends check {
+	class nearest_base extends check {
 
 		//--------------------------------------------------
 		// Variables

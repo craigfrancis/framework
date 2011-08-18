@@ -1,6 +1,6 @@
 <?php
 
-	class form_field_date extends form_field_base {
+	class form_field_date_base extends form_field {
 
 		//--------------------------------------------------
 		// Variables
@@ -273,7 +273,8 @@
 				return '<label for="' . html($this->id) . '_D">' . $day_html . '</label>' . $separator_html . '<label for="' . html($this->id) . '_M">' . $month_html . '</label>' . $separator_html . '<label for="' . html($this->id) . '_Y">' . $year_html . '</label>';
 			}
 
-			public function html_input($part = NULL) {
+			public function html_input_part($part) {
+
 				if ($part == 'D' || $part == 'M' || $part == 'Y') {
 
 					$value = $this->value_print_get();
@@ -288,20 +289,18 @@
 							));
 
 				} else {
+
 					return 'The date part must be set to "D", "M" or "Y"';
+
 				}
+
 			}
 
-			public function html() {
+			public function html_input() {
 				return '
-					<div class="' . html($this->class_row_get()) . '">
-						<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>
-						<span class="' . html($this->class_input_span) . '">
-							' . $this->html_input('D') . '
-							' . $this->html_input('M') . '
-							' . $this->html_input('Y') . '
-						</span>' . $this->info_get_html(6) . '
-					</div>' . "\n";
+									' . $this->html_input_part('D') . '
+									' . $this->html_input_part('M') . '
+									' . $this->html_input_part('Y');
 			}
 
 	}

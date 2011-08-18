@@ -1,6 +1,6 @@
 <?php
 
-	class gpg extends check {
+	class gpg_base extends check {
 
 		//--------------------------------------------------
 		// Variables

@@ -243,11 +243,11 @@
 //--------------------------------------------------
 // Debug notes
 
-	function debug_note($note) {
-		debug_note_html(nl2br(str_replace(' ', '&#xA0;', html(trim(print_r($note, true))))));
+	function debug_note($note, $colour = NULL) {
+		debug_note_html(nl2br(str_replace(' ', '&#xA0;', html(trim(print_r($note, true))))), $colour);
 	}
 
-	function debug_note_html($note_html) {
+	function debug_note_html($note_html, $colour = NULL) {
 
 		//--------------------------------------------------
 		// Suppression
@@ -295,8 +295,16 @@
 		//--------------------------------------------------
 		// Note
 
+			if ($colour !== NULL) {
+				if (substr($colour, 0, 1) != '#') {
+					$colour = '#' . $colour;
+				}
+			} else {
+				$colour = ($system_call ? '#CCC' : '#CFC');
+			}
+
 			config::array_push('debug.notes', array(
-					'colour' => ($system_call ? '#CCC' : '#CFC'),
+					'colour' => $colour,
 					'html' => $note_html,
 					'time' => $time,
 				));
@@ -444,7 +452,7 @@
 							<tr>';
 						foreach ($row as $key => $value) {
 							$explain_html .= '
-								<td style="border-width: 1px 0 0 1px; border-style: solid; border-color: #000; padding: 0.2em;">' . ($key == 'type' ? '<a href="http://dev.mysql.com/doc/refman/5.0/en/explain.html#id2772158" style="color: #000; background: #CCF; text-decoration: none;">' : '') . ($value == '' ? '&#xA0;' : html($value)) . ($key == 'type' ? '</a>' : '') . '</td>';
+								<td style="border-width: 1px 0 0 1px; border-style: solid; border-color: #000; padding: 0.2em;">' . ($key == 'type' ? '<a href="http://dev.mysql.com/doc/refman/5.0/en/explain.html#id2772158" style="color: #000; font-size: 12px; background: #CCF; text-decoration: none;">' : '') . ($value == '' ? '&#xA0;' : html($value)) . ($key == 'type' ? '</a>' : '') . '</td>';
 						}
 						$explain_html .= '
 							</tr>';
@@ -568,11 +576,11 @@
 				if (count($tables) > 0) {
 
 					$text_html .= '
-						<ul style="margin: 0; padding: 0; margin: 1em 0 1em 2em; background: #CCF; color: #000;">';
+						<ul style="margin: 0; padding: 0; margin: 1em 0 1em 2em; background: #CCF; color: #000; font-size: 12px;">';
 
 					foreach ($tables as $table) {
 						$text_html .= '
-							<li style="padding: 0; margin: 0; background: #CCF; color: #000; text-align: left;">' . preg_replace('/: (.*)/', ': <strong>$1</strong>', html($table)) . '</li>';
+							<li style="padding: 0; margin: 0; background: #CCF; color: #000; font-size: 12px; text-align: left;">' . preg_replace('/: (.*)/', ': <strong>$1</strong>', html($table)) . '</li>';
 					}
 
 					$text_html .= '
@@ -650,7 +658,7 @@
 		// Default CSS
 
 			$css_text = 'font-size: 12px; font-family: verdana; font-weight: normal; text-align: left; text-decoration: none;';
-			$css_block = 'margin: 5px 0; padding: 5px; color: #000; border: 1px solid #000; clear: both;';
+			$css_block = 'margin: 5px 0; padding: 5px; color: #000; font-size: 12px; border: 1px solid #000; clear: both;';
 			$css_para = 'text-align: left; padding: 0; margin: 0; ' . $css_text;
 
 		//--------------------------------------------------

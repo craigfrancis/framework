@@ -1,6 +1,6 @@
 <?php
 
-	class form_field_password extends form_field_text {
+	class form_field_password_base extends form_field_text {
 
 		//--------------------------------------------------
 		// Setup

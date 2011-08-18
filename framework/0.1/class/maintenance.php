@@ -10,7 +10,7 @@
 //--------------------------------------------------
 // Maintenance class
 
-	class maintenance extends base {
+	class maintenance_base extends base {
 
 		//--------------------------------------------------
 		// Variables
@@ -298,7 +298,7 @@
 //--------------------------------------------------
 // Action class
 
-	class task extends base {
+	class task_base extends base {
 
 		//--------------------------------------------------
 		// Variables

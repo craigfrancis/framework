@@ -4,7 +4,7 @@
 // Based on code from Kohana cookie helper
 //--------------------------------------------------
 
-	class cookie extends check {
+	class cookie_base extends check {
 
 		public static $salt = ROOT;
 
@@ -26,7 +26,7 @@
 			}
 
 			if ($value !== NULL) {
-				$value = cookie::salt($variable, $value) . '~' . $value; // Add the salt to the cookie value
+				$value = self::salt($variable, $value) . '~' . $value; // Add the salt to the cookie value
 			}
 
 			if ($variable != 'cookie_check') {
@@ -57,10 +57,10 @@
 
 				list($hash, $value) = explode('~', $cookie, 2); // Separate the salt and the value
 
-				if (cookie::salt($variable, $value) === $hash) {
+				if (self::salt($variable, $value) === $hash) {
 					return $value; // Cookie signature is valid
 				} else {
-					cookie::delete($variable); // The cookie signature is invalid, delete it
+					self::delete($variable); // The cookie signature is invalid, delete it
 				}
 
 			}
@@ -71,21 +71,21 @@
 
 		public static function delete($variable) {
 			unset($_COOKIE[$variable]);
-			return cookie::set($variable, NULL, '-24 hours');
+			return self::set($variable, NULL, '-24 hours');
 		}
 
 		public static function salt($variable, $value) {
 			// FirePHP edits HTTP_USER_AGENT
-			return sha1($variable . '-' . $value . '-' . cookie::$salt);
+			return sha1($variable . '-' . $value . '-' . self::$salt);
 		}
 
 		public static function supported() {
-			return (cookie::get('cookie_check') == 'true');
+			return (self::get('cookie_check') == 'true');
 		}
 
 		public static function require_support() {
 
-			if (!cookie::supported()) {
+			if (!self::supported()) {
 
 				config::set('output.error', true);
 
@@ -94,6 +94,8 @@
 
 				$layout = new layout();
 				$layout->render();
+
+				exit();
 
 			}
 
@@ -109,6 +111,6 @@
 
 	}
 
-	cookie::set('cookie_check', 'true', '+80 days');
+	cookie_base::set('cookie_check', 'true', '+80 days');
 
 ?>
