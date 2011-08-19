@@ -4,7 +4,7 @@
 // Based on code from Kohana cookie helper
 //--------------------------------------------------
 
-	class cookie_base extends check {
+	class cookie extends check {
 
 		public static $salt = ROOT;
 
@@ -29,7 +29,11 @@
 				$value = self::salt($variable, $value) . '~' . $value; // Add the salt to the cookie value
 			}
 
-			if ($variable != 'cookie_check') {
+			if ($variable == 'cookie_check') {
+				if (isset($_COOKIE[$variable]) && headers_sent()) { // Rare exception where headers have already been sent, and as it's only cookie_check we can ignore.
+					return true;
+				}
+			} else {
 				$_COOKIE[$variable] = $value;
 			}
 
@@ -111,6 +115,6 @@
 
 	}
 
-	cookie_base::set('cookie_check', 'true', '+80 days');
+	cookie::set('cookie_check', 'true', '+80 days');
 
 ?>

@@ -198,7 +198,7 @@
 		config::set_default('output.title_suffix', '');
 		config::set_default('output.title_divide', ' | ');
 		config::set_default('output.title_error', 'An error has occurred');
-		config::set_default('output.css_version', 0);
+		config::set_default('output.css_version', NULL); // Set to 0 if not required
 		config::set_default('output.page_ref_mode', 'route');
 		config::set_default('output.block_browsers', array(
 				'/MSIE [1-5]\./',

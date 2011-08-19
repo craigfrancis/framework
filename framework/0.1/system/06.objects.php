@@ -401,6 +401,8 @@
 				//--------------------------------------------------
 				// Files
 
+					$css_version = 0;
+
 					foreach ($css_types as $css_type_name => $css_type_info) {
 
 						$css_types[$css_type_name]['files'] = array();
@@ -409,10 +411,19 @@
 						$file = '/css/global/' . $css_type_name . '.css';
 
 						if (is_file(ASSET_ROOT . $file)) {
+
 							$css_types[$css_type_name]['files'][] = ASSET_URL . $file;
 							$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - found';
+
+							$file_modified = filemtime(ASSET_ROOT . $file);
+							if ($file_modified > $css_version) {
+								$css_version = $file_modified;
+							}
+
 						} else {
+
 							$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - absent';
+
 						}
 
 					}
@@ -427,16 +438,27 @@
 								$file = $build_up_address . $css_type_name . '.css';
 
 								if (is_file(ASSET_ROOT . $file)) {
+
 									$css_types[$css_type_name]['files'][] = ASSET_URL . $file;
 									$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - found';
+
+									$file_modified = filemtime(ASSET_ROOT . $file);
+									if ($file_modified > $css_version) {
+										$css_version = $file_modified;
+									}
+
 								} else {
+
 									$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - absent';
+
 								}
 
 							}
 
 						}
 					}
+
+					config::set_default('output.css_version', $css_version);
 
 				//--------------------------------------------------
 				// Debug

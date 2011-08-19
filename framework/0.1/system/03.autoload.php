@@ -12,6 +12,8 @@
 		//--------------------------------------------------
 		// Paths
 
+			$base_mode = false;
+
 			if (substr($class_name, 0, 11) == 'controller_') {
 
 				$class_file_name = substr($class_name, 11);
@@ -26,7 +28,6 @@
 				$base_mode = substr($class_name, -5) == '_base';
 
 				if ($base_mode) {
-
 					$class_file_name = substr($class_name, 0, -5); // Drop base suffix - no file name should use it
 				} else {
 					$class_file_name = $class_name;
@@ -70,7 +71,7 @@
 		//--------------------------------------------------
 		// Base support
 
-			if (!class_exists($class_name) && class_exists($class_name . '_base')) {
+			if (!$base_mode && !class_exists($class_name) && class_exists($class_name . '_base')) {
 				if (function_exists('class_alias')) {
 					class_alias($class_name, $class_name . '_base');
 				} else {

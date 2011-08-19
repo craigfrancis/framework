@@ -103,7 +103,7 @@
 			$called_from_stack = debug_backtrace();
 
 			foreach ($called_from_stack as $called_from) {
-				if (substr($called_from['file'],0, strlen(FRAMEWORK_ROOT)) != FRAMEWORK_ROOT) {
+				if (isset($called_from['file']) && substr($called_from['file'],0, strlen(FRAMEWORK_ROOT)) != FRAMEWORK_ROOT) {
 
 					if ($hidden_info === NULL) {
 						$hidden_info = '';
