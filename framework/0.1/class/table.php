@@ -2,6 +2,7 @@
 
 	class table_base extends check {
 
+		private $table_id;
 		private $headings;
 		private $heading_row;
 		private $footers;
@@ -60,6 +61,13 @@
 				$this->sort_inactive_suffix_html = '';
 
 			//--------------------------------------------------
+			// Table ID
+
+				$this->table_id = config::get('table.count', 1);
+
+				config::set('table.count', ($this->table_id + 1));
+
+			//--------------------------------------------------
 			// Site config
 
 				$site_config = config::get_all('table');
@@ -68,7 +76,7 @@
 					if ($name == 'active_asc_suffix_html') $this->active_asc_suffix_set_html($value);
 					else if ($name == 'active_desc_suffix_html') $this->active_desc_suffix_set_html($value);
 					else if ($name == 'inactive_suffix_html') $this->inactive_suffix_set_html($value);
-					else exit_with_error('Unrecognised table configuration "' . $name . '"');
+					else if ($name != 'count') exit_with_error('Unrecognised table configuration "' . $name . '"');
 				}
 
 		}
@@ -81,11 +89,25 @@
 			$this->class_name = $class_name;
 		}
 
-		public function sort_name_set($name) {
+		public function sort_name_set($name = NULL) {
+
 			$this->sort_enabled = true;
+
+			if ($name == NULL) {
+				$name = 'table' . $this->table_id;
+			}
+
 			$this->sort_name = $name;
-			$this->sort_field = request($this->sort_name . '_name');
-			$this->sort_order = request($this->sort_name . '_order');
+
+			$sort = request($this->sort_name . '_sort');
+			if (($pos = strpos($sort, '-')) !== false) {
+				$order = substr($sort, 0, $pos);
+				if ($order == 'asc' || $order == 'desc') {
+					$this->sort_field = substr($sort, ($pos + 1));
+					$this->sort_order = $order;
+				}
+			}
+
 		}
 
 		public function default_sort_set($field, $order = 'asc') {
@@ -99,7 +121,7 @@
 			$this->sort_enabled = true;
 
 			if ($this->sort_name === NULL) {
-				$this->sort_name_set('sort');
+				$this->sort_name_set();
 			}
 
 			if (in_array($this->sort_field, $this->sort_fields)) { // An unrecognised value supplied by GPC
@@ -127,7 +149,7 @@
 			$this->sort_enabled = true;
 
 			if ($this->sort_name === NULL) {
-				$this->sort_name_set('sort');
+				$this->sort_name_set();
 			}
 
 			if ($this->sort_order == 'desc' || $this->sort_order == 'asc') {
@@ -161,14 +183,10 @@
 			$this->sort_enabled = true;
 
 			if ($this->sort_name === NULL) {
-				$this->sort_name_set('sort');
+				$this->sort_name_set();
 			}
 
-			$url = url($this->current_url);
-			$url->param($this->sort_name . '_name', $field);
-			$url->param($this->sort_name . '_order', $order);
-
-			return $url->get();
+			return url($this->current_url, array($this->sort_name . '_sort' => $order . '-' . $field));
 
 		}
 
@@ -297,7 +315,7 @@
 			// Current sort - inc support for defaults
 
 				if ($this->sort_enabled && $this->sort_name === NULL) {
-					$this->sort_name_set('sort');
+					$this->sort_name_set();
 				}
 
 				$current_sort = $this->sort_field_get();
@@ -306,7 +324,6 @@
 			//--------------------------------------------------
 			// Headings
 
-				$col_sorted = array();
 				$col_class = array();
 				$col_count = 0;
 
@@ -323,17 +340,36 @@
 
 					foreach ($c_heading_row as $c_heading) {
 
-						if (!isset($col_sorted[$col_id])) {
-							$col_sorted[$col_id] = false;
+						if (!isset($col_class[$col_id])) {
 							$col_class[$col_id] = '';
-						}
-
-						if ($this->data_inherit_heading_class && $c_heading['class_name'] != '') {
-							$col_class[$col_id] .= ' ' . $c_heading['class_name'];
 						}
 
 						if ($c_heading['html'] == '') {
 							$c_heading['html'] = '&#xA0;';
+						}
+
+						if ($this->sort_name === NULL || $c_heading['sort_name'] === NULL) {
+
+							$heading_html = $c_heading['html'];
+
+						} else if ($current_sort == $c_heading['sort_name']) {
+
+							$url = $this->sort_get_url($c_heading['sort_name'], ($sort_asc ? 'desc' : 'asc'));
+
+							$heading_html = '<a href="' . html($url) . '">' . ($sort_asc ? $this->sort_active_asc_prefix_html : $this->sort_active_desc_prefix_html) . $c_heading['html'] . ($sort_asc ? $this->sort_active_asc_suffix_html : $this->sort_active_desc_suffix_html) . '</a>';
+
+							$c_heading['class_name'] .= ' sorted ' . ($sort_asc ? 'sorted_asc' : 'sorted_desc');
+
+						} else {
+
+							$url = $this->sort_get_url($c_heading['sort_name'], 'asc');
+
+							$heading_html = '<a href="' . html($url) . '">' . $this->sort_inactive_prefix_html . $c_heading['html'] . $this->sort_inactive_suffix_html . '</a>';
+
+						}
+
+						if ($this->data_inherit_heading_class && $c_heading['class_name'] != '') {
+							$col_class[$col_id] .= ' ' . $c_heading['class_name'];
 						}
 
 						$attributes_html = ' scope="col" class="' . html($c_heading['class_name']) . '"';
@@ -341,28 +377,8 @@
 							$attributes_html .= ' colspan="' . html($c_heading['colspan']) . '"';
 						}
 
-						if ($this->sort_name === NULL || $c_heading['sort_name'] === NULL) {
-
-							$output_html .= '
-								<th' . $attributes_html . '>' . $c_heading['html'] . '</th>';
-
-						} else if ($current_sort == $c_heading['sort_name']) {
-
-							$url = $this->sort_get_url($c_heading['sort_name'], ($sort_asc ? 'desc' : 'asc'));
-
-							$output_html .= '
-								<th' . $attributes_html . '><a href="' . html($url) . '">' . ($sort_asc ? $this->sort_active_asc_prefix_html : $this->sort_active_desc_prefix_html) . $c_heading['html'] . ($sort_asc ? $this->sort_active_asc_suffix_html : $this->sort_active_desc_suffix_html) . '</a></th>';
-
-							$col_sorted[$col_id] = true;
-
-						} else {
-
-							$url = $this->sort_get_url($c_heading['sort_name'], 'asc');
-
-							$output_html .= '
-								<th' . $attributes_html . '><a href="' . html($url) . '">' . $this->sort_inactive_prefix_html . $c_heading['html'] . $this->sort_inactive_suffix_html . '</a></th>';
-
-						}
+						$output_html .= '
+								<th' . $attributes_html . '>' . $heading_html . '</th>';
 
 						$col_id += $c_heading['colspan'];
 
@@ -405,10 +421,6 @@
 
 							if ($this->footer_inherit_heading_class && isset($col_class[$col_id]) && $col_class[$col_id] != '') {
 								$class .= ' ' . $col_class[$col_id];
-							}
-
-							if ($this->footer_inherit_heading_class && isset($col_sorted[$col_id]) && $col_sorted[$col_id]) {
-								$class .= ' sorted';
 							}
 
 							$attributes_html = ' class="' . html(trim($class)) . '"';
@@ -478,10 +490,6 @@
 
 							if (isset($col_class[$col_id]) && $col_class[$col_id] != '') {
 								$class .= ' ' . $col_class[$col_id];
-							}
-
-							if (isset($col_sorted[$col_id]) && $col_sorted[$col_id]) {
-								$class .= ' sorted';
 							}
 
 						//--------------------------------------------------
