@@ -12,9 +12,9 @@
 		//--------------------------------------------------
 		// Paths
 
-			$base_mode = false;
-
 			if (substr($class_name, 0, 11) == 'controller_') {
+
+				$base_mode = true;
 
 				$class_file_name = substr($class_name, 11);
 

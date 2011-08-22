@@ -21,7 +21,7 @@
 
 		private $path;
 
-		public function nav() {
+		public function __construct() {
 
 			//--------------------------------------------------
 			// Holder

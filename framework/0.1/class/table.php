@@ -14,6 +14,7 @@
 		private $data_inherit_heading_class;
 		private $footer_inherit_heading_class;
 
+		private $sort_enabled;
 		private $sort_name;
 		private $sort_field;
 		private $sort_default_field;
@@ -44,6 +45,7 @@
 				$this->data_inherit_heading_class = true;
 				$this->footer_inherit_heading_class = false;
 
+				$this->sort_enabled = false;
 				$this->sort_name = NULL;
 				$this->sort_field = NULL;
 				$this->sort_default_field = NULL;
@@ -57,6 +59,18 @@
 				$this->sort_inactive_prefix_html = '';
 				$this->sort_inactive_suffix_html = '';
 
+			//--------------------------------------------------
+			// Site config
+
+				$site_config = config::get_all('table');
+
+				foreach ($site_config as $name => $value) {
+					if ($name == 'active_asc_suffix_html') $this->active_asc_suffix_set_html($value);
+					else if ($name == 'active_desc_suffix_html') $this->active_desc_suffix_set_html($value);
+					else if ($name == 'inactive_suffix_html') $this->inactive_suffix_set_html($value);
+					else exit_with_error('Unrecognised table configuration "' . $name . '"');
+				}
+
 		}
 
 		public function current_url_set($url) {
@@ -68,32 +82,60 @@
 		}
 
 		public function sort_name_set($name) {
+			$this->sort_enabled = true;
 			$this->sort_name = $name;
 			$this->sort_field = request($this->sort_name . '_name');
 			$this->sort_order = request($this->sort_name . '_order');
 		}
 
 		public function default_sort_set($field, $order = 'asc') {
+			$this->sort_enabled = true;
 			$this->sort_default_field = $field;
 			$this->sort_default_order = $order;
 		}
 
 		public function sort_field_get() {
-			if (in_array($this->sort_field, $this->sort_fields)) {
-				return $this->sort_field;
-			} else {
-				return $this->sort_default_field; // An unrecognised value supplied by GPC
+
+			$this->sort_enabled = true;
+
+			if ($this->sort_name === NULL) {
+				$this->sort_name_set('sort');
 			}
+
+			if (in_array($this->sort_field, $this->sort_fields)) { // An unrecognised value supplied by GPC
+
+				return $this->sort_field;
+
+			} else if ($this->sort_default_field !== NULL) {
+
+				return $this->sort_default_field;
+
+			} else {
+
+				$default = reset($this->sort_fields);
+				if ($default === false) {
+					$default = NULL;
+				}
+				return $default;
+
+			}
+
 		}
 
 		public function sort_order_get() {
+
+			$this->sort_enabled = true;
+
+			if ($this->sort_name === NULL) {
+				$this->sort_name_set('sort');
+			}
 
 			if ($this->sort_order == 'desc' || $this->sort_order == 'asc') {
 				return $this->sort_order; // Stop bad values from GPC
 			}
 
 			if ($this->sort_default_order == 'desc' || $this->sort_default_order == 'asc') {
-				return $this->sort_default_order; // Mistakes in program
+				return $this->sort_default_order; // Could not have been set
 			}
 
 			return 'asc';
@@ -101,6 +143,8 @@
 		}
 
 		public function sort_get_sql() {
+
+			$this->sort_enabled = true;
 
 			$order_by_sql = $this->sort_field_get();
 
@@ -113,10 +157,19 @@
 		}
 
 		public function sort_get_url($field, $order) {
+
+			$this->sort_enabled = true;
+
+			if ($this->sort_name === NULL) {
+				$this->sort_name_set('sort');
+			}
+
 			$url = url($this->current_url);
 			$url->param($this->sort_name . '_name', $field);
 			$url->param($this->sort_name . '_order', $order);
+
 			return $url->get();
+
 		}
 
 		public function active_asc_prefix_set($content) {
@@ -185,6 +238,7 @@
 				);
 
 			if ($sort_name !== NULL && $sort_name !== '') {
+				$this->sort_enabled = true;
 				$this->sort_fields[] = $sort_name;
 			}
 
@@ -222,18 +276,18 @@
 
 		}
 
-		public function row_add($row = NULL, $class_name = '') {
+		public function row_add($row, $class_name = '') {
 			$this->rows[] = array(
 					'row' => $row,
 					'class_name' => $class_name
 				);
 		}
 
-		public function no_records_message_set($no_records) {
+		public function no_records_set($no_records) {
 			$this->no_records_html = html($no_records);
 		}
 
-		public function no_records_message_set_html($no_records_html) {
+		public function no_records_set_html($no_records_html) {
 			$this->no_records_html = $no_records_html;
 		}
 
@@ -241,6 +295,10 @@
 
 			//--------------------------------------------------
 			// Current sort - inc support for defaults
+
+				if ($this->sort_enabled && $this->sort_name === NULL) {
+					$this->sort_name_set('sort');
+				}
 
 				$current_sort = $this->sort_field_get();
 				$sort_asc = ($this->sort_order_get() == 'asc');
@@ -662,12 +720,17 @@
 
 		public $data;
 
-		public function __construct() {
+		public function __construct($table, $class_name = '') {
 
 			//--------------------------------------------------
 			// Defaults
 
 				$this->data = array();
+
+			//--------------------------------------------------
+			// Add
+
+				$table->row_add($this, $class_name);
 
 		}
 

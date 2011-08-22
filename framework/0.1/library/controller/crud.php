@@ -194,13 +194,9 @@
 			// Setup the table
 
 				$table = new table();
-				$table->sort_name_set('sort');
-				$table->default_sort_set($this->index_default_sort_field, $this->index_default_sort_order);
 				$table->class_set('basic_table full_width');
-				$table->active_asc_suffix_set_html('  <img src="' . html(config::get('url.prefix')) . '/a/img/sort/arrow.asc.gif" alt="Ascending" />');
-				$table->active_desc_suffix_set_html(' <img src="' . html(config::get('url.prefix')) . '/a/img/sort/arrow.desc.gif" alt="Descending" />');
-				$table->inactive_suffix_set_html('    <img src="' . html(config::get('url.prefix')) . '/a/img/sort/arrow.asc.na.gif" alt="Sort" />');
-				$table->no_records_message_set('No ' . $this->item_plural . ' found');
+				$table->default_sort_set($this->index_default_sort_field, $this->index_default_sort_order);
+				$table->no_records_set('No ' . $this->item_plural . ' found');
 
 				foreach ($this->index_table_fields as $field => $info) {
 					$table->heading_add($info['name'], $field, 'text');
@@ -304,7 +300,7 @@
 					//--------------------------------------------------
 					// Add row
 
-						$table_row = new table_row();
+						$table_row = new table_row($table);
 
 						foreach ($this->index_table_fields as $field => $info) {
 
@@ -327,8 +323,6 @@
 						if ($this->feature_delete) {
 							$table_row->cell_add_html('<a href="' . html($delete_url) . '">Delete</a>', 'delete');
 						}
-
-						$table->row_add($table_row);
 
 				}
 
