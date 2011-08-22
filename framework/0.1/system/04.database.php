@@ -237,6 +237,20 @@
 
 /*--------------------------------------------------
 
+	Return a special object for queries
+
+		$db = $this->db_get();
+
+		$rs_1 = $db->query('SELECT
+							FROM');
+
+		while ($row = $rs_1->fetch_assoc()) {
+		}
+
+		$rst = $this->db_query('INSERT INTO table (
+								) VALUES (
+								)');
+
 	Can be called statically or dynamically:
 
 		$rst_a = db::query('
