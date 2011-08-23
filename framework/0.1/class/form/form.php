@@ -572,7 +572,7 @@
 
 					for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
 						$field_name = $this->fields[$field_id]->db_field_name_get();
-						if ($field_name !== NULL) {
+						if ($field_name !== NULL && !$this->fields[$field_id]->disabled_get() && !$this->fields[$field_id]->readonly_get()) {
 
 							$field_key = $this->fields[$field_id]->db_field_key_get();
 							$field_type = $this->db_fields[$field_name]['type'];
@@ -760,7 +760,7 @@
 					$attributes = array(
 						'id' => $this->form_id,
 						'action' => $this->form_action,
-						'method' => $this->form_method,
+						'method' => strtolower($this->form_method), // For the HTML5 checker on totalvalidator.com
 						'class' => $this->form_class,
 					);
 

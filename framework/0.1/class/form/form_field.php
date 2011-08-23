@@ -20,6 +20,8 @@
 			protected $required_mark_html;
 			protected $required_mark_position;
 			protected $autofocus;
+			protected $disabled;
+			protected $readonly;
 			protected $class_row;
 			protected $class_label;
 			protected $class_label_span;
@@ -91,6 +93,8 @@
 					$this->required_mark_html = NULL;
 					$this->required_mark_position = NULL;
 					$this->autofocus = false;
+					$this->disabled = false;
+					$this->readonly = false;
 					$this->class_row = '';
 					$this->class_label = NULL;
 					$this->class_label_span = 'label';
@@ -175,6 +179,26 @@
 
 			public function autofocus_set($autofocus) {
 				$this->autofocus = ($autofocus == true);
+			}
+
+			public function autofocus_get() {
+				return $this->autofocus;
+			}
+
+			public function disabled_set($disabled) {
+				$this->disabled = ($disabled == true);
+			}
+
+			public function disabled_get() {
+				return $this->disabled;
+			}
+
+			public function readonly_set($readonly) {
+				$this->readonly = ($readonly == true);
+			}
+
+			public function readonly_get() {
+				return $this->readonly;
 			}
 
 			public function class_row_set($class) {
@@ -356,16 +380,24 @@
 						'id' => $this->id,
 					);
 
-				if ($this->required) {
-					$attributes_default['required'] = 'required';
-				}
-
 				if ($this->class_input !== NULL) {
 					$attributes_default['class'] = $this->class_input;
 				}
 
+				if ($this->required) {
+					$attributes_default['required'] = 'required';
+				}
+
 				if ($this->autofocus) {
 					$attributes_default['autofocus'] = 'autofocus';
+				}
+
+				if ($this->disabled) {
+					$attributes_default['disabled'] = 'disabled';
+				}
+
+				if ($this->readonly) {
+					$attributes_default['readonly'] = 'readonly';
 				}
 
 				$html = '<input';

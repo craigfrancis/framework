@@ -55,6 +55,14 @@
 					$attributes['required'] = 'required';
 				}
 
+				if ($this->disabled) {
+					$attributes['disabled'] = 'disabled';
+				}
+
+				if ($this->readonly) {
+					$attributes['readonly'] = 'readonly';
+				}
+
 				if ($this->class_input !== NULL) {
 					$attributes['class'] = $this->class_input;
 				}
