@@ -379,7 +379,7 @@
 
 					if ($latitude === NULL) {
 
-						$db->query('SELECT 1 FROM ' . DB_T_PREFIX . 'nearest_outcode LIMIT 1');
+						$db->query('SELECT 1 FROM ' . DB_PREFIX . 'nearest_outcode LIMIT 1');
 						if ($db->num_rows() == 0) {
 							// TODO: Load from sql file
 						}
