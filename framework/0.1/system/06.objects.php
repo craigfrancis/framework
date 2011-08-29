@@ -187,6 +187,8 @@
 
 			public function render_error($error) {
 
+				config::set('output.error', $error);
+
 				if (!headers_sent()) {
 					if ($error == 'page_not_found') {
 						header('HTTP/1.0 404 Not Found');
@@ -241,12 +243,19 @@
 
 					if (!is_file($view_path)) {
 
-						header('HTTP/1.0 404 Not Found');
+						$error = config::get('output.error');
 
-						$view_path = APP_ROOT . DS . 'view' . DS . 'error' . DS . 'page_not_found.ctp';
+						if ($error === false || $error === NULL) {
+							$error = 'page_not_found';
+						}
 
+						if (!headers_sent() && $error == 'page_not_found') {
+							header('HTTP/1.0 404 Not Found');
+						}
+
+						$view_path = APP_ROOT . DS . 'view' . DS . 'error' . DS . $error . '.ctp';
 						if (!is_file($view_path)) {
-							$view_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'error_page_not_found.ctp';
+							$view_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'error_' . $error . '.ctp';
 						}
 
 					}

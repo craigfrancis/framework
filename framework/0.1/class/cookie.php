@@ -91,8 +91,6 @@
 
 			if (!self::supported()) {
 
-				config::set('output.error', true);
-
 				$view = new view();
 				$view->render_error('cookies');
 
