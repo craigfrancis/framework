@@ -50,7 +50,7 @@
 	//--------------------------------------------------
 	// Route folders
 
-		$route_stack = path_to_array(config::get('route.path'));
+		$route_stack = path_to_array(str_replace('-', '_', config::get('route.path')));
 
 		if (count($route_stack) == 0) {
 			$route_stack[] = 'home';
@@ -171,7 +171,6 @@
 
 				$next_action = reset($route_stack);
 				if ($next_action !== false) {
-					$next_action = str_replace('-', '_', $next_action);
 					$actions['action_' . $next_action] = $route_stack;
 					array_shift($actions['action_' . $next_action]);
 				}
