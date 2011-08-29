@@ -221,6 +221,7 @@
 				// Default
 
 					$view_path_default = VIEW_ROOT . '/' . implode('/', config::get('view.folders')) . '.ctp';
+					$view_path_default = str_replace('-', '_', $view_path_default); // Match behaviour for controller actions
 
 					config::set_default('view.path', $view_path_default);
 
