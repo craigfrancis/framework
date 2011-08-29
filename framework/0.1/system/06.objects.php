@@ -196,9 +196,6 @@
 				}
 
 				$error_path = APP_ROOT . DS . 'view' . DS . 'error' . DS . $error . '.ctp';
-				if (!is_file($error_path)) {
-					$error_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'error_' . $error . '.ctp';
-				}
 
 				config::set('view.path', $error_path);
 				config::set('view.folders', array('error', $error));
