@@ -249,7 +249,7 @@
 						//--------------------------------------------------
 						// Clean
 
-							$path = (isset($this->data['path']) ? $this->data['path'] : '/');
+							$path = (isset($this->data['path']) ? $this->data['path'] : $current_path);
 							$path = str_replace('\\', '/', $path); // Bah, Windows!
 							$path = explode('/', $path);
 
@@ -317,6 +317,7 @@
 		echo "<br />\n";
 		echo "URL Testing as function:<br />\n";
 		echo '&#xA0; ' . html(url()) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('#testing')) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('thank-you/')) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('./thank-you/')) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('./')) . '<br />' . "\n";

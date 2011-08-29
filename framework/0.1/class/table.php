@@ -9,6 +9,7 @@
 		private $footer_row;
 		private $rows;
 
+		private $id_name;
 		private $class_name;
 		private $current_url;
 		private $no_records_html;
@@ -40,6 +41,7 @@
 				$this->footer_row = 0;
 				$this->rows = array();
 
+				$this->id_name = NULL;
 				$this->class_name = 'basic_table';
 				$this->current_url = NULL;
 				$this->no_records_html = 'No records found';
@@ -83,6 +85,10 @@
 
 		public function current_url_set($url) {
 			$this->current_url = $url;
+		}
+
+		public function id_set($id) {
+			$this->id_name = $id;
 		}
 
 		public function class_set($class_name) {
@@ -328,7 +334,7 @@
 				$col_count = 0;
 
 				$output_html = '
-					<table class="' . html($this->class_name) . '">
+					<table' . ($this->id_name !== NULL ? ' id="' . html($this->id_name) . '"' : '') . ' class="' . html($this->class_name) . '">
 						<thead>';
 
 				foreach ($this->headings as $c_heading_row) {
