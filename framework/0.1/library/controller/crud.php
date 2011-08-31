@@ -127,17 +127,7 @@
 						}
 
 						if (!isset($this->index_table_fields[$field]['field_sql'])) {
-
 							$this->index_table_fields[$field]['field_sql'] = $field;
-
-							if (isset($db_fields[$field]['type'])) {
-								if ($db_fields[$field]['type'] == 'date') {
-									$this->index_table_fields[$field]['field_sql'] = 'DATE_FORMAT(' . $db->escape_field($field) . ', "%e %b %Y")';
-								} else if ($db_fields[$field]['type'] == 'datetime') {
-									$this->index_table_fields[$field]['field_sql'] = 'DATE_FORMAT(' . $db->escape_field($field) . ', "%e %b %Y, %k:%i")';
-								}
-							}
-
 						}
 
 						if (!isset($this->index_table_fields[$field]['name'])) {
@@ -156,6 +146,22 @@
 							$this->index_table_fields[$field]['edit_url'] = false;
 						} else {
 							$edit_url_found = true;
+						}
+
+						if (!isset($this->index_table_fields[$field]['date_format'])) {
+
+							$date_format = NULL;
+
+							if (isset($db_fields[$field]['type'])) {
+								if ($db_fields[$field]['type'] == 'date') {
+									$date_format = 'jS M Y';
+								} else if ($db_fields[$field]['type'] == 'datetime') {
+									$date_format = 'jS M Y, g:ia';
+								}
+							}
+
+							$this->index_table_fields[$field]['date_format'] = $date_format;
+
 						}
 
 					}
@@ -305,6 +311,7 @@
 						foreach ($this->index_table_fields as $field => $info) {
 
 							$url = '';
+							$text = $row[$field];
 
 							if ($info['edit_url']) {
 								$url = $edit_url;
@@ -312,10 +319,14 @@
 								$url = str_replace('[ID]', urlencode($row['id']), $info['url_format']);
 							}
 
+							if ($info['date_format'] !== NULL) {
+								$text = date($info['date_format'], strtotime($text));
+							}
+
 							if ($url != '') {
-								$table_row->cell_add_html('<a href="' . html($url) . '">' . html($row[$field]) . '</a>');
+								$table_row->cell_add_html('<a href="' . html($url) . '">' . html($text) . '</a>');
 							} else {
-								$table_row->cell_add($row[$field]);
+								$table_row->cell_add($text);
 							}
 
 						}
