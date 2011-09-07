@@ -150,7 +150,7 @@
 			$this->_link_add($url, $name, $config);
 		}
 
-		public function link_with_child_add($url, $name, $child_nav, $config = NULL, $child_open = NULL) {
+		public function sub_nav_add($url, $name, $child_nav, $config = NULL, $child_open = NULL) {
 			$this->_link_add($url, $name, $config, $child_nav, $child_open);
 		}
 

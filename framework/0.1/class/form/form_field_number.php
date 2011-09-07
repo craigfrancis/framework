@@ -6,7 +6,7 @@
 		// Variables
 
 			protected $format_error_set;
-			protected $zero_to_blank_set;
+			protected $zero_to_blank;
 			protected $min_value;
 			protected $max_value;
 
@@ -24,7 +24,7 @@
 				// Additional field configuration
 
 					$this->format_error_set = false;
-					$this->zero_to_blank_set = false;
+					$this->zero_to_blank = false;
 					$this->min_value = NULL;
 					$this->max_value = NULL;
 					$this->type = 'number';
@@ -32,7 +32,7 @@
 			}
 
 			public function zero_to_blank_set($blank) {
-				$this->zero_to_blank_set = ($blank == true);
+				$this->zero_to_blank = ($blank == true);
 			}
 
 		//--------------------------------------------------
@@ -84,7 +84,7 @@
 
 				$value = parent::value_print_get();
 
-				if ($value == 0 && $this->zero_to_blank_set) {
+				if ($value == 0 && $this->zero_to_blank) {
 					return '';
 				} else {
 					return $value;

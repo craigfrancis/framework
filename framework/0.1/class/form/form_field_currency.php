@@ -29,7 +29,7 @@
 				// Additional field configuration
 
 					$this->format_error_set = false;
-					$this->zero_to_blank_set = false;
+					$this->zero_to_blank = false;
 					$this->currency_char = '£';
 					$this->type = 'currency';
 
@@ -97,7 +97,7 @@
 
 				$value = parent::value_print_get();
 
-				if ($value == 0 && $this->zero_to_blank_set) {
+				if ($value == 0 && $this->zero_to_blank) {
 					return '';
 				} else if ($value < 0) {
 					return '-' . $this->currency_char . number_format(floatval(0 - $value), $decimal_places);

@@ -146,7 +146,7 @@
 				}
 			}
 
-			public function hidden_value($name) {
+			public function hidden_value($name) { // You should call form->hidden_value() first to initialise - get/set may not be called when form is submitted with errors.
 				if ($this->form_submitted) {
 					$value = request('h-' . $name);
 					$value = ($value === NULL ? NULL : urldecode($value));
