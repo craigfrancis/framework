@@ -16,10 +16,10 @@
 
 	$paginator = new paginator($result_count);
 
-	// $paginator = new paginator(array(
-	// 		'items_per_page' => 3,
-	// 		'items_count' => $result_count,
-	// 	));
+	$paginator = new paginator(array(
+			'items_per_page' => 3,
+			'items_count' => $result_count,
+		));
 
 	$page_size = $paginator->page_size_get();
 	$page_number = $paginator->page_number_get();

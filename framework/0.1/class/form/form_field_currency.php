@@ -97,13 +97,7 @@
 
 				$value = parent::value_print_get();
 
-				if ($value == 0 && $this->zero_to_blank) {
-					return '';
-				} else if ($value < 0) {
-					return '-' . $this->currency_char . number_format(floatval(0 - $value), $decimal_places);
-				} else {
-					return $this->currency_char . number_format(floatval($value), $decimal_places);
-				}
+				return format_currency($value, $this->currency_char, $decimal_places, $this->zero_to_blank);
 
 			}
 

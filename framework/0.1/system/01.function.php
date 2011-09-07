@@ -208,6 +208,23 @@
 	}
 
 //--------------------------------------------------
+// Format currency
+
+	function format_currency($value, $currency_char = NULL, $decimal_places = 2, $zero_to_blank = false) {
+
+		$value = (round($value, 2) == 0 ? 0 : $value); // Stop negative -£0
+
+		if ($value == 0 && $zero_to_blank) {
+			return '';
+		} else if ($value < 0) {
+			return '-' . $currency_char . number_format(floatval(0 - $value), $decimal_places);
+		} else {
+			return $currency_char . number_format(floatval($value), $decimal_places);
+		}
+
+	}
+
+//--------------------------------------------------
 // Format british postcode
 
 	function format_british_postcode($postcode) {
