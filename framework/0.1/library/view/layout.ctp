@@ -72,7 +72,7 @@
 					$sub_nav->link_add($root_url . $sub_page . '/', link_to_human($sub_page));
 				}
 
-				$nav->link_with_child_add($root_url, link_to_human($folder), $sub_nav);
+				$nav->sub_nav_add($root_url, link_to_human($folder), $sub_nav);
 
 			} else {
 
