@@ -307,6 +307,10 @@
 				);
 		}
 
+		public function row_count() {
+			return count($this->rows);
+		}
+
 		public function no_records_set($no_records) {
 			$this->no_records_html = html($no_records);
 		}

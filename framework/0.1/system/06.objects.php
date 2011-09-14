@@ -137,6 +137,8 @@
 
 		class controller_base extends base {
 
+			public $parent;
+
 			public function view_path_set($view_path) {
 				config::set('view.path', $view_path);
 			}

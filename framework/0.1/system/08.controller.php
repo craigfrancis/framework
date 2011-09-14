@@ -115,6 +115,10 @@
 
 				$controllers[$controller_id] = new $controller_name();
 
+				if ($controller_id > 1) {
+					$controllers[$controller_id]->parent = $controllers[$controller_id - 1];
+				}
+
 			//--------------------------------------------------
 			// Route modification
 
