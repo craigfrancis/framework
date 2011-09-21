@@ -63,8 +63,8 @@
 					$attributes['readonly'] = 'readonly';
 				}
 
-				if ($this->class_input !== NULL) {
-					$attributes['class'] = $this->class_input;
+				if ($this->input_class !== NULL) {
+					$attributes['class'] = $this->input_class;
 				}
 
 				if ($this->placeholder !== NULL) {

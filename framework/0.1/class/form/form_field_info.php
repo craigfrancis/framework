@@ -9,14 +9,11 @@
 			protected $value_html;
 
 		//--------------------------------------------------
-		// Variables
+		// Setup
 
 			public function __construct($form, $label, $name = NULL) {
 				$this->_setup_info($form, $label, $name);
 			}
-
-		//--------------------------------------------------
-		// Setup
 
 			protected function _setup_info($form, $label, $name = NULL) {
 

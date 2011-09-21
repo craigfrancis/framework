@@ -259,7 +259,7 @@
 						}
 
 			//--------------------------------------------------
-			// Setup the paging system (smallNav)
+			// Setup the paging system
 
 				$db->query('SELECT
 								COUNT(1)

@@ -924,11 +924,11 @@
 									$k++;
 
 									if ($k == 1) {
-										$field->class_row_add('first_child odd');
+										$field->wrapper_class_add('first_child odd');
 									} else if ($k % 2) {
-										$field->class_row_add('odd');
+										$field->wrapper_class_add('odd');
 									} else {
-										$field->class_row_add('even');
+										$field->wrapper_class_add('even');
 									}
 
 									$html .= $field->html();

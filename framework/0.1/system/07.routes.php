@@ -170,7 +170,7 @@
 	//--------------------------------------------------
 	// Reduce possibility of duplicate content issues
 
-		if (substr($route_path, -1) != '/') {
+		if (substr($route_path, -1) != '/' && substr($route_path, 0, strlen(ASSET_URL)) != ASSET_URL) {
 
 			$new_url = config::get('url.prefix') . $route_path . '/';
 

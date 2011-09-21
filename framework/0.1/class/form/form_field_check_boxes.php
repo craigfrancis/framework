@@ -296,7 +296,7 @@
 					$input_id = $this->id . '_' . $this->option_keys[$field_id];
 				}
 
-				return '<label for="' . html($input_id) . '"' . ($this->class_label === NULL ? '' : ' class="' . html($this->class_label) . '"') . '>' . $label_html . '</label>';
+				return '<label for="' . html($input_id) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . $label_html . '</label>';
 
 			}
 

@@ -12,22 +12,26 @@
 			protected $id;
 			protected $name;
 			protected $type;
+			protected $wrapper_id;
+			protected $wrapper_class;
 			protected $label_html;
 			protected $label_suffix_html;
-			protected $info_html;
+			protected $label_class;
+			protected $label_wrapper_class;
+			protected $label_wrapper_node;
 			protected $input_first;
+			protected $input_class;
+			protected $input_wrapper_class;
+			protected $input_wrapper_node;
+			protected $info_html;
+			protected $info_class;
+			protected $info_node;
 			protected $required;
 			protected $required_mark_html;
 			protected $required_mark_position;
 			protected $autofocus;
 			protected $disabled;
 			protected $readonly;
-			protected $class_row;
-			protected $class_label;
-			protected $class_label_span;
-			protected $class_input;
-			protected $class_input_span;
-			protected $class_info;
 			protected $print_show;
 			protected $print_hidden;
 			protected $print_group;
@@ -85,22 +89,26 @@
 					$this->id = 'fld_' . human_to_ref($name);
 					$this->name = $name;
 					$this->type = 'unknown';
+					$this->wrapper_id = NULL;
+					$this->wrapper_class = '';
 					$this->label_html = $label_html;
 					$this->label_suffix_html = $form->label_suffix_get_html();
-					$this->info_html = '';
+					$this->label_class = NULL;
+					$this->label_wrapper_class = 'label';
+					$this->label_wrapper_node = 'span';
 					$this->input_first = false;
+					$this->input_class = NULL;
+					$this->input_wrapper_class = 'input';
+					$this->input_wrapper_node = 'span';
+					$this->info_html = '';
+					$this->info_class = 'info';
+					$this->info_node = 'span';
 					$this->required = false;
 					$this->required_mark_html = NULL;
 					$this->required_mark_position = NULL;
 					$this->autofocus = false;
 					$this->disabled = false;
 					$this->readonly = false;
-					$this->class_row = '';
-					$this->class_label = NULL;
-					$this->class_label_span = 'label';
-					$this->class_input = NULL;
-					$this->class_input_span = 'input';
-					$this->class_info = 'info';
 					$this->print_show = true;
 					$this->print_hidden = false;
 					$this->print_group = NULL;
@@ -129,6 +137,33 @@
 				return $this->type;
 			}
 
+			public function wrapper_id_set($id) {
+				$this->wrapper_id = $id;
+			}
+
+			public function wrapper_class_set($class) {
+				$this->wrapper_class = $class;
+			}
+
+			public function wrapper_class_add($class) {
+				$this->wrapper_class .= ($this->wrapper_class == '' ? '' : ' ') . $class;
+			}
+
+			public function wrapper_class_get() {
+
+				$class = 'row ';
+				$class .= $this->type . ' ';
+				$class .= $this->wrapper_class . ' ';
+				$class .= $this->name . ' ';
+
+				if (!$this->valid()) {
+					$class .= 'error ';
+				}
+
+				return trim($class);
+
+			}
+
 			public function label_set_html($label_html) { // No need for 'label_set' as this is called on init
 				$this->label_html = $label_html;
 			}
@@ -149,6 +184,30 @@
 				$this->label_suffix_html = $suffix_html;
 			}
 
+			public function label_class_set($class) {
+				$this->label_class = $class;
+			}
+
+			public function label_wrapper_class_set($class) {
+				$this->label_wrapper_class = $class;
+			}
+
+			public function label_wrapper_node_set($node) {
+				$this->label_wrapper_node = $node;
+			}
+
+			public function input_class_set($class) {
+				$this->input_class = $class;
+			}
+
+			public function input_wrapper_class_set($class) {
+				$this->input_wrapper_class = $class;
+			}
+
+			public function input_wrapper_node_set($class) {
+				$this->input_wrapper_node = $class;
+			}
+
 			public function info_set($info) {
 				$this->info_set_html(html($info));
 			}
@@ -161,8 +220,20 @@
 				if ($this->info_html == '') {
 					return '';
 				} else {
-					return ($indent > 0 ? "\n" : '') . str_repeat("\t", $indent) . '<span class="' . html($this->class_info) . '">' . $this->info_html . '</span>';
+					return ($indent > 0 ? "\n" : '') . str_repeat("\t", $indent) . '<' . html($this->info_node) . ' class="' . html($this->info_class) . '">' . $this->info_html . '</' . html($this->info_node) . '>';
 				}
+			}
+
+			public function info_class_set($class) {
+				$this->info_class = $class;
+			}
+
+			public function info_node_set($node) {
+				$this->info_node = $node;
+			}
+
+			public function print_show_set($show) { // Print on main form automatically
+				$this->print_show = ($show == true);
 			}
 
 			public function required_mark_set_html($html) {
@@ -199,53 +270,6 @@
 
 			public function readonly_get() {
 				return $this->readonly;
-			}
-
-			public function class_row_set($class) {
-				$this->class_row = $class;
-			}
-
-			public function class_row_add($class) {
-				$this->class_row .= ($this->class_row == '' ? '' : ' ') . $class;
-			}
-
-			public function class_row_get() {
-
-				$class = 'row ';
-				$class .= $this->type . ' ';
-				$class .= $this->class_row . ' ';
-				$class .= $this->name . ' ';
-
-				if (!$this->valid()) {
-					$class .= 'error ';
-				}
-
-				return trim($class);
-
-			}
-
-			public function class_label_set($class) {
-				$this->class_label = $class;
-			}
-
-			public function class_label_span_set($class) {
-				$this->class_label_span = $class;
-			}
-
-			public function class_input_set($class) {
-				$this->class_input = $class;
-			}
-
-			public function class_input_span_set($class) {
-				$this->class_input_span = $class;
-			}
-
-			public function class_info_set($class) {
-				$this->class_info = $class;
-			}
-
-			public function print_show_set($show) { // Print on main form automatically
-				$this->print_show = ($show == true);
 			}
 
 			public function print_show_get() {
@@ -368,7 +392,7 @@
 				//--------------------------------------------------
 				// Return the HTML for the label
 
-					return '<label for="' . html($this->id) . '"' . ($this->class_label === NULL ? '' : ' class="' . html($this->class_label) . '"') . '>' . ($required_mark_position == 'left' && $required_mark_html !== NULL ? $required_mark_html : '') . ($label_html !== NULL ? $label_html : $this->label_html) . ($required_mark_position == 'right' && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>';
+					return '<label for="' . html($this->id) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . ($required_mark_position == 'left' && $required_mark_html !== NULL ? $required_mark_html : '') . ($label_html !== NULL ? $label_html : $this->label_html) . ($required_mark_position == 'right' && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>';
 
 			}
 
@@ -380,8 +404,8 @@
 						'id' => $this->id,
 					);
 
-				if ($this->class_input !== NULL) {
-					$attributes_default['class'] = $this->class_input;
+				if ($this->input_class !== NULL) {
+					$attributes_default['class'] = $this->input_class;
 				}
 
 				if ($this->required) {
@@ -417,29 +441,29 @@
 			public function html() {
 				if (method_exists($this, 'html_input_by_key')) {
 					$html = '
-							<div class="' . html($this->class_row_get()) . '">
-								<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>';
+							<div class="' . html($this->wrapper_class_get()) . '"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
+								<' . html($this->label_wrapper_node) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . $this->label_suffix_html . '</' . html($this->label_wrapper_node) . '>';
 					foreach ($this->option_keys as $id => $key) {
 						$html .= '
-								<span class="' . html($this->class_input_span) . ' ' . html('key_' . human_to_ref($key)) . ' ' . html('value_' . human_to_ref($this->option_values[$id])) . '">
+								<' . html($this->input_wrapper_node) . ' class="' . html($this->input_wrapper_class) . ' ' . html('key_' . human_to_ref($key)) . ' ' . html('value_' . human_to_ref($this->option_values[$id])) . '">
 									' . $this->html_input_by_key($key) . '
 									' . $this->html_label_by_key($key) . '
-								</span>';
+								</' . html($this->input_wrapper_node) . '>';
 					}
 					$html .= $this->info_get_html(8) . '
 							</div>' . "\n";
 				} else {
 					if ($this->input_first) {
 						$html = '
-							<div class="' . html($this->class_row_get()) . ' input_first">
-								<span class="' . html($this->class_input_span) . '">' . $this->html_input() . '</span>
-								<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>' . $this->info_get_html(8) . '
+							<div class="' . html($this->wrapper_class_get()) . ' input_first"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
+								<' . html($this->input_wrapper_node) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_node) . '>
+								<' . html($this->label_wrapper_node) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . $this->label_suffix_html . '</' . html($this->label_wrapper_node) . '>' . $this->info_get_html(8) . '
 							</div>' . "\n";
 					} else {
 						$html = '
-							<div class="' . html($this->class_row_get()) . '">
-								<span class="' . html($this->class_label_span) . '">' . $this->html_label() . $this->label_suffix_html . '</span>
-								<span class="' . html($this->class_input_span) . '">' . $this->html_input() . '</span>' . $this->info_get_html(8) . '
+							<div class="' . html($this->wrapper_class_get()) . '"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
+								<' . html($this->label_wrapper_node) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . $this->label_suffix_html . '</' . html($this->label_wrapper_node) . '>
+								<' . html($this->input_wrapper_node) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_node) . '>' . $this->info_get_html(8) . '
 							</div>' . "\n";
 					}
 				}
