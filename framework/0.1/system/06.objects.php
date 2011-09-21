@@ -531,7 +531,7 @@
 
 					$return = '';
 
-					foreach ($css_main as $css) {
+					foreach ($css_main as $css) { // Cannot use array_unique, as some versions of php do not support multi-dimensional arrays
 
 						if ($css_version > 0) {
 							$css['path'] .= '?v=' . urlencode($css_version);
