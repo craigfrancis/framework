@@ -531,7 +531,7 @@
 
 					$return = '';
 
-					foreach (array_unique($css_main) as $css) {
+					foreach ($css_main as $css) {
 
 						if ($css_version > 0) {
 							$css['path'] .= '?v=' . urlencode($css_version);
@@ -551,7 +551,7 @@
 							$return .= "\n\t";
 						}
 
-						foreach (array_unique($css_alternate) as $css) {
+						foreach ($css_alternate as $css) {
 
 							if ($css_version > 0) {
 								$css['path'] .= '?v=' . urlencode($css_version);
