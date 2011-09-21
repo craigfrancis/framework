@@ -530,7 +530,7 @@
 				// Return
 
 					$return = '';
-
+debug($css_main);
 					foreach (array_unique($css_main) as $css) {
 
 						if ($css_version > 0) {
