@@ -434,7 +434,7 @@
 		//--------------------------------------------------
 		// Details
 
-			public function detail_field_get($field, $setup = NULL) {
+			public function field_get($field, $setup = NULL) {
 
 				$method = 'field_' . $field . '_get';
 
@@ -447,7 +447,7 @@
 
 			}
 
-			public function details_save() {
+			public function save() {
 
 				//--------------------------------------------------
 				// Have a user
