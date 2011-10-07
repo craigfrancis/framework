@@ -9,4 +9,20 @@
 
 	<?php } ?>
 
-	<?= $form ?>
+	<?= $form->html_start() ?>
+		<fieldset>
+
+			<?= $form->html_error_list() ?>
+
+			<?= (isset($pre_fields_html) ? $pre_fields_html : '') ?>
+
+			<?= $form->html_fields() ?>
+
+			<?= (isset($post_fields_html) ? $post_fields_html : '') ?>
+
+			<div class="row submit">
+				<input type="submit" value="<?= html($form->form_button_get()) ?>" />
+			</div>
+
+		</fieldset>
+	<?= $form->html_end() ?>

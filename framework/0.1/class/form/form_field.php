@@ -14,6 +14,7 @@
 			protected $type;
 			protected $wrapper_id;
 			protected $wrapper_class;
+			protected $wrapper_tag;
 			protected $label_html;
 			protected $label_suffix_html;
 			protected $label_class;
@@ -91,6 +92,7 @@
 					$this->type = 'unknown';
 					$this->wrapper_id = NULL;
 					$this->wrapper_class = '';
+					$this->wrapper_tag = 'div';
 					$this->label_html = $label_html;
 					$this->label_suffix_html = $form->label_suffix_get_html();
 					$this->label_class = NULL;
@@ -162,6 +164,10 @@
 
 				return trim($class);
 
+			}
+
+			public function wrapper_tag_set($class) {
+				$this->wrapper_tag = $class;
 			}
 
 			public function label_set_html($label_html) { // No need for 'label_set' as this is called on init
@@ -441,7 +447,7 @@
 			public function html() {
 				if (method_exists($this, 'html_input_by_key')) {
 					$html = '
-							<div class="' . html($this->wrapper_class_get()) . '"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
+							<' . html($this->wrapper_tag) . ' class="' . html($this->wrapper_class_get()) . '"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
 								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . $this->label_suffix_html . '</' . html($this->label_wrapper_tag) . '>';
 					foreach ($this->option_keys as $id => $key) {
 						$html .= '
@@ -451,20 +457,20 @@
 								</' . html($this->input_wrapper_tag) . '>';
 					}
 					$html .= $this->info_get_html(8) . '
-							</div>' . "\n";
+							</' . html($this->wrapper_tag) . '>' . "\n";
 				} else {
 					if ($this->input_first) {
 						$html = '
-							<div class="' . html($this->wrapper_class_get()) . ' input_first"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
+							<' . html($this->wrapper_tag) . ' class="' . html($this->wrapper_class_get()) . ' input_first"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
 								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>
 								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . $this->label_suffix_html . '</' . html($this->label_wrapper_tag) . '>' . $this->info_get_html(8) . '
-							</div>' . "\n";
+							</' . html($this->wrapper_tag) . '>' . "\n";
 					} else {
 						$html = '
-							<div class="' . html($this->wrapper_class_get()) . '"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
+							<' . html($this->wrapper_tag) . ' class="' . html($this->wrapper_class_get()) . '"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
 								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . $this->label_suffix_html . '</' . html($this->label_wrapper_tag) . '>
 								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>' . $this->info_get_html(8) . '
-							</div>' . "\n";
+							</' . html($this->wrapper_tag) . '>' . "\n";
 					}
 				}
 				return $html;

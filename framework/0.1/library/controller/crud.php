@@ -16,6 +16,7 @@
 		protected $index_search_fields;
 		protected $index_default_sort_field;
 		protected $index_default_sort_order;
+		protected $dest_url;
 
 		public function __construct() {
 			$this->_setup();
@@ -46,6 +47,9 @@
 
 		protected function setup_edit_form($form, $id) {
 			$this->_setup_edit_form_auto($form, $id);
+		}
+
+		protected function setup_edit_populate($form, $id) {
 		}
 
 		protected function setup_edit_validate($form, $id) {
@@ -447,6 +451,11 @@
 						if ($form->valid()) {
 
 							//--------------------------------------------------
+							// Destination
+
+								$this->dest_url = $form->hidden_value_get('dest');
+
+							//--------------------------------------------------
 							// Save
 
 								$new_id = $this->setup_edit_save($form, $id);
@@ -473,7 +482,7 @@
 							//--------------------------------------------------
 							// Next page
 
-								$dest = $form->hidden_value_get('dest');
+								$dest = strval($this->dest_url);
 
 								if (substr($dest, 0, 1) == '/') {
 									redirect($dest);
@@ -486,9 +495,14 @@
 				} else {
 
 					//--------------------------------------------------
-					// Defaults
+					// Destination
 
 						$form->hidden_value_set('dest', $dest);
+
+					//--------------------------------------------------
+					// Defaults
+
+						$this->setup_edit_populate($form, $id);
 
 				}
 
@@ -519,6 +533,11 @@
 			// Request
 
 				$id = intval(request('id'));
+
+				$dest = request('dest');
+				if ($dest == 'referrer') {
+					$dest = config::get('request.referrer');
+				}
 
 			//--------------------------------------------------
 			// Database
@@ -557,6 +576,7 @@
 				$form = new form();
 				$form->form_class_set('delete_form');
 				$form->form_button_set('Delete');
+				$form->hidden_value('dest');
 
 			//--------------------------------------------------
 			// Form processing
@@ -572,6 +592,11 @@
 					// Form valid
 
 						if ($form->valid()) {
+
+							//--------------------------------------------------
+							// Destination
+
+								$this->dest_url = $form->hidden_value_get('dest');
 
 							//--------------------------------------------------
 							// Delete
@@ -591,9 +616,22 @@
 							//--------------------------------------------------
 							// Next page
 
-								redirect(url('../'));
+								$dest = strval($this->dest_url);
+
+								if (substr($dest, 0, 1) == '/') {
+									redirect($dest);
+								} else {
+									redirect(url('../'));
+								}
 
 						}
+
+				} else {
+
+					//--------------------------------------------------
+					// Destination
+
+						$form->hidden_value_set('dest', $dest);
 
 				}
 
