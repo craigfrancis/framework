@@ -1,4 +1,6 @@
 
+	<?= (isset($pre_intro_html) ? $pre_intro_html : '') ?>
+
 	<?php if ($action_edit) { ?>
 
 		<p>Use the form below to edit the <strong><?= html($item_name) ?></strong> <?= html($item_single) ?><?= (isset($delete_url) ? ' (<a href="' . html($delete_url) . '">delete</a>)' : '') ?>.</p>

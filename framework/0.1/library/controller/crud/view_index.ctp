@@ -1,4 +1,6 @@
 
+	<?= (isset($pre_intro_html) ? $pre_intro_html : '') ?>
+
 	<?= $form ?>
 
 	<?= $paginator ?>
