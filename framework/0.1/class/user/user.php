@@ -195,7 +195,7 @@
 				return $user_identification;
 			}
 
-			public function user_id_get() {
+			public function id_get() {
 				return $this->user_id;
 			}
 
