@@ -142,13 +142,17 @@
 		//--------------------------------------------------
 		// Tell the user
 
-			if (php_sapi_name() == 'cli') {
+			if ($contact_email != '') {
+				$hidden_info = NULL; // If there is an email address, don't show the hidden info (e.g. on live).
+			}
+
+			if (php_sapi_name() == 'cli' || config::get('output.mime') == 'text/plain') {
 
 				echo "\n" . '--------------------------------------------------' . "\n\n";
-				echo 'Error:' . "\n\n";
+				echo 'System Error:' . "\n\n";
 				echo $message . "\n\n";
 
-				if ($hidden_info !== NULL && $contact_email == '') {
+				if ($hidden_info !== NULL) {
 					echo $hidden_info . "\n\n";
 				}
 
@@ -183,7 +187,14 @@
 						</head>
 						<body id="p_error">
 							<h1>System Error</h1>
-							<p>' . html($message) . '</p>
+							<p>' . html($message) . '</p>';
+
+					if ($hidden_info !== NULL) {
+						echo '
+							<p style="border: 1px solid #000; padding: 1em; margin: 0 0 1em 0;">' . nl2br(html($hidden_info)) . '</p>';
+					}
+
+					echo '
 						</body>
 						</html>';
 
