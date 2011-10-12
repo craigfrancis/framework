@@ -664,12 +664,16 @@
 				//--------------------------------------------------
 				// Save
 
-					$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
-
 					if ($this->db_where_sql === NULL) {
-						$this->db_link->insert($table_sql, $values);
+
+						$this->db_link->insert($this->db_table_name_sql, $values);
+
 					} else {
+
+						$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
+
 						$this->db_link->update($table_sql, $values, $this->db_where_sql);
+
 					}
 
 			}
