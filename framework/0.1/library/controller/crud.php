@@ -16,7 +16,6 @@
 		protected $index_search_fields;
 		protected $index_default_sort_field;
 		protected $index_default_sort_order;
-		protected $dest_url;
 
 		public function __construct() {
 			$this->_setup();
@@ -370,22 +369,14 @@
 		public function action_edit() {
 
 			//--------------------------------------------------
-			// Request
-
-				$id = intval(request('id'));
-
-				$dest = request('dest');
-				if ($dest == 'referrer') {
-					$dest = config::get('request.referrer');
-				}
-
-			//--------------------------------------------------
 			// Database
 
 				$db = $this->db_get();
 
 			//--------------------------------------------------
 			// Details
+
+				$id = intval(request('id'));
 
 				$action_edit = ($id > 0);
 
@@ -431,7 +422,6 @@
 				$form->form_class_set('basic_form');
 				$form->db_table_set_sql($this->db_table_name_sql);
 				$form->db_where_set_sql($where_sql);
-				$form->hidden_value('dest');
 
 				$this->setup_edit_form($form, $id);
 
@@ -449,11 +439,6 @@
 					// Form valid
 
 						if ($form->valid()) {
-
-							//--------------------------------------------------
-							// Destination
-
-								$this->dest_url = $form->hidden_value_get('dest');
 
 							//--------------------------------------------------
 							// Save
@@ -482,7 +467,7 @@
 							//--------------------------------------------------
 							// Next page
 
-								$dest = strval($this->dest_url);
+								$dest = $form->dest_url_get();
 
 								if (substr($dest, 0, 1) == '/') {
 									redirect($dest);
@@ -493,11 +478,6 @@
 						}
 
 				} else {
-
-					//--------------------------------------------------
-					// Destination
-
-						$form->hidden_value_set('dest', $dest);
 
 					//--------------------------------------------------
 					// Defaults
@@ -530,22 +510,14 @@
 		public function action_delete() {
 
 			//--------------------------------------------------
-			// Request
-
-				$id = intval(request('id'));
-
-				$dest = request('dest');
-				if ($dest == 'referrer') {
-					$dest = config::get('request.referrer');
-				}
-
-			//--------------------------------------------------
 			// Database
 
 				$db = $this->db_get();
 
 			//--------------------------------------------------
 			// Details
+
+				$id = intval(request('id'));
 
 				$where_sql = '
 					id = "' . $db->escape($id) . '" AND
@@ -576,7 +548,6 @@
 				$form = new form();
 				$form->form_class_set('delete_form');
 				$form->form_button_set('Delete');
-				$form->hidden_value('dest');
 
 			//--------------------------------------------------
 			// Form processing
@@ -592,11 +563,6 @@
 					// Form valid
 
 						if ($form->valid()) {
-
-							//--------------------------------------------------
-							// Destination
-
-								$this->dest_url = $form->hidden_value_get('dest');
 
 							//--------------------------------------------------
 							// Delete
@@ -616,7 +582,7 @@
 							//--------------------------------------------------
 							// Next page
 
-								$dest = strval($this->dest_url);
+								$dest = $form->dest_url_get();
 
 								if (substr($dest, 0, 1) == '/') {
 									redirect($dest);
@@ -625,13 +591,6 @@
 								}
 
 						}
-
-				} else {
-
-					//--------------------------------------------------
-					// Destination
-
-						$form->hidden_value_set('dest', $dest);
 
 				}
 

@@ -94,6 +94,25 @@
 
 					cookie::set('csrf', $this->csrf_token);
 
+				//--------------------------------------------------
+				// Dest support
+
+					if ($this->form_submitted) {
+
+						$this->hidden_value('dest');
+
+					} else {
+
+						$dest = request('dest');
+
+						if ($dest == 'referrer') {
+							$dest = config::get('request.referrer');
+						}
+
+						$this->hidden_value_set('dest', $dest);
+
+					}
+
 			}
 
 			public function form_id_set($form_id) {
@@ -171,6 +190,10 @@
 					$value = request('h-' . $name);
 					return ($value === NULL ? NULL : urldecode($value));
 				}
+			}
+
+			public function dest_url_get() {
+				return $this->hidden_value_get('dest');
 			}
 
 			public function required_mark_set_html($value) {
