@@ -360,7 +360,7 @@
 			}
 
 			public function message() {
-				return ;
+				return $this->message;
 			}
 
 			public function message_html() {

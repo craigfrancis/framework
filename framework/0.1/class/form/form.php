@@ -196,6 +196,18 @@
 				return $this->hidden_value_get('dest');
 			}
 
+			public function dest_redirect($default_url) {
+
+				$dest = $this->dest_url_get();
+
+				if (substr($dest, 0, 1) == '/') {
+					redirect($dest);
+				} else {
+					redirect($default_url);
+				}
+
+			}
+
 			public function required_mark_set_html($value) {
 				$this->required_mark_html = $value;
 			}
