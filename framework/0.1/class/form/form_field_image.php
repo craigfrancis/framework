@@ -48,7 +48,7 @@
 					$this->value_image_height = NULL;
 					$this->value_image_type = NULL;
 
-					if ($this->has_uploaded) {
+					if ($this->uploaded) {
 
 						$dimensions = getimagesize($this->file_path_get());
 						if ($dimensions !== false) {
@@ -72,7 +72,7 @@
 
 				$size = intval($size);
 
-				if ($this->has_uploaded && $this->value_image_width !== NULL && $this->value_image_width < $size) {
+				if ($this->uploaded && $this->value_image_width !== NULL && $this->value_image_width < $size) {
 					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html));
 				}
 
@@ -88,7 +88,7 @@
 
 				$size = intval($size);
 
-				if ($this->has_uploaded && $this->value_image_width !== NULL && $this->value_image_width > $size) {
+				if ($this->uploaded && $this->value_image_width !== NULL && $this->value_image_width > $size) {
 					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html));
 				}
 
@@ -104,7 +104,7 @@
 
 				$size = intval($size);
 
-				if ($this->has_uploaded && $this->value_image_width !== NULL && $this->value_image_width != $size) {
+				if ($this->uploaded && $this->value_image_width !== NULL && $this->value_image_width != $size) {
 					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html));
 				}
 
@@ -133,7 +133,7 @@
 
 				$size = intval($size);
 
-				if ($this->has_uploaded && $this->value_image_height !== NULL && $this->value_image_height < $size) {
+				if ($this->uploaded && $this->value_image_height !== NULL && $this->value_image_height < $size) {
 					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html));
 				}
 
@@ -149,7 +149,7 @@
 
 				$size = intval($size);
 
-				if ($this->has_uploaded && $this->value_image_height !== NULL && $this->value_image_height > $size) {
+				if ($this->uploaded && $this->value_image_height !== NULL && $this->value_image_height > $size) {
 					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html));
 				}
 
@@ -165,7 +165,7 @@
 
 				$size = intval($size);
 
-				if ($this->has_uploaded && $this->value_image_height !== NULL && $this->value_image_height != $size) {
+				if ($this->uploaded && $this->value_image_height !== NULL && $this->value_image_height != $size) {
 					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html));
 				}
 
@@ -223,7 +223,7 @@
 				//--------------------------------------------------
 				// Could not use getimagesize
 
-					if ($this->has_uploaded) {
+					if ($this->uploaded) {
 
 						if ($this->value_image_type == NULL) {
 

@@ -582,7 +582,11 @@
 						if ($field_type == 'date') {
 							$value = $this->fields[$field_id]->value_date_get();
 						} else if ($field_type == 'file' || $field_type == 'image') {
-							$value = $this->fields[$field_id]->file_name_get() . ' (' . file_size_to_human($this->fields[$field_id]->file_size_get()) . ')';
+							if ($this->fields[$field_id]->uploaded()) {
+								$value = $this->fields[$field_id]->file_name_get() . ' (' . file_size_to_human($this->fields[$field_id]->file_size_get()) . ')';
+							} else {
+								$value = 'N/A';
+							}
 						} else {
 							$value = $this->fields[$field_id]->value_get();
 						}

@@ -242,8 +242,12 @@
 				$this->print_show = ($show == true);
 			}
 
-			public function required_mark_set_html($html) {
-				$this->required_mark_html = $html;
+			public function required_mark_set($required_mark) {
+				$this->required_mark_set_html(html($required_mark));
+			}
+
+			public function required_mark_set_html($required_mark_html) {
+				$this->required_mark_html = $required_mark_html;
 			}
 
 			public function required_mark_position_set($position) {

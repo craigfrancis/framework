@@ -11,7 +11,7 @@
 			protected $partial_file_error_set;
 			protected $blank_name_error_set;
 
-			protected $has_uploaded;
+			protected $uploaded;
 
 			protected $value_ext;
 			protected $value_name;
@@ -54,7 +54,7 @@
 				//--------------------------------------------------
 				// If uploaded
 
-					$this->has_uploaded = ($this->form_submitted && isset($_FILES[$this->name]) && $_FILES[$this->name]['error'] != 4); // 4 = No file was uploaded (UPLOAD_ERR_NO_FILE)
+					$this->uploaded = ($this->form_submitted && isset($_FILES[$this->name]) && $_FILES[$this->name]['error'] != 4); // 4 = No file was uploaded (UPLOAD_ERR_NO_FILE)
 
 				//--------------------------------------------------
 				// File values
@@ -64,7 +64,7 @@
 					$this->value_size = NULL;
 					$this->value_mime = NULL;
 
-					if ($this->has_uploaded) {
+					if ($this->uploaded) {
 
 						$ext = pathinfo($_FILES[$this->name]['name'], PATHINFO_EXTENSION);
 						if ($ext) {
@@ -92,7 +92,7 @@
 
 			public function required_error_set_html($error_html) {
 
-				if ($this->form_submitted && !$this->has_uploaded) {
+				if ($this->form_submitted && !$this->uploaded) {
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
@@ -108,7 +108,7 @@
 
 				$this->max_size = intval($size);
 
-				if ($this->has_uploaded) {
+				if ($this->uploaded) {
 
 					$error_html = str_replace('XXX', file_size_to_human($this->max_size), $error_html);
 
@@ -133,7 +133,7 @@
 
 			public function partial_file_error_set_html($error_html) {
 
-				if ($this->has_uploaded) {
+				if ($this->uploaded) {
 					if ($_FILES[$this->name]['error'] == 3) $this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
@@ -147,7 +147,7 @@
 
 			public function allowed_file_types_mime_set_html($error_html, $types) {
 
-				if ($this->has_uploaded && !in_array($this->value_mime, $types)) {
+				if ($this->uploaded && !in_array($this->value_mime, $types)) {
 					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $this->value_mime, $error_html), 'MIME: ' . $this->value_mime);
 				}
 
@@ -159,7 +159,7 @@
 
 			public function allowed_file_types_ext_set_html($error_html, $types) {
 
-				if ($this->has_uploaded && !in_array($this->value_ext, $types)) {
+				if ($this->uploaded && !in_array($this->value_ext, $types)) {
 					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $this->value_ext, $error_html), 'EXT: ' . $this->value_ext);
 				}
 
@@ -171,7 +171,7 @@
 
 			public function empty_file_error_set_html($error_html) {
 
-				if ($this->has_uploaded && $_FILES[$this->name]['size'] == 0) {
+				if ($this->uploaded && $_FILES[$this->name]['size'] == 0) {
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
@@ -185,7 +185,7 @@
 
 			public function blank_name_error_set_html($error_html) {
 
-				if ($this->has_uploaded && $_FILES[$this->name]['name'] == '') {
+				if ($this->uploaded && $_FILES[$this->name]['name'] == '') {
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
@@ -201,27 +201,27 @@
 			}
 
 			public function file_path_get() {
-				return (!$this->has_uploaded ? NULL: $_FILES[$this->name]['tmp_name']);
+				return (!$this->uploaded ? NULL: $_FILES[$this->name]['tmp_name']);
 			}
 
 			public function file_ext_get() {
-				return (!$this->has_uploaded ? NULL: $this->value_ext);
+				return (!$this->uploaded ? NULL: $this->value_ext);
 			}
 
 			public function file_name_get() {
-				return (!$this->has_uploaded ? NULL: $this->value_name);
+				return (!$this->uploaded ? NULL: $this->value_name);
 			}
 
 			public function file_size_get() {
-				return (!$this->has_uploaded ? NULL: $this->value_size);
+				return (!$this->uploaded ? NULL: $this->value_size);
 			}
 
 			public function file_mime_get() {
-				return (!$this->has_uploaded ? NULL: $this->value_mime);
+				return (!$this->uploaded ? NULL: $this->value_mime);
 			}
 
 			public function file_save_to($path) {
-				if ($this->has_uploaded && is_writable(dirname($path))) {
+				if ($this->uploaded && is_writable(dirname($path))) {
 					$return = move_uploaded_file($_FILES[$this->name]['tmp_name'], $path);
 					@chmod($path, 0666); // Most websites use a generic apache user.
 					return $return;
@@ -232,8 +232,8 @@
 		//--------------------------------------------------
 		// Status
 
-			public function has_uploaded() {
-				return $this->has_uploaded;
+			public function uploaded() {
+				return $this->uploaded;
 			}
 
 		//--------------------------------------------------
