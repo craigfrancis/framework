@@ -67,22 +67,30 @@
 		// Errors
 
 			public function required_error_set($error) {
+				$this->required_error_set_html(html($error));
+			}
+
+			public function required_error_set_html($error_html) {
 
 				if ($this->form_submitted && !$this->value_provided) {
-					$this->form->_field_error_set_html($this->form_field_uid, $error);
+					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
-				$this->required = ($error !== NULL);
+				$this->required = ($error_html !== NULL);
 
 			}
 
 			public function invalid_error_set($error) {
+				$this->invalid_error_set_html(html($error));
+			}
+
+			public function invalid_error_set_html($error_html) {
 
 				$value = $this->value_time_stamp_get(); // Check upper bound to time-stamp, 2037 on 32bit systems
 
 				if ($this->form_submitted && $this->value_provided && (!checkdate($this->value['M'], $this->value['D'], $this->value['Y']) || $value === false)) {
 
-					$this->form->_field_error_set_html($this->form_field_uid, $error);
+					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 
 					$this->invalid_error_found = true;
 
@@ -93,13 +101,17 @@
 			}
 
 			public function min_date_set($error, $timestamp) {
+				$this->min_date_set_html(html($error), $timestamp);
+			}
+
+			public function min_date_set_html($error_html, $timestamp) {
 
 				if ($this->form_submitted && $this->value_provided && $this->invalid_error_found == false) {
 
 					$value = $this->value_time_stamp_get();
 
 					if ($value !== false && $value < intval($timestamp)) {
-						$this->form->_field_error_set_html($this->form_field_uid, $error);
+						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 					}
 
 				}
@@ -107,13 +119,17 @@
 			}
 
 			public function max_date_set($error, $timestamp) {
+				$this->max_date_set_html(html($error), $timestamp);
+			}
+
+			public function max_date_set_html($error_html, $timestamp) {
 
 				if ($this->form_submitted && $this->value_provided && $this->invalid_error_found == false) {
 
 					$value = $this->value_time_stamp_get();
 
 					if ($value !== false && $value > intval($timestamp)) {
-						$this->form->_field_error_set_html($this->form_field_uid, $error);
+						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 					}
 
 				}

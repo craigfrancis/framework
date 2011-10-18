@@ -60,9 +60,13 @@
 		// Errors
 
 			public function min_length_set($error, $size = 1) { // Default is "required"
+				$this->min_length_set_html(html($error), $size);
+			}
+
+			public function min_length_set_html($error_html, $size = 1) {
 
 				if ($this->form_submitted && strlen($this->value) < $size) {
-					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $size, $error));
+					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $size, $error_html));
 				}
 
 				$this->min_length = $size;
@@ -71,6 +75,10 @@
 			}
 
 			public function max_length_set($error, $size = NULL) {
+				$this->max_length_set_html(html($error), $size);
+			}
+
+			public function max_length_set_html($error_html, $size = NULL) {
 
 				if ($size === NULL) {
 
@@ -88,7 +96,7 @@
 				}
 
 				if ($this->form_submitted && strlen($this->value) > $size) {
-					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $size, $error));
+					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $size, $error_html));
 				}
 
 				$this->max_length = $size;

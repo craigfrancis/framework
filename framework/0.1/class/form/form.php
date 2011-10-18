@@ -208,8 +208,8 @@
 
 			}
 
-			public function required_mark_set_html($value) {
-				$this->required_mark_html = $value;
+			public function required_mark_set_html($required_mark_html) {
+				$this->required_mark_html = $required_mark_html;
 			}
 
 			public function required_mark_get_html($required_mark_position = 'left') {

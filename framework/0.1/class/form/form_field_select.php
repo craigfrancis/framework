@@ -95,6 +95,10 @@
 		// Errors
 
 			public function required_error_set($error) {
+				$this->required_error_set_html(html($error));
+			}
+
+			public function required_error_set_html($error_html) {
 
 				if ($this->key_select && $this->re_index_keys) {
 					$is_label = (intval($this->value) == 0);
@@ -103,15 +107,19 @@
 				}
 
 				if ($this->form_submitted && $is_label) {
-					$this->form->_field_error_set_html($this->form_field_uid, $error);
+					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
-				$this->required = ($error !== NULL);
+				$this->required = ($error_html !== NULL);
 				$this->required_error_set = true;
 
 			}
 
 			public function invalid_error_set($error) {
+				$this->invalid_error_set_html(html($error));
+			}
+
+			public function invalid_error_set_html($error_html) {
 
 				if ($this->key_select) {
 					if ($this->re_index_keys) {
@@ -127,7 +135,7 @@
 				}
 
 				if ($this->form_submitted && !$is_label && ($is_value === false || $is_value === NULL)) {
-					$this->form->_field_error_set_html($this->form_field_uid, $error);
+					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
 				$this->invalid_error_set = true;

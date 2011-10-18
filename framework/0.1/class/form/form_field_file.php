@@ -87,28 +87,36 @@
 		// Errors
 
 			public function required_error_set($error) {
+				$this->required_error_set_html(html($error));
+			}
+
+			public function required_error_set_html($error_html) {
 
 				if ($this->form_submitted && !$this->has_uploaded) {
-					$this->form->_field_error_set_html($this->form_field_uid, $error);
+					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
-				$this->required = ($error !== NULL);
+				$this->required = ($error_html !== NULL);
 
 			}
 
 			public function max_size_set($error, $size) {
+				$this->max_size_set_html(html($error), $size);
+			}
+
+			public function max_size_set_html($error_html, $size) {
 
 				$this->max_size = intval($size);
 
 				if ($this->has_uploaded) {
 
-					$error = str_replace('XXX', file_size_to_human($this->max_size), $error);
+					$error_html = str_replace('XXX', file_size_to_human($this->max_size), $error_html);
 
-					if ($_FILES[$this->name]['error'] == 1) $this->form->_field_error_set_html($this->form_field_uid, $error, 'ERROR: Exceeds "upload_max_filesize" ' . ini_get('upload_max_filesize'));
-					if ($_FILES[$this->name]['error'] == 2) $this->form->_field_error_set_html($this->form_field_uid, $error, 'ERROR: Exceeds "MAX_FILE_SIZE" specified in the html form');
+					if ($_FILES[$this->name]['error'] == 1) $this->form->_field_error_set_html($this->form_field_uid, $error_html, 'ERROR: Exceeds "upload_max_filesize" ' . ini_get('upload_max_filesize'));
+					if ($_FILES[$this->name]['error'] == 2) $this->form->_field_error_set_html($this->form_field_uid, $error_html, 'ERROR: Exceeds "MAX_FILE_SIZE" specified in the html form');
 
 					if ($_FILES[$this->name]['size'] >= $this->max_size) {
-						$this->form->_field_error_set_html($this->form_field_uid, $error);
+						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 					}
 
 				}
@@ -120,9 +128,13 @@
 			}
 
 			public function partial_file_error_set($error) {
+				$this->partial_file_error_set_html(html($error));
+			}
+
+			public function partial_file_error_set_html($error_html) {
 
 				if ($this->has_uploaded) {
-					if ($_FILES[$this->name]['error'] == 3) $this->form->_field_error_set_html($this->form_field_uid, $error);
+					if ($_FILES[$this->name]['error'] == 3) $this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
 				$this->partial_file_error_set = true;
@@ -130,25 +142,37 @@
 			}
 
 			public function allowed_file_types_mime_set($error, $types) {
+				$this->allowed_file_types_mime_set_html(html($error), $types);
+			}
+
+			public function allowed_file_types_mime_set_html($error_html, $types) {
 
 				if ($this->has_uploaded && !in_array($this->value_mime, $types)) {
-					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $this->value_mime, $error), 'MIME: ' . $this->value_mime);
+					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $this->value_mime, $error_html), 'MIME: ' . $this->value_mime);
 				}
 
 			}
 
 			public function allowed_file_types_ext_set($error, $types) {
+				$this->allowed_file_types_ext_set_html(html($error), $types);
+			}
+
+			public function allowed_file_types_ext_set_html($error_html, $types) {
 
 				if ($this->has_uploaded && !in_array($this->value_ext, $types)) {
-					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $this->value_ext, $error), 'EXT: ' . $this->value_ext);
+					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $this->value_ext, $error_html), 'EXT: ' . $this->value_ext);
 				}
 
 			}
 
 			public function empty_file_error_set($error) {
+				$this->empty_file_error_set_html(html($error));
+			}
+
+			public function empty_file_error_set_html($error_html) {
 
 				if ($this->has_uploaded && $_FILES[$this->name]['size'] == 0) {
-					$this->form->_field_error_set_html($this->form_field_uid, $error);
+					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
 				$this->empty_file_error_set = true;
@@ -156,9 +180,13 @@
 			}
 
 			public function blank_name_error_set($error) {
+				$this->blank_name_error_set_html(html($error));
+			}
+
+			public function blank_name_error_set_html($error_html) {
 
 				if ($this->has_uploaded && $_FILES[$this->name]['name'] == '') {
-					$this->form->_field_error_set_html($this->form_field_uid, $error);
+					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
 				$this->blank_name_error_set = true;

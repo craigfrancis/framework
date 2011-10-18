@@ -30,11 +30,15 @@
 		// Errors
 
 			public function format_error_set($error) {
+				$this->format_error_set_html(html($error));
+			}
+
+			public function format_error_set_html($error_html) {
 
 				if ($this->form_submitted && $this->value != '') {
 					$postcode_clean = format_british_postcode($this->value);
 					if ($postcode_clean === NULL) {
-						$this->form->_field_error_set_html($this->form_field_uid, $error);
+						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 					}
 				}
 
@@ -43,12 +47,16 @@
 			}
 
 			public function required_error_set($error) {
+				$this->required_error_set_html(html($error));
+			}
+
+			public function required_error_set_html($error_html) {
 
 				if ($this->form_submitted && $this->value == '') {
-					$this->form->_field_error_set_html($this->form_field_uid, $error);
+					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
-				$this->required = ($error !== NULL);
+				$this->required = ($error_html !== NULL);
 
 			}
 
