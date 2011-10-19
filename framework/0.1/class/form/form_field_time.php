@@ -1,6 +1,6 @@
 <?php
 
-	class form_field_date_base extends form_field {
+	class form_field_time_base extends form_field {
 
 		//--------------------------------------------------
 		// Variables
@@ -40,23 +40,23 @@
 							$form_method = $form->form_method_get();
 
 							$this->value = array(
-									'D' => intval(request($this->name . '_D', $form_method)),
+									'H' => intval(request($this->name . '_H', $form_method)),
 									'M' => intval(request($this->name . '_M', $form_method)),
-									'Y' => intval(request($this->name . '_Y', $form_method)),
+									'S' => intval(request($this->name . '_S', $form_method)),
 								);
 
 						}
 
 					}
 
-					$this->value_provided = ($this->value['D'] != 0 || $this->value['M'] != 0 || $this->value['Y'] != 0);
+					$this->value_provided = ($this->value['H'] != 0 || $this->value['M'] != 0 || $this->value['S'] != 0);
 
 				//--------------------------------------------------
 				// Default configuration
 
-					$this->type = 'date';
-					$this->format_input = array('D', 'M', 'Y');
-					$this->format_label = array('separator' => '/', 'D' => 'DD', 'M' => 'MM', 'Y' => 'YYYY');
+					$this->type = 'time';
+					$this->format_input = array('H', 'M', 'S');
+					$this->format_label = array('separator' => ':', 'H' => 'HH', 'M' => 'MM', 'S' => 'SS');
 					$this->invalid_error_set = false;
 					$this->invalid_error_found = false;
 
@@ -104,13 +104,20 @@
 
 			public function invalid_error_set_html($error_html) {
 
-				$value = $this->value_time_stamp_get(); // Check upper bound to time-stamp, 2037 on 32bit systems
+				if ($this->form_submitted && $this->value_provided) {
 
-				if ($this->form_submitted && $this->value_provided && (!checkdate($this->value['M'], $this->value['D'], $this->value['Y']) || $value === false)) {
+					$valid = true;
+					if ($this->value['H'] < 0 || $this->value['H'] > 23) $valid = false;
+					if ($this->value['M'] < 0 || $this->value['M'] > 59) $valid = false;
+					if ($this->value['S'] < 0 || $this->value['S'] > 59) $valid = false;
 
-					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+					if (!$valid) {
 
-					$this->invalid_error_found = true;
+						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+
+						$this->invalid_error_found = true; // Bypass min/max style validation
+
+					}
 
 				}
 
@@ -118,80 +125,24 @@
 
 			}
 
-			public function min_date_set($error, $timestamp) {
-				$this->min_date_set_html(html($error), $timestamp);
-			}
-
-			public function min_date_set_html($error_html, $timestamp) {
-
-				if ($this->form_submitted && $this->value_provided && $this->invalid_error_found == false) {
-
-					$value = $this->value_time_stamp_get();
-
-					if ($value !== false && $value < intval($timestamp)) {
-						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
-					}
-
-				}
-
-			}
-
-			public function max_date_set($error, $timestamp) {
-				$this->max_date_set_html(html($error), $timestamp);
-			}
-
-			public function max_date_set_html($error_html, $timestamp) {
-
-				if ($this->form_submitted && $this->value_provided && $this->invalid_error_found == false) {
-
-					$value = $this->value_time_stamp_get();
-
-					if ($value !== false && $value > intval($timestamp)) {
-						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
-					}
-
-				}
-
-			}
-
 		//--------------------------------------------------
 		// Value
 
-			public function value_set($value, $month = NULL, $year = NULL) {
-				$this->value = $this->_value_parse($value, $month, $year);
+			public function value_set($value, $minute = NULL, $second = NULL) {
+				$this->value = $this->_value_parse($value, $minute, $second);
 			}
 
 			public function value_get($part = NULL) {
-				if ($part == 'D' || $part == 'M' || $part == 'Y') {
-					return $this->value[$part];
-				} else {
-					return 'The date part must be set to "D", "M" or "Y"... or you could use value_date_get() or value_time_stamp_get()';
-				}
-			}
-
-			public function value_date_get($value = NULL) {
 				return $this->_value_date_format($this->value);
-			}
-
-			public function value_time_stamp_get() {
-				if ($this->value['M'] == 0 && $this->value['D'] == 0 && $this->value['Y'] == 0) {
-					$timestamp = false;
-				} else {
-					$timestamp = mktime(0, 0, 0, $this->value['M'], $this->value['D'], $this->value['Y']);
-					if ($timestamp === -1) {
-						$timestamp = false; // If the arguments are invalid, the function returns FALSE (before PHP 5.1 it returned -1).
-					}
-				}
-				return $timestamp;
 			}
 
 			public function value_print_get() {
 				if ($this->value === NULL) {
 					if ($this->form->saved_values_available()) {
 						return array(
-								'D' => intval($this->form->saved_value_get($this->name . '_D')),
+								'H' => intval($this->form->saved_value_get($this->name . '_H')),
 								'M' => intval($this->form->saved_value_get($this->name . '_M')),
-								'Y' => intval($this->form->saved_value_get($this->name . '_Y')),
+								'S' => intval($this->form->saved_value_get($this->name . '_S')),
 							);
 					} else {
 						return $this->_value_parse($this->form->db_select_value_get($this->db_field_name));
@@ -205,38 +156,27 @@
 			}
 
 			private function _value_date_format($value) {
-				return str_pad(intval($value['Y']), 4, '0', STR_PAD_LEFT) . '-' . str_pad(intval($value['M']), 2, '0', STR_PAD_LEFT) . '-' . str_pad(intval($value['D']), 2, '0', STR_PAD_LEFT);
+				return str_pad(intval($value['H']), 2, '0', STR_PAD_LEFT) . ':' . str_pad(intval($value['M']), 2, '0', STR_PAD_LEFT) . ':' . str_pad(intval($value['S']), 2, '0', STR_PAD_LEFT);
 			}
 
-			private function _value_parse($value, $month = NULL, $year = NULL) {
+			private function _value_parse($value, $minute = NULL, $second = NULL) {
 
-				if ($month === NULL && $year === NULL) {
+				if ($minute === NULL && $second === NULL) {
 
-					if (!is_numeric($value)) {
-						if ($value == '0000-00-00' || $value == '0000-00-00 00:00:00') {
-							$value = NULL;
-						} else {
-							$value = strtotime($value);
-							if ($value == 943920000) { // "1999-11-30 00:00:00", same as the database "0000-00-00 00:00:00"
-								$value = NULL;
-							}
-						}
-					}
-
-					if (is_numeric($value)) {
+					if (preg_match('/^([0-9]{1,2}):([0-9]{1,2})(:([0-9]{1,2}))?$/', $value, $matches)) {
 						return array(
-								'D' => date('j', $value),
-								'M' => date('n', $value),
-								'Y' => date('Y', $value),
+								'H' => intval($matches[1]),
+								'M' => intval($matches[2]),
+								'S' => intval(isset($matches[4]) ? $matches[4] : 0),
 							);
 					}
 
 				} else {
 
 					return array(
-							'D' => intval($value),
-							'M' => intval($month),
-							'Y' => intval($year),
+							'H' => intval($value),
+							'M' => intval($minute),
+							'S' => intval($second),
 						);
 
 				}
@@ -261,13 +201,13 @@
 		//--------------------------------------------------
 		// HTML
 
-			public function html_label($part = 'D', $label_html = NULL) {
+			public function html_label($part = 'H', $label_html = NULL) {
 
 				//--------------------------------------------------
 				// Check the part
 
-					if ($part != 'D' && $part != 'M' && $part != 'Y') {
-						return 'The date part must be set to "D", "M" or "Y"';
+					if ($part != 'H' && $part != 'M' && $part != 'S') {
+						return 'The date part must be set to "H", "M" or "S"';
 					}
 
 				//--------------------------------------------------
@@ -305,22 +245,22 @@
 
 			public function html_input_part($part) {
 
-				if ($part == 'D' || $part == 'M' || $part == 'Y') {
+				if ($part == 'H' || $part == 'M' || $part == 'S') {
 
 					$value = $this->value_print_get();
 
 					return $this->_html_input(array(
 								'name' => $this->name . '_' . $part,
 								'id' => $this->id . '_' . $part,
-								'maxlength' => ($part == 'Y' ? 4 : 2),
-								'size' => ($part == 'Y' ? 4 : 2),
-								'value' => ($value[$part] == 0 ? '' : $value[$part]),
-								'autofocus' => ($this->autofocus && $part == 'D' ? 'autofocus' : NULL),
+								'maxlength' => 2,
+								'size' => 2,
+								'value' => ($value == NULL ? '' : str_pad(intval($value[$part]), 2, '0', STR_PAD_LEFT)),
+								'autofocus' => ($this->autofocus && $part == 'H' ? 'autofocus' : NULL),
 							));
 
 				} else {
 
-					return 'The date part must be set to "D", "M" or "Y"';
+					return 'The date part must be set to "H", "M" or "S"';
 
 				}
 

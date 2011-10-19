@@ -102,7 +102,7 @@
 					$this->input_class = NULL;
 					$this->input_wrapper_class = 'input';
 					$this->input_wrapper_tag = 'span';
-					$this->info_html = '';
+					$this->info_html = NULL;
 					$this->info_class = 'info';
 					$this->info_tag = 'span';
 					$this->required = false;
@@ -226,11 +226,20 @@
 				$this->info_html = $info_html;
 			}
 
+			public function info_default_get_html() {
+				return '';
+			}
+
 			public function info_get_html($indent = 0) {
-				if ($this->info_html == '') {
+				if ($this->info_html !== NULL) {
+					$info_html = $this->info_html;
+				} else {
+					$info_html = $this->info_default_get_html();
+				}
+				if ($info_html == '') {
 					return '';
 				} else {
-					return ($indent > 0 ? "\n" : '') . str_repeat("\t", $indent) . '<' . html($this->info_tag) . ' class="' . html($this->info_class) . '">' . $this->info_html . '</' . html($this->info_tag) . '>';
+					return ($indent > 0 ? "\n" : '') . str_repeat("\t", $indent) . '<' . html($this->info_tag) . ' class="' . html($this->info_class) . '">' . $info_html . '</' . html($this->info_tag) . '>';
 				}
 			}
 
