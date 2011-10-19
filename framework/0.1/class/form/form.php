@@ -352,10 +352,10 @@
 
 			public function db_select_fields() {
 				$fields = array();
-				for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
-					$field_name = $this->fields[$field_id]->db_field_name_get();
+				for ($field_uid = 0; $field_uid < $this->field_count; $field_uid++) {
+					$field_name = $this->fields[$field_uid]->db_field_name_get();
 					if ($field_name !== NULL) {
-						$fields[$field_id] = $field_name;
+						$fields[$field_uid] = $field_name;
 					}
 				}
 				return $fields;
@@ -514,10 +514,10 @@
 
 				$errors_flat_html = array();
 
-				for ($field_id = -1; $field_id < $this->field_count; $field_id++) { // In field order, starting with -1 for general form errors
-					if (isset($this->errors_html[$field_id])) {
+				for ($field_uid = -1; $field_uid < $this->field_count; $field_uid++) { // In field order, starting with -1 for general form errors
+					if (isset($this->errors_html[$field_uid])) {
 
-						foreach ($this->errors_html[$field_id] as $error_html) {
+						foreach ($this->errors_html[$field_uid] as $error_html) {
 							$errors_flat_html[] = $error_html;
 						}
 
@@ -553,8 +553,8 @@
 				//--------------------------------------------------
 				// Fields
 
-					for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
-						$this->fields[$field_id]->_post_validation();
+					for ($field_uid = 0; $field_uid < $this->field_count; $field_uid++) {
+						$this->fields[$field_uid]->_post_validation();
 					}
 
 				//--------------------------------------------------
@@ -574,21 +574,21 @@
 
 					$values = array();
 
-					for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
+					for ($field_uid = 0; $field_uid < $this->field_count; $field_uid++) {
 
-						$field_name = $this->fields[$field_id]->label_get_text();
-						$field_type = $this->fields[$field_id]->type_get();
+						$field_name = $this->fields[$field_uid]->label_get_text();
+						$field_type = $this->fields[$field_uid]->type_get();
 
 						if ($field_type == 'date') {
-							$value = $this->fields[$field_id]->value_date_get();
+							$value = $this->fields[$field_uid]->value_date_get();
 						} else if ($field_type == 'file' || $field_type == 'image') {
-							if ($this->fields[$field_id]->uploaded()) {
-								$value = $this->fields[$field_id]->file_name_get() . ' (' . file_size_to_human($this->fields[$field_id]->file_size_get()) . ')';
+							if ($this->fields[$field_uid]->uploaded()) {
+								$value = $this->fields[$field_uid]->file_name_get() . ' (' . file_size_to_human($this->fields[$field_uid]->file_size_get()) . ')';
 							} else {
 								$value = 'N/A';
 							}
 						} else {
-							$value = $this->fields[$field_id]->value_get();
+							$value = $this->fields[$field_uid]->value_get();
 						}
 
 						$values[] = array($field_name, $value); // Allow multiple fields to have the same label
@@ -609,19 +609,19 @@
 
 					$values = array();
 
-					for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
-						$field_name = $this->fields[$field_id]->db_field_name_get();
-						if ($field_name !== NULL && !$this->fields[$field_id]->disabled_get() && !$this->fields[$field_id]->readonly_get()) {
+					for ($field_uid = 0; $field_uid < $this->field_count; $field_uid++) {
+						$field_name = $this->fields[$field_uid]->db_field_name_get();
+						if ($field_name !== NULL && !$this->fields[$field_uid]->disabled_get() && !$this->fields[$field_uid]->readonly_get()) {
 
-							$field_key = $this->fields[$field_id]->db_field_key_get();
+							$field_key = $this->fields[$field_uid]->db_field_key_get();
 							$field_type = $this->db_fields[$field_name]['type'];
 
 							if ($field_type == 'datetime' || $field_type == 'date') {
-								$values[$field_name] = $this->fields[$field_id]->value_date_get();
+								$values[$field_name] = $this->fields[$field_uid]->value_date_get();
 							} else if ($field_key == 'key') {
-								$values[$field_name] = $this->fields[$field_id]->value_key_get();
+								$values[$field_name] = $this->fields[$field_uid]->value_key_get();
 							} else {
-								$values[$field_name] = $this->fields[$field_id]->value_get();
+								$values[$field_name] = $this->fields[$field_uid]->value_get();
 							}
 
 						}
@@ -703,8 +703,8 @@
 		//--------------------------------------------------
 		// Field support
 
-			public function field_get($id) {
-				return $this->fields[$id];
+			public function field_get($field_uid) {
+				return $this->fields[$field_uid];
 			}
 
 			public function fields_get() {
@@ -713,7 +713,7 @@
 
 			public function field_groups_get() {
 				$field_groups = array();
-				foreach ($this->fields as $field_id => $field) {
+				foreach ($this->fields as $field_uid => $field) {
 					if ($field->print_show_get() && !$field->print_hidden_get()) {
 						$field_group = $field->print_group_get();
 						if ($field_group !== NULL) {
@@ -729,49 +729,49 @@
 			}
 
 			public function _field_add($field_obj) { // Public for form_field to call
-				$field_id = $this->field_count++;
-				$this->fields[$field_id] = $field_obj;
-				return $field_id;
+				$field_uid = $this->field_count++;
+				$this->fields[$field_uid] = $field_obj;
+				return $field_uid;
 			}
 
-			public function _field_error_add_html($field_id, $error_html, $hidden_info = NULL) {
+			public function _field_error_add_html($field_uid, $error_html, $hidden_info = NULL) {
 
 				if ($this->error_override_function !== NULL) {
 					$function = $this->error_override_function;
-					if ($field_id == -1) {
+					if ($field_uid == -1) {
 						$error_html = call_user_func($function, $error_html, $this, NULL);
 					} else {
-						$error_html = call_user_func($function, $error_html, $this, $this->field_get($field_id));
+						$error_html = call_user_func($function, $error_html, $this, $this->field_get($field_uid));
 					}
 				}
 
-				if (!isset($this->errors_html[$field_id])) {
-					$this->errors_html[$field_id] = array();
+				if (!isset($this->errors_html[$field_uid])) {
+					$this->errors_html[$field_uid] = array();
 				}
 
 				if ($hidden_info !== NULL) {
 					$error_html .= ' <!-- ' . html($hidden_info) . ' -->';
 				}
 
-				$this->errors_html[$field_id][] = $error_html;
+				$this->errors_html[$field_uid][] = $error_html;
 
 			}
 
-			public function _field_error_set_html($field_id, $error_html, $hidden_info = NULL) {
-				$this->errors_html[$field_id] = array();
-				$this->_field_error_add_html($field_id, $error_html, $hidden_info);
+			public function _field_error_set_html($field_uid, $error_html, $hidden_info = NULL) {
+				$this->errors_html[$field_uid] = array();
+				$this->_field_error_add_html($field_uid, $error_html, $hidden_info);
 			}
 
-			public function _field_errors_get_html($field_id) {
-				if (isset($this->errors_html[$field_id])) {
-					return $this->errors_html[$field_id];
+			public function _field_errors_get_html($field_uid) {
+				if (isset($this->errors_html[$field_uid])) {
+					return $this->errors_html[$field_uid];
 				} else {
 					return array();
 				}
 			}
 
-			public function _field_valid($field_id) {
-				return (!isset($this->errors_html[$field_id]));
+			public function _field_valid($field_uid) {
+				return (!isset($this->errors_html[$field_uid]));
 			}
 
 		//--------------------------------------------------
@@ -837,7 +837,7 @@
 				if (!isset($config['wrapper'])) $config['wrapper'] = 'div';
 				if (!isset($config['class'])) $config['class'] = 'form_hidden_fields';
 
-				foreach ($this->fields as $field_id => $field) {
+				foreach ($this->fields as $field_uid => $field) {
 					if ($field->print_hidden_get()) {
 						$this->hidden_values[$field->name_get()] = $field->value_hidden_get();
 					}
@@ -892,23 +892,23 @@
 
 					if ($this->field_autofocus) {
 
-						for ($field_id = 0; $field_id < $this->field_count; $field_id++) {
+						for ($field_uid = 0; $field_uid < $this->field_count; $field_uid++) {
 
-							$field_type = $this->fields[$field_id]->type_get();
+							$field_type = $this->fields[$field_uid]->type_get();
 							if ($field_type == 'date') {
-								$autofocus = ($this->fields[$field_id]->value_date_get() == '0000-00-00');
+								$autofocus = ($this->fields[$field_uid]->value_date_get() == '0000-00-00');
 							} else if ($field_type != 'file' && $field_type != 'image') {
-								$autofocus = ($this->fields[$field_id]->value_get() == '');
+								$autofocus = ($this->fields[$field_uid]->value_get() == '');
 							} else {
 								$autofocus = false;
 							}
 
-							if (!$this->_field_valid($field_id)) {
+							if (!$this->_field_valid($field_uid)) {
 								$autofocus = true;
 							}
 
 							if ($autofocus) {
-								$this->fields[$field_id]->autofocus_set(true);
+								$this->fields[$field_uid]->autofocus_set(true);
 								break;
 							}
 
@@ -927,7 +927,7 @@
 
 					} else {
 
-						foreach ($this->fields as $field_id => $field) {
+						foreach ($this->fields as $field_uid => $field) {
 							if ($field->print_show_get() && !$field->print_hidden_get()) {
 								$field_group = $field->print_group_get();
 								if ($field_group === NULL) {
@@ -956,7 +956,7 @@
 							$html .= "\n\t\t\t\t" . '<h2>' . html($group) . '</h2>' . "\n";
 						}
 
-						foreach ($this->fields as $field_id => $field) {
+						foreach ($this->fields as $field_uid => $field) {
 
 							if ($field->print_show_get() && !$field->print_hidden_get()) {
 

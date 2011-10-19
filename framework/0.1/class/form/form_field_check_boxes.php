@@ -72,16 +72,16 @@
 
 							$this->values = array();
 
-							foreach ($this->option_keys as $field_id => $c_key) {
+							foreach ($this->option_keys as $c_id => $c_key) {
 
 								if ($this->re_index_keys) {
-									$name = $this->name . '_'  . $field_id;
+									$name = $this->name . '_'  . $c_id;
 								} else {
 									$name = $this->name . '_'  . $c_key;
 								}
 
 								if (request($name, $this->form->form_method_get()) == 'true') {
-									$this->values[] = $field_id;
+									$this->values[] = $c_id;
 								}
 
 							}
@@ -177,16 +177,16 @@
 
 						if ($this->form->saved_values_available()) {
 
-							foreach ($this->option_keys as $field_id => $c_key) {
+							foreach ($this->option_keys as $c_id => $c_key) {
 
 								if ($this->re_index_keys) {
-									$name = $this->name . '_'  . $field_id;
+									$name = $this->name . '_'  . $c_id;
 								} else {
 									$name = $this->name . '_'  . $c_key;
 								}
 
 								if ($this->form->saved_value_get($name) == 'true') {
-									$this->values_print[] = $field_id;
+									$this->values_print[] = $c_id;
 								}
 
 							}

@@ -131,6 +131,10 @@
 				return $this->id;
 			}
 
+			public function uid_get() {
+				return $this->form_field_uid;
+			}
+
 			public function name_get() {
 				return $this->name;
 			}
