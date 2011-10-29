@@ -35,20 +35,6 @@
 	}
 
 //--------------------------------------------------
-// TODO: Remove check object
-
-	class check {
-
-		function __set($name, $value) {
-			if (!isset($this->$name)) {
-				exit('Property "' . html($name) . '" not set on ' . get_class($this) . ' object.');
-			}
-			$this->$name = $value;
-		}
-
-	}
-
-//--------------------------------------------------
 // Includes
 
 	require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '01.function.php');
@@ -59,54 +45,61 @@
 	require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '06.objects.php');
 
 //--------------------------------------------------
-// Scripts
+// Render
 
-	if (config::get('debug.level') >= 4) {
-		debug_progress('Start');
-	}
+	if (!defined('FRAMEWORK_INIT_ONLY') || FRAMEWORK_INIT_ONLY !== true) {
 
-	require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '07.routes.php');
+		//--------------------------------------------------
+		// Scripts
 
-	if (config::get('debug.level') >= 4) {
-		debug_progress('Routes');
-	}
+			if (config::get('debug.level') >= 4) {
+				debug_progress('Start');
+			}
 
-	require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '08.controller.php');
+			require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '07.routes.php');
 
-	if (config::get('debug.level') >= 4) {
-		debug_progress('Controller');
-	}
+			if (config::get('debug.level') >= 4) {
+				debug_progress('Routes');
+			}
 
-//--------------------------------------------------
-// View
+			require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '08.controller.php');
 
-	$view = new view();
-	$view->render();
+			if (config::get('debug.level') >= 4) {
+				debug_progress('Controller');
+			}
 
-	unset($view);
+		//--------------------------------------------------
+		// View
 
-	if (config::get('debug.level') >= 4) {
-		debug_progress('View render', 1);
-	}
+			$view = new view();
+			$view->render();
 
-//--------------------------------------------------
-// Layout
+			unset($view);
 
-	$layout = new layout();
-	$layout->render();
+			if (config::get('debug.level') >= 4) {
+				debug_progress('View render', 1);
+			}
 
-	unset($layout);
+		//--------------------------------------------------
+		// Layout
 
-	if (config::get('debug.level') >= 4) {
-		debug_progress('Layout render', 1);
-	}
+			$layout = new layout();
+			$layout->render();
 
-//--------------------------------------------------
-// Final config
+			unset($layout);
 
-	if (config::get('debug.level') >= 5) {
-		debug_show_config();
-		debug_show_array(get_defined_vars(), 'Variables');
+			if (config::get('debug.level') >= 4) {
+				debug_progress('Layout render', 1);
+			}
+
+		//--------------------------------------------------
+		// Final config
+
+			if (config::get('debug.level') >= 5) {
+				debug_show_config();
+				debug_show_array(get_defined_vars(), 'Variables');
+			}
+
 	}
 
 ?>

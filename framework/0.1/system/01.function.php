@@ -363,4 +363,18 @@
 	 	return (is_array($value) ? array_map('strip_slashes_deep', $value) : stripslashes($value));
 	}
 
+//--------------------------------------------------
+// TODO: Remove check object
+
+	class check {
+
+		function __set($name, $value) {
+			if (!isset($this->$name)) {
+				exit('Property "' . html($name) . '" not set on ' . get_class($this) . ' object.');
+			}
+			$this->$name = $value;
+		}
+
+	}
+
 ?>

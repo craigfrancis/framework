@@ -348,7 +348,7 @@
 		//--------------------------------------------------
 		// Running of an api (server support)
 
-			public function run($api, $sub_path) {
+			public function run($api, $sub_path = NULL) {
 				$api = new api($api, $sub_path, $this);
 				return $api->run_wrapper();
 			}

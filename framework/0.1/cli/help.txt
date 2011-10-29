@@ -1,0 +1,11 @@
+
+ -h
+ --help          To get this help.
+
+ --debug         To turn on output debugging.
+
+ -a [name]
+ --api [name]    Call the gateway api [name]
+
+ -m
+ --maintenance   Run the maintenance scripts
