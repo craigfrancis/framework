@@ -1,14 +1,14 @@
 #!/bin/bash
 
-PATH="$0";
-cd `/usr/bin/dirname "${PATH}"`;
-PATH=`/usr/bin/basename "${PATH}"`;
+FILE="$0";
+cd `dirname "${FILE}"`;
+FILE=`basename "${FILE}"`;
 SOURCE=`pwd -P`;
 
-while [ -L "${PATH}" ]; do
-	PATH=`/usr/bin/readlink "${PATH}"`;
-	cd `/usr/bin/dirname "${PATH}"`;
-	PATH=`/usr/bin/basename "${PATH}"`;
+while [ -L "${FILE}" ]; do
+	FILE=`readlink "${FILE}"`;
+	cd `dirname "${FILE}"`;
+	FILE=`basename "${FILE}"`;
 done
 
 DIR=`pwd -P`;
