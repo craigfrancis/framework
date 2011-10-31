@@ -50,7 +50,6 @@
 				//--------------------------------------------------
 				// Defaults
 
-					$this->config['profile'] = NULL;
 					$this->config['table_sql'] = DB_PREFIX . 'location';
 					$this->config['where_sql'] = 'true';
 					$this->config['field_id_sql'] = 'id';
@@ -68,23 +67,33 @@
 				// Set config
 
 					if (is_string($config)) {
+						$profile = $config;
+					} else if (isset($config['profile'])) {
+						$profile = $config['profile'];
+						unset($config['profile']);
+					} else {
+						$profile = '';
+					}
 
-						$config = array('profile' => $config);
-
-					} else if (!is_array($config)) {
-
+					if (!is_array($config)) {
 						$config = array();
-
 					}
 
 					$prefix = 'nearest';
-					if (isset($config['profile']) && $config['profile'] != '') {
-						$prefix .= '.' . $config['profile'];
+					if ($profile != '') {
+						$prefix .= '.' . $profile;
 					}
 
 					$site_config = config::get_all($prefix);
+
 					if (count($site_config) > 0) {
+
 						$config = array_merge($site_config, $config);
+
+					} else if ($profile != '') {
+
+						exit_with_error('Cannot find nearest profile "' . $profile . '" (' . $prefix . '.*)');
+
 					}
 
 					$this->config($config);
