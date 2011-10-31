@@ -1,11 +1,11 @@
 
  -h
- --help          To get this help.
+ --help            To get this help.
 
- --debug         To turn on output debugging.
+ --debug           To turn on output debugging.
 
- -a [name]
- --api [name]    Call the gateway api [name]
+ -g [name]
+ --gateway [name]  Call the gateway [name]
 
  -m
- --maintenance   Run the maintenance scripts
+ --maintenance     Run the maintenance scripts

@@ -29,7 +29,7 @@
 
 	$parameters = array(
 			'h' => 'help',
-			'a:' => 'api:',
+			'g:' => 'gateway:',
 			'd::' => 'debug::',
 			'm::' => 'maintenance::',
 		);
@@ -44,22 +44,22 @@
 	}
 
 //--------------------------------------------------
-// API mode
+// Gateway mode
 
-	$api = NULL;
-	if (isset($options['a'])) $api = $options['a'];
-	if (isset($options['api'])) $api = $options['api'];
+	$gateway_name = NULL;
+	if (isset($options['g'])) $gateway_name = $options['g'];
+	if (isset($options['gateway'])) $gateway_name = $options['gateway'];
 
-	if ($api !== NULL) {
+	if ($gateway_name !== NULL) {
 
 		$gateway = new gateway();
 
-		$success = $gateway->run($api);
+		$success = $gateway->run($gateway_name);
 
 		if ($success) {
 			exit();
 		} else {
-			exit('Invalid API "' . $api . '"' . "\n");
+			exit('Invalid gateway "' . $gateway_name . '"' . "\n");
 		}
 
 	}
