@@ -100,10 +100,8 @@
 		//--------------------------------------------------
 		// Called from
 
-			$called_from_stack = debug_backtrace();
-
-			foreach ($called_from_stack as $called_from) {
-				if (isset($called_from['file']) && substr($called_from['file'],0, strlen(FRAMEWORK_ROOT)) != FRAMEWORK_ROOT) {
+			foreach (debug_backtrace() as $called_from) {
+				if (isset($called_from['file']) && substr($called_from['file'], 0, strlen(FRAMEWORK_ROOT)) != FRAMEWORK_ROOT) {
 
 					if ($hidden_info === NULL) {
 						$hidden_info = '';
@@ -650,6 +648,47 @@
 			debug_show_config();
 
 	}
+
+//--------------------------------------------------
+// Error handler
+
+	function error_handler($err_no, $err_str, $err_file, $err_line, $err_context) {
+
+		foreach (debug_backtrace() as $called_from) {
+			if (isset($called_from['function']) && $called_from['function'] == 'html') { // Replace line and file if it's the multibyte error in the html() function.
+				$err_line = $called_from['line'];
+				$err_file = $called_from['file'];
+				$err_str .= ' (' . substr($called_from['args'][0], 0, 50) . ')';
+				break;
+			}
+		}
+
+		switch ($err_no) { // From "Johan 'Josso' Jensen" on http://www.php.net/set_error_handler
+			case E_NOTICE:
+			case E_USER_NOTICE:
+				$error_type = 'Notice';
+			break;
+			case E_WARNING:
+			case E_USER_WARNING:
+				$error_type = 'Warning';
+			break;
+			case E_ERROR:
+			case E_USER_ERROR:
+				$error_type = 'Fatal Error';
+			break;
+			default:
+				$error_type = 'Unknown';
+			break;
+		}
+
+		if (ini_get('display_errors')) printf('<br />\n<b>%s</b>: %s in <b>%s</b> on line <b>%d</b><br /><br />\n', $error_type, $err_str, $err_file, $err_line);
+		if (ini_get('log_errors')) error_log(sprintf('PHP %s:  %s in %s on line %d', $error_type, $err_str, $err_file, $err_line));
+
+		return true;
+
+	}
+
+	set_error_handler('error_handler');
 
 //--------------------------------------------------
 // Debug shutdown

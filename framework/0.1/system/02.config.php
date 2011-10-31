@@ -206,6 +206,10 @@
 				'/Netscape\/[4-7]\./',
 			));
 
+		if (config::get('output.charset') == 'UTF-8') {
+			mb_detect_order(array('UTF-8', 'ASCII'));
+		}
+
 	//--------------------------------------------------
 	// URL
 
