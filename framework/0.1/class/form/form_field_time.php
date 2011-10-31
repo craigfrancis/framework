@@ -55,7 +55,7 @@
 				// Default configuration
 
 					$this->type = 'time';
-					$this->format_input = array('H', 'M', 'S');
+					$this->format_input = array('H', 'M'); // Could also be array('H', 'M', 'S')
 					$this->format_label = array('separator' => ':', 'H' => 'HH', 'M' => 'MM', 'S' => 'SS');
 					$this->invalid_error_set = false;
 					$this->invalid_error_found = false;
@@ -133,7 +133,11 @@
 			}
 
 			public function value_get($part = NULL) {
-				return $this->_value_date_format($this->value);
+				if ($part == 'H' || $part == 'M' || $part == 'S') {
+					return $this->value[$part];
+				} else {
+					return $this->_value_date_format($this->value);
+				}
 			}
 
 			public function value_print_get() {
