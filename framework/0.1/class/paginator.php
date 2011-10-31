@@ -132,6 +132,12 @@ class paginator_base extends check {
 		return intval(($page_number - 1) * $page_size) . ', ' . intval($page_size);
 	}
 
+	public function limit_array($array) {
+		$page_number = $this->page_number_get();
+		$page_size = $this->page_size_get();
+		return array_slice($array, intval(($page_number - 1) * $page_size), $page_size, true);
+	}
+
 	public function page_size_get() {
 		return $this->config['items_per_page'];
 	}
