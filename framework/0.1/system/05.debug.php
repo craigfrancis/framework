@@ -658,7 +658,7 @@
 			if (isset($called_from['function']) && $called_from['function'] == 'html') { // Replace line and file if it's the multibyte error in the html() function.
 				$err_line = $called_from['line'];
 				$err_file = $called_from['file'];
-				$err_str .= ' (' . substr($called_from['args'][0], 0, 50) . ')';
+				$err_str .= ' (' . $called_from['args'][0] . ')';
 				break;
 			}
 		}
