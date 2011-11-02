@@ -32,6 +32,7 @@
 			'g:' => 'gateway:',
 			'd::' => 'debug::',
 			'm::' => 'maintenance::',
+			'p::' => 'permissions::',
 		);
 
 	$options = getopt(implode('', array_keys($parameters)), $parameters);
@@ -78,6 +79,33 @@
 
 		foreach ($ran_tasks as $task) {
 			echo '- ' . $task . "\n";
+		}
+
+		echo "\n";
+		exit();
+
+	}
+
+//--------------------------------------------------
+// Permissions mode
+
+	if (isset($options['p']) || isset($options['permissions'])) {
+
+		while (ob_get_level() > 0) {
+			ob_end_flush();
+		}
+
+		$commands = array(
+			'App Folders' => 'find ' . escapeshellarg(APP_ROOT)  . ' -type d -exec chmod 755 {} \\; 2>&1',
+			'App Files' => 'find ' . escapeshellarg(APP_ROOT)  . ' -type f -exec chmod 644 {} \\; 2>&1',
+			'File Folders' => 'find ' . escapeshellarg(FILE_ROOT) . ' -type d -exec chmod 777 {} \\; 2>&1',
+			'File Files' => 'find ' . escapeshellarg(FILE_ROOT) . ' -type f -exec chmod 666 {} \\; 2>&1',
+		);
+
+		foreach ($commands as $name => $command) {
+			echo $name . "\n";
+			flush();
+			echo shell_exec($command);
 		}
 
 		echo "\n";

@@ -26,7 +26,7 @@
 				//--------------------------------------------------
 				// Home path
 
-					$this->config_path_set(ROOT . '/private/gpg');
+					$this->config_path_set(PRIVATE_ROOT . '/gpg');
 
 			}
 

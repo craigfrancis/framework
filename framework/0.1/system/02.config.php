@@ -185,6 +185,8 @@
 		config::set_default('resource.file_url', config::get('url.prefix') . '/a/files');
 		config::set_default('resource.file_root', ROOT . '/files');
 
+		config::set_default('resource.private_root', ROOT . '/private');
+
 	//--------------------------------------------------
 	// Output
 
@@ -254,5 +256,7 @@
 
 	define('FILE_URL',    config::get('resource.file_url'));
 	define('FILE_ROOT',   config::get('resource.file_root'));
+
+	define('PRIVATE_ROOT',   config::get('resource.private_root'));
 
 ?>
