@@ -681,7 +681,7 @@
 			break;
 		}
 
-		if (ini_get('display_errors')) printf('<br />\n<b>%s</b>: %s in <b>%s</b> on line <b>%d</b><br /><br />\n', $error_type, $err_str, $err_file, $err_line);
+		if (ini_get('display_errors')) printf("<br />\n<b>%s</b>: %s in <b>%s</b> on line <b>%d</b><br /><br />\n", $error_type, $err_str, $err_file, $err_line);
 		if (ini_get('log_errors')) error_log(sprintf('PHP %s:  %s in %s on line %d', $error_type, $err_str, $err_file, $err_line));
 
 		return true;
