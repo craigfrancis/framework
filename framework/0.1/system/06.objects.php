@@ -177,9 +177,7 @@
 
 				echo config::get('output.html');
 
-				foreach (config::get('view.variables') as $name => $value) {
-					$$name = $value;
-				}
+				extract(config::get('view.variables', array()));
 
 				require_once($this->view_path_get());
 
@@ -708,9 +706,7 @@
 				//--------------------------------------------------
 				// Local variables
 
-					foreach (config::get('view.variables', array()) as $name => $value) {
-						$$name = $value;
-					}
+					extract(config::get('view.variables', array()));
 
 				//--------------------------------------------------
 				// XML Prolog
