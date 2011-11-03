@@ -9,6 +9,7 @@
 			protected $value_provided;
 			protected $format_input;
 			protected $format_label;
+			protected $input_options;
 			protected $invalid_error_set;
 			protected $invalid_error_found;
 
@@ -57,6 +58,7 @@
 					$this->type = 'time';
 					$this->format_input = array('H', 'M'); // Could also be array('H', 'M', 'S')
 					$this->format_label = array('separator' => ':', 'H' => 'HH', 'M' => 'MM', 'S' => 'SS');
+					$this->input_options = array('H' => NULL, 'M' => NULL, 'S' => NULL);
 					$this->invalid_error_set = false;
 					$this->invalid_error_found = false;
 
@@ -68,6 +70,10 @@
 
 			public function format_label_set($format_label) {
 				$this->format_label = array_merge($this->format_label, $format_label);
+			}
+
+			public function input_options_set($field, $options) {
+				$this->input_options[$field] = $options;
 			}
 
 			public function info_default_get_html() {
@@ -253,14 +259,32 @@
 
 					$value = $this->value_print_get();
 
-					return $this->_html_input(array(
+					if (is_array($this->input_options[$part])) {
+
+						$html = '
+									<select name="' . html($this->name . '_' . $part) . '" id="' . html($this->id . '_' . $part) . '"' . ($this->input_class === NULL ? '' : ' class="' . html($this->input_class) . '"') . ($this->autofocus ? ' autofocus="autofocus"' : '') . '>
+										<option value=""></option>';
+
+						foreach ($this->input_options[$part] as $option) {
+							$html .= '
+										<option value="' . html($option) . '"' . ($value[$part] !== NULL && intval($value[$part]) == intval($option) ? ' selected="selected"' : '') . '>' . html(str_pad(intval($option), 2, '0', STR_PAD_LEFT)) . '</option>';
+						}
+
+						return $html . '
+									</select>';
+
+					} else {
+
+						return $this->_html_input(array(
 								'name' => $this->name . '_' . $part,
 								'id' => $this->id . '_' . $part,
 								'maxlength' => 2,
 								'size' => 2,
-								'value' => ($value == NULL ? '' : str_pad(intval($value[$part]), 2, '0', STR_PAD_LEFT)),
+								'value' => ($value === NULL ? '' : str_pad(intval($value[$part]), 2, '0', STR_PAD_LEFT)),
 								'autofocus' => ($this->autofocus && $part == 'H' ? 'autofocus' : NULL),
 							));
+
+					}
 
 				} else {
 
