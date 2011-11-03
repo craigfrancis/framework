@@ -58,7 +58,7 @@
 					$this->type = 'time';
 					$this->format_input = array('H', 'M'); // Could also be array('H', 'M', 'S')
 					$this->format_label = array('separator' => ':', 'H' => 'HH', 'M' => 'MM', 'S' => 'SS');
-					$this->input_options = array('H' => NULL, 'M' => NULL, 'S' => NULL);
+					$this->input_options = array();
 					$this->invalid_error_set = false;
 					$this->invalid_error_found = false;
 
@@ -72,8 +72,18 @@
 				$this->format_label = array_merge($this->format_label, $format_label);
 			}
 
-			public function input_options_set($field, $options) {
-				$this->input_options[$field] = $options;
+			public function input_value_options_set($field, $options) {
+				$this->input_options[$field] = array(
+						'type' => 'value',
+						'options' => $options,
+					);
+			}
+
+			public function input_text_options_set($field, $options) {
+				$this->input_options[$field] = array(
+						'type' => 'text',
+						'options' => $options,
+					);
 			}
 
 			public function info_default_get_html() {
@@ -259,15 +269,20 @@
 
 					$value = $this->value_print_get();
 
-					if (is_array($this->input_options[$part])) {
+					if (isset($this->input_options[$part])) {
 
 						$html = '
 									<select name="' . html($this->name . '_' . $part) . '" id="' . html($this->id . '_' . $part) . '"' . ($this->input_class === NULL ? '' : ' class="' . html($this->input_class) . '"') . ($this->autofocus ? ' autofocus="autofocus"' : '') . '>
 										<option value=""></option>';
 
-						foreach ($this->input_options[$part] as $option) {
+						$type = $this->input_options[$part]['type'];
+						foreach ($this->input_options[$part]['options'] as $option_value => $option_text) {
+							if ($type == 'value') {
+								$option_value = $option_text;
+								$option_text = str_pad(intval($option_text), 2, '0', STR_PAD_LEFT);
+							}
 							$html .= '
-										<option value="' . html($option) . '"' . ($value[$part] !== NULL && intval($value[$part]) == intval($option) ? ' selected="selected"' : '') . '>' . html(str_pad(intval($option), 2, '0', STR_PAD_LEFT)) . '</option>';
+										<option value="' . html($option_value) . '"' . ($value[$part] !== NULL && intval($value[$part]) == intval($option_value) ? ' selected="selected"' : '') . '>' . html($option_text) . '</option>';
 						}
 
 						return $html . '

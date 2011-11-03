@@ -9,6 +9,7 @@
 			protected $value_provided;
 			protected $format_input;
 			protected $format_label;
+			protected $input_options;
 			protected $invalid_error_set;
 			protected $invalid_error_found;
 
@@ -57,6 +58,7 @@
 					$this->type = 'date';
 					$this->format_input = array('D', 'M', 'Y');
 					$this->format_label = array('separator' => '/', 'D' => 'DD', 'M' => 'MM', 'Y' => 'YYYY');
+					$this->input_options = array();
 					$this->invalid_error_set = false;
 					$this->invalid_error_found = false;
 
@@ -68,6 +70,20 @@
 
 			public function format_label_set($format_label) {
 				$this->format_label = array_merge($this->format_label, $format_label);
+			}
+
+			public function input_value_options_set($field, $options) {
+				$this->input_options[$field] = array(
+						'type' => 'value',
+						'options' => $options,
+					);
+			}
+
+			public function input_text_options_set($field, $options) {
+				$this->input_options[$field] = array(
+						'type' => 'text',
+						'options' => $options,
+					);
 			}
 
 			public function info_default_get_html() {
@@ -309,7 +325,28 @@
 
 					$value = $this->value_print_get();
 
-					return $this->_html_input(array(
+					if (isset($this->input_options[$part])) {
+
+						$html = '
+									<select name="' . html($this->name . '_' . $part) . '" id="' . html($this->id . '_' . $part) . '"' . ($this->input_class === NULL ? '' : ' class="' . html($this->input_class) . '"') . ($this->autofocus ? ' autofocus="autofocus"' : '') . '>
+										<option value=""></option>';
+
+						$type = $this->input_options[$part]['type'];
+						foreach ($this->input_options[$part]['options'] as $option_value => $option_text) {
+							if ($type == 'value') {
+								$option_value = $option_text;
+								$option_text = str_pad(intval($option_text), 2, '0', STR_PAD_LEFT);
+							}
+							$html .= '
+										<option value="' . html($option_value) . '"' . ($value[$part] !== NULL && intval($value[$part]) == intval($option_value) ? ' selected="selected"' : '') . '>' . html($option_text) . '</option>';
+						}
+
+						return $html . '
+									</select>';
+
+					} else {
+
+						return $this->_html_input(array(
 								'name' => $this->name . '_' . $part,
 								'id' => $this->id . '_' . $part,
 								'maxlength' => ($part == 'Y' ? 4 : 2),
@@ -317,6 +354,8 @@
 								'value' => ($value[$part] == 0 ? '' : $value[$part]),
 								'autofocus' => ($this->autofocus && $part == 'D' ? 'autofocus' : NULL),
 							));
+
+					}
 
 				} else {
 
