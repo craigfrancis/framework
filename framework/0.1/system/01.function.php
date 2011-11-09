@@ -53,6 +53,17 @@
 	}
 
 //--------------------------------------------------
+// Shortcut for gateway url's
+
+	function gateway_url($api_name, $parameters) {
+
+		$api_name = str_replace('_', '-', $api_name);
+
+		return url(config::get('gateway.url') . '/' . urlencode($api_name) . '/', $parameters);
+
+	}
+
+//--------------------------------------------------
 // Quick functions used to convert text into a safe
 // form of HTML/XML/CSV without having to write the
 // full native function in the script.
