@@ -91,6 +91,11 @@
 			$this->id_name = $id;
 		}
 
+		public function anchor_set($id) {
+			$this->id_set($id);
+			$this->current_url_set('#' . $id);
+		}
+
 		public function class_set($class_name) {
 			$this->class_name = $class_name;
 		}

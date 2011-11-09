@@ -10,6 +10,7 @@
 
 			private $data = NULL;
 			private $parameters = array();
+			private $fragment = NULL;
 			private $format = NULL;
 			private $cache = NULL;
 
@@ -55,6 +56,14 @@
 				}
 
 				$this->data = @parse_url($url); // Avoid E_WARNING
+
+				if (isset($this->data['fragment'])) {
+					$this->fragment = $this->data['fragment'];
+					unset($this->data['fragment']);
+					if (count($this->data) == 0) {
+						$this->data = NULL;
+					}
+				}
 
 				if (isset($this->data['query'])) {
 
@@ -130,8 +139,8 @@
 				//--------------------------------------------------
 				// Fragment
 
-					if (isset($this->data['fragment'])) {
-						$output .= '#' . $this->data['fragment'];
+					if ($this->fragment !== NULL) {
+						$output .= '#' . $this->fragment;
 					}
 
 				//--------------------------------------------------
@@ -313,6 +322,9 @@
 	}
 
 	if (false) {
+
+		class url extends url_base {
+		}
 
 		echo "<br />\n";
 		echo "URL Testing as function:<br />\n";

@@ -33,6 +33,16 @@
 		unset($title_folders, $folder);
 
 	//--------------------------------------------------
+	// Don't allow use underscores in urls... ideally,
+	// from an accessibility point of view, if a link
+	// was printed with underscores and an underline, it
+	// can cause issues, so be consistent, and use hyphens
+
+		if (strpos($route_path, '_') !== false) {
+			redirect(str_replace('_', '-', config::get('request.url_https')), 301);
+		}
+
+	//--------------------------------------------------
 	// Robots
 
 		if (substr($route_path, 0, 11) == '/robots.txt') {
@@ -141,9 +151,11 @@
 
 			if (preg_match('/^[\/]*([^\/]*)[\/]*(.*)$/', substr($route_path, strlen($gateway_url)), $matches)) {
 
+				$api_name = str_replace('-', '_', $matches[1]);
+
 				$gateway = new gateway();
 
-				$success = $gateway->run($matches[1], $matches[2]);
+				$success = $gateway->run($api_name, $matches[2]);
 
 				if ($success) {
 					exit();
@@ -156,16 +168,6 @@
 		}
 
 		unset($gateway_url);
-
-	//--------------------------------------------------
-	// Don't allow use underscores in urls... ideally,
-	// from an accessibility point of view, if a link
-	// was printed with underscores and an underline, it
-	// can cause issues, so be consistent, and use hyphens
-
-		if (strpos($route_path, '_') !== false) {
-			redirect(str_replace('_', '-', config::get('request.url_https')), 301);
-		}
 
 	//--------------------------------------------------
 	// Reduce possibility of duplicate content issues
