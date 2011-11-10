@@ -221,10 +221,18 @@
 			}
 
 			public function file_save_to($path) {
-				if ($this->uploaded && is_writable(dirname($path))) {
+				if ($this->uploaded) {
+
+					if (is_file($path) && !is_writable($path)) {
+						exit_with_error('Cannot save file "' . $this->label_html . '", check destination file permissions.', $path);
+					} else if (!is_writable(dirname($path))) {
+						exit_with_error('Cannot save file "' . $this->label_html . '", check destination folder permissions.', dirname($path));
+					}
+
 					$return = move_uploaded_file($_FILES[$this->name]['tmp_name'], $path);
 					@chmod($path, 0666); // Most websites use a generic apache user.
 					return $return;
+
 				}
 				return false;
 			}
