@@ -5,6 +5,7 @@
 		//--------------------------------------------------
 		// Variables
 
+			protected $value;
 			protected $select_size;
 			protected $option_values;
 			protected $option_keys;
