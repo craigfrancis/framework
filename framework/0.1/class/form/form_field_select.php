@@ -280,7 +280,7 @@
 				$value = $this->value_print_get();
 
 				$html = '
-									<select name="' . html($this->name) . '" id="' . html($this->id) . '"' . ($this->select_size <= 1 ? '' : ' size="' . intval($this->select_size) . '"') . ($this->input_class === NULL ? '' : ' class="' . html($this->input_class) . '"') . ($this->autofocus ? ' autofocus="autofocus"' : '') . '>';
+									<select name="' . html($this->name) . '" id="' . html($this->id) . '"' . ($this->select_size <= 1 ? '' : ' size="' . intval($this->select_size) . '"') . ($this->input_class === NULL ? '' : ' class="' . html($this->input_class) . '"') . ($this->autofocus ? ' autofocus="autofocus"' : '') . ($this->autocorrect ? ' autocorrect="autocorrect"' : '') . ($this->autocomplete ? ' autocomplete="autocomplete"' : '') . '>';
 
 				if ($this->label_option !== NULL) {
 					$html .= '

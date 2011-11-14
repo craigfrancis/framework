@@ -31,6 +31,8 @@
 			protected $required_mark_html;
 			protected $required_mark_position;
 			protected $autofocus;
+			protected $autocorrect;
+			protected $autocomplete;
 			protected $disabled;
 			protected $readonly;
 			protected $print_show;
@@ -109,6 +111,8 @@
 					$this->required_mark_html = NULL;
 					$this->required_mark_position = NULL;
 					$this->autofocus = false;
+					$this->autocorrect = false;
+					$this->autocomplete = false;
 					$this->disabled = false;
 					$this->readonly = false;
 					$this->print_show = true;
@@ -279,6 +283,22 @@
 				return $this->autofocus;
 			}
 
+			public function autocorrect_set($autocorrect) {
+				$this->autocorrect = ($autocorrect == true);
+			}
+
+			public function autocorrect_get() {
+				return $this->autocorrect;
+			}
+
+			public function autocomplete_set($autocomplete) {
+				$this->autocomplete = ($autocomplete == true);
+			}
+
+			public function autocomplete_get() {
+				return $this->autocomplete;
+			}
+
 			public function disabled_set($disabled) {
 				$this->disabled = ($disabled == true);
 			}
@@ -437,6 +457,14 @@
 
 				if ($this->autofocus) {
 					$attributes_default['autofocus'] = 'autofocus';
+				}
+
+				if ($this->autocorrect) {
+					$attributes_default['autocorrect'] = 'autocorrect';
+				}
+
+				if ($this->autocomplete) {
+					$attributes_default['autocomplete'] = 'autocomplete';
 				}
 
 				if ($this->disabled) {

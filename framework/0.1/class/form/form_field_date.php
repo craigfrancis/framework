@@ -325,10 +325,12 @@
 
 					$value = $this->value_print_get();
 
+					$autofocus = ($this->autofocus && $part == 'D');
+
 					if (isset($this->input_options[$part])) {
 
 						$html = '
-									<select name="' . html($this->name . '_' . $part) . '" id="' . html($this->id . '_' . $part) . '"' . ($this->input_class === NULL ? '' : ' class="' . html($this->input_class) . '"') . ($this->autofocus ? ' autofocus="autofocus"' : '') . '>
+									<select name="' . html($this->name . '_' . $part) . '" id="' . html($this->id . '_' . $part) . '"' . ($this->input_class === NULL ? '' : ' class="' . html($this->input_class) . '"') . ($autofocus ? ' autofocus="autofocus"' : '') . ($this->autocorrect ? ' autocorrect="autocorrect"' : '') . ($this->autocomplete ? ' autocomplete="autocomplete"' : '') . '>
 										<option value=""></option>';
 
 						$type = $this->input_options[$part]['type'];
@@ -352,7 +354,9 @@
 								'maxlength' => ($part == 'Y' ? 4 : 2),
 								'size' => ($part == 'Y' ? 4 : 2),
 								'value' => ($value[$part] == 0 ? '' : $value[$part]),
-								'autofocus' => ($this->autofocus && $part == 'D' ? 'autofocus' : NULL),
+								'autofocus' => ($autofocus ? 'autofocus' : NULL),
+								'autocorrect' => ($this->autocorrect ? 'autocorrect' : NULL),
+								'autocomplete' => ($this->autocomplete ? 'autocomplete' : NULL),
 							));
 
 					}

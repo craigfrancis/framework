@@ -725,7 +725,7 @@
 			}
 
 			public function field_autofocus_set($autofocus) {
-				$this->field_autofocus = $autofocus;
+				$this->field_autofocus = ($autofocus == true);
 			}
 
 			public function _field_add($field_obj) { // Public for form_field to call
