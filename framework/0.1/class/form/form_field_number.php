@@ -28,6 +28,7 @@
 					$this->min_value = NULL;
 					$this->max_value = NULL;
 					$this->type = 'number';
+					$this->input_type = 'number';
 
 			}
 
@@ -87,8 +88,8 @@
 				$this->max_value = $value;
 				$this->max_length = (strlen($value) + 6); // Allow for a decimal place, plus an arbitrary 5 digits.
 
-				if ($this->size === NULL && $this->max_length < 20) {
-					$this->size = $this->max_length;
+				if ($this->input_size === NULL && $this->max_length < 20) {
+					$this->input_size = $this->max_length;
 				}
 
 			}
@@ -122,12 +123,11 @@
 			}
 
 		//--------------------------------------------------
-		// HTML
+		// Attributes
 
-			public function html_input() {
+			protected function _input_attributes() {
 
-				$attributes = $this->_input_attributes();
-				$attributes['type'] = 'number';
+				$attributes = parent::_input_attributes();
 
 				if ($this->min_value !== NULL) {
 					$attributes['min'] = $this->min_value;
@@ -137,14 +137,14 @@
 					$attributes['max'] = $this->max_value;
 				}
 
-				if ($attributes['value'] == '') {
-					unset($attributes['value']); // HTML5 validation requires a valid floating point number.
+				if (isset($attributes['value']) && $attributes['value'] == '') {
+					unset($attributes['value']); // HTML5 validation requires a valid floating point number, so can't be an empty string
 				}
 
 				unset($attributes['size']); // Invalid HTML5 attributes
 				unset($attributes['maxlength']); // Invalid HTML5 attributes
 
-				return $this->_html_input($attributes);
+				return $attributes;
 
 			}
 

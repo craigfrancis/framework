@@ -36,44 +36,33 @@
 			}
 
 		//--------------------------------------------------
+		// Attributes
+
+			protected function _input_attributes() {
+
+				$attributes = parent::_input_attributes();
+
+				unset($attributes['type']);
+				unset($attributes['value']);
+				unset($attributes['size']);
+
+				$attributes['rows'] = intval($this->textarea_rows);
+				$attributes['cols'] = intval($this->textarea_cols);
+
+				return $attributes;
+
+			}
+
+		//--------------------------------------------------
 		// HTML
 
 			public function html_input() {
 
-				$attributes = array(
-						'name' => $this->name,
-						'id' => $this->id,
-						'rows' => intval($this->textarea_rows),
-						'cols' => intval($this->textarea_cols),
-					);
-
-				if ($this->max_length !== NULL) {
-					$attributes['maxlength'] = intval($this->max_length);
-				}
-
-				if ($this->required) {
-					$attributes['required'] = 'required';
-				}
-
-				if ($this->disabled) {
-					$attributes['disabled'] = 'disabled';
-				}
-
-				if ($this->readonly) {
-					$attributes['readonly'] = 'readonly';
-				}
-
-				if ($this->input_class !== NULL) {
-					$attributes['class'] = $this->input_class;
-				}
-
-				if ($this->placeholder !== NULL) {
-					$attributes['placeholder'] = $this->placeholder;
-				}
-
 				$html = '<textarea';
-				foreach ($attributes as $name => $value) {
-					$html .= ' ' . $name . '="' . html($value) . '"';
+				foreach ($this->_input_attributes() as $name => $value) {
+					if ($value !== NULL) {
+						$html .= ' ' . $name . '="' . html($value) . '"';
+					}
 				}
 				return $html . '>' . html($this->value_print_get()) . '</textarea>';
 

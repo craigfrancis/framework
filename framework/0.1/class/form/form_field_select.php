@@ -1,6 +1,6 @@
 <?php
 
-	class form_field_select_base extends form_field_text {
+	class form_field_select_base extends form_field {
 
 		//--------------------------------------------------
 		// Variables
@@ -27,12 +27,23 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->_setup_text($form, $label, $name);
+					$this->_setup($form, $label, $name);
+
+				//--------------------------------------------------
+				// Value
+
+					$this->value = NULL;
+
+					if ($this->form_submitted) {
+						$this->value = request($this->name, $this->form->form_method_get());
+						if ($this->value === NULL) {
+							$this->value = $this->form->hidden_value_get($this->name);
+						}
+					}
 
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->max_length = -1; // Bypass the _post_validation on the text field (not used)
 					$this->select_size = 1;
 					$this->option_values = array();
 					$this->option_keys = array();
@@ -87,7 +98,7 @@
 				$this->option_groups = $option_groups;
 			}
 
-			public function size_set($size) {
+			public function select_size_set($size) {
 				$this->select_size = $size;
 			}
 
@@ -273,14 +284,35 @@
 			}
 
 		//--------------------------------------------------
+		// Attributes
+
+			protected function _input_attributes() {
+
+				$attributes = parent::_input_attributes();
+
+				if ($this->select_size > 1) {
+					$attributes['size'] = intval($this->select_size);
+				}
+
+				return $attributes;
+
+			}
+
+		//--------------------------------------------------
 		// HTML
 
 			public function html_input() {
 
-				$value = $this->value_print_get();
+				$input_value = $this->value_print_get();
 
 				$html = '
-									<select name="' . html($this->name) . '" id="' . html($this->id) . '"' . ($this->select_size <= 1 ? '' : ' size="' . intval($this->select_size) . '"') . ($this->input_class === NULL ? '' : ' class="' . html($this->input_class) . '"') . ($this->autofocus ? ' autofocus="autofocus"' : '') . ($this->autocorrect ? ' autocorrect="autocorrect"' : '') . ($this->autocomplete ? ' autocomplete="autocomplete"' : '') . '>';
+									<select';
+				foreach ($this->_input_attributes() as $name => $value) {
+					if ($value !== NULL) {
+						$html .= ' ' . $name . '="' . html($value) . '"';
+					}
+				}
+				$html .= '>';
 
 				if ($this->label_option !== NULL) {
 					$html .= '
@@ -302,7 +334,7 @@
 						}
 
 						$html .= '
-										<option value="' . html($key) . '"' . ($key == $value ? ' selected="selected"' : '') . '>' . ($option === '' ? '&#xA0;' : html($option)) . '</option>';
+										<option value="' . html($key) . '"' . ($key == $input_value ? ' selected="selected"' : '') . '>' . ($option === '' ? '&#xA0;' : html($option)) . '</option>';
 
 					}
 
@@ -333,7 +365,7 @@
 							}
 
 							$html .= '
-											<option value="' . html($value_key) . '"' . ($value_key == $value ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
+											<option value="' . html($value_key) . '"' . ($value_key == $input_value ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 						}
 

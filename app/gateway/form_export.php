@@ -27,6 +27,7 @@
 		'form_field_postcode',
 		'form_field_currency',
 		'form_field_date',
+		'form_field_time',
 		'form_field_check_box',
 		'form_field_check_boxes',
 		'form_field_radios',
@@ -63,6 +64,9 @@
 	// Request function
 
 		$output_php .= "\n\n";
+		$output_php .= '// Generated: http://craig.framework.emma.devcf.com/a/api/form-export/' . "\n";
+		$output_php .= '// Tested:    http://cpoets.library.emma.devcf.com/form2/' . "\n";
+		$output_php .= "\n";
 		$output_php .= '//--------------------------------------------------' . "\n";
 		$output_php .= '// Support functions' . "\n";
 		$output_php .= "\n";
@@ -128,6 +132,20 @@
 		$output_php .= '		return formatBritishPostcode($postcode);' . "\n";
 		$output_php .= '	}' . "\n";
 		$output_php .= "\n";
+		$output_php .= '	function format_currency($value, $currency_char = NULL, $decimal_places = 2, $zero_to_blank = false) {' . "\n";
+		$output_php .= '	' . "\n";
+		$output_php .= '		$value = (round($value, $decimal_places) == 0 ? 0 : $value); // Stop negative -£0' . "\n";
+		$output_php .= '	' . "\n";
+		$output_php .= '		if ($value == 0 && $zero_to_blank) {' . "\n";
+		$output_php .= '			return \'\';' . "\n";
+		$output_php .= '		} else if ($value < 0) {' . "\n";
+		$output_php .= '			return \'-\' . $currency_char . number_format(floatval(0 - $value), $decimal_places);' . "\n";
+		$output_php .= '		} else {' . "\n";
+		$output_php .= '			return $currency_char . number_format(floatval($value), $decimal_places);' . "\n";
+		$output_php .= '		}' . "\n";
+		$output_php .= '	' . "\n";
+		$output_php .= '	}' . "\n";
+		$output_php .= "\n";
 
 	//--------------------------------------------------
 	// Config
@@ -145,8 +163,8 @@
 
 		$output_php .= $config_php;
 
-		$output_php .= '	config::get(\'output.charset\', $GLOBALS[\'pageCharset\']);' . "\n";
-		$output_php .= '	config::get(\'request.url\', $GLOBALS[\'tplPageUrl\']);' . "\n";
+		$output_php .= '	config::set(\'output.charset\', $GLOBALS[\'pageCharset\']);' . "\n";
+		$output_php .= '	config::set(\'request.url\', $GLOBALS[\'tplPageUrl\']);' . "\n";
 		$output_php .= '	config::set(\'request.method\', (isset($_SERVER[\'REQUEST_METHOD\']) ? strtoupper($_SERVER[\'REQUEST_METHOD\']) : \'GET\'));';
 
 	//--------------------------------------------------

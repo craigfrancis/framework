@@ -147,22 +147,19 @@
 
 			private function _html_input_by_id($field_id) {
 
-				if ($this->re_index_keys) {
-					$input_id = $this->id . '_' . ($field_id + 1);
-					$input_value = ($field_id + 1);
-				} else {
-					$input_id = $this->id . '_' . $this->option_keys[$field_id];
-					$input_value = $this->option_keys[$field_id];
-				}
-
 				$attributes = array(
 						'type' => 'radio',
-						'id' => $input_id,
-						'value' => $input_value,
 					);
 
+				if ($this->re_index_keys) {
+					$attributes['id'] = $this->id . '_' . ($field_id + 1);
+					$attributes['value'] = ($field_id + 1);
+				} else {
+					$attributes['id'] = $this->id . '_' . $this->option_keys[$field_id];
+					$attributes['value'] = $this->option_keys[$field_id];
+				}
 
-				if ($input_value == $this->value_print_get()) {
+				if ($attributes['value'] == $this->value_print_get()) {
 					$attributes['checked'] = 'checked';
 				}
 

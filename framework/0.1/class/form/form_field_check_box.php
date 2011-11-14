@@ -30,6 +30,7 @@
 
 					$this->max_length = -1; // Bypass the _post_validation on the text field (not used)
 					$this->type = 'check';
+					$this->input_type = 'checkbox';
 
 					$this->text_value_true = NULL;
 					$this->text_value_false = NULL;
@@ -123,7 +124,6 @@
 			public function html_input() {
 
 				$attributes = array(
-						'type' => 'checkbox',
 						'value' => 'true',
 					);
 

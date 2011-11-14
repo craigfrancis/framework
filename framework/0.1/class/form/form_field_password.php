@@ -16,14 +16,8 @@
 				// Additional field configuration
 
 					$this->type = 'password';
+					$this->input_type = 'password';
 
-			}
-
-		//--------------------------------------------------
-		// HTML
-
-			public function html_input() {
-				return $this->_html_input(array_merge($this->_input_attributes(), array('type' => 'password')));
 			}
 
 	}

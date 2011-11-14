@@ -267,14 +267,27 @@
 
 				if ($part == 'H' || $part == 'M' || $part == 'S') {
 
-					$value = $this->value_print_get();
+					$input_value = $this->value_print_get();
 
-					$autofocus = ($this->autofocus && $part == 'D');
+					$attributes = array(
+							'name' => $this->name . '_' . $part,
+							'id' => $this->id . '_' . $part,
+						);
+
+					if ($part != 'D') {
+						$attributes['autofocus'] = NULL;
+					}
 
 					if (isset($this->input_options[$part])) {
 
 						$html = '
-									<select name="' . html($this->name . '_' . $part) . '" id="' . html($this->id . '_' . $part) . '"' . ($this->input_class === NULL ? '' : ' class="' . html($this->input_class) . '"') . ($autofocus ? ' autofocus="autofocus"' : '') . ($this->autocorrect ? ' autocorrect="autocorrect"' : '') . ($this->autocomplete ? ' autocomplete="autocomplete"' : '') . '>
+											<select';
+						foreach (array_merge($this->_input_attributes(), $attributes) as $name => $value) {
+							if ($value !== NULL) {
+								$html .= ' ' . $name . '="' . html($value) . '"';
+							}
+						}
+						$html .= '>
 										<option value=""></option>';
 
 						$type = $this->input_options[$part]['type'];
@@ -284,7 +297,7 @@
 								$option_text = str_pad(intval($option_text), 2, '0', STR_PAD_LEFT);
 							}
 							$html .= '
-										<option value="' . html($option_value) . '"' . ($value[$part] !== NULL && intval($value[$part]) == intval($option_value) ? ' selected="selected"' : '') . '>' . html($option_text) . '</option>';
+										<option value="' . html($option_value) . '"' . ($input_value[$part] !== NULL && intval($input_value[$part]) == intval($option_value) ? ' selected="selected"' : '') . '>' . html($option_text) . '</option>';
 						}
 
 						return $html . '
@@ -292,16 +305,11 @@
 
 					} else {
 
-						return $this->_html_input(array(
-								'name' => $this->name . '_' . $part,
-								'id' => $this->id . '_' . $part,
-								'maxlength' => 2,
-								'size' => 2,
-								'value' => ($value === NULL ? '' : str_pad(intval($value[$part]), 2, '0', STR_PAD_LEFT)),
-								'autofocus' => ($autofocus ? 'autofocus' : NULL),
-								'autocorrect' => ($this->autocorrect && $part == 'H' ? 'autocorrect' : NULL),
-								'autocomplete' => ($this->autocomplete && $part == 'H' ? 'autocomplete' : NULL),
-							));
+						$attributes['value'] = ($input_value === NULL ? '' : str_pad(intval($input_value[$part]), 2, '0', STR_PAD_LEFT));
+						$attributes['maxlength'] = 2;
+						$attributes['size'] = 2;
+
+						return $this->_html_input($attributes);
 
 					}
 

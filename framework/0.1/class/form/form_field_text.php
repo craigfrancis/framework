@@ -8,8 +8,9 @@
 			protected $value;
 			protected $min_length;
 			protected $max_length;
-			protected $size;
 			protected $placeholder;
+			protected $input_size;
+			protected $input_type;
 
 		//--------------------------------------------------
 		// Setup
@@ -42,14 +43,15 @@
 
 					$this->min_length = NULL;
 					$this->max_length = NULL;
-					$this->size = NULL;
 					$this->placeholder = NULL;
 					$this->type = 'text';
+					$this->input_size = NULL;
+					$this->input_type = 'text';
 
 			}
 
-			public function size_set($size) {
-				$this->size = $size;
+			public function input_size_set($input_size) {
+				$this->input_size = $input_size;
 			}
 
 			public function placeholder_set($placeholder) {
@@ -143,20 +145,21 @@
 			}
 
 		//--------------------------------------------------
-		// HTML
+		// Attributes
 
 			protected function _input_attributes() {
 
-				$attributes = array(
-						'type' => 'text',
-						'value' => $this->value_print_get(),
-					);
+				$attributes = parent::_input_attributes();
 
-				if ($this->size !== NULL) {
-					$attributes['size'] = intval($this->size);
+				if ($this->input_type !== NULL) {
+					$attributes['type'] = $this->input_type;
 				}
 
-				if ($this->max_length !== NULL) {
+				if ($this->input_size !== NULL) {
+					$attributes['size'] = intval($this->input_size);
+				}
+
+				if ($this->max_length !== NULL && $this->max_length > 0) {
 					$attributes['maxlength'] = intval($this->max_length);
 				}
 
@@ -168,8 +171,11 @@
 
 			}
 
+		//--------------------------------------------------
+		// HTML
+
 			public function html_input() {
-				return $this->_html_input($this->_input_attributes());
+				return $this->_html_input(array('value' => $this->value_print_get()));
 			}
 
 	}

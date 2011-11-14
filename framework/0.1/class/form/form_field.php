@@ -111,8 +111,8 @@
 					$this->required_mark_html = NULL;
 					$this->required_mark_position = NULL;
 					$this->autofocus = false;
-					$this->autocorrect = false;
-					$this->autocomplete = false;
+					$this->autocorrect = NULL;
+					$this->autocomplete = NULL;
 					$this->disabled = false;
 					$this->readonly = false;
 					$this->print_show = true;
@@ -402,6 +402,48 @@
 			}
 
 		//--------------------------------------------------
+		// Attributes
+
+			protected function _input_attributes() {
+
+				$attributes = array(
+						'name' => $this->name,
+						'id' => $this->id,
+					);
+
+				if ($this->input_class !== NULL) {
+					$attributes['class'] = $this->input_class;
+				}
+
+				if ($this->required) {
+					$attributes['required'] = 'required';
+				}
+
+				if ($this->autofocus) {
+					$attributes['autofocus'] = 'autofocus';
+				}
+
+				if ($this->autocorrect !== NULL) {
+					$attributes['autocorrect'] = ($this->autocorrect ? 'on' : 'off');
+				}
+
+				if ($this->autocomplete !== NULL) {
+					$attributes['autocomplete'] = ($this->autocomplete ? 'on' : 'off');
+				}
+
+				if ($this->disabled) {
+					$attributes['disabled'] = 'disabled';
+				}
+
+				if ($this->readonly) {
+					$attributes['readonly'] = 'readonly';
+				}
+
+				return $attributes;
+
+			}
+
+		//--------------------------------------------------
 		// HTML
 
 			public function html_label($label_html = NULL) {
@@ -439,44 +481,10 @@
 
 			}
 
-			protected function _html_input($attributes_custom) {
-
-				$attributes_default = array(
-						'type' => 'text',
-						'name' => $this->name,
-						'id' => $this->id,
-					);
-
-				if ($this->input_class !== NULL) {
-					$attributes_default['class'] = $this->input_class;
-				}
-
-				if ($this->required) {
-					$attributes_default['required'] = 'required';
-				}
-
-				if ($this->autofocus) {
-					$attributes_default['autofocus'] = 'autofocus';
-				}
-
-				if ($this->autocorrect) {
-					$attributes_default['autocorrect'] = 'autocorrect';
-				}
-
-				if ($this->autocomplete) {
-					$attributes_default['autocomplete'] = 'autocomplete';
-				}
-
-				if ($this->disabled) {
-					$attributes_default['disabled'] = 'disabled';
-				}
-
-				if ($this->readonly) {
-					$attributes_default['readonly'] = 'readonly';
-				}
+			protected function _html_input($attributes_custom = array()) {
 
 				$html = '<input';
-				foreach (array_merge($attributes_default, $attributes_custom) as $name => $value) {
+				foreach (array_merge($this->_input_attributes(), $attributes_custom) as $name => $value) {
 					if ($value !== NULL) {
 						$html .= ' ' . $name . '="' . html($value) . '"';
 					}

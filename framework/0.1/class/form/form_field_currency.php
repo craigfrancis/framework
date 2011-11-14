@@ -32,6 +32,7 @@
 					$this->zero_to_blank = false;
 					$this->currency_char = '£';
 					$this->type = 'currency';
+					$this->input_type = 'text'; // Not type="number", from number field
 
 			}
 
@@ -88,8 +89,8 @@
 				$this->max_length += (floor((strlen(floor($value)) - 1) / 3)); // Thousand separators
 				$this->max_length += 3; // Decimal place char, and 2 digits
 
-				if ($this->size === NULL && $this->max_length < 20) {
-					$this->size = $this->max_length;
+				if ($this->input_size === NULL && $this->max_length < 20) {
+					$this->input_size = $this->max_length;
 				}
 
 			}
@@ -107,13 +108,6 @@
 
 				return format_currency($value, $this->currency_char, $decimal_places, $this->zero_to_blank);
 
-			}
-
-		//--------------------------------------------------
-		// HTML
-
-			public function html_input() {
-				return $this->_html_input($this->_input_attributes()); // Not type="number", from number field
 			}
 
 	}
