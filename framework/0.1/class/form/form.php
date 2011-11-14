@@ -196,6 +196,10 @@
 				return $this->hidden_value_get('dest');
 			}
 
+			public function dest_url_set($url) {
+				return $this->hidden_value_set('dest', $url);
+			}
+
 			public function dest_redirect($default_url) {
 
 				$dest = $this->dest_url_get();

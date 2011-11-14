@@ -4,6 +4,7 @@
 
 	class controller_crud extends controller {
 
+		protected $item_name;
 		protected $item_single;
 		protected $item_plural;
 		protected $db_table_name_sql;
@@ -67,6 +68,20 @@
 		}
 
 		protected function setup_delete_validate($form, $id) {
+		}
+
+		protected function setup_delete_save($form, $id) {
+
+			$db = $this->db_get();
+
+			$db->query('UPDATE
+							' . $this->db_table_name_sql . '
+						SET
+							deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+						WHERE
+							id = "' . $db->escape($id) . '" AND
+							' . $this->db_where_sql);
+
 		}
 
 		public function action_index() {
@@ -395,9 +410,9 @@
 
 					if ($row = $db->fetch_assoc()) {
 
-						$item_name = $row['title'];
+						$this->item_name = $row['title'];
 
-						$this->set('item_name', $item_name);
+						$this->set('item_name', $this->item_name);
 
 					} else {
 
@@ -519,22 +534,19 @@
 
 				$id = intval(request('id'));
 
-				$where_sql = '
-					id = "' . $db->escape($id) . '" AND
-					' . $this->db_where_sql;
-
 				$db->query('SELECT
 								' . $this->db_title_sql . ' AS title
 							FROM
 								' . $this->db_table_name_sql . '
 							WHERE
-								' . $where_sql);
+								id = "' . $db->escape($id) . '" AND
+								' . $this->db_where_sql);
 
 				if ($row = $db->fetch_assoc()) {
 
-					$item_name = $row['title'];
+					$this->item_name = $row['title'];
 
-					$this->set('item_name', $item_name);
+					$this->set('item_name', $this->item_name);
 
 				} else {
 
@@ -557,7 +569,7 @@
 					//--------------------------------------------------
 					// Validation
 
-						$this->setup_delete_validate($form);
+						$this->setup_delete_validate($form, $id);
 
 					//--------------------------------------------------
 					// Form valid
@@ -567,12 +579,7 @@
 							//--------------------------------------------------
 							// Delete
 
-								$db->query('UPDATE
-												' . $this->db_table_name_sql . '
-											SET
-												deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
-											WHERE
-												' . $where_sql);
+								$this->setup_delete_save($form, $id);
 
 							//--------------------------------------------------
 							// Thank you message
