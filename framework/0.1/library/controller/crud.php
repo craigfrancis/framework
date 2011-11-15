@@ -487,7 +487,7 @@
 								if (substr($dest, 0, 1) == '/') {
 									redirect($dest);
 								} else {
-									redirect(url('./?id=' . urlencode($id)));
+									redirect(url('../edit/?id=' . urlencode($id)));
 								}
 
 						}

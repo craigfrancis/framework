@@ -562,6 +562,13 @@
 					}
 
 				//--------------------------------------------------
+				// Set error mode
+
+					if (count($this->errors_html) > 0) {
+						config::set('output.error', true);
+					}
+
+				//--------------------------------------------------
 				// Remember this has been done
 
 					$this->post_validation_done = true;
