@@ -456,7 +456,7 @@
 				//--------------------------------------------------
 				// Email title
 
-					$email_title = config::get('output.site_name') . ': ' . ucfirst(str_replace('_', ' ', $this->task_name)) . ' @ ' . date('Y-m-d H:i:s');
+					$email_title = config::get('output.site_name', 'Company Name') . ': ' . ucfirst(str_replace('_', ' ', $this->task_name)) . ' @ ' . date('Y-m-d H:i:s');
 
 					$email_addresses = array();
 

@@ -27,7 +27,7 @@
 				//--------------------------------------------------
 				// Defaults
 
-					$this->subject = NULL;
+					$this->subject = config::get('email.from_name');
 					$this->from_email = config::get('email.from_email');
 					$this->from_name = config::get('email.from_name');
 					$this->reply_to_email = NULL;

@@ -150,7 +150,7 @@
 			<h2>Footer</h2>
 			<ul>
 
-				<li class="copyright">© <?= html(config::get('output.site_name', 'Company')) ?> <?= html(date('Y')) ?></li>
+				<li class="copyright">© <?= html(config::get('output.site_name', 'Company Name')) ?> <?= html(date('Y')) ?></li>
 
 			</ul>
 		</div>
