@@ -411,10 +411,30 @@
 		//--------------------------------------------------
 		// HTML Format for the query
 
-			$query_html = nl2br(trim(preg_replace('/^[ \t]*(?! |\t|SELECT|UPDATE|DELETE|INSERT|SHOW|FROM|LEFT|SET|WHERE|GROUP|ORDER|LIMIT)/m', '&#xA0; &#xA0; \0', html($query))));
+			$query_html = html($query);
 			if (strpos($query_html, "\n") !== false) {
+
+				$query_prefix_string = '';
+				$query_prefix_length = 0;
+				foreach (explode("\n", $query_html) as $line) {
+					if (preg_match('/^\t+/', $line, $matches)) {
+						$prefix_length = strlen($matches[0]);
+						if ($query_prefix_length == 0 || $prefix_length < $query_prefix_length) {
+							$query_prefix_length = $prefix_length;
+							$query_prefix_string = $matches[0];
+						}
+					}
+				}
+
+				if ($query_prefix_length > 0) {
+					$query_html = preg_replace('/^'. preg_quote($query_prefix_string, '/') . '/m', '', $query_html);
+				}
+
 				$query_html .= '<br /><br />';
+
 			}
+
+			$query_html = nl2br(trim(preg_replace('/^[ \t]*(?! |\t|SELECT|UPDATE|DELETE|INSERT|SHOW|FROM|LEFT|SET|WHERE|GROUP|ORDER|LIMIT)/m', '&#xA0; &#xA0; \0', $query_html)));
 
 		//--------------------------------------------------
 		// Called from
@@ -621,7 +641,7 @@
 		//--------------------------------------------------
 		// Create debug output
 
-			$html = '<strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')<br />' . (strpos($query_html, "\n") === false ? '' : '<br />') . $query_html;
+			$html = '<strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')<br />' . "\n" . (strpos($query_html, "\n") === false ? '' : '<br />' . "\n") . $query_html;
 
 			config::array_push('debug.notes', array(
 					'colour' => '#CCF',
@@ -714,11 +734,15 @@
 
 			$time = debug_run_time();
 
-			$output_html = '
-				<div style="' . html($css_block) . ' background: #FFF;">
-					<p style="' . html($css_para) . '">Elapsed time: ' . html($time) . '</p>
-					<p style="' . html($css_para) . '">Query time: ' . html(config::get('debug.db_time')) . '</p>
-				</div>';
+			$output_html  = '		<div style="' . html($css_block) . ' background: #FFF;">' . "\n";
+			$output_html .= '			<p style="' . html($css_para) . '">Elapsed time: ' . html($time) . '</p>' . "\n";
+			$output_html .= '			<p style="' . html($css_para) . '">Query time: ' . html(config::get('debug.db_time')) . '</p>' . "\n";
+			$output_html .= '		</div>' . "\n";
+
+			$output_text  = "\n\n\n\n\n\n\n\n\n\n";
+			$output_text .= '--------------------------------------------------' . "\n\n";
+			$output_text .= 'Elapsed time: ' . html($time) . "\n";
+			$output_text .= 'Query time: ' . html(config::get('debug.db_time')) . "\n\n";
 
 		//--------------------------------------------------
 		// Notes
@@ -726,30 +750,39 @@
 			$notes = config::get('debug.notes');
 
 			foreach ($notes as $note) {
-				$output_html .= '
-					<div style="' . html($css_block) . ' background: ' . html($note['colour']) . '">
-						<p style="' . html($css_para) . '">' . $note['html'] . '</p>';
+
+				$output_html .= '		<div style="' . html($css_block) . ' background: ' . html($note['colour']) . '">' . "\n";
+				$output_html .= '			<p style="' . html($css_para) . '">' . $note['html'] . '</p>' . "\n";
+
+				$output_text .= '--------------------------------------------------' . "\n\n";
+				$output_text .= html_decode(strip_tags($note['html'])) . "\n\n";
+
 				if ($note['time'] !== NULL) {
-					$output_html .= '
-						<p style="' . html($css_para) . '">Time Elapsed: ' . html($note['time']) . '</p>';
+					$output_html .= '			<p style="' . html($css_para) . '">Time Elapsed: ' . html($note['time']) . '</p>' . "\n";
+					$output_text .= 'Time Elapsed: ' . $note['time'] . "\n\n";
 				}
-				if (isset($note['extra_html'])) {
+
+				if (isset($note['extra_html']) && $note['extra_html'] != '') {
 					$output_html .= $note['extra_html'];
+					$output_text .= $note['extra_html'] . "\n\n";
 				}
-				$output_html .= '
-					</div>';
+
+				$output_html .= '		</div>' . "\n";
+
 			}
 
 		//--------------------------------------------------
 		// Wrapper
 
-			$output_html = "\n\n<!-- START OF DEBUG -->\n\n" . '
-				<div style="margin: 10px 5px 0 5px; padding: 0; clear: both;">
-					<p style="' . html($css_para) . '"><a href="#" style="margin: -10px -10px 0 0; padding: 10px 10px 0 0; color: #AAA; ' . html($css_text) . '" onclick="document.getElementById(\'debug_output\').style.display = (document.getElementById(\'debug_output\').style.display == \'block\' ? \'none\' : \'block\'); return false;">+</a></p>
-					<div style="display: ' . html(config::get('debug.default_show') === true ? 'block' : 'none') . ';" id="debug_output">
-						' . $output_html . '
-					</div>
-				</div>' . "\n\n<!-- END OF DEBUG -->\n\n";
+			$output_wrapper_html  = "\n\n<!-- START OF DEBUG -->\n\n";
+			$output_wrapper_html .= '<div style="margin: 10px 5px 0 5px; padding: 0; clear: both;">' . "\n";
+			$output_wrapper_html .= '	<p style="' . html($css_para) . '"><a href="#" style="margin: -10px -10px 0 0; padding: 10px 10px 0 0; color: #AAA; ' . html($css_text) . '" onclick="document.getElementById(\'debug_output\').style.display = (document.getElementById(\'debug_output\').style.display == \'block\' ? \'none\' : \'block\'); return false;">+</a></p>' . "\n";
+			$output_wrapper_html .= '	<div style="display: ' . html(config::get('debug.default_show') === true ? 'block' : 'none') . ';" id="debug_output">' . "\n";
+			$output_wrapper_html .= $output_html . "\n";
+			$output_wrapper_html .= '	</div>' . "\n";
+			$output_wrapper_html .= '</div>' . "\n\n<!-- END OF DEBUG -->\n\n";
+
+			$output_html = $output_wrapper_html;
 
 		//--------------------------------------------------
 		// Add
@@ -765,7 +798,15 @@
 					mime_set('text/html');
 				}
 
-		 		return $buffer . $output_html;
+				if (config::get('output.mime') == 'text/plain') {
+					$output_text = str_replace('&#xA0;', ' ', $output_text);
+					$output_text = str_replace('<br />', '', $output_text);
+					$output_text = str_replace('<strong>', '', $output_text);
+					$output_text = str_replace('</strong>', '', $output_text);
+		 			return $buffer . $output_text;
+				} else {
+		 			return $buffer . $output_html;
+				}
 
 			}
 
