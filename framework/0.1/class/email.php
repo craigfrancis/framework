@@ -52,7 +52,7 @@
 			}
 
 			public function template_set($name) {
-				$path = '/a/email/' . preg_replace('/[^a-zA-Z0-9_\-]/', '', $name) . '/';
+				$path = '/a/email/' . preg_replace('/[^a-zA-Z0-9_\-]/', '', $name);
 				$this->template_set_path(PUBLIC_ROOT . $path);
 				$this->template_set_url(config::get('url.prefix') . $path);
 			}
@@ -61,8 +61,16 @@
 				$this->template_path = $path;
 			}
 
+			public function template_get_path() {
+				return $this->template_path;
+			}
+
 			public function template_set_url($url) {
 				$this->template_url = $url;
+			}
+
+			public function template_get_url($url) {
+				return $this->template_url;
 			}
 
 			public function template_value_set($name, $value) {
@@ -399,7 +407,7 @@
 
 				if ($this->template_path !== NULL) {
 
-					$template_file = $this->template_path . 'index.txt';
+					$template_file = $this->template_path . '/index.txt';
 					if (is_file($template_file)) {
 						$content_text = file_get_contents($template_file);
 					} else {
@@ -432,7 +440,7 @@
 
 				if ($this->template_path !== NULL) {
 
-					$template_file = $this->template_path . 'index.html';
+					$template_file = $this->template_path . '/index.html';
 					if (is_file($template_file)) {
 						$content_html = file_get_contents($template_file);
 					} else {
@@ -441,21 +449,30 @@
 
 				} else {
 
-					$content_html = '<!DOCTYPE html>
+					$content_html = '[BODY]';
+
+				}
+
+				if (strpos($content_html, 'DOCTYPE') === false) {
+
+					$template_html = '<!DOCTYPE html>
 							<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
-							<head>';
+							<head>
+								<meta charset="' . html(config::get('output.charset')) . '" />';
 
 					if ($this->subject !== NULL) {
-						$content_html .= '
+						$template_html .= '
 								<title>[SUBJECT]</title>';
 					}
 
-					$content_html .= '
+					$template_html .= '
 							</head>
 							<body>
-								[BODY]
+								' . $content_html . '
 							</body>
 							</html>';
+
+					$content_html = $template_html;
 
 				}
 
