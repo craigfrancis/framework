@@ -267,14 +267,12 @@
 
 					$db = $this->user_obj->db_get();
 
-					$where_sql = '
-						' . $this->db_where_sql . ' AND
-						id = "' . $db->escape($session_id) . '" AND
-						deleted = "0000-00-00 00:00:00"';
+					$where_sql = $this->db_where_sql . ' AND
+									id = "' . $db->escape($session_id) . '" AND
+									deleted = "0000-00-00 00:00:00"';
 
 					if ($this->length > 0) {
-						$where_sql .= '
-							AND last_used > "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->length))) . '"';
+						$where_sql .= ' AND' . "\n\t\t\t\t\t\t\t\t\t" . 'last_used > "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->length))) . '"';
 					}
 
 					$db->query('SELECT
