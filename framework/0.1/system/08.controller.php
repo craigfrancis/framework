@@ -274,10 +274,10 @@
 
 		if (config::get('debug.level') >= 3) {
 
-			$note_html = 'Controllers:<br />';
+			$note_html = 'Controllers:<br />' . "\n";
 
 			foreach ($controller_log as $log) {
-				$note_html .= '&#xA0; ' . preg_replace('/^([^:]+):/', '<strong>\1</strong>:', html($log)) . '<br />';
+				$note_html .= '&#xA0; ' . preg_replace('/^([^:]+):/', '<strong>\1</strong>:', html($log)) . '<br />' . "\n";
 			}
 
 			debug_note_html($note_html);
@@ -304,36 +304,36 @@
 
 		if (config::get('debug.level') >= 3) {
 
-			$note_html  = '<strong>Action</strong>: ' . html($action_controller_path) . '<br />';
+			$note_html  = '<strong>Action</strong>: ' . html($action_controller_path) . '<br />' . "\n";
 
 			if ($action_controller_name !== NULL) {
-				$note_html .= '&#xA0; Calls:<br />';
-				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->before();<br />';
-				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->' . html($action_method) . '(' . html(implode(', ', $action_route_stack_pending)) . ');<br />';
-				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->after();<br />';
+				$note_html .= '&#xA0; Calls:<br />' . "\n";
+				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->before();<br />' . "\n";
+				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->' . html($action_method) . '(' . html(implode(', ', $action_route_stack_pending)) . ');<br />' . "\n";
+				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->after();<br />' . "\n";
 			}
 
-			$note_html .= '&#xA0; Methods:<br />';
+			$note_html .= '&#xA0; Methods:<br />' . "\n";
 
 			foreach (config::get('route.variables') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->route_variable_get(\'' . html($id) . '\'); <span style="color: #999;">// ' . html($value) . '</span><br />';
+				$note_html .= '&#xA0; &#xA0; $this->route_variable_get(\'' . html($id) . '\'); <span style="color: #999;">// ' . html($value) . '</span><br />' . "\n";
 			}
 
 			foreach (config::get('route.folders') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->route_folder_get(' . html($id) . '); <span style="color: #999;">// ' . html($value) . '</span><br />';
+				$note_html .= '&#xA0; &#xA0; $this->route_folder_get(' . html($id) . '); <span style="color: #999;">// ' . html($value) . '</span><br />' . "\n";
 			}
 
 			foreach (config::get('output.title_folders') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->title_folder_set(' . html($id) . ', \'new_value\');<br />';
+				$note_html .= '&#xA0; &#xA0; $this->title_folder_set(' . html($id) . ', \'new_value\');<br />' . "\n";
 			}
 
-			$note_html .= '&#xA0; &#xA0; $this->view_path_set(VIEW_ROOT . \'/file.ctp\');<br />';
-			$note_html .= '&#xA0; &#xA0; $this->js_add(\'/path/to/file.js\');<br />';
-			$note_html .= '&#xA0; &#xA0; $this->css_add(\'/path/to/file.css\');<br />';
-			$note_html .= '&#xA0; &#xA0; $this->head_add_html(\'&lt;html&gt;\');<br />';
-			$note_html .= '&#xA0; &#xA0; $this->page_ref_set(\'example_ref\');<br />';
-			$note_html .= '&#xA0; &#xA0; $this->error_show(\'page_not_found\');<br />';
-			$note_html .= '&#xA0; &#xA0; $this->message_set(\'The item has been updated.\');<br />';
+			$note_html .= '&#xA0; &#xA0; $this->view_path_set(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; $this->js_add(\'/path/to/file.js\');<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; $this->css_add(\'/path/to/file.css\');<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; $this->head_add_html(\'&lt;html&gt;\');<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; $this->page_ref_set(\'example_ref\');<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; $this->error_show(\'page_not_found\');<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; $this->message_set(\'The item has been updated.\');<br />' . "\n";
 
 			debug_note_html($note_html);
 
