@@ -202,6 +202,10 @@
 			public function session_start() {
 				$this->user_id = $this->session->session_get();
 			}
+			
+			public function session_id_get() {
+				return $this->session->session_id_get();
+			}
 
 			public function session_token_get() {
 				return $this->session->session_token_get();
@@ -265,7 +269,7 @@
 
 							$this->_cookie_set('login_last_id', $identification, '+30 days');
 
-							$this->session->start_session($this->user_id);
+							$this->session->session_start($this->user_id);
 
 							$this->login_success();
 
@@ -310,7 +314,7 @@
 				//--------------------------------------------------
 				// Start the session
 
-					$this->session->start_session($this->user_id);
+					$this->session->session_start($this->user_id);
 
 				//--------------------------------------------------
 				// Login success
