@@ -255,7 +255,7 @@
 					exit('<p>You need to call "max_size_set", on the field "' . $this->label_html . '"</p>');
 				}
 
-				if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/x-www-form-urlencoded') { // If not set, assume its correct
+				if ($this->form_submitted && isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/x-www-form-urlencoded') { // If not set, assume its correct
 					config::set('debug.show', false);
 					exit('<p>The form needs the attribute: <strong>enctype="multipart/form-data"</strong></p>');
 				}

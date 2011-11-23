@@ -39,7 +39,7 @@
 
 			public function value_set($value) {
 				$this->value = $value;
-				$this->value_html = html($value);
+				$this->value_html = nl2br(html($value));
 			}
 
 			public function value_set_html($html) {
