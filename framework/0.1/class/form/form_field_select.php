@@ -317,7 +317,7 @@
 
 				if ($this->label_option !== NULL) {
 					$html .= '
-										<option value="' . ($this->re_index_keys ? '0' : '') . '">' . ($this->label_option === '' ? '&#xA0;' : html($this->label_option)) . '</option>';
+										<option value="">' . ($this->label_option === '' ? '&#xA0;' : html($this->label_option)) . '</option>'; // Value must be blank for HTML5
 				}
 
 				if ($this->option_groups === NULL) {
