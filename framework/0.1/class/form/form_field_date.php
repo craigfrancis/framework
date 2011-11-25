@@ -185,7 +185,7 @@
 				}
 			}
 
-			public function value_date_get($value = NULL) {
+			public function value_date_get() {
 				return $this->_value_date_format($this->value);
 			}
 
