@@ -17,6 +17,8 @@
 			protected $value_name;
 			protected $value_size;
 			protected $value_mime;
+			protected $value_path;
+			protected $value_saved;
 
 			public function __construct($form, $label, $name = NULL) {
 				$this->_setup_file($form, $label, $name);
@@ -63,6 +65,8 @@
 					$this->value_name = NULL;
 					$this->value_size = NULL;
 					$this->value_mime = NULL;
+					$this->value_path = NULL;
+					$this->value_saved = false;
 
 					if ($this->uploaded) {
 
@@ -74,6 +78,7 @@
 						$this->value_name = $_FILES[$this->name]['name'];
 						$this->value_size = $_FILES[$this->name]['size'];
 						$this->value_mime = $_FILES[$this->name]['type'];
+						$this->value_path = $_FILES[$this->name]['tmp_name'];
 
 					}
 
@@ -201,7 +206,7 @@
 			}
 
 			public function file_path_get() {
-				return (!$this->uploaded ? NULL: $_FILES[$this->name]['tmp_name']);
+				return (!$this->uploaded ? NULL: $this->value_path);
 			}
 
 			public function file_ext_get() {
@@ -229,8 +234,17 @@
 						exit_with_error('Cannot save file "' . $this->label_html . '", check destination folder permissions.', dirname($path));
 					}
 
-					$return = move_uploaded_file($_FILES[$this->name]['tmp_name'], $path);
+					if ($this->value_saved) {
+						$return = copy($this->value_path, $path);
+					} else {
+						$return = move_uploaded_file($this->value_path, $path);
+					}
+
+					$this->value_saved = true;
+					$this->value_path = $path;
+
 					@chmod($path, 0666); // Most websites use a generic apache user.
+
 					return $return;
 
 				}

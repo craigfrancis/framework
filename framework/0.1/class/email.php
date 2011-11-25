@@ -5,7 +5,8 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $subject;
+			private $subject_prefix;
+			private $subject_suffix;
 			private $from_email;
 			private $from_name;
 			private $reply_to_email;
@@ -27,7 +28,8 @@
 				//--------------------------------------------------
 				// Defaults
 
-					$this->subject = config::get('email.from_name');
+					$this->subject_prefix = config::get('email.from_name');
+					$this->subject_suffix = '';
 					$this->from_email = config::get('email.from_email');
 					$this->from_name = config::get('email.from_name');
 					$this->reply_to_email = NULL;
@@ -44,11 +46,24 @@
 			}
 
 			public function subject_set($subject) {
-				$this->subject = $subject;
+				$this->subject_prefix = '';
+				$this->subject_suffix = $subject;
+			}
+
+			public function subject_prefix_set($prefix) {
+				$this->subject_prefix = $prefix;
+			}
+
+			public function subject_suffix_set($suffix) {
+				$this->subject_suffix = $suffix;
 			}
 
 			public function subject_get() {
-				return $this->subject;
+				$subject = $this->subject_prefix . ($this->subject_prefix != '' && $this->subject_suffix != '' ? ': ' : '') . $this->subject_suffix;
+				if ($subject == '') {
+					$subject = config::get('email.from_name');
+				}
+				return $subject;
 			}
 
 			public function template_set($name) {
@@ -98,6 +113,10 @@
 						'mime' => $mime,
 						'id' => ($id !== NULL ? $id : (count($this->attachments) + 1)),
 					);
+			}
+
+			public function attachment_file_add($file) {
+				$this->attachment_add(file_get_contents($file->file_path_get()), $file->file_name_get(), $file->file_mime_get());
 			}
 
 		//--------------------------------------------------
@@ -185,7 +204,7 @@
 					}
 
 					foreach ($recipients as $recipient) {
-						mail($recipient, $this->subject, $build['content'], $headers);
+						mail($recipient, $this->subject_get(), $build['content'], $headers);
 					}
 
 			}
@@ -420,7 +439,7 @@
 
 				}
 
-				$content_text = str_replace('[SUBJECT]', $this->subject, $content_text);
+				$content_text = str_replace('[SUBJECT]', $this->subject_get(), $content_text);
 				$content_text = str_replace('[BODY]', $this->content_text, $content_text);
 				$content_text = str_replace('[URL]', $this->template_url, $content_text);
 
@@ -455,12 +474,14 @@
 
 				if (strpos($content_html, 'DOCTYPE') === false) {
 
+					$subject = $this->subject_get();
+
 					$template_html = '<!DOCTYPE html>
 							<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
 							<head>
 								<meta charset="' . html(config::get('output.charset')) . '" />';
 
-					if ($this->subject !== NULL) {
+					if ($subject != '') {
 						$template_html .= '
 								<title>[SUBJECT]</title>';
 					}
@@ -476,7 +497,7 @@
 
 				}
 
-				$content_html = str_replace('[SUBJECT]', html($this->subject), $content_html);
+				$content_html = str_replace('[SUBJECT]', html($subject), $content_html);
 				$content_html = str_replace('[BODY]', $this->content_html, $content_html);
 				$content_html = str_replace('[URL]', html($this->template_url), $content_html);
 

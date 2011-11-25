@@ -456,7 +456,7 @@
 				//--------------------------------------------------
 				// Email title
 
-					$email_title = config::get('output.site_name', 'Company Name') . ': ' . ucfirst(str_replace('_', ' ', $this->task_name)) . ' @ ' . date('Y-m-d H:i:s');
+					$email_title = ucfirst(str_replace('_', ' ', $this->task_name)) . ' @ ' . date('Y-m-d H:i:s');
 
 					$email_addresses = array();
 
@@ -550,7 +550,7 @@
 						}
 
 						$email = new email();
-						$email->subject_set($email_title);
+						$email->subject_suffix_set($email_title);
 						$email->content_html_add($task_output_html);
 						$email->send($email_addresses);
 
