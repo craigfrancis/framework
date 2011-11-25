@@ -235,13 +235,17 @@
 					}
 
 					if ($this->value_saved) {
-						$return = copy($this->value_path, $path);
-					} else {
-						$return = move_uploaded_file($this->value_path, $path);
-					}
 
-					$this->value_saved = true;
-					$this->value_path = $path;
+						$return = copy($this->value_path, $path);
+
+					} else {
+
+						$return = move_uploaded_file($this->value_path, $path);
+
+						$this->value_saved = true;
+						$this->value_path = $path;
+
+					}
 
 					@chmod($path, 0666); // Most websites use a generic apache user.
 
