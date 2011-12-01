@@ -118,6 +118,7 @@
 							'verification_repeat_max_len' => 'Your password confirmation cannot be longer than XXX characters.',
 							'new_pass_invalid_identification' => 'Your email address has not been recognised.',
 							'new_pass_recently_changed' => 'Your account has already had its password changed recently.',
+							'new_pass_invalid_token' => 'The link to reset your password is incorrect or has expired.',
 							'login_invalid_identification' => 'Invalid log-in details.',
 							'login_invalid_verification' => 'Invalid log-in details.',
 							'save_details_invalid_verification' => 'Your current password is incorrect.',
@@ -202,7 +203,7 @@
 			public function session_start() {
 				$this->user_id = $this->session->session_get();
 			}
-			
+
 			public function session_id_get() {
 				return $this->session->session_id_get();
 			}
@@ -250,11 +251,11 @@
 
 						$result = $this->auth->verify($identification, $verification);
 
-						if ($result == 'invalid_identification') {
+						if ($result === 'invalid_identification') {
 
 							$form->error_add($this->text['login_invalid_identification']);
 
-						} else if ($result == 'invalid_verification') {
+						} else if ($result === 'invalid_verification') {
 
 							$form->error_add($this->text['login_invalid_verification']);
 
@@ -390,7 +391,9 @@
 			}
 
 		//--------------------------------------------------
-		// New password
+		// New password - simple method, enter identification
+		// and a new password will be generated and emailed
+		// to you.
 
 			public function password_new() {
 
@@ -416,13 +419,101 @@
 
 							$result = $this->auth->password_new($user_id);
 
-							if ($result == 'invalid_user') {
+							if ($result === 'invalid_user') {
 								$form->error_add($this->text['new_pass_invalid_identification']); // Should not happen
-							} else if ($result == 'recently_changed') {
+							} else if ($result === 'recently_changed') {
 								$form->error_add($this->text['new_pass_recently_changed']);
 							} else {
 								return $result;
 							}
+
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Fail
+
+					return false;
+
+			}
+
+		//--------------------------------------------------
+		// New password - request goes to email address
+		// and they can set the new password later
+
+			public function password_reset_url($request_url = NULL) {
+
+				//--------------------------------------------------
+				// Form reference + values
+
+					$form = $this->form_get();
+
+					$identification = $this->auth_fields['identification']->value_get();
+
+				//--------------------------------------------------
+				// Process
+
+					if ($form->valid()) {
+
+						$user_id = $this->auth->identification_id_get($identification);
+
+						if ($user_id !== false) {
+							return $this->auth->password_reset_url($user_id, $request_url);
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Fail
+
+					return false;
+
+			}
+
+			public function password_reset_valid() {
+
+				$result = $this->auth->password_reset_token();
+
+				return (is_array($result));
+
+			}
+
+			public function password_reset_process() {
+
+				//--------------------------------------------------
+				// Form reference + values
+
+					$form = $this->form_get();
+
+					$verification_new = $this->auth_fields['verification_new']->value_get();
+					$verification_repeat = $this->auth_fields['verification_repeat']->value_get();
+
+				//--------------------------------------------------
+				// Not the same
+
+					if ($verification_new != $verification_repeat) {
+						$this->auth_fields['verification_repeat']->error_add($this->text['save_details_invalid_new_verification_repeat']);
+					}
+
+				//--------------------------------------------------
+				// Process
+
+					if ($form->valid()) {
+
+						$result = $this->auth->password_reset_token();
+
+						if (is_array($result)) {
+
+							$this->auth->password_new($result['user_id'], $verification_new);
+
+							$this->auth->password_reset_expire($result['request_id']);
+
+							return true;
+
+						} else {
+
+							$form->error_add($this->text['new_pass_invalid_token']);
 
 						}
 

@@ -8,6 +8,7 @@
 		protected $user_obj;
 
 		protected $db_table_name;
+		protected $db_table_reset_name;
 		protected $db_table_fields;
 		protected $db_where_sql;
 
@@ -26,6 +27,7 @@
 			// Table
 
 				$this->db_table_name = DB_PREFIX . 'user';
+				$this->db_table_reset_name = DB_PREFIX . 'user_new_password';
 
 				$this->db_where_sql = 'true';
 
@@ -224,6 +226,113 @@
 
 		}
 
+		public function password_reset_url($user_id, $request_url) {
+
+			//--------------------------------------------------
+			// Create request record
+
+				$db = $this->user_obj->db_get();
+
+				$db->query('SELECT
+								id,
+								pass
+							FROM
+								' . $this->db_table_reset_name . '
+							WHERE
+								user_id = "' . $db->escape($user_id) . '" AND
+								created > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-60 minutes'))) . '" AND
+								used = "0000-00-00 00:00:00"');
+
+				if ($row = $db->fetch_assoc()) {
+
+					$request_id = $row['id'];
+					$request_pass = $row['pass'];
+
+				} else {
+
+					$request_pass = rand(100000, 999999);
+
+					$db->insert($this->db_table_reset_name, array(
+							'id' => '',
+							'user_id' => $user_id,
+							'pass' => $request_pass,
+							'created' => date('Y-m-d H:i:s'),
+							'used' => '0000-00-00 00:00:00',
+						));
+
+					$request_id = $db->insert_id();
+
+				}
+
+			//--------------------------------------------------
+			// Return password
+
+				return url($request_url, array('t' => $request_id . '-' . $request_pass), 'full');
+
+		}
+
+		public function password_reset_token() {
+
+			//--------------------------------------------------
+			// Parse token
+
+				$request_token = request('t');
+				if ($request_token == '') {
+					$request_token = request('amp;t'); // Bad email clients, double html-encoding
+				}
+
+				if (preg_match('/^([0-9]+)-(.+)$/', $request_token, $matches)) {
+					$request_id = $matches[1];
+					$request_pass = $matches[2];
+				} else {
+					$request_id = 0;
+					$request_pass = '';
+				}
+
+			//--------------------------------------------------
+			// Get the user id
+
+				$db = $this->user_obj->db_get();
+
+				$db->query('SELECT
+								user_id
+							FROM
+								' . $this->db_table_reset_name . '
+							WHERE
+								id = "' . $db->escape($request_id) . '" AND
+								pass = "' . $db->escape($request_pass) . '" AND
+								created > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-90 minutes'))) . '" AND
+								used = "0000-00-00 00:00:00"');
+
+				if ($row = $db->fetch_assoc()) {
+
+					return array(
+							'request_id' => $request_id,
+							'user_id' => $row['user_id'],
+						);
+
+				} else {
+
+					return false;
+
+				}
+
+		}
+
+		public function password_reset_expire($request_id) {
+
+			$db = $this->user_obj->db_get();
+
+			$db->query('UPDATE
+							' . $this->db_table_reset_name . ' AS tn
+						SET
+							used = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+						WHERE
+							id = "' . $db->escape($request_id) . '" AND
+							used = "0000-00-00 00:00:00"');
+
+		}
+
 		public function identification_new($user_id, $new_identification) {
 
 			//--------------------------------------------------
@@ -340,19 +449,13 @@
 
 				$db = $this->user_obj->db_get();
 
-				$db->query('INSERT INTO ' . $db->escape_field($this->db_table_name) . ' (
-								' . $db->escape_field($this->db_table_fields['id']) . ',
-								' . $db->escape_field($this->db_table_fields['identification']) . ',
-								' . $db->escape_field($this->db_table_fields['created']) . ',
-								' . $db->escape_field($this->db_table_fields['edited']) . ',
-								' . $db->escape_field($this->db_table_fields['deleted']) . '
-							) VALUES (
-								"",
-								"' . $db->escape($identification) . '",
-								"' . $db->escape(date('Y-m-d H:i:s')) . '",
-								"' . $db->escape(date('Y-m-d H:i:s')) . '",
-								"0000-00-00 00:00:00"
-							)');
+				$db->insert($this->db_table_name, array(
+						$this->db_table_fields['id'] => '',
+						$this->db_table_fields['identification'] => $identification,
+						$this->db_table_fields['created'] => date('Y-m-d H:i:s'),
+						$this->db_table_fields['edited'] => date('Y-m-d H:i:s'),
+						$this->db_table_fields['deleted'] => '0000-00-00 00:00:00',
+					));
 
 				return $db->insert_id();
 
