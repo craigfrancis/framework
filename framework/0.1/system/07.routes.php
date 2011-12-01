@@ -39,7 +39,19 @@
 	// can cause issues, so be consistent, and use hyphens
 
 		if (strpos($route_path, '_') !== false) {
-			redirect(str_replace('_', '-', config::get('request.url_https')), 301);
+
+			$new_url = url(config::get('request.url_https'));
+
+			$path = $new_url->path_get();
+			$path = str_replace('_', '-', $path);
+			$new_url->path_set($path);
+
+			if (SERVER == 'stage') {
+				exit('<p>Underscore substitution: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
+			} else {
+				redirect($new_url, 301);
+			}
+
 		}
 
 	//--------------------------------------------------

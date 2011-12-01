@@ -5,20 +5,21 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $subject_prefix;
-			private $subject_suffix;
-			private $from_email;
-			private $from_name;
-			private $reply_to_email;
-			private $reply_to_name;
-			private $headers;
-			private $attachments;
-			private $template_path;
-			private $template_url;
-			private $template_values;
-			private $content_text;
-			private $content_html;
-			private $boundaries;
+			protected $subject_prefix;
+			protected $subject_suffix;
+			protected $from_email;
+			protected $from_name;
+			protected $cc_emails;
+			protected $reply_to_email;
+			protected $reply_to_name;
+			protected $headers;
+			protected $attachments;
+			protected $template_path;
+			protected $template_url;
+			protected $template_values;
+			protected $content_text;
+			protected $content_html;
+			protected $boundaries;
 
 		//--------------------------------------------------
 		// Setup
@@ -32,6 +33,7 @@
 					$this->subject_suffix = '';
 					$this->from_email = config::get('email.from_email');
 					$this->from_name = config::get('email.from_name');
+					$this->cc_emails = array();
 					$this->reply_to_email = NULL;
 					$this->reply_to_name = NULL;
 					$this->headers = array();
@@ -95,6 +97,13 @@
 			public function from_set($email, $name = NULL) {
 				$this->from_email = $email;
 				$this->from_name = $name;
+			}
+
+			public function cc_add($email, $name = NULL) {
+				$this->cc_emails[] = array(
+						'email' => $email,
+						'name' => $name,
+					);
 			}
 
 			public function reply_to_set($email, $name = NULL) {
@@ -386,6 +395,23 @@
 
 						$headers['From'] = config::get('email.from_email', 'noreply@example.com');
 
+					}
+
+				//--------------------------------------------------
+				// CC
+
+					$cc_addresses = array();
+
+					foreach ($this->cc_emails as $cc_email) {
+						if ($cc_email['name'] !== NULL) {
+							$cc_addresses[] = '"' . $cc_email['name'] . '" <' . $cc_email['email'] .'>';
+						} else {
+							$cc_addresses[] = $cc_email['email'];
+						}
+					}
+
+					if (count($cc_addresses) > 0) {
+						$headers['CC'] = implode(', ', $cc_addresses);
 					}
 
 				//--------------------------------------------------

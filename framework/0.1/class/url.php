@@ -26,7 +26,7 @@
 				}
 
 				if (is_array($parameters)) {
-					$this->param($parameters);
+					$this->param_set($parameters);
 				}
 
 				if ($format === NULL) {
@@ -40,7 +40,7 @@
 		//--------------------------------------------------
 		// Update
 
-			public function format($format) {
+			public function format_set($format) {
 				$this->format = $format;
 				$this->cache = NULL;
 			}
@@ -83,7 +83,23 @@
 
 			}
 
-			public function param($parameters, $value = '') {
+			public function path_get() {
+				return (isset($this->data['path']) ? $this->data['path'] : NULL);
+			}
+
+			public function path_set($value) {
+				$this->data['path'] = $value;
+			}
+
+			public function host_get() {
+				return (isset($this->data['host']) ? $this->data['host'] : NULL);
+			}
+
+			public function host_set($value) {
+				$this->data['host'] = $value;
+			}
+
+			public function param_set($parameters, $value = '') {
 
 				if (is_array($parameters)) {
 					foreach ($parameters as $key => $value) { // Cannot use array_merge, as numerical based indexes will be appended.
@@ -305,7 +321,7 @@
 		// Parameter set shorthand
 
 			public function __set($name, $value) { // (PHP 5.0)
-				$this->param($name, $value);
+				$this->param_set($name, $value);
 			}
 
 			public function __call($name, $arguments) { // (PHP 5.0)
