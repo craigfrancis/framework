@@ -183,21 +183,14 @@
 
 				$db = $this->user_obj->db_get();
 
-				$db->query('INSERT INTO ' . $db->escape_field($this->db_table_name) . ' (
-								id,
-								user_id,
-								created,
-								last_used,
-								deleted,
-								ip
-							) VALUES (
-								"",
-								"' . $db->escape($user_id) . '",
-								"' . $db->escape(date('Y-m-d H:i:s')) . '",
-								"' . $db->escape(date('Y-m-d H:i:s')) . '",
-								"0000-00-00 00:00:00",
-								"' . $db->escape(config::get('request.ip')) . '"
-							)');
+				$db->insert($this->db_table_name, array(
+						'id' => '',
+						'user_id' => $user_id,
+						'ip' => config::get('request.ip'),
+						'created' => date('Y-m-d H:i:s'),
+						'last_used' => date('Y-m-d H:i:s'),
+						'deleted' => '0000-00-00 00:00:00',
+					));
 
 				return $db->insert_id();
 
