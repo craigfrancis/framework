@@ -125,10 +125,11 @@ class cms_text_base extends check {
 		$html = str_replace('&#xA0;', " ", $html);
 		$html = preg_replace('/^\t+/m', '', $html);
 		$html = str_replace("\n<ul>", '', $html);
+		$html = preg_replace('/^(\t+)<li>/m', '$1# ', $html);
 
 		preg_match_all('/<a href="(mailto:)?(.*?)"[^>]*>(.*?)<\/a>/', $html, $matches, PREG_SET_ORDER);
 		foreach ($matches as $cMatch) {
-			$html = str_replace($cMatch[0], $cMatch[3] . ' [' . $cMatch[2] . ']', $html);
+			$html = str_replace($cMatch[0], $cMatch[3] . ' <' . $cMatch[2] . '>', $html);
 		}
 
 		return trim(strip_tags($html));
