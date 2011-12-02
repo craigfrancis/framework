@@ -264,7 +264,7 @@
 							$secure_content .= 'Content-Description: OpenPGP encrypted message' . "\n";
 							$secure_content .= 'Content-Disposition: inline; filename="encrypted.asc"' . "\n";
 							$secure_content .= '' . "\n";
-							$secure_content .= $gpg->encrypt($message, $recipient) . "\n";
+							$secure_content .= $gpg->encrypt($recipient, $message) . "\n";
 							$secure_content .= '' . "\n";
 							$secure_content .= '--' . $boundary . '--';
 

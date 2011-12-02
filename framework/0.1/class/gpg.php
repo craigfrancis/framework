@@ -6,6 +6,7 @@
 		// Variables
 
 			private $gpg_command;
+			private $gpg_zip_command;
 			private $default_pass_phrase = '12345';
 			private $private_key_name = NULL;
 			private $private_key_email = NULL;
@@ -21,6 +22,11 @@
 					$this->gpg_command = '/usr/bin/gpg';
 					if (!is_executable($this->gpg_command)) {
 						$this->gpg_command = '/usr/local/bin/gpg';
+					}
+
+					$this->gpg_zip_command = '/usr/bin/gpg-zip';
+					if (!is_executable($this->gpg_zip_command)) {
+						$this->gpg_zip_command = '/usr/local/bin/gpg-zip';
 					}
 
 				//--------------------------------------------------
@@ -50,7 +56,7 @@
 		//--------------------------------------------------
 		// Sign
 
-			public function encrypt($data_plain, $key_to) {
+			public function encrypt($key_to, $data_plain) {
 
 				if ($this->private_key_email === NULL) {
 					exit_with_error('You must call private_key_use() before encrypt()');
@@ -63,10 +69,7 @@
 
 				file_put_contents($file_path_plain, $data_plain);
 
-				$result = $this->_exec('--armor --local-user ' . escapeshellarg($this->private_key_email) . ' --recipient ' . escapeshellarg($key_to) . ' --encrypt -o ' . escapeshellarg($file_path_encrypted) . ' ' . escapeshellarg($file_path_plain) . ' 2>&1');
-
-				// --default-key
-				// --local-user
+				$result = $this->_exec('--encrypt --armor --local-user ' . escapeshellarg($this->private_key_email) . ' --recipient ' . escapeshellarg($key_to) . ' --output ' . escapeshellarg($file_path_encrypted) . ' ' . escapeshellarg($file_path_plain));
 
 				$data_encrypted = file_get_contents($file_path_encrypted);
 
@@ -74,6 +77,36 @@
 				unlink($file_path_encrypted);
 
 				return $data_encrypted;
+
+			}
+
+			public function encrypt_zip($key_to, $path_source, $path_dest = NULL) {
+
+				if ($this->private_key_email === NULL) {
+					exit_with_error('You must call private_key_use() before encrypt()');
+				}
+
+				$this->_key_check_public($key_to);
+
+				if ($path_dest === NULL) {
+					$path_dest = tempnam('/tmp', 'gpg.asc.');
+				}
+
+				$path_dest_new = $path_dest . '.new';
+
+				if (is_file($path_dest_new)) {
+					exit_with_error('When creating the GPG encrypted zip, the temporary "new" file already existed');
+				}
+
+				chdir(dirname($path_source));
+
+				$result = $this->_exec_zip('--encrypt --local-user ' . escapeshellarg($this->private_key_email) . ' --recipient ' . escapeshellarg($key_to) . ' --output ' . escapeshellarg($path_dest_new) . ' ' . escapeshellarg(basename($path_source)));
+
+				if (is_file($path_dest_new)) {
+					rename($path_dest_new, $path_dest);
+				}
+
+				return $path_dest;
 
 			}
 
@@ -169,6 +202,30 @@
 				// print_r($output);
 
 				return array(
+						'command' => $command,
+						'result' => $result,
+						'output' => $output,
+					);
+
+			}
+
+			private function _exec_zip($command) {
+
+				if (!is_executable($this->gpg_zip_command)) {
+					exit_with_error('Cannot find "gpg-zip" command in /usr/bin/ or /usr/local/bin/');
+				}
+
+				$output = array();
+
+				$command = $this->gpg_zip_command . ' --gpg-args "--no-tty" ' . $command . ' 2>&1';
+
+				exec($command, $output, $result);
+
+				// echo $command . "\n";
+				// print_r($output);
+
+				return array(
+						'command' => $command,
 						'result' => $result,
 						'output' => $output,
 					);
