@@ -54,6 +54,17 @@
 			}
 
 		//--------------------------------------------------
+		// Public ket
+
+			public function public_key_get() {
+
+				$result = $this->_exec('--armor --export ' . escapeshellarg($this->private_key_email), false);
+
+				return implode("\n", $result['output']);
+
+			}
+
+		//--------------------------------------------------
 		// Sign
 
 			public function encrypt($key_to, $data_plain) {
@@ -186,7 +197,7 @@
 		//--------------------------------------------------
 		// Generic executing function
 
-			private function _exec($command) {
+			private function _exec($command, $include_errors = true) {
 
 				if (!is_executable($this->gpg_command)) {
 					exit_with_error('Cannot find "gpg" command in /usr/bin/ or /usr/local/bin/');
@@ -194,7 +205,7 @@
 
 				$output = array();
 
-				$command = $this->gpg_command . ' --no-tty ' . $command . ' 2>&1';
+				$command = $this->gpg_command . ' --no-tty ' . $command . ($include_errors ? ' 2>&1' : '');
 
 				exec($command, $output, $result);
 
