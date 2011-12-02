@@ -551,7 +551,7 @@
 
 						$email = new email();
 						$email->subject_suffix_set($email_title);
-						$email->content_html_add($task_output_html);
+						$email->body_html_add($task_output_html);
 						$email->send($email_addresses);
 
 					}

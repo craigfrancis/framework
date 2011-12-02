@@ -17,6 +17,8 @@
 			protected $template_path;
 			protected $template_url;
 			protected $template_values;
+			protected $body_text;
+			protected $body_html;
 			protected $content_text;
 			protected $content_html;
 			protected $boundaries;
@@ -41,8 +43,10 @@
 					$this->template_path = NULL;
 					$this->template_url = NULL;
 					$this->template_values = array();
-					$this->content_text = '';
-					$this->content_html = '';
+					$this->body_text = '';
+					$this->body_html = '';
+					$this->content_text = NULL;
+					$this->content_html = NULL;
 					$this->boundaries = array();
 
 			}
@@ -131,12 +135,12 @@
 		//--------------------------------------------------
 		// Content
 
-			public function content_text_add($content_text) {
-				$this->content_text .= $content_text;
+			public function body_text_add($content_text) {
+				$this->body_text .= $content_text;
 			}
 
-			public function content_html_add($content_html) {
-				$this->content_html .= $content_html;
+			public function body_html_add($content_html) {
+				$this->body_html .= $content_html;
 			}
 
 			public function request_table_add($values) {
@@ -168,7 +172,7 @@
 				//--------------------------------------------------
 				// Content
 
-					$this->content_html .= '<table cellspacing="0" cellpadding="3" border="1">' . "\n";
+					$this->body_html .= '<table cellspacing="0" cellpadding="3" border="1">' . "\n";
 
 					foreach ($values as $name => $value) {
 
@@ -177,18 +181,29 @@
 							$value = $value[1];
 						}
 
-						$this->content_html .= ' <tr><th align="left" valign="top">' . html($name) . '</th><td valign="top">' . nl2br($value == '' ? '&#xA0;' : html($value)) . '</td></tr>' . "\n";
+						$this->body_html .= ' <tr><th align="left" valign="top">' . html($name) . '</th><td valign="top">' . nl2br($value == '' ? '&#xA0;' : html($value)) . '</td></tr>' . "\n";
 
 						if (strpos($value, "\n") === false) {
-							$this->content_text .= str_pad($name . ':', ($field_length + 2)) . $value . "\n";
+							$this->body_text .= str_pad($name . ':', ($field_length + 2)) . $value . "\n";
 						} else {
-							$this->content_text .= $name . ':- ' . "\n\n" . preg_replace('/^/m', '  ', preg_replace('/\r\n?/', "\n", wordwrap($value, 70, "\n"))) . "\n\n";
+							$this->body_text .= $name . ':- ' . "\n\n" . preg_replace('/^/m', '  ', preg_replace('/\r\n?/', "\n", wordwrap($value, 70, "\n"))) . "\n\n";
 						}
 
 					}
 
-					$this->content_html .= '</table>' . "\n";
+					$this->body_html .= '</table>' . "\n";
 
+			}
+
+		//--------------------------------------------------
+		// Full email content
+
+			public function text_set($text) {
+				$this->content_text = $text;
+			}
+
+			public function html_set($html) {
+				$this->content_html = $html;
 			}
 
 		//--------------------------------------------------
@@ -450,6 +465,10 @@
 
 			public function text() {
 
+				if ($this->content_text !== NULL) {
+					return $this->content_text;
+				}
+
 				if ($this->template_path !== NULL) {
 
 					$template_file = $this->template_path . '/index.txt';
@@ -466,7 +485,7 @@
 				}
 
 				$content_text = str_replace('[SUBJECT]', $this->subject_get(), $content_text);
-				$content_text = str_replace('[BODY]', $this->content_text, $content_text);
+				$content_text = str_replace('[BODY]', $this->body_text, $content_text);
 				$content_text = str_replace('[URL]', $this->template_url, $content_text);
 
 				foreach ($this->template_values as $name => $value) {
@@ -479,7 +498,11 @@
 
 			public function html() {
 
-				if ($this->template_path === NULL && $this->content_html == '') {
+				if ($this->content_html !== NULL) {
+					return $this->content_html;
+				}
+
+				if ($this->template_path === NULL && $this->body_html == '') {
 					return '';
 				}
 
@@ -524,7 +547,7 @@
 				}
 
 				$content_html = str_replace('[SUBJECT]', html($subject), $content_html);
-				$content_html = str_replace('[BODY]', $this->content_html, $content_html);
+				$content_html = str_replace('[BODY]', $this->body_html, $content_html);
 				$content_html = str_replace('[URL]', html($this->template_url), $content_html);
 
 				foreach ($this->template_values as $name => $value) {
