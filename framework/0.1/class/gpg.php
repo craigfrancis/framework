@@ -100,7 +100,7 @@
 				$this->_key_check_public($key_to);
 
 				if ($path_dest === NULL) {
-					$path_dest = tempnam('/tmp', 'gpg.asc.');
+					$path_dest = tempnam('/tmp', 'gpg.');
 				}
 
 				$path_dest_new = $path_dest . '.new';
