@@ -464,6 +464,8 @@
 					$fields = array(
 							$this->config['field_id_sql'],
 							$this->config['field_postcode_sql'],
+							$this->config['field_latitude'],
+							$this->config['field_longitude'],
 						);
 
 					if ($this->config['field_country_sql'] !== NULL) {
@@ -477,52 +479,59 @@
 					$rst = $db->select($this->config['table_sql'], $fields, $this->config['where_sql']);
 					while ($row = $db->fetch_assoc($rst)) {
 
-						//--------------------------------------------------
-						// Country
+						$existing_accuracy_latitude = strlen($row[$this->config['field_latitude']]);
+						$existing_accuracy_longitude = strlen($row[$this->config['field_longitude']]);
 
-							if ($this->config['field_country_sql'] !== NULL) {
-								$country = $row[$this->config['field_country']];
-							} else {
-								$country = NULL;
-							}
+						if ($existing_accuracy_latitude <= 15 && $existing_accuracy_longitude <= 15) {
 
-						//--------------------------------------------------
-						// Full address search
+							//--------------------------------------------------
+							// Country
 
-							$search = array();
-							foreach (array_merge($this->config['field_address_sql'], array($this->config['field_postcode_sql'])) as $field) {
-								$val = trim($row[$field]);
-								if ($val != '') {
-									$search[] = $val;
+								if ($this->config['field_country_sql'] !== NULL) {
+									$country = $row[$this->config['field_country']];
+								} else {
+									$country = NULL;
 								}
-							}
-							$search = implode($search, ', ');
 
-							$result = $this->search($search, $country);
+							//--------------------------------------------------
+							// Full address search
 
-						//--------------------------------------------------
-						// Postcode only search
+								$search = array();
+								foreach (array_merge($this->config['field_address_sql'], array($this->config['field_postcode_sql'])) as $field) {
+									$val = trim($row[$field]);
+									if ($val != '') {
+										$search[] = $val;
+									}
+								}
+								$search = implode($search, ', ');
 
-							if ($result === NULL) {
-								$result = $this->search($row[$this->config['field_postcode']], $country);
-							}
+								$result = $this->search($search, $country);
 
-						//--------------------------------------------------
-						// Update
+							//--------------------------------------------------
+							// Postcode only search
 
-							if ($result !== NULL) {
+								if ($result === NULL) {
+									$result = $this->search($row[$this->config['field_postcode']], $country);
+								}
 
-								$values = array();
-								$values[$this->config['field_latitude']] = $result['latitude'];
-								$values[$this->config['field_longitude']] = $result['longitude'];
+							//--------------------------------------------------
+							// Update
 
-								$sql_where = '
-									' . $this->config['field_id'] . ' = "' . $db->escape($row[$this->config['field_id_sql']]) . '" AND
-									' . $this->config['where_sql'];
+								if ($result !== NULL) {
 
-								$db->update($this->config['table_sql'], $values, $sql_where);
+									$values = array();
+									$values[$this->config['field_latitude']] = $result['latitude'];
+									$values[$this->config['field_longitude']] = $result['longitude'];
 
-							}
+									$sql_where = '
+										' . $this->config['field_id'] . ' = "' . $db->escape($row[$this->config['field_id_sql']]) . '" AND
+										' . $this->config['where_sql'];
+
+									$db->update($this->config['table_sql'], $values, $sql_where);
+
+								}
+
+						}
 
 					}
 
