@@ -29,8 +29,8 @@
 
 	$parameters = array(
 			'h' => 'help',
-			'g:' => 'gateway:',
 			'd::' => 'debug::',
+			'g:' => 'gateway:',
 			'm::' => 'maintenance::',
 			'p::' => 'permissions::',
 		);
@@ -96,10 +96,10 @@
 		}
 
 		$commands = array(
-			'App Folders'  => 'find ' . escapeshellarg(APP_ROOT)  . ' -type d -mindepth 1 -exec chmod 755 {} \\; 2>&1',
-			'App Files'    => 'find ' . escapeshellarg(APP_ROOT)  . ' -type f -mindepth 1 -exec chmod 644 {} \\; 2>&1',
-			'File Folders' => 'find ' . escapeshellarg(FILE_ROOT) . ' -type d -mindepth 1 -exec chmod 777 {} \\; 2>&1',
-			'File Files'   => 'find ' . escapeshellarg(FILE_ROOT) . ' -type f -mindepth 1 -exec chmod 666 {} \\; 2>&1',
+			'App Folders'  => 'find ' . escapeshellarg(APP_ROOT)  . ' -mindepth 1 -type d -exec chmod 755 {} \\; 2>&1',
+			'App Files'    => 'find ' . escapeshellarg(APP_ROOT)  . ' -mindepth 1 -type f -exec chmod 644 {} \\; 2>&1',
+			'File Folders' => 'find ' . escapeshellarg(FILE_ROOT) . ' -mindepth 1 -type d -exec chmod 777 {} \\; 2>&1',
+			'File Files'   => 'find ' . escapeshellarg(FILE_ROOT) . ' -mindepth 1 -type f -exec chmod 666 {} \\; 2>&1',
 		);
 
 		foreach ($commands as $name => $command) {

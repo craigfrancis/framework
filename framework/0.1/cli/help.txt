@@ -9,3 +9,6 @@
 
  -m
  --maintenance     Run the maintenance scripts
+
+ -p
+ --permissions     Correct file and folder permissions
