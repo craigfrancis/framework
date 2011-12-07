@@ -167,7 +167,7 @@
 
 					$key_exists = $this->_key_exists($key_email);
 					if (!$key_exists) {
-						exit_with_error('The private key for "' . $key_email . '" has not been created');
+						exit_with_error('The private key for "' . $key_email . '" has not been created', implode("\n", $result['output']));
 					}
 
 				}
