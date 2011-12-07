@@ -675,7 +675,7 @@
 
 		}
 
-		public function csv_download($file_name, $inline = false) {
+		public function csv_download($file_name, $inline = NULL) {
 
 			//--------------------------------------------------
 			// Data
@@ -703,15 +703,15 @@
 			//--------------------------------------------------
 			// Send headers
 
-				if ($inline) {
+				if ($inline === true || ($inline === NULL && SERVER == 'stage')) {
+
+					mime_set('text/plain');
+
+				} else {
 
 					mime_set('application/csv');
 
 					header('Content-disposition: attachment; filename="'. head($file_name) . '"');
-
-				} else {
-
-					mime_set('text/plain');
 
 				}
 
