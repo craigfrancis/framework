@@ -700,7 +700,7 @@
 						} else {
 							mime_set();
 if (config::get('request.ip') == '92.27.98.57') {
-	echo 'Debug: Headings' . "\n";
+	echo 'Debug: ' . 'Content-type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')) . "\n";
 }
 
 						}
