@@ -699,6 +699,10 @@
 							mime_set('text/html');
 						} else {
 							mime_set();
+if (config::get('request.ip') == '92.27.98.57') {
+	echo 'Debug: Headings' . "\n";
+}
+
 						}
 
 						unset($mime_xml);
