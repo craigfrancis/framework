@@ -181,21 +181,63 @@
 
 		unset($gateway_url);
 
-	//--------------------------------------------------
-	// Reduce possibility of duplicate content issues
+//--------------------------------------------------
+// Handle asset requests... could contain file
+// modification time.
 
-		if (substr($route_path, -1) != '/' && substr($route_path, 0, strlen(ASSET_URL)) != ASSET_URL) {
+	if (substr($route_path, 0, strlen(ASSET_URL)) == ASSET_URL) {
 
-			$new_url = config::get('url.prefix') . $route_path . '/';
+		$route_dir = dirname($route_path);
+		$route_name = basename($route_path);
 
-			$query = config::get('request.query');
-			if ($query) {
-				$new_url .= '?' . $query;
+		$pos = strpos($route_name, '-');
+		if ($pos !== false) {
+
+			$route_mtime = substr($route_name, 0, $pos);
+			$route_file = substr($route_name, ($pos + 1));
+			$route_ext = substr($route_file, (strrpos($route_file, '.') + 1));
+
+			$mime_types = array(
+					'css' => 'text/css',
+					'js' => 'application/javascript',
+				);
+
+			$file_path = PUBLIC_ROOT . $route_dir . '/' . $route_file;
+
+			if (isset($mime_types[$route_ext]) && is_file($file_path) && preg_match('/^[0-9]+$/', $route_mtime) && $route_mtime > 10000000) { // 10000000 = 26th April 1970
+				$file_mtime = filemtime($file_path);
+				if ($route_mtime == $file_mtime) {
+
+					config::set('debug.show', false);
+
+					header('Last-Modified: ' . head(gmdate('D, d M Y H:i:s', $file_mtime)) . ' GMT');
+					header('Etag: ' . head($file_mtime));
+
+					if ((isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $file_mtime) || (isset($_SERVER['HTTP_IF_NONE_MATCH']) && trim($_SERVER['HTTP_IF_NONE_MATCH']) == $file_mtime)) {
+						header('HTTP/1.1 304 Not Modified');
+						exit;
+					}
+
+					mime_set($mime_types[$route_ext]);
+					exit(file_get_contents($file_path));
+
+				} else {
+
+					$new_url = url(config::get('request.url_https'));
+					$new_url->path_set($route_dir . '/' . $file_mtime . '-' . $route_file);
+
+					redirect($new_url, 301);
+
+				}
 			}
 
-			redirect($new_url, 301);
+			unset($route_mtime, $route_file, $route_ext, $mime_types, $file_path);
 
 		}
+
+		unset($route_dir, $route_name, $pos);
+
+	}
 
 //--------------------------------------------------
 // Process routes

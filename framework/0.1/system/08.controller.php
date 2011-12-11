@@ -298,6 +298,15 @@
 
 	if ($action_method !== NULL) {
 
+		if (substr(config::get('route.path'), -1) != '/') { // reduce possibility of duplicate content issues
+
+			$new_url = url(config::get('request.url_https'));
+			$new_url->path_set($new_url->path_get() . '/');
+
+			redirect($new_url, 301);
+
+		}
+
 		if ($action_method != 'action_index') {
 			array_push($action_route_stack_used, array_shift($action_route_stack_pending));
 		}
@@ -330,6 +339,7 @@
 			$note_html .= '&#xA0; &#xA0; $this->view_path_set(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; $this->js_add(\'/path/to/file.js\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; $this->css_add(\'/path/to/file.css\');<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; $this->css_auto();<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; $this->head_add_html(\'&lt;html&gt;\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; $this->page_ref_set(\'example_ref\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; $this->error_show(\'page_not_found\');<br />' . "\n";

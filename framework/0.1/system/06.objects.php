@@ -40,7 +40,7 @@
 			}
 
 			public function head_add_html($html) {
-				config::set('output.head_html', config::get('output.head_html') . "\n\n" . $html);
+				config::set('output.head_html', config::get('output.head_html') . $html);
 			}
 
 			public function js_add($path) {
@@ -62,22 +62,133 @@
 					));
 			}
 
-			public function css_type_set($type, $config) {
-				config::array_set('output.css_types', $type, $config);
-			}
+			public function css_auto() {
 
-			public function css_type_remove($type) {
-				$types = config::get('output.css_types');
-				if (isset($types[$type])) {
-					unset($types[$type]);
-					config::set('output.css_types', $types);
-				} else {
-					exit_with_error('Cannot remove the non-existent CSS type "' . $type . '"');
-				}
-			}
+				//--------------------------------------------------
+				// Get config
 
-			public function css_version_set($version) {
-				config::set('output.css_version', $version);
+					$css_name = config::get('output.css_name');
+					$css_types = config::get('output.css_types');
+
+				//--------------------------------------------------
+				// CSS name
+
+					$style_set = false;
+
+					if ($css_name == '') {
+
+						$css_name = request('style', 'GET');
+
+						if ($css_name != '' && isset($css_types[$css_name])) {
+
+							cookie::set('style', $css_name); // TODO: Cannot be set after output sent
+
+							$style_set = true;
+
+						} else {
+
+							$css_name = cookie::get('style');
+
+						}
+
+					}
+
+					if (!isset($css_types[$css_name]) || (!$style_set && !$css_types[$css_name]['alt_sticky'])) {
+						$css_name = '';
+					}
+
+				//--------------------------------------------------
+				// Files
+
+					foreach ($css_types as $css_type_name => $css_type_info) {
+
+						$css_types[$css_type_name]['files'] = array();
+						$css_types[$css_type_name]['log'] = array();
+
+						$file = '/css/global/' . $css_type_name . '.css';
+
+						if (is_file(ASSET_ROOT . $file)) {
+
+							$css_types[$css_type_name]['files'][] = ASSET_URL . $file;
+							$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - found';
+
+						} else {
+
+							$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - absent';
+
+						}
+
+					}
+
+					$build_up_address = '/css/';
+					foreach (path_to_array(config::get('route.path')) as $f) {
+						if ($f != '') {
+
+							$build_up_address .= $f . '/';
+
+							foreach ($css_types as $css_type_name => $css_type_info) {
+								$file = $build_up_address . $css_type_name . '.css';
+
+								if (is_file(ASSET_ROOT . $file)) {
+
+									$css_types[$css_type_name]['files'][] = ASSET_URL . $file;
+									$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - found';
+
+								} else {
+
+									$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - absent';
+
+								}
+
+							}
+
+						}
+					}
+
+				//--------------------------------------------------
+				// Debug
+
+					if (config::get('debug.level') >= 3) {
+
+						$note_html = '<strong>Styles</strong>:<br />';
+
+						foreach ($css_types as $css_type_name => $css_type_info) {
+							foreach ($css_type_info['log'] as $log) {
+								$note_html .= '&#xA0; ' . str_replace(' - found', ' - <strong>found</strong>', html($log)) . '<br />';
+							}
+						}
+
+						debug_note_html($note_html);
+
+						unset($note_html, $log);
+
+					}
+
+				//--------------------------------------------------
+				// Add to config
+
+					foreach ($css_types as $css_type_name => $css_type_info) {
+
+						if ($css_type_info['default'] == true || $css_name == $css_type_name) {
+							foreach ($css_type_info['files'] as $path) {
+
+								$media = ($css_name == $css_type_name ? $css_type_info['media_selected'] : $css_type_info['media_normal']);
+
+								$this->css_add($path, $media);
+
+							}
+						}
+
+						if ($css_type_info['alt_title'] != '' && $css_name != $css_type_name) {
+							foreach ($css_type_info['files'] as $path) {
+
+								$this->css_alternate_add($path, 'all', $css_type_info['alt_title']);
+
+							}
+						}
+
+					}
+
 			}
 
 			public function page_ref_set($page_ref) {
@@ -333,17 +444,6 @@
 						}
 
 				//--------------------------------------------------
-				// Process types
-
-					$css_types = config::get('output.css_types');
-
-					if ($css_types !== NULL && count($css_types) > 0) {
-
-						$this->css_process_types($css_types);
-
-					}
-
-				//--------------------------------------------------
 				// Message
 
 					$this->message = cookie::get('message');
@@ -376,151 +476,12 @@
 				return ''; // TODO
 			}
 
-			public function css_process_types($css_types) {
-
-				//--------------------------------------------------
-				// CSS name
-
-					$css_name = config::get('output.css_name');
-
-					$style_set = false;
-
-					if ($css_name == '') {
-
-						$css_name = request('style', 'GET');
-
-						if ($css_name != '' && isset($css_types[$css_name])) {
-
-							cookie::set('style', $css_name); // TODO: Cannot be set after output sent
-
-							$style_set = true;
-
-						} else {
-
-							$css_name = cookie::get('style');
-
-						}
-
-					}
-
-					if (!isset($css_types[$css_name]) || (!$style_set && !$css_types[$css_name]['alt_sticky'])) {
-						$css_name = '';
-					}
-
-				//--------------------------------------------------
-				// Files
-
-					$css_version = 0;
-
-					foreach ($css_types as $css_type_name => $css_type_info) {
-
-						$css_types[$css_type_name]['files'] = array();
-						$css_types[$css_type_name]['log'] = array();
-
-						$file = '/css/global/' . $css_type_name . '.css';
-
-						if (is_file(ASSET_ROOT . $file)) {
-
-							$css_types[$css_type_name]['files'][] = ASSET_URL . $file;
-							$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - found';
-
-							$file_modified = filemtime(ASSET_ROOT . $file);
-							if ($file_modified > $css_version) {
-								$css_version = $file_modified;
-							}
-
-						} else {
-
-							$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - absent';
-
-						}
-
-					}
-
-					$build_up_address = '/css/';
-					foreach (path_to_array(config::get('route.path')) as $f) {
-						if ($f != '') {
-
-							$build_up_address .= $f . '/';
-
-							foreach ($css_types as $css_type_name => $css_type_info) {
-								$file = $build_up_address . $css_type_name . '.css';
-
-								if (is_file(ASSET_ROOT . $file)) {
-
-									$css_types[$css_type_name]['files'][] = ASSET_URL . $file;
-									$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - found';
-
-									$file_modified = filemtime(ASSET_ROOT . $file);
-									if ($file_modified > $css_version) {
-										$css_version = $file_modified;
-									}
-
-								} else {
-
-									$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - absent';
-
-								}
-
-							}
-
-						}
-					}
-
-					config::set_default('output.css_version', $css_version);
-
-				//--------------------------------------------------
-				// Debug
-
-					if (config::get('debug.level') >= 3) {
-
-						$note_html = '<strong>Styles</strong>:<br />';
-
-						foreach ($css_types as $css_type_name => $css_type_info) {
-							foreach ($css_type_info['log'] as $log) {
-								$note_html .= '&#xA0; ' . str_replace(' - found', ' - <strong>found</strong>', html($log)) . '<br />';
-							}
-						}
-
-						debug_note_html($note_html);
-
-						unset($note_html, $log);
-
-					}
-
-				//--------------------------------------------------
-				// Add to config
-
-					foreach ($css_types as $css_type_name => $css_type_info) {
-
-						if ($css_type_info['default'] == true || $css_name == $css_type_name) {
-							foreach ($css_type_info['files'] as $path) {
-
-								$media = ($css_name == $css_type_name ? $css_type_info['media_selected'] : $css_type_info['media_normal']);
-
-								$this->css_add($path, $media);
-
-							}
-						}
-
-						if ($css_type_info['alt_title'] != '' && $css_name != $css_type_name) {
-							foreach ($css_type_info['files'] as $path) {
-
-								$this->css_alternate_add($path, 'all', $css_type_info['alt_title']);
-
-							}
-						}
-
-					}
-
-			}
-
 			public function css_get($mode) {
 
 				//--------------------------------------------------
 				// Configuration
 
-					$css_version = config::get('output.css_version', 0);
+					$css_version = config::get('output.version', true);
 					$css_main = config::get('output.css_files_main', array());
 					$css_alternate = config::get('output.css_files_alternate', array());
 
@@ -531,8 +492,8 @@
 
 					foreach ($css_main as $css) { // Cannot use array_unique, as some versions of php do not support multi-dimensional arrays
 
-						if ($css_version > 0) {
-							$css['path'] .= '?v=' . urlencode($css_version);
+						if ($css_version) {
+							$css['path'] = dirname($css['path']) . '/' . filemtime(PUBLIC_ROOT . $css['path']) . '-' . basename($css['path']);
 						}
 
 						if ($mode == 'html') {
@@ -551,8 +512,8 @@
 
 						foreach ($css_alternate as $css) {
 
-							if ($css_version > 0) {
-								$css['path'] .= '?v=' . urlencode($css_version);
+							if ($css_version) {
+								$css['path'] = dirname($css['path']) . '/' . filemtime(PUBLIC_ROOT . $css['path']) . '-' . basename($css['path']);
 							}
 
 							if ($mode == 'html') {
@@ -632,22 +593,6 @@
 					}
 
 				//--------------------------------------------------
-				// Javascript
-
-					$js_paths = config::get('output.js_files');
-
-					if (count($js_paths) > 0 && cookie::get('js_disable') != 'true') {
-						$html .= "\n";
-						foreach (array_unique($js_paths) as $file) {
-							$html .= "\n\t" . '<script type="text/javascript" src="' . html($file) . '"></script>';
-						}
-					}
-
-					if (config::get('debug.level') >= 4) {
-						debug_progress('JavaScript', 3);
-					}
-
-				//--------------------------------------------------
 				// CSS
 
 					$css_html = $this->css_get('html');
@@ -658,6 +603,29 @@
 
 					if (config::get('debug.level') >= 4) {
 						debug_progress('CSS', 3);
+					}
+
+				//--------------------------------------------------
+				// Javascript - after CSS
+
+					$js_version = config::get('output.version', true);
+					$js_paths = config::get('output.js_files');
+
+					if (count($js_paths) > 0 && cookie::get('js_disable') != 'true') {
+						$html .= "\n";
+						foreach (array_unique($js_paths) as $file) {
+
+							if ($js_version) {
+								$file = dirname($file) . '/' . filemtime(PUBLIC_ROOT . $file) . '-' . basename($file);
+							}
+
+							$html .= "\n\t" . '<script type="text/javascript" src="' . html($file) . '"></script>';
+
+						}
+					}
+
+					if (config::get('debug.level') >= 4) {
+						debug_progress('JavaScript', 3);
 					}
 
 				//--------------------------------------------------
@@ -746,9 +714,7 @@
 
 					$layout_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'layout.ctp';
 
-					$head_html = "\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'layout.css')) . "\n\t" . '</style>';
-
-					config::set('output.head_html', config::get('output.head_html') . $head_html);
+					$this->head_add_html("\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'layout.css')) . "\n\t" . '</style>');
 
 				}
 
