@@ -205,10 +205,11 @@
 			$file_path = PUBLIC_ROOT . $route_dir . '/' . $route_file;
 
 			if (isset($mime_types[$route_ext]) && is_file($file_path) && preg_match('/^[0-9]+$/', $route_mtime) && $route_mtime > 10000000) { // 10000000 = 26th April 1970
+
+				config::set('debug.show', false);
+
 				$file_mtime = filemtime($file_path);
 				if ($route_mtime == $file_mtime) {
-
-					config::set('debug.show', false);
 
 					header('Last-Modified: ' . head(gmdate('D, d M Y H:i:s', $file_mtime)) . ' GMT');
 					header('Etag: ' . head($file_mtime));
@@ -229,6 +230,7 @@
 					redirect($new_url, 301);
 
 				}
+
 			}
 
 			unset($route_mtime, $route_file, $route_ext, $mime_types, $file_path);
