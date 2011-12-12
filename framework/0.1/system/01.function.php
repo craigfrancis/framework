@@ -93,6 +93,10 @@
 		return preg_replace('/(\r|\n)/', '', $text);
 	}
 
+	function safe_file_name($name) {
+		return preg_replace('/[^a-zA-Z0-9_\- ]/', '', $name);
+	}
+
 //--------------------------------------------------
 // Simple string functions
 
@@ -266,7 +270,7 @@
 
 	function is_email($email) {
 		if (preg_match('/^\w[-.+\'\w]*@(\w[-._\w]*\.[a-zA-Z]{2,}.*)$/', $email, $matches)) {
-			if (function_exists('checkdnsrr')) {
+			if (function_exists('checkdnsrr') && SERVER != 'stage') { // Offline support?
 				if (checkdnsrr($matches[1] . '.', 'MX')) return true; // If a 'mail exchange' record exists
 				if (checkdnsrr($matches[1] . '.', 'A'))  return true; // Mail servers can fall back on 'A' records
 			} else {

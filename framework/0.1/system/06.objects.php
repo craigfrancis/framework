@@ -492,7 +492,7 @@
 
 					foreach ($css_main as $css) { // Cannot use array_unique, as some versions of php do not support multi-dimensional arrays
 
-						if ($css_version) {
+						if ($css_version && substr($css['path'], 0, 1) == '/') {
 							$css['path'] = dirname($css['path']) . '/' . filemtime(PUBLIC_ROOT . $css['path']) . '-' . basename($css['path']);
 						}
 
@@ -512,7 +512,7 @@
 
 						foreach ($css_alternate as $css) {
 
-							if ($css_version) {
+							if ($css_version && substr($css['path'], 0, 1) == '/') {
 								$css['path'] = dirname($css['path']) . '/' . filemtime(PUBLIC_ROOT . $css['path']) . '-' . basename($css['path']);
 							}
 
@@ -615,7 +615,7 @@
 						$html .= "\n";
 						foreach (array_unique($js_paths) as $file) {
 
-							if ($js_version) {
+							if ($js_version && substr($file, 0, 1) == '/') {
 								$file = dirname($file) . '/' . filemtime(PUBLIC_ROOT . $file) . '-' . basename($file);
 							}
 
@@ -704,7 +704,7 @@
 					debug_progress('Find layout', 2);
 				}
 
-				$layout_path = APP_ROOT . '/layouts/' . preg_replace('/[^a-zA-Z0-9_]/', '', config::get('view.layout')) . '.ctp';
+				$layout_path = APP_ROOT . '/layouts/' . safe_file_name(config::get('view.layout')) . '.ctp';
 
 				if (config::get('debug.level') >= 3) {
 					debug_note_html('<strong>Layout</strong>: ' . html($layout_path));

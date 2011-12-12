@@ -73,7 +73,7 @@
 			}
 
 			public function template_set($name) {
-				$path = '/a/email/' . preg_replace('/[^a-zA-Z0-9_\-]/', '', $name);
+				$path = '/a/email/' . safe_file_name($name);
 				$this->template_set_path(PUBLIC_ROOT . $path);
 				$this->template_set_url(config::get('url.prefix') . $path);
 			}

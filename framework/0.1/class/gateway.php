@@ -693,7 +693,7 @@
 
 					$gateway = $this;
 
-					$api_path = APP_ROOT . '/gateway/' . preg_replace('/[^a-zA-Z0-9_]/', '', $this->api) . '.php';
+					$api_path = APP_ROOT . '/gateway/' . safe_file_name($this->api) . '.php';
 
 					if (is_file($api_path)) {
 						require_once($api_path);
