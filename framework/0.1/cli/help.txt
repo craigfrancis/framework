@@ -10,5 +10,8 @@
  -m
  --maintenance     Run the maintenance scripts
 
+ -i
+ --install         Run the install.php script
+
  -p
  --permissions     Correct file and folder permissions
