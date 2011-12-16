@@ -32,6 +32,7 @@
 			'd::' => 'debug::',
 			'g:' => 'gateway:',
 			'm::' => 'maintenance::',
+			'i::' => 'install::',
 			'p::' => 'permissions::',
 		);
 
@@ -82,6 +83,28 @@
 		}
 
 		echo "\n";
+		exit();
+
+	}
+
+//--------------------------------------------------
+// Install mode
+
+	if (isset($options['i']) || isset($options['install'])) {
+
+		function run_install() {
+			require_once(func_get_arg(0)); // No local variables
+		}
+
+		$install_path = 'support' . DS . 'core' . DS . 'install.php';
+		$install_root = APP_ROOT . DS . $install_path;
+
+		if (is_file($install_root)) {
+			run_install($install_root);
+		} else {
+			exit('Missing install script: ' . $install_path . "\n");
+		}
+
 		exit();
 
 	}
