@@ -25,6 +25,40 @@
 	}
 
 //--------------------------------------------------
+// Permission reset
+
+	function permission_reset($show_output = true) {
+
+		if ($show_output) {
+			while (ob_get_level() > 0) {
+				ob_end_flush();
+			}
+		}
+
+		$commands = array(
+			'App Folders'  => 'find ' . escapeshellarg(APP_ROOT)  . ' -mindepth 1 -type d -exec chmod 755 {} \\; 2>&1',
+			'App Files'    => 'find ' . escapeshellarg(APP_ROOT)  . ' -mindepth 1 -type f -exec chmod 644 {} \\; 2>&1',
+			'File Folders' => 'find ' . escapeshellarg(FILE_ROOT) . ' -mindepth 1 -type d -exec chmod 777 {} \\; 2>&1',
+			'File Files'   => 'find ' . escapeshellarg(FILE_ROOT) . ' -mindepth 1 -type f -exec chmod 666 {} \\; 2>&1',
+		);
+
+		foreach ($commands as $name => $command) {
+			if ($show_output) {
+				echo $name . "\n";
+				flush();
+				echo shell_exec($command);
+			} else {
+				shell_exec($command);
+			}
+		}
+
+		if ($show_output) {
+			echo "\n";
+		}
+
+	}
+
+//--------------------------------------------------
 // CLI options
 
 	$parameters = array(
@@ -114,24 +148,7 @@
 
 	if (isset($options['p']) || isset($options['permissions'])) {
 
-		while (ob_get_level() > 0) {
-			ob_end_flush();
-		}
-
-		$commands = array(
-			'App Folders'  => 'find ' . escapeshellarg(APP_ROOT)  . ' -mindepth 1 -type d -exec chmod 755 {} \\; 2>&1',
-			'App Files'    => 'find ' . escapeshellarg(APP_ROOT)  . ' -mindepth 1 -type f -exec chmod 644 {} \\; 2>&1',
-			'File Folders' => 'find ' . escapeshellarg(FILE_ROOT) . ' -mindepth 1 -type d -exec chmod 777 {} \\; 2>&1',
-			'File Files'   => 'find ' . escapeshellarg(FILE_ROOT) . ' -mindepth 1 -type f -exec chmod 666 {} \\; 2>&1',
-		);
-
-		foreach ($commands as $name => $command) {
-			echo $name . "\n";
-			flush();
-			echo shell_exec($command);
-		}
-
-		echo "\n";
+		permission_reset();
 		exit();
 
 	}
