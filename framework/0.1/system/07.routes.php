@@ -211,6 +211,10 @@
 				$file_mtime = filemtime($file_path);
 				if ($route_mtime == $file_mtime) {
 
+					if (!is_readable($file_path)) {
+						exit('Cannot access: ' . $file_path);
+					}
+
 					header('Last-Modified: ' . head(gmdate('D, d M Y H:i:s', $file_mtime)) . ' GMT');
 					header('Etag: ' . head($file_mtime));
 
