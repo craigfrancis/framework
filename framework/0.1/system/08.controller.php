@@ -6,36 +6,6 @@
 	config::set('view.variables', array());
 	config::set('view.layout', 'default');
 
-	config::set('output.head_html', '');
-	config::set('output.js_files', array());
-	config::set('output.css_files_main', array());
-	config::set('output.css_files_alternate', array());
-
-	config::set_default('output.css_name', '');
-	config::set_default('output.css_types', array(
-			'core' => array(
-					'media_normal' => 'all',
-					'media_selected' => 'all',
-					'default' => true,
-					'alt_title' => '',
-					'alt_sticky' => false,
-				),
-			'print' => array(
-					'media_normal' => 'print',
-					'media_selected' => 'print,screen',
-					'default' => true,
-					'alt_title' => 'Print',
-					'alt_sticky' => false,
-				),
-			'high' => array(
-					'media_normal' => 'screen,screen',
-					'media_selected' => 'screen,screen',
-					'default' => false,
-					'alt_title' => 'High Contrast',
-					'alt_sticky' => true,
-				),
-		));
-
 //--------------------------------------------------
 // Main include
 
@@ -337,13 +307,13 @@
 			}
 
 			$note_html .= '&#xA0; &#xA0; $this->view_path_set(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
-			$note_html .= '&#xA0; &#xA0; $this->js_add(\'/path/to/file.js\');<br />' . "\n";
-			$note_html .= '&#xA0; &#xA0; $this->css_add(\'/path/to/file.css\');<br />' . "\n";
-			$note_html .= '&#xA0; &#xA0; $this->css_auto();<br />' . "\n";
-			$note_html .= '&#xA0; &#xA0; $this->head_add_html(\'&lt;html&gt;\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; $this->page_ref_set(\'example_ref\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; $this->error_show(\'page_not_found\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; $this->message_set(\'The item has been updated.\');<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; resources::js_add(\'/path/to/file.js\');<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; resources::css_add(\'/path/to/file.css\');<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; resources::css_auto();<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; resources::head_add_html(\'&lt;html&gt;\');<br />' . "\n";
 
 			debug_note_html($note_html);
 

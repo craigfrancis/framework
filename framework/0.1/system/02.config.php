@@ -211,6 +211,31 @@
 			mb_detect_order(array('UTF-8', 'ASCII'));
 		}
 
+		config::set_default('output.css_name', '');
+		config::set_default('output.css_types', array(
+				'core' => array(
+						'media_normal' => 'all',
+						'media_selected' => 'all',
+						'default' => true,
+						'alt_title' => '',
+						'alt_sticky' => false,
+					),
+				'print' => array(
+						'media_normal' => 'print',
+						'media_selected' => 'print,screen',
+						'default' => true,
+						'alt_title' => 'Print',
+						'alt_sticky' => false,
+					),
+				'high' => array(
+						'media_normal' => 'screen,screen',
+						'media_selected' => 'screen,screen',
+						'default' => false,
+						'alt_title' => 'High Contrast',
+						'alt_sticky' => true,
+					),
+			));
+
 	//--------------------------------------------------
 	// URL
 

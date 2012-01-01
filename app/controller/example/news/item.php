@@ -4,8 +4,8 @@
 
 		public function action_index() {
 
-			$this->head_add_html('<!-- Head comment -->');
-			$this->js_add('/a/js/scripts.js');
+			resources::head_add_html('<!-- Head comment -->');
+			resources::js_add('/a/js/scripts.js');
 
 			debug_note('Debug note' . "\n" . 'on multiple lines');
 

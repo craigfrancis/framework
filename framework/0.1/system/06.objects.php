@@ -39,158 +39,6 @@
 				config::array_set('output.title_folders', $id, $name);
 			}
 
-			public function head_add_html($html) {
-				config::set('output.head_html', config::get('output.head_html') . $html);
-			}
-
-			public function js_add($path) {
-				config::array_push('output.js_files', $path);
-			}
-
-			public function css_add($path, $media = 'all') {
-				config::array_push('output.css_files_main', array(
-						'path' => $path,
-						'media' => $media,
-					));
-			}
-
-			public function css_alternate_add($path, $media, $title) {
-				config::array_push('output.css_files_alternate', array(
-						'path' => $path,
-						'media' => $media,
-						'title' => $title,
-					));
-			}
-
-			public function css_auto() {
-
-				//--------------------------------------------------
-				// Get config
-
-					$css_name = config::get('output.css_name');
-					$css_types = config::get('output.css_types');
-
-				//--------------------------------------------------
-				// CSS name
-
-					$style_set = false;
-
-					if ($css_name == '') {
-
-						$css_name = request('style', 'GET');
-
-						if ($css_name != '' && isset($css_types[$css_name])) {
-
-							cookie::set('style', $css_name); // TODO: Cannot be set after output sent
-
-							$style_set = true;
-
-						} else {
-
-							$css_name = cookie::get('style');
-
-						}
-
-					}
-
-					if (!isset($css_types[$css_name]) || (!$style_set && !$css_types[$css_name]['alt_sticky'])) {
-						$css_name = '';
-					}
-
-				//--------------------------------------------------
-				// Files
-
-					foreach ($css_types as $css_type_name => $css_type_info) {
-
-						$css_types[$css_type_name]['files'] = array();
-						$css_types[$css_type_name]['log'] = array();
-
-						$file = '/css/global/' . $css_type_name . '.css';
-
-						if (is_file(ASSET_ROOT . $file)) {
-
-							$css_types[$css_type_name]['files'][] = ASSET_URL . $file;
-							$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - found';
-
-						} else {
-
-							$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - absent';
-
-						}
-
-					}
-
-					$build_up_address = '/css/';
-					foreach (path_to_array(config::get('route.path')) as $f) {
-						if ($f != '') {
-
-							$build_up_address .= $f . '/';
-
-							foreach ($css_types as $css_type_name => $css_type_info) {
-								$file = $build_up_address . $css_type_name . '.css';
-
-								if (is_file(ASSET_ROOT . $file)) {
-
-									$css_types[$css_type_name]['files'][] = ASSET_URL . $file;
-									$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - found';
-
-								} else {
-
-									$css_types[$css_type_name]['log'][] = ASSET_ROOT . $file . ' - absent';
-
-								}
-
-							}
-
-						}
-					}
-
-				//--------------------------------------------------
-				// Debug
-
-					if (config::get('debug.level') >= 3) {
-
-						$note_html = '<strong>Styles</strong>:<br />';
-
-						foreach ($css_types as $css_type_name => $css_type_info) {
-							foreach ($css_type_info['log'] as $log) {
-								$note_html .= '&#xA0; ' . str_replace(' - found', ' - <strong>found</strong>', html($log)) . '<br />';
-							}
-						}
-
-						debug_note_html($note_html);
-
-						unset($note_html, $log);
-
-					}
-
-				//--------------------------------------------------
-				// Add to config
-
-					foreach ($css_types as $css_type_name => $css_type_info) {
-
-						if ($css_type_info['default'] == true || $css_name == $css_type_name) {
-							foreach ($css_type_info['files'] as $path) {
-
-								$media = ($css_name == $css_type_name ? $css_type_info['media_selected'] : $css_type_info['media_normal']);
-
-								$this->css_add($path, $media);
-
-							}
-						}
-
-						if ($css_type_info['alt_title'] != '' && $css_name != $css_type_name) {
-							foreach ($css_type_info['files'] as $path) {
-
-								$this->css_alternate_add($path, 'all', $css_type_info['alt_title']);
-
-							}
-						}
-
-					}
-
-			}
-
 			public function page_ref_set($page_ref) {
 				config::set('output.page_ref', $page_ref);
 			}
@@ -479,47 +327,36 @@
 			public function css_get($mode) {
 
 				//--------------------------------------------------
-				// Configuration
-
-					$css_version = config::get('output.version', true);
-					$css_main = config::get('output.css_files_main', array());
-					$css_alternate = config::get('output.css_files_alternate', array());
-
-				//--------------------------------------------------
-				// Return
+				// Main files
 
 					$return = '';
 
-					foreach ($css_main as $css) { // Cannot use array_unique, as some versions of php do not support multi-dimensional arrays
-
-						if ($css_version && substr($css['path'], 0, 1) == '/') {
-							$css['path'] = dirname($css['path']) . '/' . filemtime(PUBLIC_ROOT . $css['path']) . '-' . basename($css['path']);
-						}
+					foreach (resources::get('css') as $file) { // Cannot use array_unique, as some versions of php do not support multi-dimensional arrays
 
 						if ($mode == 'html') {
-							$return .= "\n\t" . '<link rel="stylesheet" type="text/css" href="' . html($css['path']) . '" media="' . html($css['media']) . '" />';
+							$return .= "\n\t" . '<link rel="stylesheet" type="text/css" href="' . html($file['path']) . '" media="' . html($file['media']) . '" />';
 						} else if ($mode == 'xml') {
-							$return .= "\n" . '<?xml-stylesheet href="' . xml($css['path']) . '" media="' . xml($css['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
+							$return .= "\n" . '<?xml-stylesheet href="' . xml($file['path']) . '" media="' . xml($file['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
 						}
 
 					}
 
-					if (count($css_alternate) > 0) {
+				//--------------------------------------------------
+				// Alternative files
+
+					$files_alternate = resources::get('css_alternate');
+					if (count($files_alternate) > 0) {
 
 						if ($mode == 'html') {
 							$return .= "\n\t";
 						}
 
-						foreach ($css_alternate as $css) {
-
-							if ($css_version && substr($css['path'], 0, 1) == '/') {
-								$css['path'] = dirname($css['path']) . '/' . filemtime(PUBLIC_ROOT . $css['path']) . '-' . basename($css['path']);
-							}
+						foreach ($files_alternate as $file) {
 
 							if ($mode == 'html') {
-								$return .= "\n\t" . '<link rel="alternate stylesheet" type="text/css" href="' . html($css['path']) . '" media="' . html($css['media']) . '" title="' . html($css['title']) . '" />';
+								$return .= "\n\t" . '<link rel="alternate stylesheet" type="text/css" href="' . html($file['path']) . '" media="' . html($file['media']) . '" title="' . html($file['title']) . '" />';
 							} else if ($mode == 'xml') {
-								$return .= "\n" . '<?xml-stylesheet href="' . html($css['path']) . '" alternate="yes" title="' . html($css['title']) . '" media="' . html($css['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
+								$return .= "\n" . '<?xml-stylesheet href="' . html($file['path']) . '" alternate="yes" title="' . html($file['title']) . '" media="' . html($file['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
 							}
 
 						}
@@ -608,20 +445,21 @@
 				//--------------------------------------------------
 				// Javascript - after CSS
 
-					$js_version = config::get('output.version', true);
-					$js_paths = config::get('output.js_files');
+					if (cookie::get('js_disable') != 'true') {
 
-					if (count($js_paths) > 0 && cookie::get('js_disable') != 'true') {
-						$html .= "\n";
-						foreach (array_unique($js_paths) as $file) {
-
-							if ($js_version && substr($file, 0, 1) == '/' && is_file($file)) {
-								$file = dirname($file) . '/' . filemtime(PUBLIC_ROOT . $file) . '-' . basename($file);
-							}
-
-							$html .= "\n\t" . '<script type="text/javascript" src="' . html($file) . '"></script>';
-
+						$js_paths = array();
+						foreach (resources::get('js') as $file) {
+							$js_paths[] = $file['path'];
 						}
+						$js_paths = array_unique($js_paths);
+
+						if (count($js_paths) > 0) {
+							$html .= "\n";
+							foreach (array_unique($js_paths) as $file) {
+								$html .= "\n\t" . '<script type="text/javascript" src="' . html($file) . '"></script>';
+							}
+						}
+
 					}
 
 					if (config::get('debug.level') >= 4) {
@@ -631,7 +469,7 @@
 				//--------------------------------------------------
 				// Extra head HTML
 
-					$html .= config::get('output.head_html') . "\n\n";
+					$html .= resources::head_get_html() . "\n\n";
 
 					if (config::get('debug.level') >= 4) {
 						debug_progress('Extra HTML', 3);
@@ -714,7 +552,7 @@
 
 					$layout_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'layout.ctp';
 
-					$this->head_add_html("\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'layout.css')) . "\n\t" . '</style>');
+					resources::head_add_html("\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'layout.css')) . "\n\t" . '</style>');
 
 				}
 
