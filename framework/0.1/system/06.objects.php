@@ -615,7 +615,7 @@
 						$html .= "\n";
 						foreach (array_unique($js_paths) as $file) {
 
-							if ($js_version && substr($file, 0, 1) == '/') {
+							if ($js_version && substr($file, 0, 1) == '/' && is_file($file)) {
 								$file = dirname($file) . '/' . filemtime(PUBLIC_ROOT . $file) . '-' . basename($file);
 							}
 

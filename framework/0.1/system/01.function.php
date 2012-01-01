@@ -55,7 +55,7 @@
 //--------------------------------------------------
 // Shortcut for gateway url's
 
-	function gateway_url($api_name, $parameters) {
+	function gateway_url($api_name, $parameters = NULL) {
 
 		$api_name = str_replace('_', '-', $api_name);
 
