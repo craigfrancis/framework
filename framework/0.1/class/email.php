@@ -145,12 +145,13 @@
 
 			public function request_table_add($values) {
 
-				$request_values = array();
-				$request_values['Sent'] = date('l jS F Y, g:i:sa');
-				$request_values['Website'] = config::get('request.domain_http') . config::get('url.prefix');
-				$request_values['Request'] = config::get('request.url');
-				$request_values['Remote'] = config::get('request.ip');
-				$request_values['Referrer'] = config::get('request.referrer');
+				$request_values = array(
+						'Sent' => date('l jS F Y, g:i:sa'),
+						'Website' => config::get('request.domain_http') . config::get('url.prefix'),
+						'Request' => config::get('request.url'),
+						'Remote' => config::get('request.ip'),
+						'Referrer' => config::get('request.referrer'),
+					);
 
 				$this->values_table_add(array_merge($request_values, $values));
 

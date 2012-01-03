@@ -4,8 +4,9 @@
 // Setup
 
 	//--------------------------------------------------
-	// Notes
+	// Setup
 
+		config::set_default('debug.values', array());
 		config::set('debug.notes', array());
 
 	//--------------------------------------------------
@@ -60,11 +61,12 @@
 
 			if (($type == 'error' || $type == 'notice') && $error_email !== NULL) {
 
+				$email_values = config::get('debug.values', array());
+				$email_values = array_merge($email_values, array('Message' => $message));
+
 				$email = new email();
 				$email->subject_set('System ' . ucfirst($type) . ': ' . config::get('request.domain'));
-				$email->request_table_add(array(
-						'Message' => $message,
-					));
+				$email->request_table_add($email_values);
 
 				$email->send($error_email);
 
