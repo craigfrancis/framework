@@ -69,6 +69,9 @@
 // full native function in the script.
 
 	function html($text) {
+		if (is_object($text) && method_exists($text, '__toString')) {
+			$text = $text->__toString();
+		}
 		return htmlspecialchars($text, ENT_QUOTES, config::get('output.charset')); // htmlentities does not work for HTML5+XML
 	}
 
