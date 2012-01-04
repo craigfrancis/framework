@@ -31,7 +31,7 @@
 				//--------------------------------------------------
 				// Defaults
 
-					$this->subject_prefix = config::get('email.from_name');
+					$this->subject_prefix = config::get('email.prefix');
 					$this->subject_suffix = '';
 					$this->from_email = config::get('email.from_email');
 					$this->from_name = config::get('email.from_name');

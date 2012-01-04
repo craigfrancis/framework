@@ -247,7 +247,7 @@
 
 		config::set_default('email.from_name', config::get('output.site_name'));
 		config::set_default('email.from_email', 'noreply@example.com');
-
+		config::set_default('email.prefix', (SERVER == 'live' ? '' : ucfirst(SERVER)));
 		config::set_default('email.error', NULL);
 
 	//--------------------------------------------------
