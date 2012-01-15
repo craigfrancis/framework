@@ -147,6 +147,15 @@
 	unset($url_http, $url_https, $request_path, $pos);
 
 //--------------------------------------------------
+// Defaults
+
+	//--------------------------------------------------
+	// Resources
+
+		config::set('resource.file_root', ROOT . '/files');
+		config::set('resource.private_root', ROOT . '/private');
+
+//--------------------------------------------------
 // App config
 
 	$config = array();
@@ -174,7 +183,7 @@
 		}
 
 	//--------------------------------------------------
-	// Resource
+	// Resources
 
 		config::set_default('resource.asset_url', config::get('url.prefix') . '/a');
 		config::set_default('resource.asset_root', PUBLIC_ROOT . '/a');
@@ -183,9 +192,6 @@
 		config::set_default('resource.favicon_path', config::get('resource.asset_root') . '/img/global/favicon.ico'); // root is a path prefix
 
 		config::set_default('resource.file_url', config::get('url.prefix') . '/a/files');
-		config::set_default('resource.file_root', ROOT . '/files');
-
-		config::set_default('resource.private_root', ROOT . '/private');
 
 	//--------------------------------------------------
 	// Output

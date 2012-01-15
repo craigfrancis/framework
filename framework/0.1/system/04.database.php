@@ -133,6 +133,8 @@
 
 			if ($fields === 1) {
 				$fields_sql = '1';
+			} else if ($fields == 'count') {
+				$fields_sql = 'COUNT(*) AS c';
 			} else if ($fields === NULL) {
 				$fields_sql = '*';
 			} else {

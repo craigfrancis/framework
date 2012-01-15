@@ -36,11 +36,15 @@
 		}
 
 		$commands = array(
-			'App Folders'  => 'find ' . escapeshellarg(APP_ROOT)  . ' -mindepth 1 -type d -exec chmod 755 {} \\; 2>&1',
-			'App Files'    => 'find ' . escapeshellarg(APP_ROOT)  . ' -mindepth 1 -type f -exec chmod 644 {} \\; 2>&1',
-			'File Folders' => 'find ' . escapeshellarg(FILE_ROOT) . ' -mindepth 1 -type d -exec chmod 777 {} \\; 2>&1',
-			'File Files'   => 'find ' . escapeshellarg(FILE_ROOT) . ' -mindepth 1 -type f -exec chmod 666 {} \\; 2>&1',
+			'App folders'  => 'find ' . escapeshellarg(APP_ROOT)  . ' -mindepth 1 -type d -exec chmod 755 {} \\; 2>&1',
+			'App files'    => 'find ' . escapeshellarg(APP_ROOT)  . ' -mindepth 1 -type f -exec chmod 644 {} \\; 2>&1',
+			'File folders' => 'find ' . escapeshellarg(FILE_ROOT) . ' -mindepth 1 -type d -exec chmod 777 {} \\; 2>&1',
+			'File files'   => 'find ' . escapeshellarg(FILE_ROOT) . ' -mindepth 1 -type f -exec chmod 666 {} \\; 2>&1',
 		);
+
+		foreach (config::get('cli.permission_reset_paths') as $name => $info) {
+			$commands[$name] = 'find ' . escapeshellarg($info['path']) . ' -mindepth 1 -type ' . escapeshellarg($info['type']) . ' -exec chmod ' . escapeshellarg($info['permission']) . ' {} \\; 2>&1';
+		}
 
 		foreach ($commands as $name => $command) {
 			if ($show_output) {
