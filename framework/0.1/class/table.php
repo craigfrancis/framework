@@ -759,7 +759,7 @@
 
 		public function cell_add($content, $class_name = '', $colspan = 1) {
 			$this->data[] = array(
-					'html' => html($content),
+					'html' => nl2br(html($content)),
 					'class_name' => $class_name,
 					'colspan' => $colspan,
 				);
