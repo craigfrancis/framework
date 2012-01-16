@@ -96,7 +96,7 @@
 
 				if (is_array($results)) {
 
-					$controller_log[] = $controller_path . ': ' . $controller_name . '->route() - ' . html(print_r($results, true));
+					$controller_log[] = $controller_path . ': ' . $controller_name . '->route() - ' . html(debug_dump($results));
 
 					foreach ($results as $result_name => $result_value) {
 

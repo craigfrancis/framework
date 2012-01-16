@@ -215,13 +215,50 @@
 	function debug($variable) {
 
 		$called_from = debug_backtrace();
-		echo '<strong>' . substr(str_replace(ROOT, '', $called_from[0]['file']), 1) . '</strong>';
-		echo ' (line <strong>' . $called_from[0]['line'] . '</strong>)';
+		$called_from_path = substr(str_replace(ROOT, '', $called_from[0]['file']), 1);
+		$called_from_line = $called_from[0]['line'];
 
-		echo '<pre>';
-		echo html(print_r($variable, true));
-		echo '</pre>' . "\n";
+		//$output = print_r($variable, true);
+		$output = debug_dump($variable); // Shows false (not an empty string), quotes strings (var_export does - but has problems with recursion), and shows a simple string representation for the url object.
 
+		if (php_sapi_name() == 'cli' || config::get('output.mime') == 'text/plain') {
+			echo "\n" . $called_from_path . ' (line ' . html($called_from_line) . ')' . "\n";
+			echo $output . "\n";
+		} else {
+			echo "\n" . '<strong>' . html($called_from_path) . '</strong> (line <strong>' . html($called_from_line) . '</strong>)' . "\n";
+			echo '<pre>' . html($output) . '</pre>';
+		}
+
+	}
+
+//--------------------------------------------------
+// Dump a variable
+
+	function debug_dump($variable, $level = 0) {
+		switch ($type = gettype($variable)) {
+			case 'boolean':
+				return ($variable ? 'true' : 'false');
+			case 'integer':
+			case 'double':
+			case 'float':
+				return $variable;
+			case 'string':
+				return '"' . $variable . '"';
+			case 'array':
+				$indent = str_repeat('        ', $level);
+				$output = '(' . "\n";
+				foreach ($variable as $key => $value) {
+					$output .= $indent . '    [' . debug_dump($key) . '] => ' . debug_dump($value, ($level + 1)) . "\n";
+				}
+				return $output . $indent . ')';
+			case 'object':
+				$class = get_class($variable);
+				if ($class == 'url' || is_subclass_of($variable, 'url') || $class == 'url_base' || is_subclass_of($variable, 'url_base')) {
+					return 'url("' . $variable->get() . '")';
+				}
+			default:
+				return print_r($variable, true);
+		}
 	}
 
 //--------------------------------------------------
@@ -253,7 +290,7 @@
 // Debug notes
 
 	function debug_note($note, $colour = NULL) {
-		debug_note_html(nl2br(str_replace(' ', '&#xA0;', html(trim(print_r($note, true))))), $colour);
+		debug_note_html('<pre>' . html(is_string($note) ? $note : debug_dump($note)) . '</pre>', $colour);
 	}
 
 	function debug_note_html($note_html, $colour = NULL) {
@@ -345,7 +382,7 @@
 					if (in_array($key, array('db.pass', 'debug.notes', 'view.variables', 'output.html'))) {
 						$value_html = '???';
 					} else {
-						$value_html = html(print_r($value, true));
+						$value_html = html(debug_dump($value, 1));
 					}
 					$config_html[] = '&#xA0; <strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html;
 				}
@@ -376,7 +413,7 @@
 			$variables_html = array(html($label . ':'));
 			foreach ($array as $key => $value) {
 				if (substr($key, 0, 1) != '_' && substr($key, 0, 5) != 'HTTP_' && !in_array($key, array('GLOBALS'))) {
-					$variables_html[] = '&#xA0; <strong>' . html($key) . '</strong>: ' . html(print_r($value, true));
+					$variables_html[] = '&#xA0; <strong>' . html($key) . '</strong>: ' . html(debug_dump($value));
 				}
 			}
 

@@ -333,10 +333,10 @@
 						$note_html .= '&#xA0; <strong>new</strong>: ' . html($route_path) . '<br />';
 						$note_html .= '&#xA0; <strong>preg</strong>: ' . html($preg_path) . '<br />';
 						$note_html .= '&#xA0; <strong>replace</strong>: ' . html($route['replace']) . '<br />';
-						$note_html .= '&#xA0; <strong>matches</strong>: ' . html(print_r($matches, true)) . '<br />';
+						$note_html .= '&#xA0; <strong>matches</strong>: ' . html(debug_dump($matches)) . '<br />';
 
 						if (count($route_variables) > 0) {
-							$note_html .= '&#xA0; <strong>variables</strong>: ' . html(print_r($route_variables, true)) . '<br />';
+							$note_html .= '&#xA0; <strong>variables</strong>: ' . html(debug_dump($route_variables)) . '<br />';
 						}
 
 						debug_note_html($note_html);

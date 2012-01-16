@@ -210,7 +210,7 @@
 				exec($command, $output, $result);
 
 				// echo $command . "\n";
-				// print_r($output);
+				// debug($output);
 
 				return array(
 						'command' => $command,
@@ -233,7 +233,7 @@
 				exec($command, $output, $result);
 
 				// echo $command . "\n";
-				// print_r($output);
+				// debug($output);
 
 				return array(
 						'command' => $command,

@@ -185,7 +185,7 @@
 										"",
 										"' . $db->escape($gateway_name) . '",
 										"' . $db->escape($gateway_url) . '",
-										"' . $db->escape(var_export($data, true)) . '",
+										"' . $db->escape(debug_dump($data)) . '",
 										"' . $db->escape(date('Y-m-d H:i:s')) . '"
 									)');
 
