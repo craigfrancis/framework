@@ -212,7 +212,7 @@
 //--------------------------------------------------
 // Quick debug print of a variable
 
-	function debug($variable) {
+	function debug($variable = NULL) {
 
 		$called_from = debug_backtrace();
 		$called_from_path = substr(str_replace(ROOT, '', $called_from[0]['file']), 1);
@@ -236,6 +236,8 @@
 
 	function debug_dump($variable, $level = 0) {
 		switch ($type = gettype($variable)) {
+			case 'NULL':
+				return 'NULL';
 			case 'boolean':
 				return ($variable ? 'true' : 'false');
 			case 'integer':
