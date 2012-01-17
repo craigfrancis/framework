@@ -70,7 +70,7 @@
 				// Name
 
 					if ($name === NULL) {
-						$name = substr(human_to_ref($label), 0, 50);
+						$name = substr(human_to_ref($label), 0, 30);
 					}
 
 					$name_original = $name;
