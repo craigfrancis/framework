@@ -254,9 +254,8 @@
 				}
 				return $output . $indent . ')';
 			case 'object':
-				$class = get_class($variable);
-				if ($class == 'url' || is_subclass_of($variable, 'url') || $class == 'url_base' || is_subclass_of($variable, 'url_base')) {
-					return 'url("' . $variable->get() . '")';
+				if (method_exists($variable, '_debug_dump')) {
+					return $variable->_debug_dump();
 				}
 			default:
 				return print_r($variable, true);

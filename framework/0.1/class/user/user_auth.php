@@ -195,7 +195,7 @@
 			// Generate password, if necessary
 
 				if ($new_password === NULL) {
-					$new_password = rand(10000, 99999);
+					$new_password = mt_rand(10000, 99999);
 				}
 
 			//--------------------------------------------------
@@ -250,7 +250,7 @@
 
 				} else {
 
-					$request_pass = rand(100000, 999999);
+					$request_pass = mt_rand(100000, 999999);
 
 					$db->insert($this->db_table_reset_name, array(
 							'id' => '',

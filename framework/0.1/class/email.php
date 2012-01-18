@@ -264,7 +264,7 @@
 						//--------------------------------------------------
 						// Message
 
-							$boundary = '--mail_boundary--' . time() . '--' . rand(10000, 99999) . '-3';
+							$boundary = '--mail_boundary--' . time() . '--' . mt_rand(10000, 99999) . '-3';
 
 							$secure_headers = $build['headers'];
 							$secure_headers['Content-Type'] = 'multipart/encrypted; protocol="application/pgp-encrypted"; boundary="' . $boundary . '"; charset="' . config::get('output.charset') . '"';
@@ -305,8 +305,8 @@
 				// Setup
 
 					$this->boundaries = array(
-							'--mail_boundary--' . time() . '--' . rand(10000, 99999) . '-1',
-							'--mail_boundary--' . time() . '--' . rand(10000, 99999) . '-2',
+							'--mail_boundary--' . time() . '--' . mt_rand(10000, 99999) . '-1',
+							'--mail_boundary--' . time() . '--' . mt_rand(10000, 99999) . '-2',
 						);
 
 					$headers = array();

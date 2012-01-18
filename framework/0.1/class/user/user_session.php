@@ -134,7 +134,7 @@
 			//--------------------------------------------------
 			// Create the authentication token
 
-				$pass_orig = md5(uniqid(rand(), true));
+				$pass_orig = md5(uniqid(mt_rand(), true));
 
 				$pass_salt = '';
 				for ($k=0; $k<10; $k++) {

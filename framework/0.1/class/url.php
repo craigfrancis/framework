@@ -318,6 +318,13 @@
 			}
 
 		//--------------------------------------------------
+		// Shorter representation in debug_dump()
+
+			public function _debug_dump() {
+				return 'url("' . $this->get() . '")';
+			}
+
+		//--------------------------------------------------
 		// Parameter set shorthand
 
 			public function __set($name, $value) { // (PHP 5.0)

@@ -89,7 +89,7 @@
 					$this->csrf_error_html = 'The request did not appear to come from a trusted source, please try again.';
 
 					if ($this->csrf_token == '') {
-						$this->csrf_token = rand(1000000, 9999999);
+						$this->csrf_token = mt_rand(1000000, 9999999);
 					}
 
 					cookie::set('csrf', $this->csrf_token);
