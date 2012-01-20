@@ -49,6 +49,11 @@
 					$this->content_html = NULL;
 					$this->boundaries = array();
 
+				//--------------------------------------------------
+				// Default header for tracking
+
+					$this->header_set('X-PHP-Script', '"' . addslashes(config::get('request.url_https')) . '" <' . addslashes(config::get('request.ip')) . '>');
+
 			}
 
 			public function subject_set($subject) {
@@ -267,7 +272,7 @@
 							$boundary = '--mail_boundary--' . time() . '--' . mt_rand(10000, 99999) . '-3';
 
 							$secure_headers = $build['headers'];
-							$secure_headers['Content-Type'] = 'multipart/encrypted; protocol="application/pgp-encrypted"; boundary="' . $boundary . '"; charset="' . config::get('output.charset') . '"';
+							$secure_headers['Content-Type'] = 'multipart/encrypted; protocol="application/pgp-encrypted"; boundary="' . addslashes($boundary) . '"; charset="' . addslashes(config::get('output.charset')) . '"';
 
 							$secure_content  = '--' . $boundary . "\n";
 							$secure_content .= 'Content-Type: application/pgp-encrypted' . "\n";
@@ -323,16 +328,16 @@
 					if (count($this->attachments) > 0) {
 
 						$headers['MIME-Version'] = '1.0';
-						$headers['Content-Type'] = 'multipart/mixed; boundary="' . $this->boundaries[0] . '"';
+						$headers['Content-Type'] = 'multipart/mixed; boundary="' . addslashes($this->boundaries[0]) . '"';
 
 						$content  = '--' . $this->boundaries[0] . "\n";
-						$content .= 'Content-Type: multipart/alternative; boundary="' . head($this->boundaries[1]) . '"' . "\n";
+						$content .= 'Content-Type: multipart/alternative; boundary="' . head(addslashes($this->boundaries[1])) . '"' . "\n";
 						$content .= '' . "\n";
 
 						if ($content_text != '' || $content_html == '') {
 
 							$content .= '--' . $this->boundaries[1] . "\n";
-							$content .= 'Content-Type: text/plain; charset="' . head(config::get('output.charset')) . '"' . "\n";
+							$content .= 'Content-Type: text/plain; charset="' . head(addslashes(config::get('output.charset'))) . '"' . "\n";
 							$content .= '' . "\n";
 							$content .= ($content_text != '' ? $content_text : 'See attached') . "\n";
 							$content .= '' . "\n";
@@ -342,7 +347,7 @@
 						if ($content_html != '') {
 
 							$content .= '--' . $this->boundaries[1] . "\n";
-							$content .= 'Content-Type: text/html; charset="' . head(config::get('output.charset')) . '"' . "\n";
+							$content .= 'Content-Type: text/html; charset="' . head(addslashes(config::get('output.charset'))) . '"' . "\n";
 							$content .= '' . "\n";
 							$content .= $content_html . "\n";
 							$content .= '' . "\n";
@@ -353,10 +358,10 @@
 
 						foreach ($this->attachments as $attachment) {
 							$content .= '--' . $this->boundaries[0] . "\n";
-							$content .= 'Content-Type: ' . head($attachment['mime']) . '; name="' . head($attachment['filename']) . '"' . "\n";
-							$content .= 'Content-Disposition: attachment; filename="' . head($attachment['filename']) . '"' . "\n";
+							$content .= 'Content-Type: ' . head(addslashes($attachment['mime'])) . '; name="' . head(addslashes($attachment['filename'])) . '"' . "\n";
+							$content .= 'Content-Disposition: attachment; filename="' . head(addslashes($attachment['filename'])) . '"' . "\n";
 							$content .= 'Content-Transfer-Encoding: base64' . "\n";
-							$content .= 'X-Attachment-Id: ' . head($attachment['id']) . "\n";
+							$content .= 'X-Attachment-Id: ' . head(addslashes($attachment['id'])) . "\n";
 							$content .= '' . "\n";
 							$content .= chunk_split(base64_encode($attachment['content'])) . "\n";
 						}
@@ -366,16 +371,16 @@
 					} else if ($content_text != '' && $content_html != '') {
 
 						$headers['MIME-Version'] = '1.0';
-						$headers['Content-Type'] = 'multipart/alternative; boundary="' . $this->boundaries[0] . '"';
+						$headers['Content-Type'] = 'multipart/alternative; boundary="' . addslashes($this->boundaries[0]) . '"';
 
 						$content  = '--' . $this->boundaries[0] . "\n";
-						$content .= 'Content-Type: text/plain; charset="' . head(config::get('output.charset')) . '"' . "\n";
+						$content .= 'Content-Type: text/plain; charset="' . head(addslashes(config::get('output.charset'))) . '"' . "\n";
 						$content .= 'Content-Transfer-Encoding: 7bit' . "\n";
 						$content .= '' . "\n";
 						$content .= $content_text . "\n";
 						$content .= '' . "\n";
 						$content .= '--' . $this->boundaries[0] . "\n";
-						$content .= 'Content-Type: text/html; charset="' . head(config::get('output.charset')) . '"' . "\n";
+						$content .= 'Content-Type: text/html; charset="' . head(addslashes(config::get('output.charset'))) . '"' . "\n";
 						$content .= 'Content-Transfer-Encoding: 7bit' . "\n";
 						$content .= '' . "\n";
 						$content .= $content_html . "\n";
@@ -384,13 +389,13 @@
 
 					} else if ($content_html != '') {
 
-						$headers['Content-Type'] = 'text/html; charset="' . config::get('output.charset') . '"';
+						$headers['Content-Type'] = 'text/html; charset="' . addslashes(config::get('output.charset')) . '"';
 
 						$content = $content_html;
 
 					} else if ($content_text != '') {
 
-						$headers['Content-Type'] = 'text/plain; charset="' . config::get('output.charset') . '"';
+						$headers['Content-Type'] = 'text/plain; charset="' . addslashes(config::get('output.charset')) . '"';
 
 						$content = $content_text;
 
@@ -401,15 +406,15 @@
 
 					if ($this->from_name !== NULL && $this->from_email !== NULL) {
 
-						$headers['From'] = '"' . $this->from_name . '" <' . $this->from_email .'>';
+						$headers['From'] = '"' . addslashes($this->from_name) . '" <' . addslashes($this->from_email) .'>';
 
 					} else if ($this->from_email !== NULL) {
 
-						$headers['From'] = $this->from_email;
+						$headers['From'] = addslashes($this->from_email);
 
 					} else {
 
-						$headers['From'] = config::get('email.from_email', 'noreply@example.com');
+						$headers['From'] = addslashes(config::get('email.from_email', 'noreply@example.com'));
 
 					}
 
@@ -420,9 +425,9 @@
 
 					foreach ($this->cc_emails as $cc_email) {
 						if ($cc_email['name'] !== NULL) {
-							$cc_addresses[] = '"' . $cc_email['name'] . '" <' . $cc_email['email'] .'>';
+							$cc_addresses[] = '"' . addslashes($cc_email['name']) . '" <' . addslashes($cc_email['email']) .'>';
 						} else {
-							$cc_addresses[] = $cc_email['email'];
+							$cc_addresses[] = addslashes($cc_email['email']);
 						}
 					}
 
@@ -435,11 +440,11 @@
 
 					if ($this->reply_to_name !== NULL && $this->reply_to_email !== NULL) {
 
-						$headers['Reply-To'] = '"' . $this->reply_to_name . '" <' . $this->reply_to_email .'>';
+						$headers['Reply-To'] = '"' . addslashes($this->reply_to_name) . '" <' . addslashes($this->reply_to_email) .'>';
 
 					} else if ($this->reply_to_email !== NULL) {
 
-						$headers['Reply-To'] = $this->reply_to_email;
+						$headers['Reply-To'] = addslashes($this->reply_to_email);
 
 					}
 
@@ -456,7 +461,7 @@
 			private function _build_headers($headers) {
 				$headers_text = '';
 				foreach (array_merge($headers, $this->headers) as $header => $value) {
-					$headers_text .= $header . ': ' . head($value) . "\n";
+					$headers_text .= head($header) . ': ' . head($value) . "\n";
 				}
 				return trim($headers_text);
 			}
@@ -522,9 +527,9 @@
 
 				}
 
-				if (strpos($content_html, 'DOCTYPE') === false) {
+				$subject = $this->subject_get();
 
-					$subject = $this->subject_get();
+				if (strpos($content_html, 'DOCTYPE') === false) {
 
 					$template_html = '<!DOCTYPE html>
 							<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
