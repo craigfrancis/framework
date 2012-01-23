@@ -1,5 +1,5 @@
 
-	<?= (isset($pre_intro_html) ? $pre_intro_html : '') ?>
+	<?= (isset($page_start_html) ? $page_start_html : '') ?>
 
 	<?php if ($action_edit) { ?>
 
@@ -16,11 +16,11 @@
 
 			<?= $form->html_error_list() ?>
 
-			<?= (isset($pre_fields_html) ? $pre_fields_html : '') ?>
+			<?= (isset($fields_start_html) ? $fields_start_html : '') ?>
 
 			<?= $form->html_fields() ?>
 
-			<?= (isset($post_fields_html) ? $post_fields_html : '') ?>
+			<?= (isset($fields_end_html) ? $fields_end_html : '') ?>
 
 			<div class="row submit">
 				<input type="submit" value="<?= html($form->form_button_get()) ?>" />
@@ -28,3 +28,5 @@
 
 		</fieldset>
 	<?= $form->html_end() ?>
+
+	<?= (isset($page_end_html) ? $page_end_html : '') ?>

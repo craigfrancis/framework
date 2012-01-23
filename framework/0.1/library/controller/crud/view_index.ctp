@@ -1,5 +1,5 @@
 
-	<?= (isset($pre_intro_html) ? $pre_intro_html : '') ?>
+	<?= (isset($page_start_html) ? $page_start_html : '') ?>
 
 	<?php if (isset($add_url)) { ?>
 
@@ -14,3 +14,5 @@
 	<?= $table ?>
 
 	<?= $paginator ?>
+
+	<?= (isset($page_end_html) ? $page_end_html : '') ?>
