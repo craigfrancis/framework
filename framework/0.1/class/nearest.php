@@ -48,20 +48,22 @@
 			protected function _setup($config) {
 
 				//--------------------------------------------------
-				// Defaults
+				// Default config
 
-					$this->config['table_sql'] = DB_PREFIX . 'location';
-					$this->config['where_sql'] = 'true';
-					$this->config['field_id_sql'] = 'id';
-					$this->config['field_latitude_sql'] = 'latitude';
-					$this->config['field_longitude_sql'] = 'longitude';
-					$this->config['field_address_sql'] = array();
-					$this->config['field_postcode_sql'] = 'postcode';
-					$this->config['field_country_sql'] = NULL;
-					$this->config['extra_fields_sql'] = array();
-					$this->config['max_results'] = 5;
-					$this->config['max_km'] = 40; // 25 miles
-					$this->config['min_results'] = 0;
+					$this->config = array(
+							'table_sql' => DB_PREFIX . 'location',
+							'where_sql' => 'true',
+							'field_id_sql' => 'id',
+							'field_latitude_sql' => 'latitude',
+							'field_longitude_sql' => 'longitude',
+							'field_address_sql' => array(),
+							'field_postcode_sql' => 'postcode',
+							'field_country_sql' => NULL,
+							'extra_fields_sql' => array(),
+							'max_results' => 5,
+							'max_km' => 40, // 25 miles
+							'min_results' => 0,
+						);
 
 				//--------------------------------------------------
 				// Set config
@@ -70,9 +72,8 @@
 						$profile = $config;
 					} else if (isset($config['profile'])) {
 						$profile = $config['profile'];
-						unset($config['profile']);
 					} else {
-						$profile = '';
+						$profile = NULL;
 					}
 
 					if (!is_array($config)) {
@@ -80,8 +81,9 @@
 					}
 
 					$prefix = 'nearest';
-					if ($profile != '') {
+					if ($profile !== NULL) {
 						$prefix .= '.' . $profile;
+						$config['profile'] = $profile;
 					}
 
 					$site_config = config::get_all($prefix);
@@ -90,20 +92,20 @@
 
 						$config = array_merge($site_config, $config);
 
-					} else if ($profile != '') {
+					} else if ($profile !== NULL) {
 
 						exit_with_error('Cannot find nearest profile "' . $profile . '" (' . $prefix . '.*)');
 
 					}
 
-					$this->config($config);
+					$this->config_set($config);
 
 			}
 
 		//--------------------------------------------------
 		// Configuration
 
-			public function config($config, $value = NULL) {
+			public function config_set($config, $value = NULL) {
 
 				//--------------------------------------------------
 				// Set
