@@ -2,6 +2,7 @@
  -h
  --help            To get this help.
 
+ -d
  --debug           To turn on output debugging.
 
  -g [name]

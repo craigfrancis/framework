@@ -47,12 +47,12 @@
 					'permission' => '644',
 				),
 			'File folders' => array(
-					'path' => APP_ROOT,
+					'path' => FILE_ROOT,
 					'type' => 'd',
 					'permission' => '777',
 				),
 			'File files' => array(
-					'path' => APP_ROOT,
+					'path' => FILE_ROOT,
 					'type' => 'f',
 					'permission' => '666',
 				),
@@ -62,6 +62,9 @@
 			$command = 'find ' . escapeshellarg($info['path']) . ' -mindepth 1 -type ' . escapeshellarg($info['type']) . ' -exec chmod ' . escapeshellarg($info['permission']) . ' {} \\; 2>&1';
 			if ($show_output) {
 				echo $name . "\n";
+				if (config::get('debug.show')) {
+					echo '  ' . $command . "\n";
+				}
 				flush();
 				echo shell_exec($command);
 			} else {
