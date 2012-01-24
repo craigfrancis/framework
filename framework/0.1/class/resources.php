@@ -60,7 +60,7 @@
 
 					if ($css_name != '' && isset($css_types[$css_name])) {
 
-						cookie::set('style', $css_name); // TODO: Cannot be set after output sent
+						cookie::set('style', $css_name);
 
 						$style_set = true;
 

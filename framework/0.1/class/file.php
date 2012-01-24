@@ -165,11 +165,11 @@
 						while (false !== ($size = readdir($handle))) {
 							if (substr($size, 0, 1) != '.' && $size != 'original') {
 
-								$image = new image($original_path); // TODO: need a copy of the image, so it does not get scaled down, then back up again
+								$image = new image($original_path); // Need a new copy of the image, so it does not get scaled down, then back up again
 
-								// See below... but what happens if the aspect ratio of the image
-								// does not allow it to confirm to the boundaries... does it set a
-								// background colour, or crop the image?
+								// TODO: See below... but what happens if the aspect ratio of the
+								// image does not allow it to confirm to the boundaries... does it
+								// set a background colour, or crop the image?
 
 								$image->save_jpg($this->image_path_get($id, $size));
 								$image->destroy();
