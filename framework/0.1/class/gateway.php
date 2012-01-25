@@ -485,7 +485,7 @@
 			}
 
 			protected function return_error($error) {
-				header('HTTP/1.0 500 Internal Server Error');
+				http_response_code(500);
 				$this->return_xml('<error message="' . xml($error) . '" />');
 			}
 

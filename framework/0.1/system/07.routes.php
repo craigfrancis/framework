@@ -219,7 +219,7 @@
 					header('Etag: ' . head($file_mtime));
 
 					if ((isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $file_mtime) || (isset($_SERVER['HTTP_IF_NONE_MATCH']) && trim($_SERVER['HTTP_IF_NONE_MATCH']) == $file_mtime)) {
-						header('HTTP/1.1 304 Not Modified');
+						http_response_code(304);
 						exit;
 					}
 

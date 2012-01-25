@@ -161,7 +161,7 @@
 			} else {
 
 				if (!headers_sent()) {
-					header('HTTP/1.0 500 Internal Server Error');
+					http_response_code(500);
 					mime_set('text/html');
 				}
 

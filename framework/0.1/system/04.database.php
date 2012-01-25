@@ -225,7 +225,7 @@
 				config::set('db.error_thrown', true);
 				exit_with_error('An error has occurred with the database', $query . "\n\n" . $extra);
 			} else {
-				header('HTTP/1.0 500 Internal Server Error');
+				http_response_code(500);
 				exit('<p>I have an error: <br />' . htmlentities($use_query_as_error ? $query : $extra) . '</p>');
 			}
 

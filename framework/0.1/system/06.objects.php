@@ -150,9 +150,9 @@
 
 				if (!headers_sent()) {
 					if ($error == 'page_not_found') {
-						header('HTTP/1.0 404 Not Found');
+						http_response_code(404);
 					} else if ($error == 'system') {
-						header('HTTP/1.0 500 Internal Server Error');
+						http_response_code(500);
 					}
 				}
 
@@ -209,7 +209,7 @@
 						}
 
 						if (!headers_sent() && $error == 'page_not_found') {
-							header('HTTP/1.0 404 Not Found');
+							http_response_code(404);
 						}
 
 						$view_path = APP_ROOT . DS . 'view' . DS . 'error' . DS . $error . '.ctp';
