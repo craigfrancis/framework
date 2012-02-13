@@ -48,7 +48,11 @@
 			}
 
 			public function link_set($url, $text) {
-				$this->value_set_html('<a href="' . html($url) . '">' . $text . '</a>');
+				if ($url === NULL) {
+					$this->value_set($text);
+				} else {
+					$this->value_set_html('<a href="' . html($url) . '">' . html($text) . '</a>');
+				}
 			}
 
 			public function value_get() {
