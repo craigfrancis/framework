@@ -73,7 +73,7 @@
 				$size = intval($size);
 
 				if ($this->uploaded && $this->value_image_width !== NULL && $this->value_image_width < $size) {
-					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html));
+					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html), $this->value_image_width . 'px');
 				}
 
 				$this->min_width_size = $size;
@@ -89,7 +89,7 @@
 				$size = intval($size);
 
 				if ($this->uploaded && $this->value_image_width !== NULL && $this->value_image_width > $size) {
-					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html));
+					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html), $this->value_image_width . 'px');
 				}
 
 				$this->max_width_size = $size;
@@ -105,7 +105,7 @@
 				$size = intval($size);
 
 				if ($this->uploaded && $this->value_image_width !== NULL && $this->value_image_width != $size) {
-					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html));
+					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html), $this->value_image_width . 'px');
 				}
 
 				$this->min_width_size = $size;
@@ -134,7 +134,7 @@
 				$size = intval($size);
 
 				if ($this->uploaded && $this->value_image_height !== NULL && $this->value_image_height < $size) {
-					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html));
+					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html), $this->value_image_height . 'px');
 				}
 
 				$this->min_height_size = $size;
@@ -150,7 +150,7 @@
 				$size = intval($size);
 
 				if ($this->uploaded && $this->value_image_height !== NULL && $this->value_image_height > $size) {
-					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html));
+					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html), $this->value_image_height . 'px');
 				}
 
 				$this->max_height_size = $size;
@@ -166,7 +166,7 @@
 				$size = intval($size);
 
 				if ($this->uploaded && $this->value_image_height !== NULL && $this->value_image_height != $size) {
-					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html));
+					$this->form->_field_error_add_html($this->form_field_uid, str_replace('XXX', $size . 'px', $error_html), $this->value_image_height . 'px');
 				}
 
 				$this->min_height_size = $size;
