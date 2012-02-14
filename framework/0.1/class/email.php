@@ -557,7 +557,7 @@
 				$content_html = str_replace('[URL]', html($this->template_url), $content_html);
 
 				foreach ($this->template_values as $name => $value) {
-					$content_html = str_replace('[' . $name . ']', html($value), $content_html);
+					$content_html = str_replace('[' . $name . ']', nl2br(html($value)), $content_html);
 				}
 
 				return $content_html;
