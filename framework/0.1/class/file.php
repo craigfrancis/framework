@@ -85,7 +85,7 @@
 			}
 
 		//--------------------------------------------------
-		// Image path and url
+		// Image path, url, and html
 
 			public function image_path_get($id, $size = 'original') {
 				return FILE_ROOT . '/' . safe_file_name($this->config['profile']) . '/' . safe_file_name($size) . '/' . $id . '.' . safe_file_name($this->config['image_type']);
@@ -113,6 +113,17 @@
 
 			public function image_exists($id) {
 				return file_exists($this->image_path_get($id));
+			}
+
+			public function image_tag_get($id, $alt = '', $size = 'original') {
+
+				$image_info = getimagesize($this->image_path_get($id, $size));
+				if ($image_info) {
+					return '<img src="' . html($this->image_url_get($id, $size)) . '" alt="' . html($alt) . '" width="' . html($image_info[0]) . '" height="' . html($image_info[1]) . '" />';
+				} else {
+					return 'N/A';
+				}
+
 			}
 
 		//--------------------------------------------------
