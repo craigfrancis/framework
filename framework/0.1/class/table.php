@@ -757,7 +757,7 @@
 
 		}
 
-		public function cell_add($content, $class_name = '', $colspan = 1) {
+		public function cell_add($content = '', $class_name = '', $colspan = 1) {
 			$this->data[] = array(
 					'html' => nl2br(html($content)),
 					'class_name' => $class_name,
@@ -765,7 +765,7 @@
 				);
 		}
 
-		public function cell_add_html($content_html, $class_name = '', $colspan = 1) {
+		public function cell_add_html($content_html = '', $class_name = '', $colspan = 1) {
 			$this->data[] = array(
 					'html' => $content_html,
 					'class_name' => $class_name,
