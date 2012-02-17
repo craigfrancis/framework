@@ -359,7 +359,7 @@
 							$col_class[$col_id] = '';
 						}
 
-						if ($c_heading['html'] == '') {
+						if ($c_heading['html'] === '' || $c_heading['html'] === NULL) {
 							$c_heading['html'] = '&#xA0;';
 						}
 
@@ -428,7 +428,7 @@
 
 						foreach ($c_footer_row as $c_footer) {
 
-							if ($c_footer['html'] == '') {
+							if ($c_footer['html'] === '' || $c_footer['html'] === NULL) {
 								$c_footer['html'] = '&#xA0;';
 							}
 
@@ -518,7 +518,7 @@
 						//--------------------------------------------------
 						// HTML
 
-							if ($c_data['html'] == '') {
+							if ($c_data['html'] === '' || $c_data['html'] === NULL) {
 								$c_data['html'] = '&#xA0;';
 							}
 
