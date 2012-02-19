@@ -92,7 +92,9 @@
 
 	$options = getopt(implode('', array_keys($parameters)), $parameters);
 
-	config::set('debug.show', (isset($options['d']) || isset($options['debug'])));
+	$debug_show = (isset($options['d']) || isset($options['debug'])); // Could be reset, e.g. when initialising maintenance
+
+	config::set('debug.show', $debug_show);
 
 	if (isset($options['h']) || isset($options['help'])) {
 		print_help();
@@ -129,14 +131,21 @@
 
 		$ran_tasks = $maintenance->run();
 
-		echo "\n";
-		echo 'Done @ ' . date('Y-m-d H:i:s') . "\n\n";
+		if ($debug_show) {
 
-		foreach ($ran_tasks as $task) {
-			echo '- ' . $task . "\n";
+			echo "\n";
+			echo 'Done @ ' . date('Y-m-d H:i:s') . "\n\n";
+
+			foreach ($ran_tasks as $task) {
+				echo '- ' . $task . "\n";
+			}
+
+			if (count($ran_tasks) > 0) {
+				echo "\n";
+			}
+
 		}
 
-		echo "\n";
 		exit();
 
 	}
