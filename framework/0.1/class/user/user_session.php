@@ -65,7 +65,7 @@
 			$this->allow_concurrent = $enable;
 		}
 
-		public function session_start($user_id) {
+		public function session_create($user_id) {
 
 			//--------------------------------------------------
 			// Test cookie support
@@ -129,7 +129,7 @@
 			//--------------------------------------------------
 			// Create a new session
 
-				$session_id = $this->session_create($user_id);
+				$session_id = $this->session_create_record($user_id);
 
 			//--------------------------------------------------
 			// Create the authentication token
@@ -176,7 +176,7 @@
 
 		}
 
-		public function session_create($user_id) {
+		public function session_create_record($user_id) {
 
 			//--------------------------------------------------
 			// Create a new session

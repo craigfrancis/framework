@@ -270,7 +270,7 @@
 
 							$this->_cookie_set('login_last_id', $identification, '+30 days');
 
-							$this->session->session_start($this->user_id);
+							$this->session->session_create($this->user_id);
 
 							$this->login_success();
 
@@ -315,7 +315,7 @@
 				//--------------------------------------------------
 				// Start the session
 
-					$this->session->session_start($this->user_id);
+					$this->session->session_create($this->user_id);
 
 				//--------------------------------------------------
 				// Login success
