@@ -204,6 +204,10 @@
 				$this->user_id = $this->session->session_get();
 			}
 
+			protected function _session_create() {
+				$this->session->session_create($this->user_id);
+			}
+
 			public function session_id_get() {
 				return $this->session->session_id_get();
 			}
@@ -227,11 +231,11 @@
 		//--------------------------------------------------
 		// Login
 
-			public function login_validation($user_id) {
+			protected function _login_validation($user_id) {
 				return true;
 			}
 
-			public function login_success() {
+			protected function _login_success() {
 			}
 
 			public function login() {
@@ -261,7 +265,7 @@
 
 						} else {
 
-							$validation = $this->login_validation($result, $form);
+							$validation = $this->_login_validation($result, $form);
 							if (!$validation) {
 								return false;
 							}
@@ -270,9 +274,9 @@
 
 							$this->_cookie_set('login_last_id', $identification, '+30 days');
 
-							$this->session->session_create($this->user_id);
+							$this->_session_create();
 
-							$this->login_success();
+							$this->_login_success();
 
 							return true;
 
@@ -315,12 +319,12 @@
 				//--------------------------------------------------
 				// Start the session
 
-					$this->session->session_create($this->user_id);
+					$this->_session_create();
 
 				//--------------------------------------------------
 				// Login success
 
-					$this->login_success();
+					$this->_login_success();
 
 			}
 
