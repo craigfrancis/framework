@@ -204,10 +204,6 @@
 				$this->user_id = $this->session->session_get();
 			}
 
-			protected function _session_create() {
-				$this->session->session_create($this->user_id);
-			}
-
 			public function session_id_get() {
 				return $this->session->session_id_get();
 			}
@@ -236,6 +232,7 @@
 			}
 
 			protected function _login_success() {
+				$this->session->session_create($this->user_id);
 			}
 
 			public function login() {
@@ -273,8 +270,6 @@
 							$this->user_id = $result;
 
 							$this->_cookie_set('login_last_id', $identification, '+30 days');
-
-							$this->_session_create();
 
 							$this->_login_success();
 
@@ -315,11 +310,6 @@
 						}
 
 					}
-
-				//--------------------------------------------------
-				// Start the session
-
-					$this->_session_create();
 
 				//--------------------------------------------------
 				// Login success

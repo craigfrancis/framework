@@ -129,7 +129,7 @@
 			//--------------------------------------------------
 			// Create a new session
 
-				$session_id = $this->session_create_record($user_id);
+				$session_id = $this->_session_create_record($user_id);
 
 			//--------------------------------------------------
 			// Create the authentication token
@@ -176,7 +176,7 @@
 
 		}
 
-		public function session_create_record($user_id) {
+		protected function _session_create_record($user_id) {
 
 			//--------------------------------------------------
 			// Create a new session
@@ -196,7 +196,7 @@
 
 		}
 
-		public function session_details_get() {
+		protected function _session_details_get() {
 
 			//--------------------------------------------------
 			// Get session details - supporting IE and its
@@ -221,7 +221,7 @@
 
 		public function session_token_get() {
 
-			list($session_id, $session_pass) = $this->session_details_get();
+			list($session_id, $session_pass) = $this->_session_details_get();
 
 			if ($session_id > 0) {
 				return $session_id . '-' . $session_pass;
@@ -239,7 +239,7 @@
 
 				if ($auth_token === NULL) {
 
-					list($session_id, $session_pass) = $this->session_details_get();
+					list($session_id, $session_pass) = $this->_session_details_get();
 
 				} else {
 
