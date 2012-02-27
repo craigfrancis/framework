@@ -220,11 +220,17 @@
 
 					if ((isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $file_mtime) || (isset($_SERVER['HTTP_IF_NONE_MATCH']) && trim($_SERVER['HTTP_IF_NONE_MATCH']) == $file_mtime)) {
 						http_response_code(304);
-						exit;
+						exit();
 					}
 
 					mime_set($mime_types[$route_ext]);
-					exit(file_get_contents($file_path));
+
+					if (extension_loaded('zlib')) {
+						ob_start('ob_gzhandler');
+					}
+
+					readfile($file_path);
+					exit();
 
 				} else {
 

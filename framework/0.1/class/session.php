@@ -34,9 +34,11 @@
 		}
 
 		public static function reset() {
+
 			session::destroy();
 			session::start();
 			session_regenerate_id();
+
 		}
 
 		public static function destroy() {
