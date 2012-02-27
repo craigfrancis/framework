@@ -714,12 +714,28 @@
 
 	function error_handler($err_no, $err_str, $err_file, $err_line, $err_context) {
 
+		$hidden_info = '';
+
 		foreach (debug_backtrace() as $called_from) {
-			if (isset($called_from['function']) && $called_from['function'] == 'html') { // Replace line and file if it's the multibyte error in the html() function.
+			if (isset($called_from['file']) && substr($called_from['file'], 0, strlen(FRAMEWORK_ROOT)) != FRAMEWORK_ROOT) {
+
+				$hidden_info .= "\n " . $err_file . ':' . $err_line;
+
 				$err_line = $called_from['line'];
 				$err_file = $called_from['file'];
-				$err_str .= ' (' . $called_from['args'][0] . ')';
+
+				if (isset($called_from['function']) && $called_from['function'] == 'html') {
+
+					// Show value for multibyte error in the html() function.
+					//   ini_set('display_errors', false);
+					//   html('Testing: ' . chr(254));
+
+					$err_str .= ' (' . $called_from['args'][0] . ')';
+
+				}
+
 				break;
+
 			}
 		}
 
@@ -741,11 +757,24 @@
 			break;
 		}
 
-		if (ini_get('display_errors')) printf("<br />\n<b>%s</b>: %s in <b>%s</b> on line <b>%d</b><br /><br />\n", $error_type, $err_str, $err_file, $err_line);
-		if (ini_get('log_errors')) error_log(sprintf('PHP %s:  %s in %s on line %d', $error_type, $err_str, $err_file, $err_line));
+		if (ini_get('display_errors')) {
+			echo "\n<br />\n<b>" . error_handler_html($error_type) . '</b>: ' . error_handler_html($err_str) . ' in <b>' . error_handler_html($err_file) . '</b> on line <b>' . error_handler_html($err_line) . '</b>';
+			if ($hidden_info != '') {
+				echo "\n<!--" . error_handler_html($hidden_info) . "\n-->\n";
+			}
+			echo "<br /><br />\n";
+		}
+
+		if (ini_get('log_errors')) {
+			error_log(sprintf('PHP %s: %s in %s on line %d', $error_type, $err_str, $err_file, $err_line));
+		}
 
 		return true;
 
+	}
+
+	function error_handler_html($text) { // Ignores bad characters
+		return htmlspecialchars($text, ENT_QUOTES + ENT_IGNORE, config::get('output.charset'));
 	}
 
 	set_error_handler('error_handler');
