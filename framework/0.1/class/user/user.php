@@ -59,6 +59,7 @@
 			protected $user_id = 0;
 			protected $cookie_prefix = 'user_'; // Allow different user log-in mechanics, e.g. "admin_"
 			protected $identification_type = 'email';
+			protected $remember_login = true;
 
 			protected $db_link;
 
@@ -269,7 +270,9 @@
 
 							$this->user_id = $result;
 
-							$this->_cookie_set('login_last_id', $identification, '+30 days');
+							if ($this->remember_login) {
+								$this->_cookie_set('login_last_id', $identification, '+30 days');
+							}
 
 							$this->_login_success();
 
@@ -286,7 +289,7 @@
 
 			}
 
-			public function login_forced($remember_login = true) {
+			public function login_forced($remember_login = NULL) {
 
 				//--------------------------------------------------
 				// Have a user - This function should really only
@@ -298,6 +301,10 @@
 
 				//--------------------------------------------------
 				// Set the cookie for last time.
+
+					if ($remember_login === NULL) {
+						$remember_login = $this->remember_login;
+					}
 
 					if ($remember_login) {
 
