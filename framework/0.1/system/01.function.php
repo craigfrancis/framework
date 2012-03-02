@@ -206,7 +206,9 @@
 	function path_to_array($path) {
 		$output = array();
 		foreach (explode('/', $path) as $name) {
-			if ($name != '' && substr($name, 0, 1) != '.') { // Ignore empty, "..", and hidden folders
+			if ($name == '..') { // Move up a folder 
+				array_pop($output);
+			} else if ($name != '' && $name != '.') { // Ignore empty and current folder
 				$output[] = $name;
 			}
 		}
