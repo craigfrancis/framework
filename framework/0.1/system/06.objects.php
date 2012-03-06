@@ -85,6 +85,10 @@
 				cookie::set('message', $message);
 			}
 
+			public function view_path_set($view_path) {
+				config::set('view.path', $view_path);
+			}
+
 			public function set($name, $value) {
 				config::array_set('view.variables', $name, $value);
 			}
@@ -97,10 +101,6 @@
 		class controller_base extends base {
 
 			public $parent;
-
-			public function view_path_set($view_path) {
-				config::set('view.path', $view_path);
-			}
 
 			public function route() {
 			}
@@ -181,7 +181,7 @@
 				//--------------------------------------------------
 				// Default
 
-					$view_path_default = VIEW_ROOT . '/' . implode('/', config::get('view.folders')) . '.ctp';
+					$view_path_default = VIEW_ROOT . '/' . implode('/', config::get('view.folders', array('home'))) . '.ctp';
 					$view_path_default = str_replace('-', '_', $view_path_default); // Match behaviour for controller actions
 
 					config::set_default('view.path', $view_path_default);
