@@ -213,10 +213,6 @@
 				'/Netscape\/[4-7]\./',
 			));
 
-		if (config::get('output.charset') == 'UTF-8') {
-			mb_detect_order(array('UTF-8', 'ASCII'));
-		}
-
 		config::set_default('output.css_name', '');
 		config::set_default('output.css_types', array(
 				'core' => array(
@@ -275,6 +271,15 @@
 
 		config::set_default('maintenance.active', true);
 		config::set_default('maintenance.url', '/maintenance/');
+
+//--------------------------------------------------
+// Encoding
+
+	mb_internal_encoding(config::get('output.charset'));
+
+	if (config::get('output.charset') == 'UTF-8') {
+		mb_detect_order(array('UTF-8', 'ASCII'));
+	}
 
 //--------------------------------------------------
 // Constants
