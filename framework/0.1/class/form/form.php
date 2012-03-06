@@ -548,6 +548,8 @@
 
 					if ($this->form_submitted && $this->csrf_token != $csrf_token) {
 
+						cookie::require_support();
+
 						$note = 'COOKIE:' . $this->csrf_token . ' != ' . $this->form_method . ':' . $csrf_token;
 
 						$this->_field_error_add_html(-1, $this->csrf_error_html, $note);

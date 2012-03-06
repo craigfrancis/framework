@@ -68,11 +68,6 @@
 		public function session_create($user_id) {
 
 			//--------------------------------------------------
-			// Test cookie support
-
-				cookie::require_support();
-
-			//--------------------------------------------------
 			// Process previous sessions
 
 				$db = $this->user_obj->db_get();
