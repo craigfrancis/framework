@@ -91,7 +91,7 @@
 <html lang="<?= html(config::get('output.lang')) ?>" xml:lang="<?= html(config::get('output.lang')) ?>" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
-	<?= $this->head_html() ?>
+	<?= $this->head_get_html() ?>
 
 	<!--[if lt IE 9]>
 		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -103,7 +103,7 @@
 	<div id="page_wrapper">
 
 		<div id="page_title">
-			<h1><?= html($this->title()) ?></h1>
+			<h1><?= html($this->title_get()) ?></h1>
 		</div>
 
 		<div id="page_container">
@@ -128,9 +128,9 @@
 
 <!-- END OF PAGE TOP -->
 
-	<?= $this->message_html() ?>
+	<?= $this->message_get_html() ?>
 
-	<?= $this->view_html() ?>
+	<?= $this->view_get_html() ?>
 
 <!-- START OF PAGE BOTTOM -->
 
@@ -157,7 +157,7 @@
 
 	</div>
 
-	<?= $this->tracking_html(); ?>
+	<?= $this->tracking_get_html(); ?>
 
 	<?php //view_element('google_analytics'); ?>
 

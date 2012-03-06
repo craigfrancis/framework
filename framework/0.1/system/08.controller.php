@@ -264,8 +264,6 @@
 //--------------------------------------------------
 // Action
 
-	ob_start();
-
 	if ($action_method !== NULL) {
 
 		if (substr(config::get('route.path'), -1) != '/') { // reduce possibility of duplicate content issues
@@ -308,12 +306,12 @@
 
 			$note_html .= '&#xA0; &#xA0; $this->view_path_set(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; $this->page_ref_set(\'example_ref\');<br />' . "\n";
-			$note_html .= '&#xA0; &#xA0; $this->error_show(\'page_not_found\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; $this->message_set(\'The item has been updated.\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; resources::js_add(\'/path/to/file.js\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; resources::css_add(\'/path/to/file.css\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; resources::css_auto();<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; resources::head_add_html(\'&lt;html&gt;\');<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; render_error(\'page_not_found\');<br />' . "\n";
 
 			debug_note_html($note_html);
 
@@ -338,8 +336,6 @@
 		config::set('view.folders', config::get('route.folders'));
 
 	}
-
-	config::set('output.html', ob_get_clean());
 
 	unset($controllers, $action_method, $action_controller_id, $action_controller_name, $action_controller_path, $action_route_stack_used, $action_route_stack_pending);
 

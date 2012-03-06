@@ -288,9 +288,6 @@
 					$view = new view();
 					$view->render_html($html);
 
-					$layout = new layout();
-					$layout->render();
-
 			}
 
 	}

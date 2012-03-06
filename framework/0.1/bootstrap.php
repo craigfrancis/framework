@@ -50,11 +50,14 @@
 	if (!defined('FRAMEWORK_INIT_ONLY') || FRAMEWORK_INIT_ONLY !== true) {
 
 		//--------------------------------------------------
-		// Scripts
+		// Start
 
 			if (config::get('debug.level') >= 4) {
 				debug_progress('Start');
 			}
+
+		//--------------------------------------------------
+		// Routes
 
 			require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '07.routes.php');
 
@@ -62,34 +65,32 @@
 				debug_progress('Routes');
 			}
 
+		//--------------------------------------------------
+		// Controller
+
+			ob_start();
+
 			require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '08.controller.php');
 
 			if (config::get('debug.level') >= 4) {
 				debug_progress('Controller');
 			}
 
+			$controller_html = ob_get_clean();
+
 		//--------------------------------------------------
 		// View
 
-			$view = new view();
+			$layout = new layout();
+			$layout->view_add_html($controller_html);
+
+			$view = new view($layout);
 			$view->render();
 
-			unset($view);
+			unset($layout, $view, $controller_html);
 
 			if (config::get('debug.level') >= 4) {
 				debug_progress('View render', 1);
-			}
-
-		//--------------------------------------------------
-		// Layout
-
-			$layout = new layout();
-			$layout->render();
-
-			unset($layout);
-
-			if (config::get('debug.level') >= 4) {
-				debug_progress('Layout render', 1);
 			}
 
 		//--------------------------------------------------

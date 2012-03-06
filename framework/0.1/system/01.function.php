@@ -364,6 +364,15 @@
 	}
 
 //--------------------------------------------------
+// Render an error page (shortcut)
+
+	function render_error($error) {
+		$view = new view();
+		$view->render_error($error);
+		exit();
+	}
+
+//--------------------------------------------------
 // Function to send the user onto another page.
 // This takes into IE6 into consideration when
 // redirecting from a HTTPS connection to the

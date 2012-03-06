@@ -171,11 +171,7 @@
 					config::array_set('view.variables', 'hidden_info', $hidden_info);
 					config::array_set('view.variables', 'contact_email', $contact_email);
 
-					$view = new view();
-					$view->render_error('system');
-
-					$layout = new layout();
-					$layout->render();
+					render_error('system');
 
 				} else {
 
@@ -380,7 +376,7 @@
 			$config_html = array($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
 			foreach ($config as $key => $value) {
 				if (!in_array($key, array('db.link'))) {
-					if (in_array($key, array('db.pass', 'debug.notes', 'view.variables', 'output.html'))) {
+					if (in_array($key, array('db.pass', 'debug.notes', 'view.variables'))) {
 						$value_html = '???';
 					} else {
 						$value_html = html(debug_dump($value, 1));

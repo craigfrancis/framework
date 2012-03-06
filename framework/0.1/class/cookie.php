@@ -90,15 +90,7 @@
 		public static function require_support() {
 
 			if (!self::supported()) {
-
-				$view = new view();
-				$view->render_error('cookies');
-
-				$layout = new layout();
-				$layout->render();
-
-				exit();
-
+				render_error('cookies');
 			}
 
 		}

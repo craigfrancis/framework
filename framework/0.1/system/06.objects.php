@@ -39,6 +39,10 @@
 				config::array_set('output.title_folders', $id, $name);
 			}
 
+			public function title_get() {
+				return config::get('output.title');
+			}
+
 			public function page_ref_set($page_ref) {
 				config::set('output.page_ref', $page_ref);
 			}
@@ -111,121 +115,6 @@
 			public function after() {
 			}
 
-			public function error_show($error) {
-
-				$view = new view();
-				$view->render_error($error);
-
-				$layout = new layout();
-				$layout->render();
-
-				exit();
-
-			}
-
-		}
-
-	//--------------------------------------------------
-	// View
-
-		class view_base extends base {
-
-			public function render() {
-
-				ob_start();
-
-				echo config::get('output.html');
-
-				extract(config::get('view.variables', array()));
-
-				require_once($this->view_path_get());
-
-				config::set('output.html', ob_get_clean());
-
-			}
-
-			public function render_error($error) {
-
-				config::set('output.error', $error);
-
-				if (!headers_sent()) {
-					if ($error == 'page_not_found') {
-						http_response_code(404);
-					} else if ($error == 'system') {
-						http_response_code(500);
-					}
-				}
-
-				$error_path = APP_ROOT . DS . 'view' . DS . 'error' . DS . $error . '.ctp';
-
-				config::set('view.path', $error_path);
-				config::set('view.folders', array('error', $error));
-
-				config::set('route.path', '/error/' . $error . '/');
-				config::set('route.variables', array());
-
-				config::set('output.page_ref', 'error_' . $error);
-
-				$this->render();
-
-			}
-
-			public function render_html($html) {
-
-				config::set('output.html', $html);
-
-			}
-
-			private function view_path_get() {
-
-				//--------------------------------------------------
-				// Default
-
-					$view_path_default = VIEW_ROOT . '/' . implode('/', config::get('view.folders', array('home'))) . '.ctp';
-					$view_path_default = str_replace('-', '_', $view_path_default); // Match behaviour for controller actions
-
-					config::set_default('view.path', $view_path_default);
-
-					config::set('view.path_default', $view_path_default);
-
-				//--------------------------------------------------
-				// Get
-
-					$view_path = config::get('view.path');
-
-					if (config::get('debug.level') >= 3) {
-						debug_note_html('<strong>View</strong>: ' . html($view_path));
-					}
-
-				//--------------------------------------------------
-				// Page not found
-
-					if (!is_file($view_path)) {
-
-						$error = config::get('output.error');
-
-						if ($error === false || $error === NULL) {
-							$error = 'page_not_found';
-						}
-
-						if (!headers_sent() && $error == 'page_not_found') {
-							http_response_code(404);
-						}
-
-						$view_path = APP_ROOT . DS . 'view' . DS . 'error' . DS . $error . '.ctp';
-						if (!is_file($view_path)) {
-							$view_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'error_' . $error . '.ctp';
-						}
-
-					}
-
-				//--------------------------------------------------
-				// Return
-
-					return $view_path;
-
-			}
-
 		}
 
 	//--------------------------------------------------
@@ -233,83 +122,15 @@
 
 		class layout_base extends base {
 
+			private $view_html = '';
 			private $view_processed = false;
 			private $message = NULL;
 
-			public function __construct() {
-
-				//--------------------------------------------------
-				// Title
-
-					//--------------------------------------------------
-					// Default
-
-						$k = 0;
-
-						$title_prefix = config::get('output.title_prefix');
-						$title_suffix = config::get('output.title_suffix');
-						$title_divide = config::get('output.title_divide');
-
-						if (config::get('output.error')) {
-
-							$title_default = config::get('output.title_error');
-
-							$k++;
-
-						} else {
-
-							$title_default = '';
-
-							foreach (config::get('output.title_folders') as $folder) {
-								if ($folder != '') {
-									if ($k++ > 0) {
-										$title_default .= $title_divide;
-									}
-									$title_default .= $folder;
-								}
-							}
-
-						}
-
-						$title_default = $title_prefix  . ($title_prefix != '' && $k > 0 ? $title_divide : '') . $title_default;
-						$title_default = $title_default . ($title_suffix != '' && $k > 0 ? $title_divide : '') . $title_suffix;
-
-						config::set('output.title_default', $title_default);
-
-					//--------------------------------------------------
-					// Main
-
-						$title = config::get('output.title');
-
-						if ($title === NULL) {
-
-							config::set('output.title', $title_default);
-
-						} else {
-
-							config::set('output.title', config::get('output.title_prefix') . $title . config::get('output.title_suffix'));
-
-						}
-
-				//--------------------------------------------------
-				// Message
-
-					$this->message = cookie::get('message');
-					if ($this->message !== NULL) {
-						cookie::delete('message');
-					}
-
-			}
-
-			public function title() {
-				return config::get('output.title');
-			}
-
-			public function message() {
+			public function message_get() {
 				return $this->message;
 			}
 
-			public function message_html() {
+			public function message_get_html() {
 				if ($this->message == '') {
 					return '';
 				} else {
@@ -320,7 +141,7 @@
 				}
 			}
 
-			public function tracking_html() {
+			public function tracking_get_html() {
 				return ''; // TODO
 			}
 
@@ -370,15 +191,16 @@
 
 			}
 
-			private function view_html() {
-
-				$this->view_processed = true;
-
-				return config::get('output.html');
-
+			public function view_add_html($html) {
+				$this->view_html .= $html;
 			}
 
-			public function head_html($config = NULL) {
+			public function view_get_html() {
+				$this->view_processed = true;
+				return $this->view_html;
+			}
+
+			public function head_get_html($config = NULL) {
 
 				//--------------------------------------------------
 				// Debug
@@ -395,7 +217,7 @@
 				//--------------------------------------------------
 				// Page title
 
-					$html .= "\n\n\t" . '<title>' . html($this->title()) . '</title>';
+					$html .= "\n\n\t" . '<title>' . html($this->title_get()) . '</title>';
 
 				//--------------------------------------------------
 				// Favicon
@@ -485,6 +307,67 @@
 			public function render() {
 
 				//--------------------------------------------------
+				// Title
+
+					//--------------------------------------------------
+					// Default
+
+						$k = 0;
+
+						$title_prefix = config::get('output.title_prefix');
+						$title_suffix = config::get('output.title_suffix');
+						$title_divide = config::get('output.title_divide');
+
+						if (config::get('output.error')) {
+
+							$title_default = config::get('output.title_error');
+
+							$k++;
+
+						} else {
+
+							$title_default = '';
+
+							foreach (config::get('output.title_folders') as $folder) {
+								if ($folder != '') {
+									if ($k++ > 0) {
+										$title_default .= $title_divide;
+									}
+									$title_default .= $folder;
+								}
+							}
+
+						}
+
+						$title_default = $title_prefix  . ($title_prefix != '' && $k > 0 ? $title_divide : '') . $title_default;
+						$title_default = $title_default . ($title_suffix != '' && $k > 0 ? $title_divide : '') . $title_suffix;
+
+						config::set('output.title_default', $title_default);
+
+					//--------------------------------------------------
+					// Main
+
+						$title = config::get('output.title');
+
+						if ($title === NULL) {
+
+							config::set('output.title', $title_default);
+
+						} else {
+
+							config::set('output.title', config::get('output.title_prefix') . $title . config::get('output.title_suffix'));
+
+						}
+
+				//--------------------------------------------------
+				// Message
+
+					$this->message = cookie::get('message');
+					if ($this->message !== NULL) {
+						cookie::delete('message');
+					}
+
+				//--------------------------------------------------
 				// Headers
 
 					//--------------------------------------------------
@@ -525,18 +408,18 @@
 				//--------------------------------------------------
 				// Include
 
-					require_once($this->layout_path());
+					require($this->layout_path_get());
 
 				//--------------------------------------------------
-				// If view_html() was not called
+				// If view_get_html() was not called
 
 					if (!$this->view_processed) {
-						echo $this->view_html();
+						echo $this->view_get_html();
 					}
 
 			}
 
-			private function layout_path() {
+			private function layout_path_get() {
 
 				if (config::get('debug.level') >= 4) {
 					debug_progress('Find layout', 2);
@@ -566,6 +449,120 @@
 
 		}
 
+	//--------------------------------------------------
+	// View
+
+		class view_base extends base {
+
+			protected $layout;
+
+			public function __construct($layout = NULL) {
+				if ($layout === NULL) {
+					$this->layout = new layout();
+				} else {
+					$this->layout = $layout;
+				}
+			}
+
+			public function render() {
+
+				ob_start();
+
+				extract(config::get('view.variables', array()));
+
+				require_once($this->view_path_get());
+
+				$this->layout->view_add_html(ob_get_clean());
+				$this->layout->render();
+
+			}
+
+			public function render_html($html) {
+				$this->layout->view_add_html($html);
+				$this->layout->render();
+			}
+
+			public function render_error($error) {
+
+				config::set('output.error', $error);
+
+				if (!headers_sent()) {
+					if ($error == 'page_not_found') {
+						http_response_code(404);
+					} else if ($error == 'system') {
+						http_response_code(500);
+					}
+				}
+
+				$error_path = APP_ROOT . DS . 'view' . DS . 'error' . DS . $error . '.ctp';
+
+				config::set('view.path', $error_path);
+				config::set('view.folders', array('error', $error));
+
+				config::set('route.path', '/error/' . $error . '/');
+				config::set('route.variables', array());
+
+				config::set('output.page_ref', 'error_' . $error);
+
+				$this->render();
+
+			}
+
+			private function view_path_get() {
+
+				//--------------------------------------------------
+				// Default
+
+					$view_path_default = VIEW_ROOT . '/' . implode('/', config::get('view.folders', array('home'))) . '.ctp';
+					$view_path_default = str_replace('-', '_', $view_path_default); // Match behaviour for controller actions
+
+					config::set_default('view.path', $view_path_default);
+
+					config::set('view.path_default', $view_path_default);
+
+				//--------------------------------------------------
+				// Get
+
+					$view_path = config::get('view.path');
+
+					if (config::get('debug.level') >= 3) {
+						debug_note_html('<strong>View</strong>: ' . html($view_path));
+					}
+
+				//--------------------------------------------------
+				// Page not found
+
+					if (!is_file($view_path)) {
+
+						$error = config::get('output.error');
+
+						if ($error === false || $error === NULL) {
+							$error = 'page_not_found';
+						}
+
+						if (!headers_sent() && $error == 'page_not_found') {
+							http_response_code(404);
+						}
+
+						$view_path = APP_ROOT . DS . 'view' . DS . 'error' . DS . $error . '.ctp';
+						if (!is_file($view_path)) {
+							$view_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'error_' . $error . '.ctp';
+						}
+						if (!is_file($view_path)) {
+							$view_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'error_page_not_found.ctp';
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $view_path;
+
+			}
+
+		}
+
 //--------------------------------------------------
 // Get website customised objects
 
@@ -585,13 +582,13 @@
 			}
 		}
 
-		if (!class_exists('view')) {
-			class view extends view_base {
+		if (!class_exists('layout')) {
+			class layout extends layout_base {
 			}
 		}
 
-		if (!class_exists('layout')) {
-			class layout extends layout_base {
+		if (!class_exists('view')) {
+			class view extends view_base {
 			}
 		}
 
