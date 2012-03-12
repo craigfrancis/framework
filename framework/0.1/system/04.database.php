@@ -223,7 +223,7 @@
 
 			if (function_exists('exit_with_error') && config::get('db.error_thrown') !== true) {
 				config::set('db.error_thrown', true);
-				exit_with_error('An error has occurred with the database', $query . "\n\n" . $extra);
+				exit_with_error('An error has occurred with the database.', $query . "\n\n" . $extra);
 			} else {
 				http_response_code(500);
 				exit('<p>I have an error: <br />' . htmlentities($use_query_as_error ? $query : $extra) . '</p>');
