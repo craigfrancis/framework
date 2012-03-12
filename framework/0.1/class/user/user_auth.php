@@ -432,11 +432,11 @@
 
 				} else if ($user_id > 0) {
 
-					return 'invalid_identification';
+					return 'invalid_verification';
 
 				} else {
 
-					return 'invalid_verification';
+					return 'invalid_identification';
 
 				}
 

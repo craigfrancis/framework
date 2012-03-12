@@ -14,6 +14,7 @@
 			private $form_submitted;
 			private $hidden_values;
 			private $fields;
+			private $field_refs;
 			private $field_count;
 			private $field_autofocus;
 			private $required_mark_html;
@@ -53,6 +54,7 @@
 					$this->form_submitted = false;
 					$this->hidden_values = array();
 					$this->fields = array();
+					$this->field_refs = array();
 					$this->field_count = 0;
 					$this->required_mark_html = NULL;
 					$this->required_mark_position = 'left';
@@ -266,16 +268,24 @@
 				return $this->error_override_function;
 			}
 
-			public function db_table_set_sql($table_sql, $alias_sql = NULL, $db = NULL) {
+			public function db_get() {
+				if ($this->db_link === NULL) {
+					$this->db_link = new db();
+				}
+				return $this->db_link;
+			}
+
+			public function db_set($db_link) {
+				$this->db_link = $db_link;
+			}
+
+			public function db_table_set_sql($table_sql, $alias_sql = NULL) {
 
 				//--------------------------------------------------
 				// Store
 
-					if ($db === NULL) {
-						$db = new db();
-					}
+					$db = $this->db_get();
 
-					$this->db_link = $db;
 					$this->db_table_name_sql = $table_sql;
 					$this->db_table_alias_sql = $alias_sql;
 
@@ -284,7 +294,7 @@
 
 					$this->db_fields = array();
 
-					$rst = $this->db_link->query('SELECT * FROM ' . $this->db_table_name_sql . ' LIMIT 0', false); // Don't return ANY data, and don't run debug (can't have it asking for "deleted" columns).
+					$rst = $db->query('SELECT * FROM ' . $this->db_table_name_sql . ' LIMIT 0', false); // Don't return ANY data, and don't run debug (can't have it asking for "deleted" columns).
 
 					for ($k = (mysql_num_fields($rst) - 1); $k >= 0; $k--) {
 
@@ -300,8 +310,8 @@
 
 						$length = mysql_field_len($rst, $k); // $mysql_field->max_length returns 0
 						if ($length < 0) {
-							$this->db_link->query('SHOW COLUMNS FROM ' .  $this->db_table_name_sql . ' LIKE "' . $this->db_link->escape($mysql_field->name) . '"'); // Backup when longtext returns -1 (Latin) or -3 (UFT8).
-							if ($row = $this->db_link->fetch_assoc()) {
+							$db->query('SHOW COLUMNS FROM ' .  $this->db_table_name_sql . ' LIKE "' . $db->escape($mysql_field->name) . '"'); // Backup when longtext returns -1 (Latin) or -3 (UFT8).
+							if ($row = $db->fetch_assoc()) {
 								if ($row['Type'] == 'tinytext') $length = 255;
 								if ($row['Type'] == 'text') $length = 65535;
 								if ($row['Type'] == 'longtext') $length = 4294967295;
@@ -340,9 +350,15 @@
 
 			public function db_field_options_get($field) {
 				if (isset($this->db_fields[$field]) && ($this->db_fields[$field]['type'] == 'enum' || $this->db_fields[$field]['type'] == 'set')) {
-					return $this->db_link->enum_values($this->db_table_name_sql, $field);
+
+					$db = $this->db_get();
+
+					return $db->enum_values($this->db_table_name_sql, $field);
+
 				} else {
+
 					return NULL;
+
 				}
 			}
 
@@ -356,10 +372,10 @@
 
 			public function db_select_fields() {
 				$fields = array();
-				for ($field_uid = 0; $field_uid < $this->field_count; $field_uid++) {
-					$field_name = $this->fields[$field_uid]->db_field_name_get();
+				foreach ($this->fields as $field) {
+					$field_name = $field->db_field_name_get();
 					if ($field_name !== NULL) {
-						$fields[$field_uid] = $field_name;
+						$fields[] = $field_name;
 					}
 				}
 				return $fields;
@@ -394,9 +410,11 @@
 
 								$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
 
-								$this->db_link->select($table_sql, $fields, $this->db_where_sql);
+								$db = $this->db_get();
 
-								if ($row = $this->db_link->fetch_assoc()) {
+								$db->select($table_sql, $fields, $this->db_where_sql);
+
+								if ($row = $db->fetch_assoc()) {
 									$this->db_select_values = $row;
 								}
 
@@ -513,23 +531,14 @@
 			}
 
 			public function errors_html() {
-
 				$this->_post_validation();
-
 				$errors_flat_html = array();
-
-				for ($field_uid = -1; $field_uid < $this->field_count; $field_uid++) { // In field order, starting with -1 for general form errors
-					if (isset($this->errors_html[$field_uid])) {
-
-						foreach ($this->errors_html[$field_uid] as $error_html) {
-							$errors_flat_html[] = $error_html;
-						}
-
+				foreach ($this->errors_html as $errors_html) {
+					foreach ($errors_html as $error_html) {
+						$errors_flat_html[] = $error_html;
 					}
 				}
-
 				return $errors_flat_html;
-
 			}
 
 			private function _post_validation() {
@@ -559,8 +568,8 @@
 				//--------------------------------------------------
 				// Fields
 
-					for ($field_uid = 0; $field_uid < $this->field_count; $field_uid++) {
-						$this->fields[$field_uid]->_post_validation();
+					foreach ($this->fields as $field) {
+						$field->_post_validation();
 					}
 
 				//--------------------------------------------------
@@ -587,21 +596,21 @@
 
 					$values = array();
 
-					for ($field_uid = 0; $field_uid < $this->field_count; $field_uid++) {
+					foreach ($this->fields as $field) {
 
-						$field_name = $this->fields[$field_uid]->label_get_text();
-						$field_type = $this->fields[$field_uid]->type_get();
+						$field_name = $field->label_get_text();
+						$field_type = $field->type_get();
 
 						if ($field_type == 'date') {
-							$value = $this->fields[$field_uid]->value_date_get();
+							$value = $field->value_date_get();
 						} else if ($field_type == 'file' || $field_type == 'image') {
-							if ($this->fields[$field_uid]->uploaded()) {
-								$value = $this->fields[$field_uid]->file_name_get() . ' (' . file_size_to_human($this->fields[$field_uid]->file_size_get()) . ')';
+							if ($field->uploaded()) {
+								$value = $field->file_name_get() . ' (' . file_size_to_human($field->file_size_get()) . ')';
 							} else {
 								$value = 'N/A';
 							}
 						} else {
-							$value = $this->fields[$field_uid]->value_get();
+							$value = $field->value_get();
 						}
 
 						$values[] = array($field_name, $value); // Allow multiple fields to have the same label
@@ -622,19 +631,19 @@
 
 					$values = array();
 
-					for ($field_uid = 0; $field_uid < $this->field_count; $field_uid++) {
-						$field_name = $this->fields[$field_uid]->db_field_name_get();
-						if ($field_name !== NULL && !$this->fields[$field_uid]->disabled_get() && !$this->fields[$field_uid]->readonly_get()) {
+					foreach ($this->fields as $field) {
+						$field_name = $field->db_field_name_get();
+						if ($field_name !== NULL && !$field->disabled_get() && !$field->readonly_get()) {
 
-							$field_key = $this->fields[$field_uid]->db_field_key_get();
+							$field_key = $field->db_field_key_get();
 							$field_type = $this->db_fields[$field_name]['type'];
 
 							if ($field_type == 'datetime' || $field_type == 'date') {
-								$values[$field_name] = $this->fields[$field_uid]->value_date_get();
+								$values[$field_name] = $field->value_date_get();
 							} else if ($field_key == 'key') {
-								$values[$field_name] = $this->fields[$field_uid]->value_key_get();
+								$values[$field_name] = $field->value_key_get();
 							} else {
-								$values[$field_name] = $this->fields[$field_uid]->value_get();
+								$values[$field_name] = $field->value_get();
 							}
 
 						}
@@ -681,15 +690,17 @@
 				//--------------------------------------------------
 				// Save
 
+					$db = $this->db_get();
+
 					if ($this->db_where_sql === NULL) {
 
-						$this->db_link->insert($this->db_table_name_sql, $values);
+						$db->insert($this->db_table_name_sql, $values);
 
 					} else {
 
 						$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
 
-						$this->db_link->update($table_sql, $values, $this->db_where_sql);
+						$db->update($table_sql, $values, $this->db_where_sql);
 
 					}
 
@@ -709,15 +720,57 @@
 
 					$this->db_save();
 
-					return $this->db_link->insert_id();
+					$db = $this->db_get();
+
+					return $db->insert_id();
 
 			}
 
 		//--------------------------------------------------
 		// Field support
 
-			public function field_get($field_uid) {
-				return $this->fields[$field_uid];
+			public function field_get($ref, $setup = NULL) {
+
+				if (is_numeric($ref)) {
+
+					if (isset($this->fields[$ref])) {
+						return $this->fields[$ref];
+					} else {
+						exit_with_error('Cannot return the field "' . $ref . '", on "' . get_class($this) . '".');
+					}
+
+				} else {
+
+					if (isset($this->field_refs[$ref])) {
+
+						return $this->field_refs[$ref];
+
+					} else {
+
+						$method = 'field_' . $ref . '_get';
+
+						if (method_exists($this, $method)) {
+							$field = $this->$method($setup);
+						} else {
+							$field = $this->_field_create($ref, $setup);
+						}
+
+						$this->field_refs[$ref] = $field;
+
+						return $field;
+
+					}
+
+				}
+
+			}
+
+			protected function _field_create($ref, $setup) {
+				exit_with_error('Cannot create the "' . $ref . '" field, missing the "field_' . $ref . '_get" method on "' . get_class($this) . '".');
+			}
+
+			public function field_exists($ref) {
+				return (isset($this->fields[$ref]) || isset($this->field_refs[$ref]));
 			}
 
 			public function fields_get() {
@@ -726,7 +779,7 @@
 
 			public function field_groups_get() {
 				$field_groups = array();
-				foreach ($this->fields as $field_uid => $field) {
+				foreach ($this->fields as $field) {
 					if ($field->print_show_get() && !$field->print_hidden_get()) {
 						$field_group = $field->print_group_get();
 						if ($field_group !== NULL) {
@@ -742,9 +795,11 @@
 			}
 
 			public function _field_add($field_obj) { // Public for form_field to call
-				$field_uid = $this->field_count++;
-				$this->fields[$field_uid] = $field_obj;
-				return $field_uid;
+				while (isset($this->fields[$this->field_count])) {
+					$this->field_count++;
+				}
+				$this->fields[$this->field_count] = $field_obj;
+				return $this->field_count;
 			}
 
 			public function _field_error_add_html($field_uid, $error_html, $hidden_info = NULL) {
@@ -754,7 +809,7 @@
 					if ($field_uid == -1) {
 						$error_html = call_user_func($function, $error_html, $this, NULL);
 					} else {
-						$error_html = call_user_func($function, $error_html, $this, $this->field_get($field_uid));
+						$error_html = call_user_func($function, $error_html, $this, $this->fields[$field_uid]);
 					}
 				}
 
@@ -850,7 +905,7 @@
 				if (!isset($config['wrapper'])) $config['wrapper'] = 'div';
 				if (!isset($config['class'])) $config['class'] = 'form_hidden_fields';
 
-				foreach ($this->fields as $field_uid => $field) {
+				foreach ($this->fields as $field) {
 					if ($field->print_hidden_get()) {
 						$this->hidden_values[$field->name_get()] = $field->value_hidden_get();
 					}
@@ -905,13 +960,13 @@
 
 					if ($this->field_autofocus) {
 
-						for ($field_uid = 0; $field_uid < $this->field_count; $field_uid++) {
+						foreach ($this->fields as $field_uid => $field) {
 
-							$field_type = $this->fields[$field_uid]->type_get();
+							$field_type = $field->type_get();
 							if ($field_type == 'date') {
-								$autofocus = ($this->fields[$field_uid]->value_date_get() == '0000-00-00');
+								$autofocus = ($field->value_date_get() == '0000-00-00');
 							} else if ($field_type != 'file' && $field_type != 'image') {
-								$autofocus = ($this->fields[$field_uid]->value_get() == '');
+								$autofocus = ($field->value_get() == '');
 							} else {
 								$autofocus = false;
 							}
@@ -921,7 +976,7 @@
 							}
 
 							if ($autofocus) {
-								$this->fields[$field_uid]->autofocus_set(true);
+								$field->autofocus_set(true);
 								break;
 							}
 
@@ -940,7 +995,7 @@
 
 					} else {
 
-						foreach ($this->fields as $field_uid => $field) {
+						foreach ($this->fields as $field) {
 							if ($field->print_show_get() && !$field->print_hidden_get()) {
 								$field_group = $field->print_group_get();
 								if ($field_group === NULL) {
@@ -969,7 +1024,7 @@
 							$html .= "\n\t\t\t\t" . '<h2>' . html($group) . '</h2>' . "\n";
 						}
 
-						foreach ($this->fields as $field_uid => $field) {
+						foreach ($this->fields as $field) {
 
 							if ($field->print_show_get() && !$field->print_hidden_get()) {
 

@@ -53,8 +53,6 @@
 			protected $form = NULL;
 
 			protected $text = array();
-			protected $auth_fields = array();
-			protected $detail_fields = array();
 			protected $save_values = array();
 			protected $user_id = 0;
 			protected $cookie_prefix = 'user_'; // Allow different user log-in mechanics, e.g. "admin_"
@@ -144,7 +142,9 @@
 			public function form_get() {
 				if ($this->form === NULL) {
 
-					$this->form = new form();
+					$this->form = new user_form();
+					$this->form->user_ref_set($this);
+					$this->form->db_set($this->db_get());
 					$this->form->db_save_disable();
 					$this->form->db_table_set_sql($this->details->db_table_get_sql());
 
@@ -162,6 +162,10 @@
 
 			public function text_set($id, $text) {
 				$this->text[$id] = $text;
+			}
+
+			public function text_get($id) {
+				return $this->text[$id];
 			}
 
 			public function identification_as_username() {
@@ -243,8 +247,8 @@
 
 					$form = $this->form_get();
 
-					$identification = $this->auth_fields['identification']->value_get();
-					$verification = $this->auth_fields['verification']->value_get();
+					$identification = $form->field_get('identification')->value_get();
+					$verification = $form->field_get('verification')->value_get();
 
 				//--------------------------------------------------
 				// Process
@@ -351,11 +355,11 @@
 				//--------------------------------------------------
 				// Details
 
-					$identification = $this->auth_fields['identification']->value_get();
+					$identification = $form->field_get('identification')->value_get();
 
-					if (isset($this->auth_fields['verification'])) {
+					if ($form->field_exists('verification')) {
 
-						$verification = $this->auth_fields['verification']->value_get();
+						$verification = $form->field_get('verification')->value_get();
 
 					} else {
 
@@ -403,7 +407,7 @@
 
 					$form = $this->form_get();
 
-					$identification = $this->auth_fields['identification']->value_get();
+					$identification = $form->field_get('identification')->value_get();
 
 				//--------------------------------------------------
 				// Process
@@ -450,7 +454,7 @@
 
 					$form = $this->form_get();
 
-					$identification = $this->auth_fields['identification']->value_get();
+					$identification = $form->field_get('identification')->value_get();
 
 				//--------------------------------------------------
 				// Process
@@ -487,14 +491,17 @@
 
 					$form = $this->form_get();
 
-					$verification_new = $this->auth_fields['verification_new']->value_get();
-					$verification_repeat = $this->auth_fields['verification_repeat']->value_get();
+					$verification_new_ref = $form->field_get('verification_new');
+					$verification_repeat_ref = $form->field_get('verification_repeat');
+
+					$verification_new_value = $verification_new_ref->value_get();
+					$verification_repeat_value = $verification_repeat_ref->value_get();
 
 				//--------------------------------------------------
 				// Not the same
 
-					if ($verification_new != $verification_repeat) {
-						$this->auth_fields['verification_repeat']->error_add($this->text['save_details_invalid_new_verification_repeat']);
+					if ($verification_new_value != $verification_repeat_value) {
+						$verification_repeat_ref->error_add($this->text['save_details_invalid_new_verification_repeat']);
 					}
 
 				//--------------------------------------------------
@@ -506,7 +513,7 @@
 
 						if (is_array($result)) {
 
-							$this->auth->password_new($result['user_id'], $verification_new);
+							$this->auth->password_new($result['user_id'], $verification_new_value);
 
 							$this->auth->password_reset_expire($result['request_id']);
 
@@ -529,19 +536,6 @@
 
 		//--------------------------------------------------
 		// Details
-
-			public function field_get($field, $setup = NULL) {
-
-				$method = 'field_' . $field . '_get';
-
-				if (method_exists($this, $method)) {
-					$this->detail_fields[$field] = $this->$method($this->form_get(), $setup);
-					return $this->detail_fields[$field];
-				} else {
-					exit_with_error('Missing the method "' . $method . '" on the user object.');
-				}
-
-			}
 
 			public function save() {
 
@@ -591,101 +585,6 @@
 		// Fields
 
 			//--------------------------------------------------
-			// Create
-
-				public function field_identification_get($name = NULL) {
-
-					if ($this->identification_type == 'username') {
-
-						$this->auth_fields['identification'] = new form_field_text($this->form_get(), $this->text['identification_label'], ($name === NULL ? 'identification' : $name));
-						$this->auth_fields['identification']->min_length_set($this->text['identification_min_len'], 1);
-						$this->auth_fields['identification']->max_length_set($this->text['identification_max_len'], 50);
-						return $this->auth_fields['identification'];
-
-					} else {
-
-						$this->auth_fields['identification'] = new form_field_email($this->form_get(), $this->text['identification_label'], ($name === NULL ? 'identification' : $name));
-						$this->auth_fields['identification']->format_error_set($this->text['identification_format']);
-						$this->auth_fields['identification']->min_length_set($this->text['identification_min_len'], 1);
-						$this->auth_fields['identification']->max_length_set($this->text['identification_max_len'], 250);
-						return $this->auth_fields['identification'];
-
-					}
-
-				}
-
-				public function field_identification_new_get($name = NULL) {
-
-					if ($this->identification_type == 'username') {
-
-						$this->auth_fields['identification_new'] = new form_field_text($this->form_get(), $this->text['identification_new_label'], ($name === NULL ? 'identification_new' : $name));
-						$this->auth_fields['identification_new']->min_length_set($this->text['identification_new_min_len'], 1);
-						$this->auth_fields['identification_new']->max_length_set($this->text['identification_new_max_len'], 50);
-						return $this->auth_fields['identification_new'];
-
-					} else {
-
-						$this->auth_fields['identification_new'] = new form_field_email($this->form_get(), $this->text['identification_new_label'], ($name === NULL ? 'identification_new' : $name));
-						$this->auth_fields['identification_new']->format_error_set($this->text['identification_new_format']);
-						$this->auth_fields['identification_new']->min_length_set($this->text['identification_new_min_len'], 1);
-						$this->auth_fields['identification_new']->max_length_set($this->text['identification_new_max_len'], 250);
-						return $this->auth_fields['identification_new'];
-
-					}
-
-				}
-
-				public function field_verification_get($required = NULL, $name = NULL) {
-
-					$this->auth_fields['verification'] = new form_field_password($this->form_get(), $this->text['verification_label'], ($name === NULL ? 'verification' : $name));
-
-					if ($required === NULL || $required === true) {  // Default required (register page, or re-confirm on profile page)
-						$this->auth_fields['verification']->min_length_set($this->text['verification_min_len'], 1);
-					}
-
-					$this->auth_fields['verification']->max_length_set($this->text['verification_max_len'], 250);
-
-					return $this->auth_fields['verification'];
-
-				}
-
-				public function field_verification_new_get($required = NULL) {
-
-					$this->auth_fields['verification_new'] = new form_field_password($this->form_get(), $this->text['verification_new_label']);
-
-					if ($required === true) { // Default not required (profile page)
-						$this->auth_fields['verification_new']->min_length_set($this->text['verification_new_min_len'], 1);
-					}
-
-					$this->auth_fields['verification_new']->max_length_set($this->text['verification_new_max_len'], 250);
-
-					return $this->auth_fields['verification_new'];
-
-				}
-
-				public function field_verification_repeat_get($required = NULL) {
-
-					$this->auth_fields['verification_repeat'] = new form_field_password($this->form_get(), $this->text['verification_repeat_label']);
-
-					if ($required === NULL) {
-						if (isset($this->auth_fields['verification_new'])) {
-							$required = false; // Profile page, with new verification field (will be used to check re-entry)
-						} else if (isset($this->auth_fields['verification'])) {
-							$required = true; // Register page, asking to repeat password.
-						}
-					}
-
-					if ($required === true) {
-						$this->auth_fields['verification_repeat']->min_length_set($this->text['verification_repeat_min_len'], 1);
-					}
-
-					$this->auth_fields['verification_repeat']->max_length_set($this->text['verification_repeat_max_len'], 250);
-
-					return $this->auth_fields['verification_repeat'];
-
-				}
-
-			//--------------------------------------------------
 			// Populate field values
 
 				public function login_fields_populate() {
@@ -693,7 +592,9 @@
 					//--------------------------------------------------
 					// Nice and simple, identification field
 
-						$this->auth_fields['identification']->value_set($this->last_login_get());
+						$form = $this->form_get();
+
+						$form->field_get('identification')->value_set($this->last_login_get());
 
 				}
 
@@ -709,12 +610,14 @@
 					//--------------------------------------------------
 					// If the "identification_new" field exists
 
-						if (isset($this->auth_fields['identification_new'])) {
+						$form = $this->form_get();
+
+						if ($form->field_exists('identification_new')) {
 
 							$user_identification = $this->auth->user_identification_get($this->user_id);
 
 							if ($user_identification !== false) {
-								$this->auth_fields['identification_new']->value_set($user_identification);
+								$form->field_get('identification_new')->value_set($user_identification);
 							} else {
 								exit_with_error('Failed getting user identification', 'Function call: detail_fields_populate');
 							}
@@ -729,14 +632,26 @@
 				public function detail_fields_validate() {
 
 					//--------------------------------------------------
+					// Form reference
+
+						$form = $this->form_get();
+
+					//--------------------------------------------------
 					// Current verification
 
-						if (isset($this->auth_fields['verification']) && $this->auth_fields['verification']->value_get() != '') {
+						if ($form->field_exists('verification')) {
 
-							$result = $this->auth->verify(NULL, $this->auth_fields['verification']->value_get());
+							$verification_ref = $form->field_get('verification');
+							$verification_value = $verification_ref->value_get();
 
-		 					if ($result <= 0) {
-								$this->auth_fields['verification']->error_add($this->text['save_details_invalid_verification']);
+							if ($verification_value != '') {
+
+								$result = $this->auth->verify(NULL, $verification_value);
+
+			 					if ($result <= 0) {
+									$verification_ref->error_add($this->text['save_details_invalid_verification']);
+								}
+
 							}
 
 						}
@@ -744,25 +659,29 @@
 					//--------------------------------------------------
 					// New verification
 
-						if (isset($this->auth_fields['verification_new']) && isset($this->auth_fields['verification_repeat'])) {
-							if ($this->auth_fields['verification_new']->value_get() != $this->auth_fields['verification_repeat']->value_get()) {
+						if ($form->field_exists('verification_new') && $form->field_exists('verification_repeat')) {
 
-								$this->auth_fields['verification_repeat']->error_add($this->text['save_details_invalid_new_verification_repeat']);
+							$verification_new_ref = $form->field_get('verification_new');
+							$verification_repeat_ref = $form->field_get('verification_repeat');
 
+							if ($verification_new_ref->value_get() != $verification_repeat_ref->value_get()) {
+								$verification_repeat_ref->error_add($this->text['save_details_invalid_new_verification_repeat']);
 							}
+
 						}
 
 					//--------------------------------------------------
 					// New identification
 
-						if (isset($this->auth_fields['identification_new'])) {
+						if ($form->field_exists('identification_new')) {
 
-							$new_identification = $this->auth_fields['identification_new']->value_get();
+							$identification_new_ref = $form->field_get('identification_new');
+							$identification_new_value = $identification_new_ref->value_get();
 
-							$new_id = $this->auth->identification_id_get($new_identification);
+							$new_id = $this->auth->identification_id_get($identification_new_value);
 
 							if ($new_id != $this->user_id && $new_id !== false) {
-								$this->auth_fields['identification_new']->error_add($this->text['save_details_invalid_new_identification']);
+								$identification_new_ref->error_add($this->text['save_details_invalid_new_identification']);
 							}
 
 						}
@@ -772,22 +691,29 @@
 				public function register_fields_validate($identification, $verification) {
 
 					//--------------------------------------------------
+					// Form reference
+
+						$form = $this->form_get();
+
+					//--------------------------------------------------
 					// Unique identification
 
 						$result = $this->auth->unique_identification($identification);
 						if (!$result) {
-							$this->auth_fields['identification']->error_add($this->text['register_duplicate_identification']);
+							$form->field_get('identification')->error_add($this->text['register_duplicate_identification']);
 						}
 
 					//--------------------------------------------------
 					// Verification repeat
 
-						if (isset($this->auth_fields['verification_repeat'])) {
-							if ($this->auth_fields['verification_repeat']->value_get() != $verification) {
+						if ($form->field_exists('verification_repeat')) {
 
-								$this->auth_fields['verification_repeat']->error_add($this->text['register_invalid_verification_repeat']);
+							$verification_repeat_ref = $form->field_get('verification_repeat');
 
+							if ($verification_repeat_ref->value_get() != $verification) {
+								$verification_repeat_ref->error_add($this->text['register_invalid_verification_repeat']);
 							}
+
 						}
 
 				}
@@ -801,6 +727,11 @@
 				protected function _save() {
 
 					//--------------------------------------------------
+					// Form reference
+
+						$form = $this->form_get();
+
+					//--------------------------------------------------
 					// Update
 
 						$values = array_merge($this->save_values, $this->form->data_db_get());
@@ -808,12 +739,24 @@
 							$this->values_set($values);
 						}
 
-						if (isset($this->auth_fields['verification_new']) && $this->auth_fields['verification_new']->value_get() != '') {
-							$this->auth->password_new($this->user_id, $this->auth_fields['verification_new']->value_get());
+					//--------------------------------------------------
+					// New verification
+
+						if ($form->field_exists('verification_new')) {
+
+							$verification_new_value = $form->field_get('verification_new')->value_get();
+
+							if ($verification_new_value != '') {
+								$this->auth->password_new($this->user_id, $verification_new_value);
+							}
+
 						}
 
-						if (isset($this->auth_fields['identification_new'])) {
-							$this->auth->identification_new($this->user_id, $this->auth_fields['identification_new']->value_get());
+					//--------------------------------------------------
+					// New identification
+
+						if ($form->field_exists('identification_new')) {
+							$this->auth->identification_new($this->user_id, $form->field_get('identification_new')->value_get());
 						}
 
 					//--------------------------------------------------
