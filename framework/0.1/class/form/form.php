@@ -108,7 +108,7 @@
 						$dest = request('dest');
 
 						if ($dest == 'referrer') {
-							$dest = config::get('request.referrer');
+							$dest = url(config::get('request.referrer'), array('dest' => NULL)); // If the previous page also had a "dest" value, drop it (stop loop)
 						}
 
 						$this->hidden_value_set('dest', $dest);
