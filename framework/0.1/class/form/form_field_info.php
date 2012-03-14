@@ -67,7 +67,11 @@
 		// HTML
 
 			public function html_input() {
-				return $this->value_html;
+				if ($this->value_html !== NULL) {
+					return $this->value_html;
+				} else {
+					return $this->form->db_select_value_get($this->db_field_name);
+				}
 			}
 
 			public function html_label($label_html = NULL) {
