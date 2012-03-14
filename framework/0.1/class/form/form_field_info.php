@@ -26,6 +26,7 @@
 				// Value
 
 					$this->value = NULL;
+					$this->value_html = NULL;
 
 				//--------------------------------------------------
 				// Additional field configuration
