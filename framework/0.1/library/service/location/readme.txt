@@ -10,6 +10,7 @@ By default this uses Google's GeoCoding service, but other services could be use
 
 How would this provide an admin control panel? - a controller which sets the template to "s_location" (or "s_location_ct_index").
 
+Have a view element to show the map on the website.
 
 //--------------------------------------------------
 // Example

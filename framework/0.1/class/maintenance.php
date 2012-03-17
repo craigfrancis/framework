@@ -1,5 +1,7 @@
 <?php
 
+// TODO: Add an admin interface somewhere which can show the tasks being run, can cancel them, or stack them up.
+
 //--------------------------------------------------
 // Is enabled
 
