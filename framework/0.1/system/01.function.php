@@ -48,8 +48,9 @@
 //--------------------------------------------------
 // Shortcut for url object
 
-	function url($url = NULL, $parameters = NULL, $format = NULL) { // Shortcut, to avoid saying 'new'.
-		return new url($url, $parameters, $format);
+	function url() { // Shortcut, to avoid saying 'new'.
+		$obj = new ReflectionClass('url');
+		return $obj->newInstanceArgs(func_get_args());
 	}
 
 //--------------------------------------------------
@@ -206,7 +207,7 @@
 	function path_to_array($path) {
 		$output = array();
 		foreach (explode('/', $path) as $name) {
-			if ($name == '..') { // Move up a folder 
+			if ($name == '..') { // Move up a folder
 				array_pop($output);
 			} else if ($name != '' && $name != '.') { // Ignore empty and current folder
 				$output[] = $name;
