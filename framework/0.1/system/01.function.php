@@ -53,6 +53,20 @@
 		return $obj->newInstanceArgs(func_get_args());
 	}
 
+	function http_url() {
+		$obj = new ReflectionClass('url');
+		$url = $obj->newInstanceArgs(func_get_args());
+		$url->scheme_set('http');
+		return $url;
+	}
+
+	function https_url() {
+		$obj = new ReflectionClass('url');
+		$url = $obj->newInstanceArgs(func_get_args());
+		$url->scheme_set('https');
+		return $url;
+	}
+
 //--------------------------------------------------
 // Shortcut for gateway url's
 
