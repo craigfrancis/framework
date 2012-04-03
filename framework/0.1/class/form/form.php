@@ -873,7 +873,7 @@
 						'class' => $this->form_class,
 						'action' => $this->form_action,
 						'method' => strtolower($this->form_method), // For the HTML5 checker on totalvalidator.com
-						'accept-charset' => config::get('output.charset'),
+						'accept-charset' => config::get('output.charset'), // When text from MS Word is pasted in an IE6 input field, it does not translate to UTF-8
 					);
 
 					$attributes = array_merge($attributes, $this->form_attributes);
