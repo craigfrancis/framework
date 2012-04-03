@@ -873,6 +873,7 @@
 						'class' => $this->form_class,
 						'action' => $this->form_action,
 						'method' => strtolower($this->form_method), // For the HTML5 checker on totalvalidator.com
+						'accept-charset' => config::get('output.charset'),
 					);
 
 					$attributes = array_merge($attributes, $this->form_attributes);
