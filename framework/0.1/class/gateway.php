@@ -1,5 +1,7 @@
 <?php
 
+// TODO: Update to oAuth: https://code.google.com/oauthplayground/
+
 //--------------------------------------------------
 // Is enabled
 
