@@ -1,7 +1,7 @@
 <?php
 
 	config::set('session.id', NULL);
-	config::set_default('session.name', 'session_name');
+	config::set_default('session.name', 'sess_' . substr(md5(config::get('request.domain')), 0, 5));
 
 	class session_base extends check {
 
@@ -70,6 +70,8 @@
 			if (config::get('session.id') === NULL) { // Cannot call session_id(), as this is not reset on session_write_close().
 
 				session_name(config::get('session.name'));
+
+				ini_set('session.cookie_httponly', true);
 
 				$result = @session_start(); // May warn about headers already being sent, which happens in loading object.
 

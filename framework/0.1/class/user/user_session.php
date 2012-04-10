@@ -152,22 +152,12 @@
 								deleted = "0000-00-00 00:00:00"');
 
 			//--------------------------------------------------
-			// Set the session cookies - both session and
-			// persistent, as Internet Explorer uses the
-			// computers internal clock (which is usually wrong)
-			// to decide when to delete persistent cookies.
+			// Store
 
-				if ($this->length > 0) {
-					$persistent_length = (time() + $this->length);
-				} else {
-					$persistent_length = strtotime('+10 years');
-				}
+				$session_name = $this->user_obj->session_name_get();
 
-				$this->user_obj->_cookie_set('session_id_p', $session_id, $persistent_length);
-				$this->user_obj->_cookie_set('session_id_s', $session_id);
-
-				$this->user_obj->_cookie_set('session_pass_p', $pass_orig, $persistent_length);
-				$this->user_obj->_cookie_set('session_pass_s', $pass_orig);
+				session::set($session_name . '_id', $session_id);
+				session::set($session_name . '_pass', $pass_orig); // Password support added so an "auth_token" can be passed to the user.
 
 		}
 
@@ -194,16 +184,12 @@
 		protected function _session_details_get() {
 
 			//--------------------------------------------------
-			// Get session details - supporting IE and its
-			// incorrect support of persistent cookies
+			// Get session details
 
-				$session_id = $this->user_obj->_cookie_get('session_id_p');
-				$session_pass = $this->user_obj->_cookie_get('session_pass_p');
+				$session_name = $this->user_obj->session_name_get();
 
-				if ($session_id == '') {
-					$session_id = $this->user_obj->_cookie_get('session_id_s');
-					$session_pass = $this->user_obj->_cookie_get('session_pass_s');
-				}
+				$session_id = session::get($session_name . '_id');
+				$session_pass = session::get($session_name . '_pass');
 
 				$session_id = intval($session_id);
 
@@ -229,8 +215,7 @@
 		public function session_get($auth_token = NULL) {
 
 			//--------------------------------------------------
-			// Get session details - supporting IE and its
-			// incorrect support of persistent cookies
+			// Get session details
 
 				if ($auth_token === NULL) {
 
@@ -354,13 +339,12 @@
 				}
 
 			//--------------------------------------------------
-			// Be nice, and clean the cookies - not necessary
+			// Be nice, and cleanup - not necessary
 
-				$this->user_obj->_cookie_set('session_id_p', '-', 1);
-				$this->user_obj->_cookie_set('session_id_s', '-', 1);
+				$session_name = $this->user_obj->session_name_get();
 
-				$this->user_obj->_cookie_set('session_pass_p', '-', 1);
-				$this->user_obj->_cookie_set('session_pass_s', '-', 1);
+				session::delete($session_name . '_id');
+				session::delete($session_name . '_pass');
 
 		}
 

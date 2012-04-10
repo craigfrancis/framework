@@ -55,8 +55,9 @@
 			protected $text = array();
 			protected $save_values = array();
 			protected $user_id = 0;
-			protected $cookie_prefix = 'user_'; // Allow different user log-in mechanics, e.g. "admin_"
+			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $identification_type = 'email';
+			protected $cookie_login_last = 'user_login_last_id';
 			protected $remember_login = true;
 
 			protected $db_link;
@@ -156,8 +157,12 @@
 				return $this->form;
 			}
 
-			public function cookie_prefix_set($prefix) {
-				$this->cookie_prefix = $prefix;
+			public function session_name_set($name) {
+				$this->session_name = $name;
+			}
+
+			public function session_name_get() {
+				return $this->session_name;
 			}
 
 			public function text_set($id, $text) {
@@ -218,7 +223,7 @@
 			}
 
 			public function last_login_get() {
-				return $this->_cookie_get('login_last_id');
+				return cookie::get($this->cookie_login_last);
 			}
 
 			public function identification_id_get($identification) {
@@ -271,7 +276,7 @@
 							$this->user_id = $result;
 
 							if ($this->remember_login) {
-								$this->_cookie_set('login_last_id', $identification, '+30 days');
+								cookie::set($this->cookie_login_last, $identification, '+30 days');
 							}
 
 							$this->_login_success();
@@ -300,7 +305,7 @@
 					}
 
 				//--------------------------------------------------
-				// Set the cookie for last time.
+				// Set the cookie for "last login"
 
 					if ($remember_login === NULL) {
 						$remember_login = $this->remember_login;
@@ -311,7 +316,7 @@
 						$user_identification = $this->auth->identification_name_get($this->user_id);
 
 						if ($user_identification !== false) {
-							$this->_cookie_set('login_last_id', $user_identification, '+30 days');
+							cookie::set($this->cookie_login_last, $user_identification, '+30 days');
 						} else {
 							exit_with_error('Failed getting user identification', 'Function call: login_forced');
 						}
@@ -761,17 +766,6 @@
 						return true;
 
 				}
-
-		//--------------------------------------------------
-		// System functions
-
-			public function _cookie_get($name) { // Public for user_session to call
-				return cookie::get($this->cookie_prefix . $name);
-			}
-
-			public function _cookie_set($name, $value, $expires = 0) {
-				cookie::set($this->cookie_prefix . $name, $value, $expires);
-			}
 
 	}
 

@@ -86,7 +86,7 @@
 			}
 
 			public function message_set($message) {
-				cookie::set('message', $message);
+				session::set('message', $message);
 			}
 
 			public function view_path_set($view_path) {
@@ -267,7 +267,7 @@
 				//--------------------------------------------------
 				// Javascript - after CSS
 
-					if (cookie::get('js_disable') != 'true') {
+					if (session::get('js_disable') != 'true') {
 
 						$js_paths = array();
 						foreach (resources::get('js') as $file) {
@@ -362,9 +362,9 @@
 				//--------------------------------------------------
 				// Message
 
-					$this->message = cookie::get('message');
+					$this->message = session::get('message');
 					if ($this->message !== NULL) {
-						cookie::delete('message');
+						session::delete('message');
 					}
 
 				//--------------------------------------------------

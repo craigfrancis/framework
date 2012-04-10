@@ -60,13 +60,13 @@
 
 					if ($css_name != '' && isset($css_types[$css_name])) {
 
-						cookie::set('style', $css_name);
+						session::set('style', $css_name);
 
 						$style_set = true;
 
 					} else {
 
-						$css_name = cookie::get('style');
+						$css_name = session::get('style');
 
 					}
 
