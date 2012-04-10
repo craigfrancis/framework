@@ -26,8 +26,7 @@
 
 	$limit_sql = $paginator->limit_get_sql();
 
-	<?= $paginator ?>
-	<?= $paginator->html() ?>
+	<?= $paginator->html(); ?>
 
 //--------------------------------------------------
 // End of example setup
@@ -349,6 +348,9 @@ class paginator_base extends check {
 	}
 
 	public function __toString() { // (PHP 5.2)
+		if (SERVER == 'stage') {
+			return 'depreciated - use $paginator->html()';
+		}
 		return $this->html();
 	}
 

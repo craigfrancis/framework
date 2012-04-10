@@ -734,6 +734,9 @@
 		}
 
 		public function __toString() { // (PHP 5.2)
+			if (SERVER == 'stage') {
+				return 'depreciated - use $table->html()';
+			}
 			return $this->html();
 		}
 

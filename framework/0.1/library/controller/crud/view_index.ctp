@@ -7,12 +7,12 @@
 
 	<?php } ?>
 
-	<?= $form ?>
+	<?= $form->html(); ?>
 
-	<?= $paginator ?>
+	<?= $paginator->html(); ?>
 
-	<?= $table ?>
+	<?= $table->html(); ?>
 
-	<?= $paginator ?>
+	<?= $paginator->html(); ?>
 
 	<?= (isset($page_end_html) ? $page_end_html : '') ?>

@@ -112,7 +112,7 @@
 
 				<h2>Site Navigation</h2>
 
-				<?= $nav ?>
+				<?= $nav->html(); ?>
 
 			</div>
 
