@@ -34,8 +34,7 @@
 				$this->db_table_fields = array(
 						'id' => 'id',
 						'identification' => ($user->identification_type_get() == 'username' ? 'username' : 'email'),
-						'verification_hash' => 'pass_hash',
-						'verification_salt' => 'pass_salt',
+						'password' => 'pass',
 						'created' => 'created',
 						'edited' => 'edited',
 						'deleted' => 'deleted'
@@ -49,6 +48,10 @@
 
 		public function db_table_field_set($field, $name) { // Provide override
 			$this->db_table_fields[$field] = $name;
+		}
+
+		public function identification_unique($identification) {
+			return ($this->identification_id_get($identification) === false);
 		}
 
 		public function identification_id_get($identification) {
@@ -77,7 +80,7 @@
 
 		}
 
-		public function user_identification_get($user_id) {
+		public function identification_name_get($user_id) {
 
 			//--------------------------------------------------
 			// Get
@@ -103,11 +106,57 @@
 
 		}
 
-		public function unique_identification($identification) {
-			return ($this->identification_id_get($identification) === false);
+		public function identification_set($user_id, $new_identification) {
+
+			//--------------------------------------------------
+			// Update
+
+				$db = $this->user_obj->db_get();
+
+				$db->query('UPDATE
+								' . $db->escape_field($this->db_table_name) . '
+							SET
+								' . $db->escape_field($this->db_table_fields['edited']) . ' = "' . $db->escape(date('Y-m-d H:i:s')) . '",
+								' . $db->escape_field($this->db_table_fields['identification']) . ' = "' . $db->escape($new_identification) . '"
+							WHERE
+								' . $this->db_where_sql . ' AND
+								' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($user_id) . '" AND
+								' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"
+							LIMIT
+								1');
+
 		}
 
-		public function hash_password($user_id, $password, $db_salt = '') {
+		public function password_hash($user_id, $password, $db_pass = NULL) {
+
+			//--------------------------------------------------
+			// Split password
+
+				$db_hash = '';
+				$db_salt = '';
+
+				if (preg_match('/^([a-z0-9]{32})-([a-z]{10})$/i', $db_pass, $matches)) {
+
+					if ($password === NULL) { // DB version check, matches required format so no change needed
+						return $db_pass;
+					}
+
+					$db_hash = $matches[1];
+					$db_salt = $matches[2];
+
+				} else if ($password === NULL) {
+
+					$password = $db_pass; // DB version check, either a plain text or just a md5() hashed value stored
+
+					if (strlen($password) != 32) {
+						$password = md5($password);
+					}
+
+				} else if ($db_pass !== NULL) { // Set to NULL when setting password for first time.
+
+					exit_with_error('Unrecognised db pass "' . $db_pass . '"');
+
+				}
 
 			//--------------------------------------------------
 			// No salt provided, so create one
@@ -125,42 +174,19 @@
 					$password = md5($password);
 				}
 
-				$db_hash = md5(md5($user_id) . $password . md5($db_salt)); // User ID bind's to account, while salt tries to remain unknown
+				$return_hash = md5(md5($user_id) . $password . md5($db_salt)); // User ID bind's to account, while salt tries to remain unknown
 
 			//--------------------------------------------------
 			// Return
 
-				return array($db_hash, $db_salt);
+				return $return_hash . '-' . $db_salt;
 
 		}
 
-		public function check_password($user_id, $db_hash, $db_salt) {
+		public function password_set($user_id, $new_password = NULL) {
 
 			//--------------------------------------------------
-			// Not an MD5 password
-
-				if (strlen($db_hash) != 32) {
-					$db_salt = '';
-				}
-
-			//--------------------------------------------------
-			// Missing salt
-
-				if ($db_salt == '') {
-					list($db_hash, $db_salt) = $this->hash_password($user_id, $db_hash);
-				}
-
-			//--------------------------------------------------
-			// Return
-
-				return array($db_hash, $db_salt);
-
-		}
-
-		public function password_new($user_id, $new_password = NULL) {
-
-			//--------------------------------------------------
-			// Throttle random passwords (forgotten password)
+			// Throttle random passwords (e.g. forgotten password)
 
 				$db = $this->user_obj->db_get();
 
@@ -195,13 +221,13 @@
 			// Generate password, if necessary
 
 				if ($new_password === NULL) {
-					$new_password = mt_rand(10000, 99999);
+					$new_password = mt_rand(100000, 999999);
 				}
 
 			//--------------------------------------------------
 			// Hash password
 
-				list($db_hash, $db_salt) = $this->hash_password($user_id, $new_password);
+				$db_pass = $this->password_hash($user_id, $new_password);
 
 			//--------------------------------------------------
 			// Update
@@ -210,8 +236,7 @@
 								' . $db->escape_field($this->db_table_name) . '
 							SET
 								' . $db->escape_field($this->db_table_fields['edited']) . ' = "' . $db->escape(date('Y-m-d H:i:s')) . '",
-								' . $db->escape_field($this->db_table_fields['verification_hash']) . ' = "' . $db->escape($db_hash) . '",
-								' . $db->escape_field($this->db_table_fields['verification_salt']) . ' = "' . $db->escape($db_salt) . '"
+								' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($db_pass) . '"
 							WHERE
 								' . $this->db_where_sql . ' AND
 								' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($user_id) . '" AND
@@ -267,7 +292,10 @@
 			//--------------------------------------------------
 			// Return password
 
-				return url($request_url, array('t' => $request_id . '-' . $request_pass), 'full');
+				$url = url($request_url, array('t' => $request_id . '-' . $request_pass));
+				$url->format_set('full');
+
+				return $url;
 
 		}
 
@@ -333,28 +361,7 @@
 
 		}
 
-		public function identification_new($user_id, $new_identification) {
-
-			//--------------------------------------------------
-			// Update
-
-				$db = $this->user_obj->db_get();
-
-				$db->query('UPDATE
-								' . $db->escape_field($this->db_table_name) . '
-							SET
-								' . $db->escape_field($this->db_table_fields['edited']) . ' = "' . $db->escape(date('Y-m-d H:i:s')) . '",
-								' . $db->escape_field($this->db_table_fields['identification']) . ' = "' . $db->escape($new_identification) . '"
-							WHERE
-								' . $this->db_where_sql . ' AND
-								' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($user_id) . '" AND
-								' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"
-							LIMIT
-								1');
-
-		}
-
-		public function verify($identification, $verification) {
+		public function verify($identification, $password) {
 
 			//--------------------------------------------------
 			// Account details
@@ -369,8 +376,7 @@
 
 				$db->query('SELECT
 								' . $db->escape_field($this->db_table_fields['id']) . ' AS id,
-								' . $db->escape_field($this->db_table_fields['verification_hash']) . ' AS verification_hash,
-								' . $db->escape_field($this->db_table_fields['verification_salt']) . ' AS verification_salt
+								' . $db->escape_field($this->db_table_fields['password']) . ' AS password
 							FROM
 								' . $db->escape_field($this->db_table_name) . '
 							WHERE
@@ -381,35 +387,31 @@
 								1');
 
 				if ($row = $db->fetch_assoc()) {
-					$user_id = $row['id'];
-					$db_hash = $row['verification_hash'];
-					$db_salt = $row['verification_salt'];
+					$db_id = $row['id'];
+					$db_pass = $row['password'];
 				} else {
-					$user_id = 0;
-					$db_hash = '';
-					$db_salt = '';
+					$db_id = 0;
+					$db_pass = '';
 				}
 
 			//--------------------------------------------------
 			// Check the password the db values
 
-				if ($user_id > 0) {
+				if ($db_id > 0) {
 
-					list($db_hash_new, $db_salt_new) = $this->check_password($user_id, $db_hash, $db_salt);
+					$new_pass = $this->password_hash($db_id, NULL, $db_pass);
 
-					if ($db_hash_new != $db_hash || $db_salt_new != $db_salt) {
+					if ($new_pass != $db_pass) {
 
-						$db_hash = $db_hash_new;
-						$db_salt = $db_salt_new;
+						$db_pass = $new_pass;
 
 						$db->query('UPDATE
 										' . $db->escape_field($this->db_table_name) . '
 									SET
-										' . $db->escape_field($this->db_table_fields['verification_hash']) . ' = "' . $db->escape($db_hash) . '",
-										' . $db->escape_field($this->db_table_fields['verification_salt']) . ' = "' . $db->escape($db_salt) . '"
+										' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($db_pass) . '"
 									WHERE
 										' . $this->db_where_sql . ' AND
-										' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($user_id) . '" AND
+										' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($db_id) . '" AND
 										' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"
 									LIMIT
 										1');
@@ -419,20 +421,20 @@
 				}
 
 			//--------------------------------------------------
-			// Hash the users verification (password)
+			// Hash the users password
 
-				list($input_hash, $input_salt) = $this->hash_password($user_id, $verification, $db_salt);
+				$input_hash = $this->password_hash($db_id, $password, $db_pass);
 
 			//--------------------------------------------------
 			// Result
 
-				if ($input_hash == $db_hash) {
+				if ($input_hash == $db_pass) {
 
-					return $user_id;
+					return $db_id;
 
-				} else if ($user_id > 0) {
+				} else if ($db_id > 0) {
 
-					return 'invalid_verification';
+					return 'invalid_password';
 
 				} else {
 

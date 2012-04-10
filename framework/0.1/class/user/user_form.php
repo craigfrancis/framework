@@ -50,53 +50,53 @@
 
 		}
 
-		protected function field_verification_get($required = NULL, $name = NULL) {
+		protected function field_password_get($required = NULL, $name = NULL) {
 
-			$field_verification = new form_field_password($this, $this->user->text_get('verification_label'), ($name === NULL ? 'verification' : $name));
+			$field_password = new form_field_password($this, $this->user->text_get('password_label'), ($name === NULL ? 'password' : $name));
 
 			if ($required === NULL || $required === true) {  // Default required (register page, or re-confirm on profile page)
-				$field_verification->min_length_set($this->user->text_get('verification_min_len'), 1);
+				$field_password->min_length_set($this->user->text_get('password_min_len'), 1);
 			}
 
-			$field_verification->max_length_set($this->user->text_get('verification_max_len'), 250);
+			$field_password->max_length_set($this->user->text_get('password_max_len'), 250);
 
-			return $field_verification;
+			return $field_password;
 
 		}
 
-		protected function field_verification_new_get($required = NULL) {
+		protected function field_password_new_get($required = NULL) {
 
-			$field_verification = new form_field_password($this, $this->user->text_get('verification_new_label'));
+			$field_password = new form_field_password($this, $this->user->text_get('password_new_label'));
 
 			if ($required === true) { // Default not required (profile page)
-				$field_verification->min_length_set($this->user->text_get('verification_new_min_len'), 1);
+				$field_password->min_length_set($this->user->text_get('password_new_min_len'), 1);
 			}
 
-			$field_verification->max_length_set($this->user->text_get('verification_new_max_len'), 250);
+			$field_password->max_length_set($this->user->text_get('password_new_max_len'), 250);
 
-			return $field_verification;
+			return $field_password;
 
 		}
 
-		protected function field_verification_repeat_get($required = NULL) {
+		protected function field_password_repeat_get($required = NULL) {
 
-			$field_verification_repeat = new form_field_password($this, $this->user->text_get('verification_repeat_label'));
+			$field_password_repeat = new form_field_password($this, $this->user->text_get('password_repeat_label'));
 
 			if ($required === NULL) {
-				if ($this->field_exists('verification_new')) {
-					$required = false; // Profile page, with new verification field (will be used to check re-entry)
-				} else if ($this->field_exists('verification')) {
+				if ($this->field_exists('password_new')) {
+					$required = false; // Profile page, with new password field (will be used to check re-entry)
+				} else if ($this->field_exists('password')) {
 					$required = true; // Register page, asking to repeat password.
 				}
 			}
 
 			if ($required === true) {
-				$field_verification_repeat->min_length_set($this->user->text_get('verification_repeat_min_len'), 1);
+				$field_password_repeat->min_length_set($this->user->text_get('password_repeat_min_len'), 1);
 			}
 
-			$field_verification_repeat->max_length_set($this->user->text_get('verification_repeat_max_len'), 250);
+			$field_password_repeat->max_length_set($this->user->text_get('password_repeat_max_len'), 250);
 
-			return $field_verification_repeat;
+			return $field_password_repeat;
 
 		}
 

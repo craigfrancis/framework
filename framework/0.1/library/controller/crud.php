@@ -104,7 +104,7 @@
 						$k = 0;
 
 						foreach ($db_fields as $field => $info) {
-							if (!in_array($field, array('id', 'pass', 'pass_hash', 'pass_salt', 'edited', 'deleted'))) {
+							if (!in_array($field, array('id', 'pass', 'edited', 'deleted'))) {
 								$this->index_table_fields[$field] = NULL;
 								if ($k++ > 3) {
 									break;
@@ -197,7 +197,7 @@
 				if (count($this->index_search_fields) == 0) {
 
 					foreach ($db_fields as $field => $info) {
-						if (!in_array($field, array('id', 'pass', 'pass_hash', 'pass_salt'))) {
+						if (!in_array($field, array('id', 'pass'))) {
 							$this->index_search_fields[] = $field;
 						}
 					}
@@ -626,7 +626,7 @@
 			$db_fields = $this->_db_fields();
 
 			foreach ($db_fields as $field => $info) {
-				if (!in_array($field, array('id', 'pass', 'pass_hash', 'pass_salt', 'created', 'edited', 'deleted'))) {
+				if (!in_array($field, array('id', 'pass', 'created', 'edited', 'deleted'))) {
 
 					$name = ref_to_human($field);
 

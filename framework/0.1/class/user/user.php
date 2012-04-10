@@ -106,25 +106,25 @@
 							'identification_new_min_len' => 'Your email address is required.',
 							'identification_new_max_len' => 'Your email address cannot be longer than XXX characters.',
 							'identification_new_format' => 'Your email address does not appear to be correct.',
-							'verification_label' => 'Password',
-							'verification_min_len' => 'Your password is required.',
-							'verification_max_len' => 'Your password cannot be longer than XXX characters.',
-							'verification_new_label' => 'New password',
-							'verification_new_min_len' => 'Your new password is required.',
-							'verification_new_max_len' => 'Your new password cannot be longer than XXX characters.',
-							'verification_repeat_label' => 'Repeat password',
-							'verification_repeat_min_len' => 'Your password confirmation is required.',
-							'verification_repeat_max_len' => 'Your password confirmation cannot be longer than XXX characters.',
+							'password_label' => 'Password',
+							'password_min_len' => 'Your password is required.',
+							'password_max_len' => 'Your password cannot be longer than XXX characters.',
+							'password_new_label' => 'New password',
+							'password_new_min_len' => 'Your new password is required.',
+							'password_new_max_len' => 'Your new password cannot be longer than XXX characters.',
+							'password_repeat_label' => 'Repeat password',
+							'password_repeat_min_len' => 'Your password confirmation is required.',
+							'password_repeat_max_len' => 'Your password confirmation cannot be longer than XXX characters.',
 							'new_pass_invalid_identification' => 'Your email address has not been recognised.',
 							'new_pass_recently_changed' => 'Your account has already had its password changed recently.',
 							'new_pass_invalid_token' => 'The link to reset your password is incorrect or has expired.',
 							'login_invalid_identification' => 'Invalid log-in details.',
-							'login_invalid_verification' => 'Invalid log-in details.',
-							'save_details_invalid_verification' => 'Your current password is incorrect.',
-							'save_details_invalid_new_verification_repeat' => 'Your new passwords do not match.',
+							'login_invalid_password' => 'Invalid log-in details.',
+							'save_details_invalid_password' => 'Your current password is incorrect.',
+							'save_details_invalid_new_password_repeat' => 'Your new passwords do not match.',
 							'save_details_invalid_new_identification' => 'The email address supplied is already in use.',
 							'register_duplicate_identification' => 'The email address supplied is already in use.',
-							'register_invalid_verification_repeat' => 'Your passwords do not match.'
+							'register_invalid_password_repeat' => 'Your passwords do not match.'
 						);
 
 			}
@@ -192,7 +192,7 @@
 		// Support functions
 
 			public function require_by_id($user_id) {
-				$user_identification = $this->auth->user_identification_get($user_id);
+				$user_identification = $this->auth->identification_name_get($user_id);
 				if ($user_identification !== false) {
 					$this->user_id = $user_id;
 				} else {
@@ -225,10 +225,6 @@
 				return $this->auth->identification_id_get($identification);
 			}
 
-			public function hash_password($user_id, $new_password) {
-				return $this->auth->hash_password($user_id, $new_password);
-			}
-
 		//--------------------------------------------------
 		// Login
 
@@ -248,22 +244,22 @@
 					$form = $this->form_get();
 
 					$identification = $form->field_get('identification')->value_get();
-					$verification = $form->field_get('verification')->value_get();
+					$password = $form->field_get('password')->value_get();
 
 				//--------------------------------------------------
 				// Process
 
 					if ($form->valid()) {
 
-						$result = $this->auth->verify($identification, $verification);
+						$result = $this->auth->verify($identification, $password);
 
 						if ($result === 'invalid_identification') {
 
 							$form->error_add($this->text['login_invalid_identification']);
 
-						} else if ($result === 'invalid_verification') {
+						} else if ($result === 'invalid_password') {
 
-							$form->error_add($this->text['login_invalid_verification']);
+							$form->error_add($this->text['login_invalid_password']);
 
 						} else {
 
@@ -312,7 +308,7 @@
 
 					if ($remember_login) {
 
-						$user_identification = $this->auth->user_identification_get($this->user_id);
+						$user_identification = $this->auth->identification_name_get($this->user_id);
 
 						if ($user_identification !== false) {
 							$this->_cookie_set('login_last_id', $user_identification, '+30 days');
@@ -357,15 +353,15 @@
 
 					$identification = $form->field_get('identification')->value_get();
 
-					if ($form->field_exists('verification')) {
+					if ($form->field_exists('password')) {
 
-						$verification = $form->field_get('verification')->value_get();
+						$password = $form->field_get('password')->value_get();
 
 					} else {
 
-						$verification = '';
+						$password = '';
 						for ($k=0; $k<5; $k++) {
-							$verification .= chr(mt_rand(97,122));
+							$password .= chr(mt_rand(97,122));
 						}
 
 					}
@@ -373,7 +369,7 @@
 				//--------------------------------------------------
 				// Additional validation
 
-					$this->register_fields_validate($identification, $verification);
+					$this->register_fields_validate($identification, $password);
 					$this->extra_fields_validate(0);
 
 				//--------------------------------------------------
@@ -383,7 +379,7 @@
 
 						$this->user_id = $this->auth->register($identification);
 
-						$this->auth->password_new($this->user_id, $verification);
+						$this->auth->password_set($this->user_id, $password);
 
 						return $this->_save();
 
@@ -397,8 +393,8 @@
 
 		//--------------------------------------------------
 		// New password - simple method, enter identification
-		// and a new password will be generated and emailed
-		// to you.
+		// and a new password will be generated, this could
+		// then be emailed to the user.
 
 			public function password_new() {
 
@@ -422,14 +418,14 @@
 
 						} else {
 
-							$result = $this->auth->password_new($user_id);
+							$new_password = $this->auth->password_set($user_id);
 
-							if ($result === 'invalid_user') {
+							if ($new_password === 'invalid_user') {
 								$form->error_add($this->text['new_pass_invalid_identification']); // Should not happen
-							} else if ($result === 'recently_changed') {
+							} else if ($new_password === 'recently_changed') {
 								$form->error_add($this->text['new_pass_recently_changed']);
 							} else {
-								return $result;
+								return $new_password;
 							}
 
 						}
@@ -491,17 +487,17 @@
 
 					$form = $this->form_get();
 
-					$verification_new_ref = $form->field_get('verification_new');
-					$verification_repeat_ref = $form->field_get('verification_repeat');
+					$password_new_ref = $form->field_get('password_new');
+					$password_repeat_ref = $form->field_get('password_repeat');
 
-					$verification_new_value = $verification_new_ref->value_get();
-					$verification_repeat_value = $verification_repeat_ref->value_get();
+					$password_new_value = $password_new_ref->value_get();
+					$password_repeat_value = $password_repeat_ref->value_get();
 
 				//--------------------------------------------------
 				// Not the same
 
-					if ($verification_new_value != $verification_repeat_value) {
-						$verification_repeat_ref->error_add($this->text['save_details_invalid_new_verification_repeat']);
+					if ($password_new_value != $password_repeat_value) {
+						$password_repeat_ref->error_add($this->text['save_details_invalid_new_password_repeat']);
 					}
 
 				//--------------------------------------------------
@@ -513,7 +509,7 @@
 
 						if (is_array($result)) {
 
-							$this->auth->password_new($result['user_id'], $verification_new_value);
+							$this->auth->password_set($result['user_id'], $password_new_value);
 
 							$this->auth->password_reset_expire($result['request_id']);
 
@@ -614,7 +610,7 @@
 
 						if ($form->field_exists('identification_new')) {
 
-							$user_identification = $this->auth->user_identification_get($this->user_id);
+							$user_identification = $this->auth->identification_name_get($this->user_id);
 
 							if ($user_identification !== false) {
 								$form->field_get('identification_new')->value_set($user_identification);
@@ -637,19 +633,19 @@
 						$form = $this->form_get();
 
 					//--------------------------------------------------
-					// Current verification
+					// Current password
 
-						if ($form->field_exists('verification')) {
+						if ($form->field_exists('password')) {
 
-							$verification_ref = $form->field_get('verification');
-							$verification_value = $verification_ref->value_get();
+							$password_ref = $form->field_get('password');
+							$password_value = $password_ref->value_get();
 
-							if ($verification_value != '') {
+							if ($password_value != '') {
 
-								$result = $this->auth->verify(NULL, $verification_value);
+								$result = $this->auth->verify(NULL, $password_value);
 
 			 					if ($result <= 0) {
-									$verification_ref->error_add($this->text['save_details_invalid_verification']);
+									$password_ref->error_add($this->text['save_details_invalid_password']);
 								}
 
 							}
@@ -657,15 +653,15 @@
 						}
 
 					//--------------------------------------------------
-					// New verification
+					// New password
 
-						if ($form->field_exists('verification_new') && $form->field_exists('verification_repeat')) {
+						if ($form->field_exists('password_new') && $form->field_exists('password_repeat')) {
 
-							$verification_new_ref = $form->field_get('verification_new');
-							$verification_repeat_ref = $form->field_get('verification_repeat');
+							$password_new_ref = $form->field_get('password_new');
+							$password_repeat_ref = $form->field_get('password_repeat');
 
-							if ($verification_new_ref->value_get() != $verification_repeat_ref->value_get()) {
-								$verification_repeat_ref->error_add($this->text['save_details_invalid_new_verification_repeat']);
+							if ($password_new_ref->value_get() != $password_repeat_ref->value_get()) {
+								$password_repeat_ref->error_add($this->text['save_details_invalid_new_password_repeat']);
 							}
 
 						}
@@ -688,7 +684,7 @@
 
 				}
 
-				public function register_fields_validate($identification, $verification) {
+				public function register_fields_validate($identification, $password) {
 
 					//--------------------------------------------------
 					// Form reference
@@ -698,7 +694,7 @@
 					//--------------------------------------------------
 					// Unique identification
 
-						$result = $this->auth->unique_identification($identification);
+						$result = $this->auth->identification_unique($identification);
 						if (!$result) {
 							$form->field_get('identification')->error_add($this->text['register_duplicate_identification']);
 						}
@@ -706,12 +702,12 @@
 					//--------------------------------------------------
 					// Verification repeat
 
-						if ($form->field_exists('verification_repeat')) {
+						if ($form->field_exists('password_repeat')) {
 
-							$verification_repeat_ref = $form->field_get('verification_repeat');
+							$password_repeat_ref = $form->field_get('password_repeat');
 
-							if ($verification_repeat_ref->value_get() != $verification) {
-								$verification_repeat_ref->error_add($this->text['register_invalid_verification_repeat']);
+							if ($password_repeat_ref->value_get() != $password) {
+								$password_repeat_ref->error_add($this->text['register_invalid_password_repeat']);
 							}
 
 						}
@@ -740,14 +736,14 @@
 						}
 
 					//--------------------------------------------------
-					// New verification
+					// New password
 
-						if ($form->field_exists('verification_new')) {
+						if ($form->field_exists('password_new')) {
 
-							$verification_new_value = $form->field_get('verification_new')->value_get();
+							$password_new_value = $form->field_get('password_new')->value_get();
 
-							if ($verification_new_value != '') {
-								$this->auth->password_new($this->user_id, $verification_new_value);
+							if ($password_new_value != '') {
+								$this->auth->password_set($this->user_id, $password_new_value);
 							}
 
 						}
@@ -756,7 +752,7 @@
 					// New identification
 
 						if ($form->field_exists('identification_new')) {
-							$this->auth->identification_new($this->user_id, $form->field_get('identification_new')->value_get());
+							$this->auth->identification_set($this->user_id, $form->field_get('identification_new')->value_get());
 						}
 
 					//--------------------------------------------------
@@ -788,8 +784,7 @@
 				CREATE TABLE [TABLE] (
 					id int(11) NOT NULL AUTO_INCREMENT,
 					email varchar(100) NOT NULL,
-					pass_hash varchar(32) NOT NULL,
-					pass_salt varchar(10) NOT NULL,
+					pass tinytext NOT NULL,
 					created datetime NOT NULL,
 					edited datetime NOT NULL,
 					deleted datetime NOT NULL,
