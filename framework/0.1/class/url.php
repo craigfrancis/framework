@@ -260,11 +260,24 @@
 						if ($format == 'full') {
 
 							//--------------------------------------------------
+							// Host
+
+								if (isset($this->path_data['host'])) {
+									$host = $this->path_data['host'];
+								} else {
+									$host = config::get('request.domain');
+								}
+
+							//--------------------------------------------------
 							// Scheme
 
 								if ($this->scheme !== NULL) {
 
 									$scheme = $this->scheme;
+
+									if ($scheme == 'https' && $host == config::get('request.domain') && !https_available()) {
+										$scheme = 'http'; // Drop down to HTTP if HTTPS is not available.
+									}
 
 								} else {
 
@@ -296,11 +309,7 @@
 							//--------------------------------------------------
 							// Host
 
-								if (isset($this->path_data['host'])) {
-									$output .= $this->path_data['host'];
-								} else {
-									$output .= config::get('request.domain');
-								}
+								$output .= $host;
 
 							//--------------------------------------------------
 							// Port

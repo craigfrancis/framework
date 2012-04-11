@@ -452,13 +452,15 @@
 	}
 
 //--------------------------------------------------
-// If this page requires a https connection
+// HTTPS connections
+
+	function https_available() {
+		return (substr(config::get('request.domain_https'), 0, 8) == 'https://');
+	}
 
 	function https_required() {
 
-		$https_available = (substr(config::get('request.url_https'), 0, 8) == 'https://');
-
-		if ($https_available && !config::get('request.https') && config::get('request.method') == 'GET') {
+		if (https_available() && !config::get('request.https') && config::get('request.method') == 'GET') {
 			redirect(config::get('request.url_https'));
 		}
 
