@@ -397,7 +397,7 @@
 			//--------------------------------------------------
 			// Check the password the db values
 
-				if ($db_id > 0) {
+				if ($db_id > 0 && $db_pass != '') {
 
 					$new_pass = $this->password_hash($db_id, NULL, $db_pass);
 
