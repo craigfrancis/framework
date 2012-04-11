@@ -3,6 +3,9 @@
 	// config::get('url.default_format') - absolute (default) / full (includes domain) / relative (not implemented)
 	// config::get('url.prefix') - e.g. '/website' will be prefixed onto any absolute urls, so url('/contact/') == '/website/contact/'
 
+//--------------------------------------------------
+// URL Class
+
 	class url_base extends check {
 
 		//--------------------------------------------------
@@ -372,6 +375,9 @@
 			}
 
 	}
+
+//--------------------------------------------------
+// Testing
 
 	if (false) {
 
