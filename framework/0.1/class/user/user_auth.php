@@ -154,7 +154,7 @@
 
 				} else if ($db_pass !== NULL) { // Set to NULL when setting password for first time.
 
-					exit_with_error('Unrecognised db pass "' . $db_pass . '"');
+					exit_with_error('Unrecognised db pass "' . $db_pass . '" for user id "' . $user_id . '"');
 
 				}
 
