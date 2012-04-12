@@ -172,6 +172,8 @@
 
 				$return_hash = md5(md5($user_id) . $password . md5($db_salt)); // User ID bind's to account, while salt tries to remain unknown
 
+					// SELECT * FROM user WHERE pass = CONCAT(MD5(CONCAT(MD5(id), MD5("XXX"), MD5(RIGHT(pass, 10)))), RIGHT(pass, 11))
+
 			//--------------------------------------------------
 			// Return
 
