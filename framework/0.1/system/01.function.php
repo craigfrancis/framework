@@ -91,6 +91,16 @@
 		return html_entity_decode($text, ENT_QUOTES, config::get('output.charset'));
 	}
 
+	function html_tag($tag, $attributes) {
+		$html = '<' . html($tag);
+		foreach ($attributes as $name => $value) {
+			if ($value != '') {
+				$html .= ' ' . html(is_int($name) ? $value : $name) . '="' . html($value) . '"';
+			}
+		}
+		return $html . ($tag == 'input' ? ' />' : '>');
+	}
+
 	function xml($text) {
 		$text = str_replace('&', '&amp;', $text);
 		$text = str_replace('"', '&quot;', $text);

@@ -880,20 +880,9 @@
 					$attributes = array_merge($attributes, $config);
 
 				//--------------------------------------------------
-				// HTML
+				// Return HTML
 
-					$html = '<form';
-					foreach ($attributes as $name => $value) {
-						if ($value != '') {
-							$html .= ' ' . html($name) . '="' . html($value) . '"';
-						}
-					}
-					$html .= '>' . $hidden_fields_html;
-
-				//--------------------------------------------------
-				// Return
-
-					return $html;
+					return html_tag('form', $attributes) . $hidden_fields_html;
 
 			}
 

@@ -307,13 +307,7 @@
 				$input_value = $this->value_print_get();
 
 				$html = '
-									<select';
-				foreach ($this->_input_attributes() as $name => $value) {
-					if ($value !== NULL) {
-						$html .= ' ' . $name . '="' . html($value) . '"';
-					}
-				}
-				$html .= '>';
+									' . html_tag('select', array_merge($this->_input_attributes()));
 
 				if ($this->label_option !== NULL) {
 					$html .= '

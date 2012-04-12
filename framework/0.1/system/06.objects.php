@@ -269,16 +269,15 @@
 
 					if (session::get('js_disable') != 'true') {
 
-						$js_paths = array();
+						$js_files = array();
 						foreach (resources::get('js') as $file) {
-							$js_paths[] = $file['path'];
+							$js_files[$file['path']] = array_merge(array('type' => 'text/javascript', 'src' => $file['path']), $file['attributes']); // Unique path
 						}
-						$js_paths = array_unique($js_paths);
 
-						if (count($js_paths) > 0) {
+						if (count($js_files) > 0) {
 							$html .= "\n";
-							foreach (array_unique($js_paths) as $file) {
-								$html .= "\n\t" . '<script type="text/javascript" src="' . html($file) . '"></script>';
+							foreach ($js_files as $attributes) {
+								$html .= "\n\t" . html_tag('script', $attributes) . '</script>';
 							}
 						}
 

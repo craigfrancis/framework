@@ -337,13 +337,7 @@
 					if (isset($this->input_options[$part])) {
 
 						$html = '
-											<select';
-						foreach (array_merge($this->_input_attributes(), $attributes) as $name => $value) {
-							if ($value !== NULL) {
-								$html .= ' ' . $name . '="' . html($value) . '"';
-							}
-						}
-						$html .= '>
+									' . html_tag('select', array_merge($this->_input_attributes(), $attributes)) . '
 										<option value=""></option>';
 
 						$type = $this->input_options[$part]['type'];

@@ -17,10 +17,14 @@
 			return $obj->head_html;
 		}
 
-		public static function js_add($path) {
+		public static function js_add($path, $attributes = array()) { // Could be resources::js_add('/path.js', 'defer');
+			if (is_string($attributes)) {
+				$attributes = array($attributes);
+			}
 			$obj = resources::instance_get();
 			$obj->js_files[] = array(
 					'path' => $path,
+					'attributes' => $attributes,
 				);
 		}
 

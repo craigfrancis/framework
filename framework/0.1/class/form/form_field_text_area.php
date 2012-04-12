@@ -57,15 +57,7 @@
 		// HTML
 
 			public function html_input() {
-
-				$html = '<textarea';
-				foreach ($this->_input_attributes() as $name => $value) {
-					if ($value !== NULL) {
-						$html .= ' ' . $name . '="' . html($value) . '"';
-					}
-				}
-				return $html . '>' . html($this->value_print_get()) . '</textarea>';
-
+				return html_tag('textarea', array_merge($this->_input_attributes())) . html($this->value_print_get()) . '</textarea>';
 			}
 
 	}

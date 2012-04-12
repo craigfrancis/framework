@@ -482,15 +482,7 @@
 			}
 
 			protected function _html_input($attributes_custom = array()) {
-
-				$html = '<input';
-				foreach (array_merge($this->_input_attributes(), $attributes_custom) as $name => $value) {
-					if ($value !== NULL) {
-						$html .= ' ' . $name . '="' . html($value) . '"';
-					}
-				}
-				return $html . ' />';
-
+				return html_tag('input', array_merge($this->_input_attributes(), $attributes_custom));
 			}
 
 			public function html_input() {
