@@ -137,7 +137,7 @@
 
 				if (preg_match('/^([a-z0-9]{32})-([a-z]{10})$/i', $db_pass, $matches)) {
 
-					if ($password === NULL) { // DB version check, matches required format so no change needed
+					if ($password === NULL) { // DB value check, it matches the required format so no change needed
 						return $db_pass;
 					}
 
@@ -146,13 +146,9 @@
 
 				} else if ($password === NULL) {
 
-					$password = $db_pass; // DB version check, either a plain text or just a md5() hashed value stored
+					$password = $db_pass; // DB value check, either a plain text or just a md5() hashed value stored
 
-					if (strlen($password) != 32) {
-						$password = md5($password);
-					}
-
-				} else if ($db_pass !== NULL) { // Set to NULL when setting password for first time.
+				} else if ($db_pass !== NULL && $db_pass !== '') { // NULL when setting password for first time, or empty string if unknown user
 
 					exit_with_error('Unrecognised db pass "' . $db_pass . '" for user id "' . $user_id . '"');
 
@@ -170,7 +166,7 @@
 			//--------------------------------------------------
 			// Generate hash
 
-				if (strlen($password) != 32) {
+				if (strlen($password) != 32) { // DB value may already be hashed, or client side (JS?) may have already MD5'ed the value.
 					$password = md5($password);
 				}
 
@@ -382,59 +378,64 @@
 							WHERE
 								' . $where_sql . ' AND
 								' . $this->db_where_sql . ' AND
-								' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"
+								' . $db->escape_field($this->db_table_fields['password']) . ' != "" AND
+								' . $db->escape_field($this->db_table_fields['deleted'])  . ' = "0000-00-00 00:00:00"
 							LIMIT
 								1');
 
 				if ($row = $db->fetch_assoc()) {
 					$db_id = $row['id'];
-					$db_pass = $row['password'];
+					$db_pass = $row['password']; // Blank password (disabled account) excluded in query
 				} else {
 					$db_id = 0;
 					$db_pass = '';
 				}
 
 			//--------------------------------------------------
-			// Check the password the db values
+			// Check the db password has been hashed
 
-				if ($db_id > 0 && $db_pass != '') {
+				$new_pass = $this->password_hash($db_id, NULL, $db_pass);
 
-					$new_pass = $this->password_hash($db_id, NULL, $db_pass);
+				if ($db_id > 0 && $new_pass != $db_pass) {
 
-					if ($new_pass != $db_pass) {
+					$db_pass = $new_pass;
 
-						$db_pass = $new_pass;
-
-						$db->query('UPDATE
-										' . $db->escape_field($this->db_table_name) . '
-									SET
-										' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($db_pass) . '"
-									WHERE
-										' . $this->db_where_sql . ' AND
-										' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($db_id) . '" AND
-										' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"
-									LIMIT
-										1');
-
-					}
+					$db->query('UPDATE
+									' . $db->escape_field($this->db_table_name) . '
+								SET
+									' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($db_pass) . '"
+								WHERE
+									' . $this->db_where_sql . ' AND
+									' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($db_id) . '" AND
+									' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"
+								LIMIT
+									1');
 
 				}
 
 			//--------------------------------------------------
-			// Hash the users password
+			// Hash the users password - always run, so timing
+			// will always be about the same... taking that the
+			// hashing process is computationally expensive we
+			// don't want to return early, as that would show
+			// the account exists.
 
 				$input_hash = $this->password_hash($db_id, $password, $db_pass);
 
 			//--------------------------------------------------
 			// Result
 
-				if ($input_hash == $db_pass) {
+				if ($db_id > 0) {
 
-					return $db_id;
+					if ($input_hash == $db_pass) {
 
-				} else if ($db_id > 0) {
+						return $db_id;
 
-					return 'invalid_password';
+					} else {
+
+						return 'invalid_password';
+
+					}
 
 				} else {
 
