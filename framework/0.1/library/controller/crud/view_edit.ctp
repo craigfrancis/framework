@@ -21,10 +21,8 @@
 			<?= $form->html_fields() ?>
 
 			<?= (isset($fields_end_html) ? $fields_end_html : '') ?>
-
-			<div class="row submit">
-				<input type="submit" value="<?= html($form->form_button_get()) ?>" />
-			</div>
+			
+			<?= $form->html_submit() ?>
 
 		</fieldset>
 	<?= $form->html_end() ?>

@@ -12,6 +12,11 @@
 // Example setup
 //--------------------------------------------------
 
+	// Site config:
+	//   paginator.items_per_page
+	//   paginator.items_count
+	//   paginator... see below for the rest
+
 	$result_count = 123;
 
 	$paginator = new paginator($result_count);

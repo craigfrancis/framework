@@ -1,5 +1,45 @@
 <?php
 
+/***************************************************
+// Example setup
+//--------------------------------------------------
+
+	// Site config:
+	//   form.disabled
+	//   form.readonly
+	//   form.label_override_function
+	//   form.error_override_function
+
+	$form = new form();
+	$form->form_class_set('basic_form');
+	$form->form_button_set('Save');
+	$form->db_table_set_sql(DB_PREFIX . 'table');
+
+	$field_name = new form_field_text($form, 'Name');
+	$field_name->db_field_set('name');
+	$field_name->min_length_set('Your name is required.');
+	$field_name->max_length_set('Your name cannot be longer than XXX characters.');
+
+	if ($form->submitted()) {
+
+		// $form->error_add('Custom error');
+
+		if ($form->valid()) {
+			$form->db_save();
+			redirect('...');
+		}
+
+	}
+
+	<?= $form->html(); ?>
+
+//--------------------------------------------------
+// End of example setup
+***************************************************/
+
+//--------------------------------------------------
+// Base form class
+
 	class form_base extends check {
 
 		//--------------------------------------------------
@@ -12,6 +52,9 @@
 			private $form_button;
 			private $form_attributes;
 			private $form_submitted;
+			private $autocomplete;
+			private $disabled;
+			private $readonly;
 			private $hidden_values;
 			private $fields;
 			private $field_refs;
@@ -44,6 +87,11 @@
 			public function __construct() {
 
 				//--------------------------------------------------
+				// Site config
+
+					$site_config = config::get_all('form');
+
+				//--------------------------------------------------
 				// Defaults
 
 					$this->form_action = config::get('request.url_https');
@@ -52,6 +100,9 @@
 					$this->form_button = 'Save';
 					$this->form_attributes = array();
 					$this->form_submitted = false;
+					$this->autocomplete = NULL;
+					$this->disabled = (isset($site_config['disabled']) ? $site_config['disabled'] : false);
+					$this->readonly = (isset($site_config['readonly']) ? $site_config['readonly'] : false);
 					$this->hidden_values = array();
 					$this->fields = array();
 					$this->field_refs = array();
@@ -59,9 +110,9 @@
 					$this->required_mark_html = NULL;
 					$this->required_mark_position = 'left';
 					$this->label_suffix_html = ':';
-					$this->label_override_function = config::get('form.label_override_function', NULL);
+					$this->label_override_function = (isset($site_config['label_override_function']) ? $site_config['label_override_function'] : NULL);
 					$this->errors_html = array();
-					$this->error_override_function = config::get('form.error_override_function', NULL);
+					$this->error_override_function = (isset($site_config['error_override_function']) ? $site_config['error_override_function'] : NULL);
 					$this->post_validation_done = false;
 					$this->db_link = NULL;
 					$this->db_table_name_sql = NULL;
@@ -78,7 +129,7 @@
 				//--------------------------------------------------
 				// Internal form ID
 
-					$form_id = config::get('form.count', 1);
+					$form_id = (isset($site_config['count']) ? $site_config['count'] : 1);
 
 					config::set('form.count', ($form_id + 1));
 
@@ -165,6 +216,30 @@
 				} else {
 					$this->form_attributes[$attribute] = $value;
 				}
+			}
+
+			public function autocomplete_set($autocomplete) {
+				$this->autocomplete = ($autocomplete == true);
+			}
+
+			public function autocomplete_get() {
+				return $this->autocomplete;
+			}
+
+			public function disabled_set($disabled) {
+				$this->disabled = ($disabled == true);
+			}
+
+			public function disabled_get() {
+				return $this->disabled;
+			}
+
+			public function readonly_set($readonly) {
+				$this->readonly = ($readonly == true);
+			}
+
+			public function readonly_get() {
+				return $this->readonly;
 			}
 
 			public function hidden_value($name) { // You should call form->hidden_value() first to initialise - get/set may not be called when form is submitted with errors.
@@ -492,7 +567,7 @@
 		// Status
 
 			public function submitted() {
-				return $this->form_submitted;
+				return ($this->form_submitted === true && $this->disabled === false && $this->readonly === false);
 			}
 
 			private function _is_submitted() {
@@ -667,6 +742,9 @@
 
 				//--------------------------------------------------
 				// Validation
+
+					if ($this->disabled) exit_with_error('This form has been disabled, so you cannot call "db_save".');
+					if ($this->readonly) exit_with_error('This form is readonly, so you cannot call "db_save".');
 
 					if ($this->db_table_name_sql === NULL) exit('<p>You need to call "db_table_set_sql" on the form object</p>');
 
@@ -876,6 +954,10 @@
 						'accept-charset' => config::get('output.charset'), // When text from MS Word is pasted in an IE6 input field, it does not translate to UTF-8
 					);
 
+					if ($this->autocomplete !== NULL) {
+						$attributes['autocomplete'] = ($this->autocomplete ? 'on' : 'off');
+					}
+
 					$attributes = array_merge($attributes, $this->form_attributes);
 					$attributes = array_merge($attributes, $config);
 
@@ -1054,6 +1136,31 @@
 
 			}
 
+			public function html_submit($config = array()) {
+				if ($this->disabled === false && $this->readonly === false) {
+
+					$attributes = array('type' => 'submit');
+
+					if (isset($config['name'])) $attributes['name'] = $config['name'];
+
+					if (is_string($config)) {
+						$attributes['value'] = $config;
+					} else if (isset($config['value'])) {
+						$attributes['value'] = $config['value'];
+					} else {
+						$attributes['value'] = $this->form_button;
+					}
+
+					return '
+							<div class="row submit">
+								' . html_tag('input', $attributes) . '
+							</div>';
+
+				} else {
+					return '';
+				}
+			}
+
 			public function html_end() {
 				return '</form>' . "\n";
 			}
@@ -1064,9 +1171,7 @@
 						<fieldset>
 							' . $this->html_error_list() . '
 							' . $this->html_fields() . '
-							<div class="row submit">
-								<input type="submit" value="' . html($this->form_button) . '" />
-							</div>
+							' . $this->html_submit() . '
 						</fieldset>
 					' . $this->html_end() . "\n";
 			}

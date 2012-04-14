@@ -113,8 +113,8 @@
 					$this->autofocus = false;
 					$this->autocorrect = NULL;
 					$this->autocomplete = NULL;
-					$this->disabled = false;
-					$this->readonly = false;
+					$this->disabled = $form->disabled_get();
+					$this->readonly = $form->readonly_get();
 					$this->print_show = true;
 					$this->print_hidden = false;
 					$this->print_group = NULL;
