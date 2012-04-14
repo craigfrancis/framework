@@ -21,7 +21,7 @@
 			<?= $form->html_fields() ?>
 
 			<?= (isset($fields_end_html) ? $fields_end_html : '') ?>
-			
+
 			<?= $form->html_submit() ?>
 
 		</fieldset>

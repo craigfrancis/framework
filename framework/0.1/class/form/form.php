@@ -1136,24 +1136,29 @@
 
 			}
 
-			public function html_submit($config = array()) {
+			public function html_submit($config = NULL) {
 				if ($this->disabled === false && $this->readonly === false) {
 
-					$attributes = array('type' => 'submit');
-
-					if (isset($config['name'])) $attributes['name'] = $config['name'];
-
-					if (is_string($config)) {
-						$attributes['value'] = $config;
-					} else if (isset($config['value'])) {
-						$attributes['value'] = $config['value'];
+					if (is_array($config)) {
+						if (is_array(reset($config))) {
+							$buttons = $config;
+						} else {
+							$buttons = array($config);
+						}
 					} else {
-						$attributes['value'] = $this->form_button;
+						$buttons = array(array('value' => $config));
 					}
 
-					return '
-							<div class="row submit">
-								' . html_tag('input', $attributes) . '
+					$html = '
+							<div class="row submit">';
+					foreach ($buttons as $attributes) {
+						if (!isset($attributes['value'])) {
+							$attributes['value'] = $this->form_button;
+						}
+						$html .= '
+								' . html_tag('input', array_merge(array('type' => 'submit'), $attributes));
+					}
+					return $html . '
 							</div>';
 
 				} else {
