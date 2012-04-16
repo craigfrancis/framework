@@ -228,6 +228,10 @@
 
 	}
 
+	function prefix_match($prefix, $string) {
+		return (substr($string, 0, strlen($prefix)) == $prefix);
+	}
+
 	function path_to_array($path) {
 		$output = array();
 		foreach (explode('/', $path) as $name) {
