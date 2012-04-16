@@ -301,11 +301,11 @@
 
 	function is_email($email) {
 		if (preg_match('/^\w[-.+\'\w]*@(\w[-._\w]*\.[a-zA-Z]{2,}.*)$/', $email, $matches)) {
-			if (function_exists('checkdnsrr') && SERVER != 'stage') { // Offline support?
+			if (config::get('email.check_domain', true) && function_exists('checkdnsrr')) {
 				if (checkdnsrr($matches[1] . '.', 'MX')) return true; // If a 'mail exchange' record exists
 				if (checkdnsrr($matches[1] . '.', 'A'))  return true; // Mail servers can fall back on 'A' records
 			} else {
-				return true; // For Windows
+				return true; // Skipping domain check, or on a Windows server.
 			}
 		}
 		return false;

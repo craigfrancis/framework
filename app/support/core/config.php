@@ -8,7 +8,7 @@
 //--------------------------------------------------
 // Server specific
 
-	if (preg_match('/^\/(Library|Volumes)\//i', realpath(__FILE__))) {
+	if (preg_match('/^\/(Library|Volumes)\//i', ROOT)) {
 
 		//--------------------------------------------------
 		// Server
@@ -36,7 +36,7 @@
 
 			$config['debug.level'] = 4;
 
-	} else if (preg_match('/^\/www\/demo/i', realpath(__FILE__))) {
+	} else if (prefix_match('/www/demo/', ROOT)) {
 
 		//--------------------------------------------------
 		// Server
