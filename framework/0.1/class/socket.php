@@ -199,7 +199,7 @@
 
 					if (isset($this->host_cookies[$host])) {
 						foreach ($this->host_cookies[$host] as $host_path => $host_cookies) {
-							if (substr($path, 0, strlen($host_path)) == $host_path) {
+							if (prefix_match($host_path, $path)) {
 								foreach ($host_cookies as $name => $value) {
 									$cookies[] = urlencode($name) . '=' . urlencode($value);
 								}

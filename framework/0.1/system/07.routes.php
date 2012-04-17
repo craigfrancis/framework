@@ -122,13 +122,13 @@
 
 		$maintenance_url = config::get('maintenance.url');
 
-		if ($maintenance_url !== NULL && substr($route_path, 0, strlen($maintenance_url)) == $maintenance_url) {
+		if ($maintenance_url !== NULL && prefix_match($maintenance_url, $route_path)) {
 
 			$maintenance = new maintenance();
 
 			$test_url = str_replace('//', '/', $maintenance_url . '/test/');
 
-			if (substr($route_path, 0, strlen($test_url)) == $test_url) {
+			if (prefix_match($test_url, $route_path)) {
 
 				$maintenance->test();
 
@@ -159,7 +159,7 @@
 
 		$gateway_url = config::get('gateway.url');
 
-		if ($gateway_url !== NULL && substr($route_path, 0, strlen($gateway_url)) == $gateway_url) {
+		if ($gateway_url !== NULL && prefix_match($gateway_url, $route_path)) {
 
 			if (preg_match('/^[\/]*([^\/]*)[\/]*(.*)$/', substr($route_path, strlen($gateway_url)), $matches)) {
 
@@ -185,7 +185,7 @@
 // Handle asset requests... could contain file
 // modification time.
 
-	if (substr($route_path, 0, strlen(ASSET_URL)) == ASSET_URL) {
+	if (prefix_match(ASSET_URL, $route_path)) {
 
 		$route_dir = dirname($route_path);
 		$route_name = basename($route_path);

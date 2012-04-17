@@ -103,7 +103,7 @@
 		// Called from
 
 			foreach (debug_backtrace() as $called_from) {
-				if (isset($called_from['file']) && substr($called_from['file'], 0, strlen(FRAMEWORK_ROOT)) != FRAMEWORK_ROOT) {
+				if (isset($called_from['file']) && !prefix_match(FRAMEWORK_ROOT, $called_from['file'])) {
 
 					if ($hidden_info === NULL) {
 						$hidden_info = '';
@@ -313,7 +313,7 @@
 			$call_from_file = $called_from[$called_from_id]['file'];
 			$call_from_line = $called_from[$called_from_id]['line'];
 
-			$system_call = (substr($call_from_file, 0, strlen(FRAMEWORK_ROOT)) == FRAMEWORK_ROOT);
+			$system_call = prefix_match(FRAMEWORK_ROOT, $call_from_file);
 
 		//--------------------------------------------------
 		// Time position
@@ -713,7 +713,7 @@
 		$hidden_info = '';
 
 		foreach (debug_backtrace() as $called_from) {
-			if (isset($called_from['file']) && substr($called_from['file'], 0, strlen(FRAMEWORK_ROOT)) != FRAMEWORK_ROOT) {
+			if (isset($called_from['file']) && !prefix_match(FRAMEWORK_ROOT, $called_from['file'])) {
 
 				$hidden_info .= "\n " . $err_file . ':' . $err_line;
 
