@@ -161,7 +161,7 @@
 
 		if ($gateway_url !== NULL && prefix_match($gateway_url, $route_path)) {
 
-			if (preg_match('/^[\/]*([^\/]*)[\/]*(.*)$/', substr($route_path, strlen($gateway_url)), $matches)) {
+			if (preg_match('/^[\/]*([^\/]+)[\/]*(.*)$/', substr($route_path, strlen($gateway_url)), $matches)) {
 
 				$api_name = str_replace('-', '_', $matches[1]);
 
