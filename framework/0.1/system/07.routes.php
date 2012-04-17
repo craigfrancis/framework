@@ -229,8 +229,12 @@
 						ob_start('ob_gzhandler');
 					}
 
-					readfile($file_path);
-					exit();
+					if ($route_ext == 'css' && config::get('output.css_minify', false)) {
+						exit(resources::css_minify(file_get_contents($file_path)));
+					} else {
+						readfile($file_path);
+						exit();
+					}
 
 				} else {
 

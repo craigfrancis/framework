@@ -213,6 +213,7 @@
 				'/Netscape\/[4-7]\./',
 			));
 
+		config::set_default('output.css_minify', false);
 		config::set_default('output.css_name', '');
 		config::set_default('output.css_types', array(
 				'core' => array(

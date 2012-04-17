@@ -174,6 +174,12 @@
 
 		}
 
+		public static function css_minify($css) { // Reinhold Weber
+			$css = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $css); // Remove comments
+			$css = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $css); // Remove tabs, spaces, newlines, etc.
+			return $css;
+		}
+
 		public static function get($type) {
 
 			$obj = resources::instance_get();
