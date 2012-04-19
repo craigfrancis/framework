@@ -64,7 +64,8 @@
 		// Value
 
 			public function value_get() {
-				return format_british_postcode($this->value);
+				$value = format_british_postcode($this->value);
+				return ($value === NULL ? '' : $value); // If the value is an empty string (or error), it should return an empty string, so changes can be detected with new_value !== old_value
 			}
 
 		//--------------------------------------------------
