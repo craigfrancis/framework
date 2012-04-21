@@ -46,6 +46,16 @@
 					'type' => 'f',
 					'permission' => '644',
 				),
+			'Framework folders' => array(
+					'path' => FRAMEWORK_ROOT,
+					'type' => 'd',
+					'permission' => '755',
+				),
+			'Framework files' => array(
+					'path' => FRAMEWORK_ROOT,
+					'type' => 'f',
+					'permission' => '644',
+				),
 			'File folders' => array(
 					'path' => FILE_ROOT,
 					'type' => 'd',
