@@ -25,6 +25,21 @@
 	}
 
 //--------------------------------------------------
+// Execute command
+
+	function execute_command($command, $show_output = true) {
+		if ($show_output) {
+			if (config::get('debug.show')) {
+				echo '  ' . $command . "\n";
+			}
+			flush();
+			echo shell_exec($command);
+		} else {
+			shell_exec($command);
+		}
+	}
+
+//--------------------------------------------------
 // Permission reset
 
 	function permission_reset($show_output = true) {
@@ -68,19 +83,17 @@
 				),
 		);
 
-		foreach (array_merge($reset_paths, config::get('cli.permission_reset_paths')) as $name => $info) {
-			$command = 'find ' . escapeshellarg($info['path']) . ' -mindepth 1 -type ' . escapeshellarg($info['type']) . ' -exec chmod ' . escapeshellarg($info['permission']) . ' {} \\; 2>&1';
+		foreach (array_merge($reset_paths, config::get('cli.permission_reset_paths', array())) as $name => $info) {
 			if ($show_output) {
 				echo $name . "\n";
-				if (config::get('debug.show')) {
-					echo '  ' . $command . "\n";
-				}
-				flush();
-				echo shell_exec($command);
-			} else {
-				shell_exec($command);
 			}
+			execute_command('find ' . escapeshellarg($info['path']) . ' -mindepth 1 -type ' . escapeshellarg($info['type']) . ' -exec chmod ' . escapeshellarg($info['permission']) . ' {} \\; 2>&1', $show_output);
 		}
+
+		if ($show_output) {
+			echo 'Shell script' . "\n";
+		}
+		execute_command('chmod 755 ' . escapeshellarg(FRAMEWORK_ROOT . '/cli/run.sh') . ' 2>&1', $show_output);
 
 		if ($show_output) {
 			echo "\n";
