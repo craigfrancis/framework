@@ -87,7 +87,7 @@
 			if ($show_output) {
 				echo $name . "\n";
 			}
-			execute_command('find ' . escapeshellarg($info['path']) . ' -mindepth 1 -type ' . escapeshellarg($info['type']) . ' -exec chmod ' . escapeshellarg($info['permission']) . ' {} \\; 2>&1', $show_output);
+			execute_command('find ' . escapeshellarg($info['path']) . ' -mindepth 1 -type ' . escapeshellarg($info['type']) . ' ! -path \'*/\.*\' -exec chmod ' . escapeshellarg($info['permission']) . ' {} \\; 2>&1', $show_output);
 		}
 
 		if ($show_output) {
