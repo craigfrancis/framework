@@ -438,6 +438,7 @@
 
 	function save_form_redirect($url) {
 		session::set('save_form_url', config::get('request.url'));
+		session::set('save_form_created', time());
 		session::set('save_form_used', false);
 		if (config::get('request.method') == 'POST') { // If user clicks back after seeing login form it might be as a GET request, so don't loose their POST data from before.
 			session::set('save_form_data', $_POST);
@@ -450,6 +451,7 @@
 		if ($used === true) {
 
 			session::delete('save_form_url');
+			session::delete('save_form_created');
 			session::delete('save_form_used');
 			session::delete('save_form_data');
 
@@ -457,9 +459,11 @@
 
 			session::set('save_form_used', true);
 
-			$next_url = session::get('save_form_url');
-			if (substr($next_url, 0, 1) == '/') { // Shouldn't be an issue, but make sure we stay on this website
-				redirect($next_url);
+			if (session::get('save_form_created') > (time() - (60*5))) {
+				$next_url = session::get('save_form_url');
+				if (substr($next_url, 0, 1) == '/') { // Shouldn't be an issue, but make sure we stay on this website
+					redirect($next_url);
+				}
 			}
 
 		}

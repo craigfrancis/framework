@@ -550,6 +550,7 @@
 					$this->saved_values_used = true;
 
 					session::delete('save_form_url');
+					session::delete('save_form_created');
 					session::delete('save_form_used');
 					session::delete('save_form_data');
 
