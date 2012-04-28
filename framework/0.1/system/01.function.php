@@ -72,9 +72,14 @@
 
 	function gateway_url($api_name, $parameters = NULL) {
 
-		$api_name = str_replace('_', '-', $api_name);
+		$api_name = ref_to_link($api_name);
+		$api_path = config::get('gateway.url') . '/' . urlencode($api_name) . '/';
 
-		return url(config::get('gateway.url') . '/' . urlencode($api_name) . '/', $parameters);
+		if ($parameters !== NULL) {
+			return url($api_path, $parameters);
+		} else {
+			return url($api_path);
+		}
 
 	}
 
@@ -123,110 +128,152 @@
 	}
 
 //--------------------------------------------------
-// Simple string functions
+// String conversion
 
-	function camel_to_human($text) {
-		return ucfirst(preg_replace('/([a-z])([A-Z])/', '\1 \2', $text));
-	}
+	//--------------------------------------------------
+	// Human to...
 
-	function human_to_camel($text) {
+		function human_to_ref($text) {
 
-		$text = ucwords(strtolower($text));
-		$text = preg_replace('/[^a-zA-Z0-9]/', '', $text);
+			$text = strtolower($text);
+			$text = preg_replace('/[^a-z0-9_]/i', '_', $text);
+			$text = preg_replace('/__+/', '_', $text);
+			$text = preg_replace('/_+$/', '', $text);
+			$text = preg_replace('/^_+/', '', $text);
 
-		if (strlen($text) > 0) { // Min of 1 char
-			$text[0] = strtolower($text[0]);
+			return $text;
+
 		}
 
-		return $text;
-
-	}
-
-	function ref_to_human($text) {
-		return ucfirst(str_replace('_', ' ', $text));
-	}
-
-	function human_to_ref($text) {
-
-		$text = strtolower($text);
-		$text = preg_replace('/[^a-z0-9_]/i', '_', $text);
-		$text = preg_replace('/__+/', '_', $text);
-		$text = preg_replace('/_+$/', '', $text);
-		$text = preg_replace('/^_+/', '', $text);
-
-		return $text;
-
-	}
-
-	function link_to_human($text) {
-		return ucfirst(str_replace('-', ' ', $text));
-	}
-
-	function human_to_link($text) {
-		return str_replace('_', '-', human_to_ref($text));
-	}
-
-	function file_size_to_human($size) {
-
-		$units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
-		foreach ($units as $unit) {
-			if ($size >= 1024 && $unit != 'YB') {
-				$size = ($size / 1024);
-			} else {
-				return round($size, 0) . $unit;
-			}
+		function human_to_link($text) {
+			return ref_to_link(human_to_ref($text));
 		}
 
-	}
+		function human_to_camel($text) {
 
-	function timestamp_to_human($unix) {
+			$text = ucwords(strtolower($text));
+			$text = preg_replace('/[^a-zA-Z0-9]/', '', $text);
 
-		//--------------------------------------------------
-		// Maths
-
-			$sec = $unix % 60;
-			$unix -= $sec;
-
-			$min_seconds = $unix % 3600;
-			$unix -= $min_seconds;
-			$min = ($min_seconds / 60);
-
-			$hour_seconds = $unix % 86400;
-			$unix -= $hour_seconds;
-			$hour = ($hour_seconds / 3600);
-
-			$day_seconds = $unix % 604800;
-			$unix -= $day_seconds;
-			$day = ($day_seconds / 86400);
-
-			$week = ($unix / 604800);
-
-		//--------------------------------------------------
-		// Text
-
-			$output = '';
-
-			if ($week > 0) $output .= ', ' . $week . ' week'   . ($week != 1 ? 's' : '');
-			if ($day  > 0) $output .= ', ' . $day  . ' day'    . ($day  != 1 ? 's' : '');
-			if ($hour > 0) $output .= ', ' . $hour . ' hour'   . ($hour != 1 ? 's' : '');
-			if ($min  > 0) $output .= ', ' . $min  . ' minute' . ($min  != 1 ? 's' : '');
-
-			if ($sec > 0 || $output == '') {
-				$output .= ', ' . $sec  . ' second' . ($sec != 1 ? 's' : '');
+			if (strlen($text) > 0) { // Min of 1 char
+				$text[0] = strtolower($text[0]);
 			}
 
-		//--------------------------------------------------
-		// Grammar
+			return $text;
 
-			$output = substr($output, 2);
-			$output = preg_replace('/, ([^,]+)$/', ' and $1', $output);
+		}
 
-		//--------------------------------------------------
-		// Return the output
+	//--------------------------------------------------
+	// Ref to... (example_ref_format)
 
-			return $output;
+		function ref_to_human($text) {
+			return ucfirst(str_replace('_', ' ', $text));
+		}
 
-	}
+		function ref_to_link($text) {
+			return str_replace('_', '-', $text);
+		}
+
+		function ref_to_camel($text) {
+			return human_to_camel(str_replace('_', ' ', $text));
+		}
+
+	//--------------------------------------------------
+	// Link to... (example-link-format)
+
+		function link_to_human($text) {
+			return ucfirst(str_replace('-', ' ', $text));
+		}
+
+		function link_to_ref($text) {
+			return str_replace('-', '_', $text);
+		}
+
+		function link_to_camel($text) {
+			return human_to_camel(str_replace('-', ' ', $text));
+		}
+
+	//--------------------------------------------------
+	// Camel to... (exampleCamelFormat)
+
+		function camel_to_human($text) {
+			return ucfirst(preg_replace('/([a-z])([A-Z])/', '\1 \2', $text));
+		}
+
+		function camel_to_ref($text) {
+			return human_to_ref(camel_to_human($text));
+		}
+
+		function camel_to_link($text) {
+			return human_to_link(camel_to_human($text));
+		}
+
+	//--------------------------------------------------
+	// Extra "to human" functions
+
+		function file_size_to_human($size) {
+
+			$units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+			foreach ($units as $unit) {
+				if ($size >= 1024 && $unit != 'YB') {
+					$size = ($size / 1024);
+				} else {
+					return round($size, 0) . $unit;
+				}
+			}
+
+		}
+
+		function timestamp_to_human($unix) {
+
+			//--------------------------------------------------
+			// Maths
+
+				$sec = $unix % 60;
+				$unix -= $sec;
+
+				$min_seconds = $unix % 3600;
+				$unix -= $min_seconds;
+				$min = ($min_seconds / 60);
+
+				$hour_seconds = $unix % 86400;
+				$unix -= $hour_seconds;
+				$hour = ($hour_seconds / 3600);
+
+				$day_seconds = $unix % 604800;
+				$unix -= $day_seconds;
+				$day = ($day_seconds / 86400);
+
+				$week = ($unix / 604800);
+
+			//--------------------------------------------------
+			// Text
+
+				$output = '';
+
+				if ($week > 0) $output .= ', ' . $week . ' week'   . ($week != 1 ? 's' : '');
+				if ($day  > 0) $output .= ', ' . $day  . ' day'    . ($day  != 1 ? 's' : '');
+				if ($hour > 0) $output .= ', ' . $hour . ' hour'   . ($hour != 1 ? 's' : '');
+				if ($min  > 0) $output .= ', ' . $min  . ' minute' . ($min  != 1 ? 's' : '');
+
+				if ($sec > 0 || $output == '') {
+					$output .= ', ' . $sec  . ' second' . ($sec != 1 ? 's' : '');
+				}
+
+			//--------------------------------------------------
+			// Grammar
+
+				$output = substr($output, 2);
+				$output = preg_replace('/, ([^,]+)$/', ' and $1', $output);
+
+			//--------------------------------------------------
+			// Return the output
+
+				return $output;
+
+		}
+
+//--------------------------------------------------
+// Other string functions
 
 	function prefix_match($prefix, $string) {
 		return (substr($string, 0, strlen($prefix)) == $prefix);

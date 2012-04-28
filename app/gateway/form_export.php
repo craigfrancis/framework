@@ -116,6 +116,16 @@
 		$output_php .= '		return htmlDecode($html);' . "\n";
 		$output_php .= '	}' . "\n";
 		$output_php .= "\n";
+		$output_php .= '	function html_tag($tag, $attributes) {' . "\n";
+		$output_php .= '		$html = \'<\' . html($tag);' . "\n";
+		$output_php .= '		foreach ($attributes as $name => $value) {' . "\n";
+		$output_php .= '			if ($value != \'\') {' . "\n";
+		$output_php .= '				$html .= \' \' . html(is_int($name) ? $value : $name) . \'="\' . html($value) . \'"\';' . "\n";
+		$output_php .= '			}' . "\n";
+		$output_php .= '		}' . "\n";
+		$output_php .= '		return $html . ($tag == \'input\' ? \' />\' : \'>\');' . "\n";
+		$output_php .= '	}' . "\n";
+		$output_php .= "\n";
 		$output_php .= '	function human_to_ref($text) {' . "\n";
 		$output_php .= '		return human2camel($text);' . "\n";
 		$output_php .= '	}' . "\n";
@@ -209,7 +219,7 @@
 // Save
 
 	mime_set('text/plain');
-	debug($output_php);
+	echo $output_php;
 
 	file_put_contents($path_output, $output_php);
 

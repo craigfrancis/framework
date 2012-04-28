@@ -19,31 +19,32 @@
 			while (false !== ($file = readdir($handle))) {
 
 				if (is_file($root_path . $file) && substr($file, -4) == '.ctp' && $file != 'home.ctp') {
-					$root_folders[] = substr($file, 0, -4);
+					$folder = substr($file, 0, -4);
+					$root_folders[$folder] = ref_to_link($folder);
 				}
 
 			}
 			closedir($handle);
 		}
-		$root_folders = array_unique($root_folders);
 
 	//--------------------------------------------------
 	// Sub pages
 
 		$sub_pages = array();
 
-		foreach ($root_folders as $folder) {
+		foreach ($root_folders as $root_folder => $root_url) {
 
-			$sub_pages[$folder] = array();
+			$sub_pages[$root_folder] = array();
 
-			$folder_path = $root_path . $folder . '/';
+			$folder_path = $root_path . $root_folder . '/';
 			if (is_dir($folder_path)) {
 
 				if ($handle = opendir($folder_path)) {
 					while (false !== ($file = readdir($handle))) {
 
 						if (is_file($folder_path . $file) && substr($file, -4) == '.ctp') {
-							$sub_pages[$folder][] = substr($file, 0, -4);
+							$folder = substr($file, 0, -4);
+							$sub_pages[$root_folder][$folder] = ref_to_link($folder);
 						}
 
 					}
@@ -60,23 +61,23 @@
 		$nav = new nav();
 		$nav->link_add(config::get('url.prefix') . '/', 'Home');
 
-		foreach ($root_folders as $folder) {
+		foreach ($root_folders as $root_folder => $root_url) {
 
-			$root_url = config::get('url.prefix') . '/' . urlencode($folder) . '/';
+			$root_url = config::get('url.prefix') . '/' . urlencode($root_url) . '/';
 
-			if (count($sub_pages[$folder]) > 0) {
+			if (count($sub_pages[$root_folder]) > 0) {
 
 				$sub_nav = new nav();
 
-				foreach ($sub_pages[$folder] as $sub_page) {
-					$sub_nav->link_add($root_url . $sub_page . '/', link_to_human($sub_page));
+				foreach ($sub_pages[$root_folder] as $sub_folder => $sub_url) {
+					$sub_nav->link_add($root_url . $sub_url . '/', ref_to_human($sub_folder));
 				}
 
-				$nav->sub_nav_add($root_url, link_to_human($folder), $sub_nav);
+				$nav->sub_nav_add($root_url, ref_to_human($root_folder), $sub_nav);
 
 			} else {
 
-				$nav->link_add($root_url, link_to_human($folder));
+				$nav->link_add($root_url, ref_to_human($root_folder));
 
 			}
 
