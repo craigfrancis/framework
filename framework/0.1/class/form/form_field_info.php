@@ -32,6 +32,7 @@
 				// Additional field configuration
 
 					$this->type = 'info';
+					$this->readonly = true; // Don't update if linked to a db field
 
 			}
 
@@ -71,7 +72,7 @@
 				if ($this->value_html !== NULL) {
 					return $this->value_html;
 				} else {
-					return $this->form->db_select_value_get($this->db_field_name);
+					return html($this->form->db_select_value_get($this->db_field_name));
 				}
 			}
 
