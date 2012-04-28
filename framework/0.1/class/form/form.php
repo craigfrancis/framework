@@ -934,6 +934,18 @@
 					}
 
 				//--------------------------------------------------
+				// Remove query string if in GET mode
+
+					$form_action = $this->form_action;
+
+					if ($this->form_method == 'GET') {
+						$pos = strpos($form_action, '?');
+						if ($pos !== false) {
+							$form_action = substr($form_action, 0, $pos);
+						}
+					}
+
+				//--------------------------------------------------
 				// Hidden fields
 
 					if (!isset($config['hidden']) || $config['hidden'] !== true) {
@@ -950,8 +962,8 @@
 					$attributes = array(
 						'id' => $this->form_id,
 						'class' => $this->form_class,
-						'action' => $this->form_action,
-						'method' => strtolower($this->form_method), // For the HTML5 checker on totalvalidator.com
+						'action' => $form_action,
+						'method' => strtolower($this->form_method), // Lowercase for the HTML5 checker on totalvalidator.com
 						'accept-charset' => config::get('output.charset'), // When text from MS Word is pasted in an IE6 input field, it does not translate to UTF-8
 					);
 
@@ -971,37 +983,71 @@
 
 			public function html_hidden($config = NULL) {
 
-				if (!is_array($config)) {
-					$config = array();
-				}
+				//--------------------------------------------------
+				// Config
 
-				if (!isset($config['wrapper'])) $config['wrapper'] = 'div';
-				if (!isset($config['class'])) $config['class'] = 'form_hidden_fields';
-
-				foreach ($this->fields as $field) {
-					if ($field->print_hidden_get()) {
-						$this->hidden_values[$field->name_get()] = $field->value_hidden_get();
+					if (!is_array($config)) {
+						$config = array();
 					}
-				}
 
-				$html = '';
+					if (!isset($config['wrapper'])) $config['wrapper'] = 'div';
+					if (!isset($config['class'])) $config['class'] = 'form_hidden_fields';
 
-				if ($config['wrapper'] !== NULL) {
-					$html .= '<' . html($config['wrapper']) . ' class="' . html($config['class']) . '">';
-				}
+					$field_names = array();
 
-				$html .= '<input type="hidden" name="act" value="' . html($this->form_id) . '" />';
-				$html .= '<input type="hidden" name="csrf" value="' . html($this->csrf_token) . '" />';
+					foreach ($this->fields as $field) {
 
-				foreach ($this->hidden_values as $name => $value) {
-					$html .= '<input type="hidden" name="h-' . html($name) . '" value="' . html(urlencode($value)) . '" />'; // URL encode allows newline characters to exist in hidden (one line) input fields.
-				}
+						$field_name = $field->name_get();
+						$field_names[] = $field_name;
 
-				if ($config['wrapper'] !== NULL) {
-					$html .= '</' . html($config['wrapper']) . '>' . "\n";
-				}
+						if ($field->print_hidden_get()) {
+							$this->hidden_values[$field_name] = $field->value_hidden_get();
+						}
 
-				return $html;
+					}
+
+				//--------------------------------------------------
+				// Input fields - use array to keep unique keys
+
+					$input_fields = array();
+
+					if ($this->form_method == 'GET') {
+						$form_action_query = parse_url($this->form_action, PHP_URL_QUERY);
+						if ($form_action_query) {
+							parse_str($form_action_query, $form_action_query);
+							foreach ($form_action_query as $name => $value) {
+								if (!in_array($name, $field_names)) {
+									$input_fields[$name] = $value;
+								}
+							}
+						}
+					}
+
+					$input_fields['act'] = $this->form_id;
+					$input_fields['csrf'] = $this->csrf_token;
+
+					foreach ($this->hidden_values as $name => $value) {
+						$input_fields['h-' . $name] = urlencode($value); // URL encode allows newline characters to exist in hidden (one line) input fields.
+					}
+
+				//--------------------------------------------------
+				// HTML
+
+					$html = '';
+
+					if ($config['wrapper'] !== NULL) {
+						$html .= '<' . html($config['wrapper']) . ' class="' . html($config['class']) . '">';
+					}
+
+					foreach ($input_fields as $name => $value) {
+						$html .= '<input type="hidden" name="' . html($name) . '" value="' . html($value) . '" />';
+					}
+
+					if ($config['wrapper'] !== NULL) {
+						$html .= '</' . html($config['wrapper']) . '>' . "\n";
+					}
+
+					return $html;
 
 			}
 
