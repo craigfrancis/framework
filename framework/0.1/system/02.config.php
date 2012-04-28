@@ -256,7 +256,7 @@
 	//--------------------------------------------------
 	// Debug
 
-		config::set_default('debug.level', 0); // 0 not running, 1 or 2 for application debug, 3 to also include framework details
+		config::set_default('debug.level', (SERVER == 'stage' ? 3 : 0)); // 0 not running, 1 or 2 for application debug, 3 to also include framework details
 		config::set_default('debug.show', true); // Only relevant when running.
 
 	//--------------------------------------------------

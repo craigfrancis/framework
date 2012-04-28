@@ -36,7 +36,7 @@
 //--------------------------------------------------
 // Error reporting
 
-	if (SERVER == 'stage') {
+	if (SERVER == 'stage' && count(config::get_all('db')) > 0) {
 
 		debug_require_db_table('report', '
 				CREATE TABLE [TABLE] (
