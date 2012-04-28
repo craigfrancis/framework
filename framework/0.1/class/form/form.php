@@ -545,7 +545,7 @@
 
 			public function saved_value_get($name) {
 
-				if ($this->saved_values_used == false) {
+				if ($this->saved_values_used === false) {
 
 					$this->saved_values_used = true;
 

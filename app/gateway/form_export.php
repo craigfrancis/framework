@@ -178,20 +178,46 @@
 		$output_php .= '	config::set(\'request.method\', (isset($_SERVER[\'REQUEST_METHOD\']) ? strtoupper($_SERVER[\'REQUEST_METHOD\']) : \'GET\'));';
 
 	//--------------------------------------------------
-	// Session
-
-		$session_path = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/class/session.php';
-
-		$session_php = file_get_contents($session_path);
-
-		$session_php = preg_replace('/^<\?php\n/', '', $session_php);
-		$session_php = preg_replace('/\?>$/', '', $session_php);
-		$session_php = str_replace('class session_base extends check', 'class session', $session_php);
+	// Database
 
 		$output_php .= "\n\n";
 		$output_php .= '//--------------------------------------------------' . "\n";
-		$output_php .= '// Session object' . "\n";
-		$output_php .= $session_php;
+		$output_php .= '// Database object' . "\n";
+		$output_php .= '' . "\n";
+		$output_php .= '	class db extends database {' . "\n";
+		$output_php .= '		public function __construct() {' . "\n";
+		$output_php .= '			$this->link = $GLOBALS[\'db\']->link;' . "\n";
+		$output_php .= '		}' . "\n";
+		$output_php .= '		public function fetch_assoc($result = null) {' . "\n";
+		$output_php .= '			return $this->fetchAssoc($result);' . "\n";
+		$output_php .= '		}' . "\n";
+		$output_php .= '		public function insert_id() {' . "\n";
+		$output_php .= '			return $this->insertId();' . "\n";
+		$output_php .= '		}' . "\n";
+		$output_php .= '		public function affected_rows() {' . "\n";
+		$output_php .= '			return $this->affectedRows();' . "\n";
+		$output_php .= '		}' . "\n";
+		$output_php .= '		public function enum_values($table_sql, $field) {' . "\n";
+		$output_php .= '			return $this->enumValues($table_sql, $field);' . "\n";
+		$output_php .= '		}' . "\n";
+		$output_php .= '	}' . "\n";
+		$output_php .= '' . "\n";
+
+	//--------------------------------------------------
+	// Session
+
+// 		$session_path = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/class/session.php';
+//
+// 		$session_php = file_get_contents($session_path);
+//
+// 		$session_php = preg_replace('/^<\?php\n/', '', $session_php);
+// 		$session_php = preg_replace('/\?' . '>$/', '', $session_php);
+// 		$session_php = str_replace('class session_base extends check', 'class session', $session_php);
+//
+// 		$output_php .= "\n\n";
+// 		$output_php .= '//--------------------------------------------------' . "\n";
+// 		$output_php .= '// Session object' . "\n";
+// 		$output_php .= $session_php;
 
 	//--------------------------------------------------
 	// Form code
@@ -206,6 +232,7 @@
 			$file_source = preg_replace('/\?>$/', '', $file_source);
 			$file_source = str_replace('_base extends', ' extends', $file_source);
 			$file_source = str_replace(' extends check', '', $file_source);
+			$file_source = preg_replace('/public function saved_values_available\(\) {/', "$0\n\n\t\t\t\treturn false;", $file_source);
 			$file_source = rtrim($file_source);
 			$output_php .= "\n" . $file_source;
 		}
