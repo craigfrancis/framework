@@ -273,7 +273,7 @@
 		}
 
 //--------------------------------------------------
-// Other string functions
+// Other string/array functions
 
 	function prefix_match($prefix, $string) {
 		return (substr($string, 0, strlen($prefix)) == $prefix);
@@ -298,6 +298,10 @@
 			$dump_data = array_pop($text);
 		}
 		return implode(' ', $text);
+	}
+
+	function is_assoc($array) {
+		return (count(array_filter(array_keys($array), 'is_string')) > 0); // http://stackoverflow.com/questions/173400
 	}
 
 //--------------------------------------------------
