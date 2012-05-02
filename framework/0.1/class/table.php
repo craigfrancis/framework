@@ -46,6 +46,8 @@
 		private $no_records_html;
 		private $data_inherit_heading_class;
 		private $footer_inherit_heading_class;
+		private $charset_input;
+		private $charset_output;
 
 		private $sort_enabled;
 		private $sort_name;
@@ -78,6 +80,8 @@
 				$this->no_records_html = 'No records found';
 				$this->data_inherit_heading_class = true;
 				$this->footer_inherit_heading_class = false;
+				$this->charset_input = config::get('output.charset');
+				$this->charset_output = NULL;
 
 				$this->sort_enabled = false;
 				$this->sort_name = NULL;
@@ -596,6 +600,15 @@
 
 		public function csv_data_get() {
 
+ 			//--------------------------------------------------
+			// Convert characterset
+
+				$charset_new = 'ISO-8859-1';
+
+				if ($charset_new != $this->charset_input) {
+					$this->charset_input = $charset_new;
+				}
+
 			//--------------------------------------------------
 			// Headings
 
@@ -609,7 +622,7 @@
 
 					foreach ($c_heading_row as $c_heading) {
 
-						$csv_output .= '"' . csv(html_decode(strip_tags($c_heading['html']))) . '",';
+						$csv_output .= '"' . $this->_html_to_csv($c_heading['html']) . '",';
 
 						for ($k = 1; $k < $c_heading['colspan']; $k++) {
 							$csv_output .= '"",';
@@ -642,7 +655,7 @@
 
 						foreach ($this->rows[$c_row]['row']->data as $c_data) {
 
-							$csv_output .= '"' . csv(html_decode(strip_tags($c_data['html']))) . '",';
+							$csv_output .= '"' . $this->_html_to_csv($c_data['html']) . '",';
 
 							for ($k = 1; $k < $c_data['colspan']; $k++) {
 								$csv_output .= '"",';
@@ -661,7 +674,7 @@
 
 				if (count($this->rows) == 0) {
 
-					$csv_output .= '"' . csv(html_decode(strip_tags($this->no_records_html))) . '",';
+					$csv_output .= '"' . $this->_html_to_csv($this->no_records_html) . '",';
 
 					for ($k = 0; $k < ($col_count - 1); $k++) {
 						$csv_output .= '"",';
@@ -680,7 +693,7 @@
 
 						foreach ($c_footer_row as $c_footer) {
 
-							$csv_output .= '"' . csv(html_decode(strip_tags($c_footer['html']))) . '",';
+							$csv_output .= '"' . $this->_html_to_csv($c_footer['html']) . '",';
 
 							for ($k = 1; $k < $c_footer['colspan']; $k++) {
 								$csv_output .= '"",';
@@ -719,16 +732,10 @@
 				config::set('debug.show', false);
 
 			//--------------------------------------------------
-			// Convert characterset
+			// Update output.charset, for mime_set()
 
-				$new_charset = 'ISO-8859-1';
-
-				if ($new_charset != config::get('output.charset')) {
-
-					$csv_output = iconv(config::get('output.charset'), $new_charset . '//TRANSLIT', $csv_output);
-
-					config::set('output.charset', $new_charset);
-
+				if ($this->charset_output !== NULL && $this->charset_output != $this->charset_input) {
+					config::set('output.charset', $this->charset_output);
 				}
 
 			//--------------------------------------------------
@@ -762,6 +769,13 @@
 
 				exit($csv_output);
 
+		}
+
+		function _html_to_csv($data) {
+			if ($this->charset_output !== NULL && $this->charset_output != $this->charset_input) {
+				$data = iconv($this->charset_input, $this->charset_output . '//TRANSLIT', $data);
+			}
+			return csv(html_decode(strip_tags($data)));
 		}
 
 		public function __toString() { // (PHP 5.2)
