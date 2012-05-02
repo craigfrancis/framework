@@ -16,7 +16,8 @@
 			protected $attachments;
 			protected $template_path;
 			protected $template_url;
-			protected $template_values;
+			protected $template_values_text;
+			protected $template_values_html;
 			protected $body_text;
 			protected $body_html;
 			protected $content_text;
@@ -42,7 +43,8 @@
 					$this->attachments = array();
 					$this->template_path = NULL;
 					$this->template_url = NULL;
-					$this->template_values = array();
+					$this->template_values_text = array();
+					$this->template_values_html = array();
 					$this->body_text = '';
 					$this->body_html = '';
 					$this->content_text = NULL;
@@ -100,12 +102,40 @@
 			}
 
 			public function template_value_set($name, $value) {
-				$this->template_values[$name] = $value;
+
+				$this->template_values_text[$name] = $value;
+
+				if (!isset($this->template_values_html[$name])) {
+					$this->template_values_html[$name] = nl2br(html($value));
+				}
+
+			}
+
+			public function template_value_get($name) {
+				return (isset($this->template_values_text[$name]) ? $this->template_values_text[$name] : NULL);
+			}
+
+			public function template_value_set_html($name, $value) {
+
+				$this->template_values_html[$name] = $value;
+
+				if (!isset($this->template_values_text[$name])) {
+					$this->template_values_text[$name] = html_decode(strip_tags($value));
+				}
+
 			}
 
 			public function from_set($email, $name = NULL) {
 				$this->from_email = $email;
 				$this->from_name = $name;
+			}
+
+			public function from_email_get() {
+				return $this->from_email;
+			}
+
+			public function from_name_get() {
+				return $this->from_name;
 			}
 
 			public function cc_add($email, $name = NULL) {
@@ -404,7 +434,7 @@
 				//--------------------------------------------------
 				// From
 
-					if ($this->from_name !== NULL && $this->from_email !== NULL) {
+					if ($this->from_name != '' && $this->from_email != '') {
 
 						$headers['From'] = '"' . addslashes($this->from_name) . '" <' . addslashes($this->from_email) .'>';
 
@@ -494,7 +524,7 @@
 				$content_text = str_replace('[BODY]', $this->body_text, $content_text);
 				$content_text = str_replace('[URL]', $this->template_url, $content_text);
 
-				foreach ($this->template_values as $name => $value) {
+				foreach ($this->template_values_text as $name => $value) {
 					$content_text = str_replace('[' . $name . ']', $value, $content_text);
 				}
 
@@ -556,8 +586,8 @@
 				$content_html = str_replace('[BODY]', $this->body_html, $content_html);
 				$content_html = str_replace('[URL]', html($this->template_url), $content_html);
 
-				foreach ($this->template_values as $name => $value) {
-					$content_html = str_replace('[' . $name . ']', nl2br(html($value)), $content_html);
+				foreach ($this->template_values_html as $name => $html) {
+					$content_html = str_replace('[' . $name . ']', $html, $content_html);
 				}
 
 				return $content_html;
