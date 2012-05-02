@@ -74,7 +74,7 @@
 				$this->footer_row = 0;
 				$this->rows = array();
 
-				$this->id_name = NULL;
+				$this->id_name = '';
 				$this->class_name = 'basic_table';
 				$this->current_url = NULL;
 				$this->no_records_html = 'No records found';
@@ -340,10 +340,11 @@
 
 		}
 
-		public function row_add($row, $class_name = '') {
+		public function row_add($row, $class_name = '', $id_name = '') {
 			$this->rows[] = array(
 					'row' => $row,
-					'class_name' => $class_name
+					'class_name' => $class_name,
+					'id_name' => $id_name,
 				);
 		}
 
@@ -378,7 +379,7 @@
 				$col_count = 0;
 
 				$output_html = '
-					<table' . ($this->id_name !== NULL ? ' id="' . html($this->id_name) . '"' : '') . ' class="' . html($this->class_name) . '">
+					<table' . ($this->id_name != '' ? ' id="' . html($this->id_name) . '"' : '') . ' class="' . html($this->class_name) . '">
 						<thead>';
 
 				foreach ($this->headings as $c_heading_row) {
@@ -501,11 +502,12 @@
 				$output_html .= '
 						<tbody>';
 
-				$row_id = 0;
+				$row_count = 0;
 
 				foreach (array_keys($this->rows) as $c_row) {
 
-					$row_class = $this->rows[$c_row]['class_name'] . ($row_id++ % 2 ? ' even' : '');
+					$row_class = $this->rows[$c_row]['class_name'] . ($row_count++ % 2 ? ' even' : '');
+					$row_id = $this->rows[$c_row]['id_name'];
 
 					if ($this->rows[$c_row]['row'] === NULL) {
 
@@ -527,7 +529,7 @@
 					}
 
 					$output_html .= '
-							<tr class="' . html(trim($row_class)) . '">';
+							<tr' . ($row_id != '' ? ' id="' . html($row_id) . '"' : '') . ' class="' . html(trim($row_class)) . '">';
 
 					$col_id = 0;
 
@@ -794,7 +796,7 @@
 
 		public $data;
 
-		public function __construct($table, $class_name = '') {
+		public function __construct($table, $class_name = '', $id_name = '') {
 
 			//--------------------------------------------------
 			// Defaults
@@ -804,7 +806,7 @@
 			//--------------------------------------------------
 			// Add
 
-				$table->row_add($this, $class_name);
+				$table->row_add($this, $class_name, $id_name);
 
 		}
 

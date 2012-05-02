@@ -1186,6 +1186,10 @@
 			public function html_submit($buttons = NULL) {
 				if ($this->disabled === false && $this->readonly === false) {
 
+					if ($buttons === NULL) {
+						$buttons = $this->form_button;
+					}
+
 					if (!is_array($buttons) || is_assoc($buttons)) {
 						$buttons = array($buttons);
 					}
@@ -1197,7 +1201,7 @@
 							$attributes = array('value' => $attributes);
 						}
 						if (!isset($attributes['value'])) {
-							$attributes['value'] = $this->form_button;
+							$attributes['value'] = 'Save';
 						}
 						$html .= '
 								' . html_tag('input', array_merge(array('type' => 'submit', 'name' => 'button'), $attributes));
@@ -1206,7 +1210,9 @@
 							</div>';
 
 				} else {
+
 					return '';
+
 				}
 			}
 
