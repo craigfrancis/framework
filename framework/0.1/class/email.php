@@ -1,5 +1,30 @@
 <?php
 
+/***************************************************
+// Example setup
+//--------------------------------------------------
+
+	// Site config:
+	//   email.from_email
+	//   email.from_name (defaults to 'output.site_name')
+	//   email.subject_prefix (defaults to blank on live, or set to SERVER)
+
+	// $values = $form->data_array_get();
+	// $values = array('Name' => 'Craig', 'Telephone' => '0779 0100 438');
+
+	$email = new email();
+	$email->subject_suffix_set('My subject');
+	$email->request_table_add($values);
+	// $email->values_table_add($values);
+	// $email->body_text_add('...');
+	// $email->body_html_add('...');
+	// $email->attachment_add($content, $filename, $mime);
+	$email->send('noreply@example.com');
+
+//--------------------------------------------------
+// End of example setup
+***************************************************/
+
 	class email_base extends check {
 
 		//--------------------------------------------------

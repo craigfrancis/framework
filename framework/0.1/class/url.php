@@ -73,6 +73,7 @@
 			public function param_set($parameters, $value = '') {
 
 				if (is_array($parameters)) {
+
 					foreach ($parameters as $key => $value) { // Cannot use array_merge, as numerical based indexes will be appended.
 						if ($value == '') {
 							unset($this->parameters[$key]);
@@ -80,10 +81,15 @@
 							$this->parameters[$key] = $value;
 						}
 					}
-				} else if ($value == '') {
-					unset($this->parameters[$parameters]); // Remove
+
 				} else {
-					$this->parameters[$parameters] = $value;
+
+					if ($value === NULL) {
+						$value = ''; // Want to be available in an isset check
+					}
+
+					$this->parameters[$parameters] = $value; // Blank values will be removed later
+
 				}
 
 			}
@@ -151,13 +157,7 @@
 					$query = $this->parameters;
 
 					if (is_array($parameters)) {
-						foreach ($parameters as $key => $value) { // Cannot use array_merge, as numerical based indexes will be appended.
-							if ($value == '') {
-								unset($query[$key]);
-							} else {
-								$query[$key] = $value;
-							}
-						}
+						$query = array_merge($query, $parameters);
 					}
 
 					if (count($this->path_extra) > 0) {
@@ -180,7 +180,7 @@
 					}
 
 					if (count($query) > 0) {
-						$output .= '?' . http_build_query($query);
+						$output .= '?' . $this->_query_build($query);
 					}
 
 				//--------------------------------------------------
@@ -195,6 +195,14 @@
 
 					return $output;
 
+			}
+
+			private function _query_build($query) {
+				return http_build_query(array_filter($query, array($this, '_query_filter')));
+			}
+
+			private function _query_filter($value) {
+				return ($value != '');
 			}
 
 			private function _default_path_get() {
