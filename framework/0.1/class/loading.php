@@ -255,6 +255,18 @@
 					while (ob_get_level() > 0) {
 						$output = ob_get_clean() . $output;
 					}
+					$output = str_pad($output, 1024);
+
+				//--------------------------------------------------
+				// Extra
+
+					// if (request('ModPagespeed') != 'off') {
+					// 	redirect(url(array('ModPagespeed' => 'off')));
+					// }
+
+					// apache_setenv('no-gzip', 1);
+					// ini_set('zlib.output_compression', 0);
+					// ini_set('implicit_flush', 1);
 
 				//--------------------------------------------------
 				// Send output

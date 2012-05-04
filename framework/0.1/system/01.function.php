@@ -376,6 +376,13 @@
 	}
 
 //--------------------------------------------------
+// Download
+
+	function http_download() {
+
+	}
+
+//--------------------------------------------------
 // Set http response code
 
 	if (!function_exists('http_response_code')) {
