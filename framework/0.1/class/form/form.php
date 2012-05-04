@@ -202,7 +202,7 @@
 				return $this->form_class;
 			}
 
-			public function form_button_set($text) {
+			public function form_button_set($text = NULL) {
 				$this->form_button = $text;
 			}
 
@@ -1188,6 +1188,10 @@
 
 					if ($buttons === NULL) {
 						$buttons = $this->form_button;
+					}
+
+					if ($buttons === NULL) {
+						return;
 					}
 
 					if (!is_array($buttons) || is_assoc($buttons)) {

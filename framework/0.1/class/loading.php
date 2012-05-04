@@ -1,5 +1,38 @@
 <?php
 
+/***************************************************
+// Example setup
+//--------------------------------------------------
+
+	$loading = new loading();
+	// $loading->time_out_set(60 * 10); // Seconds before script will timeout
+	// $loading->reload_frequency_set(2); // Seconds browser will wait before trying again
+	// $loading->reload_url_set('...'); // If you want the user to load a different url while waiting (e.g. add a new parameter)
+	// $loading->loading_html_path_set('...'); // For a customised loading page
+
+	$loading->check(); // Will return false if not running, true if it was running and but timed out, or perform an exit()
+
+	if ($form->submitted()) {
+		if ($form->valid()) {
+
+			$loading->start('Starting action.'); // String will replace [MESSAGE] in loading_html, or array for multiple tags.
+
+			sleep(5);
+
+			$loading->update('Updating progress.');
+
+			sleep(5);
+
+			$loading->done();
+			exit();
+
+		}
+	}
+
+//--------------------------------------------------
+// End of example setup
+***************************************************/
+
 	class loading {
 
 		//--------------------------------------------------
@@ -17,34 +50,43 @@
 				//--------------------------------------------------
 				// Defaults
 
-					$this->time_out = (60*7);
-					$this->reload_url = config::get('request.url_https');
+					$this->time_out = 600; // 10 minutes
+					$this->reload_frequency = 2;
+					$this->reload_url = NULL;
 					$this->loading_html_path = NULL;
 
 			}
 
-			public function set_reload_url($url) {
-				$this->reload_url = $url;
-			}
-
-			public function get_reload_url($url) {
-				return $this->reload_url;
-			}
-
-			public function set_loading_html_path($path) {
-				$this->loading_html_path = $path;
-			}
-
-			public function get_loading_html_path($path) {
-				return $this->loading_html_path;
-			}
-
-			public function set_time_out($seconds) {
+			public function time_out_set($seconds) {
 				$this->time_out = intval($seconds);
 			}
 
-			public function get_time_out($path) {
+			public function time_out_get() {
 				return $this->time_out;
+			}
+
+			public function reload_frequency_set($seconds) {
+				$this->reload_frequency = intval($seconds);
+			}
+
+			public function reload_frequency_get() {
+				return $this->reload_frequency;
+			}
+
+			public function reload_url_set($url) {
+				$this->reload_url = $url;
+			}
+
+			public function reload_url_get() {
+				return $this->reload_url;
+			}
+
+			public function loading_html_path_set($path) {
+				$this->loading_html_path = $path;
+			}
+
+			public function loading_html_path_get() {
+				return $this->loading_html_path;
 			}
 
 		//--------------------------------------------------
@@ -79,6 +121,8 @@
 
 				$this->_send($variables);
 
+				set_time_limit($this->time_out);
+
 				session::close();
 
 			}
@@ -100,6 +144,11 @@
 		// Send
 
 			private function _send($variables = NULL) {
+
+				//--------------------------------------------------
+				// Disable debug
+
+					config::set('debug.show', false);
 
 				//--------------------------------------------------
 				// Loading contents
@@ -157,20 +206,25 @@
 					$contents_html = str_replace('[TIME_UPDATE]', html($time_diff_update), $contents_html);
 
 				//--------------------------------------------------
-				// Refresh URL
+				// Reload URL
+
+					$reload_url = $this->reload_url;
+					if ($reload_url === NULL) {
+						$reload_url = url();
+					}
 
 					if (strpos($contents_html, '[URL]') !== false) {
 
-						$contents_html = str_replace('[URL]', html($this->reload_url), $contents_html);
+						$contents_html = str_replace('[URL]', html($reload_url), $contents_html);
 
 					} else {
 
-						$refresh_html = "\n\t" . '<meta http-equiv="refresh" content="2;url=' . html($this->reload_url) . '" />' . "\n\n";
+						$reload_html = "\n\t" . '<meta http-equiv="refresh" content="' . html($this->reload_frequency) . ';url=' . html($reload_url) . '" />' . "\n\n";
 
 						$pos = strpos(strtolower($contents_html), '</head>');
 						if ($pos !== false) {
 
-					 		$contents_html = substr($contents_html, 0, $pos) . $refresh_html . substr($contents_html, $pos);
+					 		$contents_html = substr($contents_html, 0, $pos) . $reload_html . substr($contents_html, $pos);
 
 						} else {
 
@@ -179,7 +233,7 @@
 								<head>
 									<meta charset="' . html(config::get('output.charset')) . '" />
 									<title>Loading</title>
-									' . $refresh_html . '
+									' . $reload_html . '
 								</head>
 								<body>
 									' . $contents_html . '
@@ -205,7 +259,7 @@
 				//--------------------------------------------------
 				// Send output
 
-					// TODO: Send refresh header, not relying on meta tags
+					// TODO: Send refresh/reload header, not relying on meta tags
 
 					header ('Connection: close');
 					header ('Accept-Ranges: bytes');

@@ -21,6 +21,24 @@
 	// $email->attachment_add($content, $filename, $mime);
 	$email->send('noreply@example.com');
 
+	--------------------------------------------------
+
+	$email = new email();
+	// $email->template_set('my_template'); // File in /app/public/a/email/x/index.(html|txt) which could contain [BODY] tag for body_(html|text)_add();
+	// $email->body_html_add('<p>Hi [NAME],</p>');
+	// $email->body_text_add('Hi [NAME],');
+
+	$recipients = array(
+			array('name' => 'AAA', 'email' => 'noreply@example.com'),
+			array('name' => 'BBB', 'email' => 'noreply@example.com'),
+			array('name' => 'CCC', 'email' => 'noreply@example.com'),
+		);
+
+	foreach ($recipients as $recipient) {
+		$email->template_value_set('NAME', $recipient['name']);
+		$email->send($recipient['email']);
+	}
+
 //--------------------------------------------------
 // End of example setup
 ***************************************************/
@@ -127,27 +145,20 @@
 			}
 
 			public function template_value_set($name, $value) {
-
 				$this->template_values_text[$name] = $value;
-
-				if (!isset($this->template_values_html[$name])) {
-					$this->template_values_html[$name] = nl2br(html($value));
-				}
-
+				$this->template_values_html[$name] = nl2br(html($value));
 			}
 
 			public function template_value_get($name) {
 				return (isset($this->template_values_text[$name]) ? $this->template_values_text[$name] : NULL);
 			}
 
+			public function template_value_set_text($name, $value) {
+				$this->template_values_text[$name] = $value;
+			}
+
 			public function template_value_set_html($name, $value) {
-
 				$this->template_values_html[$name] = $value;
-
-				if (!isset($this->template_values_text[$name])) {
-					$this->template_values_text[$name] = html_decode(strip_tags($value));
-				}
-
 			}
 
 			public function from_set($email, $name = NULL) {
