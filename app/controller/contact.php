@@ -63,10 +63,8 @@
 							//--------------------------------------------------
 							// Next page
 
-								$url = url('./thank-you/');
-								$url->id = $record_id;
-
-								redirect($url->get());
+								// redirect(http_url());
+								redirect(http_url('/contact/thank-you/', array('id' => $record_id)));
 
 						}
 

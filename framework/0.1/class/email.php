@@ -124,23 +124,23 @@
 
 			public function template_set($name) {
 				$path = '/a/email/' . safe_file_name($name);
-				$this->template_set_path(PUBLIC_ROOT . $path);
-				$this->template_set_url(config::get('url.prefix') . $path);
+				$this->template_path_set(PUBLIC_ROOT . $path);
+				$this->template_url_set(config::get('url.prefix') . $path);
 			}
 
-			public function template_set_path($path) {
+			public function template_path_set($path) {
 				$this->template_path = $path;
 			}
 
-			public function template_get_path() {
+			public function template_path_get() {
 				return $this->template_path;
 			}
 
-			public function template_set_url($url) {
+			public function template_url_set($url) {
 				$this->template_url = $url;
 			}
 
-			public function template_get_url($url) {
+			public function template_url_get($url) {
 				return $this->template_url;
 			}
 

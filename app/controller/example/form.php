@@ -75,7 +75,7 @@ exit('Updated?');
 								//--------------------------------------------------
 								// Next page
 
-									redirect(url('./'));
+									redirect(http_url());
 
 							}
 
@@ -281,17 +281,12 @@ exit();
 
 									$form->db_value_set('ip', config::get('request.ip'));
 
-									$form->db_save();
-
-									$record_id = $db->insert_id();
+									$record_id = $form->db_insert();
 
 								//--------------------------------------------------
 								// Next page
 
-									$url = url('./thank_you/');
-									$url->id = $record_id;
-
-									redirect($url);
+									redirect(http_url('/contact/thank-you/', array('id' => $record_id)));
 
 							}
 
@@ -319,7 +314,7 @@ exit();
 		}
 
 		public function action_thank_you($sub_page) {
-			print_r($sub_page);
+			debug($sub_page);
 		}
 
 	}

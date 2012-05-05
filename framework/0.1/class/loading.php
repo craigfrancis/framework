@@ -8,9 +8,9 @@
 	// $loading->time_out_set(60 * 10); // Seconds before script will timeout
 	// $loading->reload_frequency_set(2); // Seconds browser will wait before trying again
 	// $loading->reload_url_set('...'); // If you want the user to load a different url while waiting (e.g. add a new parameter)
-	// $loading->loading_html_path_set('...'); // For a customised loading page
+	// $loading->template_path_set('...'); // For a customised loading page
 
-	$loading->check(); // Will return false if not running, true if it was running and but timed out, or perform an exit()
+	$loading->check(); // Will exit() with loading page if still running, return false if not running, or return the session variables if there was a time-out.
 
 	if ($form->submitted()) {
 		if ($form->valid()) {
@@ -40,7 +40,7 @@
 
 			private $time_out;
 			private $reload_url;
-			private $loading_html_path;
+			private $template_path;
 
 		//--------------------------------------------------
 		// Setup
@@ -53,7 +53,7 @@
 					$this->time_out = 600; // 10 minutes
 					$this->reload_frequency = 2;
 					$this->reload_url = NULL;
-					$this->loading_html_path = NULL;
+					$this->template_path = NULL;
 
 			}
 
@@ -81,12 +81,12 @@
 				return $this->reload_url;
 			}
 
-			public function loading_html_path_set($path) {
-				$this->loading_html_path = $path;
+			public function template_path_set($path) {
+				$this->template_path = $path;
 			}
 
-			public function loading_html_path_get() {
-				return $this->loading_html_path;
+			public function template_path_get() {
+				return $this->template_path;
 			}
 
 		//--------------------------------------------------
@@ -99,8 +99,9 @@
 				if ($start > 0) {
 
 					if (($start + $this->time_out) < time()) {
+						$return = session::get('loading.variables');
 						$this->done();
-						return true;
+						return $return;
 					}
 
 					$this->_send(session::get('loading.variables'));
@@ -153,13 +154,13 @@
 				//--------------------------------------------------
 				// Loading contents
 
-					if ($this->loading_html_path !== NULL) {
+					if ($this->template_path !== NULL) {
 
-						if (!is_file($this->loading_html_path)) {
-							exit('Could not return loading html file "' . $this->loading_html_path . '"');
+						if (!is_file($this->template_path)) {
+							exit('Could not return template file "' . $this->template_path . '"');
 						}
 
-						$contents_html = file_get_contents($this->loading_html_path);
+						$contents_html = file_get_contents($this->template_path);
 
 					} else {
 
