@@ -14,7 +14,7 @@
 
 				$loading->start('Starting action'); // String will replace [MESSAGE] in loading_html, or array for multiple tags.
 
-				sleep(5);
+				sleep(3);
 
 				$loading->update('Updating');
 

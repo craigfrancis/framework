@@ -73,7 +73,7 @@
 
 				ini_set('session.cookie_httponly', true);
 
-				$result = @session_start(); // May warn about headers already being sent, which happens in loading object.
+				$result = session_start(); // May warn about headers already being sent, which happens in loading object.
 
 				config::set('session.id', session_id());
 

@@ -129,16 +129,30 @@
 			}
 
 			public function update($variables) {
+
+				$error_reporting = error_reporting(0); // Don't show warnings about headers
+				session::start();
+				error_reporting($error_reporting);
+
 				session::set('loading.time_update', time());
 				session::set('loading.variables', $variables);
+
 				session::close(); // So reloading page can gain lock on session file.
+
 			}
 
 			public function done() {
+
+				$error_reporting = error_reporting(0);
+				session::start();
+				error_reporting($error_reporting);
+
 				session::delete('loading.time_start');
 				session::delete('loading.time_update');
 				session::delete('loading.variables');
+
 				session::close();
+
 			}
 
 		//--------------------------------------------------

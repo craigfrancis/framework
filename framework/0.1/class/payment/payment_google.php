@@ -49,11 +49,13 @@
 
 						$response = '';
 
-						$errorLevel = error_reporting(E_ALL & ~E_WARNING); // IIS SSL Errors?
+						$error_reporting = error_reporting(0); // IIS SSL Errors?
 
 						$fp = @fsockopen('ssl://' . $urlParts['host'], 443, $errno, $errstr, 10);
 						if (!$fp) {
+
 							exit_with_error('Could not determine the checkout URL ', 'ERROR: ' . $errstr . ' (' . $errno . ')');
+
 						} else {
 
 							fwrite($fp, $data);
@@ -66,7 +68,7 @@
 
 						}
 
-						error_reporting($errorLevel);
+						error_reporting($error_reporting);
 
 						$response = str_replace("\r\n", "\n", $response);
 
