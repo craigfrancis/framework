@@ -4,7 +4,7 @@
 
 		public function action_index() {
 
-			$browser = new browser();
+			$browser = new socket_browser();
 
 		}
 

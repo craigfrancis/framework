@@ -1,6 +1,6 @@
 <?php
 
-	class socket_browser extends check {
+	class socket_browser_base extends check {
 
 		//--------------------------------------------------
 		// Variables

@@ -710,6 +710,10 @@
 
 	function error_handler($err_no, $err_str, $err_file, $err_line, $err_context) {
 
+		if (error_reporting() == 0) {
+			return; // If disabled, as much granularity as I want to check for
+		}
+
 		$hidden_info = '';
 
 		foreach (debug_backtrace() as $called_from) {
