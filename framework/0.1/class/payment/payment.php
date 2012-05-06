@@ -2,9 +2,6 @@
 
 // Add the handler support seen in chrysalis.crm
 
-//--------------------------------------------------
-// Base payment class
-
 	class payment_base extends check {
 
 		//--------------------------------------------------

@@ -1,41 +1,37 @@
 <?php
 
-// A service that allows you to create a list of locations (e.g. stores), and allow visitors to your site to find the nearest locations using a simple "as the crow flies" distance calculation.
-//
-// By default this uses Google's GeoCoding service, but other services could be used.
-//
-// How would this provide an admin control panel? - a controller which sets the template to "s_location" (or "s_location_ct_index").
-//
-// Have a view element to show the map on the website.
-
 /***************************************************
-// Example setup
-//--------------------------------------------------
 
 	//--------------------------------------------------
-	// Simple
+	// Site config
 
-		// config::set('nearest.table_sql', 'stores');
 
-		$nearest = new nearest();
 
 	//--------------------------------------------------
-	// Profile support
+	// Example setup
 
-		config::set('nearest.profile.table_sql', 'stores');
+		//--------------------------------------------------
+		// Simple
 
-		$nearest = new nearest('profile');
+			// config::set('nearest.table_sql', 'stores');
 
-	//--------------------------------------------------
-	// Custom
+			$nearest = new nearest();
 
-		$nearest = new nearest(array(
-				'table_sql' => 'stores',
-				'max_results' => 10,
-			));
+		//--------------------------------------------------
+		// Profile support
 
-//--------------------------------------------------
-// End of example setup
+			config::set('nearest.profile.table_sql', 'stores');
+
+			$nearest = new nearest('profile');
+
+		//--------------------------------------------------
+		// Custom
+
+			$nearest = new nearest(array(
+					'table_sql' => 'stores',
+					'max_results' => 10,
+				));
+
 ***************************************************/
 
 	class nearest_base extends check {

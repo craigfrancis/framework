@@ -1,53 +1,50 @@
 <?php
 
-//--------------------------------------------------
-// This source code is released under the BSD licence,
-// see the end of this script for the full details.
-// It was originally created by Craig Francis in 2006.
-//
-// http://www.craigfrancis.co.uk/features/code/phpCmsText/
-//
-//--------------------------------------------------
-
 /***************************************************
-// Example setup
-//--------------------------------------------------
 
 	//--------------------------------------------------
-	// Simple setup
+	// License
 
-		$cms_text = new cms_text();
+		This source code is released under the BSD licence,
+		see the end of this script for the full details.
+		It was originally created by Craig Francis in 2006.
 
-	//--------------------------------------------------
-	// Full config - its not necessary to set any of these
-	// as they have safe defaults.
-
-		$cms_text = new cms_text(array(
-				'allow_html_code' => false,
-				'allow_popup_links' => false,
-				'allow_mail_links' => false,
-				'allow_img_tags' => false,
-				'allow_para_align' => false,
-				'allow_list_tags' => false,
-				'allow_table_tags' => false,
-				'allow_heading_tags' => false,
-				'no_follow_links' => false,
-				'hide_cms_comments' => false,
-				'heading_level' => 3,
-			));
+		http://www.craigfrancis.co.uk/features/code/phpCmsText/
 
 	//--------------------------------------------------
-	// Print out the HTML, either using process_inline_html()
-	// for <p> tags (etc), or as process_block_html() to
-	// be printed straight into a <div>.
+	// Example setup
 
-		echo $cms_text->process_inline_html($text);
-		echo $cms_text->process_block_html($text);
+		//--------------------------------------------------
+		// Initialise
 
-		$text = $cms_text->process_text($text); // Could be used in an email
+			$cms_text = new cms_text();
 
-//--------------------------------------------------
-// End of example setup
+			--- or ---
+
+			$cms_text = new cms_text(array(
+					'allow_html_code' => false,
+					'allow_popup_links' => false,
+					'allow_mail_links' => false,
+					'allow_img_tags' => false,
+					'allow_para_align' => false,
+					'allow_list_tags' => false,
+					'allow_table_tags' => false,
+					'allow_heading_tags' => false,
+					'no_follow_links' => false,
+					'hide_cms_comments' => false,
+					'heading_level' => 3,
+				));
+
+		//--------------------------------------------------
+		// Print out the HTML, either using process_inline_html()
+		// for <p> tags (etc), or as process_block_html() to
+		// be printed straight into a <div>.
+
+			echo $cms_text->process_inline_html($text);
+			echo $cms_text->process_block_html($text);
+
+			echo $cms_text->process_text($text); // Could be used in an email
+
 ***************************************************/
 
 class cms_text_base extends check {

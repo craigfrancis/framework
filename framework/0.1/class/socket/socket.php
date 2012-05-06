@@ -40,6 +40,10 @@
 			$this->cookies[$name] = $value;
 		}
 
+		public function cookies_set($cookies) {
+			$this->cookies = $cookies;
+		}
+
 		public function preserve_cookies_set($preserve_cookies) {
 			$this->preserve_cookies = $preserve_cookies;
 		}

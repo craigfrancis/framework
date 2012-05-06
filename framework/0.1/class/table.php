@@ -1,35 +1,33 @@
 <?php
 
 /***************************************************
-// Example setup
-//--------------------------------------------------
 
-	// Site config:
-	//   table.active_asc_suffix_html
-	//   table.active_desc_suffix_html
-	//   table.inactive_suffix_html
+	//--------------------------------------------------
+	// Site config
 
-	$table = new table();
-	$table->class_set('basic_table');
-	$table->no_records_set('No records found');
+		table.active_asc_suffix_html
+		table.active_desc_suffix_html
+		table.inactive_suffix_html
 
-	$table->heading_add('Heading 1');
-	$table->heading_add('Heading 2');
+	//--------------------------------------------------
+	// Example setup
 
-	while (false) {
-		$table_row = new table_row($table);
-		$table_row->cell_add_html('<html>');
-		$table_row->cell_add('Plain text');
-	}
+		$table = new table();
+		$table->class_set('basic_table');
+		$table->no_records_set('No records found');
 
-	<?= $table->html(); ?>
+		$table->heading_add('Heading 1');
+		$table->heading_add('Heading 2');
 
-//--------------------------------------------------
-// End of example setup
+		while (false) {
+			$table_row = new table_row($table);
+			$table_row->cell_add_html('<html>');
+			$table_row->cell_add('Plain text');
+		}
+
+		<?= $table->html(); ?>
+
 ***************************************************/
-
-//--------------------------------------------------
-// Base table class
 
 	class table_base extends check {
 
@@ -788,9 +786,6 @@
 		}
 
 	}
-
-//--------------------------------------------------
-// Base table row class
 
 	class table_row_base extends check {
 

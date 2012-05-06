@@ -1,5 +1,19 @@
 <?php
 
+/***************************************************
+
+	//--------------------------------------------------
+	// Site config
+
+
+
+	//--------------------------------------------------
+	// Example setup
+
+
+
+***************************************************/
+
 // TODO: Add an admin interface somewhere which can show the tasks being run, can cancel them, or stack them up.
 
 //--------------------------------------------------
@@ -549,7 +563,7 @@
 						}
 
 						$email = new email();
-						$email->subject_suffix_set($email_title);
+						$email->subject_set($email_title);
 						$email->body_html_add($task_output_html);
 						$email->send($email_addresses);
 

@@ -1,36 +1,35 @@
 <?php
 
 /***************************************************
-// Example setup
-//--------------------------------------------------
 
-	$loading = new loading();
-	// $loading->time_out_set(60 * 10); // Seconds before script will timeout
-	// $loading->reload_frequency_set(2); // Seconds browser will wait before trying again
-	// $loading->reload_url_set('...'); // If you want the user to load a different url while waiting (e.g. add a new parameter)
-	// $loading->template_path_set('...'); // For a customised loading page
+	//--------------------------------------------------
+	// Example setup
 
-	$loading->check(); // Will exit() with loading page if still running, return false if not running, or return the session variables if there was a time-out.
+		$loading = new loading();
+		// $loading->time_out_set(60 * 10); // Seconds before script will timeout
+		// $loading->reload_frequency_set(2); // Seconds browser will wait before trying again
+		// $loading->reload_url_set('...'); // If you want the user to load a different url while waiting (e.g. add a new parameter)
+		// $loading->template_path_set('...'); // For a customised loading page
 
-	if ($form->submitted()) {
-		if ($form->valid()) {
+		$loading->check(); // Will exit() with loading page if still running, return false if not running, or return the session variables if there was a time-out.
 
-			$loading->start('Starting action.'); // String will replace [MESSAGE] in loading_html, or array for multiple tags.
+		if ($form->submitted()) {
+			if ($form->valid()) {
 
-			sleep(5);
+				$loading->start('Starting action.'); // String will replace [MESSAGE] in loading_html, or array for multiple tags.
 
-			$loading->update('Updating progress.');
+				sleep(5);
 
-			sleep(5);
+				$loading->update('Updating progress.');
 
-			$loading->done();
-			exit();
+				sleep(5);
 
+				$loading->done();
+				exit();
+
+			}
 		}
-	}
 
-//--------------------------------------------------
-// End of example setup
 ***************************************************/
 
 	class loading {

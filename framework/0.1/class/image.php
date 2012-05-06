@@ -1,35 +1,34 @@
 <?php
 
-//--------------------------------------------------
-// This source code is released under the BSD licence,
-// see the end of this script for the full details.
-// It was originally created by Craig Francis in 2006.
-//
-// http://www.craigfrancis.co.uk/features/code/phpImage/
-//
-//--------------------------------------------------
-
 /***************************************************
-// Example setup
-//--------------------------------------------------
 
 	//--------------------------------------------------
-	// Load image and send to browser
+	// License
 
-		$image = new image('1.jpg');
-		$image->output_jpg();
+		This source code is released under the BSD licence,
+		see the end of this script for the full details.
+		It was originally created by Craig Francis in 2006.
+
+		http://www.craigfrancis.co.uk/features/code/phpImage/
 
 	//--------------------------------------------------
-	// Load two images
+	// Example setup
 
-		$image_sub = new image('2.gif');
+		//--------------------------------------------------
+		// Load image and send to browser
 
-		$image = new image('1.jpg');
-		$image->image_add($image_sub, 10, 123);
-		$image->output_gif();
+			$image = new image('1.jpg');
+			$image->output_jpg();
 
-//--------------------------------------------------
-// End of example setup
+		//--------------------------------------------------
+		// Load two images
+
+			$image_sub = new image('2.gif');
+
+			$image = new image('1.jpg');
+			$image->image_add($image_sub, 10, 123);
+			$image->output_gif();
+
 ***************************************************/
 
 	define('IMAGE_LOAD_SUCCESS', 0);

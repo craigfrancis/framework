@@ -1,10 +1,26 @@
 <?php
 
-	// config::get('url.default_format') - absolute (default) / full (includes domain) / relative (not implemented)
-	// config::get('url.prefix') - e.g. '/website' will be prefixed onto any absolute urls, so url('/contact/') == '/website/contact/'
+/***************************************************
 
-//--------------------------------------------------
-// URL Class
+	//--------------------------------------------------
+	// Site config
+
+		url.default_format - absolute (default) / full (includes domain) / relative (not implemented)
+		url.prefix - e.g. '/website' will be prefixed onto any absolute urls, so url('/contact/') == '/website/contact/'
+
+	//--------------------------------------------------
+	// Example setup
+
+		url('/contact/');
+
+		https_url();
+		http_url('./thank-you/');
+
+		url('/item/view/', array('id' => 5));
+
+		url('/news/', 'article', array('article' => 'my-name'));
+
+***************************************************/
 
 	class url_base extends check {
 

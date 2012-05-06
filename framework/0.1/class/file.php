@@ -1,21 +1,19 @@
 <?php
 
 /***************************************************
-// Example setup
-//--------------------------------------------------
 
 	//--------------------------------------------------
-	// Save images to folders:
-	//  files/item_name/original/123.png
-	//  files/item_name/100x100/123.jpg
-	//  files/item_name/500x500/123.jpg
-	//  files/item_name/120xX/123.jpg
+	// Example setup
+
+			// Save images to folders:
+			//  files/item_name/original/123.png
+			//  files/item_name/100x100/123.jpg
+			//  files/item_name/500x500/123.jpg
+			//  files/item_name/120xX/123.jpg
 
 		$file = new file('item_name');
 		$file->image_save(123, '/path/to/file.png');
 
-//--------------------------------------------------
-// End of example setup
 ***************************************************/
 
 	class file_base extends check {

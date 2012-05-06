@@ -1,44 +1,42 @@
 <?php
 
 /***************************************************
-// Example setup
-//--------------------------------------------------
 
-	// Site config:
-	//   form.disabled
-	//   form.readonly
-	//   form.label_override_function
-	//   form.error_override_function
+	//--------------------------------------------------
+	// Site config
 
-	$form = new form();
-	$form->form_class_set('basic_form');
-	$form->form_button_set('Save');
-	$form->db_table_set_sql(DB_PREFIX . 'table');
+		form.disabled
+		form.readonly
+		form.label_override_function
+		form.error_override_function
 
-	$field_name = new form_field_text($form, 'Name');
-	$field_name->db_field_set('name');
-	$field_name->min_length_set('Your name is required.');
-	$field_name->max_length_set('Your name cannot be longer than XXX characters.');
+	//--------------------------------------------------
+	// Example setup
 
-	if ($form->submitted()) {
+		$form = new form();
+		$form->form_class_set('basic_form');
+		$form->form_button_set('Save');
+		$form->db_table_set_sql(DB_PREFIX . 'table');
 
-		// $form->error_add('Custom error');
+		$field_name = new form_field_text($form, 'Name');
+		$field_name->db_field_set('name');
+		$field_name->min_length_set('Your name is required.');
+		$field_name->max_length_set('Your name cannot be longer than XXX characters.');
 
-		if ($form->valid()) {
-			$form->db_save();
-			redirect('...');
+		if ($form->submitted()) {
+
+			// $form->error_add('Custom error');
+
+			if ($form->valid()) {
+				$form->db_save();
+				redirect('...');
+			}
+
 		}
 
-	}
+		<?= $form->html(); ?>
 
-	<?= $form->html(); ?>
-
-//--------------------------------------------------
-// End of example setup
 ***************************************************/
-
-//--------------------------------------------------
-// Base form class
 
 	class form_base extends check {
 
