@@ -1209,7 +1209,7 @@
 						$buttons = array($buttons);
 					}
 
-					if (!$this->form_passive) {
+					if ($this->form_passive) {
 						$default_attributes = array('type' => 'submit');
 					} else {
 						$default_attributes = array('type' => 'submit', 'name' => 'button');
