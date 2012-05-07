@@ -581,7 +581,7 @@
 			}
 
 			private function _is_submitted() {
-				$this->form_submitted = ($this->form_passive == false && request('act') == $this->form_id && config::get('request.method') == $this->form_method);
+				$this->form_submitted = ($this->form_passive || (request('act') == $this->form_id && config::get('request.method') == $this->form_method));
 			}
 
 			public function valid() {
@@ -638,15 +638,19 @@
 				//--------------------------------------------------
 				// CSRF check
 
-					$csrf_token = request('csrf', $this->form_method);
+					if (!$this->form_passive) {
 
-					if ($this->form_submitted && $this->csrf_token != $csrf_token) {
+						$csrf_token = request('csrf', $this->form_method);
 
-						cookie::require_support();
+						if ($this->form_submitted && $this->csrf_token != $csrf_token) {
 
-						$note = 'COOKIE:' . $this->csrf_token . ' != ' . $this->form_method . ':' . $csrf_token;
+							cookie::require_support();
 
-						$this->_field_error_add_html(-1, $this->csrf_error_html, $note);
+							$note = 'COOKIE:' . $this->csrf_token . ' != ' . $this->form_method . ':' . $csrf_token;
+
+							$this->_field_error_add_html(-1, $this->csrf_error_html, $note);
+
+						}
 
 					}
 

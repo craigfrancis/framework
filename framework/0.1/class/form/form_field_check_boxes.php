@@ -60,7 +60,7 @@
 				//--------------------------------------------------
 				// Update the values
 
-					if ($this->form_submitted || $this->form_passive) {
+					if ($this->form_submitted) {
 
 						$hidden_value = $this->form->hidden_value_get($this->name);
 

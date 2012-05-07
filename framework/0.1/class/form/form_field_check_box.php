@@ -21,7 +21,7 @@
 				//--------------------------------------------------
 				// Value
 
-					if ($this->form_submitted || $this->form_passive) {
+					if ($this->form_submitted) {
 						$this->value = ($this->value == 'true');
 					}
 
