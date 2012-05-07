@@ -25,7 +25,7 @@
 
 						$path = 'https://checkout.google.com/api/checkout/v2/merchantCheckout/Merchant/' . urlencode($GLOBALS['googleMerchantId']);
 
-						$urlParts = parse_url($path);
+						$url_parts = parse_url($path);
 
 						$order_xml = $this->checkout_xml();
 
@@ -35,8 +35,8 @@
 						// TODO: Possibly use the socket class?
 
 						$header = array();
-						$header[] = 'POST ' . head($urlParts['path']) . ' HTTP/1.0';
-						$header[] = 'Host: ' . head($urlParts['host']);
+						$header[] = 'POST ' . head($url_parts['path']) . ' HTTP/1.0';
+						$header[] = 'Host: ' . head($url_parts['host']);
 						$header[] = 'Authorization: Basic ' . head(base64_encode($GLOBALS['googleMerchantId'] . ':' . $GLOBALS['googleMerchantKey']));
 						$header[] = 'Content-Type: application/xml;charset=' . head($GLOBALS['pageCharset']);
 						$header[] = 'Accept: application/xml;charset=' . head($GLOBALS['pageCharset']);
@@ -51,7 +51,7 @@
 
 						$error_reporting = error_reporting(0); // IIS SSL Errors?
 
-						$fp = @fsockopen('ssl://' . $urlParts['host'], 443, $errno, $errstr, 10);
+						$fp = @fsockopen('ssl://' . $url_parts['host'], 443, $errno, $errstr, 10);
 						if (!$fp) {
 
 							exit_with_error('Could not determine the checkout URL ', 'ERROR: ' . $errstr . ' (' . $errno . ')');
