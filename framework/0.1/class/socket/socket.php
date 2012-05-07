@@ -5,8 +5,6 @@
 		private $values;
 		private $headers;
 		private $cookies;
-		private $host_cookies;
-		private $preserve_cookies;
 		private $request_full;
 		private $response_full;
 		private $response_headers;
@@ -18,8 +16,6 @@
 			$this->values = array();
 			$this->headers = array();
 			$this->cookies = array();
-			$this->host_cookies = array();
-			$this->preserve_cookies = false;
 			$this->request_full = '';
 			$this->response_full = '';
 			$this->response_headers = '';
@@ -44,28 +40,24 @@
 			$this->cookies = $cookies;
 		}
 
-		public function preserve_cookies_set($preserve_cookies) {
-			$this->preserve_cookies = $preserve_cookies;
-		}
-
 		public function exit_on_error_set($exit_on_error) {
 			$this->exit_on_error = $exit_on_error;
 		}
 
-		public function get($url) {
-			return $this->_send($url, '', 'GET');
+		public function get($url, $data = '') {
+			return $this->_send($url, $data, 'GET');
 		}
 
-		public function post($url, $post_data = '') {
-			return $this->_send($url, $post_data, 'POST');
+		public function post($url, $data = '') {
+			return $this->_send($url, $data, 'POST');
 		}
 
-		public function put($url, $post_data = '') {
-			return $this->_send($url, $post_data, 'PUT');
+		public function put($url, $data = '') {
+			return $this->_send($url, $data, 'PUT');
 		}
 
-		public function delete($url, $post_data = '') {
-			return $this->_send($url, $post_data, 'DELETE');
+		public function delete($url, $data = '') {
+			return $this->_send($url, $data, 'DELETE');
 		}
 
 		public function request_full_get() {
@@ -97,11 +89,22 @@
 		}
 
 		public function response_header_get($field) {
-			if (preg_match('/^' . preg_quote($field, '/') . ': ([^\n]*)/im', $this->response_headers, $matches)) {
-				return $matches[1];
+			$values = $this->response_header_get_all($field);
+			if (count($values) > 0) {
+				return array_shift($values);
 			} else {
 				return NULL;
 			}
+		}
+
+		public function response_header_get_all($field) {
+			$values = array();
+			if (preg_match_all('/^' . preg_quote($field, '/') . ': ([^\n]*)/im', $this->response_headers, $matches, PREG_SET_ORDER)) {
+				foreach ($matches as $match) {
+					$values[] = $match[1];
+				}
+			}
+			return $values;
 		}
 
 		public function response_data_get() {
@@ -112,7 +115,7 @@
 			return $this->error_string;
 		}
 
-		private function _send($url, $post_data = '', $method = 'POST') {
+		private function _send($url, $data = '', $method = 'POST') {
 
 			//--------------------------------------------------
 			// No error
@@ -120,12 +123,19 @@
 				$this->error_string = NULL;
 
 			//--------------------------------------------------
+			// Post data with GET request
+
+				if ($method == 'GET' && is_array($data)) {
+					$url = url($url, $data);
+				}
+
+			//--------------------------------------------------
 			// Parse the URL
 
 				//--------------------------------------------------
 				// Split
 
-					$url_parts = parse_url($url);
+					$url_parts = @parse_url($url);
 
 				//--------------------------------------------------
 				// HTTPS
@@ -201,16 +211,6 @@
 						$cookies[] = urlencode($name) . '=' . urlencode($value);
 					}
 
-					if (isset($this->host_cookies[$host])) {
-						foreach ($this->host_cookies[$host] as $host_path => $host_cookies) {
-							if (prefix_match($host_path, $path)) {
-								foreach ($host_cookies as $name => $value) {
-									$cookies[] = urlencode($name) . '=' . urlencode($value);
-								}
-							}
-						}
-					}
-
 					if (count($cookies) > 0) {
 						$headers[] = 'Cookie: ' . head(implode('; ', $cookies));
 					}
@@ -218,29 +218,23 @@
 				//--------------------------------------------------
 				// POST or PUT data
 
-					if ($method == 'GET') {
+					if ($method != 'GET') {
 
-						$post_data = ''; // Not tested yet with query string
+						if ($data == '' || is_array($data)) {
 
-						$headers[] = 'Content-Type: application/x-www-form-urlencoded';
+							$data_encoded = array();
 
-					} else {
-
-						if ($post_data == '' || is_array($post_data)) {
-
-							$post_data_encoded = array();
-
-							if (is_array($post_data)) {
-								foreach ($post_data as $c_name => $c_value) {
-									$post_data_encoded[] = urlencode($c_name) . '=' . urlencode($c_value);
+							if (is_array($data)) {
+								foreach ($data as $c_name => $c_value) {
+									$data_encoded[] = urlencode($c_name) . '=' . urlencode($c_value);
 								}
 							}
 
 							foreach ($this->values as $c_name => $c_value) {
-								$post_data_encoded[] = urlencode($c_name) . '=' . urlencode($c_value);
+								$data_encoded[] = urlencode($c_name) . '=' . urlencode($c_value);
 							}
 
-							$post_data = implode('&', $post_data_encoded);
+							$data = implode('&', $data_encoded);
 
 							$headers[] = 'Content-Type: application/x-www-form-urlencoded';
 
@@ -248,9 +242,9 @@
 
 						}
 
-						if ($post_data != '') {
+						if ($data != '') {
 
-							$headers[] = 'Content-Length: ' . strlen($post_data);
+							$headers[] = 'Content-Length: ' . strlen($data);
 
 						}
 
@@ -268,8 +262,8 @@
 
 					$request = implode("\r\n", $headers) . "\r\n\r\n";
 
-					if ($post_data != '') {
-						$request .= $post_data;
+					if ($method != 'GET' && $data != '') {
+						$request .= $data;
 					}
 
 					$this->request_full = $request;
@@ -309,22 +303,6 @@
 
 						$this->response_headers = trim(substr($response, 0, $pos));
 						$this->response_data = trim(substr($response, ($pos + 2)));
-
-					//--------------------------------------------------
-					// Cookies
-
-						if ($this->preserve_cookies) {
-							if (preg_match_all('/^Set-Cookie: *([^=]+)=([^;\n]+)(.*Path=([^;\n]+))?/ims', $this->response_headers, $matches, PREG_SET_ORDER)) {
-								foreach ($matches as $match) {
-
-									$path = (isset($match[4]) ? $match[4] : '/');
-
-									$this->host_cookies[$host][$path][$match[1]] = urldecode($match[2]);
-
-								}
-								ksort($this->host_cookies);
-							}
-						}
 
 				} else {
 
