@@ -36,8 +36,8 @@
 			public function format_error_set_html($error_html) {
 
 				if ($this->form_submitted && $this->value != '') {
-					$parts = @parse_url($this->value);
-					if ($parts === false || !isset($parts['scheme']) || !isset($parts['host'])) {
+					$url_parts = @parse_url($this->value);
+					if ($url_parts === false || !isset($url_parts['scheme']) || !isset($url_parts['host'])) {
 						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 					}
 				}
@@ -53,9 +53,9 @@
 			public function allowed_schemes_set_html($error_html, $schemes) {
 
 				if ($this->form_submitted && $this->value != '') {
-					$parts = @parse_url($this->value);
-					if (isset($parts['scheme']) && !in_array($parts['scheme'], $schemes)) {
-						$this->form->_field_error_set_html($this->form_field_uid, $error_html, 'Scheme: ' . $parts['scheme']);
+					$url_parts = @parse_url($this->value);
+					if (isset($url_parts['scheme']) && !in_array($url_parts['scheme'], $schemes)) {
+						$this->form->_field_error_set_html($this->form_field_uid, $error_html, 'Scheme: ' . $url_parts['scheme']);
 					}
 				}
 
