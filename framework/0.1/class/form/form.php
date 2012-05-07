@@ -36,6 +36,23 @@
 
 		<?= $form->html(); ?>
 
+	//--------------------------------------------------
+	// Search form
+
+		$form = new form();
+		$form->form_passive_set(true);
+		$form->form_method_set('GET');
+		$form->form_button_set('Search');
+
+		$field_search = new form_field_text($form, 'Search');
+		$field_search->max_length_set('The search cannot be longer than XXX characters.', 200);
+
+		if ($form->valid()) {
+			$search = $field_search->value_get();
+		} else {
+			$search = '';
+		}
+
 ***************************************************/
 
 	class form_base extends check {
