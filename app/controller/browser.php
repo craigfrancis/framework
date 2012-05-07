@@ -5,34 +5,84 @@
 		public function action_index() {
 
 			//--------------------------------------------------
-			// Config
+			// Form setup
 
-				define('WORLD_PAY_REF', 3);
-				define('WORLD_PAY_TEST_MODE', 0); // Use 100 to test, and use visa card "4911830000000"
-				define('WORLD_PAY_INST_ID', 264397);
-				define('WORLD_PAY_VAT', 20);
-				define('WORLD_PAY_SIGNATURE', 'dfhshsvhausq');
-				define('WORLD_PAY_MERCHANT_CODE', 'GILLMANSOAMEM1');
-				define('WORLD_PAY_ADMIN_USER', 'system@gillmansoame');
-				define('WORLD_PAY_ADMIN_PASS', 'asjhbd8214');
+				$form = new form();
+				$form->form_class_set('basic_form');
+				$form->form_button_set('Search');
 
-			//--------------------------------------------------
-			// Browser object
-
-				$browser = new socket_browser();
+				$field_search = new form_field_text($form, 'Search');
+				$field_search->min_length_set('Your search is required.');
+				$field_search->max_length_set('Your search cannot be longer than XXX characters.', 250);
 
 			//--------------------------------------------------
-			// Login page
+			// Form processing
 
-				if (WORLD_PAY_TEST_MODE > 0) {
-					$next_url = 'https://secure.worldpay.com/sso/public/auth/login.html?serviceIdentifier=applicationlisttest';
+				if ($form->submitted()) {
+
+					//--------------------------------------------------
+					// Validation
+
+
+
+					//--------------------------------------------------
+					// Form valid
+
+						if ($form->valid()) {
+
+							//--------------------------------------------------
+							// Browser object
+
+								$browser = new socket_browser();
+								$browser->user_agent_set('Mozilla/5.0');
+
+							//--------------------------------------------------
+							// First page
+
+								$browser->get('http://google.co.uk'); // Performs a redirect to www.google.co.uk
+
+							//--------------------------------------------------
+							// Search form
+
+								$browser->form_select();
+
+								$browser->form_field_set('q', $field_search->value_get());
+
+								$browser->form_submit();
+
+							//--------------------------------------------------
+							// Follow link
+
+								$query = '(//div[@role="main"]//a)[1]'; // If Google recognises UA as supporting JS, it won't link though /url gateway.
+								$query = '(//a[contains(@href,"/url")])[1]';
+
+								// debug($browser->nodes_get_html($query));
+
+								$browser->link_follow($query);
+
+							//--------------------------------------------------
+							// Print
+
+								debug($browser->url_get());
+								debug($browser->data_get());
+
+								exit();
+
+						}
+
 				} else {
-					$next_url = 'https://secure.worldpay.com/sso/public/auth/login.html?serviceIdentifier=merchantadmin';
+
+					//--------------------------------------------------
+					// Defaults
+
+						$field_search->value_set('Craig Francis');
+
 				}
 
-				$browser->get($next_url);
+			//--------------------------------------------------
+			// Variables
 
-				$browser->form_select();
+				$this->set('form', $form);
 
 		}
 
