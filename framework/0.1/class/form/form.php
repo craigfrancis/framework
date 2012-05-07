@@ -532,6 +532,10 @@
 
 			public function saved_values_available() {
 
+				if ($this->form_passive) {
+					return false;
+				}
+
 				if ($this->saved_values_used === NULL) {
 
 					$this->saved_values_used = false;
