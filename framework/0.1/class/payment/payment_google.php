@@ -32,7 +32,7 @@
 					//--------------------------------------------------
 					// Data
 
-						// Possibly use the socket class?
+						// TODO: Possibly use the socket class?
 
 						$header = array();
 						$header[] = 'POST ' . head($urlParts['path']) . ' HTTP/1.0';

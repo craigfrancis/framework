@@ -1010,7 +1010,7 @@
 					$input_fields = array();
 
 					if ($this->form_method == 'GET') {
-						$form_action_query = parse_url($this->form_action, PHP_URL_QUERY);
+						$form_action_query = @parse_url($this->form_action, PHP_URL_QUERY);
 						if ($form_action_query) {
 							parse_str($form_action_query, $form_action_query);
 							foreach ($form_action_query as $name => $value) {
