@@ -5,7 +5,43 @@
 	//--------------------------------------------------
 	// Example setup
 
+		//--------------------------------------------------
+		// Setup
 
+			$browser = new socket_browser();
+
+		//--------------------------------------------------
+		// Pre-load url and data (testing)
+
+			// $browser->url_set('http://www.example.com');
+			// $browser->data_set(file_get_contents('/folder/file.html'));
+
+		//--------------------------------------------------
+		// Get first page
+
+			$browser->get('http://www.example.com');
+
+			// debug($browser->url_get());
+			// debug($browser->data_get());
+
+		//--------------------------------------------------
+		// Follow a link
+
+			$browser->link_follow('Home'); // Could also be the number (e.g. link "5"), or an XPath
+
+		//--------------------------------------------------
+		// Setup form
+
+			// debug($browser->nodes_get_html('//form')); // Test an XPath
+
+			$browser->form_select(); // If more than 1 form, pass in the number or an XPath (e.g. '//form[@id="myId"]')
+
+			// debug($browser->form_fields_get());
+
+			// $browser->form_field_set('username', 'admin');
+			// $browser->form_field_set('password', '123');
+
+			$browser->form_submit();
 
 ***************************************************/
 
@@ -15,8 +51,11 @@
 		// Variables
 
 			private $socket;
+			private $user_agent;
+			private $current_data;
 			private $current_url;
-			private $host_cookies;
+			private $cookies;
+			private $form;
 
 		//--------------------------------------------------
 		// Setup
@@ -30,58 +69,63 @@
 				$this->socket = new socket();
 				$this->socket->exit_on_error_set(false);
 
+				$this->user_agent = NULL;
+				$this->current_data = NULL;
 				$this->current_url = NULL;
-				$this->host_cookies = array();
+				$this->cookies = array();
+				$this->form = NULL;
 
+			}
+
+			public function user_agent_get() {
+				return $this->user_agent;
+			}
+
+			public function user_agent_set($user_agent) {
+				$this->user_agent = $user_agent;
 			}
 
 		//--------------------------------------------------
 		// Request
 
 			public function get($url) {
-
-				//--------------------------------------------------
-				// Get page
-
-config::set('debug.show', false);
-$this->current_url = $url;
-return;
-
-					do {
-
-						$this->socket->get($url);
-
-						$this->current_url = $url;
-
-					} while (($url = $this->socket->response_header_get('Location')) !== NULL);
-
+				$this->_send($url);
 			}
 
 		//--------------------------------------------------
 		// Current page
 
-			public function current_url_get() {
+			public function url_get() {
 				return $this->current_url;
 			}
 
-			public function current_dom_get($html) {
+			public function url_set($url) {
+				$this->current_url = $url;
+			}
+
+			public function data_get() {
+				return $this->current_data;
+			}
+
+			public function data_set($data) {
+				$this->current_data = $data;
+			}
+
+		//--------------------------------------------------
+		// DOM Support
+
+			public function dom_get() {
 
 				//--------------------------------------------------
-				// Missing current URL
+				// Missing current URL / data
 
 					if ($this->current_url === NULL) {
 						exit_with_error('Need to request a page first');
 					}
 
-				//--------------------------------------------------
-				// HTML
-
-					//$html = $this->socket->response_data_get();
-					// if ($html == '') {
-					// 	return false;
-					// }
-
-					$html = file_get_contents('/Volumes/WebServer/Projects/craig.framework/framework/0.1/class/socket/data.html');
+					if ($this->current_data == '') {
+						return false;
+					}
 
 				//--------------------------------------------------
 				// Parse
@@ -89,7 +133,7 @@ return;
 					libxml_use_internal_errors(true);
 
 					$dom = new DOMDocument();
-					$dom->loadHTML($html);
+					$dom->loadHTML($this->current_data);
 
 					// foreach (libxml_get_errors() as $error) {
 					// }
@@ -102,47 +146,461 @@ return;
 
 			}
 
+			public function node_get($query) {
+
+				$nodes = $this->nodes_get($query);
+
+				if ($nodes->length == 1) {
+					return $nodes->item(0);
+				} else {
+					exit_with_error('There were ' . $nodes->length . ' nodes with the XPath "' . $query . '"', $this->current_url);
+				}
+
+			}
+
+			public function nodes_get($query, $dom = NULL) {
+
+				if ($dom === NULL) {
+					$dom = $this->dom_get();
+				}
+
+				if ($dom == false) {
+					exit_with_error('There was no content returned from last query.', $this->current_url);
+				}
+
+				$xpath = new DOMXPath($dom);
+
+				return $xpath->query($query);
+
+			}
+
+			public function nodes_get_html($query) {
+				$node_html = array();
+				foreach ($this->nodes_get($query) as $node) {
+					$node_html[] = trim($this->_node_as_dom($node)->saveHTML());
+				}
+				return $node_html;
+			}
+
+		//--------------------------------------------------
+		// Link support
+
+			public function link_follow($query) {
+				$this->_send($this->link_get_url($query));
+			}
+
+			public function link_get_url($query) {
+
+				//--------------------------------------------------
+				// Node
+
+					if (is_int($query)) {
+
+						$xpath = '(//a)[' . $query . ']';
+
+					} else if (substr($query, 0, 1) == '/' || substr($query, 0, 2) == '(/') {
+
+						$xpath = $query; // Best guess at it being an XPath
+
+					} else {
+
+						$xpath = '//a[contains(text(),"' . $query . '")]'; // Text found in link
+
+					}
+
+					$link_node = $this->node_get($xpath);
+
+				//--------------------------------------------------
+				// Return
+
+					$url = $link_node->getAttribute('href');
+
+					if ($url !== '') {
+						return $url;
+					} else {
+						exit_with_error('Cannot find a href attribute on link "' . $query . '"');
+					}
+
+			}
+
 		//--------------------------------------------------
 		// Form support
 
-			public function form_select() {
-
-
+			public function form_select($query = 1) {
 
 				//--------------------------------------------------
-				// Data
+				// Form
 
+					if (is_int($query)) {
+						$query = '(//form)[' . $query . ']';
+					}
 
-$xpath = new DOMXPath($this->current_dom_get());
+					$form_node = $this->node_get($query);
+					$form_dom = $this->_node_as_dom($form_node);
 
+				//--------------------------------------------------
+				// Details
 
-$query = '//form[@method="POST"]';
+					//--------------------------------------------------
+					// Form action
 
-$forms = $xpath->query($query);
+						$form_action = $form_node->getAttribute('action');
 
-if ($forms->length == 1) {
-	$form = $forms->item(0);
-} else {
-	exit_with_error('There were ' . $forms->length . ' forms found on: ' . $this->current_url);
-}
+						if ($form_action == '') {
+							$form_action = $this->current_url; // Not specified, so use current url
+						}
 
+					//--------------------------------------------------
+					// Start
 
-debug($form);
-exit();
+						$this->form = array(
+								'action' => $form_action,
+								'method' => strtoupper($form_node->getAttribute('method')),
+								'fields' => array(),
+								'submits' => array(),
+							);
 
+					//--------------------------------------------------
+					// Input fields
+
+						foreach ($this->nodes_get('//input', $form_dom) as $input) {
+
+							$name = $input->getAttribute('name');
+							$type = $input->getAttribute('type');
+
+							if ($type == 'submit') {
+
+								if ($name == '' && isset($this->form['submits'][''])) { // More than 1 submit with no name
+									continue;
+								}
+
+								$this->form['submits'][$name] = $input->getAttribute('value');
+
+							} else if ($name != '' && $type != 'file') {
+
+								$this->form['fields'][$name] = array(
+										'type' => 'input',
+										'value' => $input->getAttribute('value'),
+									);
+
+							}
+
+						}
+
+					//--------------------------------------------------
+					// Select fields
+
+						foreach ($this->nodes_get('//select', $form_dom) as $select) {
+							$name = $select->getAttribute('name');
+							if ($name != '') {
+
+								$options = array();
+								$value = NULL;
+
+								foreach ($this->nodes_get('//option', $this->_node_as_dom($select)) as $option) {
+
+									if ($option->hasAttribute('value')) {
+										$option_value = $option->getAttribute('value');
+									} else {
+										$option_value = $option->nodeValue;
+									}
+
+									$options[$option_value] = $option->nodeValue;
+
+									if ($option->hasAttribute('selected')) {
+										$value = $option_value;
+									}
+
+								}
+
+								if ($value === NULL) {
+									reset($options);
+									$value = key($options);
+								}
+
+								$this->form['fields'][$name] = array(
+										'type' => 'select',
+										'value' => $value,
+										'options' => $options,
+									);
+
+							}
+						}
+
+				//--------------------------------------------------
+				// Success
+
+					return true;
 
 			}
 
-			public function form_var_set() {
+			public function form_field_set($name, $value) {
+
+				$field = $this->_form_field_get($name);
+
+				if ($field['type'] == 'select' && !isset($field['options'][$value])) {
+					exit_with_error('Cannot use the value "' . $value . '" in the select field "' . $name . '" (' . implode('/', array_keys($field['options'])) . ')', $this->current_url);
+				}
+
+				$this->form['fields'][$name]['value'] = $value;
+
 			}
 
-			public function form_submit() {
+			public function form_field_select_options_get($name) {
+
+				$field = $this->_form_field_get($name);
+
+				if ($field['type'] == 'select') {
+					return $field['options'];
+				} else {
+					exit_with_error('The field "' . $name . '" is not a select field', $this->current_url);
+				}
+
+			}
+
+			private function _form_field_get($name) {
+
+				if ($this->form === NULL) {
+					exit_with_error('Cannot set the form field "' . $name . '" until you have called form_select()', $this->current_url);
+				}
+
+				if (!isset($this->form['fields'][$name])) {
+					exit_with_error('Cannot find the form field "' . $name . '"', $this->current_url);
+				}
+
+				return $this->form['fields'][$name];
+
+			}
+
+			public function form_fields_get() {
+				$fields = array();
+				foreach ($this->form['fields'] as $name => $info) {
+					$fields[$name] = $info['value'];
+				}
+				return $fields;
+			}
+
+			public function form_submit($button_name = NULL, $button_value = NULL) {
+
+				//--------------------------------------------------
+				// Check
+
+					if ($this->form === NULL) {
+						exit_with_error('Cannot submit the form until you have called form_select()', $this->current_url);
+					}
+
+				//--------------------------------------------------
+				// Post values
+
+					$post_values = $this->form_fields_get();
+
+					if ($button_name === NULL) {
+						reset($this->form['submits']);
+						$button_name = key($this->form['submits']);
+					}
+
+					if ($button_name != '') { // Not NULL or empty-name
+
+						if (!isset($this->form['submits'][$button_name])) {
+							exit_with_error('Cannot submit the form with the unknown button "' . $button_name . '"', $this->current_url);
+						}
+
+						if ($button_value === NULL) {
+							$button_value = $this->form['submits'][$button_name];
+						}
+
+						$post_values[$button_name] = $button_value;
+
+					}
+
+				//--------------------------------------------------
+				// Send
+
+					$this->_send($this->form['action'], $post_values, $this->form['method']);
+
 			}
 
 		//--------------------------------------------------
-		// DOM support
+		// Support functions
 
+			private function _send($url, $data = '', $method = 'GET') {
 
+				//--------------------------------------------------
+				// Reset
+
+					$this->form = NULL;
+
+				//--------------------------------------------------
+				// Base headers
+
+					if ($this->user_agent !== NULL) {
+						$this->socket->header_add('User-Agent', $this->user_agent);
+						$this->socket->header_add('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+						$this->socket->header_add('Accept-Language', 'en-gb,en;q=0.5');
+						$this->socket->header_add('Accept-Charset', 'utf-8,ISO-8859-1;q=0.7,*;q=0.7');
+					}
+
+				//--------------------------------------------------
+				// Get page
+
+					do {
+
+						//--------------------------------------------------
+						// Check it is a full url
+
+							$url_parts = @parse_url($url);
+
+							if (!isset($url_parts['host'])) { // Not a full URL
+
+								//--------------------------------------------------
+								// Parse and merge urls
+
+										// Basic alternative to missing http_build_url();
+
+									$current_url_parts = @parse_url($this->current_url);
+									$current_url_path = (isset($current_url_parts['path']) ? $current_url_parts['path'] : '/');
+
+									unset($current_url_parts['path']);
+									unset($current_url_parts['query']);
+									unset($current_url_parts['fragment']);
+
+									$url_parts = array_merge($current_url_parts, $url_parts);
+
+									if (!isset($url_parts['scheme'])) {
+										$url_parts['scheme'] = 'http';
+									}
+
+								//--------------------------------------------------
+								// Process relative paths
+
+									if (!isset($url_parts['path'])) {
+
+										$url_parts['path'] = $current_url_path;
+
+									} else if (substr($url_parts['path'], 0, 1) != '/') {
+
+										$new_path = dirname($current_url_path) . '/' . $url_parts['path'];
+
+										$new_path = '/' . implode('/', path_to_array($new_path)) . (substr($new_path, -1) == '/' ? '/' : '');
+
+										$url_parts['path'] = $new_path;
+
+									}
+
+								//--------------------------------------------------
+								// Re-build
+
+									$url = $url_parts['scheme'] . '://';
+
+									if (isset($url_parts['user'])) {
+										$url .= $url_parts['user'];
+										if (isset($url_parts['pass'])) {
+											$url .= ':' . $url_parts['pass'];
+										}
+										$url .= '@';
+									}
+
+									$url .= $url_parts['host'];
+
+									if (isset($url_parts['port'])) {
+										$url .= ':' . $url_parts['port'];
+									}
+
+									$url .= $url_parts['path'];
+
+									if (isset($url_parts['query'])) {
+										$url .= '?' . $url_parts['query'];
+									}
+
+							}
+
+						//--------------------------------------------------
+						// URL parts
+
+							$url_host = $url_parts['host'];
+
+							if (!isset($url_parts['path']) || $url_parts['path'] == '') {
+								$url_path = '/';
+							} else {
+								$url_path = $url_parts['path'];
+							}
+
+						//--------------------------------------------------
+						// Cookies
+
+							$cookies = array();
+
+							if (isset($this->cookies[$url_host])) {
+								foreach ($this->cookies[$url_host] as $host_path => $host_cookies) {
+									if (prefix_match($host_path, $url_path)) {
+										foreach ($host_cookies as $name => $value) {
+											$cookies[$name] = $value;
+										}
+									}
+								}
+							}
+
+							$this->socket->cookies_set($cookies);
+
+						//--------------------------------------------------
+						// Request
+
+							if ($method == 'GET' || $method == '') {
+
+								$this->socket->get($url, $data);
+
+							} else if ($method == 'POST') {
+
+								$this->socket->post($url, $data);
+
+							} else {
+
+								exit_with_error('Unknown request method "' . $method . '"');
+
+							}
+
+							$this->current_url = $url;
+							$this->current_data = $this->socket->response_data_get();
+
+							$this->socket->header_add('Referer', $url);
+
+						//--------------------------------------------------
+						// Reset - incase we do a redirect
+
+							$method = 'GET';
+							$data = '';
+
+						//--------------------------------------------------
+						// Cookies
+
+							foreach ($this->socket->response_header_get_all('Set-Cookie') as $header_cookie) {
+								if (preg_match('/^([^=]+)=([^;\n]+)(.*?path=([^;\n]+))?/i', $header_cookie, $matches)) {
+
+									$path = (isset($matches[4]) ? $matches[4] : '/');
+
+									$this->cookies[$url_host][$path][$matches[1]] = urldecode($matches[2]);
+
+								}
+							}
+
+							if (isset($this->cookies[$url_host])) {
+								ksort($this->cookies[$url_host]); // If there are two cookies with the same name, one for "/" and one for "/path/", the latter should take precedence.
+							}
+
+					} while (($url = $this->socket->response_header_get('Location')) !== NULL);
+
+				//--------------------------------------------------
+				// Success
+
+					return true;
+
+			}
+
+			private function _node_as_dom($node) { // Useful for passing to XPath or calling saveHTML()
+				$dom = new DOMDocument();
+				$dom->appendChild($dom->importNode($node, true));
+				return $dom;
+			}
 
 	}
 
