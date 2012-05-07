@@ -28,7 +28,7 @@
 
 					$this->value = NULL;
 
-					if ($this->form_submitted) {
+					if ($this->form_submitted || $this->form_passive) {
 
 						$hidden_value = $this->form->hidden_value_get($this->name);
 

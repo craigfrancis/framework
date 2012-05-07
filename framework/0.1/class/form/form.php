@@ -49,6 +49,7 @@
 			private $form_class;
 			private $form_button;
 			private $form_attributes;
+			private $form_passive;
 			private $form_submitted;
 			private $autocomplete;
 			private $disabled;
@@ -97,6 +98,7 @@
 					$this->form_class = '';
 					$this->form_button = 'Save';
 					$this->form_attributes = array();
+					$this->form_passive = false;
 					$this->form_submitted = false;
 					$this->autocomplete = NULL;
 					$this->disabled = (isset($site_config['disabled']) ? $site_config['disabled'] : false);
@@ -214,6 +216,15 @@
 				} else {
 					$this->form_attributes[$attribute] = $value;
 				}
+			}
+
+			public function form_passive_set($passive) {
+				$this->form_passive = ($passive == true);
+				$this->_is_submitted();
+			}
+
+			public function form_passive_get() {
+				return $this->form_passive;
 			}
 
 			public function autocomplete_set($autocomplete) {
@@ -570,7 +581,7 @@
 			}
 
 			private function _is_submitted() {
-				$this->form_submitted = (request('act') == $this->form_id && config::get('request.method') == $this->form_method);
+				$this->form_submitted = ($this->form_passive == false && request('act') == $this->form_id && config::get('request.method') == $this->form_method);
 			}
 
 			public function valid() {
@@ -1021,8 +1032,10 @@
 						}
 					}
 
-					$input_fields['act'] = $this->form_id;
-					$input_fields['csrf'] = $this->csrf_token;
+					if (!$this->form_passive) {
+						$input_fields['act'] = $this->form_id;
+						$input_fields['csrf'] = $this->csrf_token;
+					}
 
 					foreach ($this->hidden_values as $name => $value) {
 						$input_fields['h-' . $name] = urlencode($value); // URL encode allows newline characters to exist in hidden (one line) input fields.
@@ -1196,6 +1209,12 @@
 						$buttons = array($buttons);
 					}
 
+					if (!$this->form_passive) {
+						$default_attributes = array('type' => 'submit');
+					} else {
+						$default_attributes = array('type' => 'submit', 'name' => 'button');
+					}
+
 					$html = '
 							<div class="row submit">';
 					foreach ($buttons as $attributes) {
@@ -1206,7 +1225,7 @@
 							$attributes['value'] = 'Save';
 						}
 						$html .= '
-								' . html_tag('input', array_merge(array('type' => 'submit', 'name' => 'button'), $attributes));
+								' . html_tag('input', array_merge($default_attributes, $attributes));
 					}
 					return $html . '
 							</div>';

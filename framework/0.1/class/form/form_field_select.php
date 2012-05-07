@@ -35,7 +35,7 @@
 
 					$this->value = NULL;
 
-					if ($this->form_submitted) {
+					if ($this->form_submitted || $this->form_passive) {
 						$this->value = request($this->name, $this->form->form_method_get());
 						if ($this->value === NULL) {
 							$this->value = $this->form->hidden_value_get($this->name);

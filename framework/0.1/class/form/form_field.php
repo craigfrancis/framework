@@ -8,6 +8,7 @@
 			protected $form;
 			protected $form_field_uid;
 			protected $form_submitted;
+			protected $form_passive;
 
 			protected $id;
 			protected $name;
@@ -88,6 +89,7 @@
 					$this->form = $form;
 					$this->form_field_uid = $form_field_uid;
 					$this->form_submitted = $form->submitted();
+					$this->form_passive = $form->form_passive_get();
 
 					$this->id = 'fld_' . human_to_ref($name);
 					$this->name = $name;

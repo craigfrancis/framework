@@ -21,7 +21,7 @@
 				//--------------------------------------------------
 				// Strip currency symbol from input value
 
-					if ($this->form_submitted) {
+					if ($this->form_submitted || $this->form_passive) {
 						$this->value_set($this->value);
 					}
 
