@@ -50,6 +50,7 @@
 								$values = $form->data_array_get();
 
 								$email = new email();
+								$email->subject_set('Contact us');
 								$email->request_table_add($values);
 								$email->send(config::get('email.contact_us'));
 

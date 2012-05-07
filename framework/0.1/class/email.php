@@ -222,8 +222,8 @@
 						'Sent' => date('l jS F Y, g:i:sa'),
 						'Website' => config::get('request.domain_http') . config::get('url.prefix'),
 						'Request' => config::get('request.url'),
-						'Remote' => config::get('request.ip'),
 						'Referrer' => config::get('request.referrer'),
+						'Remote' => config::get('request.ip'),
 					);
 
 				$this->values_table_add(array_merge($request_values, $values));
