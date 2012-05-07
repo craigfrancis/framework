@@ -288,6 +288,20 @@
 						}
 
 					//--------------------------------------------------
+					// Text area fields
+
+						foreach ($this->nodes_get('//textarea', $form_dom) as $input) {
+
+							$name = $input->getAttribute('name');
+
+							$this->form['fields'][$name] = array(
+									'type' => 'textarea',
+									'value' => $input->nodeValue,
+								);
+
+						}
+
+					//--------------------------------------------------
 					// Select fields
 
 						foreach ($this->nodes_get('//select', $form_dom) as $select) {
