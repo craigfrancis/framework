@@ -207,12 +207,22 @@
 			//--------------------------------------------------
 			// Search form
 
-				$form = new form();
-				$form->form_class_set('search_form');
-				$form->form_button_set('Search');
+				$search_form = new form();
+				$search_form->form_passive_set(true);
+				$search_form->form_method_set('GET');
+				$search_form->form_class_set('search_form');
+				$search_form->form_button_set('Search');
 
-				$field_search = new form_field_text($form, 'Search');
-				$field_search->max_length_set('The search cannot be longer than XXX characters.', 200);
+				$search_field = new form_field_text($search_form, 'Search');
+				$search_field->max_length_set('The search cannot be longer than XXX characters.', 200);
+
+				if ($search_form->valid()) {
+					$search = $search_field->value_get();
+				} else {
+					$search = '';
+				}
+
+				$this->set('search', $search_form);
 
 			//--------------------------------------------------
 			// Setup the table
@@ -245,22 +255,17 @@
 					//--------------------------------------------------
 					// Keywords
 
-						$search = $field_search->value_get();
-						if ($search != '') {
+						foreach (preg_split('/\W+/', trim($search)) as $word) {
+							if ($word != '') {
 
-							foreach (preg_split('/\W+/', $search) as $word) {
-								if ($word != '') {
-
-									$where_word_sql = array();
-									foreach ($this->index_search_fields as $field) {
-										$where_word_sql[] = $db->escape_field($field) . ' LIKE "%' . $db->escape_like($word) . '%"';
-									}
-
-									$where_sql[] = implode(' OR ', $where_word_sql);
-
+								$where_word_sql = array();
+								foreach ($this->index_search_fields as $field) {
+									$where_word_sql[] = $db->escape_field($field) . ' LIKE "%' . $db->escape_like($word) . '%"';
 								}
-							}
 
+								$where_sql[] = implode(' OR ', $where_word_sql);
+
+							}
 						}
 
 					//--------------------------------------------------
@@ -366,7 +371,7 @@
 			// Variables
 
 				$this->set('item_single', $this->item_single);
-				$this->set('form', $form);
+
 				$this->set('table', $table);
 				$this->set('paginator', $paginator);
 

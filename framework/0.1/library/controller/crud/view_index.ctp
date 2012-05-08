@@ -7,7 +7,7 @@
 
 	<?php } ?>
 
-	<?= $form->html(); ?>
+	<?= $search->html(); ?>
 
 	<?= $paginator->html(); ?>
 
