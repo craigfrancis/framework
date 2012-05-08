@@ -65,6 +65,7 @@
 			private $form_method;
 			private $form_class;
 			private $form_button;
+			private $form_button_name;
 			private $form_attributes;
 			private $form_passive;
 			private $form_submitted;
@@ -114,6 +115,7 @@
 					$this->form_method = 'POST';
 					$this->form_class = '';
 					$this->form_button = 'Save';
+					$this->form_button_name = 'button';
 					$this->form_attributes = array();
 					$this->form_passive = false;
 					$this->form_submitted = false;
@@ -237,6 +239,7 @@
 
 			public function form_passive_set($passive) {
 				$this->form_passive = ($passive == true);
+				$this->form_button_name = ($this->form_passive ? NULL : 'button'); // As passive we don't need to know which button is pressed (just adds cruft to url)
 				$this->_is_submitted();
 			}
 
@@ -1040,6 +1043,10 @@
 
 					}
 
+					if ($this->form_button_name !== NULL) {
+						$field_names[] = $this->form_button_name;
+					}
+
 				//--------------------------------------------------
 				// Input fields - use array to keep unique keys
 
@@ -1234,12 +1241,6 @@
 						$buttons = array($buttons);
 					}
 
-					if ($this->form_passive) {
-						$default_attributes = array('type' => 'submit');
-					} else {
-						$default_attributes = array('type' => 'submit', 'name' => 'button');
-					}
-
 					$html = '
 							<div class="row submit">';
 					foreach ($buttons as $attributes) {
@@ -1250,7 +1251,7 @@
 							$attributes['value'] = 'Save';
 						}
 						$html .= '
-								' . html_tag('input', array_merge($default_attributes, $attributes));
+								' . html_tag('input', array_merge(array('type' => 'submit', 'name' => $this->form_button_name), $attributes));
 					}
 					return $html . '
 							</div>';
