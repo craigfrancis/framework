@@ -66,6 +66,25 @@
 			}
 
 		//--------------------------------------------------
+		// View variables
+
+			config::set('view.variables', array());
+			config::set('view.layout', 'default');
+
+		//--------------------------------------------------
+		// Main include
+
+			$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'main.php';
+			if (is_file($include_path)) {
+				require_once($include_path);
+			}
+
+		//--------------------------------------------------
+		// Initialisation done
+
+			define('FRAMEWORK_INIT_TIME', debug_run_time());
+
+		//--------------------------------------------------
 		// Controller
 
 			ob_start();
@@ -97,8 +116,19 @@
 		// Final config
 
 			if (config::get('debug.level') >= 5) {
+
 				debug_show_config();
-				debug_show_array(get_defined_vars(), 'Variables');
+
+				$variables_array = get_defined_vars();
+				$variables_html = array('Variables:');
+				foreach ($variables_array as $key => $value) {
+					if (substr($key, 0, 1) != '_' && substr($key, 0, 5) != 'HTTP_' && !in_array($key, array('GLOBALS'))) {
+						$variables_html[] = '&#xA0; <strong>' . html($key) . '</strong>: ' . html(debug_dump($value));
+					}
+				}
+
+				debug_note_html(implode($variables_html, '<br />' . "\n"));
+
 			}
 
 	}

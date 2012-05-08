@@ -427,7 +427,7 @@
 				$layout_path = APP_ROOT . '/layouts/' . safe_file_name(config::get('view.layout')) . '.ctp';
 
 				if (config::get('debug.level') >= 3) {
-					debug_note_html('<strong>Layout</strong>: ' . html($layout_path));
+					debug_note_html('<strong>Layout</strong>: ' . html($layout_path), 'S');
 				}
 
 				if (!is_file($layout_path)) {
@@ -525,7 +525,7 @@
 					$view_path = config::get('view.path');
 
 					if (config::get('debug.level') >= 3) {
-						debug_note_html('<strong>View</strong>: ' . html($view_path));
+						debug_note_html('<strong>View</strong>: ' . html($view_path), 'S');
 					}
 
 				//--------------------------------------------------

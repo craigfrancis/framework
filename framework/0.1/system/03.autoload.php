@@ -89,7 +89,7 @@
 				$note_html .= '&#xA0; ' . html($path) . '<br />';
 			}
 
-			debug_note_html($note_html);
+			debug_note_html($note_html, 'S');
 
 	}
 

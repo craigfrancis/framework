@@ -286,11 +286,11 @@
 //--------------------------------------------------
 // Debug notes
 
-	function debug_note($note, $colour = NULL) {
-		debug_note_html('<pre>' . html(is_string($note) ? $note : debug_dump($note)) . '</pre>', $colour);
+	function debug_note($note, $type = NULL, $colour = NULL) {
+		debug_note_html('<pre>' . html(is_string($note) ? $note : debug_dump($note)) . '</pre>', $type, $colour);
 	}
 
-	function debug_note_html($note_html, $colour = NULL) {
+	function debug_note_html($note_html, $type = NULL, $colour = NULL) {
 
 		//--------------------------------------------------
 		// Suppression
@@ -338,18 +338,23 @@
 		//--------------------------------------------------
 		// Note
 
+			if ($type == NULL) {
+				$type = (defined('FRAMEWORK_INIT_TIME') ? 'L' : 'I');
+			}
+
 			if ($colour !== NULL) {
 				if (substr($colour, 0, 1) != '#') {
 					$colour = '#' . $colour;
 				}
 			} else {
-				$colour = ($system_call ? '#CCC' : '#CFC');
+				$colour = ($system_call ? '#CCC' : '#FFC');
 			}
 
 			config::array_push('debug.notes', array(
+					'type' => $type,
 					'colour' => $colour,
-					'html' => $note_html,
 					'time' => $time,
+					'html' => $note_html,
 				));
 
 	}
@@ -388,36 +393,7 @@
 		//--------------------------------------------------
 		// Add note
 
-			debug_note_html(implode($config_html, '<br />' . "\n"));
-
-	}
-
-//--------------------------------------------------
-// Print variables
-
-	function debug_show_array($array, $label = 'Array') {
-
-		//--------------------------------------------------
-		// Suppression
-
-			if (config::get('debug.level') == 0) {
-				return;
-			}
-
-		//--------------------------------------------------
-		// HTML
-
-			$variables_html = array(html($label . ':'));
-			foreach ($array as $key => $value) {
-				if (substr($key, 0, 1) != '_' && substr($key, 0, 5) != 'HTTP_' && !in_array($key, array('GLOBALS'))) {
-					$variables_html[] = '&#xA0; <strong>' . html($key) . '</strong>: ' . html(debug_dump($value));
-				}
-			}
-
-		//--------------------------------------------------
-		// Add note
-
-			debug_note_html(implode($variables_html, '<br />' . "\n"));
+			debug_note_html(implode($config_html, '<br />' . "\n"), 'C');
 
 	}
 
@@ -680,9 +656,10 @@
 			$html = '<strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')<br />' . "\n" . (strpos($query_html, "\n") === false ? '' : '<br />' . "\n") . $query_html;
 
 			config::array_push('debug.notes', array(
+					'type' => (defined('FRAMEWORK_INIT_TIME') ? 'L' : 'I'),
 					'colour' => '#CCF',
-					'html' => $html,
 					'time' => $time_total,
+					'html' => $html,
 					'extra_html' => $explain_html . $text_html,
 				));
 
@@ -801,17 +778,29 @@
 		//--------------------------------------------------
 		// Time taken
 
-			$time = debug_run_time();
+			$output_html = array(
+					'C' => '', // Config
+					'S' => '', // Setup
+					'I' => '', // Initialising
+					'L' => '', // Log
+				);
 
-			$output_html  = '		<div style="' . html($css_block) . ' background: #FFF;">' . "\n";
-			$output_html .= '			<p style="' . html($css_para) . '">Elapsed time: ' . html($time) . '</p>' . "\n";
-			$output_html .= '			<p style="' . html($css_para) . '">Query time: ' . html(config::get('debug.db_time')) . '</p>' . "\n";
-			$output_html .= '		</div>' . "\n";
+			$output_time = '';
+
+			if (defined('FRAMEWORK_INIT_TIME')) {
+				$output_time .= 'Setup time: ' . html(FRAMEWORK_INIT_TIME) . "\n";
+			}
+
+			$output_time .= 'Total time: ' . html(debug_run_time()) . "\n";
+			$output_time .= 'Query time: ' . html(config::get('debug.db_time')) . "";
+
+			$output_html['L'] .= '		<div style="' . html($css_block) . ' background: #FFF;">' . "\n";
+			$output_html['L'] .= '			<p style="' . html($css_para) . '"><pre>' . html($output_time) . '</pre></p>' . "\n";
+			$output_html['L'] .= '		</div>' . "\n";
 
 			$output_text  = "\n\n\n\n\n\n\n\n\n\n";
 			$output_text .= '--------------------------------------------------' . "\n\n";
-			$output_text .= 'Elapsed time: ' . html($time) . "\n";
-			$output_text .= 'Query time: ' . html(config::get('debug.db_time')) . "\n\n";
+			$output_text .= $output_time . "\n\n";
 
 		//--------------------------------------------------
 		// Notes
@@ -820,35 +809,56 @@
 
 			foreach ($notes as $note) {
 
-				$output_html .= '		<div style="' . html($css_block) . ' background: ' . html($note['colour']) . '">' . "\n";
-				$output_html .= '			<p style="' . html($css_para) . '">' . $note['html'] . '</p>' . "\n";
+				$type = $note['type'];
+
+				if (!isset($output_html[$type])) {
+					$output_html[$type] = '';
+				}
+
+				$output_html[$type] .= '		<div style="' . html($css_block) . ' background: ' . html($note['colour']) . '">' . "\n";
+				$output_html[$type] .= '			<p style="' . html($css_para) . '">' . $note['html'] . '</p>' . "\n";
 
 				$output_text .= '--------------------------------------------------' . "\n\n";
 				$output_text .= html_decode(strip_tags($note['html'])) . "\n\n";
 
 				if ($note['time'] !== NULL) {
-					$output_html .= '			<p style="' . html($css_para) . '">Time Elapsed: ' . html($note['time']) . '</p>' . "\n";
+					$output_html[$type] .= '			<p style="' . html($css_para) . '">Time Elapsed: ' . html($note['time']) . '</p>' . "\n";
 					$output_text .= 'Time Elapsed: ' . $note['time'] . "\n\n";
 				}
 
 				if (isset($note['extra_html']) && $note['extra_html'] != '') {
-					$output_html .= $note['extra_html'];
+					$output_html[$type] .= $note['extra_html'];
 					$output_text .= $note['extra_html'] . "\n\n";
 				}
 
-				$output_html .= '		</div>' . "\n";
+				$output_html[$type] .= '		</div>' . "\n";
 
 			}
 
 		//--------------------------------------------------
 		// Wrapper
 
+			$output_links_html = '';
+			$output_data_html = '';
+
+			foreach ($output_html as $type => $html) {
+				if ($html !== '') {
+
+					$node_id = 'debug_output_' . $type;
+
+					$output_links_html .= '<a href="#' . html($node_id) . '" style="padding: 1px; color: #DDD; background: #FFF; ' . html($css_text) . '" onclick="var debug_ref = document.getElementById(\'' . addslashes($node_id) . '\'); var debug_open = debug_ref.style.display == \'block\'; this.style.color = (debug_open ? \'#DDD\' : \'#000\'); document.getElementById(\'' . addslashes($node_id) . '\').style.display = (debug_open ? \'none\' : \'block\'); this.scrollIntoView(); return false;">[' . html($type) . ']</a>';
+
+					$output_data_html .= '	<div style="display: ' . html(config::get('debug.default_show') === true ? 'block' : 'none') . ';" id="' . html($node_id) . '">' . "\n";
+					$output_data_html .= $html . "\n";
+					$output_data_html .= '	</div>' . "\n";
+
+				}
+			}
+
 			$output_wrapper_html  = "\n\n<!-- START OF DEBUG -->\n\n";
-			$output_wrapper_html .= '<div style="margin: 10px 5px 0 5px; padding: 0; clear: both;">' . "\n";
-			$output_wrapper_html .= '	<p style="' . html($css_para) . '"><a href="#" style="margin: -10px -10px 0 0; padding: 10px 10px 0 0; color: #AAA; ' . html($css_text) . '" onclick="document.getElementById(\'debug_output\').style.display = (document.getElementById(\'debug_output\').style.display == \'block\' ? \'none\' : \'block\'); return false;">+</a></p>' . "\n";
-			$output_wrapper_html .= '	<div style="display: ' . html(config::get('debug.default_show') === true ? 'block' : 'none') . ';" id="debug_output">' . "\n";
-			$output_wrapper_html .= $output_html . "\n";
-			$output_wrapper_html .= '	</div>' . "\n";
+			$output_wrapper_html .= '<div style="margin: 0; padding: 10px; clear: both;">' . "\n";
+			$output_wrapper_html .= '	<p style="text-align: left; padding: 0; margin: 0; ' . html($css_text) . '">' . $output_links_html . '</p>' . "\n";
+			$output_wrapper_html .= $output_data_html;
 			$output_wrapper_html .= '</div>' . "\n\n<!-- END OF DEBUG -->\n\n";
 
 			$output_html = $output_wrapper_html;

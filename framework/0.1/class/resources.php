@@ -141,7 +141,7 @@
 						}
 					}
 
-					debug_note_html($note_html);
+					debug_note_html($note_html, 'S');
 
 					unset($note_html, $log);
 

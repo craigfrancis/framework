@@ -349,7 +349,7 @@
 							$note_html .= '&#xA0; <strong>variables</strong>: ' . html(debug_dump($route_variables)) . '<br />';
 						}
 
-						debug_note_html($note_html);
+						debug_note_html($note_html, 'S');
 
 						unset($note_html);
 
