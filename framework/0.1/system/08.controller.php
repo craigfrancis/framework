@@ -203,6 +203,8 @@
 
 				public function action_index() {
 
+					$db = $this->db_get();
+
 					require_once($this->action_index_path);
 
 				}
@@ -286,12 +288,15 @@
 				$note_html .= '&#xA0; &#xA0; $this->route_folder_get(' . html($id) . '); <span style="color: #999;">// ' . html($value) . '</span><br />' . "\n";
 			}
 
-			foreach (config::get('output.title_folders') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->title_folder_set(' . html($id) . ', \'new_value\');<br />' . "\n";
-			}
-
 			$note_html .= '&#xA0; &#xA0; $this->view_path_set(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; $this->page_ref_set(\'example_ref\');<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; $this->title_set(\'Custom page title.\');<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; $this->title_full_set(\'Custom page title.\');<br />' . "\n";
+
+			foreach (config::get('output.title_folders') as $id => $value) {
+				$note_html .= '&#xA0; &#xA0; $this->title_folder_set(' . html($id) . ', \'new_value\'); <span style="color: #999;">// ' . html($value) . '</span><br />' . "\n";
+			}
+
 			$note_html .= '&#xA0; &#xA0; $this->message_set(\'The item has been updated.\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; resources::js_add(\'/path/to/file.js\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; resources::css_add(\'/path/to/file.css\');<br />' . "\n";

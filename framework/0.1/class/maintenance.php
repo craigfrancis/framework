@@ -287,7 +287,7 @@
 				//--------------------------------------------------
 				// Create simple index of tasks
 
-					config::set('output.title', 'Maintenance tasks');
+					$this->title_set('Maintenance tasks');
 
 					$html = '
 						<h2>Tasks</h2>

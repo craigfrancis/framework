@@ -38,20 +38,14 @@
 
 			public function __construct() {
 
-				$path_base = NULL; // First argument, if set and not an array of parameters.
-
 				foreach (func_get_args() as $k => $arg) {
 					if (is_array($arg)) {
 						$this->param_set($arg);
 					} else if ($k == 0) {
-						$path_base = $arg;
+						$this->parse($arg); // First argument, if set and not an array of parameters.
 					} else {
 						$this->path_extra[] = $arg;
 					}
-				}
-
-				if ($path_base !== NULL) {
-					$this->parse($path_base);
 				}
 
 			}

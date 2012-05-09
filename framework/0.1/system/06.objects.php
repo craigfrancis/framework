@@ -35,6 +35,23 @@
 				}
 			}
 
+			public function title_set($title_main) {
+
+				$title_prefix = config::get('output.title_prefix');
+				$title_suffix = config::get('output.title_suffix');
+				$title_divide = config::get('output.title_divide');
+
+				$title_full = $title_prefix . ($title_prefix != '' && $title_main != '' ? $title_divide : '') . $title_main;
+				$title_full = $title_full   . ($title_suffix != '' && $title_main != '' ? $title_divide : '') . $title_suffix;
+
+				$this->title_full_set($title_full);
+
+			}
+
+			public function title_full_set($title) {
+				config::set('output.title', $title);
+			}
+
 			public function title_folder_set($id, $name) {
 				config::array_set('output.title_folders', $id, $name);
 			}
@@ -306,26 +323,20 @@
 			public function render() {
 
 				//--------------------------------------------------
-				// Title
+				// Default title
 
-					//--------------------------------------------------
-					// Default
-
-						$k = 0;
-
-						$title_prefix = config::get('output.title_prefix');
-						$title_suffix = config::get('output.title_suffix');
-						$title_divide = config::get('output.title_divide');
+					if (config::get('output.title') === NULL) {
 
 						if (config::get('output.error')) {
 
 							$title_default = config::get('output.title_error');
 
-							$k++;
-
 						} else {
 
+							$k = 0;
+
 							$title_default = '';
+							$title_divide = config::get('output.title_divide');
 
 							foreach (config::get('output.title_folders') as $folder) {
 								if ($folder != '') {
@@ -338,25 +349,9 @@
 
 						}
 
-						$title_default = $title_prefix  . ($title_prefix != '' && $k > 0 ? $title_divide : '') . $title_default;
-						$title_default = $title_default . ($title_suffix != '' && $k > 0 ? $title_divide : '') . $title_suffix;
+						$this->title_set($title_default);
 
-						config::set('output.title_default', $title_default);
-
-					//--------------------------------------------------
-					// Main
-
-						$title = config::get('output.title');
-
-						if ($title === NULL) {
-
-							config::set('output.title', $title_default);
-
-						} else {
-
-							config::set('output.title', config::get('output.title_prefix') . $title . config::get('output.title_suffix'));
-
-						}
+					}
 
 				//--------------------------------------------------
 				// Message

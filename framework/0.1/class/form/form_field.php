@@ -271,10 +271,6 @@
 				$this->info_tag = $tag;
 			}
 
-			public function print_show_set($show) { // Print on main form automatically
-				$this->print_show = ($show == true);
-			}
-
 			public function required_mark_set($required_mark) {
 				$this->required_mark_set_html(html($required_mark));
 			}
@@ -329,6 +325,10 @@
 
 			public function readonly_get() {
 				return $this->readonly;
+			}
+
+			public function print_show_set($show) { // Print on main form automatically
+				$this->print_show = ($show == true);
 			}
 
 			public function print_show_get() {
