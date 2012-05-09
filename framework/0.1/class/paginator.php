@@ -47,13 +47,13 @@
 			'variable' => 'page',
 			'elements' => NULL,
 			'indent_html' => "\n\t\t\t\t",
-			'first_html' => 'First',
-			'back_html' => 'Back',
-			'next_html' => 'Next',
-			'last_html' => 'Last',
-			'number_pad' => 0,
+			'first_html' => NULL,
+			'back_html' => '[«]',
+			'next_html' => '[»]',
+			'last_html' => NULL,
+			'number_pad' => 2,
 			'link_wrapper_element' => 'span',
-			'extra_html' => '<span class="pagination_extra">Page [PAGE] of [COUNT]</span>',
+			'extra_html' => NULL, // '<span class="pagination_extra">Page [PAGE] of [COUNT]</span>'
 		);
 
 		protected $url = NULL;
@@ -61,7 +61,7 @@
 		protected $page_number = NULL;
 
 		public function __construct($config = NULL) {
-			this::setup($config);
+			$this->setup($config);
 		}
 
 		protected function setup($config) {
@@ -219,7 +219,7 @@
 
 				$nav_links_html = $this->_nav_links_html();
 
-				if ($this->config['extra_html'] !== '') {
+				if ($this->config['extra_html'] != '') {
 					$extra_html = $this->config['indent_html'] . "\t" . $this->config['extra_html'];
 					$extra_html = str_replace('[PAGE]', $this->page_number, $extra_html);
 					$extra_html = str_replace('[COUNT]', ($this->page_count == 0 ? 1 : $this->page_count), $extra_html);
@@ -291,7 +291,7 @@
 			//--------------------------------------------------
 			// Build
 
-				if ($this->config['first_html'] !== '') {
+				if ($this->config['first_html'] != '') {
 
 					$link_html = ($this->page_number <= 1 ? '<span>' . $this->config['first_html'] . '</span>' : $this->page_link_get_html($this->config['first_html'], 1));
 
@@ -299,7 +299,7 @@
 
 				}
 
-				if ($this->config['back_html'] !== '') {
+				if ($this->config['back_html'] != '') {
 
 					$link_html = $this->page_link_get_html($this->config['back_html'], ($this->page_number - 1));
 
@@ -307,7 +307,7 @@
 
 				}
 
-				if ($this->config['next_html'] !== '') {
+				if ($this->config['next_html'] != '') {
 
 					$link_html = $this->page_link_get_html($this->config['next_html'], $this->page_number + 1);
 
@@ -315,7 +315,7 @@
 
 				}
 
-				if ($this->config['last_html'] !== '') {
+				if ($this->config['last_html'] != '') {
 
 					$link_html = ($this->page_number >= $this->page_count ? '<span>' . $this->config['last_html'] . '</span>' : $this->page_link_get_html($this->config['last_html'], $this->page_count));
 
