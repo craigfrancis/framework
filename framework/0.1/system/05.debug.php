@@ -772,8 +772,8 @@
 		// Default CSS
 
 			$css_text = 'font-size: 12px; font-family: verdana; font-weight: normal; text-align: left; text-decoration: none;';
-			$css_block = 'margin: 5px 0; padding: 5px; color: #000; font-size: 12px; border: 1px solid #000; clear: both;';
-			$css_para = 'text-align: left; padding: 0; margin: 0; ' . $css_text;
+			$css_block = 'padding: 5px; margin: 5px 0; color: #000; font-size: 12px; border: 1px solid #000; clear: both;';
+			$css_para = 'padding: 0; margin: 0; ' . $css_text;
 
 		//--------------------------------------------------
 		// Time taken
@@ -856,7 +856,7 @@
 			}
 
 			$output_wrapper_html  = "\n\n<!-- START OF DEBUG -->\n\n";
-			$output_wrapper_html .= '<div style="margin: 0; padding: 10px; clear: both;">' . "\n";
+			$output_wrapper_html .= '<div style="margin: 0; padding: 10px; clear: both; text-align: left;">' . "\n";
 			$output_wrapper_html .= '	<p style="text-align: left; padding: 0; margin: 0; ' . html($css_text) . '">' . $output_links_html . '</p>' . "\n";
 			$output_wrapper_html .= $output_data_html;
 			$output_wrapper_html .= '</div>' . "\n\n<!-- END OF DEBUG -->\n\n";
