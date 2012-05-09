@@ -24,6 +24,8 @@
 			protected $input_class;
 			protected $input_wrapper_class;
 			protected $input_wrapper_tag;
+			protected $format_class;
+			protected $format_tag;
 			protected $info_html;
 			protected $info_class;
 			protected $info_tag;
@@ -104,6 +106,8 @@
 					$this->input_class = NULL;
 					$this->input_wrapper_class = 'input';
 					$this->input_wrapper_tag = 'span';
+					$this->format_class = 'format';
+					$this->format_tag = 'span';
 					$this->info_html = NULL;
 					$this->info_class = 'info';
 					$this->info_tag = 'span';
@@ -222,6 +226,27 @@
 				$this->input_wrapper_tag = $class;
 			}
 
+			public function format_default_get_html() {
+				return '';
+			}
+
+			public function format_get_html($indent = 0) {
+				$format_html = $this->format_default_get_html();
+				if ($format_html == '') {
+					return '';
+				} else {
+					return ($indent > 0 ? "\n" : '') . str_repeat("\t", $indent) . '<' . html($this->format_tag) . ' class="' . html($this->format_class) . '">' . $format_html . '</' . html($this->format_tag) . '>';
+				}
+			}
+
+			public function format_class_set($class) {
+				$this->format_class = $class;
+			}
+
+			public function format_tag_set($tag) {
+				$this->format_tag = $tag;
+			}
+
 			public function info_set($info) {
 				$this->info_set_html(html($info));
 			}
@@ -230,20 +255,11 @@
 				$this->info_html = $info_html;
 			}
 
-			public function info_default_get_html() {
-				return '';
-			}
-
 			public function info_get_html($indent = 0) {
-				if ($this->info_html !== NULL) {
-					$info_html = $this->info_html;
-				} else {
-					$info_html = $this->info_default_get_html();
-				}
-				if ($info_html == '') {
+				if ($this->info_html == '') {
 					return '';
 				} else {
-					return ($indent > 0 ? "\n" : '') . str_repeat("\t", $indent) . '<' . html($this->info_tag) . ' class="' . html($this->info_class) . '">' . $info_html . '</' . html($this->info_tag) . '>';
+					return ($indent > 0 ? "\n" : '') . str_repeat("\t", $indent) . '<' . html($this->info_tag) . ' class="' . html($this->info_class) . '">' . $this->info_html . '</' . html($this->info_tag) . '>';
 				}
 			}
 
@@ -501,20 +517,20 @@
 									' . $this->html_label_by_key($key) . '
 								</' . html($this->input_wrapper_tag) . '>';
 					}
-					$html .= $this->info_get_html(8) . '
+					$html .= $this->format_get_html(8) . $this->info_get_html(8) . '
 							</' . html($this->wrapper_tag) . '>' . "\n";
 				} else {
 					if ($this->input_first) {
 						$html = '
 							<' . html($this->wrapper_tag) . ' class="' . html($this->wrapper_class_get()) . ' input_first"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
 								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>
-								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . $this->label_suffix_html . '</' . html($this->label_wrapper_tag) . '>' . $this->info_get_html(8) . '
+								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . $this->label_suffix_html . '</' . html($this->label_wrapper_tag) . '>' . $this->format_get_html(8) . $this->info_get_html(8) . '
 							</' . html($this->wrapper_tag) . '>' . "\n";
 					} else {
 						$html = '
 							<' . html($this->wrapper_tag) . ' class="' . html($this->wrapper_class_get()) . '"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
 								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . $this->label_suffix_html . '</' . html($this->label_wrapper_tag) . '>
-								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>' . $this->info_get_html(8) . '
+								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>' . $this->format_get_html(8) . $this->info_get_html(8) . '
 							</' . html($this->wrapper_tag) . '>' . "\n";
 					}
 				}

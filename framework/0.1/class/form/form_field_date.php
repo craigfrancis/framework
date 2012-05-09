@@ -86,7 +86,7 @@
 					);
 			}
 
-			public function info_default_get_html() {
+			public function format_default_get_html() {
 
 				$html = array();
 				foreach ($this->format_input as $field) {
