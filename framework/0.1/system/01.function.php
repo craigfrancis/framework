@@ -309,6 +309,10 @@
 
 	function format_currency($value, $currency_char = NULL, $decimal_places = 2, $zero_to_blank = false) {
 
+		if ($currency_char === NULL) {
+			$currency_char = config::get('output.currency');
+		}
+
 		$value = (round($value, $decimal_places) == 0 ? 0 : $value); // Stop negative -£0
 
 		if ($value == 0 && $zero_to_blank) {

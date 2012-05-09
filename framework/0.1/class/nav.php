@@ -3,12 +3,30 @@
 /***************************************************
 
 	//--------------------------------------------------
-	// Site config
+	// Example setup
 
-
+		$nav = new nav();
+		$nav->link_add('/', 'Home');
+		$nav->link_add('/contact/', 'Contact us');
+		$nav->link_add('/help/', 'Help');
 
 	//--------------------------------------------------
-	// Example setup
+	// Example setup - with groups
+
+		$nav = new nav();
+
+		$nav->group_add('Group A');
+		$nav->link_add('/a1/', 'A1');
+		$nav->link_add('/a2/', 'A2');
+		$nav->link_add('/a3/', 'A3');
+
+		$nav->group_add('Group B');
+		$nav->link_add('/b1/', 'B1');
+		$nav->link_add('/b2/', 'B2');
+		$nav->link_add('/b3/', 'B3');
+
+	//--------------------------------------------------
+	// Example setup - with sub navigation
 
 
 

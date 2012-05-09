@@ -104,7 +104,13 @@
 				}
 
 				$build_up_address = '/css/';
-				foreach (path_to_array(config::get('route.path')) as $f) {
+
+				$route_array = path_to_array(config::get('route.path'));
+				if (count($route_array) == 0) {
+					$route_array[] = '/home/';
+				}
+
+				foreach ($route_array as $f) {
 					if ($f != '') {
 
 						$build_up_address .= $f . '/';
