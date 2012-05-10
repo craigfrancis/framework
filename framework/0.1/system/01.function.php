@@ -48,7 +48,7 @@
 //--------------------------------------------------
 // Shortcut for url object - to avoid saying 'new'
 
-	if (!version_compare(PHP_VERSION, '5.3.0', '<')) {
+	if (version_compare(PHP_VERSION, '5.3.0', '<')) {
 
 		function url() {
 			$obj = new ReflectionClass('url');
