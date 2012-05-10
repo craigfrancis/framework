@@ -46,25 +46,37 @@
 	}
 
 //--------------------------------------------------
-// Shortcut for url object
+// Shortcut for url object - to avoid saying 'new'
 
-	function url() { // Shortcut, to avoid saying 'new'.
-		$obj = new ReflectionClass('url');
-		return $obj->newInstanceArgs(func_get_args());
-	}
+	if (!version_compare(PHP_VERSION, '5.3.0', '<')) {
 
-	function http_url() {
-		$obj = new ReflectionClass('url');
-		$url = $obj->newInstanceArgs(func_get_args());
-		$url->scheme_set('http');
-		return $url;
-	}
+		function url() {
+			$obj = new ReflectionClass('url');
+			$url = $obj->newInstanceArgs(func_get_args());
+			return $url->get();
+		}
 
-	function https_url() {
-		$obj = new ReflectionClass('url');
-		$url = $obj->newInstanceArgs(func_get_args());
-		$url->scheme_set('https');
-		return $url;
+	} else {
+
+		function url() {
+			$obj = new ReflectionClass('url');
+			return $obj->newInstanceArgs(func_get_args());
+		}
+
+		function http_url() {
+			$obj = new ReflectionClass('url');
+			$url = $obj->newInstanceArgs(func_get_args());
+			$url->scheme_set('http');
+			return $url;
+		}
+
+		function https_url() {
+			$obj = new ReflectionClass('url');
+			$url = $obj->newInstanceArgs(func_get_args());
+			$url->scheme_set('https');
+			return $url;
+		}
+
 	}
 
 //--------------------------------------------------
