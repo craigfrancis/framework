@@ -238,7 +238,7 @@
 				$note_html .= '&#xA0; ' . preg_replace('/^([^:]+):/', '<strong>\1</strong>:', html($log)) . '<br />' . "\n";
 			}
 
-			debug_note_html($note_html, 'S');
+			debug_note_html($note_html, 'H');
 
 			unset($note_html, $log);
 
@@ -304,7 +304,7 @@
 			$note_html .= '&#xA0; &#xA0; resources::head_add_html(\'&lt;html&gt;\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; render_error(\'page_not_found\');<br />' . "\n";
 
-			debug_note_html($note_html, 'S');
+			debug_note_html($note_html, 'H');
 
 			unset($note_html, $id, $value);
 
@@ -321,7 +321,7 @@
 	} else {
 
 		if (config::get('debug.level') >= 3) {
-			debug_note_html('<strong>Action</strong>: Missing', 'S');
+			debug_note_html('<strong>Action</strong>: Missing', 'H');
 		}
 
 		config::set('view.folders', config::get('route.folders'));

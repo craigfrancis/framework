@@ -381,7 +381,7 @@
 				// Note
 
 					if ($type == NULL) {
-						$type = (defined('FRAMEWORK_INIT_TIME') ? 'L' : 'I');
+						$type = (defined('FRAMEWORK_INIT_TIME') ? 'L' : 'S');
 					}
 
 					if ($colour !== NULL) {
@@ -685,7 +685,7 @@
 					$html = '<strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')<br />' . "\n" . (strpos($query_html, "\n") === false ? '' : '<br />' . "\n") . $query_html;
 
 					config::array_push('debug.notes', array(
-							'type' => (defined('FRAMEWORK_INIT_TIME') ? 'L' : 'I'),
+							'type' => (defined('FRAMEWORK_INIT_TIME') ? 'L' : 'S'),
 							'colour' => '#CCF',
 							'time' => $time_total,
 							'html' => $html,
@@ -740,12 +740,17 @@
 				//--------------------------------------------------
 				// Time taken
 
-					$output_html = array(
-							'C' => '', // Config
-							'S' => '', // Setup
-							'I' => '', // Initialising
-							'L' => '', // Log
+					$output_types = array(
+							'C' => 'Config',
+							'H' => 'Help',
+							'S' => 'Setup',
+							'L' => 'Log',
 						);
+
+					$output_html = array();
+					foreach ($output_types as $type => $label) {
+						$output_html[$type] = '';
+					}
 
 					$output_time = '';
 
@@ -807,7 +812,7 @@
 
 							$node_id = 'debug_output_' . $type;
 
-							$output_links_html .= '<a href="#' . html($node_id) . '" style="padding: 1px; color: #DDD; background: #FFF; ' . html($css_text) . '" onclick="var debug_ref = document.getElementById(\'' . addslashes($node_id) . '\'); var debug_open = debug_ref.style.display == \'block\'; this.style.color = (debug_open ? \'#DDD\' : \'#000\'); document.getElementById(\'' . addslashes($node_id) . '\').style.display = (debug_open ? \'none\' : \'block\'); this.scrollIntoView(); return false;">[' . html($type) . ']</a>';
+							$output_links_html .= '<a href="#' . html($node_id) . '"' . (isset($output_types[$type]) ? ' title="' . html($output_types[$type]) . '"' : '') . ' style="padding: 1px; color: #DDD; background: #FFF; ' . html($css_text) . '" onclick="var debug_ref = document.getElementById(\'' . addslashes($node_id) . '\'); var debug_open = debug_ref.style.display == \'block\'; this.style.color = (debug_open ? \'#DDD\' : \'#000\'); document.getElementById(\'' . addslashes($node_id) . '\').style.display = (debug_open ? \'none\' : \'block\'); this.scrollIntoView(); return false;">[' . html($type) . ']</a>';
 
 							$output_data_html .= '	<div style="display: ' . html(config::get('debug.default_show') === true ? 'block' : 'none') . ';" id="' . html($node_id) . '">' . "\n";
 							$output_data_html .= $html . "\n";
