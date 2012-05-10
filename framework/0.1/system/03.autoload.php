@@ -83,13 +83,17 @@
 		//--------------------------------------------------
 		// Error
 
-			$note_html = '<strong>Autoload</strong> ' . html($class_name) . ':<br />';
+			if (config::get('debug.level') > 0) {
 
-			foreach ($paths as $path) {
-				$note_html .= '&#xA0; ' . html($path) . '<br />';
+				$note_html = '<strong>Autoload</strong> ' . html($class_name) . ':<br />';
+
+				foreach ($paths as $path) {
+					$note_html .= '&#xA0; ' . html($path) . '<br />';
+				}
+
+				debug_note_html($note_html, 'S');
+
 			}
-
-			debug_note_html($note_html, 'S');
 
 	}
 

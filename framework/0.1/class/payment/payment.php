@@ -76,7 +76,7 @@ debug($this->config);
 //--------------------------------------------------
 // Tables exist
 
-	if (SERVER == 'stage') {
+	if (config::get('debug.level') > 0) {
 
 // 		debug_require_db_table('user', '
 // 				CREATE TABLE [TABLE] (

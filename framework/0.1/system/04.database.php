@@ -45,7 +45,10 @@
 			if ($run_debug && function_exists('debug_database')) {
 				$this->result = debug_database($this, $query);
 			} else {
-				$this->result = mysql_query($query, $this->link) or $this->_error($query);
+				$this->result = mysql_query($query, $this->link);
+			}
+			if (!$this->result) {
+				$this->_error($query);
 			}
 			return $this->result;
 		}

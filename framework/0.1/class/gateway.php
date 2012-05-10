@@ -162,7 +162,7 @@
 				// Debug
 
 					if (function_exists('debug_note')) {
-						debug_note('API Call: ' . $gateway_url . "\n\n");
+						debug_note('API Call: ' . $gateway_url);
 					}
 
 				//--------------------------------------------------
@@ -305,7 +305,7 @@
 				// Debug
 
 					if (function_exists('debug_note')) {
-						debug_note('API Returned: ' . $gateway_url . "\n\n" . $this->response_data . "\n\n");
+						debug_note('API Returned: ' . $gateway_url . "\n\n" . $this->response_data);
 					}
 
 				//--------------------------------------------------
@@ -387,7 +387,7 @@
 
 			public function _check_tables() {
 
-				if (SERVER == 'stage') {
+				if (config::get('debug.level') > 0) {
 
 					debug_require_db_table('gateway_log', '
 							CREATE TABLE [TABLE] (
