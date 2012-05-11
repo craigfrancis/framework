@@ -107,7 +107,7 @@
 
 				$route_array = path_to_array(config::get('route.path'));
 				if (count($route_array) == 0) {
-					$route_array[] = '/home/';
+					$route_array[] = 'home';
 				}
 
 				foreach ($route_array as $f) {
