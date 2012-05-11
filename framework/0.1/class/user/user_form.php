@@ -73,6 +73,7 @@
 			}
 
 			$field_password->max_length_set($this->user->text_get('password_new_max_len'), 250);
+			$field_password->autocomplete_set(false); // Some browsers may try to auto fill this field with the current password.
 
 			return $field_password;
 
@@ -95,6 +96,7 @@
 			}
 
 			$field_password_repeat->max_length_set($this->user->text_get('password_repeat_max_len'), 250);
+			$field_password_repeat->autocomplete_set(false);
 
 			return $field_password_repeat;
 
