@@ -72,16 +72,16 @@
 
 							$this->values = array();
 
-							foreach ($this->option_keys as $c_id => $c_key) {
+							foreach ($this->option_keys as $id => $key) {
 
 								if ($this->re_index_keys) {
-									$name = $this->name . '_'  . $c_id;
+									$name = $this->name . '_'  . $id;
 								} else {
-									$name = $this->name . '_'  . $c_key;
+									$name = $this->name . '_'  . $key;
 								}
 
 								if (request($name, $this->form->form_method_get()) == 'true') {
-									$this->values[] = $c_id;
+									$this->values[] = $id;
 								}
 
 							}
@@ -118,8 +118,8 @@
 
 			public function values_set($values) {
 				$this->values = array();
-				foreach ($values as $c_value) {
-					$key = array_search($c_value, $this->option_values);
+				foreach ($values as $value) {
+					$key = array_search($value, $this->option_values);
 					if ($key !== false && $key !== NULL) {
 						$this->values[] = $key;
 					}
@@ -132,8 +132,8 @@
 
 			public function values_key_set($values) {
 				$this->values = array();
-				foreach ($values as $c_value) {
-					$key = array_search($c_value, $this->option_keys);
+				foreach ($values as $value) {
+					$key = array_search($value, $this->option_keys);
 					if ($key !== false && $key !== NULL) {
 						$this->values[] = $key;
 					}
@@ -147,8 +147,8 @@
 			public function values_get() {
 				$return = array();
 				if (is_array($this->values)) {
-					foreach ($this->values as $c_id) {
-						$return[$this->option_keys[$c_id]] = $this->option_values[$c_id];
+					foreach ($this->values as $id) {
+						$return[$this->option_keys[$id]] = $this->option_values[$id];
 					}
 				}
 				return $return;
@@ -161,8 +161,8 @@
 			public function values_key_get() {
 				$return = array();
 				if (is_array($this->values)) {
-					foreach ($this->values as $c_id) {
-						$return[] = $this->option_keys[$c_id];
+					foreach ($this->values as $id) {
+						$return[] = $this->option_keys[$id];
 					}
 				}
 				return $return;
@@ -177,16 +177,16 @@
 
 						if ($this->form->saved_values_available()) {
 
-							foreach ($this->option_keys as $c_id => $c_key) {
+							foreach ($this->option_keys as $id => $key) {
 
 								if ($this->re_index_keys) {
-									$name = $this->name . '_'  . $c_id;
+									$name = $this->name . '_'  . $id;
 								} else {
-									$name = $this->name . '_'  . $c_key;
+									$name = $this->name . '_'  . $key;
 								}
 
 								if ($this->form->saved_value_get($name) == 'true') {
-									$this->values_print[] = $c_id;
+									$this->values_print[] = $id;
 								}
 
 							}
@@ -194,8 +194,8 @@
 						} else {
 
 
-							foreach (explode(',', $this->form->db_select_value_get($this->db_field_name)) as $c_value) {
-								$key = array_search($c_value, ($this->db_field_key == 'key' ? $this->option_keys : $this->option_values));
+							foreach (explode(',', $this->form->db_select_value_get($this->db_field_name)) as $value) {
+								$key = array_search($value, ($this->db_field_key == 'key' ? $this->option_keys : $this->option_values));
 								if ($key !== false && $key !== NULL) {
 									$this->values_print[] = $key;
 								}

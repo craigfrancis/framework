@@ -225,13 +225,13 @@
 							$data_encoded = array();
 
 							if (is_array($data)) {
-								foreach ($data as $c_name => $c_value) {
-									$data_encoded[] = urlencode($c_name) . '=' . urlencode($c_value);
+								foreach ($data as $name => $value) {
+									$data_encoded[] = urlencode($name) . '=' . urlencode($value);
 								}
 							}
 
-							foreach ($this->values as $c_name => $c_value) {
-								$data_encoded[] = urlencode($c_name) . '=' . urlencode($c_value);
+							foreach ($this->values as $name => $value) {
+								$data_encoded[] = urlencode($name) . '=' . urlencode($value);
 							}
 
 							$data = implode('&', $data_encoded);
@@ -253,8 +253,8 @@
 				//--------------------------------------------------
 				// Custom headers
 
-					foreach ($this->headers as $c_name => $c_value) {
-						$headers[] = head($c_name) . ': ' . head($c_value);
+					foreach ($this->headers as $name => $value) {
+						$headers[] = head($name) . ': ' . head($value);
 					}
 
 				//--------------------------------------------------

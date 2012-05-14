@@ -47,8 +47,8 @@
 						$config_extra = parse_ini_file($include_path, true);
 						foreach ($config_extra as $section => $values) {
 							if (is_array($values)) {
-								foreach ($values as $c_key => $c_value) {
-									$this->config[$section][$c_key] = $c_value;
+								foreach ($values as $key => $value) {
+									$this->config[$section][$key] = $value;
 								}
 							}
 						}
@@ -370,15 +370,15 @@
 				}
 			}
 
-			public function _gateway_config($gateway_name, $detail, $default = NULL) {
+			private function _gateway_config($gateway_name, $detail, $default = NULL) {
 				return $this->_config_get('gateways', $gateway_name . '-' . $detail, $default);
 			}
 
-			public function _host_config($host, $detail, $default = NULL) {
+			private function _host_config($host, $detail, $default = NULL) {
 				return $this->_config_get('hosts', $host . '-' . $detail, $default);
 			}
 
-			public function _client_config($client, $detail, $default = NULL) {
+			private function _client_config($client, $detail, $default = NULL) {
 				return $this->_config_get('clients', $client . '-' . $detail, $default);
 			}
 
