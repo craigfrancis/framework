@@ -336,7 +336,7 @@
 		// Debug notes
 
 			function debug_note($note, $type = NULL, $colour = NULL) {
-				debug_note_html('<pre>' . html(is_string($note) ? $note : debug_dump($note)) . '</pre>', $type, $colour);
+				debug_note_html(html(is_string($note) ? $note : debug_dump($note)), $type, $colour);
 			}
 
 			function debug_note_html($note_html, $type = NULL, $colour = NULL) {
@@ -413,7 +413,9 @@
 
 					ksort($config);
 
-					$config_html = array($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
+					$config_html  = array($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
+					$config_html .= '<div style="margin: 0; padding: 0 0 0 3em;">';
+
 					foreach ($config as $key => $value) {
 						if (!in_array($key, array('db.link'))) {
 							if (in_array($key, array('db.pass', 'debug.notes', 'view.variables'))) {
@@ -421,14 +423,16 @@
 							} else {
 								$value_html = html(debug_dump($value, 1));
 							}
-							$config_html[] = '&#xA0; <strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html;
+							$config_html .= '<p style="margin: 0; padding: 0; text-indent: -2em; font: normal normal 12px/14px monospace;"><strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html . '</p>';
 						}
 					}
+
+					$config_html .= '</div>';
 
 				//--------------------------------------------------
 				// Add note
 
-					debug_note_html(implode($config_html, '<br />' . "\n"), 'C');
+					debug_note_html($config_html, 'C');
 
 			}
 
@@ -481,11 +485,9 @@
 							$query_html = preg_replace('/^'. preg_quote($query_prefix_string, '/') . '/m', '', $query_html);
 						}
 
-						$query_html .= '<br /><br />';
-
 					}
 
-					$query_html = nl2br(trim(preg_replace('/^[ \t]*(?! |\t|SELECT|UPDATE|DELETE|INSERT|SHOW|FROM|LEFT|SET|WHERE|GROUP|ORDER|LIMIT)/m', '&#xA0; &#xA0; \0', $query_html)));
+					$query_html = trim(preg_replace('/^[ \t]*(?! |\t|SELECT|UPDATE|DELETE|INSERT|SHOW|FROM|LEFT|SET|WHERE|GROUP|ORDER|LIMIT)/m', '    ', $query_html));
 
 				//--------------------------------------------------
 				// Called from
@@ -506,7 +508,7 @@
 					if (preg_match('/^\W*\(?\W*SELECT/i', $query)) {
 
 						$explain_html .= '
-							<table style="border-spacing: 0; border-width: 0 1px 1px 0; border-style: solid; border-color: #000; margin: 1em 0 0 0;">';
+							<table style="border-spacing: 0; border-width: 0 1px 1px 0; border-style: solid; border-color: #000; margin: 1em 0 0 0; font: normal normal 12px/14px monospace;">';
 
 						$headers_printed = false;
 
@@ -530,7 +532,7 @@
 									<tr>';
 								foreach ($row as $key => $value) {
 									$explain_html .= '
-										<td style="border-width: 1px 0 0 1px; border-style: solid; border-color: #000; padding: 0.2em;">' . ($key == 'type' ? '<a href="http://dev.mysql.com/doc/refman/5.0/en/explain.html#id2772158" style="color: #000; font-size: 12px; background: #CCF; text-decoration: none;">' : '') . ($value == '' ? '&#xA0;' : html($value)) . ($key == 'type' ? '</a>' : '') . '</td>';
+										<td style="border-width: 1px 0 0 1px; border-style: solid; border-color: #000; padding: 0.2em;">' . ($key == 'type' ? '<a href="http://dev.mysql.com/doc/refman/5.0/en/explain.html#id2772158" style="color: #000; background: #CCF; font: normal normal 12px/14px monospace; text-decoration: none;">' : '') . ($value == '' ? '&#xA0;' : html($value)) . ($key == 'type' ? '</a>' : '') . '</td>';
 								}
 								$explain_html .= '
 									</tr>';
@@ -632,7 +634,7 @@
 											echo '	<h1>Error</h1>' . "\n";
 											echo '	<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>' . "\n";
 											echo '	<p>Missing reference to "' . html(str_replace('`', '', $required_clause)) . '" column on the table "' . html($table[1]) . '".</p>' . "\n";
-											echo '	<p style="padding: 0 0 0 1em;">' . "\n";
+											echo '	<p style="padding: 0 0 0 1em; white-space: pre;">' . "\n";
 											echo "\n\n";
 											echo $query_html . "\n";
 											echo "\n\n";
@@ -654,11 +656,11 @@
 						if (count($tables) > 0) {
 
 							$text_html .= '
-								<ul style="margin: 0; padding: 0; margin: 1em 0 1em 2em; background: #CCF; color: #000; font-size: 12px;">';
+								<ul style="margin: 0; padding: 0; margin: 1em 0 1em 2em; background: #CCF; color: #000; font: normal normal 12px/14px monospace;">';
 
 							foreach ($tables as $table) {
 								$text_html .= '
-									<li style="padding: 0; margin: 0; background: #CCF; color: #000; font-size: 12px; text-align: left;">' . preg_replace('/: (.*)/', ': <strong>$1</strong>', html($table)) . '</li>';
+									<li style="padding: 0; margin: 0; background: #CCF; color: #000; font: normal normal 12px/14px monospace; text-align: left;">' . preg_replace('/: (.*)/', ': <strong>$1</strong>', html($table)) . '</li>';
 							}
 
 							$text_html .= '
@@ -682,7 +684,10 @@
 				//--------------------------------------------------
 				// Create debug output
 
-					$html = '<strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')<br />' . "\n" . (strpos($query_html, "\n") === false ? '' : '<br />' . "\n") . $query_html;
+					$single_line = (strpos($query_html, "\n") === false);
+
+					$html  = '<strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')<br />' . "\n";
+					$html .= '<p style="margin: 0; padding: 0; font: normal normal 12px/14px monospace; white-space: pre;">' . ($single_line ? '' : "\n") . $query_html . ($single_line ? '' : "\n\n") . '</p>';
 
 					config::array_push('debug.notes', array(
 							'type' => (defined('FRAMEWORK_INIT_TIME') ? 'L' : 'S'),
@@ -733,8 +738,8 @@
 				//--------------------------------------------------
 				// Default CSS
 
-					$css_text = 'font-size: 12px; font-family: verdana; font-weight: normal; text-align: left; text-decoration: none;';
-					$css_block = 'padding: 5px; margin: 5px 0; color: #000; font-size: 12px; border: 1px solid #000; clear: both;';
+					$css_text = 'font: normal normal 12px/14px monospace; text-align: left; text-decoration: none;';
+					$css_block = 'font: normal normal 12px/14px monospace; padding: 5px; margin: 5px 0; color: #000; border: 1px solid #000; clear: both;';
 					$css_para = 'padding: 0; margin: 0; ' . $css_text;
 
 				//--------------------------------------------------
@@ -762,7 +767,7 @@
 					$output_time .= 'Query time: ' . html(config::get('debug.db_time')) . "";
 
 					$output_html['L'] .= '		<div style="' . html($css_block) . ' background: #FFF;">' . "\n";
-					$output_html['L'] .= '			<p style="' . html($css_para) . '"><pre>' . html($output_time) . '</pre></p>' . "\n";
+					$output_html['L'] .= '			<pre style="' . html($css_para) . ';">' . html($output_time) . '</pre>' . "\n";
 					$output_html['L'] .= '		</div>' . "\n";
 
 					$output_text  = "\n\n\n\n\n\n\n\n\n\n";
@@ -814,7 +819,7 @@
 
 							$output_links_html .= '<a href="#' . html($node_id) . '"' . (isset($output_types[$type]) ? ' title="' . html($output_types[$type]) . '"' : '') . ' style="padding: 1px; color: #DDD; background: #FFF; ' . html($css_text) . '" onclick="var debug_ref = document.getElementById(\'' . addslashes($node_id) . '\'); var debug_open = debug_ref.style.display == \'block\'; this.style.color = (debug_open ? \'#DDD\' : \'#000\'); document.getElementById(\'' . addslashes($node_id) . '\').style.display = (debug_open ? \'none\' : \'block\'); this.scrollIntoView(); return false;">[' . html($type) . ']</a>';
 
-							$output_data_html .= '	<div style="display: ' . html(config::get('debug.default_show') === true ? 'block' : 'none') . ';" id="' . html($node_id) . '">' . "\n";
+							$output_data_html .= '	<div style="display: ' . html(config::get('debug.default_show') !== true ? 'block' : 'none') . ';" id="' . html($node_id) . '">' . "\n";
 							$output_data_html .= $html . "\n";
 							$output_data_html .= '	</div>' . "\n";
 
