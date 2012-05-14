@@ -396,6 +396,8 @@
 
 	function http_download_file($path, $mime, $name = NULL, $mode = 'attachment') {
 
+		config::set('debug.show', false);
+
 		if ($mime === NULL) $mime = mime_content_type($path); // Please don't rely on this function
 		if ($name === NULL) $name = basename($path);
 
@@ -410,6 +412,24 @@
 		header('Pragma:');
 
 		readfile($path);
+
+	}
+
+	function http_download_string($content, $mime, $name, $mode = 'attachment') {
+
+		config::set('debug.show', false);
+
+		mime_set($mime);
+
+		header('Content-disposition: ' . head($mode) . '; filename="' . head($name) . '"');
+		header('Accept-Ranges: bytes');
+		header('Content-Length: ' . head(strlen($content)));
+
+		header('Cache-control:'); // IE6 does not like 'attachment' files on HTTPS
+		header('Expires: ' . head(date('D, d M Y 00:00:00')) . ' GMT');
+		header('Pragma:');
+
+		echo $content;
 
 	}
 
