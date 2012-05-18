@@ -87,7 +87,8 @@ class cms_text_base extends check {
 			$this->config['allow_heading_tags']    = (isset($config['allow_heading_tags'])    && $config['allow_heading_tags']    === true);
 			$this->config['no_follow_links']       = (isset($config['no_follow_links'])       && $config['no_follow_links']       === true);
 			$this->config['hide_cms_comments']     = (isset($config['hide_cms_comments'])     && $config['hide_cms_comments']     === true);
-			$this->config['plain_text_mail_links'] = (isset($config['plain_text_mail_links']) && $config['plain_text_mail_links'] === true);
+
+			$this->config['plain_text_mail_links'] = (!isset($config['plain_text_mail_links']) || $config['plain_text_mail_links'] == true); // Default to be plain text
 
 		//--------------------------------------------------
 		// General config
