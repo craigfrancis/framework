@@ -560,9 +560,9 @@
 
 					$this->saved_values_used = false;
 
-					if (session::get('save_form_url') == config::get('request.url') && config::get('request.method') == 'GET' && $this->form_method == 'POST') {
+					if (session::get('save_request_url') == config::get('request.url') && config::get('request.method') == 'GET' && $this->form_method == 'POST') {
 
-						$data = session::get('save_form_data');
+						$data = session::get('save_request_data');
 
 						if (isset($data['act']) && $data['act'] == $this->form_id) {
 							$this->saved_values_data = $data;
@@ -582,11 +582,11 @@
 
 					$this->saved_values_used = true;
 
-					session::delete('save_form_user');
-					session::delete('save_form_url');
-					session::delete('save_form_created');
-					session::delete('save_form_used');
-					session::delete('save_form_data');
+					session::delete('save_request_user');
+					session::delete('save_request_url');
+					session::delete('save_request_created');
+					session::delete('save_request_used');
+					session::delete('save_request_data');
 
 				}
 

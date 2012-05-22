@@ -542,36 +542,36 @@
 	}
 
 //--------------------------------------------------
-// Save form support functions - useful if the users
+// Save request support functions - useful if the users
 // session has expired while filling out a long form
 
-	function save_form_redirect($url, $user = NULL) {
-		session::set('save_form_user', $user);
-		session::set('save_form_url', config::get('request.url'));
-		session::set('save_form_created', time());
-		session::set('save_form_used', false);
+	function save_request_redirect($url, $user = NULL) {
+		session::set('save_request_user', $user);
+		session::set('save_request_url', config::get('request.url'));
+		session::set('save_request_created', time());
+		session::set('save_request_used', false);
 		if (config::get('request.method') == 'POST') { // If user clicks back after seeing login form it might be as a GET request, so don't loose their POST data from before.
-			session::set('save_form_data', $_POST);
+			session::set('save_request_data', $_POST);
 		}
 		redirect($url);
 	}
 
-	function save_form_restore($user = NULL) {
-		$used = session::get('save_form_used');
-		if ($used === true || $user !== session::get('save_form_user')) {
+	function save_request_restore($user = NULL) {
+		$used = session::get('save_request_used');
+		if ($used === true || $user !== session::get('save_request_user')) {
 
-			session::delete('save_form_user');
-			session::delete('save_form_url');
-			session::delete('save_form_created');
-			session::delete('save_form_used');
-			session::delete('save_form_data');
+			session::delete('save_request_user');
+			session::delete('save_request_url');
+			session::delete('save_request_created');
+			session::delete('save_request_used');
+			session::delete('save_request_data');
 
 		} else if ($used === false) {
 
-			session::set('save_form_used', true);
+			session::set('save_request_used', true);
 
-			if (session::get('save_form_created') > (time() - (60*5))) {
-				$next_url = session::get('save_form_url');
+			if (session::get('save_request_created') > (time() - (60*5))) {
+				$next_url = session::get('save_request_url');
 				if (substr($next_url, 0, 1) == '/') { // Shouldn't be an issue, but make sure we stay on this website
 					redirect($next_url);
 				}
