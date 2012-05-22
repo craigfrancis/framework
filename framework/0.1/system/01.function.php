@@ -545,7 +545,8 @@
 // Save form support functions - useful if the users
 // session has expired while filling out a long form
 
-	function save_form_redirect($url) {
+	function save_form_redirect($url, $user = NULL) {
+		session::set('save_form_user', $user);
 		session::set('save_form_url', config::get('request.url'));
 		session::set('save_form_created', time());
 		session::set('save_form_used', false);
@@ -555,10 +556,11 @@
 		redirect($url);
 	}
 
-	function save_form_restore() {
+	function save_form_restore($user = NULL) {
 		$used = session::get('save_form_used');
-		if ($used === true) {
+		if ($used === true || $user !== session::get('save_form_user')) {
 
+			session::delete('save_form_user');
 			session::delete('save_form_url');
 			session::delete('save_form_created');
 			session::delete('save_form_used');
