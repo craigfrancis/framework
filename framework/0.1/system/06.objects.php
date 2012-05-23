@@ -161,10 +161,10 @@
 			public function tracking_get_html() {
 
 				if (!$this->tracking_allowed_get()) {
-					return 'Not'; // Not allowed
+					return ''; // Not allowed
 				}
 
-				return 'Allowed'; // TODO
+				return ''; // TODO
 
 			}
 
