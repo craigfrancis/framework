@@ -160,7 +160,5 @@
 
 	<?= $this->tracking_get_html(); ?>
 
-	<?php //view_element('google_analytics'); ?>
-
 </body>
 </html>

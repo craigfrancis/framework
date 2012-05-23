@@ -160,11 +160,47 @@
 
 			public function tracking_get_html() {
 
-				if (!$this->tracking_allowed_get()) {
-					return ''; // Not allowed
-				}
+				//--------------------------------------------------
+				// If allowed
 
-				return ''; // TODO
+					if (!$this->tracking_allowed_get()) {
+						return '';
+					}
+
+				//--------------------------------------------------
+				// Start
+
+					$html = '';
+
+				//--------------------------------------------------
+				// Google analytics
+
+					$google_analytics_code = config::get('tracking.google_analytics.code');
+					if ($google_analytics_code !== NULL) {
+
+						$html .= "\n";
+						$html .= '	<script type="text/javascript">' . "\n";
+						$html .= '	//<![CDATA[' . "\n";
+						$html .= "\n";
+						$html .= '		var _gaq = _gaq || [];' . "\n";
+						$html .= '		_gaq.push(["_setAccount", "' . html($google_analytics_code) . '"]);' . "\n";
+						$html .= '		_gaq.push(["_trackPageview"]);' . "\n";
+						$html .= "\n";
+						$html .= '		(function() {' . "\n";
+						$html .= '			var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true;' . "\n";
+						$html .= '			ga.src = ("https:" == document.location.protocol ? "https://ssl" : "http://www") + ".google-analytics.com/ga.js";' . "\n";
+						$html .= '			var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s);' . "\n";
+						$html .= '		})();' . "\n";
+						$html .= "\n";
+						$html .= '	//]]>' . "\n";
+						$html .= '	</script>';
+
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $html;
 
 			}
 
@@ -188,7 +224,7 @@
 					}
 
 				//--------------------------------------------------
-				// Default
+				// If on live server
 
 					return (SERVER == 'live');
 
