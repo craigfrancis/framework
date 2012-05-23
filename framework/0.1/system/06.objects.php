@@ -159,7 +159,33 @@
 			}
 
 			public function tracking_get_html() {
-				return ''; // TODO
+				if ($this->tracking_allowed_get()) {
+					return ''; // TODO
+				} else {
+					return ''; // Not allowed
+				}
+			}
+
+			public function tracking_allowed_get() {
+
+				//--------------------------------------------------
+				// Do not track header support
+
+					if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
+						return false;
+					} else {
+						foreach (getallheaders() as $name => $value) {
+							if (strtolower($name) == 'dnt' && $value == 1) {
+								return false;
+							}
+						}
+					}
+
+				//--------------------------------------------------
+				// Default
+
+					return true;
+
 			}
 
 			public function css_get($mode) {
