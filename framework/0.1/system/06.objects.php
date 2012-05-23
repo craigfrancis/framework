@@ -172,13 +172,17 @@
 				// Do not track header support
 
 					if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
+
 						return false;
-					} else {
+
+					} else if (function_exists('getallheaders')) {
+
 						foreach (getallheaders() as $name => $value) {
 							if (strtolower($name) == 'dnt' && $value == 1) {
 								return false;
 							}
 						}
+
 					}
 
 				//--------------------------------------------------
