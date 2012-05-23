@@ -159,11 +159,13 @@
 			}
 
 			public function tracking_get_html() {
-				if ($this->tracking_allowed_get()) {
-					return ''; // TODO
-				} else {
-					return ''; // Not allowed
+
+				if (!$this->tracking_allowed_get()) {
+					return 'Not'; // Not allowed
 				}
+
+				return 'Allowed'; // TODO
+
 			}
 
 			public function tracking_allowed_get() {
@@ -188,7 +190,7 @@
 				//--------------------------------------------------
 				// Default
 
-					return true;
+					return (SERVER == 'live');
 
 			}
 
