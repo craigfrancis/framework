@@ -8,7 +8,6 @@
 		$path_output = '/Volumes/WebServer/Projects/cpoets.library/a/php/form2.php';
 	} else {
 		$path_source = ROOT . '/framework/0.1/class/form';
-		exit($path_source);
 		$path_output = NULL;
 	}
 
@@ -20,7 +19,7 @@
 		$name = pathinfo($file, PATHINFO_FILENAME);
 		$files_found[$name] = $file;
 	}
-
+debug($files_found);
 	$files_ordered = array(
 		'form',
 		'form_field',
