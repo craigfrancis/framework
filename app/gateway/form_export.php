@@ -16,7 +16,7 @@
 
 	$files_found = array();
 	foreach (glob($path_source . '/*') as $file) {
-		$name = basename($file);
+		$name = basename($file, '.php');
 		$files_found[$name] = $file;
 	}
 debug($files_found);
