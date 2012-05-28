@@ -9,7 +9,16 @@
 		// Support functions
 
 			public function checkout_button_url() {
-				return 'https://checkout.google.com/buttons/checkout.gif?merchant_id=' . urlencode($GLOBALS['googleMerchantId']) . '&w=160&h=43&style=trans&variant=text&loc=en_US';
+
+				return url('https://checkout.google.com/buttons/checkout.gif', array(
+						'merchant_id' => $GLOBALS['googleMerchantId'],
+						'w' => '160',
+						'h' => '43',
+						'style' => 'trans',
+						'variant' => 'text',
+						'loc' => 'en_US',
+					));
+
 			}
 
 		//--------------------------------------------------

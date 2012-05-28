@@ -345,11 +345,11 @@
 										edited > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-1 week'))) . '"');
 
 						if ($row = $db->fetch_assoc()) {
-											$latitude = $row['latitude'];
-											$longitude = $row['longitude'];
-											$accuracy = $row['accuracy'];
-											$cached = true;
-										}
+							$latitude = $row['latitude'];
+							$longitude = $row['longitude'];
+							$accuracy = $row['accuracy'];
+							$cached = true;
+						}
 
 					}
 
@@ -361,17 +361,11 @@
 						//--------------------------------------------------
 						// Ask
 
-							$contents = '';
-
-							$path = 'http://maps.google.com/maps/api/geocode/xml?address=' . urlencode($search_query) . '&sensor=false&region=' . urlencode($country);
-
-							$handle = fopen($path, 'rb');
-							if ($handle) {
-								while ($handle && !feof($handle)) {
-									$contents .= fread($handle, 8192);
-								}
-								fclose($handle);
-							}
+							$contents = file_get_contents(url('http://maps.google.com/maps/api/geocode/xml', array(
+									'address' => $search_query,
+									'sensor' => 'false',
+									'region' => $country,
+								)));
 
 							usleep(500000); // Half a second
 

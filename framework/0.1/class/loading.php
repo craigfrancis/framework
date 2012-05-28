@@ -7,8 +7,8 @@
 
 		$loading = new loading();
 		// $loading->time_out_set(60 * 10); // Seconds before script will timeout
-		// $loading->reload_frequency_set(2); // Seconds browser will wait before trying again
-		// $loading->reload_url_set('...'); // If you want the user to load a different url while waiting (e.g. add a new parameter)
+		// $loading->refresh_frequency_set(2); // Seconds browser will wait before trying again
+		// $loading->refresh_url_set('...'); // If you want the user to load a different url while waiting (e.g. add a new parameter)
 		// $loading->template_path_set('...'); // For a customised loading page
 
 		$loading->check(); // Will exit() with loading page if still running, return false if not running, or return the session variables if there was a time-out.
@@ -38,7 +38,7 @@
 		// Variables
 
 			private $time_out;
-			private $reload_url;
+			private $refresh_url;
 			private $template_path;
 
 		//--------------------------------------------------
@@ -50,8 +50,8 @@
 				// Defaults
 
 					$this->time_out = 600; // 10 minutes
-					$this->reload_frequency = 2;
-					$this->reload_url = NULL;
+					$this->refresh_frequency = 2;
+					$this->refresh_url = NULL;
 					$this->template_path = NULL;
 
 			}
@@ -64,20 +64,20 @@
 				return $this->time_out;
 			}
 
-			public function reload_frequency_set($seconds) {
-				$this->reload_frequency = intval($seconds);
+			public function refresh_frequency_set($seconds) {
+				$this->refresh_frequency = intval($seconds);
 			}
 
-			public function reload_frequency_get() {
-				return $this->reload_frequency;
+			public function refresh_frequency_get() {
+				return $this->refresh_frequency;
 			}
 
-			public function reload_url_set($url) {
-				$this->reload_url = $url;
+			public function refresh_url_set($url) {
+				$this->refresh_url = $url;
 			}
 
-			public function reload_url_get() {
-				return $this->reload_url;
+			public function refresh_url_get() {
+				return $this->refresh_url;
 			}
 
 			public function template_path_set($path) {
@@ -136,7 +136,7 @@
 				session::set('loading.time_update', time());
 				session::set('loading.variables', $variables);
 
-				session::close(); // So reloading page can gain lock on session file.
+				session::close(); // So refreshing page can gain lock on session file.
 
 			}
 
@@ -220,25 +220,27 @@
 					$contents_html = str_replace('[TIME_UPDATE]', html($time_diff_update), $contents_html);
 
 				//--------------------------------------------------
-				// Reload URL
+				// Refresh URL
 
-					$reload_url = $this->reload_url;
-					if ($reload_url === NULL) {
-						$reload_url = url();
+					$refresh_url = $this->refresh_url;
+					if ($refresh_url === NULL) {
+						$refresh_url = url();
 					}
+
+					$refresh_header = $this->refresh_frequency . '; url=' . $refresh_url;
 
 					if (strpos($contents_html, '[URL]') !== false) {
 
-						$contents_html = str_replace('[URL]', html($reload_url), $contents_html);
+						$contents_html = str_replace('[URL]', html($refresh_url), $contents_html);
 
 					} else {
 
-						$reload_html = "\n\t" . '<meta http-equiv="refresh" content="' . html($this->reload_frequency) . ';url=' . html($reload_url) . '" />' . "\n\n";
+						$refresh_html = "\n\t" . '<meta http-equiv="refresh" content="' . html($refresh_header) . '" />' . "\n\n";
 
 						$pos = strpos(strtolower($contents_html), '</head>');
 						if ($pos !== false) {
 
-					 		$contents_html = substr($contents_html, 0, $pos) . $reload_html . substr($contents_html, $pos);
+					 		$contents_html = substr($contents_html, 0, $pos) . $refresh_html . substr($contents_html, $pos);
 
 						} else {
 
@@ -247,7 +249,7 @@
 								<head>
 									<meta charset="' . html(config::get('output.charset')) . '" />
 									<title>Loading</title>
-									' . $reload_html . '
+									' . $refresh_html . '
 								</head>
 								<body>
 									' . $contents_html . '
@@ -289,11 +291,11 @@
 				//--------------------------------------------------
 				// Send output
 
-					// TODO: Send refresh/reload header, not relying on meta tags
+					header('Refresh: ' . head($refresh_header));
 
-					header ('Connection: close');
-					header ('Accept-Ranges: bytes');
-					header ('Content-Length: ' . strlen($output));
+					header('Connection: close');
+					header('Accept-Ranges: bytes');
+					header('Content-Length: ' . head(strlen($output)));
 
 					echo $output;
 
