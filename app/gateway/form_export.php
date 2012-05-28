@@ -3,8 +3,13 @@
 //--------------------------------------------------
 // Config
 
-	$path_source = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/class/form';
-	$path_output = '/Volumes/WebServer/Projects/cpoets.library/a/php/form2.php';
+	if (SERVER == 'stage') {
+		$path_source = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/class/form';
+		$path_output = '/Volumes/WebServer/Projects/cpoets.library/a/php/form2.php';
+	} else {
+		$path_source = ROOT . '/framework/0.1/class/form';
+		$path_output = NULL;
+	}
 
 //--------------------------------------------------
 // Files
@@ -249,6 +254,8 @@
 	mime_set('text/plain');
 	echo $output_php;
 
-	file_put_contents($path_output, $output_php);
+	if ($path_output != NULL) {
+		file_put_contents($path_output, $output_php);
+	}
 
 ?>
