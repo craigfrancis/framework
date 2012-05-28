@@ -17,11 +17,11 @@
 		//--------------------------------------------------
 		// Initialise
 
-			$cms_text = new cms_text();
+			$cms_tags = new cms_tags();
 
 			--- or ---
 
-			$cms_text = new cms_text(array(
+			$cms_tags = new cms_tags(array(
 					'allow_html_code' => false,
 					'allow_popup_links' => false,
 					'allow_mail_links' => false,
@@ -40,14 +40,14 @@
 		// for <p> tags (etc), or as process_block_html() to
 		// be printed straight into a <div>.
 
-			echo $cms_text->process_inline_html($text);
-			echo $cms_text->process_block_html($text);
+			echo $cms_tags->process_inline_html($text);
+			echo $cms_tags->process_block_html($text);
 
-			echo $cms_text->process_text($text); // Could be used in an email
+			echo $cms_tags->process_text($text); // Could be used in an email
 
 ***************************************************/
 
-class cms_text_base extends check {
+class cms_tags_base extends check {
 
 	var $preserved_inline_tags;
 	var $indent_level;
