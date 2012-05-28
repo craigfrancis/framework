@@ -8,6 +8,7 @@
 		$path_output = '/Volumes/WebServer/Projects/cpoets.library/a/php/form2.php';
 	} else {
 		$path_source = ROOT . '/framework/0.1/class/form';
+		exit($path_source);
 		$path_output = NULL;
 	}
 
