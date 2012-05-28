@@ -19,7 +19,7 @@
 		$name = basename($file, '.php');
 		$files_found[$name] = $file;
 	}
-debug($files_found);
+
 	$files_ordered = array(
 		'form',
 		'form_field',
