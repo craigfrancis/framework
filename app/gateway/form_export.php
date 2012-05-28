@@ -68,13 +68,14 @@
 	//--------------------------------------------------
 	// Request function
 
+		$output_php .= "\n\n";
+
 		if (SERVER == 'stage') {
-			$output_php .= "\n\n";
 			$output_php .= '// Generated: http://craig.framework.emma.devcf.com/a/api/form-export/' . "\n";
 			$output_php .= '// Tested:    http://cpoets.library.emma.devcf.com/form2/' . "\n";
+			$output_php .= "\n";
 		}
 
-		$output_php .= "\n";
 		$output_php .= '//--------------------------------------------------' . "\n";
 		$output_php .= '// Support functions' . "\n";
 		$output_php .= "\n";
