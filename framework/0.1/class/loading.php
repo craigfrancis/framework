@@ -272,13 +272,17 @@
 					$output = str_pad($output, 1024);
 
 				//--------------------------------------------------
+				// Disable mod_gzip or mod_deflate, to end connection
+
+					apache_setenv('no-gzip', 1);
+
+				//--------------------------------------------------
 				// Extra
 
 					// if (request('ModPagespeed') != 'off') {
 					// 	redirect(url(array('ModPagespeed' => 'off')));
 					// }
 
-					apache_setenv('no-gzip', 1);
 					// ini_set('zlib.output_compression', 0);
 					// ini_set('implicit_flush', 1);
 
