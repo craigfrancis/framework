@@ -4,9 +4,11 @@
 // Config
 
 	if (SERVER == 'stage') {
+		$path_config = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/system/02.config.php';
 		$path_source = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/class/form';
 		$path_output = '/Volumes/WebServer/Projects/cpoets.library/a/php/form2.php';
 	} else {
+		$path_config = ROOT . '/framework/0.1/system/02.config.php';
 		$path_source = ROOT . '/framework/0.1/class/form';
 		$path_output = NULL;
 	}
@@ -169,9 +171,7 @@
 	//--------------------------------------------------
 	// Config
 
-		$config_path = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/system/02.config.php';
-
-		$config_php = file_get_contents($config_path);
+		$config_php = file_get_contents($path_config);
 
 		$config_start = strpos($config_php, '//--------------------------------------------------');
 		$config_end = strpos($config_php, '//--------------------------------------------------', ($config_start + 1));
