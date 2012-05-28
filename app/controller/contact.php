@@ -65,7 +65,9 @@
 							// Next page
 
 								// redirect(http_url());
-								redirect(http_url('/contact/thank-you/', array('id' => $record_id)));
+								// redirect(http_url('/contact/thank-you/', array('id' => $record_id)));
+
+								redirect(url('/contact/thank-you/', array('id' => $record_id))); // Not using http_url() while on PHP 5.1 server
 
 						}
 
