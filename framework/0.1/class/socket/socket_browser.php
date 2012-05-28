@@ -461,9 +461,13 @@
 
 						//--------------------------------------------------
 						// Check it is a full url
-debug($url);
+
 							$url_parts = @parse_url($url);
-debug($url_parts);
+
+							if ($url_parts === false) {
+								exit_with_error('Cannot parse url "' . $url . '"');
+							}
+
 							if (!isset($url_parts['host'])) { // Not a full URL
 
 								//--------------------------------------------------
