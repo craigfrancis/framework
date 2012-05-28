@@ -7,6 +7,8 @@
 
 	<?php } ?>
 
+	<?= (isset($page_middle_html) ? $page_middle_html : '') ?>
+
 	<?= $search->html(); ?>
 
 	<?= $paginator->html(); ?>

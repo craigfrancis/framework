@@ -82,23 +82,17 @@
 
 			public function param_set($parameters, $value = '') {
 
-				if (is_array($parameters)) {
+				if (!is_array($parameters)) {
+					$parameters = array($parameters => $value);
+				}
 
-					foreach ($parameters as $key => $value) { // Cannot use array_merge, as numerical based indexes will be appended.
-						if ($value == '') {
-							unset($this->parameters[$key]);
-						} else {
-							$this->parameters[$key] = $value;
-						}
-					}
-
-				} else {
+				foreach ($parameters as $key => $value) { // Cannot use array_merge, as numerical based indexes will be appended.
 
 					if ($value === NULL) {
 						$value = ''; // Want to be available in an isset check
 					}
 
-					$this->parameters[$parameters] = $value; // Blank values will be removed later
+					$this->parameters[$key] = $value; // Blank values will be removed later
 
 				}
 

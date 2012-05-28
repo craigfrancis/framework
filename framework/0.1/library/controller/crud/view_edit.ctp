@@ -1,7 +1,11 @@
 
 	<?= (isset($page_start_html) ? $page_start_html : '') ?>
 
-	<?php if ($action_edit) { ?>
+	<?php if (isset($page_intro_html)) { ?>
+
+		<?= $page_intro_html ?>
+
+	<?php } else if ($action_edit) { ?>
 
 		<p>Use the form below to edit the <strong><?= html($item_name) ?></strong> <?= html($item_single) ?><?= (isset($delete_url) ? ' (<a href="' . html($delete_url) . '">delete</a>)' : '') ?>.</p>
 
@@ -10,6 +14,8 @@
 		<p>Use the form below to create a new <?= html($item_single) ?>.</p>
 
 	<?php } ?>
+
+	<?= (isset($page_middle_html) ? $page_middle_html : '') ?>
 
 	<?= $form->html_start() ?>
 		<fieldset>

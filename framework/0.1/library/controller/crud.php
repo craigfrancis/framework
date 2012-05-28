@@ -323,8 +323,8 @@
 					//--------------------------------------------------
 					// Details
 
-						$edit_url = url('./edit/?id=' . urlencode($row['id']));
-						$delete_url = url('./delete/?id=' . urlencode($row['id']));
+						$edit_url = url('./edit/', array('id' => $row['id']));
+						$delete_url = url('./delete/', array('id' => $row['id']));
 
 					//--------------------------------------------------
 					// Add row
@@ -487,13 +487,7 @@
 							//--------------------------------------------------
 							// Next page
 
-								$dest = $form->dest_url_get();
-
-								if (substr($dest, 0, 1) == '/') {
-									redirect($dest);
-								} else {
-									redirect(url('../edit/?id=' . urlencode($id)));
-								}
+								$form->dest_redirect(url('../edit/', array('id' => $id)));
 
 						}
 
@@ -510,7 +504,7 @@
 			// Page URLs
 
 				if ($this->feature_delete) {
-					$this->set('delete_url', url('../delete/?id=' . urlencode($id)));
+					$this->set('delete_url', url('../delete/', array('id' => $id)));
 				}
 
 			//--------------------------------------------------
@@ -594,13 +588,7 @@
 							//--------------------------------------------------
 							// Next page
 
-								$dest = $form->dest_url_get();
-
-								if (substr($dest, 0, 1) == '/') {
-									redirect($dest);
-								} else {
-									redirect(url('../'));
-								}
+								$form->dest_redirect(url('../'));
 
 						}
 
@@ -610,7 +598,7 @@
 			// Page URLs
 
 				if ($this->feature_edit) {
-					$this->set('edit_url', url('../edit/?id=' . urlencode($id)));
+					$this->set('edit_url', url('../edit/', array('id' => $id)));
 				}
 
 			//--------------------------------------------------
