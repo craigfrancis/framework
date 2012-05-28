@@ -5,6 +5,13 @@
 		public function action_index() {
 
 			//--------------------------------------------------
+			// Disabled
+
+				if (version_compare(PHP_VERSION, '5.2.0', '<')) {
+					return;
+				}
+
+			//--------------------------------------------------
 			// Form setup
 
 				$form = new form();
