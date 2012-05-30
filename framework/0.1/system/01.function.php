@@ -556,9 +556,10 @@
 		redirect($url);
 	}
 
-	function save_request_restore($user = NULL) {
-		$used = session::get('save_request_used');
-		if ($used === true || $user !== session::get('save_request_user')) {
+	function save_request_restore($current_user = NULL) {
+		$session_user = session::get('save_request_user');
+		$session_used = session::get('save_request_used');
+		if ($session_used === true || ($session_user != '' && $session_user != $current_user)) {
 
 			session::delete('save_request_user');
 			session::delete('save_request_url');
@@ -566,7 +567,7 @@
 			session::delete('save_request_used');
 			session::delete('save_request_data');
 
-		} else if ($used === false) {
+		} else if ($session_used === false) {
 
 			session::set('save_request_used', true);
 
