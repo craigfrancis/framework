@@ -171,7 +171,11 @@
 		public function page_url_get($page_number) {
 
 			if ($this->url === NULL) {
-				$this->url = url($this->config['base_url']);
+				if ($this->config['base_url'] !== NULL) {
+					$this->url = url($this->config['base_url']);
+				} else {
+					$this->url = url();
+				}
 			}
 
 			if ($page_number >= 1 && $page_number <= $this->page_count) {
