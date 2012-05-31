@@ -306,7 +306,7 @@
 
 		}
 
-		public function end_heading_row() {
+		public function heading_end() {
 			$this->heading_id++;
 		}
 
@@ -328,7 +328,7 @@
 
 		}
 
-		public function end_footer_row() {
+		public function footer_end() {
 
 			if (!isset($this->footers[$this->footer_id])) {
 				$this->footers[$this->footer_id] = array();
