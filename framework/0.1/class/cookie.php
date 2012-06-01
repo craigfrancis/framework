@@ -4,11 +4,13 @@
 // Based on code from Kohana cookie helper
 //--------------------------------------------------
 
-	class cookie extends check {
+	class cookie_base extends check {
 
 		public static $salt = ROOT;
 
 		public static function set($variable, $value, $expiration = NULL, $config = NULL) {
+
+			$variable_full = config::get('cookie.prefix', '') . $variable;
 
 			if ($config === NULL) {
 				$config = array();
@@ -25,16 +27,18 @@
 				$expiration = strtotime($expiration);
 			}
 
-			if ($value !== NULL) {
+			if ($value !== NULL && config::get('cookie.protect', true)) {
 				$value = self::salt($variable, $value) . '~' . $value; // Add the salt to the cookie value
 			}
 
 			if ($variable == 'cookie_check') {
-				if (isset($_COOKIE[$variable]) && headers_sent()) { // Rare exception where headers have already been sent, and as it's only cookie_check we can ignore.
+				if (isset($_COOKIE[$variable_full]) && headers_sent()) { // Rare exception where headers have already been sent, and as it's only cookie_check we can ignore.
 					return true;
 				}
+			} else if ($value === NULL) {
+				unset($_COOKIE[$variable_full]);
 			} else {
-				$_COOKIE[$variable] = $value;
+				$_COOKIE[$variable_full] = $value;
 			}
 
 			if (headers_sent($file, $line)) {
@@ -42,22 +46,28 @@
 			}
 
 			if (floatval(phpversion()) >= 5.2) {
-				return setcookie($variable, $value, $expiration, $config['path'], $config['domain'], $config['secure'], $config['http_only']);
+				return setcookie($variable_full, $value, $expiration, $config['path'], $config['domain'], $config['secure'], $config['http_only']);
 			} else {
-				return setcookie($variable, $value, $expiration, $config['path'], $config['domain'], $config['secure']);
+				return setcookie($variable_full, $value, $expiration, $config['path'], $config['domain'], $config['secure']);
 			}
 
 		}
 
 		public static function get($variable, $default = NULL) {
 
-			if (!isset($_COOKIE[$variable])) {
+			$variable_full = config::get('cookie.prefix', '') . $variable;
+
+			if (!isset($_COOKIE[$variable_full])) {
 				return $default;
 			}
 
-			$cookie = $_COOKIE[$variable];
+			$cookie = $_COOKIE[$variable_full];
 
-			if (isset($cookie[40]) AND $cookie[40] === '~') { // sha1 length is 40 characters
+			if (!config::get('cookie.protect', true)) {
+
+				return $cookie;
+
+			} else if (isset($cookie[40]) AND $cookie[40] === '~') { // sha1 length is 40 characters
 
 				list($hash, $value) = explode('~', $cookie, 2); // Separate the salt and the value
 
@@ -74,13 +84,11 @@
 		}
 
 		public static function delete($variable) {
-			unset($_COOKIE[$variable]);
 			return self::set($variable, NULL, '-24 hours');
 		}
 
 		public static function salt($variable, $value) {
-			// FirePHP edits HTTP_USER_AGENT
-			return sha1($variable . '-' . $value . '-' . self::$salt);
+			return sha1($variable . '-' . $value . '-' . self::$salt); // FirePHP edits HTTP_USER_AGENT
 		}
 
 		public static function supported() {
@@ -103,6 +111,6 @@
 
 	}
 
-	cookie::set('cookie_check', 'true', '+80 days');
+	cookie_base::set('cookie_check', 'true', '+80 days');
 
 ?>
