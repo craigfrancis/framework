@@ -113,7 +113,11 @@
 			'p::' => 'permissions::',
 		);
 
-	$options = getopt(implode('', array_keys($parameters)), $parameters);
+	if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+		$options = getopt(implode('', array_keys($parameters)));
+	} else {
+		$options = getopt(implode('', array_keys($parameters)), $parameters);
+	}
 
 	$debug_show = (isset($options['d']) || isset($options['debug'])); // Could be reset, e.g. when initialising maintenance
 

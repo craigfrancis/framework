@@ -74,7 +74,7 @@
 			//--------------------------------------------------
 			// Set
 
-				if (floatval(phpversion()) >= 5.2) {
+				if (version_compare(PHP_VERSION, '5.2.0', '>=')) {
 					return setcookie($variable_full, $value, $expiration, $config['path'], $config['domain'], $config['secure'], $config['http_only']);
 				} else {
 					return setcookie($variable_full, $value, $expiration, $config['path'], $config['domain'], $config['secure']);
