@@ -293,11 +293,9 @@
 						<h2>Tasks</h2>
 						<ul>';
 
-					$url = url('./');
-
 					foreach ($this->task_paths as $task_name => $task_path) {
 						$html .= '
-								<li><a href="' . html($url->get(array('execute' => $task_name))) . '">' . html(ucfirst(str_replace('_', ' ', $task_name))) . '</a></li>';
+								<li><a href="' . html(url('./', array('execute' => $task_name))) . '">' . html(ucfirst(str_replace('_', ' ', $task_name))) . '</a></li>';
 					}
 
 					$html .= '

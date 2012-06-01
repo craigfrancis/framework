@@ -172,9 +172,9 @@
 
 			if ($this->url === NULL) {
 				if ($this->config['base_url'] !== NULL) {
-					$this->url = url($this->config['base_url']);
+					$this->url = new url($this->config['base_url']);
 				} else {
-					$this->url = url();
+					$this->url = new url();
 				}
 			}
 
