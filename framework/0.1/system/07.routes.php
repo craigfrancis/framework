@@ -175,6 +175,8 @@
 
 				if ($success) {
 					exit();
+				} else {
+					render_error('page_not_found');
 				}
 
 				unset($gateway, $success);
@@ -188,7 +190,9 @@
 	//--------------------------------------------------
 	// Default mode
 
-		define('REQUEST_MODE', '');
+		if (!defined('REQUEST_MODE')) { // May have been a failed gateway loading
+			define('REQUEST_MODE', '');
+		}
 
 //--------------------------------------------------
 // Handle asset requests... could contain file
