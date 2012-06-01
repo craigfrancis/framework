@@ -1,7 +1,7 @@
 <?php
 
 	config::set('session.id', NULL);
-	config::set_default('session.name', 'sess_' . substr(md5(config::get('request.domain') . config::get('url.prefix')), 0, 5));
+	config::set_default('session.name', config::get('cookie.prefix') . 'session');
 
 	class session_base extends check {
 

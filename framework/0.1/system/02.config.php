@@ -246,6 +246,12 @@
 		config::set_default('url.default_format', 'absolute');
 
 	//--------------------------------------------------
+	// Cookie
+
+		config::set_default('cookie.protect', false); // Does increase header size, which probably isn't good for page speed
+		config::set_default('cookie.prefix', substr(md5(config::get('request.domain') . config::get('url.prefix')), 0, 5) . '_');
+
+	//--------------------------------------------------
 	// Email
 
 		config::set_default('email.from_name', config::get('output.site_name'));

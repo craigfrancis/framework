@@ -8,48 +8,78 @@
 
 		public static $salt = ROOT;
 
+		public static function init() {
+			self::set('cookie_check', 'true');
+		}
+
 		public static function set($variable, $value, $expiration = NULL, $config = NULL) {
 
-			$variable_full = config::get('cookie.prefix', '') . $variable;
+			//--------------------------------------------------
+			// Config
 
-			if ($config === NULL) {
-				$config = array();
-			}
+				$variable_full = config::get('cookie.prefix', '') . $variable;
 
-			if (!isset($config['path']))      $config['path']      = '/';
-			if (!isset($config['domain']))    $config['domain']    = NULL;
-			if (!isset($config['secure']))    $config['secure']    = false;
-			if (!isset($config['http_only'])) $config['http_only'] = true;
-
-			if ($expiration === NULL) {
-				$expiration = 0; // Session cookie
-			} else if (is_string($expiration)) {
-				$expiration = strtotime($expiration);
-			}
-
-			if ($value !== NULL && config::get('cookie.protect', true)) {
-				$value = self::salt($variable, $value) . '~' . $value; // Add the salt to the cookie value
-			}
-
-			if ($variable == 'cookie_check') {
-				if (isset($_COOKIE[$variable_full]) && headers_sent()) { // Rare exception where headers have already been sent, and as it's only cookie_check we can ignore.
-					return true;
+				if ($expiration === NULL) {
+					$expiration = 0; // Session cookie
+				} else if (is_string($expiration)) {
+					$expiration = strtotime($expiration);
 				}
-			} else if ($value === NULL) {
-				unset($_COOKIE[$variable_full]);
-			} else {
-				$_COOKIE[$variable_full] = $value;
-			}
 
-			if (headers_sent($file, $line)) {
-				exit_with_error('Cannot set cookie "' . $variable . '" - output already started by "' . $file . '" line "' . $line . '"');
-			}
+				if ($config === NULL) {
+					$config = array();
+				}
 
-			if (floatval(phpversion()) >= 5.2) {
-				return setcookie($variable_full, $value, $expiration, $config['path'], $config['domain'], $config['secure'], $config['http_only']);
-			} else {
-				return setcookie($variable_full, $value, $expiration, $config['path'], $config['domain'], $config['secure']);
-			}
+				if (!isset($config['path']))      $config['path']      = '/';
+				if (!isset($config['domain']))    $config['domain']    = NULL;
+				if (!isset($config['secure']))    $config['secure']    = false;
+				if (!isset($config['http_only'])) $config['http_only'] = true;
+
+			//--------------------------------------------------
+			// Cookie check
+
+				if ($variable == 'cookie_check') {
+
+					if (isset($_COOKIE[$variable_full])) {
+						return true; // Don't re-call setcookie() when this one has already been done
+					}
+
+				} else if (!isset($_COOKIE['cookie_check'])) {
+
+					self::init();
+
+				}
+
+			//--------------------------------------------------
+			// Value
+
+				if ($value !== NULL && config::get('cookie.protect', false)) {
+					$value = self::salt($variable, $value) . '~' . $value; // Add the salt to the cookie value
+				}
+
+			//--------------------------------------------------
+			// Global variable
+
+				if ($value === NULL) {
+					unset($_COOKIE[$variable_full]);
+				} else {
+					$_COOKIE[$variable_full] = $value;
+				}
+
+			//--------------------------------------------------
+			// Headers sent check
+
+				if (headers_sent($file, $line)) {
+					exit_with_error('Cannot set cookie "' . $variable . '" - output already started by "' . $file . '" line "' . $line . '"');
+				}
+
+			//--------------------------------------------------
+			// Set
+
+				if (floatval(phpversion()) >= 5.2) {
+					return setcookie($variable_full, $value, $expiration, $config['path'], $config['domain'], $config['secure'], $config['http_only']);
+				} else {
+					return setcookie($variable_full, $value, $expiration, $config['path'], $config['domain'], $config['secure']);
+				}
 
 		}
 
@@ -63,7 +93,7 @@
 
 			$cookie = $_COOKIE[$variable_full];
 
-			if (!config::get('cookie.protect', true)) {
+			if (!config::get('cookie.protect', false)) {
 
 				return $cookie;
 
@@ -110,7 +140,5 @@
 		}
 
 	}
-
-	cookie_base::set('cookie_check', 'true', '+80 days');
 
 ?>
