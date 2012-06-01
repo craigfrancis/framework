@@ -35,21 +35,6 @@
 				if (!isset($config['http_only'])) $config['http_only'] = true;
 
 			//--------------------------------------------------
-			// Cookie check
-
-				if ($variable == 'cookie_check') {
-
-					if (isset($_COOKIE[$variable_full])) {
-						return true; // Don't re-call setcookie() when this one has already been done
-					}
-
-				} else if (!isset($_COOKIE['cookie_check'])) {
-
-					self::init();
-
-				}
-
-			//--------------------------------------------------
 			// Value
 
 				if ($value !== NULL && config::get('cookie.protect', false)) {
@@ -57,12 +42,26 @@
 				}
 
 			//--------------------------------------------------
-			// Global variable
+			// Variable
 
-				if ($value === NULL) {
-					unset($_COOKIE[$variable_full]);
+				if ($variable == 'cookie_check') {
+
+					if (isset($_COOKIE[$variable_full])) {
+						return true; // Don't re-call setcookie() when client is already sending this cookie
+					}
+
 				} else {
-					$_COOKIE[$variable_full] = $value;
+
+					if (!isset($_COOKIE['cookie_check'])) {
+						self::init();
+					}
+
+					if ($value === NULL) {
+						unset($_COOKIE[$variable_full]);
+					} else {
+						$_COOKIE[$variable_full] = $value;
+					}
+
 				}
 
 			//--------------------------------------------------
