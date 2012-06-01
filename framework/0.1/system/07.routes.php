@@ -190,9 +190,7 @@
 	//--------------------------------------------------
 	// Default mode
 
-		if (!defined('REQUEST_MODE')) { // May have been a failed gateway loading
-			define('REQUEST_MODE', '');
-		}
+		define('REQUEST_MODE', '');
 
 //--------------------------------------------------
 // Handle asset requests... could contain file
