@@ -124,6 +124,8 @@
 
 		if ($maintenance_url !== NULL && prefix_match($maintenance_url, $route_path)) {
 
+			define('REQUEST_MODE', 'maintenance');
+
 			$maintenance = new maintenance();
 
 			$test_url = str_replace('//', '/', $maintenance_url . '/test/');
@@ -163,6 +165,8 @@
 
 			if (preg_match('/^[\/]*([^\/]+)[\/]*(.*)$/', substr($route_path, strlen($gateway_url)), $matches)) {
 
+				define('REQUEST_MODE', 'gateway');
+
 				$api_name = str_replace('-', '_', $matches[1]);
 
 				$gateway = new gateway();
@@ -180,6 +184,11 @@
 		}
 
 		unset($gateway_url);
+
+	//--------------------------------------------------
+	// Default mode
+
+		define('REQUEST_MODE', '');
 
 //--------------------------------------------------
 // Handle asset requests... could contain file

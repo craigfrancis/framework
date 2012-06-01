@@ -137,6 +137,8 @@
 
 	if ($gateway_name !== NULL) {
 
+		define('REQUEST_MODE', 'gateway');
+
 		$gateway = new gateway();
 
 		$success = $gateway->run($gateway_name);
@@ -153,6 +155,8 @@
 // Maintenance mode
 
 	if (isset($options['m']) || isset($options['maintenance'])) {
+
+		define('REQUEST_MODE', 'maintenance');
 
 		$maintenance = new maintenance();
 
@@ -176,6 +180,11 @@
 		exit();
 
 	}
+
+//--------------------------------------------------
+// Default
+
+	define('REQUEST_MODE', '');
 
 //--------------------------------------------------
 // Install mode
