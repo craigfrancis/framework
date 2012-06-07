@@ -247,7 +247,7 @@
 
 					if ($route_ext == 'css' && config::get('output.css_tidy', false)) {
 
-						$cache_folder .= PRIVATE_ROOT . '/tmp/css_tidy/';
+						$cache_folder = PRIVATE_ROOT . '/tmp/css_tidy/';
 						$cache_file = $cache_folder . md5($file_path);
 
 						if (!is_dir($cache_folder)) {
