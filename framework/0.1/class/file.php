@@ -36,6 +36,10 @@
 				// Default config
 
 					$this->config = array(
+							'file_root' => FILE_ROOT,
+							'file_url' => FILE_URL,
+							'file_folder_division' => NULL, // Set to something like "1000" so the folder structure can by divided into folders /files/008000/8192
+							'file_missing_url' => NULL,
 							'image_type' => 'jpg',
 							'image_missing_url_prefix' => NULL, // If you want to show placeholder images, e.g. /a/img/place-holder/100x100.jpg
 							'image_missing_url' => NULL,
@@ -82,10 +86,89 @@
 			}
 
 		//--------------------------------------------------
-		// Image path, url, and html
+		// Standard file support
+
+			public function file_path_get($id, $ext = NULL) {
+
+				if ($this->config['file_folder_division'] === NULL) {
+
+					$path = $this->config['file_root'] . '/' . safe_file_name($this->config['profile']) . '/' . safe_file_name($id);
+					if ($ext !== NULL) {
+						$path .= '.' . safe_file_name($ext);
+					}
+					return $path;
+
+				} else {
+
+					$id = intval($id);
+
+					$division_int = intval($this->config['file_folder_division']); // e.g. 1000
+					$division_len = strlen($division_int);
+
+					$divide = (floor($id / $division_int) * $division_int);
+					$divide = str_pad(intval($divide), ($division_len + 2), '0', STR_PAD_LEFT);
+
+					$folder = $this->config['file_root'] . '/files/' . $folder . '/' . $divide;
+
+					if (!is_dir($folder)) {
+						@mkdir($folder, 0777, true);
+						if (!is_dir($folder)) {
+							exit_with_error('Cannot create folder ' . $folder);
+						} else {
+							@chmod($folder, 0777);
+						}
+					}
+
+					$path = $folder . '/' . str_pad($id, $division_len, '0', STR_PAD_LEFT);
+
+					if (!is_dir($path)) {
+						@mkdir($path, 0777, true);
+						if (!is_dir($path)) {
+							exit_with_error('Cannot create sub folder ' . $path);
+						} else {
+							@chmod($path, 0777);
+						}
+					}
+
+					if ($ext !== NULL) {
+						$path .= '.' . safe_file_name($ext);
+					}
+
+					return $path;
+
+				}
+
+			}
+
+			public function file_url_get($id, $ext = NULL) {
+
+				$path = $this->file_path_get($id, $ext);
+
+				if (is_file($path)) {
+
+					return str_replace('_', '-', $this->config['file_url'] . substr($path, strlen($this->config['file_root'])));
+
+				} else {
+
+					return $this->config['file_missing_url'];
+
+				}
+
+			}
+
+			public function file_save($file, $id, $ext = NULL) {
+				file_put_contents($this->file_path_get($id, $ext), $file);
+			}
+
+			public function file_exists($id, $ext = NULL) {
+				return file_exists($this->file_path_get($id, $ext));
+			}
+
+		//--------------------------------------------------
+		// Image support
 
 			public function image_path_get($id, $size = 'original') {
-				return FILE_ROOT . '/' . safe_file_name($this->config['profile']) . '/' . safe_file_name($size) . '/' . $id . '.' . safe_file_name($this->config['image_type']);
+				return $this->config['file_root'] . '/' . safe_file_name($this->config['profile']) . '/' . safe_file_name($size) . '/' . safe_file_name($id) . '.' . safe_file_name($this->config['image_type']);
 			}
 
 			public function image_url_get($id, $size = 'original') {
@@ -94,7 +177,7 @@
 
 				if (is_file($path)) {
 
-					return str_replace('_', '-', FILE_URL . substr($path, strlen(FILE_ROOT)));
+					return str_replace('_', '-', $this->config['file_url'] . substr($path, strlen($this->config['file_root'])));
 
 				} else if ($this->config['image_missing_url_prefix'] !== NULL) { // Allow for placeholder images
 
@@ -112,7 +195,7 @@
 				return file_exists($this->image_path_get($id));
 			}
 
-			public function image_tag_get($id, $alt = '', $size = 'original') {
+			public function image_get_html($id, $alt = '', $size = 'original') {
 
 				$image_info = getimagesize($this->image_path_get($id, $size));
 				if ($image_info) {
@@ -131,7 +214,7 @@
 				//--------------------------------------------------
 				// Variables
 
-					$folder_path = FILE_ROOT . '/' . safe_file_name($this->config['profile']);
+					$folder_path = $this->config['file_root'] . '/' . safe_file_name($this->config['profile']);
 					$original_path = $this->image_path_get($id, 'original');
 
 				//--------------------------------------------------
