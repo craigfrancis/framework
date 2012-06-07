@@ -247,12 +247,7 @@
 
 					if ($route_ext == 'css' && config::get('output.css_tidy', false)) {
 
-						$cache_folder = PRIVATE_ROOT . '/tmp/';
-						if (!is_dir($cache_folder) || !is_writable($cache_folder)) {
-							exit_with_error('Cannot write to temp folder', $cache_folder);
-						}
-
-						$cache_folder .= 'css_tidy/';
+						$cache_folder .= PRIVATE_ROOT . '/tmp/css_tidy/';
 						$cache_file = $cache_folder . md5($file_path);
 
 						if (!is_dir($cache_folder)) {

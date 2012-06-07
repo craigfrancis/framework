@@ -597,6 +597,23 @@
 	}
 
 //--------------------------------------------------
+// Recursively delete a directory
+
+	function rrmdir($dir) {
+		foreach (scandir($dir) as $file) {
+			if ($file != '.' && $file != '..') {
+				$path = $dir . '/' . $file;
+				if (is_dir($path)) {
+					rrmdir($path);
+				} else {
+					unlink($path);
+				}
+			}
+		}
+		rmdir($dir);
+	}
+
+//--------------------------------------------------
 // Random bytes - from Drupal/phpPass
 
 	function random_bytes($count)  {

@@ -17,6 +17,46 @@
 	mime_set('text/plain');
 
 //--------------------------------------------------
+// Execute command
+
+	function execute_command($command, $show_output = true) {
+		if ($show_output && config::get('debug.show')) {
+			echo '  ' . $command . "\n";
+		}
+		$output = shell_exec($command);
+		if ($show_output) {
+			echo $output;
+			flush();
+		}
+		return $output;
+	}
+
+//--------------------------------------------------
+// CLI options
+
+	$parameters = array(
+			'h' => 'help',
+			'd::' => 'debug::',
+			'g:' => 'gateway:',
+			'm::' => 'maintenance::',
+			'i::' => 'install::',
+			'p::' => 'permissions::',
+		);
+
+	if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+		$options = getopt(implode('', array_keys($parameters)));
+	} else {
+		$options = getopt(implode('', array_keys($parameters)), $parameters);
+	}
+
+//--------------------------------------------------
+// Debug
+
+	$debug_show = (isset($options['d']) || isset($options['debug'])); // Could be reset, e.g. when initialising maintenance
+
+	config::set('debug.show', $debug_show);
+
+//--------------------------------------------------
 // Help text
 
 	function print_help() {
@@ -24,23 +64,13 @@
 		echo "\n";
 	}
 
-//--------------------------------------------------
-// Execute command
-
-	function execute_command($command, $show_output = true) {
-		if ($show_output) {
-			if (config::get('debug.show')) {
-				echo '  ' . $command . "\n";
-			}
-			flush();
-			echo shell_exec($command);
-		} else {
-			shell_exec($command);
-		}
+	if (isset($options['h']) || isset($options['help'])) {
+		print_help();
+		exit();
 	}
 
 //--------------------------------------------------
-// Permission reset
+// Permissions mode
 
 	function permission_reset($show_output = true) {
 
@@ -101,31 +131,11 @@
 
 	}
 
-//--------------------------------------------------
-// CLI options
+	if (isset($options['p']) || isset($options['permissions'])) {
 
-	$parameters = array(
-			'h' => 'help',
-			'd::' => 'debug::',
-			'g:' => 'gateway:',
-			'm::' => 'maintenance::',
-			'i::' => 'install::',
-			'p::' => 'permissions::',
-		);
-
-	if (version_compare(PHP_VERSION, '5.3.0', '<')) {
-		$options = getopt(implode('', array_keys($parameters)));
-	} else {
-		$options = getopt(implode('', array_keys($parameters)), $parameters);
-	}
-
-	$debug_show = (isset($options['d']) || isset($options['debug'])); // Could be reset, e.g. when initialising maintenance
-
-	config::set('debug.show', $debug_show);
-
-	if (isset($options['h']) || isset($options['help'])) {
-		print_help();
+		permission_reset();
 		exit();
+
 	}
 
 //--------------------------------------------------
@@ -191,30 +201,44 @@
 
 	if (isset($options['i']) || isset($options['install'])) {
 
-		function run_install() {
-			require_once(func_get_arg(0)); // No local variables
-		}
+		//--------------------------------------------------
+		// Setup new empty /tmp/ folder
 
-		$install_path = 'support' . DS . 'core' . DS . 'install.php';
-		$install_root = APP_ROOT . DS . $install_path;
+			$temp_folder = PRIVATE_ROOT . '/tmp/';
+			if (is_dir($temp_folder)) {
+				rrmdir($temp_folder);
+				if (is_dir($temp_folder)) {
+					exit_with_error('Cannot delete/empty the /private/tmp/ folder', $temp_folder);
+				}
+			}
 
-		if (is_file($install_root)) {
-			run_install($install_root);
-		} else {
-			exit('Missing install script: ' . $install_path . "\n");
-		}
+			if (is_dir(PRIVATE_ROOT . '/.svn')) {
+				$output = execute_command('svn propget svn:ignore ' . escapeshellarg(PRIVATE_ROOT), false);
+				if (!preg_match('/^tmp$/m', $output)) {
+					execute_command('svn propset svn:ignore "tmp" ' . escapeshellarg(PRIVATE_ROOT));
+				}
+			}
 
-		exit();
+			mkdir($temp_folder, 0777);
+			chmod($temp_folder, 0777);
 
-	}
+		//--------------------------------------------------
+		// Run install script
 
-//--------------------------------------------------
-// Permissions mode
+			function run_install() {
+				require_once(func_get_arg(0)); // No local variables
+			}
 
-	if (isset($options['p']) || isset($options['permissions'])) {
+			$install_path = 'support' . DS . 'core' . DS . 'install.php';
+			$install_root = APP_ROOT . DS . $install_path;
 
-		permission_reset();
-		exit();
+			if (is_file($install_root)) {
+				run_install($install_root);
+			} else {
+				exit('Missing install script: ' . $install_path . "\n");
+			}
+
+			exit();
 
 	}
 
