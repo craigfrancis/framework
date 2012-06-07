@@ -226,26 +226,55 @@
 						exit('Cannot access: ' . $file_path);
 					}
 
+					$expires = (60*60*24*365);
+					header('Vary: Accept-Encoding'); // http://support.microsoft.com/kb/824847
+					header('Cache-Control: public, max-age=' . head($expires)); // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
+					header('Pragma: public'); // For HTTP/1.0 compatibility
+					header('Expires: ' . head(gmdate('D, d M Y H:i:s', time() + $expires)) . ' GMT');
 					header('Last-Modified: ' . head(gmdate('D, d M Y H:i:s', $file_mtime)) . ' GMT');
 					header('Etag: ' . head($file_mtime));
+
+					mime_set($mime_types[$route_ext]);
 
 					if ((isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $file_mtime) || (isset($_SERVER['HTTP_IF_NONE_MATCH']) && trim($_SERVER['HTTP_IF_NONE_MATCH']) == $file_mtime)) {
 						http_response_code(304);
 						exit();
 					}
 
-					mime_set($mime_types[$route_ext]);
-
 					if (extension_loaded('zlib')) {
 						ob_start('ob_gzhandler');
 					}
 
-					if ($route_ext == 'css' && config::get('output.css_minify', false)) {
-						exit(resources::css_minify(file_get_contents($file_path)));
-					} else {
-						readfile($file_path);
-						exit();
+					if ($route_ext == 'css' && config::get('output.css_tidy', false)) {
+
+						$cache_folder = PRIVATE_ROOT . '/tmp/';
+						if (!is_dir($cache_folder) || !is_writable($cache_folder)) {
+							exit_with_error('Cannot write to temp folder', $cache_folder);
+						}
+
+						$cache_folder .= 'css_tidy/';
+						$cache_file = $cache_folder . md5($file_path);
+
+						if (!is_dir($cache_folder)) {
+							mkdir($cache_folder, 0777);
+							chmod($cache_folder, 0777);
+						} else if (!is_writable($cache_folder)) {
+							exit_with_error('Cannot write to CSS cache folder', $cache_folder);
+						}
+
+						if (!file_exists($cache_file) || filemtime($cache_file) != $file_mtime) {
+							$css = new csstidy();
+							$css->parse(file_get_contents($file_path));
+							file_put_contents($cache_file, $css->print->plain());
+							touch($cache_file, $file_mtime);
+						}
+
+						$file_path = $cache_file;
+
 					}
+
+					readfile($file_path);
+					exit();
 
 				} else {
 

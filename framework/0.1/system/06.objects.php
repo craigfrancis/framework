@@ -237,7 +237,13 @@
 
 					$return = '';
 
+					$css_prefix = config::get('output.css_path_prefix', '');
+
 					foreach (resources::get('css') as $file) { // Cannot use array_unique, as some versions of php do not support multi-dimensional arrays
+
+						if (substr($file['path'], 0, 1) == '/') {
+							$file['path'] = $css_prefix . $file['path'];
+						}
 
 						if ($mode == 'html') {
 							$return .= "\n\t" . '<link rel="stylesheet" type="text/css" href="' . html($file['path']) . '" media="' . html($file['media']) . '" />';
@@ -258,6 +264,10 @@
 						}
 
 						foreach ($files_alternate as $file) {
+
+							if (substr($file['path'], 0, 1) == '/') {
+								$file['path'] = $css_prefix . $file['path'];
+							}
 
 							if ($mode == 'html') {
 								$return .= "\n\t" . '<link rel="alternate stylesheet" type="text/css" href="' . html($file['path']) . '" media="' . html($file['media']) . '" title="' . html($file['title']) . '" />';
@@ -354,9 +364,17 @@
 
 					if (session::get('js_disable') != 'true') {
 
+						$js_prefix = config::get('output.js_path_prefix', '');
 						$js_files = array();
+
 						foreach (resources::get('js') as $file) {
+
+							if (substr($file['path'], 0, 1) == '/') {
+								$file['path'] = $js_prefix . $file['path'];
+							}
+
 							$js_files[$file['path']] = array_merge(array('type' => 'text/javascript', 'src' => $file['path']), $file['attributes']); // Unique path
+
 						}
 
 						if (count($js_files) > 0) {

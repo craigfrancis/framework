@@ -156,8 +156,6 @@
 			//--------------------------------------------------
 			// Add to config
 
-				$css_prefix = config::get('output.css_path_prefix', '');
-
 				foreach ($css_types as $css_type_name => $css_type_info) {
 
 					if ($css_type_info['default'] == true || $css_name == $css_type_name) {
@@ -165,7 +163,7 @@
 
 							$media = ($css_name == $css_type_name ? $css_type_info['media_selected'] : $css_type_info['media_normal']);
 
-							resources::css_add($css_prefix . $path, $media);
+							resources::css_add($path, $media);
 
 						}
 					}
@@ -173,19 +171,13 @@
 					if ($css_type_info['alt_title'] != '' && $css_name != $css_type_name) {
 						foreach ($css_type_info['files'] as $path) {
 
-							resources::css_alternate_add($css_prefix . $path, 'all', $css_type_info['alt_title']);
+							resources::css_alternate_add($path, 'all', $css_type_info['alt_title']);
 
 						}
 					}
 
 				}
 
-		}
-
-		public static function css_minify($css) { // Reinhold Weber
-			$css = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $css); // Remove comments
-			$css = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $css); // Remove tabs, spaces, newlines, etc.
-			return $css;
 		}
 
 		public static function get($type) {

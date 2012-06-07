@@ -394,7 +394,7 @@
 //--------------------------------------------------
 // Download
 
-	function http_download_file($path, $mime, $name = NULL, $mode = 'attachment') {
+	function http_file_download($path, $mime, $name = NULL, $mode = 'attachment') {
 
 		config::set('debug.show', false);
 
@@ -415,7 +415,7 @@
 
 	}
 
-	function http_download_string($content, $mime, $name, $mode = 'attachment') {
+	function http_string_download($content, $mime, $name, $mode = 'attachment') {
 
 		config::set('debug.show', false);
 
