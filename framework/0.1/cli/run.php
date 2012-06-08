@@ -108,6 +108,7 @@
 			$temp_folder = PRIVATE_ROOT . '/tmp/';
 			if (is_dir($temp_folder)) {
 				rrmdir($temp_folder);
+				clearstatcache();
 				if (is_dir($temp_folder)) {
 					exit_with_error('Cannot delete/empty the /private/tmp/ folder', $temp_folder);
 				}
