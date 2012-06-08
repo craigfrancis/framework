@@ -261,13 +261,6 @@
 			public function test() {
 
 				//--------------------------------------------------
-				// Only on stage
-
-					if (SERVER != 'stage') {
-						exit('Disabled');
-					}
-
-				//--------------------------------------------------
 				// Execute task
 
 					$task_name = request('execute');
@@ -295,7 +288,7 @@
 
 					foreach ($this->task_paths as $task_name => $task_path) {
 						$html .= '
-								<li><a href="' . html(url('./', array('execute' => $task_name))) . '">' . html(ucfirst(str_replace('_', ' ', $task_name))) . '</a></li>';
+								<li><a href="' . html(url('./', array('execute' => $task_name))) . '">' . html(ref_to_human($task_name)) . '</a></li>';
 					}
 
 					$html .= '
@@ -469,7 +462,7 @@
 				//--------------------------------------------------
 				// Email title
 
-					$email_title = ucfirst(str_replace('_', ' ', $this->task_name)) . ' @ ' . date('Y-m-d H:i:s');
+					$email_title = ref_to_human($this->task_name) . ' @ ' . date('Y-m-d H:i:s');
 
 					$email_addresses = array();
 

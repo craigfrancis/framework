@@ -142,6 +142,13 @@
 
 				unset($gateway, $success);
 
+			} else if (SERVER == 'stage') {
+
+				$gateway = new gateway();
+				$gateway->index();
+
+				exit();
+
 			}
 
 		}
@@ -159,9 +166,7 @@
 
 			$maintenance = new maintenance();
 
-			$test_url = str_replace('//', '/', $maintenance_url . '/test/');
-
-			if (prefix_match($test_url, $route_path)) {
+			if (SERVER == 'stage' && prefix_match(str_replace('//', '/', $maintenance_url . '/test/'), $route_path)) {
 
 				$maintenance->test();
 

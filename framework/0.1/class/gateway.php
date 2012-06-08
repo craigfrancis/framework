@@ -357,6 +357,48 @@
 				return $api->run_wrapper();
 			}
 
+			public function index() {
+
+				//--------------------------------------------------
+				// Gateways
+
+					$gateway_urls = array();
+					$gateway_dir = APP_ROOT . '/gateway/';
+
+					if ($handle = opendir($gateway_dir)) {
+						while (false !== ($file = readdir($handle))) {
+							if (is_file($gateway_dir . $file) && preg_match('/^([a-zA-Z0-9_]+)\.php$/', $file, $matches)) {
+
+								$gateway_urls[$matches[1]] = gateway_url($matches[1]);
+
+							}
+						}
+					}
+
+					asort($gateway_urls);
+
+				//--------------------------------------------------
+				// View
+
+					$this->title_set('Gateways');
+
+					$html = '
+						<h2>Gateways</h2>
+						<ul>';
+
+					foreach ($gateway_urls as $gateway_name => $gateway_url) {
+						$html .= '
+								<li><a href="' . html($gateway_url) . '">' . html(ref_to_human($gateway_name)) . '</a></li>';
+					}
+
+					$html .= '
+						</ul>';
+
+					$view = new view();
+					$view->render_html($html);
+
+			}
+
 		//--------------------------------------------------
 		// Config
 

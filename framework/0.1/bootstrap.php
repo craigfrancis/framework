@@ -132,6 +132,12 @@
 			}
 
 		//--------------------------------------------------
+		// View variables
+
+			config::set('view.variables', array());
+			config::set('view.layout', 'default');
+
+		//--------------------------------------------------
 		// Routes
 
 			require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '07.routes.php');
@@ -139,12 +145,6 @@
 			if (config::get('debug.level') >= 4) {
 				debug_progress('Routes');
 			}
-
-		//--------------------------------------------------
-		// View variables
-
-			config::set('view.variables', array());
-			config::set('view.layout', 'default');
 
 		//--------------------------------------------------
 		// Main include
