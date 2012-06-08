@@ -215,7 +215,6 @@ if ( !function_exists("__autoload") ) {
    * @param string $class
    */
   function __autoload($class) {
-	debug($class);
     DOMPDF_autoload($class);
   }
 }
