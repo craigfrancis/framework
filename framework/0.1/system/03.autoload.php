@@ -50,6 +50,7 @@
 
 				$paths[] = FRAMEWORK_ROOT . '/class/' . $class_file_name . '.php';
 				$paths[] = FRAMEWORK_ROOT . '/class/' . $folder . '/' . $class_file_name . '.php';
+				$paths[] = FRAMEWORK_ROOT . '/vendors/' . $folder . '/' . $class_file_name . '.php';
 
 			}
 
