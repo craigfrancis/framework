@@ -126,7 +126,7 @@
 
 			if (preg_match('/^[\/]*([^\/]+)[\/]*(.*)$/', substr($route_path, strlen($gateway_url)), $matches)) {
 
-				define('REQUEST_MODE', 'gateway');
+				config::set('output.mode', 'gateway');
 
 				$api_name = str_replace('-', '_', $matches[1]);
 
@@ -162,7 +162,7 @@
 
 		if ($maintenance_url !== NULL && prefix_match($maintenance_url, $route_path)) {
 
-			define('REQUEST_MODE', 'maintenance');
+			config::set('output.mode', 'maintenance');
 
 			$maintenance = new maintenance();
 
@@ -191,11 +191,6 @@
 		}
 
 		unset($maintenance_url);
-
-	//--------------------------------------------------
-	// Default mode
-
-		define('REQUEST_MODE', '');
 
 //--------------------------------------------------
 // Handle asset requests... could contain file

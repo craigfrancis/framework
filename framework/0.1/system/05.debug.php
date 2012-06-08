@@ -436,8 +436,15 @@
 
 			}
 
+			function debug_show_constants() {
+
+				// TODO
+
+			}
+
 			if (config::get('debug.level') >= 3) {
 				debug_show_config();
+				debug_show_constants();
 			}
 
 		//--------------------------------------------------

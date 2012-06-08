@@ -32,45 +32,7 @@
 	}
 
 //--------------------------------------------------
-// CLI options
-
-	$parameters = array(
-			'h' => 'help',
-			'd::' => 'debug::',
-			'g:' => 'gateway:',
-			'm::' => 'maintenance::',
-			'i::' => 'install::',
-			'p::' => 'permissions::',
-		);
-
-	if (version_compare(PHP_VERSION, '5.3.0', '<')) {
-		$options = getopt(implode('', array_keys($parameters)));
-	} else {
-		$options = getopt(implode('', array_keys($parameters)), $parameters);
-	}
-
-//--------------------------------------------------
-// Debug
-
-	$debug_show = (isset($options['d']) || isset($options['debug'])); // Could be reset, e.g. when initialising maintenance
-
-	config::set('debug.show', $debug_show);
-
-//--------------------------------------------------
-// Help text
-
-	function print_help() {
-		readfile(CLI_ROOT . '/help.txt');
-		echo "\n";
-	}
-
-	if (isset($options['h']) || isset($options['help'])) {
-		print_help();
-		exit();
-	}
-
-//--------------------------------------------------
-// Permissions mode
+// Permissions reset
 
 	function permission_reset($show_output = true) {
 
@@ -131,75 +93,14 @@
 
 	}
 
-	if (isset($options['p']) || isset($options['permissions'])) {
+//--------------------------------------------------
+// Install
 
-		permission_reset();
-		exit();
-
+	function install_run_script() {
+		require_once(func_get_arg(0)); // No local variables
 	}
 
-//--------------------------------------------------
-// Gateway mode
-
-	$gateway_name = NULL;
-	if (isset($options['g'])) $gateway_name = $options['g'];
-	if (isset($options['gateway'])) $gateway_name = $options['gateway'];
-
-	if ($gateway_name !== NULL) {
-
-		define('REQUEST_MODE', 'gateway');
-
-		$gateway = new gateway();
-
-		$success = $gateway->run($gateway_name);
-
-		if ($success) {
-			exit();
-		} else {
-			exit('Invalid gateway "' . $gateway_name . '"' . "\n");
-		}
-
-	}
-
-//--------------------------------------------------
-// Maintenance mode
-
-	if (isset($options['m']) || isset($options['maintenance'])) {
-
-		define('REQUEST_MODE', 'maintenance');
-
-		$maintenance = new maintenance();
-
-		$ran_tasks = $maintenance->run();
-
-		if ($debug_show) {
-
-			echo "\n";
-			echo 'Done @ ' . date('Y-m-d H:i:s') . "\n\n";
-
-			foreach ($ran_tasks as $task) {
-				echo '- ' . $task . "\n";
-			}
-
-			if (count($ran_tasks) > 0) {
-				echo "\n";
-			}
-
-		}
-
-		exit();
-
-	}
-
-//--------------------------------------------------
-// Default
-
-	define('REQUEST_MODE', '');
-
-//--------------------------------------------------
-// Install mode
-
-	if (isset($options['i']) || isset($options['install'])) {
+	function install_run() {
 
 		//--------------------------------------------------
 		// Setup new empty /tmp/ folder
@@ -225,26 +126,138 @@
 		//--------------------------------------------------
 		// Run install script
 
-			function run_install() {
-				require_once(func_get_arg(0)); // No local variables
-			}
-
 			$install_path = 'support' . DS . 'core' . DS . 'install.php';
 			$install_root = APP_ROOT . DS . $install_path;
 
 			if (is_file($install_root)) {
-				run_install($install_root);
+				install_run_script($install_root);
 			} else {
 				exit('Missing install script: ' . $install_path . "\n");
 			}
 
-			exit();
+	}
+
+//--------------------------------------------------
+// Parse options
+
+	$parameters = array(
+			'h' => 'help',
+			'd::' => 'debug::',
+			'g:' => 'gateway:',
+			'm::' => 'maintenance::',
+			'i::' => 'install::',
+			'p::' => 'permissions::',
+		);
+
+	if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+		$options = getopt(implode('', array_keys($parameters)));
+	} else {
+		$options = getopt(implode('', array_keys($parameters)), $parameters);
+	}
+
+//--------------------------------------------------
+// Debug
+
+	$debug_show = (isset($options['d']) || isset($options['debug'])); // Could be reset, e.g. when initialising maintenance
+
+	config::set('debug.show', $debug_show);
+
+//--------------------------------------------------
+// Help
+
+	function print_help() {
+		readfile(CLI_ROOT . '/help.txt');
+		echo "\n";
+	}
+
+	$show_help = (count($options) == 0);
+
+//--------------------------------------------------
+// Process options
+
+	foreach ($options as $option_name => $option_values) {
+
+		if (!is_array($option_values)) {
+			$option_values = array($option_values);
+		}
+
+		foreach ($option_values as $option_value) {
+
+			switch ($option_name) {
+				case 'h':
+				case 'help':
+
+					print_help();
+					break;
+
+				case 'p':
+				case 'permissions':
+
+					permission_reset();
+					break;
+
+				case 'i':
+				case 'install':
+
+					install_run();
+					break;
+
+				case 'g':
+				case 'gateway':
+
+					config::set('output.mode', 'gateway');
+
+					$gateway = new gateway();
+					$success = $gateway->run($option_value);
+
+					if (!$success) {
+						exit('Invalid gateway "' . $option_value . '"' . "\n");
+					}
+
+					break;
+
+				case 'm':
+				case 'maintenance':
+
+					config::set('output.mode', 'maintenance');
+
+					$maintenance = new maintenance();
+
+					$ran_tasks = $maintenance->run();
+
+					if ($debug_show) {
+
+						echo "\n";
+						echo 'Done @ ' . date('Y-m-d H:i:s') . "\n\n";
+
+						foreach ($ran_tasks as $task) {
+							echo '- ' . $task . "\n";
+						}
+
+						if (count($ran_tasks) > 0) {
+							echo "\n";
+						}
+
+					}
+
+					break;
+
+				default:
+
+					$show_help = true;
+					break;
+
+			}
+
+		}
 
 	}
 
 //--------------------------------------------------
 // Not handled
 
-	print_help();
+	if ($show_help) {
+		print_help();
+	}
 
 ?>
