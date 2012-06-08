@@ -438,7 +438,30 @@
 
 			function debug_show_constants() {
 
-				// TODO
+				//--------------------------------------------------
+				// Constants
+
+					$constants = get_defined_constants(true);
+
+					if (!isset($constants['user'])) {
+						return;
+					}
+
+					ksort($constants['user']);
+
+					$constants_html  = 'Constants:';
+					$constants_html .= '<div style="margin: 0; padding: 0 0 0 3em;">';
+
+					foreach ($constants['user'] as $key => $value) {
+						$constants_html .= '<p style="margin: 0; padding: 0; text-indent: -2em; font: normal normal 12px/14px monospace;"><strong>' . html($key) . '</strong>: ' . html(debug_dump($value)) . '</p>';
+					}
+
+					$constants_html .= '</div>';
+
+				//--------------------------------------------------
+				// Add note
+
+					debug_note_html($constants_html, 'C');
 
 			}
 
