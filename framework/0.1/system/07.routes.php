@@ -118,6 +118,37 @@
 		}
 
 	//--------------------------------------------------
+	// Gateway
+
+		$gateway_url = config::get('gateway.url');
+
+		if ($gateway_url !== NULL && prefix_match($gateway_url, $route_path)) {
+
+			if (preg_match('/^[\/]*([^\/]+)[\/]*(.*)$/', substr($route_path, strlen($gateway_url)), $matches)) {
+
+				define('REQUEST_MODE', 'gateway');
+
+				$api_name = str_replace('-', '_', $matches[1]);
+
+				$gateway = new gateway();
+
+				$success = $gateway->run($api_name, $matches[2]);
+
+				if ($success) {
+					exit();
+				} else {
+					render_error('page_not_found');
+				}
+
+				unset($gateway, $success);
+
+			}
+
+		}
+
+		unset($gateway_url);
+
+	//--------------------------------------------------
 	// Maintenance
 
 		$maintenance_url = config::get('maintenance.url');
@@ -155,37 +186,6 @@
 		}
 
 		unset($maintenance_url);
-
-	//--------------------------------------------------
-	// Gateway
-
-		$gateway_url = config::get('gateway.url');
-
-		if ($gateway_url !== NULL && prefix_match($gateway_url, $route_path)) {
-
-			if (preg_match('/^[\/]*([^\/]+)[\/]*(.*)$/', substr($route_path, strlen($gateway_url)), $matches)) {
-
-				define('REQUEST_MODE', 'gateway');
-
-				$api_name = str_replace('-', '_', $matches[1]);
-
-				$gateway = new gateway();
-
-				$success = $gateway->run($api_name, $matches[2]);
-
-				if ($success) {
-					exit();
-				} else {
-					render_error('page_not_found');
-				}
-
-				unset($gateway, $success);
-
-			}
-
-		}
-
-		unset($gateway_url);
 
 	//--------------------------------------------------
 	// Default mode
