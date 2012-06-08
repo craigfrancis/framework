@@ -72,7 +72,7 @@
 				if ($this->value_html !== NULL) {
 					return $this->value_html;
 				} else {
-					return html($this->form->db_select_value_get($this->db_field_name));
+					return nl2br(html($this->form->db_select_value_get($this->db_field_name)));
 				}
 			}
 
