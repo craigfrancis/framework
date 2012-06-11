@@ -196,6 +196,61 @@
 
 			$version = config::get('output.version', true);
 
+			if ($type == 'js' && config::get('output.js_combine')) {
+
+				$grouped_files = array(); // Local files that can be grouped
+
+				foreach ($files as $id => $file) {
+					if (substr($file['path'], 0, 1) == '/' && substr($file['path'], -3) == '.js' && count($file['attributes']) == 0) {
+						$grouped_files[$id] = $file['path'];
+					}
+				}
+
+				if (count($grouped_files) > 0) {
+
+					$prefix = reset($grouped_files);
+					$length = strlen($prefix);
+
+					foreach ($grouped_files as $path) { // @Gumbo - http://stackoverflow.com/questions/1336207/finding-common-prefix-of-array-of-strings
+						while ($length && substr($path, 0, $length) !== $prefix) {
+							$length--;
+							$prefix = substr($prefix, 0, -1);
+						}
+						if (!$length) break;
+					}
+
+					if ($length > 0 && substr($prefix, -1) == '/') {
+
+						if ($version) {
+							$last_modified = 0;
+							foreach ($grouped_files as $path) {
+								$file_modified = filemtime(PUBLIC_ROOT . $path);
+								if ($last_modified < $file_modified) {
+									$last_modified = $file_modified;
+								}
+							}
+							$last_modified .= '-';
+						} else {
+							$last_modified = '';
+						}
+
+						$paths = array();
+						foreach ($grouped_files as $id => $path) {
+							unset($files[$id]);
+							$paths[] = substr($path, $length, -3);
+						}
+
+						$files[] = array(
+								'path' => $prefix . $last_modified . '{' . implode(',', array_unique($paths)) . '}.js',
+								'attributes' => array(),
+							);
+
+					}
+
+				}
+
+			}
+
 			if ($version) {
 				foreach ($files as $id => $file) {
 					if (substr($file['path'], 0, 1) == '/' && is_file(PUBLIC_ROOT . $file['path'])) {

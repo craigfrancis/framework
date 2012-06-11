@@ -213,6 +213,8 @@
 				'/Netscape\/[4-7]\./',
 			));
 
+		config::set_default('output.js_combine', true);
+		config::set_default('output.js_min', false);
 		config::set_default('output.css_tidy', false);
 		config::set_default('output.css_name', '');
 		config::set_default('output.css_types', array(
