@@ -288,7 +288,7 @@
 // Other string/array functions
 
 	function prefix_match($prefix, $string) {
-		return (substr($string, 0, strlen($prefix)) == $prefix);
+		return (strncmp($string, $prefix, strlen($prefix)) == 0);
 	}
 
 	function path_to_array($path) {
