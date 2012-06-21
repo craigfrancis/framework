@@ -77,7 +77,7 @@
 		}
 
 		public function response_mime_get() {
-			if (preg_match('/^Content-Type: ("|)([^;]+)\1/im', $this->response_headers, $matches)) {
+			if (preg_match('/^Content-Type: ?("|)([^;]+)\1/im', $this->response_headers, $matches)) {
 				return $matches[2];
 			} else {
 				return NULL;
@@ -99,7 +99,7 @@
 
 		public function response_header_get_all($field) {
 			$values = array();
-			if (preg_match_all('/^' . preg_quote($field, '/') . ': ([^\n]*)/im', $this->response_headers, $matches, PREG_SET_ORDER)) {
+			if (preg_match_all('/^' . preg_quote($field, '/') . ': ?([^\n]*)/im', $this->response_headers, $matches, PREG_SET_ORDER)) {
 				foreach ($matches as $match) {
 					$values[] = $match[1];
 				}

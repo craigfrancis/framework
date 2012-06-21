@@ -300,8 +300,6 @@
 
 					if ($cache_folder) {
 
-						$cache_file = $cache_folder . md5($route_file);
-
 						if (!is_dir($cache_folder)) {
 							mkdir($cache_folder, 0777);
 							chmod($cache_folder, 0777);
@@ -309,7 +307,14 @@
 							exit_with_error('Cannot write to CSS cache folder', $cache_folder);
 						}
 
-						if (!file_exists($cache_file) || filemtime($cache_file) != $files_mtime) {
+						$cache_file_base = $cache_folder . md5($route_dir . $route_file . $route_ext);
+						$cache_file_time = $cache_file_base . '-' . $route_mtime;
+
+						if (!file_exists($cache_file_time)) {
+
+							foreach (glob($cache_file_base . '-*') as $filename) {
+								unlink($filename);
+							}
 
 							$files_contents = '';
 							foreach ($route_files as $path) {
@@ -318,21 +323,19 @@
 
 							if ($route_ext == 'js') {
 
-								file_put_contents($cache_file, jsmin::minify($files_contents));
+								file_put_contents($cache_file_time, jsmin::minify($files_contents));
 
 							} else {
 
 								$css = new csstidy();
 								$css->parse($files_contents);
-								file_put_contents($cache_file, $css->print->plain());
+								file_put_contents($cache_file_time, $css->print->plain());
 
 							}
 
-							touch($cache_file, $files_mtime);
-
 						}
 
-						$route_files = array($cache_file);
+						$route_files = array($cache_file_time);
 
 					}
 
@@ -351,7 +354,7 @@
 				// New version
 
 					$new_url = url(config::get('request.url_https'));
-					$new_url->path_set($route_dir . '/' . $files_mtime . '-' . $route_file);
+					$new_url->path_set($route_dir . '/' . $files_mtime . '-' . $route_file . '.' . $route_ext);
 
 					redirect($new_url, 301);
 
