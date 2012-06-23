@@ -202,7 +202,7 @@
 						if (function_exists('mysql_set_charset')) {
 						 	mysql_set_charset($charset, $this->link);
 						} else {
-							mysql_query('SET NAMES ' . $charset);
+							mysql_query('SET NAMES ' . $charset, $this->link);
 						}
 					}
 
