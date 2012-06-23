@@ -301,11 +301,12 @@
 					if ($cache_folder) {
 
 						if (!is_dir($cache_folder)) {
-							mkdir($cache_folder, 0777);
-							chmod($cache_folder, 0777);
-						} else if (!is_writable($cache_folder)) {
-							exit_with_error('Cannot write to CSS cache folder', $cache_folder);
+							@mkdir($cache_folder, 0777);
+							@chmod($cache_folder, 0777);
 						}
+
+						if (!is_dir($cache_folder)) exit_with_error('Cannot create cache folder', $cache_folder);
+						if (!is_writable($cache_folder)) exit_with_error('Cannot write to cache folder', $cache_folder);
 
 						$cache_file_base = $cache_folder . md5($route_dir . $route_file . $route_ext);
 						$cache_file_time = $cache_file_base . '-' . $route_mtime;
