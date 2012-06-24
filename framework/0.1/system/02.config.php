@@ -282,7 +282,7 @@
 		config::set_default('maintenance.url', '/maintenance/');
 
 //--------------------------------------------------
-// Encoding
+// Character set
 
 	mb_internal_encoding(config::get('output.charset'));
 
