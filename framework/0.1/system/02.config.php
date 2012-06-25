@@ -117,7 +117,7 @@
 	}
 
 	$request_path = config::get('request.url');
-	$pos = strpos($request_path, '?'); // TODO: Better way?
+	$pos = strpos($request_path, '?');
 	if ($pos !== false) {
 		$request_path = substr($request_path, 0, $pos);
 	}
