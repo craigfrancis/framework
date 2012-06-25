@@ -109,9 +109,21 @@
 					$site_config = config::get_all('form');
 
 				//--------------------------------------------------
+				// Form action
+
+					$form_action = new url();
+
+					if (https_available()) {
+						$form_action->scheme_set('https');
+					} else {
+						$form_action->format_set('full');
+					}
+
+					$this->form_action = $form_action->get();
+
+				//--------------------------------------------------
 				// Defaults
 
-					$this->form_action = config::get('request.url_https');
 					$this->form_method = 'POST';
 					$this->form_class = '';
 					$this->form_button = 'Save';

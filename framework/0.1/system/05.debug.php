@@ -369,9 +369,9 @@
 
 					} else {
 
-						$note_html = str_replace(APP_ROOT, '/app', $note_html);
-						$note_html = str_replace(FRAMEWORK_ROOT, '/framework', $note_html);
-						$note_html = str_replace(ROOT, '', $note_html);
+						if (SERVER == 'live') {
+							$note_html = str_replace(ROOT, '[HIDDEN]', $note_html);
+						}
 
 						$time = NULL;
 

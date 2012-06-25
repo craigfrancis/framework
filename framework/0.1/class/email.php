@@ -104,7 +104,10 @@
 				//--------------------------------------------------
 				// Default header for tracking
 
-					$this->header_set('X-PHP-Script', '"' . addslashes(config::get('request.url_https')) . '" <' . addslashes(config::get('request.ip')) . '>');
+					$url = new url();
+					$url->format_set('full');
+
+					$this->header_set('X-PHP-Script', '"' . addslashes($url->get()) . '" <' . addslashes(config::get('request.ip')) . '>');
 
 			}
 
@@ -284,6 +287,21 @@
 		// Send
 
 			public function send($recipients, $build = NULL) {
+
+				//--------------------------------------------------
+				// Testing support
+
+					$email_testing = config::get('email.testing');
+
+					if ($email_testing !== NULL) {
+
+						$recipients = $email_testing;
+
+						foreach ($this->cc_emails as $cc_id => $cc_info) {
+							$this->cc_emails[$cc_id]['email'] = $email_testing;
+						}
+
+					}
 
 				//--------------------------------------------------
 				// Build

@@ -353,10 +353,11 @@
 				//--------------------------------------------------
 				// New version
 
-					$new_url = url(config::get('request.url_https'));
+					$new_url = new url();
+					$new_url->format_set('full');
 					$new_url->path_set($route_dir . '/' . $files_mtime . '-' . $route_file . '.' . $route_ext);
 
-					redirect($new_url, 301);
+					redirect($new_url->get(), 301);
 
 			}
 

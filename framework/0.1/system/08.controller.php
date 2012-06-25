@@ -256,10 +256,11 @@
 
 		if (substr(config::get('route.path'), -1) != '/') { // reduce possibility of duplicate content issues
 
-			$new_url = url(config::get('request.url_https'));
+			$new_url = new url();
+			$new_url->format_set('full');
 			$new_url->path_set($new_url->path_get() . '/');
 
-			redirect($new_url, 301);
+			redirect($new_url->get(), 301);
 
 		}
 

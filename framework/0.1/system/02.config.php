@@ -94,40 +94,30 @@
 //--------------------------------------------------
 // Request defaults
 
-	config::set('request.https', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'));
-	config::set('request.method', (isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET'));
-	config::set('request.domain', (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''));
-	config::set('request.query', (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ''));
-	config::set('request.browser', (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''));
-	config::set('request.accept', (isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : ''));
-
-	$url_http = 'http://' . config::get('request.domain');
-
-	if (config::get('request.https')) {
-		$url_https = substr_replace($url_http, 'https://', 0, 7);
-	} else {
-		$url_https = $url_http;
-	}
-
-	config::set('request.domain_http',  $url_http);
-	config::set('request.domain_https', $url_https);
-
 	if (!isset($_SERVER['REQUEST_URI']) && isset($_SERVER['SCRIPT_FILENAME'])) {
 		$_SERVER['REQUEST_URI'] = '/' . preg_replace('/^' . preg_quote(ROOT, '/') . '\/?/', '', realpath($_SERVER['SCRIPT_FILENAME']));
 	}
 
-	if (isset($_SERVER['REQUEST_URI'])) { // Path including query string
-		config::set('request.url',                    $_SERVER['REQUEST_URI']);
-		config::set('request.url_http',  $url_http  . $_SERVER['REQUEST_URI']);
-		config::set('request.url_https', $url_https . $_SERVER['REQUEST_URI']);
+	config::set('request.https', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'));
+	config::set('request.method', (isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET'));
+	config::set('request.domain', (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''));
+	config::set('request.url', (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : './'));
+	config::set('request.query', (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ''));
+	config::set('request.browser', (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''));
+	config::set('request.accept', (isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : ''));
+
+	$request_domain = config::get('request.domain');
+
+	if (config::get('request.https')) {
+		config::set('request.domain_http',  'http://'  . $request_domain);
+		config::set('request.domain_https', 'https://' . $request_domain);
 	} else {
-		config::set('request.url',       './');
-		config::set('request.url_http',  './');
-		config::set('request.url_https', './');
+		config::set('request.domain_http',  'http://' . $request_domain);
+		config::set('request.domain_https', 'http://' . $request_domain);
 	}
 
 	$request_path = config::get('request.url');
-	$pos = strpos($request_path, '?');
+	$pos = strpos($request_path, '?'); // TODO: Better way?
 	if ($pos !== false) {
 		$request_path = substr($request_path, 0, $pos);
 	}
@@ -142,9 +132,9 @@
 		config::set('request.ip', '127.0.0.1');
 	}
 
-	config::set('request.referrer', str_replace($url_https . config::get('url.prefix'), '', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '')));
+	config::set('request.referrer', str_replace(config::get('request.domain_https') . config::get('url.prefix'), '', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '')));
 
-	unset($url_http, $url_https, $request_path, $pos);
+	unset($request_domain, $request_path, $pos);
 
 //--------------------------------------------------
 // Defaults

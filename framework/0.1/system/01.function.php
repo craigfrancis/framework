@@ -591,7 +591,12 @@
 	function https_required() {
 
 		if (https_available() && !config::get('request.https') && config::get('request.method') == 'GET') {
-			redirect(config::get('request.url_https'));
+
+			$new_url = new url();
+			$new_url->scheme_set('https');
+
+			redirect($new_url->get());
+
 		}
 
 	}
