@@ -235,52 +235,52 @@
 
 		}
 
-		function timestamp_to_human($unix) {
+		function timestamp_to_human($input_seconds) {
 
 			//--------------------------------------------------
 			// Maths
 
-				$sec = $unix % 60;
-				$unix -= $sec;
+				$output_seconds = ($input_seconds % 60);
+				$input_seconds -= $output_seconds;
 
-				$min_seconds = $unix % 3600;
-				$unix -= $min_seconds;
-				$min = ($min_seconds / 60);
+				$min_seconds = ($input_seconds % 3600);
+				$input_seconds -= $min_seconds;
+				$output_minutes = ($min_seconds / 60);
 
-				$hour_seconds = $unix % 86400;
-				$unix -= $hour_seconds;
-				$hour = ($hour_seconds / 3600);
+				$hour_seconds = ($input_seconds % 86400);
+				$input_seconds -= $hour_seconds;
+				$output_hours = ($hour_seconds / 3600);
 
-				$day_seconds = $unix % 604800;
-				$unix -= $day_seconds;
-				$day = ($day_seconds / 86400);
+				$day_seconds = ($input_seconds % 604800);
+				$input_seconds -= $day_seconds;
+				$output_days = ($day_seconds / 86400);
 
-				$week = ($unix / 604800);
+				$output_weeks = ($input_seconds / 604800);
 
 			//--------------------------------------------------
 			// Text
 
-				$output = '';
+				$output_text = '';
 
-				if ($week > 0) $output .= ', ' . $week . ' week'   . ($week != 1 ? 's' : '');
-				if ($day  > 0) $output .= ', ' . $day  . ' day'    . ($day  != 1 ? 's' : '');
-				if ($hour > 0) $output .= ', ' . $hour . ' hour'   . ($hour != 1 ? 's' : '');
-				if ($min  > 0) $output .= ', ' . $min  . ' minute' . ($min  != 1 ? 's' : '');
+				if ($output_weeks    > 0) $output_text .= ', ' . $output_weeks    . ' week'   . ($output_weeks    != 1 ? 's' : '');
+				if ($output_days     > 0) $output_text .= ', ' . $output_days     . ' day'    . ($output_days     != 1 ? 's' : '');
+				if ($output_hours    > 0) $output_text .= ', ' . $output_hours    . ' hour'   . ($output_hours    != 1 ? 's' : '');
+				if ($output_minutes  > 0) $output_text .= ', ' . $output_minutes  . ' minute' . ($output_minutes  != 1 ? 's' : '');
 
-				if ($sec > 0 || $output == '') {
-					$output .= ', ' . $sec  . ' second' . ($sec != 1 ? 's' : '');
+				if ($output_seconds > 0 || $output_text == '') {
+					$output_text .= ', ' . $output_seconds  . ' second' . ($output_seconds != 1 ? 's' : '');
 				}
 
 			//--------------------------------------------------
 			// Grammar
 
-				$output = substr($output, 2);
-				$output = preg_replace('/, ([^,]+)$/', ' and $1', $output);
+				$output_text = substr($output_text, 2);
+				$output_text = preg_replace('/, ([^,]+)$/', ', and $1', $output_text);
 
 			//--------------------------------------------------
 			// Return the output
 
-				return $output;
+				return $output_text;
 
 		}
 
