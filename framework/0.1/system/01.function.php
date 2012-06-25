@@ -705,7 +705,7 @@
 	}
 
 //--------------------------------------------------
-// TODO: Remove check object
+// Check object - ensures all properties are set
 
 	class check {
 
