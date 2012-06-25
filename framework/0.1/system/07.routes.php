@@ -40,11 +40,10 @@
 
 		if (strpos($route_path, '_') !== false) {
 
-			$new_url = url(config::get('request.url_https'));
-
-			$path = $new_url->path_get();
-			$path = str_replace('_', '-', $path);
-			$new_url->path_set($path);
+			$new_url = new url();
+			$new_url->format_set('full');
+			$new_url->path_set(str_replace('_', '-', $new_url->path_get()));
+			$new_url = $new_url->get();
 
 			if (SERVER == 'stage') {
 				exit('<p>Underscore substitution: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');

@@ -65,19 +65,23 @@
 			}
 
 			public function path_get() {
+				$this->_path_cache_update();
 				return (isset($this->path_data['path']) ? $this->path_data['path'] : NULL);
 			}
 
 			public function path_set($value) {
 				$this->path_data['path'] = $value;
+				$this->path_cache = NULL;
 			}
 
 			public function host_get() {
+				$this->_path_cache_update();
 				return (isset($this->path_data['host']) ? $this->path_data['host'] : NULL);
 			}
 
 			public function host_set($value) {
 				$this->path_data['host'] = $value;
+				$this->path_cache = NULL;
 			}
 
 			public function param_set($parameters, $value = '') {
@@ -149,9 +153,7 @@
 				// can be cached, as most of the time, only the
 				// parameters change on each call.
 
-					if ($this->path_cache === NULL) {
-						$this->path_cache = $this->_default_path_get();
-					}
+					$this->_path_cache_update();
 
 					$output = $this->path_cache;
 
@@ -209,7 +211,14 @@
 				return ($value != '');
 			}
 
-			private function _default_path_get() {
+			private function _path_cache_update() {
+
+				//--------------------------------------------------
+				// Already done
+
+					if ($this->path_cache !== NULL) {
+						return;
+					}
 
 				//--------------------------------------------------
 				// Current path
@@ -377,7 +386,7 @@
 				//--------------------------------------------------
 				// Return
 
-					return $output;
+					$this->path_cache = $output;
 
 			}
 
