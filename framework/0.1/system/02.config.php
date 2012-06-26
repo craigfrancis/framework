@@ -92,55 +92,25 @@
 	}
 
 //--------------------------------------------------
-// Request defaults
-
-	if (!isset($_SERVER['REQUEST_URI']) && isset($_SERVER['SCRIPT_FILENAME'])) {
-		$_SERVER['REQUEST_URI'] = '/' . preg_replace('/^' . preg_quote(ROOT, '/') . '\/?/', '', realpath($_SERVER['SCRIPT_FILENAME']));
-	}
-
-	config::set('request.https', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'));
-	config::set('request.method', (isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET'));
-	config::set('request.domain', (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''));
-	config::set('request.url', (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : './'));
-	config::set('request.query', (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ''));
-	config::set('request.browser', (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''));
-	config::set('request.accept', (isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : ''));
-
-	$request_domain = config::get('request.domain');
-
-	if (config::get('request.https')) {
-		config::set('request.domain_http',  'http://'  . $request_domain);
-		config::set('request.domain_https', 'https://' . $request_domain);
-	} else {
-		config::set('request.domain_http',  'http://' . $request_domain);
-		config::set('request.domain_https', 'http://' . $request_domain);
-	}
-
-	$request_path = config::get('request.url');
-	$pos = strpos($request_path, '?');
-	if ($pos !== false) {
-		$request_path = substr($request_path, 0, $pos);
-	}
-
-	config::set('request.path', $request_path);
-
-	if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-		config::set('request.ip', 'XForward=[' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ']');
-	} else if (isset($_SERVER['REMOTE_ADDR'])) {
-		config::set('request.ip', $_SERVER['REMOTE_ADDR']);
-	} else {
-		config::set('request.ip', '127.0.0.1');
-	}
-
-	config::set('request.referrer', str_replace(config::get('request.domain_https') . config::get('url.prefix'), '', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '')));
-
-	unset($request_domain, $request_path, $pos);
-
-//--------------------------------------------------
-// Defaults
+// Pre app specified defaults
 
 	//--------------------------------------------------
-	// Resources
+	// Request
+
+		if (!isset($_SERVER['REQUEST_URI']) && isset($_SERVER['SCRIPT_FILENAME'])) {
+			$_SERVER['REQUEST_URI'] = '/' . preg_replace('/^' . preg_quote(ROOT, '/') . '\/?/', '', realpath($_SERVER['SCRIPT_FILENAME']));
+		}
+
+		config::set('request.https', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'));
+		config::set('request.method', (isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET'));
+		config::set('request.domain', (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''));
+		config::set('request.url', (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : './'));
+		config::set('request.query', (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ''));
+		config::set('request.browser', (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''));
+		config::set('request.accept', (isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : ''));
+
+	//--------------------------------------------------
+	// Resource
 
 		config::set('resource.file_root', ROOT . '/files');
 		config::set('resource.private_root', ROOT . '/private');
@@ -163,7 +133,7 @@
 	unset($config, $key, $value);
 
 //--------------------------------------------------
-// Defaults
+// Post app specified defaults
 
 	//--------------------------------------------------
 	// Server
@@ -173,7 +143,40 @@
 		}
 
 	//--------------------------------------------------
-	// Resources
+	// Request
+
+		$request_domain = config::get('request.domain'); // Can be set (cli), or changed in app config file
+
+		if (config::get('request.https')) {
+			config::set('request.domain_http',  'http://'  . $request_domain);
+			config::set('request.domain_https', 'https://' . $request_domain);
+		} else {
+			config::set('request.domain_http',  'http://' . $request_domain);
+			config::set('request.domain_https', 'http://' . $request_domain); // Sets the default as HTTP, but app config can set HTTPS version
+		}
+
+		$request_path = config::get('request.url');
+		$pos = strpos($request_path, '?');
+		if ($pos !== false) {
+			$request_path = substr($request_path, 0, $pos);
+		}
+
+		config::set('request.path', $request_path);
+
+		if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			config::set('request.ip', 'XForward=[' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ']');
+		} else if (isset($_SERVER['REMOTE_ADDR'])) {
+			config::set('request.ip', $_SERVER['REMOTE_ADDR']);
+		} else {
+			config::set('request.ip', '127.0.0.1');
+		}
+
+		config::set('request.referrer', str_replace(config::get('request.domain_https') . config::get('url.prefix'), '', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '')));
+
+		unset($request_domain, $request_path, $pos);
+
+	//--------------------------------------------------
+	// Resource
 
 		config::set_default('resource.asset_url', config::get('url.prefix') . '/a');
 		config::set_default('resource.asset_root', PUBLIC_ROOT . '/a');
