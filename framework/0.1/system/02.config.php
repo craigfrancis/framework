@@ -126,7 +126,7 @@
 		require_once($include_path);
 	}
 
-	foreach ($config as $key => $value) { // Using an array so any project can include this file.
+	foreach ($config as $key => $value) { // Using an array so any project can include the config file.
 		config::set($key, $value);
 	}
 
@@ -148,11 +148,11 @@
 		$request_domain = config::get('request.domain'); // Can be set (cli), or changed in app config file
 
 		if (config::get('request.https')) {
-			config::set('request.domain_http',  'http://'  . $request_domain);
-			config::set('request.domain_https', 'https://' . $request_domain);
+			config::set_default('request.domain_http',  'http://'  . $request_domain);
+			config::set_default('request.domain_https', 'https://' . $request_domain);
 		} else {
-			config::set('request.domain_http',  'http://' . $request_domain);
-			config::set('request.domain_https', 'http://' . $request_domain); // Sets the default as HTTP, but app config can set HTTPS version
+			config::set_default('request.domain_http',  'http://' . $request_domain);
+			config::set_default('request.domain_https', 'http://' . $request_domain); // Sets the default as HTTP, but app config can set HTTPS version
 		}
 
 		$request_path = config::get('request.url');
@@ -161,17 +161,17 @@
 			$request_path = substr($request_path, 0, $pos);
 		}
 
-		config::set('request.path', $request_path);
+		config::set_default('request.path', $request_path);
 
 		if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-			config::set('request.ip', 'XForward=[' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ']');
+			config::set_default('request.ip', 'XForward=[' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ']');
 		} else if (isset($_SERVER['REMOTE_ADDR'])) {
-			config::set('request.ip', $_SERVER['REMOTE_ADDR']);
+			config::set_default('request.ip', $_SERVER['REMOTE_ADDR']);
 		} else {
-			config::set('request.ip', '127.0.0.1');
+			config::set_default('request.ip', '127.0.0.1');
 		}
 
-		config::set('request.referrer', str_replace(config::get('request.domain_https') . config::get('url.prefix'), '', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '')));
+		config::set_default('request.referrer', str_replace(config::get('request.domain_https') . config::get('url.prefix'), '', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '')));
 
 		unset($request_domain, $request_path, $pos);
 
