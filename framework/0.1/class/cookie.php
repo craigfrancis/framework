@@ -52,7 +52,7 @@
 
 				} else {
 
-					if (!isset($_COOKIE['cookie_check'])) {
+					if (!isset($_COOKIE[config::get('cookie.prefix', '') . 'cookie_check'])) {
 						self::init();
 					}
 
