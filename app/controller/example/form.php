@@ -103,7 +103,7 @@ exit('Updated?');
 
 					$form = new form();
 					$form->form_id_set('form_X');
-					$form->form_action_set(config::get('request.url_https'));
+					$form->form_action_set(config::get('request.url'));
 					$form->form_method_set('POST');
 					$form->form_class_set('basic_form'); // Default not set
 					$form->hidden_value_set('message', 'This is my' . "\n" . 'message.');

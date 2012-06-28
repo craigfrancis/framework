@@ -183,8 +183,8 @@
 		$output_php .= $config_php;
 
 		$output_php .= '	config::set(\'output.charset\', $GLOBALS[\'pageCharset\']);' . "\n";
-		$output_php .= '	config::set(\'request.url\', $GLOBALS[\'tplPageUrl\']);' . "\n";
-		$output_php .= '	config::set(\'request.url_https\', $GLOBALS[\'tplHttpsUrl\']);' . "\n";
+		$output_php .= '	config::set(\'request.uri\', $GLOBALS[\'tplPageUrl\']);' . "\n";
+		$output_php .= '	config::set(\'request.url\', $GLOBALS[\'tplHttpsUrl\']);' . "\n";
 		$output_php .= '	config::set(\'request.method\', (isset($_SERVER[\'REQUEST_METHOD\']) ? strtoupper($_SERVER[\'REQUEST_METHOD\']) : \'GET\'));';
 
 	//--------------------------------------------------
