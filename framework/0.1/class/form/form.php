@@ -109,21 +109,9 @@
 					$site_config = config::get_all('form');
 
 				//--------------------------------------------------
-				// Form action
-
-					$form_action = new url();
-
-					if (https_available()) {
-						$form_action->scheme_set('https');
-					} else {
-						$form_action->format_set('full');
-					}
-
-					$this->form_action = $form_action->get();
-
-				//--------------------------------------------------
 				// Defaults
 
+					$this->form_action = config::get('request.url');
 					$this->form_method = 'POST';
 					$this->form_class = '';
 					$this->form_button = 'Save';
@@ -572,7 +560,7 @@
 
 					$this->saved_values_used = false;
 
-					if (session::get('save_request_url') == config::get('request.url') && config::get('request.method') == 'GET' && $this->form_method == 'POST') {
+					if (session::get('save_request_url') == config::get('request.uri') && config::get('request.method') == 'GET' && $this->form_method == 'POST') {
 
 						$data = session::get('save_request_data');
 

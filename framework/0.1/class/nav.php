@@ -83,7 +83,7 @@
 			//--------------------------------------------------
 			// Current path
 
-				$this->path = config::get('request.url');
+				$this->path = config::get('request.uri');
 
 		}
 

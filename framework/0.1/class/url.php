@@ -286,7 +286,7 @@
 								if (isset($this->path_data['host'])) {
 									$host = $this->path_data['host'];
 								} else {
-									$host = config::get('request.domain');
+									$host = config::get('output.domain');
 									if ($host == '') {
 										exit_with_error('Cannot determine domain name for "full" url'); // Probably an email sent from the CLI, so we want to exit
 									}
@@ -299,7 +299,7 @@
 
 									$scheme = $this->scheme;
 
-									if ($scheme == 'https' && $host == config::get('request.domain') && !https_available()) {
+									if ($scheme == 'https' && $host == config::get('output.domain') && !https_available()) {
 										$scheme = 'http'; // Drop down to HTTP if HTTPS is not available.
 									}
 

@@ -104,10 +104,7 @@
 				//--------------------------------------------------
 				// Default header for tracking
 
-					$url = new url();
-					$url->format_set('full');
-
-					$this->header_set('X-PHP-Script', '"' . addslashes($url->get()) . '" <' . addslashes(config::get('request.ip')) . '>');
+					$this->header_set('X-PHP-Script', '"' . addslashes(config::get('request.url')) . '" <' . addslashes(config::get('request.ip')) . '>');
 
 			}
 
@@ -223,8 +220,8 @@
 
 				$request_values = array(
 						'Sent' => date('l jS F Y, g:i:sa'),
-						'Website' => config::get('request.domain_http') . config::get('url.prefix'),
-						'Request' => config::get('request.url'),
+						'Website' => config::get('request.domain'),
+						'Request' => config::get('request.uri'),
 						'Referrer' => config::get('request.referrer'),
 						'Remote' => config::get('request.ip'),
 					);

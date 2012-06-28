@@ -423,7 +423,7 @@
 							} else {
 								$value_html = html(debug_dump($value, 1));
 							}
-							$config_html .= '<p style="margin: 0; padding: 0; text-indent: -2em; font: normal normal 12px/14px monospace;"><strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html . '</p>';
+							$config_html .= "\n" . '  <p style="margin: 0; padding: 0; text-indent: -2em; font: normal normal 12px/14px monospace;"><strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html . '</p>';
 						}
 					}
 
@@ -453,7 +453,7 @@
 					$constants_html .= '<div style="margin: 0; padding: 0 0 0 3em;">';
 
 					foreach ($constants['user'] as $key => $value) {
-						$constants_html .= '<p style="margin: 0; padding: 0; text-indent: -2em; font: normal normal 12px/14px monospace;"><strong>' . html($key) . '</strong>: ' . html(debug_dump($value)) . '</p>';
+						$constants_html .= "\n" . '  <p style="margin: 0; padding: 0; text-indent: -2em; font: normal normal 12px/14px monospace;"><strong>' . html($key) . '</strong>: ' . html(debug_dump($value)) . '</p>';
 					}
 
 					$constants_html .= '</div>';

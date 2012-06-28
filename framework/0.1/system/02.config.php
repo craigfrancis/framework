@@ -98,16 +98,24 @@
 	// Request
 
 		if (!isset($_SERVER['REQUEST_URI']) && isset($_SERVER['SCRIPT_FILENAME'])) {
-			$_SERVER['REQUEST_URI'] = '/' . preg_replace('/^' . preg_quote(ROOT, '/') . '\/?/', '', realpath($_SERVER['SCRIPT_FILENAME']));
+			$_SERVER['REQUEST_URI'] = preg_replace('/^' . preg_quote(ROOT, '/') . '/', '', realpath($_SERVER['SCRIPT_FILENAME']));
 		}
 
 		config::set('request.https', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'));
 		config::set('request.method', (isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET'));
 		config::set('request.domain', (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''));
-		config::set('request.url', (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : './'));
+		config::set('request.uri', (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : './'));
 		config::set('request.query', (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ''));
 		config::set('request.browser', (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''));
 		config::set('request.accept', (isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : ''));
+
+		if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			config::set('request.ip', 'XForward=[' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ']');
+		} else if (isset($_SERVER['REMOTE_ADDR'])) {
+			config::set('request.ip', $_SERVER['REMOTE_ADDR']);
+		} else {
+			config::set('request.ip', '127.0.0.1'); // Probably CLI
+		}
 
 	//--------------------------------------------------
 	// Resource
@@ -145,35 +153,25 @@
 	//--------------------------------------------------
 	// Request
 
-		$request_domain = config::get('request.domain'); // Can be set (cli), or changed in app config file
-
-		if (config::get('request.https')) {
-			config::set_default('request.domain_http',  'http://'  . $request_domain);
-			config::set_default('request.domain_https', 'https://' . $request_domain);
-		} else {
-			config::set_default('request.domain_http',  'http://' . $request_domain);
-			config::set_default('request.domain_https', 'http://' . $request_domain); // Sets the default as HTTP, but app config can set HTTPS version
-		}
-
-		$request_path = config::get('request.url');
-		$pos = strpos($request_path, '?');
+		$uri = config::get('request.uri');
+		$pos = strpos($uri, '?');
 		if ($pos !== false) {
-			$request_path = substr($request_path, 0, $pos);
-		}
-
-		config::set_default('request.path', $request_path);
-
-		if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-			config::set_default('request.ip', 'XForward=[' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ']');
-		} else if (isset($_SERVER['REMOTE_ADDR'])) {
-			config::set_default('request.ip', $_SERVER['REMOTE_ADDR']);
+			config::set_default('request.path', substr($uri, 0, $pos));
 		} else {
-			config::set_default('request.ip', '127.0.0.1');
+			config::set_default('request.path', $uri);
 		}
 
-		config::set_default('request.referrer', str_replace(config::get('request.domain_https') . config::get('url.prefix'), '', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '')));
+		if (defined('CLI_MODE')) {
+			config::set_default('request.url', 'file://' . $uri);
+		} else {
+			config::set_default('request.url', (config::get('request.https') ? 'https://' : 'http://') . config::get('request.domain') . $uri);
+		}
 
-		unset($request_domain, $request_path, $pos);
+		$local = (config::get('request.https') ? 'https://' : 'http://') . config::get('request.domain') . config::get('url.prefix');
+
+		config::set_default('request.referrer', str_replace($local, '', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '')));
+
+		unset($uri, $pos, $local);
 
 	//--------------------------------------------------
 	// Resource
@@ -188,6 +186,19 @@
 
 	//--------------------------------------------------
 	// Output
+
+		config::set_default('output.protocols', array(config::get('request.https') ? 'https' : 'http'));
+
+		$protocols = config::get('output.protocols');
+		$domain = config::get('request.domain'); // Can be set (cli), or changed in app config file
+
+		if ($domain != '') {
+			config::set_default('output.domain', $domain);
+			config::set_default('output.domain_http',  (in_array('http',  $protocols) ? 'http'  : reset($protocols)) . '://'  . $domain);
+			config::set_default('output.domain_https', (in_array('https', $protocols) ? 'https' : reset($protocols)) . '://'  . $domain);
+		}
+
+		unset($protocols, $domain);
 
 		config::set_default('output.site_name', 'Company Name');
 		config::set_default('output.lang', 'en-GB');

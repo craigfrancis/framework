@@ -519,7 +519,7 @@
 	function redirect($url, $http_response_code = 302) {
 
 		if (substr($url, 0, 1) == '/') {
-			$url = (config::get('request.https') ? config::get('request.domain_https') : config::get('request.domain_http')) . $url;
+			$url = (config::get('request.https') ? config::get('output.domain_https') : config::get('output.domain_http')) . $url;
 		}
 
 		$next_html = '<p>Go to <a href="' . html($url) . '">next page</a>.</p>';
@@ -547,7 +547,7 @@
 
 	function save_request_redirect($url, $user = NULL) {
 		session::set('save_request_user', $user);
-		session::set('save_request_url', config::get('request.url'));
+		session::set('save_request_url', config::get('request.uri'));
 		session::set('save_request_created', time());
 		session::set('save_request_used', false);
 		if (config::get('request.method') == 'POST') { // If user clicks back after seeing login form it might be as a GET request, so don't loose their POST data from before.
@@ -585,7 +585,7 @@
 // HTTPS connections
 
 	function https_available() {
-		return (substr(config::get('request.domain_https'), 0, 8) == 'https://');
+		return in_array('https', config::get('output.protocols'));
 	}
 
 	function https_required() {
