@@ -218,9 +218,14 @@
 
 			public function request_table_add($values) {
 
+				$domain = config::get('request.domain');
+				if ($domain == '') {
+					$domain = config::get('request.output'); // CLI
+				}
+
 				$request_values = array(
 						'Sent' => date('l jS F Y, g:i:sa'),
-						'Website' => config::get('request.domain'),
+						'Website' => $domain,
 						'Request' => config::get('request.uri'),
 						'Referrer' => config::get('request.referrer'),
 						'Remote' => config::get('request.ip'),

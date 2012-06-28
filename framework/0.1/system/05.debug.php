@@ -38,7 +38,7 @@
 				$email_values = array_merge($email_values, array('Message' => $message));
 
 				$email = new email();
-				$email->subject_set('System ' . ucfirst($type) . ': ' . config::get('request.domain'));
+				$email->subject_set('System ' . ucfirst($type) . ': ' . config::get('output.domain'));
 				$email->request_table_add($email_values);
 
 				$email->send($error_email);
