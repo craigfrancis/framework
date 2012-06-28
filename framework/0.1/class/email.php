@@ -220,7 +220,7 @@
 
 				$domain = config::get('request.domain');
 				if ($domain == '') {
-					$domain = config::get('request.output'); // CLI
+					$domain = config::get('output.domain'); // CLI
 				}
 
 				$request_values = array(
