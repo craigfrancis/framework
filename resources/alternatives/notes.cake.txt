@@ -1,0 +1,95 @@
+
+- URL's are built with arrays, such as:
+
+	array('controller' => 'user', 'action' => 'invite')
+
+	This array is NOT easy for non cake developers to understand... while hard coded, a string like /user/invite/ is much easier to read.
+
+	The action is always set to "index" in the URL output when using custom routes, and passing in things like 'action' => NULL does not remove it either (only solution I can find is to post process the string output).
+
+	The attributes (e.g. controller) are optional, but when it guesses, it can get it wrong... the empty array does NOT always return the url for the current page.
+
+	If you have a controller for "user" and one for "users", where the former is used for the end user to edit things like their profile (latter for the admin)... then the user form create() method guesses that the controller is "users", even though the processing is done in the "user" controller... likewise you need to drop the "id" attribute (NULL), which you don't want to show in the /user/profile/321 url... and the action needs to be changed, as it changes to "edit".
+
+	If you need to store a link in the database (e.g. an event log, with a url field to see the details), then storing the resulting string is much easier than an array.
+
+- HTML elements like links use abstracted php code... which is not easy to edit. For example, take the code:
+
+	<p><?php echo $html->link('Studio', array('admin' => false, 'controller' => 'studio', 'action' => 'index')); ?></p>
+
+	Now get a HTML developer to add a class onto the link.
+
+	And where the link text is "Studio", replace it with an <img /> tag... true it's good that the default is html escaped, but its not obvious how to stop that.
+
+- Form setup is done in the view with abstractions in HTML.
+
+	A user could also add a field with a DOM editor.
+
+	A field can be removed, and the validation would not be applied.
+
+	The saveAll method does take a fieldList, but this array only says the name of the fields (does not allow the table name to be specified)... so if a hasMany relationship exists, and both tables have a "name" field, you can only allow on both or neither.
+
+	How do you handle this situation... username must be unique, so the $validation rules on the "user" model includes isUnique. But when sending a buddy request, your sending in a data['User']['username'] value, which needs to perform the opposite type of validation (buddy needs to exist).
+
+	If there is a date of birth field for a user, both the admin control panel (edit + add) and users profile page, will need to be told to use different min/max year values than the default (duplicating code/configuration)... and the same VIEW file cannot be used, as the admin does have additional fields (i.e. to set if the user is an admin).
+
+	Because form configuration is done in the view (i.e. datetime min year), then the validation cannot use that configuration to test the data.
+
+	The only way to set default options (e.g. the input before/between/after), or customise the HTML output, is to extend the HTML Helper, and potentially re-create the input() function.
+
+- Inflector, while very cleaver, would make life allot easier if everything was singular (consistent).
+
+	Controllers have "_controller" in the file name (models don't).
+
+	Tables are plural, but the models singular... with the table names, it really screws with things like "moderation", turns out that the table needed to be called "moderations"... and if you have a "users" table, sub-tables seem to vary and allow "user_buddies" (singular, and can effect table list sorting).
+
+	When creating a $data array, the model name is required... but is it singular, or plural, upper/camel case, etc... turns out in this case, it was singular, but the validation was getting in the way (because it was so abstracted I didn't think to check that at first).
+
+- The default php for a view action is something like:
+
+	if (!$id) {
+		$this->Session->setFlash(__('Invalid User.', true));
+		$this->redirect(array('action'=>'index'));
+	}
+	$this->set('user', $this->User->read(null, $id));
+
+	This does NOT handle an invalid id being provided.
+
+- The cake Auth component:
+
+	Hashes the password by default, so adding a "minLength" rule on the model will always return true... and is no longer available to be used in a welcome email (solution to replace hashPasswords function, so it stores a plain text version).
+
+	Does not hash the confirmation password by default (inconsistency), and does not have built in functionality to validate, so a custom rule needs to be created on the model (for every project).
+
+- There is quite a bit of duplication when it comes to the default baked methods...
+
+	Add and edit, e.g. the fields may be exactly the same, and so is the save method (e.g. fieldList).
+
+	View and edit, e.g. when you correct the invalid id problem (above), you will have something like the following twice in the code:
+
+		$currentData = $this->User->read(null, $id);
+		if (!$currentData) {
+			$this->Session->setFlash(__('Invalid User.', true));
+			$this->redirect(array('action'=>'index'));
+		}
+
+- There does not appear to be any navigation helpers by default, so adding <strong> tags on the currently selected link isn't particularly trivial.
+
+- Loading in vendor files seems to require that all those files are in lowercase... and if calling "" to load in the file, and the file does not exist, it silently ignores the error.
+
+- The model updateAll method call does not escape values in the data array, which is good for doing "column = column + 1", but passing in a string which is not properly escaped is easily done.
+
+- If you create an instance of a model (e.g. UserBuddies) in one class, and set a property like "$this->UserBuddies->user_id" to a value that limits the returned buddies, then in another bit of a code you create a new instance of "UserBuddies", the original will be cloned, and keep the "user_id" attribute... so if you forgot to set it, it will silently still "work", even if that value is no longer valid.
+
+- Database conditions can be easily misread...
+
+		'conditions' => array(
+				array('UserBuddy.id' => $this->id),
+				'OR' => array(
+						array('UserBuddy.user_id' => $this->user_id),
+						array('UserBuddy.buddy_user_id' => $this->user_id),
+					),
+			),
+
+	This could be read as "(UserBuddy.id = X) OR ((UserBuddy.user_id = X) AND (UserBuddy.buddy_user_id = X))"
+
