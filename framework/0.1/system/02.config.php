@@ -185,12 +185,12 @@
 	// Output
 
 		config::set_default('output.protocols', array(config::get('request.https') ? 'https' : 'http'));
+		config::set_default('output.domain', config::get('request.domain')); // Can be set for CLI support in app config file
 
 		$protocols = config::get('output.protocols');
-		$domain = config::get('request.domain'); // Can be set (cli), or changed in app config file
+		$domain = config::get('output.domain');
 
 		if ($domain != '') {
-			config::set_default('output.domain', $domain);
 			config::set_default('output.domain_http',  (in_array('http',  $protocols) ? 'http'  : reset($protocols)) . '://'  . $domain);
 			config::set_default('output.domain_https', (in_array('https', $protocols) ? 'https' : reset($protocols)) . '://'  . $domain);
 		}
