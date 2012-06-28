@@ -192,7 +192,7 @@
 
 			if (config::get('debug.level') >= 5) {
 
-				debug_show_config();
+				debug_note_html(debug_config_html(), 'C');
 
 				$variables_array = get_defined_vars();
 				$variables_html = array('Variables:');

@@ -144,11 +144,12 @@
 
 	$parameters = array(
 			'h' => 'help',
-			'd::' => 'debug::',
-			'g:' => 'gateway:',
-			'm::' => 'maintenance::',
-			'i::' => 'install::',
-			'p::' => 'permissions::',
+			'd::' => 'debug::', // Optional value
+			'c::' => 'config::', // Optional value
+			'g:' => 'gateway:', // Requires value
+			'm' => 'maintenance',
+			'i' => 'install',
+			'p' => 'permissions',
 		);
 
 	if (version_compare(PHP_VERSION, '5.3.0', '<')) {
@@ -200,6 +201,22 @@
 				case 'help':
 
 					print_help();
+					break;
+
+				case 'c':
+				case 'config':
+
+					if ($option_value) {
+						echo config::get($option_value) . "\n";
+					} else {
+						echo "\n";
+						echo '--------------------------------------------------' . "\n\n";
+						echo html_decode(strip_tags(debug_config_html())) . "\n\n";
+						echo '--------------------------------------------------' . "\n\n";
+						echo html_decode(strip_tags(debug_constants_html())) . "\n\n";
+						echo '--------------------------------------------------' . "\n\n";
+					}
+
 					break;
 
 				case 'p':

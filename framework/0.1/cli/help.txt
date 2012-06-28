@@ -2,17 +2,20 @@
  -h
  --help            To get this help.
 
- -d
- --debug           To turn on output debugging.
+ -d[=level]
+ --debug[=level]   Turn on debugging, and optionally set level (e.g. 3).
 
- -g [name]
- --gateway [name]  Call the gateway [name]
+ -c[=name]
+ --config[=name]   Show configuration.
+
+ -g=name
+ --gateway=name    Call the gateway "name".
 
  -m
- --maintenance     Run the maintenance scripts
+ --maintenance     Run the maintenance scripts.
 
  -i
- --install         Run the install.php script
+ --install         Run the install.php script.
 
  -p
- --permissions     Correct file and folder permissions
+ --permissions     Correct file and folder permissions.
