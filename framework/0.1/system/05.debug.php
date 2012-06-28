@@ -318,6 +318,54 @@
 	}
 
 //--------------------------------------------------
+// Config
+
+	function debug_config_html($prefix = '') {
+
+		$config = config::get_all($prefix);
+
+		ksort($config);
+
+		$config_html  = ($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
+		$config_html .= '<div style="margin: 0; padding: 0 0 0 3em;">';
+
+		foreach ($config as $key => $value) {
+			if (!in_array($key, array('db.link'))) {
+				if (in_array($key, array('db.pass', 'debug.notes', 'view.variables'))) {
+					$value_html = '???';
+				} else {
+					$value_html = html(debug_dump($value, 1));
+				}
+				$config_html .= "\n" . '  <p style="margin: 0; padding: 0; text-indent: -2em; font: normal normal 12px/14px monospace;"><strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html . '</p>';
+			}
+		}
+
+		return $config_html . '</div>';
+
+	}
+
+	function debug_constants_html() {
+
+		$constants = get_defined_constants(true);
+
+		if (!isset($constants['user'])) {
+			return;
+		}
+
+		ksort($constants['user']);
+
+		$constants_html  = 'Constants:';
+		$constants_html .= '<div style="margin: 0; padding: 0 0 0 3em;">';
+
+		foreach ($constants['user'] as $key => $value) {
+			$constants_html .= "\n" . '  <p style="margin: 0; padding: 0; text-indent: -2em; font: normal normal 12px/14px monospace;"><strong>' . html($key) . '</strong>: ' . html(debug_dump($value)) . '</p>';
+		}
+
+		return $constants_html . '</div>';
+
+	}
+
+//--------------------------------------------------
 // Debug mode
 
 	if (config::get('debug.level') > 0) {
@@ -403,51 +451,6 @@
 
 		//--------------------------------------------------
 		// Show configuration
-
-			function debug_config_html($prefix = '') {
-
-				$config = config::get_all($prefix);
-
-				ksort($config);
-
-				$config_html  = ($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
-				$config_html .= '<div style="margin: 0; padding: 0 0 0 3em;">';
-
-				foreach ($config as $key => $value) {
-					if (!in_array($key, array('db.link'))) {
-						if (in_array($key, array('db.pass', 'debug.notes', 'view.variables'))) {
-							$value_html = '???';
-						} else {
-							$value_html = html(debug_dump($value, 1));
-						}
-						$config_html .= "\n" . '  <p style="margin: 0; padding: 0; text-indent: -2em; font: normal normal 12px/14px monospace;"><strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html . '</p>';
-					}
-				}
-
-				return $config_html . '</div>';
-
-			}
-
-			function debug_constants_html() {
-
-				$constants = get_defined_constants(true);
-
-				if (!isset($constants['user'])) {
-					return;
-				}
-
-				ksort($constants['user']);
-
-				$constants_html  = 'Constants:';
-				$constants_html .= '<div style="margin: 0; padding: 0 0 0 3em;">';
-
-				foreach ($constants['user'] as $key => $value) {
-					$constants_html .= "\n" . '  <p style="margin: 0; padding: 0; text-indent: -2em; font: normal normal 12px/14px monospace;"><strong>' . html($key) . '</strong>: ' . html(debug_dump($value)) . '</p>';
-				}
-
-				return $constants_html . '</div>';
-
-			}
 
 			if (config::get('debug.level') >= 3) {
 				debug_note_html(debug_config_html(), 'C');
