@@ -162,6 +162,16 @@
 
 	$debug_show = (isset($options['d']) || isset($options['debug'])); // Could be reset, e.g. when initialising maintenance
 
+	if ($debug_show) {
+
+		$debug_level = intval(isset($options['d']) ? $options['d'] : $options['debug']);
+
+		if ($debug_level > 0) {
+			config::set('debug.level', $debug_level);
+		}
+
+	}
+
 	config::set('debug.show', $debug_show);
 
 //--------------------------------------------------
