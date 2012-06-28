@@ -410,7 +410,7 @@
 
 				ksort($config);
 
-				$config_html  = array($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
+				$config_html  = ($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
 				$config_html .= '<div style="margin: 0; padding: 0 0 0 3em;">';
 
 				foreach ($config as $key => $value) {
