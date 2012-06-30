@@ -6,7 +6,7 @@ FILE=`/bin/basename "${FILE}"`;
 SOURCE=`pwd -P`;
 
 while [ -L "${FILE}" ]; do
-	FILE=`readlink "${FILE}"`;
+	FILE=`/usr/bin/readlink "${FILE}"`;
 	cd `/usr/bin/dirname "${FILE}"`;
 	FILE=`/bin/basename "${FILE}"`;
 done
