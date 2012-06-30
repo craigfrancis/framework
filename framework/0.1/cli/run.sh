@@ -1,14 +1,14 @@
 #!/bin/bash
 
 FILE="$0";
-cd `dirname "${FILE}"`;
-FILE=`basename "${FILE}"`;
+cd `/usr/bin/dirname "${FILE}"`;
+FILE=`/bin/basename "${FILE}"`;
 SOURCE=`pwd -P`;
 
 while [ -L "${FILE}" ]; do
 	FILE=`readlink "${FILE}"`;
-	cd `dirname "${FILE}"`;
-	FILE=`basename "${FILE}"`;
+	cd `/usr/bin/dirname "${FILE}"`;
+	FILE=`/bin/basename "${FILE}"`;
 done
 
 DIR=`pwd -P`;
