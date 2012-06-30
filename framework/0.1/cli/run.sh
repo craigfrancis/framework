@@ -1,17 +1,19 @@
 #!/bin/bash
 
+export PATH="/bin/:/usr/bin/";
+
 FILE="$0";
-cd `/usr/bin/dirname "${FILE}"`;
-FILE=`/bin/basename "${FILE}"`;
+cd `dirname "${FILE}"`;
+FILE=`basename "${FILE}"`;
 SOURCE=`pwd -P`;
 
 while [ -L "${FILE}" ]; do
-	FILE=`/usr/bin/readlink "${FILE}"`;
-	cd `/usr/bin/dirname "${FILE}"`;
-	FILE=`/bin/basename "${FILE}"`;
+	FILE=`readlink "${FILE}"`;
+	cd `dirname "${FILE}"`;
+	FILE=`basename "${FILE}"`;
 done
 
 DIR=`pwd -P`;
 cd "$SOURCE";
 
-/usr/bin/php $DIR/run.php $@;
+php $DIR/run.php $@;
