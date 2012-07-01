@@ -162,10 +162,15 @@
 			chmod($temp_folder, 0777);
 
 		//--------------------------------------------------
+		// Database structure
+
+			// TODO
+
+		//--------------------------------------------------
 		// Run install script
 
-			$install_path = 'support' . DS . 'core' . DS . 'install.php';
-			$install_root = APP_ROOT . DS . $install_path;
+			$install_path = 'support/core/install.php';
+			$install_root = APP_ROOT . '/' . $install_path;
 
 			if (is_file($install_root)) {
 				install_run_script($install_root);
@@ -220,6 +225,11 @@
 				file_put_contents($setup_file, implode("\n", $folder_children));
 
 			}
+
+		//--------------------------------------------------
+		// Database structure
+
+			// TODO
 
 	}
 
