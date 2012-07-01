@@ -104,7 +104,41 @@
 	function install_run() {
 
 		//--------------------------------------------------
-		// Setup new empty /tmp/ folder
+		// Setup folders
+
+			$setup_folder = ROOT . '/setup';
+
+			$folders = array(
+				'files' => FILE_ROOT,
+				'private' => PRIVATE_ROOT,
+			);
+
+			foreach ($folders as $folder_name => $folder_path) {
+
+				if (substr($folder_path, -1) != '/') {
+					$folder_path .= '/';
+				}
+				$folder_path_length = strlen($folder_path);
+
+				$setup_file = $setup_folder . '/dir.' . safe_file_name($folder_name);
+
+				if (is_file($setup_file)) {
+					$folder_children = explode("\n", file_get_contents($setup_file));
+				} else {
+					$folder_children = array();
+				}
+
+				foreach ($folder_children as $path) {
+					$path = $folder_path . $path;
+					if (!is_dir($path)) {
+						mkdir($path, 0777, true);
+					}
+				}
+
+			}
+
+		//--------------------------------------------------
+		// Empty the /tmp/ folder
 
 			$temp_folder = PRIVATE_ROOT . '/tmp/';
 			if (is_dir($temp_folder)) {
@@ -120,6 +154,8 @@
 				if (!preg_match('/^tmp$/m', $output)) {
 					execute_command('svn propset svn:ignore "tmp" ' . escapeshellarg(PRIVATE_ROOT));
 				}
+			} else if (is_dir(ROOT . '/.git')) {
+				file_put_contents(PRIVATE_ROOT . '/.gitignore', 'tmp');
 			}
 
 			mkdir($temp_folder, 0777);
@@ -140,6 +176,54 @@
 	}
 
 //--------------------------------------------------
+// Setup
+
+	function setup_run() {
+
+		//--------------------------------------------------
+		// Create setup folder
+
+			$setup_folder = ROOT . '/setup';
+			if (!is_dir($setup_folder)) {
+				mkdir($setup_folder);
+			}
+
+		//--------------------------------------------------
+		// Folder structures
+
+			$folders = array(
+				'files' => FILE_ROOT,
+				'private' => PRIVATE_ROOT,
+			);
+
+			foreach ($folders as $folder_name => $folder_path) {
+
+				if (substr($folder_path, -1) != '/') {
+					$folder_path .= '/';
+				}
+				$folder_path_length = strlen($folder_path);
+
+				$folder_listing = shell_exec('find ' . escapeshellarg($folder_path) . ' -type d -mindepth 1 2>&1');
+				$folder_children = array();
+
+				foreach (explode("\n", $folder_listing) as $path) {
+					if (substr($path, 0, $folder_path_length) == $folder_path) {
+						$path = substr($path, ($folder_path_length + 1));
+						if (substr($path, 0, 4) != 'tmp') { // Will be created anyway
+							$folder_children[] = $path;
+						}
+					}
+				}
+
+				$setup_file = $setup_folder . '/dir.' . safe_file_name($folder_name);
+
+				file_put_contents($setup_file, implode("\n", $folder_children));
+
+			}
+
+	}
+
+//--------------------------------------------------
 // Parse options
 
 	$parameters = array(
@@ -149,6 +233,7 @@
 			'g:' => 'gateway:', // Requires value
 			'm' => 'maintenance',
 			'i' => 'install',
+			's' => 'setup',
 			'p' => 'permissions',
 		);
 
@@ -229,6 +314,12 @@
 				case 'install':
 
 					install_run();
+					break;
+
+				case 's':
+				case 'setup':
+
+					setup_run();
 					break;
 
 				case 'g':

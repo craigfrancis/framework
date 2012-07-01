@@ -15,7 +15,10 @@
  --maintenance     Run the maintenance scripts.
 
  -i
- --install         Run the install.php script.
+ --install         Run install.
+
+ -s
+ --setup           Save the site structure to the /setup/ folder.
 
  -p
  --permissions     Correct file and folder permissions.
