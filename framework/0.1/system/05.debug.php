@@ -358,7 +358,12 @@
 		$constants_html .= '<div style="margin: 0; padding: 0 0 0 3em;">';
 
 		foreach ($constants['user'] as $key => $value) {
-			$constants_html .= "\n" . '  <p style="margin: 0; padding: 0; text-indent: -2em; font: normal normal 12px/14px monospace;"><strong>' . html($key) . '</strong>: ' . html(debug_dump($value)) . '</p>';
+			if ($key == 'ENCRYPTION_KEY') {
+				$value_html = '???';
+			} else {
+				$value_html = html(debug_dump($value));
+			}
+			$constants_html .= "\n" . '  <p style="margin: 0; padding: 0; text-indent: -2em; font: normal normal 12px/14px monospace;"><strong>' . html($key) . '</strong>: ' . $value_html . '</p>';
 		}
 
 		return $constants_html . '</div>';

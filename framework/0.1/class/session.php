@@ -1,6 +1,7 @@
 <?php
 
 	config::set('session.id', NULL);
+	config::set_default('session.key', sha1(ENCRYPTION_KEY));
 	config::set_default('session.name', config::get('cookie.prefix') . 'session');
 
 	class session_base extends check {
@@ -69,13 +70,37 @@
 
 			if (config::get('session.id') === NULL) { // Cannot call session_id(), as this is not reset on session_write_close().
 
-				session_name(config::get('session.name'));
+				//--------------------------------------------------
+				// Start
 
-				ini_set('session.cookie_httponly', true);
+					session_name(config::get('session.name'));
 
-				$result = session_start(); // May warn about headers already being sent, which happens in loading object.
+					ini_set('session.cookie_httponly', true);
 
-				config::set('session.id', session_id());
+					$result = session_start(); // May warn about headers already being sent, which happens in loading object.
+
+				//--------------------------------------------------
+				// Store session ID
+
+					config::set('session.id', session_id());
+
+				//--------------------------------------------------
+				// Check this session is for this website
+
+					$config_key = config::get('session.key');
+					$session_key = session::get('session.key');
+
+					if ($session_key == '') {
+
+						session::set('session.key', $config_key);
+
+					} else if ($config_key != $session_key) {
+
+						session::destroy();
+
+						exit_with_error('Your session is not valid for this website', $config_key . ' != ' . $session_key);
+
+					}
 
 			}
 

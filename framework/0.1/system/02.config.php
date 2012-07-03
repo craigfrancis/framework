@@ -148,7 +148,7 @@
 
 	$config = array();
 
-	$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'config.php';
+	$include_path = APP_ROOT . '/support/core/config.php';
 
 	if (is_file($include_path)) {
 		require_once($include_path);
@@ -168,6 +168,13 @@
 
 		if (!defined('SERVER')) {
 			define('SERVER', 'live');
+		}
+
+	//--------------------------------------------------
+	// Encryption key
+
+		if (!defined('ENCRYPTION_KEY')) {
+			exit('Missing the ENCRYPTION_KEY in your config.');
 		}
 
 	//--------------------------------------------------
@@ -252,7 +259,7 @@
 	// Cookie
 
 		config::set_default('cookie.protect', false); // Does increase header size, which probably isn't good for page speed
-		config::set_default('cookie.prefix', substr(md5(config::get('request.domain') . config::get('url.prefix')), 0, 5) . '_');
+		config::set_default('cookie.prefix', substr(sha1(ENCRYPTION_KEY), 0, 5) . '_');
 
 	//--------------------------------------------------
 	// Email

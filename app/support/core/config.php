@@ -1,9 +1,9 @@
 <?php
 
 //--------------------------------------------------
-// Database
+// Encryption key
 
-	$config['db.prefix'] = 'tpl_';
+	define('ENCRYPTION_KEY', 'gNB2gaD7hpR*q[2[NCv');
 
 //--------------------------------------------------
 // Server specific
@@ -22,6 +22,7 @@
 			$config['db.user'] = 'stage';
 			$config['db.pass'] = 'st8ge';
 			$config['db.name'] = 's-craig-framework';
+			$config['db.prefix'] = 'tpl_';
 
 		//--------------------------------------------------
 		// Email
@@ -57,6 +58,7 @@
 			$config['db.user'] = 'craig';
 			$config['db.pass'] = 'cr8ig';
 			$config['db.name'] = 'l-craig-framework';
+			$config['db.prefix'] = 'tpl_';
 
 		//--------------------------------------------------
 		// Email
