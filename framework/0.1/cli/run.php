@@ -205,7 +205,7 @@
 				}
 				$folder_path_length = strlen($folder_path);
 
-				$folder_listing = shell_exec('find ' . escapeshellarg($folder_path) . ' -type d -mindepth 1 2>&1');
+				$folder_listing = shell_exec('find ' . escapeshellarg($folder_path) . ' -type d -mindepth 1 ! -path "*/.*" 2>&1');
 				$folder_children = array();
 
 				foreach (explode("\n", $folder_listing) as $path) {
