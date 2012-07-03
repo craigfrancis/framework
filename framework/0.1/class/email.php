@@ -62,6 +62,7 @@
 			protected $cc_emails;
 			protected $reply_to_email;
 			protected $reply_to_name;
+			protected $return_path;
 			protected $headers;
 			protected $attachments;
 			protected $template_path;
@@ -89,6 +90,7 @@
 					$this->cc_emails = array();
 					$this->reply_to_email = NULL;
 					$this->reply_to_name = NULL;
+					$this->return_path = $this->from_email;
 					$this->headers = array();
 					$this->attachments = array();
 					$this->template_path = NULL;
@@ -186,6 +188,10 @@
 			public function reply_to_set($email, $name = NULL) {
 				$this->reply_to_email = $email;
 				$this->reply_to_name = $name;
+			}
+
+			public function return_path_set($email) {
+				$this->return_path = $email;
 			}
 
 			public function header_set($name, $value) {
@@ -315,6 +321,15 @@
 					$headers = $this->_build_headers($build['headers']);
 
 				//--------------------------------------------------
+				// Additional parameters
+
+					$additional_parameters = '';
+
+					if ($this->return_path !== NULL) {
+						$additional_parameters = '-f "' . addslashes($this->return_path) . '"';
+					}
+
+				//--------------------------------------------------
 				// Send
 
 					if (!is_array($recipients)) {
@@ -322,7 +337,9 @@
 					}
 
 					foreach ($recipients as $recipient) {
-						mail($recipient, $this->subject_get(), $build['content'], $headers);
+
+						mail($recipient, $this->subject_get(), $build['content'], $headers, $additional_parameters);
+
 					}
 
 			}
@@ -532,8 +549,15 @@
 
 					} else if ($this->reply_to_email !== NULL) {
 
-						$headers['Reply-To'] = addslashes($this->reply_to_email);
+						$headers['Reply-To'] = $this->reply_to_email;
 
+					}
+
+				//--------------------------------------------------
+				// Return path
+
+					if ($this->return_path !== NULL) {
+						$headers['Return-Path'] = $this->return_path;
 					}
 
 				//--------------------------------------------------
