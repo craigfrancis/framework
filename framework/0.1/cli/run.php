@@ -106,7 +106,7 @@
 		//--------------------------------------------------
 		// Setup folders
 
-			$setup_folder = ROOT . '/setup';
+			$setup_folder = APP_ROOT . '/support/setup';
 
 			$folders = array(
 				'files' => FILE_ROOT,
@@ -188,7 +188,7 @@
 		//--------------------------------------------------
 		// Create setup folder
 
-			$setup_folder = ROOT . '/setup';
+			$setup_folder = APP_ROOT . '/support/setup';
 			if (!is_dir($setup_folder)) {
 				mkdir($setup_folder);
 			}
@@ -228,6 +228,8 @@
 
 		//--------------------------------------------------
 		// Database structure
+
+			file_put_contents($setup_folder . '/database', '');
 
 			// TODO
 
