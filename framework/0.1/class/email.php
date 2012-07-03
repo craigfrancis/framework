@@ -90,7 +90,7 @@
 					$this->cc_emails = array();
 					$this->reply_to_email = NULL;
 					$this->reply_to_name = NULL;
-					$this->return_path = $this->from_email;
+					$this->return_path = NULL;
 					$this->headers = array();
 					$this->attachments = array();
 					$this->template_path = NULL;
@@ -325,8 +325,14 @@
 
 					$additional_parameters = '';
 
-					if ($this->return_path !== NULL) {
+					if ($this->return_path != NULL) {
+
 						$additional_parameters = '-f "' . addslashes($this->return_path) . '"';
+
+					} else if ($this->from_email != NULL) {
+
+						$additional_parameters = '-f "' . addslashes($this->from_email) . '"';
+
 					}
 
 				//--------------------------------------------------
@@ -337,9 +343,7 @@
 					}
 
 					foreach ($recipients as $recipient) {
-
 						mail($recipient, $this->subject_get(), $build['content'], $headers, $additional_parameters);
-
 					}
 
 			}
@@ -556,8 +560,14 @@
 				//--------------------------------------------------
 				// Return path
 
-					if ($this->return_path !== NULL) {
+					if ($this->return_path != NULL) {
+
 						$headers['Return-Path'] = $this->return_path;
+
+					} else if ($this->from_email != NULL) {
+
+						$headers['Return-Path'] = $this->from_email;
+
 					}
 
 				//--------------------------------------------------
