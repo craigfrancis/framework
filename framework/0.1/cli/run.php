@@ -118,21 +118,20 @@
 				if (substr($folder_path, -1) != '/') {
 					$folder_path .= '/';
 				}
-				$folder_path_length = strlen($folder_path);
 
 				$setup_file = $setup_folder . '/dir.' . safe_file_name($folder_name);
 
 				if (is_file($setup_file)) {
-					$folder_children = explode("\n", file_get_contents($setup_file));
-				} else {
-					$folder_children = array();
-				}
 
-				foreach ($folder_children as $path) {
-					$path = $folder_path . $path;
-					if (!is_dir($path)) {
-						mkdir($path, 0777, true);
+					$folder_children = explode("\n", file_get_contents($setup_file));
+
+					foreach ($folder_children as $path) {
+						$path = $folder_path . $path;
+						if (!is_dir($path)) {
+							mkdir($path, 0777, true);
+						}
 					}
+
 				}
 
 			}
@@ -174,8 +173,6 @@
 
 			if (is_file($install_root)) {
 				install_run_script($install_root);
-			} else {
-				exit('Missing install script: ' . $install_path . "\n");
 			}
 
 	}
