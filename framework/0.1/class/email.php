@@ -104,9 +104,11 @@
 					$this->boundaries = array();
 
 				//--------------------------------------------------
-				// Default header for tracking
+				// Default headers for tracking
 
-					$this->header_set('X-PHP-Script', '"' . addslashes(config::get('request.url')) . '" <' . addslashes(config::get('request.ip')) . '>');
+					$this->header_set('X-Request-IP', '"' . addslashes(config::get('request.ip')) . '"');
+					$this->header_set('X-Request-UA', '"' . addslashes(config::get('request.browser')) . '"');
+					$this->header_set('X-Request-Script', '"' . addslashes(config::get('request.url')) . '"');
 
 			}
 
