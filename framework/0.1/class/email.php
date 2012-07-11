@@ -43,7 +43,7 @@
 
 		$email = new email();
 		$email->request_table_add($values); // or values_table_add() to remove automatically added values
-		$email->attachment_add($content, $filename, $mime);
+		$email->attachment_add($path, $mime);
 		$email->send('noreply@example.com');
 
 //--------------------------------------------------
@@ -200,17 +200,28 @@
 				$this->headers[$name] = $value;
 			}
 
-			public function attachment_add($content, $filename, $mime, $id = NULL) {
-				$this->attachments[] = array(
-						'content' => $content,
-						'filename' => $filename,
-						'mime' => $mime,
-						'id' => ($id !== NULL ? $id : (count($this->attachments) + 1)),
-					);
+			public function attachment_add($path, $mime, $name = NULL, $id = NULL) {
+
+				if ($mime === NULL) $mime = mime_content_type($path); // Please don't rely on this function
+				if ($name === NULL) $name = basename($path);
+
+				$this->attachment_raw_add(file_get_contents($path), $mime, $name, $id);
+
 			}
 
-			public function attachment_file_add($file) {
-				$this->attachment_add(file_get_contents($file->file_path_get()), $file->file_name_get(), $file->file_mime_get());
+			public function attachment_file_add($file, $id = NULL) {
+				$this->attachment_add(file_get_contents($file->file_path_get()), $file->file_mime_get(), $file->file_name_get(), $id);
+			}
+
+			public function attachment_raw_add($content, $mime, $name = NULL, $id = NULL) {
+
+				$this->attachments[] = array(
+						'content' => $content,
+						'mime' => $mime,
+						'name' => $name,
+						'id' => ($id !== NULL ? $id : (count($this->attachments) + 1)),
+					);
+
 			}
 
 		//--------------------------------------------------
@@ -469,8 +480,8 @@
 
 						foreach ($this->attachments as $attachment) {
 							$content .= '--' . $this->boundaries[0] . "\n";
-							$content .= 'Content-Type: ' . head(addslashes($attachment['mime'])) . '; name="' . head(addslashes($attachment['filename'])) . '"' . "\n";
-							$content .= 'Content-Disposition: attachment; filename="' . head(addslashes($attachment['filename'])) . '"' . "\n";
+							$content .= 'Content-Type: ' . head(addslashes($attachment['mime'])) . '; name="' . head(addslashes($attachment['name'])) . '"' . "\n";
+							$content .= 'Content-Disposition: attachment; filename="' . head(addslashes($attachment['name'])) . '"' . "\n";
 							$content .= 'Content-Transfer-Encoding: base64' . "\n";
 							$content .= 'X-Attachment-Id: ' . head(addslashes($attachment['id'])) . "\n";
 							$content .= '' . "\n";
