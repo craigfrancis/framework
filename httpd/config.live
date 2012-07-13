@@ -4,8 +4,8 @@
 		ServerName www.phpprime.com
 
 		DocumentRoot /www/live/craig.framework/app/public/
-		CustomLog /www/live/craig.framework/app/logs/access_log combined
-		ErrorLog /www/live/craig.framework/app/logs/error_log
+		CustomLog /www/live/craig.framework/logs/access_log combined
+		ErrorLog /www/live/craig.framework/logs/error_log
 
 	</VirtualHost>
 
