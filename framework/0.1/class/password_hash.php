@@ -26,6 +26,9 @@
 //
 //--------------------------------------------------
 
+// Also look at:
+//   https://github.com/ircmaxell/password_compat/blob/master/lib/password.php
+
 	class password_hash_base extends check {
 
 		//--------------------------------------------------
