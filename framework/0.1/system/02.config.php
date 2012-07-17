@@ -108,6 +108,7 @@
 		config::set('request.query', (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ''));
 		config::set('request.browser', (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''));
 		config::set('request.accept', (isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : ''));
+		config::set('request.referrer', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : ''));
 
 		if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
 			config::set('request.ip', 'XForward=[' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ']');
@@ -117,31 +118,28 @@
 			config::set('request.ip', '127.0.0.1'); // Probably CLI
 		}
 
-		$uri = config::get('request.uri');
-		$pos = strpos($uri, '?');
+		$path = config::get('request.uri');
+		$pos = strpos($path, '?');
 		if ($pos !== false) {
-			config::set('request.path', substr($uri, 0, $pos));
-		} else {
-			config::set('request.path', $uri);
+			$path = substr($path, 0, $pos);
 		}
+
+		config::set('request.path', $path);
+		config::set('request.folders', path_to_array($path));
 
 		if (defined('CLI_MODE')) {
-			config::set('request.url', 'file://' . $uri);
+			config::set('request.url', 'file://' . $path);
 		} else {
-			config::set('request.url', (config::get('request.https') ? 'https://' : 'http://') . config::get('request.domain') . $uri);
+			config::set('request.url', (config::get('request.https') ? 'https://' : 'http://') . config::get('request.domain') . $path);
 		}
 
-		$local = (config::get('request.https') ? 'https://' : 'http://') . config::get('request.domain') . config::get('url.prefix');
-
-		config::set('request.referrer', str_replace($local, '', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '')));
-
-		unset($uri, $pos, $local);
+		unset($path, $pos);
 
 	//--------------------------------------------------
-	// Resource
+	// URL
 
-		config::set('resource.file_root', ROOT . '/files');
-		config::set('resource.private_root', ROOT . '/private');
+		config::set('url.prefix', '');
+		config::set('url.default_format', 'absolute');
 
 //--------------------------------------------------
 // App config
@@ -178,15 +176,31 @@
 		}
 
 	//--------------------------------------------------
-	// Resource
+	// Database
 
-		config::set_default('resource.asset_url', config::get('url.prefix') . '/a');
-		config::set_default('resource.asset_root', PUBLIC_ROOT . '/a');
+		define('DB_PREFIX', config::get('db.prefix'));
 
-		config::set_default('resource.favicon_url', config::get('resource.asset_url') . '/img/global/favicon.ico');
-		config::set_default('resource.favicon_path', config::get('resource.asset_root') . '/img/global/favicon.ico'); // root is a path prefix
+	//--------------------------------------------------
+	// Resources
 
-		config::set_default('resource.file_url', config::get('url.prefix') . '/a/files');
+		if (!defined('ASSET_URL'))    define('ASSET_URL',    config::get('url.prefix') . '/a');
+		if (!defined('ASSET_ROOT'))   define('ASSET_ROOT',   PUBLIC_ROOT . '/a');
+		if (!defined('FILE_URL'))     define('FILE_URL',     config::get('url.prefix') . '/a/files');
+		if (!defined('FILE_ROOT'))    define('FILE_ROOT',    ROOT . '/files');
+		if (!defined('PRIVATE_ROOT')) define('PRIVATE_ROOT', ROOT . '/private');
+
+	//--------------------------------------------------
+	// Request
+
+		if (config::get('request.referrer_shorten', true) === true) {
+
+			$local = (config::get('request.https') ? 'https://' : 'http://') . config::get('request.domain') . config::get('url.prefix');
+
+			config::set('request.referrer', str_replace($local, '', config::get('request.referrer')));
+
+			unset($local);
+
+		}
 
 	//--------------------------------------------------
 	// Output
@@ -221,6 +235,8 @@
 				'/Netscape\/[4-7]\./',
 			));
 
+		config::set_default('output.favicon_url',  ASSET_URL  . '/img/global/favicon.ico');
+		config::set_default('output.favicon_path', ASSET_ROOT . '/img/global/favicon.ico');
 		config::set_default('output.js_combine', true);
 		config::set_default('output.js_min', false);
 		config::set_default('output.css_tidy', false);
@@ -248,12 +264,6 @@
 						'alt_sticky' => true,
 					),
 			));
-
-	//--------------------------------------------------
-	// URL
-
-		config::set_default('url.prefix', '');
-		config::set_default('url.default_format', 'absolute');
 
 	//--------------------------------------------------
 	// Cookie
@@ -297,18 +307,5 @@
 	if (config::get('output.charset') == 'UTF-8') {
 		mb_detect_order(array('UTF-8', 'ASCII'));
 	}
-
-//--------------------------------------------------
-// Constants
-
-	define('DB_PREFIX', config::get('db.prefix'));
-
-	define('ASSET_URL',   config::get('resource.asset_url'));
-	define('ASSET_ROOT',  config::get('resource.asset_root'));
-
-	define('FILE_URL',    config::get('resource.file_url'));
-	define('FILE_ROOT',   config::get('resource.file_root'));
-
-	define('PRIVATE_ROOT',   config::get('resource.private_root'));
 
 ?>

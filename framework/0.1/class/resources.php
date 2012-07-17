@@ -147,7 +147,7 @@
 						}
 					}
 
-					debug_note_html($note_html, 'H');
+					debug_note_html(str_replace(ROOT, '', $note_html), 'H');
 
 					unset($note_html, $log);
 

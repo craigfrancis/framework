@@ -17,6 +17,15 @@
 				return $this->db_link;
 			}
 
+			public function request_folder_get($id) {
+				$folders = config::get('request.folders');
+				if (isset($folders[$id])) {
+					return $folders[$id];
+				} else {
+					return NULL;
+				}
+			}
+
 			public function route_folder_get($id) {
 				$folders = config::get('route.folders');
 				if (isset($folders[$id])) {
@@ -317,7 +326,7 @@
 				//--------------------------------------------------
 				// Favicon
 
-					$favicon_url = config::get('resource.favicon_url');
+					$favicon_url = config::get('output.favicon_url');
 
 					if ($favicon_url !== NULL) {
 						$html .= "\n\n\t" . '<link rel="shortcut icon" type="image/x-icon" href="' . html($favicon_url) . '" />';
@@ -508,7 +517,7 @@
 				$layout_path = APP_ROOT . '/layouts/' . safe_file_name(config::get('view.layout')) . '.ctp';
 
 				if (config::get('debug.level') >= 3) {
-					debug_note_html('<strong>Layout</strong>: ' . html($layout_path), 'H');
+					debug_note_html('<strong>Layout</strong>: ' . html(str_replace(ROOT, '', $layout_path)), 'H');
 				}
 
 				if (!is_file($layout_path)) {
@@ -606,7 +615,7 @@
 					$view_path = config::get('view.path');
 
 					if (config::get('debug.level') >= 3) {
-						debug_note_html('<strong>View</strong>: ' . html($view_path), 'H');
+						debug_note_html('<strong>View</strong>: ' . html(str_replace(ROOT, '', $view_path)), 'H');
 					}
 
 				//--------------------------------------------------

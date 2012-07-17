@@ -238,7 +238,7 @@
 				$note_html .= '&#xA0; ' . preg_replace('/^([^:]+):/', '<strong>\1</strong>:', html($log)) . '<br />' . "\n";
 			}
 
-			debug_note_html($note_html, 'H');
+			debug_note_html(str_replace(ROOT, '', $note_html), 'H');
 
 			unset($note_html, $log);
 
@@ -270,7 +270,7 @@
 
 		if (config::get('debug.level') >= 3) {
 
-			$note_html  = '<strong>Action</strong>: ' . html($action_controller_path) . '<br />' . "\n";
+			$note_html  = '<strong>Action</strong>: ' . html(str_replace(ROOT, '', $action_controller_path)) . '<br />' . "\n";
 
 			if ($action_controller_name !== NULL) {
 				$note_html .= '&#xA0; Calls:<br />' . "\n";
@@ -281,12 +281,16 @@
 
 			$note_html .= '&#xA0; Methods:<br />' . "\n";
 
-			foreach (config::get('route.variables') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->route_variable_get(\'' . html($id) . '\'); <span style="color: #999;">// ' . html($value) . '</span><br />' . "\n";
+			foreach (config::get('request.folders') as $id => $value) {
+				$note_html .= '&#xA0; &#xA0; $this->request_folder_get(' . html($id) . '); <span style="color: #999;">// ' . html($value) . '</span><br />' . "\n";
 			}
 
 			foreach (config::get('route.folders') as $id => $value) {
 				$note_html .= '&#xA0; &#xA0; $this->route_folder_get(' . html($id) . '); <span style="color: #999;">// ' . html($value) . '</span><br />' . "\n";
+			}
+
+			foreach (config::get('route.variables') as $id => $value) {
+				$note_html .= '&#xA0; &#xA0; $this->route_variable_get(\'' . html($id) . '\'); <span style="color: #999;">// ' . html($value) . '</span><br />' . "\n";
 			}
 
 			$note_html .= '&#xA0; &#xA0; $this->view_path_set(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
