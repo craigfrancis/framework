@@ -96,8 +96,6 @@
 
 					if ($session_key == '' || $session_key != $config_key) {
 
-$config_key_old = sha1(ENCRYPTION_KEY); // TODO: Remove
-
 						if (count($_SESSION) == 0 || $session_key == $config_key_old) {
 
 							session_regenerate_id(); // Don't want UA telling us the ID to use
