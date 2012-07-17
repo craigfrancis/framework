@@ -120,20 +120,20 @@
 		$uri = config::get('request.uri');
 		$pos = strpos($uri, '?');
 		if ($pos !== false) {
-			config::set_default('request.path', substr($uri, 0, $pos));
+			config::set('request.path', substr($uri, 0, $pos));
 		} else {
-			config::set_default('request.path', $uri);
+			config::set('request.path', $uri);
 		}
 
 		if (defined('CLI_MODE')) {
-			config::set_default('request.url', 'file://' . $uri);
+			config::set('request.url', 'file://' . $uri);
 		} else {
-			config::set_default('request.url', (config::get('request.https') ? 'https://' : 'http://') . config::get('request.domain') . $uri);
+			config::set('request.url', (config::get('request.https') ? 'https://' : 'http://') . config::get('request.domain') . $uri);
 		}
 
 		$local = (config::get('request.https') ? 'https://' : 'http://') . config::get('request.domain') . config::get('url.prefix');
 
-		config::set_default('request.referrer', str_replace($local, '', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '')));
+		config::set('request.referrer', str_replace($local, '', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '')));
 
 		unset($uri, $pos, $local);
 

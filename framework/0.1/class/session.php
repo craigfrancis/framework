@@ -75,30 +75,42 @@
 
 					session_name(config::get('session.name'));
 
-					ini_set('session.cookie_httponly', true);
+					ini_set('session.use_cookies', true);
+					ini_set('session.use_only_cookies', true); // Prevent session fixation though the URL
+					ini_set('session.cookie_httponly', true); // Not available to JS
 
-					$result = session_start(); // May warn about headers already being sent, which happens in loading object.
+					session_start(); // May warn about headers already being sent, which happens in loading object.
 
 				//--------------------------------------------------
-				// Store session ID
+				// Store session ID - must happen immediately after
+				// starting the session as a session::get later will
+				// notice this missing and try to start it again.
 
 					config::set('session.id', session_id());
 
 				//--------------------------------------------------
 				// Check this session is for this website
 
-					$config_key = config::get('session.key');
 					$session_key = session::get('session.key');
+					$config_key = config::get('session.key');
 
-					if ($session_key == '') {
+					if ($session_key == '' || $session_key != $config_key) {
 
-						session::set('session.key', $config_key);
+						if (count($_SESSION) == 0) {
 
-					} else if ($config_key != $session_key) {
+							session_regenerate_id(); // Don't want UA telling us the ID to use
 
-						session::destroy();
+							config::set('session.id', session_id());
 
-						exit_with_error('Your session is not valid for this website', $config_key . ' != ' . $session_key);
+							session::set('session.key', $config_key);
+
+						} else {
+
+							session::destroy();
+
+							exit_with_error('Your session is not valid for this website', '"' . $session_key . '" != "' . $config_key . '"');
+
+						}
 
 					}
 

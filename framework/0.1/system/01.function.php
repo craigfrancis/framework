@@ -11,23 +11,27 @@
 			$value = NULL;
 			$method = strtoupper($method);
 
-			if ($method == 'POST') {
-
-				if (isset($_POST[$variable])) {
-					$value = $_POST[$variable];
-				}
-
-			} else if ($method == 'REQUEST') {
+			if ($method == 'REQUEST') {
 
 				if (isset($_REQUEST[$variable])) {
 					$value = $_REQUEST[$variable];
 				}
 
-			} else {
+			} else if ($method == 'POST') {
+
+				if (isset($_POST[$variable])) {
+					$value = $_POST[$variable];
+				}
+
+			} else if ($method == 'GET') {
 
 				if (isset($_GET[$variable])) {
 					$value = $_GET[$variable];
 				}
+
+			} else {
+
+				exit_with_error('Unknown request method "' . $method . '" for variable "' . $variable . '"');
 
 			}
 
