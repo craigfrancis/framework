@@ -13,12 +13,12 @@
 
 				$table->heading_add('Person', NULL, 'text');
 				$table->heading_add('Event', NULL, 'text', 2);
-				$table->end_heading_row();
+				$table->heading_row_end();
 
 				$table->heading_add('Name', NULL, 'text');
 				$table->heading_add('Created', NULL, 'date');
 				$table->heading_add('Message', NULL);
-				$table->end_heading_row();
+				$table->heading_row_end();
 
 				$table_row = new table_row($table);
 				$table_row->cell_add('Craig Francis');
