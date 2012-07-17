@@ -118,22 +118,24 @@
 			config::set('request.ip', '127.0.0.1'); // Probably CLI
 		}
 
-		$path = config::get('request.uri');
-		$pos = strpos($path, '?');
+		$uri = config::get('request.uri');
+		$pos = strpos($uri, '?');
 		if ($pos !== false) {
-			$path = substr($path, 0, $pos);
+			$path = substr($uri, 0, $pos);
+		} else {
+			$path = $uri;
 		}
 
 		config::set('request.path', $path);
 		config::set('request.folders', path_to_array($path));
 
 		if (defined('CLI_MODE')) {
-			config::set('request.url', 'file://' . $path);
+			config::set('request.url', 'file://' . $uri);
 		} else {
-			config::set('request.url', (config::get('request.https') ? 'https://' : 'http://') . config::get('request.domain') . $path);
+			config::set('request.url', (config::get('request.https') ? 'https://' : 'http://') . config::get('request.domain') . $uri);
 		}
 
-		unset($path, $pos);
+		unset($uri, $path, $pos);
 
 	//--------------------------------------------------
 	// URL

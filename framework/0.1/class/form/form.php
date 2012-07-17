@@ -111,7 +111,7 @@
 				//--------------------------------------------------
 				// Defaults
 
-					$this->form_action = config::get('request.uri');
+					$this->form_action = config::get('request.url');
 					$this->form_method = 'POST';
 					$this->form_class = '';
 					$this->form_button = 'Save';
