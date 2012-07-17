@@ -1,7 +1,7 @@
 <?php
 
 	config::set('session.id', NULL);
-	config::set_default('session.key', sha1(ENCRYPTION_KEY));
+	config::set_default('session.key', sha1(ENCRYPTION_KEY . '-' . SERVER));
 	config::set_default('session.name', config::get('cookie.prefix') . 'session');
 
 	class session_base extends check {
@@ -73,11 +73,11 @@
 				//--------------------------------------------------
 				// Start
 
-					session_name(config::get('session.name'));
-
 					ini_set('session.use_cookies', true);
 					ini_set('session.use_only_cookies', true); // Prevent session fixation though the URL
 					ini_set('session.cookie_httponly', true); // Not available to JS
+
+					session_name(config::get('session.name'));
 
 					session_start(); // May warn about headers already being sent, which happens in loading object.
 
@@ -96,7 +96,9 @@
 
 					if ($session_key == '' || $session_key != $config_key) {
 
-						if (count($_SESSION) == 0) {
+$config_key_old = sha1(ENCRYPTION_KEY); // TODO: Remove
+
+						if (count($_SESSION) == 0 || $session_key == $config_key_old) {
 
 							session_regenerate_id(); // Don't want UA telling us the ID to use
 
