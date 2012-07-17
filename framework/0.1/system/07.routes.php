@@ -79,7 +79,7 @@
 
 		if (substr($route_path, 0, 12) == '/favicon.ico') {
 
-			$favicon_path = config::get('resource.favicon_path');
+			$favicon_path = config::get('output.favicon_path');
 
 			if (!is_file($favicon_path)) {
 				$favicon_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'favicon.ico';
