@@ -96,7 +96,7 @@
 
 					if ($session_key == '' || $session_key != $config_key) {
 
-						if (count($_SESSION) == 0 || $session_key == $config_key_old) {
+						if (count($_SESSION) == 0) {
 
 							session_regenerate_id(); // Don't want UA telling us the ID to use
 
