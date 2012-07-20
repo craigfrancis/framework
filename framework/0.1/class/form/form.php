@@ -40,8 +40,7 @@
 	// Search form
 
 		$form = new form();
-		$form->form_passive_set(true);
-		$form->form_method_set('GET');
+		$form->form_passive_set(true, 'GET');
 		$form->form_button_set('Search');
 
 		$field_search = new form_field_text($form, 'Search');
@@ -237,10 +236,14 @@
 				}
 			}
 
-			public function form_passive_set($passive) {
+			public function form_passive_set($passive, $method = NULL) {
 				$this->form_passive = ($passive == true);
 				$this->form_button_name = ($this->form_passive ? NULL : 'button'); // As passive we don't need to know which button is pressed (just adds cruft to url)
-				$this->_is_submitted();
+				if ($method !== NULL) {
+					$this->form_method_set($method);
+				} else {
+					$this->_is_submitted();
+				}
 			}
 
 			public function form_passive_get() {

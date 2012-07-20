@@ -85,6 +85,10 @@
 
 			}
 
+			public function folder_path_get() {
+				return $this->config['file_root'] . '/' . safe_file_name($this->config['profile']);
+			}
+
 		//--------------------------------------------------
 		// Standard file support
 
@@ -92,7 +96,7 @@
 
 				if ($this->config['file_folder_division'] === NULL) {
 
-					$path = $this->config['file_root'] . '/' . safe_file_name($this->config['profile']) . '/' . safe_file_name($id);
+					$path = $this->folder_path_get() . '/' . safe_file_name($id);
 					if ($ext !== NULL) {
 						$path .= '.' . safe_file_name($ext);
 					}
@@ -168,7 +172,7 @@
 		// Image support
 
 			public function image_path_get($id, $size = 'original') {
-				return $this->config['file_root'] . '/' . safe_file_name($this->config['profile']) . '/' . safe_file_name($size) . '/' . safe_file_name($id) . '.' . safe_file_name($this->config['image_type']);
+				return $this->folder_path_get() . '/' . safe_file_name($size) . '/' . safe_file_name($id) . '.' . safe_file_name($this->config['image_type']);
 			}
 
 			public function image_url_get($id, $size = 'original') {
@@ -212,13 +216,9 @@
 			public function image_save($id, $path = NULL) { // No path set, then re-save images using the original file.
 
 				//--------------------------------------------------
-				// Variables
+				// Original image
 
-					$folder_path = $this->config['file_root'] . '/' . safe_file_name($this->config['profile']);
 					$original_path = $this->image_path_get($id, 'original');
-
-				//--------------------------------------------------
-				// Image
 
 					if ($path === NULL) {
 
@@ -252,7 +252,7 @@
 				//--------------------------------------------------
 				// Sub sizes
 
-					if ($handle = opendir($folder_path)) {
+					if ($handle = opendir($this->folder_path_get())) {
 						while (false !== ($size = readdir($handle))) {
 							if (substr($size, 0, 1) != '.' && $size != 'original') {
 
@@ -278,6 +278,32 @@
 			}
 
 			public function image_delete($id) {
+
+				//--------------------------------------------------
+				// Original
+
+					$original_path = $this->image_path_get($id, 'original');
+					if (is_file($original_path)) {
+						unlink($original_path);
+					}
+
+				//--------------------------------------------------
+				// Sub sizes
+
+					if ($handle = opendir($this->folder_path_get())) {
+						while (false !== ($size = readdir($handle))) {
+							if (substr($size, 0, 1) != '.' && $size != 'original') {
+
+								$path = $this->image_path_get($id, $size);
+								if (is_file($path)) {
+									unlink($path);
+								}
+
+							}
+						}
+						closedir($handle);
+					}
+
 			}
 
 	}
