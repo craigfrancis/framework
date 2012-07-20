@@ -537,7 +537,7 @@
 				//--------------------------------------------------
 				// Return
 
-					if (isset($this->db_select_values[$field])) {
+					if (array_key_exists($field, $this->db_select_values)) {
 
 						return $this->db_select_values[$field];
 

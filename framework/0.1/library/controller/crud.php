@@ -7,7 +7,7 @@
 	//--------------------------------------------------
 	// Example
 
-		class admin_item_controller extends controller {
+		class admin_item_controller extends controller_crud {
 
 			public function __construct() {
 
@@ -24,7 +24,8 @@
 
 					// $this->db_table_name_sql = DB_PREFIX . 'item';
 					// $this->db_where_sql = 'deleted = "0000-00-00 00:00:00"';
-					// $this->db_title_sql = 'name';
+					// $this->db_field_id_sql = 'name';
+					// $this->db_field_title_sql = 'name';
 
 					// $this->index_default_sort_field = 'name';
 					// $this->index_default_sort_order = 'asc';
@@ -45,7 +46,8 @@
 			protected $item_plural;
 			protected $db_table_name_sql;
 			protected $db_where_sql;
-			protected $db_title_sql;
+			protected $db_field_id_sql;
+			protected $db_field_title_sql;
 			protected $feature_add;
 			protected $feature_edit;
 			protected $feature_delete;
@@ -71,7 +73,8 @@
 
 					$this->db_table_name_sql = NULL;
 					$this->db_where_sql = 'deleted = "0000-00-00 00:00:00"';
-					$this->db_title_sql = 'title';
+					$this->db_field_id_sql = 'id';
+					$this->db_field_title_sql = 'title';
 
 					$this->feature_add = true;
 					$this->feature_edit = true;
@@ -106,8 +109,9 @@
 
 							$k = 0;
 
+							$ignore_fields = array($this->db_field_id_sql, 'pass', 'created', 'edited', 'deleted');
 							foreach ($db_fields as $field => $info) {
-								if (!in_array($field, array('id', 'pass', 'edited', 'deleted'))) {
+								if (!in_array($field, $ignore_fields)) {
 									$this->index_table_fields[$field] = NULL;
 									if ($k++ > 3) {
 										break;
@@ -206,7 +210,7 @@
 					if (count($this->index_search_fields) == 0) {
 
 						foreach ($db_fields as $field => $info) {
-							if (!in_array($field, array('id', 'pass'))) {
+							if (!in_array($field, array($this->db_field_id_sql, 'pass'))) {
 								$this->index_search_fields[] = $field;
 							}
 						}
@@ -305,8 +309,8 @@
 					foreach ($this->index_table_fields as $field => $info) {
 						$fields_sql[$field] = $info['field_sql'] . ' AS ' . $db->escape_field($field);
 					}
-					if (!isset($fields_sql['id'])) {
-						$fields_sql['id'] = 'id';
+					if (!isset($fields_sql[$this->db_field_id_sql])) {
+						$fields_sql[$this->db_field_id_sql] = $this->db_field_id_sql . ' AS id';
 					}
 					$fields_sql = implode(', ', $fields_sql);
 
@@ -376,7 +380,7 @@
 					if ($info['edit_url']) {
 						$url = $row['edit_url'];
 					} else if ($info['url_format']) {
-						$url = str_replace('[ID]', urlencode($row['id']), $info['url_format']);
+						$url = str_replace('[ID]', urlencode($row[$this->db_field_id_sql]), $info['url_format']);
 					}
 
 					if ($info['date_format'] !== NULL) {
@@ -421,11 +425,11 @@
 					if ($action_edit) {
 
 						$where_sql = '
-							id = "' . $db->escape($id) . '" AND
+							' . $this->db_field_id_sql . ' = "' . $db->escape($id) . '" AND
 							' . $this->db_where_sql;
 
 						$db->query('SELECT
-										' . $this->db_title_sql . ' AS title
+										' . $this->db_field_title_sql . ' AS title
 									FROM
 										' . $this->db_table_name_sql . '
 									WHERE
@@ -577,11 +581,11 @@
 					$id = intval(request('id'));
 
 					$db->query('SELECT
-									' . $this->db_title_sql . ' AS title
+									' . $this->db_field_title_sql . ' AS title
 								FROM
 									' . $this->db_table_name_sql . '
 								WHERE
-									id = "' . $db->escape($id) . '" AND
+									' . $this->db_field_id_sql . ' = "' . $db->escape($id) . '" AND
 									' . $this->db_where_sql);
 
 					if ($row = $db->fetch_assoc()) {
@@ -669,7 +673,7 @@
 							SET
 								deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 							WHERE
-								id = "' . $db->escape($id) . '" AND
+								' . $this->db_field_id_sql . ' = "' . $db->escape($id) . '" AND
 								' . $this->db_where_sql);
 
 			}
@@ -682,7 +686,7 @@
 				$db_fields = $this->_db_fields();
 
 				foreach ($db_fields as $field => $info) {
-					if (!in_array($field, array('id', 'pass', 'created', 'edited', 'deleted'))) {
+					if (!in_array($field, array($this->db_field_id_sql, 'pass', 'created', 'edited', 'deleted'))) {
 
 						$name = ref_to_human($field);
 

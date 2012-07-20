@@ -208,7 +208,7 @@
 			}
 
 			private function _query_filter($value) {
-				return ($value != '');
+				return ($value !== ''); // Allow 0
 			}
 
 			private function _path_cache_update() {
