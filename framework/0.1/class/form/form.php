@@ -768,10 +768,16 @@
 
 								$values[$field_name] = $field->value_get();
 
-								if ($field_type == 'int' && $values[$field_name] === '' && $this->db_fields[$field_name]['null']) {
-									$values[$field_name] = NULL;
-								}
+							}
 
+							if ($this->db_fields[$field_name]['null']) {
+								if ($field_type == 'int' && $values[$field_name] === '') {
+									$values[$field_name] = NULL; // e.g. number field setting an empty string (not 0).
+								}
+							} else {
+								if ($values[$field_name] === NULL) {
+									$values[$field_name] = ''; // e.g. enum with "not null" and select field with selected label.
+								}
 							}
 
 						}
