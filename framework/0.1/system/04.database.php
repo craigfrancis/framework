@@ -93,7 +93,16 @@
 		public function insert($table_sql, $values, $on_duplicate = NULL) {
 
 			$fields_sql = implode(', ', array_map(array($this, 'escape_field'), array_keys($values)));
-			$values_sql = implode(', ', array_map(array($this, 'escape_string'), $values));
+
+			$values_sql = array();
+			foreach ($values as $value) {
+				if ($value === NULL) {
+					$values_sql[] = 'NULL';
+				} else {
+					$values_sql[] = $this->escape_string($value);
+				}
+			}
+			$values_sql = implode(', ', $values_sql);
 
 			if ($on_duplicate === NULL) {
 
@@ -123,7 +132,7 @@
 
 			$set_sql = array();
 			foreach ($values as $field_name => $field_value) {
-				$set_sql[] = $this->escape_field($field_name) . ' = ' . $this->escape_string($field_value);
+				$set_sql[] = $this->escape_field($field_name) . ' = ' . ($field_value === NULL ? 'NULL' : $this->escape_string($field_value));
 			}
 			$set_sql = implode(', ', $set_sql);
 
