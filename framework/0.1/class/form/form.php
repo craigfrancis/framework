@@ -430,6 +430,7 @@
 
 						$this->db_fields[$mysql_field->name]['length'] = $length;
 						$this->db_fields[$mysql_field->name]['type'] = $type;
+						$this->db_fields[$mysql_field->name]['null'] = !($mysql_field->not_null);
 
 					}
 
@@ -756,11 +757,21 @@
 							$field_type = $this->db_fields[$field_name]['type'];
 
 							if ($field_type == 'datetime' || $field_type == 'date') {
+
 								$values[$field_name] = $field->value_date_get();
+
 							} else if ($field_key == 'key') {
+
 								$values[$field_name] = $field->value_key_get();
+
 							} else {
+
 								$values[$field_name] = $field->value_get();
+
+								if ($field_type == 'int' && $values[$field_name] === '' && $this->db_fields[$field_name]['null']) {
+									$values[$field_name] = NULL;
+								}
+
 							}
 
 						}
