@@ -230,7 +230,13 @@
 				$this->sort_name_set();
 			}
 
-			return url($this->current_url, array($this->sort_name . '_sort' => $order . '-' . $field));
+			$params = array($this->sort_name . '_sort' => $order . '-' . $field);
+
+			if ($this->current_url === NULL) {
+				return url($params);
+			} else {
+				return url($this->current_url, $params);
+			}
 
 		}
 
