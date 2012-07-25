@@ -45,7 +45,7 @@
 
 			public function format_error_set_html($error_html) {
 
-				if ($this->form_submitted && $this->value !== '' && $this->value !== NULL && !is_numeric($this->value)) {
+				if ($this->form_submitted && $this->value != '' && !is_numeric($this->value)) {
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
@@ -102,13 +102,9 @@
 				$value = parent::value_print_get();
 
 				if ($value == 0 && $this->zero_to_blank) {
-
 					return '';
-
 				} else {
-
 					return $value;
-
 				}
 
 			}
