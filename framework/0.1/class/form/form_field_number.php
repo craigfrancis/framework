@@ -97,10 +97,6 @@
 		//--------------------------------------------------
 		// Value
 
-			public function value_get() {
-				return $this->value;
-			}
-
 			public function value_print_get($decimal_places = 2) {
 
 				$value = parent::value_print_get();
