@@ -7,7 +7,6 @@
 
 			protected $format_error_set;
 			protected $zero_to_blank;
-			protected $null_print_value;
 			protected $min_value;
 			protected $max_value;
 
@@ -28,7 +27,6 @@
 					$this->zero_to_blank = false;
 					$this->min_value = NULL;
 					$this->max_value = NULL;
-					$this->null_print_value = NULL;
 					$this->type = 'number';
 					$this->input_type = 'number';
 
@@ -36,10 +34,6 @@
 
 			public function zero_to_blank_set($blank) {
 				$this->zero_to_blank = ($blank == true);
-			}
-
-			public function null_print_value_set($value) {
-				$this->null_print_value = $value;
 			}
 
 		//--------------------------------------------------
@@ -51,7 +45,7 @@
 
 			public function format_error_set_html($error_html) {
 
-				if ($this->form_submitted && $this->value !== '' && $this->value !== $this->null_print_value && !is_numeric($this->value)) {
+				if ($this->form_submitted && $this->value !== '' && $this->value !== NULL && !is_numeric($this->value)) {
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
@@ -104,11 +98,7 @@
 		// Value
 
 			public function value_get() {
-				if ($this->null_print_value === $this->value) {
-					return NULL;
-				} else {
-					return $this->value;
-				}
+				return $this->value;
 			}
 
 			public function value_print_get($decimal_places = 2) {
@@ -117,7 +107,7 @@
 
 				if ($value === NULL) {
 
-					return $this->null_print_value;
+					return NULL;
 
 				} else if ($value == 0 && $this->zero_to_blank) {
 
