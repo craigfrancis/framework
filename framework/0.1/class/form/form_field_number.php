@@ -105,11 +105,7 @@
 
 				$value = parent::value_print_get();
 
-				if ($value === NULL) {
-
-					return NULL;
-
-				} else if ($value == 0 && $this->zero_to_blank) {
+				if ($value == 0 && $this->zero_to_blank) {
 
 					return '';
 
