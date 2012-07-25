@@ -275,7 +275,7 @@
 			public function readonly_get() {
 				return $this->readonly;
 			}
-			
+
 			public function print_group_start($print_group) {
 				$this->print_group = $print_group;
 			}
