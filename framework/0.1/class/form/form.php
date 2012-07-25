@@ -767,17 +767,11 @@
 							$field_type = $this->db_fields[$field_name]['type'];
 
 							if ($field_type == 'datetime' || $field_type == 'date') {
-
 								$values[$field_name] = $field->value_date_get();
-
 							} else if ($field_key == 'key') {
-
 								$values[$field_name] = $field->value_key_get();
-
 							} else {
-
 								$values[$field_name] = $field->value_get();
-
 							}
 
 							if ($this->db_fields[$field_name]['null']) {
