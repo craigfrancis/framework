@@ -37,9 +37,9 @@
 			protected $autocomplete;
 			protected $disabled;
 			protected $readonly;
-			protected $print_show;
-			protected $print_hidden;
 			protected $print_group;
+			protected $print_include;
+			protected $print_hidden;
 			protected $db_field_name;
 			protected $db_field_key;
 
@@ -119,9 +119,9 @@
 					$this->autocomplete = NULL;
 					$this->disabled = $form->disabled_get();
 					$this->readonly = $form->readonly_get();
-					$this->print_show = true;
+					$this->print_group = $form->print_group_get();
+					$this->print_include = true;
 					$this->print_hidden = false;
-					$this->print_group = NULL;
 					$this->db_field_name = NULL;
 					$this->db_field_key = 'value';
 
@@ -327,12 +327,12 @@
 				return $this->readonly;
 			}
 
-			public function print_show_set($show) { // Print on main form automatically
-				$this->print_show = ($show == true);
+			public function print_include_set($include) { // Print on main form automatically
+				$this->print_include = ($include == true);
 			}
 
-			public function print_show_get() {
-				return $this->print_show;
+			public function print_include_get() {
+				return $this->print_include;
 			}
 
 			public function print_hidden_set($hidden) { // Won't print on main form automatically, but will preserve value in a hidden field

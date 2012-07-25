@@ -71,6 +71,7 @@
 			private $autocomplete;
 			private $disabled;
 			private $readonly;
+			private $print_group;
 			private $hidden_values;
 			private $fields;
 			private $field_refs;
@@ -121,6 +122,7 @@
 					$this->autocomplete = NULL;
 					$this->disabled = (isset($site_config['disabled']) ? $site_config['disabled'] : false);
 					$this->readonly = (isset($site_config['readonly']) ? $site_config['readonly'] : false);
+					$this->print_group = NULL;
 					$this->hidden_values = array();
 					$this->fields = array();
 					$this->field_refs = array();
@@ -220,6 +222,14 @@
 				return $this->form_class;
 			}
 
+			public function form_autocomplete_set($autocomplete) {
+				$this->autocomplete = ($autocomplete == true);
+			}
+
+			public function form_autocomplete_get() {
+				return $this->autocomplete;
+			}
+
 			public function form_button_set($text = NULL) {
 				$this->form_button = $text;
 			}
@@ -250,14 +260,6 @@
 				return $this->form_passive;
 			}
 
-			public function autocomplete_set($autocomplete) {
-				$this->autocomplete = ($autocomplete == true);
-			}
-
-			public function autocomplete_get() {
-				return $this->autocomplete;
-			}
-
 			public function disabled_set($disabled) {
 				$this->disabled = ($disabled == true);
 			}
@@ -272,6 +274,14 @@
 
 			public function readonly_get() {
 				return $this->readonly;
+			}
+			
+			public function print_group_start($print_group) {
+				$this->print_group = $print_group;
+			}
+
+			public function print_group_get() {
+				return $this->print_group;
 			}
 
 			public function hidden_value($name) { // You should call form->hidden_value() first to initialise - get/set may not be called when form is submitted with errors.
@@ -917,7 +927,7 @@
 			public function field_groups_get() {
 				$field_groups = array();
 				foreach ($this->fields as $field) {
-					if ($field->print_show_get() && !$field->print_hidden_get()) {
+					if ($field->print_include_get() && !$field->print_hidden_get()) {
 						$field_group = $field->print_group_get();
 						if ($field_group !== NULL) {
 							$field_groups[] = $field_group;
@@ -1179,7 +1189,7 @@
 					} else {
 
 						foreach ($this->fields as $field) {
-							if ($field->print_show_get() && !$field->print_hidden_get()) {
+							if ($field->print_include_get() && !$field->print_hidden_get()) {
 								$field_group = $field->print_group_get();
 								if ($field_group === NULL) {
 									$field_groups = array(NULL);
@@ -1209,7 +1219,7 @@
 
 						foreach ($this->fields as $field) {
 
-							if ($field->print_show_get() && !$field->print_hidden_get()) {
+							if ($field->print_include_get() && !$field->print_hidden_get()) {
 
 								$field_group = $field->print_group_get();
 
