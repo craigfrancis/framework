@@ -3,6 +3,7 @@
 // TODO: Update to oAuth
 //   https://code.google.com/oauthplayground/
 //   https://developers.google.com/accounts/docs/OAuth2#CS
+//   http://hueniverse.com/2012/07/oauth-2-0-and-the-road-to-hell/
 
 //--------------------------------------------------
 // Is enabled
