@@ -665,6 +665,22 @@
 				return $errors_flat_html;
 			}
 
+			public function validation_js($object = NULL) {
+				if ($object === NULL) {
+					$object = $this->form_id . '_validation';
+				}
+				$js = "\n" . 'var ' . $object . ' = {';
+				foreach ($this->fields as $field) {
+					$id = $field->id_get();
+					$js .= "\n\t" . '"' . addslashes($id) . '": function() {';
+					$js .= "\n\t\t" . 'var f = {"ref": document.getElementById("' . addslashes($id) . '"), "val": null, "errors_html": []};';
+					$js .= $field->_validation_js();
+					$js .= "\n\t\t" . 'return f;';
+					$js .= "\n\t" . '},';
+				}
+				return (count($this->fields) == 0 ? $js :  substr($js, 0, -1)) . '}';
+			}
+
 			private function _post_validation() {
 
 				//--------------------------------------------------

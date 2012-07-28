@@ -29,6 +29,7 @@
 			protected $info_html;
 			protected $info_class;
 			protected $info_tag;
+			protected $validation_js;
 			protected $required;
 			protected $required_mark_html;
 			protected $required_mark_position;
@@ -111,6 +112,7 @@
 					$this->info_html = NULL;
 					$this->info_class = 'info';
 					$this->info_tag = 'span';
+					$this->validation_js = array();
 					$this->required = false;
 					$this->required_mark_html = NULL;
 					$this->required_mark_position = NULL;
@@ -413,6 +415,10 @@
 
 		//--------------------------------------------------
 		// Validation
+
+			public function _validation_js() {
+				return '';
+			}
 
 			public function _post_validation() {
 			}

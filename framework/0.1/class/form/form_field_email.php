@@ -40,6 +40,7 @@
 				}
 
 				$this->format_error_set = true;
+				$this->validation_js[] = 'if (f.val != "" && !f.val.match(/^\w[-.+\'\w]*@(\w[-._\w]*\.[a-zA-Z]{2,}.*)$/)) f.errors_html.push("' . addslashes($error_html) . '");';
 
 			}
 

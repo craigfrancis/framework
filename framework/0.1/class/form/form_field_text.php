@@ -67,12 +67,15 @@
 
 			public function min_length_set_html($error_html, $size = 1) {
 
+				$error_html = str_replace('XXX', $size, $error_html);
+
 				if ($this->form_submitted && strlen($this->value) < $size) {
-					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $size, $error_html));
+					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
 				$this->min_length = $size;
 				$this->required = ($size > 0);
+				$this->validation_js[] = 'if (f.val.length < ' . intval($size) . ') f.errors_html.push("' . addslashes($error_html) . '");';
 
 			}
 
@@ -97,11 +100,14 @@
 
 				}
 
+				$error_html = str_replace('XXX', $size, $error_html);
+
 				if ($this->form_submitted && strlen($this->value) > $size) {
-					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $size, $error_html));
+					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
 				$this->max_length = $size;
+				$this->validation_js[] = 'if (f.val.length > ' . intval($size) . ') f.errors_html.push("' . addslashes($error_html) . '");';
 
 			}
 
@@ -133,6 +139,14 @@
 
 		//--------------------------------------------------
 		// Validation
+
+			public function _validation_js() {
+				$js  = "\n\t\t" . 'f.val = f.ref.value;';
+				foreach ($this->validation_js as $validation_js) {
+					$js .= "\n\t\t" . $validation_js;
+				}
+				return $js;
+			}
 
 			public function _post_validation() {
 

@@ -119,6 +119,12 @@
 			}
 
 		//--------------------------------------------------
+		// Validation
+
+			public function _validation_js() {
+			}
+
+		//--------------------------------------------------
 		// HTML
 
 			public function html_input() {
