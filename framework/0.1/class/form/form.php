@@ -678,7 +678,7 @@
 					$js .= "\n\t\t" . 'return f;';
 					$js .= "\n\t" . '},';
 				}
-				return (count($this->fields) == 0 ? $js :  substr($js, 0, -1)) . '}';
+				return (count($this->fields) == 0 ? $js :  substr($js, 0, -1)) . "\n" . '};';
 			}
 
 			private function _post_validation() {
