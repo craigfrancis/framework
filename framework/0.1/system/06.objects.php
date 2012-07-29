@@ -126,6 +126,22 @@
 		}
 
 	//--------------------------------------------------
+	// Setup
+
+		class setup_base extends base {
+
+			public function run() {
+
+				$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'setup.php';
+				if (is_file($include_path)) {
+					require_once($include_path);
+				}
+
+			}
+
+		}
+
+	//--------------------------------------------------
 	// Controller
 
 		class controller_base extends base {
@@ -566,6 +582,10 @@
 
 			}
 
+			public function add_html($html) {
+				$this->layout->view_add_html($html);
+			}
+
 			public function render_html($html) {
 				$this->layout->view_add_html($html);
 				$this->layout->render();
@@ -665,6 +685,11 @@
 
 	//--------------------------------------------------
 	// Defaults if not provided
+
+		if (!class_exists('setup')) {
+			class setup extends setup_base {
+			}
+		}
 
 		if (!class_exists('controller')) {
 			class controller extends controller_base {

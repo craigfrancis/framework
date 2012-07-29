@@ -241,6 +241,7 @@
 					$db = $this->user_obj->db_get();
 
 					$where_sql = $this->db_where_sql . ' AND
+									user_id = user_id AND
 									id = "' . $db->escape($session_id) . '" AND
 									deleted = "0000-00-00 00:00:00"';
 
@@ -275,6 +276,7 @@
 												last_used = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 											WHERE
 												' . $this->db_where_sql . ' AND
+												user_id = user_id AND
 												id = "' . $db->escape($session_id) . '" AND
 												deleted = "0000-00-00 00:00:00"');
 

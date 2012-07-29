@@ -78,12 +78,12 @@
 					ini_set('memory_limit', '1024M');
 
 				//--------------------------------------------------
-				// Main include
+				// Include setup
 
-					$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'main.php';
-					if (is_file($include_path)) {
-						require_once($include_path);
-					}
+					$setup = new setup();
+					$setup->run();
+
+					unset($setup);
 
 				//--------------------------------------------------
 				// Clear old locks

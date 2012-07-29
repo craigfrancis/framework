@@ -147,45 +147,50 @@
 			}
 
 		//--------------------------------------------------
-		// Main include
-
-			$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'main.php';
-			if (is_file($include_path)) {
-				require_once($include_path);
-			}
-
-		//--------------------------------------------------
 		// Initialisation done
 
 			define('FRAMEWORK_INIT_TIME', debug_run_time());
 
 		//--------------------------------------------------
-		// Controller
+		// Page setup
 
-			ob_start();
+			//--------------------------------------------------
+			// Buffer to catch output from setup/controller.
 
-			require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '08.controller.php');
+				ob_start();
 
-			if (config::get('debug.level') >= 4) {
-				debug_progress('Controller');
-			}
+			//--------------------------------------------------
+			// Include setup
 
-			$controller_html = ob_get_clean();
+				$setup = new setup();
+				$setup->run();
 
-		//--------------------------------------------------
-		// View
+				unset($setup); // Don't allow controller to know about this
 
-			$layout = new layout();
-			$layout->view_add_html($controller_html);
+			//--------------------------------------------------
+			// Controller
 
-			$view = new view($layout);
-			$view->render();
+				require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '08.controller.php');
 
-			unset($layout, $view, $controller_html);
+				if (config::get('debug.level') >= 4) {
+					debug_progress('Controller');
+				}
 
-			if (config::get('debug.level') >= 4) {
-				debug_progress('View render', 1);
-			}
+			//--------------------------------------------------
+			// View
+
+				$view = new view();
+				$view->add_html(ob_get_clean());
+				$view->render();
+
+			//--------------------------------------------------
+			// Cleanup
+
+				unset($layout, $view);
+
+				if (config::get('debug.level') >= 4) {
+					debug_progress('View render', 1);
+				}
 
 		//--------------------------------------------------
 		// Final config
