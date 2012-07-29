@@ -326,6 +326,7 @@
 								' . $this->db_table_reset_name . '
 							WHERE
 								id = "' . $db->escape($request_id) . '" AND
+								user_id = user_id AND
 								pass = "' . $db->escape($request_pass) . '" AND
 								created > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-90 minutes'))) . '" AND
 								used = "0000-00-00 00:00:00"');
@@ -350,11 +351,12 @@
 			$db = $this->user_obj->db_get();
 
 			$db->query('UPDATE
-							' . $this->db_table_reset_name . ' AS tn
+							' . $this->db_table_reset_name . '
 						SET
 							used = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 						WHERE
 							id = "' . $db->escape($request_id) . '" AND
+							user_id = user_id AND
 							used = "0000-00-00 00:00:00"');
 
 		}

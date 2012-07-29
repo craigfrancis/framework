@@ -796,6 +796,16 @@
 					KEY user_id (user_id)
 				);');
 
+		debug_require_db_table('user_new_password', '
+				CREATE TABLE [TABLE] (
+					id int(11) NOT NULL AUTO_INCREMENT,
+					user_id int(11) NOT NULL,
+					pass tinytext NOT NULL,
+					created datetime NOT NULL,
+					used datetime NOT NULL,
+					PRIMARY KEY (id)
+				);');
+
 	}
 
 ?>
