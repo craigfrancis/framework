@@ -105,6 +105,7 @@
 									' . $db->escape_field($this->db_table_name) . '
 								WHERE
 									' . $this->db_where_sql . ' AND
+									user_id = user_id AND
 									deleted != "0000-00-00 00:00:00" AND
 									deleted < "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->history_length))) . '"');
 
@@ -114,6 +115,7 @@
 										' . $db->escape_field($this->db_table_name) . '
 									WHERE
 										' . $this->db_where_sql . ' AND
+										user_id = user_id AND
 										deleted = "0000-00-00 00:00:00" AND
 										last_used < "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->length - $this->history_length))) . '"');
 
@@ -148,6 +150,7 @@
 								pass_salt = "' . $db->escape($pass_salt) . '"
 							WHERE
 								' . $this->db_where_sql . ' AND
+								user_id = user_id AND
 								id = "' . $db->escape($session_id) . '" AND
 								deleted = "0000-00-00 00:00:00"');
 
@@ -322,6 +325,7 @@
 										' . $db->escape_field($this->db_table_name) . '
 									WHERE
 										' . $this->db_where_sql . ' AND
+										user_id = user_id AND
 										id = "' . $db->escape($this->session_id) . '" AND
 										deleted = "0000-00-00 00:00:00"');
 
@@ -333,6 +337,7 @@
 										deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 									WHERE
 										' . $this->db_where_sql . ' AND
+										user_id = user_id AND
 										id = "' . $db->escape($this->session_id) . '" AND
 										deleted = "0000-00-00 00:00:00"');
 
