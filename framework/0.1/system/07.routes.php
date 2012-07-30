@@ -133,13 +133,11 @@
 
 				$success = $gateway->run($api_name, $matches[2]);
 
-				if ($success) {
-					exit();
-				} else {
+				if (!$success) {
 					render_error('page_not_found');
 				}
 
-				unset($gateway, $success);
+				exit();
 
 			} else if (SERVER == 'stage') {
 

@@ -52,6 +52,7 @@
 			'next_html' => '[»]',
 			'last_html' => NULL,
 			'number_pad' => 2,
+			'link_count' => 9,
 			'link_wrapper_element' => 'span',
 			'extra_html' => NULL, // '<span class="pagination_extra">Page [PAGE] of [COUNT]</span>'
 		);
@@ -339,13 +340,15 @@
 			//--------------------------------------------------
 			// Range of page numbers
 
-				$start = ($this->page_number - 4); // floor(9 / 2)
-				if ($start > ($this->page_count - 8)) $start = ($this->page_count - 8);
+				$max = ($this->page_count - ($this->config['link_count'] - 1));
+
+				$start = ($this->page_number - floor($this->config['link_count'] / 2));
+				if ($start > $max) $start = $max;
 				if ($start < 1) $start = 1;
 
 				$page_links_html = array();
 
-				for ($i = 1; $start <= $this->page_count && $i <= 9; $i++, $start++) {
+				for ($i = 1; ($start <= $this->page_count && $i <= $this->config['link_count']); $i++, $start++) {
 					$c = ($start == $this->page_number);
 					$page_links_html[] = '<' . html($this->config['link_wrapper_element']) . ' class="pagination_page pagination_page_' . $i . ($c ? ' pagination_current' : '') . '">' . ($c ? '<strong>' : '') . '<a href="' . html($this->page_url_get($start)) . '">' . str_pad($start, $this->config['number_pad'], '0', STR_PAD_LEFT) . '</a>' . ($c ? '</strong>' : '') . '</' . html($this->config['link_wrapper_element']) . '>';
 				}
