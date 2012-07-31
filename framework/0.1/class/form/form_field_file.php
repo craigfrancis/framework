@@ -73,6 +73,8 @@
 						$ext = pathinfo($_FILES[$this->name]['name'], PATHINFO_EXTENSION);
 						if ($ext) {
 							$this->value_ext = strtolower($ext);
+						} else {
+							$this->value_ext = ''; // File name missing value, which is not the same as NULL (useful distinction when sending to DB)
 						}
 
 						$this->value_name = $_FILES[$this->name]['name'];
