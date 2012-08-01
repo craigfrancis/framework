@@ -9,12 +9,12 @@
 		//--------------------------------------------------
 		// Form validation rules
 
-			<?= $form->validation_js(); ?>
+			<?= $form->validation_js() . "\n" ?>
 
 		//--------------------------------------------------
 		// Errors on a single field
 
-			// console.log(form_1_validation.fld_name().errors_html);
+			// console.log(form_1_validation.fld_name().errors);
 
 		//--------------------------------------------------
 		// Errors as a list
@@ -23,8 +23,8 @@
 				var errors_list_html = [], field = null;
 				for (field in form_validation) {
 					field = form_validation[field]();
-					if (field.errors_html.length > 0) {
-						errors_list_html = errors_list_html.concat(field.errors_html);
+					for (k in field.errors) {
+						errors_list_html = errors_list_html.concat(field.errors[k].html);
 					}
 				}
 				return errors_list_html;

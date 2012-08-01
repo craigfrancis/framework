@@ -75,7 +75,7 @@
 
 				$this->min_length = $size;
 				$this->required = ($size > 0);
-				$this->validation_js[] = 'if (f.val.length < ' . intval($size) . ') f.errors_html.push("' . addslashes($error_html) . '");';
+				$this->validation_js[] = 'if (f.val.length < ' . intval($size) . ') f.errors.push({"type": "min_length", "html": "' . addslashes($error_html) . '"});';
 
 			}
 
@@ -107,7 +107,7 @@
 				}
 
 				$this->max_length = $size;
-				$this->validation_js[] = 'if (f.val.length > ' . intval($size) . ') f.errors_html.push("' . addslashes($error_html) . '");';
+				$this->validation_js[] = 'if (f.val.length > ' . intval($size) . ') f.errors.push({"type": "max_length", "html": "' . addslashes($error_html) . '"});';
 
 			}
 
