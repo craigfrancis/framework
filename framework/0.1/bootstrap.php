@@ -1,6 +1,6 @@
 <?php
 
-// Testing git commit
+// Testing git commit2
 
 //--------------------------------------------------
 // Version
