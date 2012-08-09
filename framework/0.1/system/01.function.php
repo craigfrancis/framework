@@ -115,7 +115,7 @@
 	function html_tag($tag, $attributes) {
 		$html = '<' . html($tag);
 		foreach ($attributes as $name => $value) {
-			if ($value != '') {
+			if ($value !== '' && $value !== NULL) { // Allow numerical value 0
 				$html .= ' ' . html(is_int($name) ? $value : $name) . '="' . html($value) . '"';
 			}
 		}
