@@ -67,7 +67,7 @@
 
 			public function min_value_set_html($error_html, $value) {
 
-				if ($this->form_submitted && floatval($this->value) < $value) {
+				if ($this->form_submitted && $this->value != '' && floatval($this->value) < $value) {
 					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $value, $error_html));
 				}
 
@@ -81,7 +81,7 @@
 
 			public function max_value_set_html($error_html, $value) {
 
-				if ($this->form_submitted && floatval($this->value) > $value) {
+				if ($this->form_submitted && $this->value != '' && floatval($this->value) > $value) {
 					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $value, $error_html));
 				}
 
