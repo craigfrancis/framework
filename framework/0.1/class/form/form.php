@@ -613,6 +613,18 @@
 			}
 
 		//--------------------------------------------------
+		// Events
+
+			public function populate() {
+			}
+
+			public function validate() {
+			}
+
+			public function save() {
+			}
+
+		//--------------------------------------------------
 		// Status
 
 			public function submitted() {
@@ -657,6 +669,7 @@
 			public function errors_html() {
 				$this->_post_validation();
 				$errors_flat_html = array();
+				ksort($this->errors_html); // Match order of fields
 				foreach ($this->errors_html as $errors_html) {
 					foreach ($errors_html as $error_html) {
 						$errors_flat_html[] = $error_html;
@@ -714,6 +727,13 @@
 
 					foreach ($this->fields as $field) {
 						$field->_post_validation();
+					}
+
+				//--------------------------------------------------
+				// Extra
+
+					if ($this->form_submitted) {
+						$this->validate();
 					}
 
 				//--------------------------------------------------

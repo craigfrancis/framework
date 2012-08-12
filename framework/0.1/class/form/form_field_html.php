@@ -10,7 +10,7 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($form, $label, $name = NULL) {
+			public function __construct($form, $label = 'html', $name = NULL) {
 				$this->_setup_html($form, $label, $name);
 			}
 
