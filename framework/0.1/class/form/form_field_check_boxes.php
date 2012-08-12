@@ -70,20 +70,12 @@
 
 						} else {
 
-							$this->values = array();
+							$values = request($this->name, $this->form->form_method_get());
 
-							foreach ($this->option_keys as $id => $key) {
-
-								if ($this->re_index_keys) {
-									$name = $this->name . '_'  . $id;
-								} else {
-									$name = $this->name . '_'  . $key;
-								}
-
-								if (request($name, $this->form->form_method_get()) == 'true') {
-									$this->values[] = $id;
-								}
-
+							if (is_array($values)) {
+								$this->values = $this->_values_http_process($values);
+							} else {
+								$this->values = array();
 							}
 
 						}
@@ -177,22 +169,12 @@
 
 						if ($this->form->saved_values_available()) {
 
-							foreach ($this->option_keys as $id => $key) {
-
-								if ($this->re_index_keys) {
-									$name = $this->name . '_'  . $id;
-								} else {
-									$name = $this->name . '_'  . $key;
-								}
-
-								if ($this->form->saved_value_get($name) == 'true') {
-									$this->values_print[] = $id;
-								}
-
+							$values = $this->form->saved_value_get($this->name);
+							if (is_array($values)) {
+								$this->values_print = $this->_values_http_process($values);
 							}
 
 						} else {
-
 
 							foreach (explode(',', $this->form->db_select_value_get($this->db_field_name)) as $value) {
 								$key = array_search($value, ($this->db_field_key == 'key' ? $this->option_keys : $this->option_values));
@@ -217,6 +199,26 @@
 			public function value_hidden_get() {
 				return $this->value_key_get();
 			}
+
+			private function _values_http_process($values) {
+				$output = array();
+				foreach ($values as $value) {
+					if ($this->re_index_keys) {
+						if (isset($this->option_keys[$value])) {
+							$output[] = $value;
+						}
+					} else {
+						$key = array_search($value, $this->option_keys);
+						if ($key !== false && $key !== NULL) {
+							$output[] = $key;
+						}
+					}
+				}
+				return $output;
+			}
+
+		//--------------------------------------------------
+		// Field functions
 
 			public function field_id_by_value_get($value) {
 				$id = array_search($value, $this->option_values);
@@ -332,16 +334,16 @@
 
 				$attributes = array(
 						'type' => 'checkbox',
-						'value' => 'true',
+						'name' => $this->name . '[]',
 						'required' => NULL, // The set of check boxes may be required, but not all of them will be.
 					);
 
 				if ($this->re_index_keys) {
 					$attributes['id'] = $this->id . '_' . $field_id;
-					$attributes['name'] = $this->name . '_' . $field_id;
+					$attributes['value'] = $field_id;
 				} else {
 					$attributes['id'] = $this->id . '_' . $this->option_keys[$field_id];
-					$attributes['name'] = $this->name . '_' . $this->option_keys[$field_id];
+					$attributes['value'] = $this->option_keys[$field_id];
 				}
 
 				if ($this->value_print_get($field_id)) {

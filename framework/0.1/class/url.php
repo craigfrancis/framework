@@ -186,7 +186,10 @@
 					}
 
 					if (count($query) > 0) {
-						$output .= '?' . $this->_query_build($query);
+						$query = $this->_query_build($query);
+						if ($query != '') {
+							$output .= '?' . $query;
+						}
 					}
 
 				//--------------------------------------------------
