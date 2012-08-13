@@ -645,7 +645,7 @@
 						}
 
 						if ($error == 'page_not_found') {
-							error_log('File does not exist: ' . config::get('request.uri'));
+							error_log('File does not exist: ' . config::get('request.uri'), 4);
 						}
 
 						$view_path = APP_ROOT . '/view/error/' . $error . '.ctp';
