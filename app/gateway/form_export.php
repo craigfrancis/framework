@@ -149,6 +149,10 @@
 		$output_php .= '		return isemail($email);' . "\n";
 		$output_php .= '	}' . "\n";
 		$output_php .= "\n";
+		$output_php .= '	function is_assoc($array) {' . "\n";
+		$output_php .= '		return (count(array_filter(array_keys($array), \'is_string\')) > 0); // http://stackoverflow.com/questions/173400' . "\n";
+		$output_php .= '	}' . "\n";
+		$output_php .= "\n";
 		$output_php .= '	function format_british_postcode($postcode) {' . "\n";
 		$output_php .= '		return formatBritishPostcode($postcode);' . "\n";
 		$output_php .= '	}' . "\n";
@@ -259,7 +263,7 @@
 	echo $output_php;
 
 	if ($path_output != NULL) {
-		file_put_contents($path_output, $output_php);
+		// file_put_contents($path_output, $output_php);
 	}
 
 ?>

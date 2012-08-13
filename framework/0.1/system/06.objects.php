@@ -132,7 +132,7 @@
 
 			public function run() {
 
-				$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'setup.php';
+				$include_path = APP_ROOT . '/support/core/setup.php';
 				if (is_file($include_path)) {
 					require_once($include_path);
 				}
@@ -538,9 +538,9 @@
 
 				if (!is_file($layout_path)) {
 
-					$layout_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'layout.ctp';
+					$layout_path = FRAMEWORK_ROOT . '/library/view/layout.ctp';
 
-					resources::head_add_html("\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'layout.css')) . "\n\t" . '</style>');
+					resources::head_add_html("\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(FRAMEWORK_ROOT . '/library/view/layout.css')) . "\n\t" . '</style>');
 
 				}
 
@@ -595,19 +595,6 @@
 
 				config::set('output.error', $error);
 
-				if (!headers_sent()) {
-					if ($error == 'page_not_found') {
-						http_response_code(404);
-					} else if ($error == 'system') {
-						http_response_code(500);
-					}
-				}
-
-				$error_path = APP_ROOT . DS . 'view' . DS . 'error' . DS . $error . '.ctp';
-
-				config::set('view.path', $error_path);
-				config::set('view.folders', array('error', $error));
-
 				config::set('route.path', '/error/' . $error . '/');
 				config::set('route.variables', array());
 
@@ -641,25 +628,38 @@
 				//--------------------------------------------------
 				// Page not found
 
-					if (!is_file($view_path)) {
+					$error = config::get('output.error');
 
-						$error = config::get('output.error');
+					if ($error !== false || !is_file($view_path)) {
 
 						if ($error === false || $error === NULL) {
 							$error = 'page_not_found';
 						}
 
-						if (!headers_sent() && $error == 'page_not_found') {
-							http_response_code(404);
+						if (!headers_sent()) {
+							if ($error == 'page_not_found') {
+								http_response_code(404);
+							} else if ($error == 'system') {
+								http_response_code(500);
+							}
 						}
 
-						$view_path = APP_ROOT . DS . 'view' . DS . 'error' . DS . $error . '.ctp';
+						if ($error == 'page_not_found') {
+							$stderr = fopen('php://stderr', 'w');
+							fwrite($stderr, '[' . date('r') . '] [error] [client ' . config::get('request.ip') . '] File does not exist: ' . config::get('request.uri') . "\n");
+							fclose($stderr);
+						}
+
+						$view_path = APP_ROOT . '/view/error/' . $error . '.ctp';
 						if (!is_file($view_path)) {
-							$view_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'error_' . $error . '.ctp';
+							$view_path = FRAMEWORK_ROOT . '/library/view/error_' . $error . '.ctp';
 						}
 						if (!is_file($view_path)) {
-							$view_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'error_page_not_found.ctp';
+							$view_path = FRAMEWORK_ROOT . '/library/view/error_page_not_found.ctp';
 						}
+
+						config::set('view.path', $view_path);
+						config::set('view.folders', array('error', $error));
 
 					}
 
@@ -678,7 +678,7 @@
 	//--------------------------------------------------
 	// Include
 
-		$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'controller.php';
+		$include_path = APP_ROOT . '/support/core/controller.php';
 		if (is_file($include_path)) {
 			require_once($include_path);
 		}
