@@ -645,9 +645,7 @@
 						}
 
 						if ($error == 'page_not_found') {
-							$stderr = fopen('php://stderr', 'w');
-							fwrite($stderr, '[' . date('r') . '] [error] [client ' . config::get('request.ip') . '] File does not exist: ' . config::get('request.uri') . "\n");
-							fclose($stderr);
+							error_log('File does not exist: ' . config::get('request.uri'));
 						}
 
 						$view_path = APP_ROOT . '/view/error/' . $error . '.ctp';
