@@ -613,18 +613,6 @@
 			}
 
 		//--------------------------------------------------
-		// Events
-
-			public function populate() {
-			}
-
-			public function validate() {
-			}
-
-			public function save() {
-			}
-
-		//--------------------------------------------------
 		// Status
 
 			public function submitted() {
@@ -636,8 +624,16 @@
 			}
 
 			public function valid() {
+
 				$this->_post_validation();
-				return (count($this->errors_html) == 0);
+
+				if (count($this->errors_html) > 0) {
+					config::set('output.error', true); // Error mode
+					return false;
+				} else {
+					return true;
+				}
+
 			}
 
 		//--------------------------------------------------
@@ -727,20 +723,6 @@
 
 					foreach ($this->fields as $field) {
 						$field->_post_validation();
-					}
-
-				//--------------------------------------------------
-				// Extra
-
-					if ($this->form_submitted) {
-						$this->validate();
-					}
-
-				//--------------------------------------------------
-				// Set error mode
-
-					if (count($this->errors_html) > 0) {
-						config::set('output.error', true);
 					}
 
 				//--------------------------------------------------

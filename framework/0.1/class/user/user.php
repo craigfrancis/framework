@@ -49,7 +49,6 @@
 			protected $form = NULL;
 
 			protected $text = array();
-			protected $save_values = array();
 			protected $user_id = 0;
 			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $identification_type = 'email';
@@ -229,14 +228,6 @@
 		//--------------------------------------------------
 		// Login
 
-			protected function _login_validation($user_id) {
-				return true;
-			}
-
-			protected function _login_success() {
-				$this->session->session_create($this->user_id);
-			}
-
 			public function login() {
 
 				//--------------------------------------------------
@@ -248,38 +239,28 @@
 					$password = $form->field_get('password')->value_get();
 
 				//--------------------------------------------------
-				// Process
+				// Validation
 
 					if ($form->valid()) {
+						$result = $this->validate_login($identification, $password);
+					} else {
+						$result = false;
+					}
 
-						$result = $this->auth->verify($identification, $password);
+				//--------------------------------------------------
+				// Process
 
-						if ($result === 'invalid_identification') {
+					if ($form->valid() && $result) {
 
-							$form->error_add($this->text['login_invalid_identification']);
+						$this->user_id = $result;
 
-						} else if ($result === 'invalid_password') {
-
-							$form->error_add($this->text['login_invalid_password']);
-
-						} else {
-
-							$validation = $this->_login_validation($result, $form);
-							if (!$validation) {
-								return false;
-							}
-
-							$this->user_id = $result;
-
-							if ($this->remember_login) {
-								cookie::set($this->cookie_login_last, $identification, '+30 days');
-							}
-
-							$this->_login_success();
-
-							return true;
-
+						if ($this->remember_login) {
+							cookie::set($this->cookie_login_last, $identification, '+30 days');
 						}
+
+						$this->complete_login();
+
+						return true;
 
 					}
 
@@ -297,7 +278,7 @@
 				// be used after register().
 
 					if ($this->user_id == 0) {
-						exit_with_error('This page is only available for members', 'Function call: login_forced');
+						exit_with_error('This is only available for members', 'Function call: login_forced');
 					}
 
 				//--------------------------------------------------
@@ -322,13 +303,19 @@
 				//--------------------------------------------------
 				// Login success
 
-					$this->_login_success();
+					$this->complete_login();
+
+				//--------------------------------------------------
+				// Success
+
+					return true;
 
 			}
 
 			public function logout() {
 				$this->session->logout();
 				$this->user_id = 0;
+				return true;
 			}
 
 		//--------------------------------------------------
@@ -345,9 +332,21 @@
 			public function register() {
 
 				//--------------------------------------------------
+				// Not a user
+
+					if ($this->user_id != 0) {
+						exit_with_error('This page is not available for members', 'Function call: register');
+					}
+
+				//--------------------------------------------------
 				// Form reference
 
 					$form = $this->form_get();
+
+				//--------------------------------------------------
+				// How to set extra db values
+
+					// $form->db_value_set('registered', date('Y-m-d H:i:s'));
 
 				//--------------------------------------------------
 				// Details
@@ -370,8 +369,8 @@
 				//--------------------------------------------------
 				// Additional validation
 
-					$this->register_fields_validate($identification, $password);
-					$this->extra_fields_validate(0);
+					$this->validate_register($identification, $password);
+					$this->validate_extra();
 
 				//--------------------------------------------------
 				// Process
@@ -382,7 +381,10 @@
 
 						$this->auth->password_set($this->user_id, $password);
 
-						return $this->_save();
+						$this->complete_save();
+						$this->complete_register();
+
+						return true;
 
 					} else {
 
@@ -548,17 +550,22 @@
 
 					$form = $this->form_get();
 
-					$this->detail_fields_validate();
-					$this->extra_fields_validate($this->user_id);
+					$this->validate_save();
+					$this->validate_extra();
 
 					if (!$form->valid()) {
 						return false;
 					}
 
 				//--------------------------------------------------
-				// Return the result of the save
+				// Save
 
-					return $this->_save();
+					$this->complete_save();
+
+				//--------------------------------------------------
+				// Success
+
+					return true;
 
 			}
 
@@ -584,7 +591,7 @@
 			//--------------------------------------------------
 			// Populate field values
 
-				public function login_fields_populate() {
+				public function populate_login() {
 
 					//--------------------------------------------------
 					// Nice and simple, identification field
@@ -595,13 +602,13 @@
 
 				}
 
-				public function detail_fields_populate() {
+				public function populate_details() {
 
 					//--------------------------------------------------
 					// Have a user
 
 						if ($this->user_id == 0) {
-							exit_with_error('This page is only available for members', 'Function call: detail_fields_populate');
+							exit_with_error('This page is only available for members', 'Function call: populate_details');
 						}
 
 					//--------------------------------------------------
@@ -616,7 +623,7 @@
 							if ($user_identification !== false) {
 								$form->field_get('identification_new')->value_set($user_identification);
 							} else {
-								exit_with_error('Failed getting user identification', 'Function call: detail_fields_populate');
+								exit_with_error('Failed getting user identification', 'Function call: populate_details');
 							}
 
 						}
@@ -626,7 +633,61 @@
 			//--------------------------------------------------
 			// Validate
 
-				public function detail_fields_validate() {
+				public function validate_login($identification, $password) {
+
+					$form = $this->form_get();
+
+					$result = $this->auth->verify($identification, $password);
+
+					if ($result === 'invalid_identification') {
+
+						$form->error_add($this->text['login_invalid_identification']);
+
+					} else if ($result === 'invalid_password') {
+
+						$form->error_add($this->text['login_invalid_password']);
+
+					} else {
+
+						return $result;
+
+					}
+
+					return false;
+
+				}
+
+				public function validate_register($identification, $password) {
+
+					//--------------------------------------------------
+					// Form reference
+
+						$form = $this->form_get();
+
+					//--------------------------------------------------
+					// Unique identification
+
+						$result = $this->auth->identification_unique($identification);
+						if (!$result) {
+							$form->field_get('identification')->error_add($this->text['register_duplicate_identification']);
+						}
+
+					//--------------------------------------------------
+					// Verification repeat
+
+						if ($form->field_exists('password_repeat')) {
+
+							$password_repeat_ref = $form->field_get('password_repeat');
+
+							if ($password_repeat_ref->value_get() != $password) {
+								$password_repeat_ref->error_add($this->text['register_invalid_password_repeat']);
+							}
+
+						}
+
+				}
+
+				public function validate_save() {
 
 					//--------------------------------------------------
 					// Form reference
@@ -685,43 +746,25 @@
 
 				}
 
-				public function register_fields_validate($identification, $password) {
-
-					//--------------------------------------------------
-					// Form reference
-
-						$form = $this->form_get();
-
-					//--------------------------------------------------
-					// Unique identification
-
-						$result = $this->auth->identification_unique($identification);
-						if (!$result) {
-							$form->field_get('identification')->error_add($this->text['register_duplicate_identification']);
-						}
-
-					//--------------------------------------------------
-					// Verification repeat
-
-						if ($form->field_exists('password_repeat')) {
-
-							$password_repeat_ref = $form->field_get('password_repeat');
-
-							if ($password_repeat_ref->value_get() != $password) {
-								$password_repeat_ref->error_add($this->text['register_invalid_password_repeat']);
-							}
-
-						}
-
-				}
-
-				public function extra_fields_validate($user_id) {
+				public function validate_extra() {
 				}
 
 			//--------------------------------------------------
-			// Save
+			// Result
 
-				protected function _save() {
+				public function complete_login() {
+
+					//--------------------------------------------------
+					// Open session
+
+						$this->session->session_create($this->user_id);
+
+				}
+
+				public function complete_register() {
+				}
+
+				public function complete_save() {
 
 					//--------------------------------------------------
 					// Form reference
@@ -731,7 +774,8 @@
 					//--------------------------------------------------
 					// Update
 
-						$values = array_merge($this->save_values, $this->form->data_db_get());
+						$values = $form->data_db_get();
+
 						if (count($values) > 0) {
 							$this->values_set($values);
 						}
@@ -755,11 +799,6 @@
 						if ($form->field_exists('identification_new')) {
 							$this->auth->identification_set($this->user_id, $form->field_get('identification_new')->value_get());
 						}
-
-					//--------------------------------------------------
-					// Success, in theory
-
-						return true;
 
 				}
 
