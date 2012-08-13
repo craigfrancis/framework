@@ -630,7 +630,7 @@
 
 					$error = config::get('output.error');
 
-					if ($error !== false || !is_file($view_path)) {
+					if (is_string($error) || !is_file($view_path)) {
 
 						if ($error === false || $error === NULL) {
 							$error = 'page_not_found';
