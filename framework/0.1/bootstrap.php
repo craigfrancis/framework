@@ -14,18 +14,14 @@
 //--------------------------------------------------
 // Default paths
 
-	if (!defined('DS')) {
-		define('DS', DIRECTORY_SEPARATOR);
-	}
-
 	if (!defined('ROOT')) {
 		define('ROOT', dirname(dirname(dirname(__FILE__))));
 	}
 
-	if (!defined('APP_ROOT'))        define('APP_ROOT',        ROOT     . DS . 'app');
-	if (!defined('VIEW_ROOT'))       define('VIEW_ROOT',       APP_ROOT . DS . 'view');
-	if (!defined('PUBLIC_ROOT'))     define('PUBLIC_ROOT',     APP_ROOT . DS . 'public');
-	if (!defined('CONTROLLER_ROOT')) define('CONTROLLER_ROOT', APP_ROOT . DS . 'controller');
+	if (!defined('APP_ROOT'))        define('APP_ROOT',        ROOT     . '/app');
+	if (!defined('VIEW_ROOT'))       define('VIEW_ROOT',       APP_ROOT . '/view');
+	if (!defined('PUBLIC_ROOT'))     define('PUBLIC_ROOT',     APP_ROOT . '/public');
+	if (!defined('CONTROLLER_ROOT')) define('CONTROLLER_ROOT', APP_ROOT . '/controller');
 
 //--------------------------------------------------
 // Framework path
@@ -112,12 +108,12 @@
 //--------------------------------------------------
 // Includes
 
-	require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '01.function.php');
-	require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '02.config.php');
-	require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '03.autoload.php');
-	require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '04.database.php');
-	require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '05.debug.php');
-	require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '06.objects.php');
+	require_once(FRAMEWORK_ROOT . '/system/01.function.php');
+	require_once(FRAMEWORK_ROOT . '/system/02.config.php');
+	require_once(FRAMEWORK_ROOT . '/system/03.autoload.php');
+	require_once(FRAMEWORK_ROOT . '/system/04.database.php');
+	require_once(FRAMEWORK_ROOT . '/system/05.debug.php');
+	require_once(FRAMEWORK_ROOT . '/system/06.objects.php');
 
 //--------------------------------------------------
 // Render
@@ -140,7 +136,7 @@
 		//--------------------------------------------------
 		// Routes
 
-			require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '07.routes.php');
+			require_once(FRAMEWORK_ROOT . '/system/07.routes.php');
 
 			if (config::get('debug.level') >= 4) {
 				debug_progress('Routes');
@@ -170,7 +166,7 @@
 			//--------------------------------------------------
 			// Controller
 
-				require_once(FRAMEWORK_ROOT . DS . 'system' . DS . '08.controller.php');
+				require_once(FRAMEWORK_ROOT . '/system/08.controller.php');
 
 				if (config::get('debug.level') >= 4) {
 					debug_progress('Controller');

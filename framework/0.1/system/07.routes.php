@@ -58,10 +58,10 @@
 
 		if (substr($route_path, 0, 11) == '/robots.txt') {
 
-			$robots_path = APP_ROOT . DS . 'view' . DS . 'robots.txt';
+			$robots_path = APP_ROOT . '/view/robots.txt';
 
 			if (!is_file($robots_path)) {
-				$robots_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'robots.txt';
+				$robots_path = FRAMEWORK_ROOT . '/library/view/robots.txt';
 			}
 
 			header('Content-type: text/plain; charset=' . head(config::get('output.charset')));
@@ -82,7 +82,7 @@
 			$favicon_path = config::get('output.favicon_path');
 
 			if (!is_file($favicon_path)) {
-				$favicon_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'favicon.ico';
+				$favicon_path = FRAMEWORK_ROOT . '/library/view/favicon.ico';
 			}
 
 			header('Content-type: image/vnd.microsoft.icon; charset=' . head(config::get('output.charset')));
@@ -100,10 +100,10 @@
 
 		if (substr($route_path, 0, 12) == '/sitemap.xml') {
 
-			$sitemap_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'sitemap.php';
+			$sitemap_path = APP_ROOT . '/support/core/sitemap.php';
 
 			if (!is_file($sitemap_path)) {
-				$sitemap_path = FRAMEWORK_ROOT . DS . 'library' . DS . 'view' . DS . 'sitemap.php';
+				$sitemap_path = FRAMEWORK_ROOT . '/library/view/sitemap.php';
 			}
 
 			header('Content-type: application/xml; charset=' . head(config::get('output.charset')));
@@ -373,7 +373,7 @@
 	$routes = array();
 	$route_variables = array();
 
-	$include_path = APP_ROOT . DS . 'support' . DS . 'core' . DS . 'routes.php';
+	$include_path = APP_ROOT . '/support/core/routes.php';
 	if (is_file($include_path)) {
 		require_once($include_path);
 	}
