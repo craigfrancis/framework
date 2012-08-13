@@ -5,6 +5,8 @@
 		private $values;
 		private $headers;
 		private $cookies;
+		private $login_username;
+		private $login_password;
 		private $request_full;
 		private $response_full;
 		private $response_headers;
@@ -16,6 +18,8 @@
 			$this->values = array();
 			$this->headers = array();
 			$this->cookies = array();
+			$this->login_username = '';
+			$this->login_password = '';
 			$this->request_full = '';
 			$this->response_full = '';
 			$this->response_headers = '';
@@ -38,6 +42,11 @@
 
 		public function cookies_set($cookies) {
 			$this->cookies = $cookies;
+		}
+
+		public function login_set($username, $password) {
+			$this->login_username = $username;
+			$this->login_password = $password;
 		}
 
 		public function exit_on_error_set($exit_on_error) {
@@ -199,7 +208,13 @@
 				// User authorisation
 
 					if ($user != '' && $pass != '') {
+
 						$headers[] = 'Authorization: Basic ' . base64_encode($user . ':' . $pass);
+
+					} else if ($this->login_username != '' && $this->login_password != '') {
+
+						$headers[] = 'Authorization: Basic ' . base64_encode($this->login_username . ':' . $this->login_password);
+
 					}
 
 				//--------------------------------------------------
