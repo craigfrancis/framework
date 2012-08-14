@@ -44,6 +44,7 @@
 			'items_per_page' => 24, // Divisible by 1, 2, 3, 4, 6, 12
 			'items_count' => 0,
 			'base_url' => NULL,
+			'mode' => 'link', // or 'form'
 			'variable' => 'page',
 			'elements' => NULL,
 			'indent_html' => "\n\t\t\t\t",
@@ -71,7 +72,7 @@
 			// Default elements
 
 				if ($this->config['elements'] === NULL) {
-					$this->config['elements'] = array('<p class="pagination">', 'first', 'back', 'links', 'next', 'last', 'extra', '</p>' . "\n");
+					$this->config['elements'] = array('<p class="pagination">', 'hidden', 'first', 'back', 'links', 'next', 'last', 'extra', '</p>' . "\n");
 				}
 
 			//--------------------------------------------------
@@ -122,8 +123,40 @@
 					$this->page_count = 1;
 				}
 
-				if ($this->page_number === NULL || $config == 'variable' || isset($config['variable'])) {
-					$this->page_number_set(isset($_REQUEST[$this->config['variable']]) ? $_REQUEST[$this->config['variable']] : 0);
+				if ($this->page_number === NULL || isset($config['variable'])) { // No known page number yet, or the variable has been changed
+
+					$page_number = (isset($_REQUEST[$this->config['variable']]) ? $_REQUEST[$this->config['variable']] : 0);
+
+					if ($this->config['mode'] == 'form' && isset($_REQUEST[$this->config['variable'] . '_rel'])) {
+
+						$page_relative = html($_REQUEST[$this->config['variable'] . '_rel']);
+
+						if ($page_relative == $this->config['first_html']) {
+
+							$page_number = 1;
+
+						} else if ($page_relative == $this->config['last_html']) {
+
+							$page_number = $this->page_count;
+
+						} else if ($page_relative == $this->config['back_html']) {
+
+							$page_number -= 1;
+
+						} else if ($page_relative == $this->config['next_html']) {
+
+							$page_number += 1;
+
+						} else {
+
+							$page_number = $page_relative;
+
+						}
+
+					}
+
+					$this->page_number_set($page_number);
+
 				}
 
 		}
@@ -159,6 +192,7 @@
 			if ($this->page_number > $this->page_count) {
 				$this->page_number = $this->page_count;
 			}
+
 			if ($this->page_number < 1) {
 				$this->page_number = 1;
 			}
@@ -171,34 +205,50 @@
 
 		public function page_url_get($page_number) {
 
-			if ($this->url === NULL) {
-				if ($this->config['base_url'] !== NULL) {
-					$this->url = new url($this->config['base_url']);
-				} else {
-					$this->url = new url();
-				}
-			}
-
 			if ($page_number >= 1 && $page_number <= $this->page_count) {
+
+				if ($this->url === NULL) {
+					if ($this->config['base_url'] !== NULL) {
+						$this->url = new url($this->config['base_url']);
+					} else {
+						$this->url = new url();
+					}
+				}
+
 				return $this->url->get(array($this->config['variable'] => $page_number));
+
 			} else {
+
 				return NULL;
+
 			}
 
 		}
 
 		public function page_link_get_html($link_html, $page_number = NULL) {
 
-			if ($page_number === NULL) {
-				$page_number = $this->page_number;
+			if ($page_number != $this->page_number) {
+				$url = $this->page_url_get($page_number === NULL ? $this->page_number : $page_number);
+			} else {
+				$url = NULL;
 			}
 
-			$url = $this->page_url_get($page_number);
+			if ($this->config['mode'] == 'form') {
 
-			if ($link_html !== NULL) {
-				return ($url !== NULL ? '<a href="' . html($url) . '">' : '<span>') . $link_html . ($url !== NULL ? '</a>' : '</span>');
+				return '<input type="submit" name="' . html($this->config['variable']) . '_rel" value="' . $link_html . '"' . ($url === NULL ? ' disabled="disabled"' : '') . ' />';
+
+			} else if ($page_number == $this->page_number) {
+
+				return '<strong>' . $link_html . '</strong>';
+
+			} else if ($url === NULL) {
+
+				return '<span>' . $link_html . '</span>';
+
 			} else {
-				return $url;
+
+				return '<a href="' . html($url) . '">' . $link_html . '</a>';
+
 			}
 
 		}
@@ -253,6 +303,7 @@
 						'next' => $nav_links_html['next'],
 						'last' => $nav_links_html['last'],
 						'extra' => $extra_html,
+						'hidden' => ($this->config['mode'] == 'form' ? '<input type="hidden" name="' . html($this->config['variable']) . '" value="' . html($this->page_number) . '" />' : ''),
 					));
 
 		}
@@ -266,6 +317,7 @@
 				// $elements_html['next']
 				// $elements_html['last']
 				// $elements_html['extra']
+				// $elements_html['hidden']
 
 			$html = '';
 
@@ -298,7 +350,7 @@
 
 				if ($this->config['first_html'] != '') {
 
-					$link_html = ($this->page_number <= 1 ? '<span>' . $this->config['first_html'] . '</span>' : $this->page_link_get_html($this->config['first_html'], 1));
+					$link_html = $this->page_link_get_html($this->config['first_html'], 1);
 
 					$nav_links_html['first'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_first">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
@@ -322,7 +374,7 @@
 
 				if ($this->config['last_html'] != '') {
 
-					$link_html = ($this->page_number >= $this->page_count ? '<span>' . $this->config['last_html'] . '</span>' : $this->page_link_get_html($this->config['last_html'], $this->page_count));
+					$link_html = $this->page_link_get_html($this->config['last_html'], $this->page_count);
 
 					$nav_links_html['last'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_last">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
@@ -349,8 +401,13 @@
 				$page_links_html = array();
 
 				for ($i = 1; ($start <= $this->page_count && $i <= $this->config['link_count']); $i++, $start++) {
+
 					$c = ($start == $this->page_number);
-					$page_links_html[] = '<' . html($this->config['link_wrapper_element']) . ' class="pagination_page pagination_page_' . $i . ($c ? ' pagination_current' : '') . '">' . ($c ? '<strong>' : '') . '<a href="' . html($this->page_url_get($start)) . '">' . str_pad($start, $this->config['number_pad'], '0', STR_PAD_LEFT) . '</a>' . ($c ? '</strong>' : '') . '</' . html($this->config['link_wrapper_element']) . '>';
+
+					$link_html = $this->page_link_get_html(str_pad($start, $this->config['number_pad'], '0', STR_PAD_LEFT), $start);
+
+					$page_links_html[] = '<' . html($this->config['link_wrapper_element']) . ' class="pagination_page pagination_page_' . $i . ($c ? ' pagination_current' : '') . '">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
+
 				}
 
 			//--------------------------------------------------
