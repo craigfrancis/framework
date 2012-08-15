@@ -53,6 +53,7 @@
 			private $socket;
 			private $user_agent;
 			private $current_data;
+			private $current_code;
 			private $current_url;
 			private $cookies;
 			private $form;
@@ -71,6 +72,7 @@
 
 				$this->user_agent = NULL;
 				$this->current_data = NULL;
+				$this->current_code = NULL;
 				$this->current_url = NULL;
 				$this->cookies = array();
 				$this->form = NULL;
@@ -89,7 +91,7 @@
 		// Request
 
 			public function get($url) {
-				$this->_send($url);
+				return $this->_send($url);
 			}
 
 		//--------------------------------------------------
@@ -101,6 +103,14 @@
 
 			public function url_set($url) {
 				$this->current_url = $url;
+			}
+
+			public function code_get() {
+				return $this->current_code;
+			}
+
+			public function code_set($code) {
+				$this->current_code = $code;
 			}
 
 			public function data_get() {
@@ -186,7 +196,7 @@
 		// Link support
 
 			public function link_follow($query) {
-				$this->_send($this->link_get_url($query));
+				return $this->_send($this->link_get_url($query));
 			}
 
 			public function link_get_url($query) {
@@ -430,7 +440,7 @@
 				//--------------------------------------------------
 				// Send
 
-					$this->_send($this->form['action'], $post_values, $this->form['method']);
+					return $this->_send($this->form['action'], $post_values, $this->form['method']);
 
 			}
 
@@ -579,6 +589,7 @@
 
 							$this->current_url = $url;
 							$this->current_data = $this->socket->response_data_get();
+							$this->current_code = $this->socket->response_code_get();
 
 							$this->socket->header_add('Referer', $url);
 
@@ -610,7 +621,7 @@
 				//--------------------------------------------------
 				// Success
 
-					return true;
+					return ($this->current_code == 200);
 
 			}
 
