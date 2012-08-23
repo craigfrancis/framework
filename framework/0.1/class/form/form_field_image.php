@@ -227,7 +227,7 @@
 
 						if ($this->value_image_type == NULL) {
 
-							$this->form->_field_error_set_html($this->form_field_uid, $error_html, 'ERROR: Failed getimagesize');
+							$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', 'invalid-image', $error_html), 'ERROR: Failed getimagesize');
 
 						} else {
 
@@ -237,7 +237,7 @@
 							if (in_array('png', $types) && $this->value_image_type == IMAGETYPE_PNG) $valid = true;
 
 							if (!$valid) {
-								$this->form->_field_error_set_html($this->form_field_uid, $error_html, 'ERROR: Non valid type (' . implode(', ', $types) . ')');
+								$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $this->value_image_type, $error_html), 'ERROR: Non valid type (' . implode(', ', $types) . ')');
 							}
 
 						}

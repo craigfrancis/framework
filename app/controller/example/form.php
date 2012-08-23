@@ -188,7 +188,7 @@ exit('Updated?');
 					$field_image->max_height_set('The image must not be more than XXX high.', 300);
 					$field_image->required_height_set('The image must be XXX high.', 300);
 					// $field_image->required_error_set('The image is required.');
-					$field_image->file_type_error_set('The image file has an unrecognised file type.');
+					$field_image->file_type_error_set('The image file has an unrecognised file type (XXX).');
 
 					$field_hear = new form_field_select($form, 'Where did you hear about us');
 					// $field_hear->key_select_set(false);
