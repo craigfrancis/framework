@@ -16,7 +16,7 @@
 
 				$base_mode = true;
 
-				$class_file_name = substr($class_name, 11);
+				$class_file_name = str_replace('_', '-', substr($class_name, 11));
 
 				$paths = array(
 						APP_ROOT . '/support/controller/' . $class_file_name . '.php',
@@ -28,12 +28,12 @@
 				$base_mode = substr($class_name, -5) == '_base';
 
 				if ($base_mode) {
-					$class_file_name = substr($class_name, 0, -5); // Drop base suffix - no file name should use it
+					$class_file_name = str_replace('_', '-', substr($class_name, 0, -5)); // Drop base suffix - no file name should use it
 				} else {
-					$class_file_name = $class_name;
+					$class_file_name = str_replace('_', '-', $class_name);
 				}
 
-				if (($pos = strpos($class_file_name, '_')) !== false) {
+				if (($pos = strpos($class_file_name, '-')) !== false) {
 					$folder = substr($class_file_name, 0, $pos);
 				} else {
 					$folder = $class_file_name;

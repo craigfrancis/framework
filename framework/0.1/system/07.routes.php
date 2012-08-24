@@ -127,14 +127,12 @@
 
 				config::set('output.mode', 'gateway');
 
-				$api_name = str_replace('-', '_', $matches[1]);
-
 				$gateway = new gateway();
 
-				$success = $gateway->run($api_name, $matches[2]);
+				$success = $gateway->run($matches[1], $matches[2]);
 
 				if (!$success) {
-					render_error('page_not_found');
+					render_error('page-not-found');
 				}
 
 				exit();
@@ -371,7 +369,6 @@
 // Process routes
 
 	$routes = array();
-	$route_variables = array();
 
 	$include_path = APP_ROOT . '/support/core/routes.php';
 	if (is_file($include_path)) {
@@ -430,15 +427,6 @@
 			if (preg_match($preg_path, $route_path, $matches)) {
 
 				//--------------------------------------------------
-				// Request variables
-
-					if (isset($route['variables'])) {
-						foreach ($route['variables'] as $var_id => $var_name) {
-							$route_variables[$var_name] = (isset($matches[$var_id + 1]) ? $matches[$var_id + 1] : NULL);
-						}
-					}
-
-				//--------------------------------------------------
 				// New path
 
 					$old_path = $route_path;
@@ -456,10 +444,6 @@
 						$note_html .= '&#xA0; <strong>preg</strong>: ' . html($preg_path) . '<br />';
 						$note_html .= '&#xA0; <strong>replace</strong>: ' . html($route['replace']) . '<br />';
 						$note_html .= '&#xA0; <strong>matches</strong>: ' . html(debug_dump($matches)) . '<br />';
-
-						if (count($route_variables) > 0) {
-							$note_html .= '&#xA0; <strong>variables</strong>: ' . html(debug_dump($route_variables)) . '<br />';
-						}
 
 						debug_note_html($note_html, 'H');
 
@@ -479,8 +463,7 @@
 	}
 
 	config::set('route.path', $route_path);
-	config::set('route.variables', $route_variables);
 
-	unset($route_path, $route_variables, $routes, $route, $id, $path, $method, $preg_path, $matches, $var_name, $var_id, $old_path);
+	unset($route_path, $routes, $route, $id, $path, $method, $preg_path, $matches, $var_name, $var_id, $old_path);
 
 ?>

@@ -26,24 +26,6 @@
 				}
 			}
 
-			public function route_folder_get($id) {
-				$folders = config::get('route.folders');
-				if (isset($folders[$id])) {
-					return $folders[$id];
-				} else {
-					return NULL;
-				}
-			}
-
-			public function route_variable_get($ref) {
-				$variables = config::get('route.variables');
-				if (isset($variables[$ref])) {
-					return $variables[$ref];
-				} else {
-					return NULL;
-				}
-			}
-
 			public function title_set($title_main) {
 
 				$title_prefix = config::get('output.title_prefix');
@@ -593,12 +575,9 @@
 
 			public function render_error($error) {
 
-				config::set('output.error', $error);
-
 				config::set('route.path', '/error/' . $error . '/');
-				config::set('route.variables', array());
-
-				config::set('output.page_ref', 'error_' . $error);
+				config::set('output.error', $error);
+				config::set('output.page_ref', 'error-' . $error);
 
 				$this->render();
 
@@ -610,7 +589,6 @@
 				// Default
 
 					$view_path_default = VIEW_ROOT . '/' . implode('/', config::get('view.folders', array('home'))) . '.ctp';
-					$view_path_default = str_replace('-', '_', $view_path_default); // Match behaviour for controller actions
 
 					config::set_default('view.path', $view_path_default);
 
@@ -633,27 +611,27 @@
 					if (is_string($error) || !is_file($view_path)) {
 
 						if ($error === false || $error === NULL) {
-							$error = 'page_not_found';
+							$error = 'page-not-found';
 						}
 
 						if (!headers_sent()) {
-							if ($error == 'page_not_found') {
+							if ($error == 'page-not-found') {
 								http_response_code(404);
 							} else if ($error == 'system') {
 								http_response_code(500);
 							}
 						}
 
-						if ($error == 'page_not_found') {
+						if ($error == 'page-not-found') {
 							error_log('File does not exist: ' . config::get('request.uri'), 4);
 						}
 
 						$view_path = APP_ROOT . '/view/error/' . $error . '.ctp';
 						if (!is_file($view_path)) {
-							$view_path = FRAMEWORK_ROOT . '/library/view/error_' . $error . '.ctp';
+							$view_path = FRAMEWORK_ROOT . '/library/view/error-' . $error . '.ctp';
 						}
 						if (!is_file($view_path)) {
-							$view_path = FRAMEWORK_ROOT . '/library/view/error_page_not_found.ctp';
+							$view_path = FRAMEWORK_ROOT . '/library/view/error-page-not-found.ctp';
 						}
 
 						config::set('view.path', $view_path);

@@ -237,14 +237,17 @@
 
 			public function request_table_add($values) {
 
-				$domain = config::get('request.domain');
-				if ($domain == '') {
-					$domain = config::get('output.domain'); // CLI
+				$website = config::get('request.domain');
+				if ($website == '') {
+					$website = config::get('output.domain'); // CLI
+				}
+				if ($website != '') {
+					$website = (config::get('request.https') ? 'https' : 'http') . '://' . $website;
 				}
 
 				$request_values = array(
 						'Sent' => date('l jS F Y, g:i:sa'),
-						'Website' => $domain,
+						'Website' => $website,
 						'Request' => config::get('request.uri'),
 						'Referrer' => config::get('request.referrer'),
 						'Remote' => config::get('request.ip'),

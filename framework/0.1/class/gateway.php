@@ -368,7 +368,7 @@
 
 					if ($handle = opendir($gateway_dir)) {
 						while (false !== ($file = readdir($handle))) {
-							if (is_file($gateway_dir . $file) && preg_match('/^([a-zA-Z0-9_]+)\.php$/', $file, $matches)) {
+							if (is_file($gateway_dir . $file) && preg_match('/^([a-zA-Z0-9_\-]+)\.php$/', $file, $matches)) {
 
 								$gateway_urls[$matches[1]] = gateway_url($matches[1]);
 
@@ -389,7 +389,7 @@
 
 					foreach ($gateway_urls as $gateway_name => $gateway_url) {
 						$html .= '
-								<li><a href="' . html($gateway_url) . '">' . html(ref_to_human($gateway_name)) . '</a></li>';
+								<li><a href="' . html($gateway_url) . '">' . html($gateway_name) . '</a></li>';
 					}
 
 					$html .= '
@@ -751,7 +751,7 @@
 				//--------------------------------------------------
 				// Object mode support
 
-					$api_object = $this->api . '_api';
+					$api_object = str_replace('-', '_', $this->api) . '_api';
 
 					if (class_exists($api_object)) {
 						$api = new $api_object($this->api, $this->sub_path, $this->gateway, 'run');

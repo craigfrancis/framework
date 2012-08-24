@@ -21,12 +21,12 @@
 				$table->heading_row_end();
 
 				$table_row = new table_row($table);
-				$table_row->cell_add('Craig Francis');
+				$table_row->cell_add('First Person');
 				$table_row->cell_add('2012-04-01');
 				$table_row->cell_add('Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');
 
 				$table_row = new table_row($table);
-				$table_row->cell_add('Rebz Loggenberg');
+				$table_row->cell_add('Second Person');
 				$table_row->cell_add('2012-04-03');
 				$table_row->cell_add('Consectetur adipisicing elit, sed do eiusmod tempor' . "\n\n" . 'Incididunt ut labore et dolore magna aliqua.');
 

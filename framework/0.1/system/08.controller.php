@@ -6,13 +6,11 @@
 	//--------------------------------------------------
 	// Route folders
 
-		$route_stack = path_to_array(str_replace('-', '_', config::get('route.path')));
+		$route_folders = path_to_array(config::get('route.path'));
 
-		if (count($route_stack) == 0) {
-			$route_stack[] = 'home';
+		if (count($route_folders) == 0) {
+			$route_folders[] = 'home';
 		}
-
-		config::set('route.folders', $route_stack);
 
 	//--------------------------------------------------
 	// Controllers
@@ -32,6 +30,8 @@
 		$action_route_stack_pending = array();
 		$action_method = NULL;
 
+		$route_stack = $route_folders;
+
 		while (($folder = array_shift($route_stack)) !== NULL) {
 
 			//--------------------------------------------------
@@ -49,11 +49,11 @@
 			// Load controller
 
 				$building_path .= '/' . $folder;
-				$building_name .= ($building_name == '' ? '' : '_') . $folder;
+				$building_name .= ($building_name == '' ? '' : '-') . $folder;
 				$building_stack[] = $folder;
 
 				$controller_path = CONTROLLER_ROOT . $building_path . '.php';
-				$controller_name = $building_name . '_controller';
+				$controller_name = str_replace('-', '_', $building_name) . '_controller';
 
 				if (!is_file($controller_path)) {
 					$controller_log[] = $controller_path . ': n/a';
@@ -129,7 +129,7 @@
 
 				$actions = array('action_index' => $route_stack);
 
-				$next_action = reset($route_stack);
+				$next_action = str_replace('-', '_', reset($route_stack));
 				if ($next_action !== false) {
 					$actions['action_' . $next_action] = $route_stack;
 					array_shift($actions['action_' . $next_action]);
@@ -254,7 +254,7 @@
 
 	if ($action_method !== NULL) {
 
-		if (substr(config::get('route.path'), -1) != '/') { // reduce possibility of duplicate content issues
+		if (substr(config::get('route.path'), -1) != '/') { // reduce possibility of duplicate content issues, for a page that exists
 
 			$new_url = new url();
 			$new_url->format_set('full');
@@ -285,14 +285,6 @@
 				$note_html .= '&#xA0; &#xA0; $this->request_folder_get(' . html($id) . '); <span style="color: #999;">// ' . html($value) . '</span><br />' . "\n";
 			}
 
-			foreach (config::get('route.folders') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->route_folder_get(' . html($id) . '); <span style="color: #999;">// ' . html($value) . '</span><br />' . "\n";
-			}
-
-			foreach (config::get('route.variables') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->route_variable_get(\'' . html($id) . '\'); <span style="color: #999;">// ' . html($value) . '</span><br />' . "\n";
-			}
-
 			$note_html .= '&#xA0; &#xA0; $this->view_path_set(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; $this->page_ref_set(\'example_ref\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; $this->title_set(\'Custom page title.\');<br />' . "\n";
@@ -307,7 +299,7 @@
 			$note_html .= '&#xA0; &#xA0; resources::css_add(\'/path/to/file.css\');<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; resources::css_auto();<br />' . "\n";
 			$note_html .= '&#xA0; &#xA0; resources::head_add_html(\'&lt;html&gt;\');<br />' . "\n";
-			$note_html .= '&#xA0; &#xA0; render_error(\'page_not_found\');<br />' . "\n";
+			$note_html .= '&#xA0; &#xA0; render_error(\'page-not-found\');<br />' . "\n";
 
 			debug_note_html($note_html, 'H');
 
@@ -329,7 +321,7 @@
 			debug_note_html('<strong>Action</strong>: Missing', 'H');
 		}
 
-		config::set('view.folders', config::get('route.folders'));
+		config::set('view.folders', $route_folders);
 
 	}
 
