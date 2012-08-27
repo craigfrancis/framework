@@ -88,7 +88,6 @@
 
 	function gateway_url($api_name, $parameters = NULL) {
 
-		$api_name = ref_to_link($api_name);
 		$api_path = config::get('gateway.url') . '/' . urlencode($api_name) . '/';
 
 		if ($parameters !== NULL) {

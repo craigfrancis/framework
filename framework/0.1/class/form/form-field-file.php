@@ -230,6 +230,11 @@
 			public function file_save_to($path) {
 				if ($this->uploaded) {
 
+					$folder = dirname($path);
+					if (!is_dir($folder)) {
+						@mkdir($folder, 0777, true);
+					}
+
 					if (is_file($path) && !is_writable($path)) {
 						exit_with_error('Cannot save file "' . $this->label_html . '", check destination file permissions.', $path);
 					} else if (!is_writable(dirname($path))) {
