@@ -50,7 +50,7 @@
 
 					if ($handle = opendir($this->tasks_dir)) {
 						while (false !== ($file = readdir($handle))) {
-							if (is_file($this->tasks_dir . $file) && preg_match('/^([0-9]+\.)?([a-zA-Z0-9_]+)\.php$/', $file, $matches)) {
+							if (is_file($this->tasks_dir . $file) && preg_match('/^([0-9]+\.)?([a-zA-Z0-9_\-]+)\.php$/', $file, $matches)) {
 
 								$this->task_paths[$matches[2]] = $this->tasks_dir . $file;
 
