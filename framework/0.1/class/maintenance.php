@@ -439,7 +439,7 @@
 
 					$gateway = $this;
 
-					$task_object = $this->task_name . '_task';
+					$task_object = str_replace('-', '_', $this->task_name) . '_task';
 
 					$task_path = $this->maintenance->task_path_get($this->task_name);
 
