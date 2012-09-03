@@ -148,7 +148,7 @@
 
 	$config = array();
 
-	$include_path = APP_ROOT . '/support/core/config.php';
+	$include_path = APP_ROOT . '/config/config.php';
 
 	if (is_file($include_path)) {
 		require_once($include_path);

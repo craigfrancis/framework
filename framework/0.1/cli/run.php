@@ -106,7 +106,7 @@
 		//--------------------------------------------------
 		// Setup folders
 
-			$setup_folder = APP_ROOT . '/support/setup';
+			$config_folder = APP_ROOT . '/config';
 
 			$folders = array(
 				'files' => FILE_ROOT,
@@ -119,7 +119,7 @@
 					$folder_path .= '/';
 				}
 
-				$setup_file = $setup_folder . '/dir.' . safe_file_name($folder_name);
+				$setup_file = $config_folder . '/dir.' . safe_file_name($folder_name) . '.txt';
 
 				if (is_file($setup_file)) {
 
@@ -168,7 +168,7 @@
 		//--------------------------------------------------
 		// Run install script
 
-			$install_path = 'support/core/install.php';
+			$install_path = 'config/install.php';
 			$install_root = APP_ROOT . '/' . $install_path;
 
 			if (is_file($install_root)) {
@@ -185,9 +185,9 @@
 		//--------------------------------------------------
 		// Create setup folder
 
-			$setup_folder = APP_ROOT . '/support/setup';
-			if (!is_dir($setup_folder)) {
-				mkdir($setup_folder);
+			$config_folder = APP_ROOT . '/config';
+			if (!is_dir($config_folder)) {
+				mkdir($config_folder);
 			}
 
 		//--------------------------------------------------
@@ -217,7 +217,7 @@
 					}
 				}
 
-				$setup_file = $setup_folder . '/dir.' . safe_file_name($folder_name);
+				$setup_file = $config_folder . '/dir.' . safe_file_name($folder_name) . '.txt';
 
 				file_put_contents($setup_file, implode("\n", $folder_children));
 
@@ -226,7 +226,7 @@
 		//--------------------------------------------------
 		// Database structure
 
-			file_put_contents($setup_folder . '/database', '');
+			file_put_contents($config_folder . '/database.txt', '');
 
 			// TODO
 
