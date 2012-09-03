@@ -50,7 +50,7 @@
 
 					if ($handle = opendir($this->tasks_dir)) {
 						while (false !== ($file = readdir($handle))) {
-							if (is_file($this->tasks_dir . $file) && preg_match('/^([0-9]+\.)?([a-zA-Z0-9_]+)\.php$/', $file, $matches)) {
+							if (is_file($this->tasks_dir . $file) && preg_match('/^([0-9]+\.)?([a-zA-Z0-9_\-]+)\.php$/', $file, $matches)) {
 
 								$this->task_paths[$matches[2]] = $this->tasks_dir . $file;
 
@@ -439,7 +439,7 @@
 
 					$gateway = $this;
 
-					$task_object = $this->task_name . '_task';
+					$task_object = str_replace('-', '_', $this->task_name) . '_task';
 
 					$task_path = $this->maintenance->task_path_get($this->task_name);
 
