@@ -177,8 +177,8 @@
 								$output .= urlencode($query[$value]) . '/';
 								unset($query[$value]);
 							} else {
-								if (substr($value, 0, 1) == '/') $value = substr($value, 1);
 								if (substr($value, -1) != '/') $value .= '/';
+								if (substr($value, 0, 1) == '/') $value = substr($value, 1);
 								$output .= $value;
 							}
 						}
