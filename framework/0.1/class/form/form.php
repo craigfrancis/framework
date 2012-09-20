@@ -179,7 +179,12 @@
 						$dest = request('dest');
 
 						if ($dest == 'referrer') {
-							$dest = url(config::get('request.referrer'), array('dest' => NULL)); // If the previous page also had a "dest" value, drop it (stop loop)
+							$referrer = config::get('request.referrer');
+							if ($referrer != '') {
+								$dest = url($referrer, array('dest' => NULL)); // If the previous page also had a "dest" value, drop it (stop loop)
+							} else {
+								$dest = NULL; // Not provided, e.g. user re-loaded page
+							}
 						}
 
 						$this->hidden_value_set('dest', $dest);
