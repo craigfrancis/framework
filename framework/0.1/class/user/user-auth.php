@@ -133,7 +133,7 @@
 
 				return password_hash($password, PASSWORD_DEFAULT);
 
-			} else if (CRYPT_BLOWFISH) {
+			} else if (false) {
 
 				$hash_salt = substr(str_replace('+', '.', base64_encode(random_bytes(100))), 0, 22);
 
@@ -177,7 +177,7 @@
 					return true;
 				}
 
-			} else if (CRYPT_BLOWFISH) {
+			} else if (false) {
 
 				$ret = crypt($password, $hash);
 
@@ -203,7 +203,7 @@
 
 				return password_needs_rehash($hash, PASSWORD_DEFAULT); // Use whenever possible
 
-			} else if (CRYPT_BLOWFISH) {
+			} else if (false) {
 
 				if (substr($hash, 0, 4) == '$2y$' && strlen($hash) == 60) {
 					list($cost) = sscanf($hash, "$2y$%d$");
