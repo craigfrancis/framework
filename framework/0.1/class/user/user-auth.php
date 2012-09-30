@@ -140,9 +140,13 @@
 					exit_with_error('Cannot generate password salt', $hash_salt);
 				}
 
-				$hash_format = '$2a$10$' . $hash_salt;
+				if (version_compare(PHP_VERSION, '5.3.7', '>=')) {
+					$hash_format = '$2y$10$';
+				} else {
+					$hash_format = '$2a$10$'; // Not great, but better than nothing.
+				}
 
-				$ret = crypt($password, $hash_format);
+				$ret = crypt($password, ($hash_format . $hash_salt));
 
 				if (!is_string($ret) || strlen($ret) <= 13) {
 					exit_with_error('Error when creating crypt version of password', $hash_format . "\n" . $ret);
@@ -208,9 +212,10 @@
 
 			} else if (CRYPT_BLOWFISH) {
 
-				if (substr($hash, 0, 4) == '$2a$' && strlen($hash) == 60) {
-					list($cost) = sscanf($hash, "$2a$%d$");
-					if ($cost >= 10) {
+				if (strlen($hash) == 60 && preg_match('/^\$2([axy])\$([0-9]+)\$/', $hash, $matches)) {
+					if ($matches[1] != 'y' && version_compare(PHP_VERSION, '5.3.7', '>=')) {
+						return true; // Re-hash with new $2y$ version
+					} else if ($matches[2] >= 10) {
 						return false;
 					}
 				}
