@@ -127,57 +127,98 @@
 
 		}
 
-		public function password_hash($user_id, $password, $db_pass = NULL) {
+		public function password_hash($user_id, $password) {
 
-			//--------------------------------------------------
-			// Split password
+			if (function_exists('password_hash')) {
 
-				$db_hash = '';
-				$db_salt = '';
+				return password_hash($password, PASSWORD_DEFAULT);
 
-				if (preg_match('/^([a-z0-9]{32})-([a-z]{10})$/i', $db_pass, $matches)) {
+			} else if (CRYPT_BLOWFISH) {
 
-					if ($password === NULL) { // DB value check, it matches the required format so no change needed
-						return $db_pass;
+				$hash_salt = substr(str_replace('+', '.', base64_encode(random_bytes(100))), 0, 22);
+
+				$hash_format = '$2y$10$';
+
+				$hash_result = crypt($password, ($hash_format . $hash_salt));
+
+				if (!is_string($hash_result) || strlen($hash_result) <= 13) {
+					exit_with_error('Error when creating crypt version of password', $hash_result);
+				}
+
+				return $hash_result;
+
+			} else {
+
+				$hash_salt = '';
+				for ($k=0; $k<10; $k++) {
+					$hash_salt .= chr(mt_rand(97,122));
+				}
+
+				return md5(md5($user_id) . md5($password) . md5($hash_salt)) . '-' . $hash_salt;
+
+			}
+
+		}
+
+		public function password_verify($user_id, $password, $hash) {
+
+			if (preg_match('/^([a-z0-9]{32})-([a-z]{10})$/i', $hash, $matches)) { // Old hashing method
+
+				$part_hash = $matches[1];
+				$part_salt = $matches[2];
+
+				if (md5(md5($user_id) . md5($password) . md5($part_salt)) == $part_hash) {
+					return true;
+				}
+
+			} else if (function_exists('password_verify')) {
+
+				if (password_verify($password, $hash)) {
+					return true;
+				}
+
+			} else if (CRYPT_BLOWFISH) {
+
+				$ret = crypt($password, $hash);
+
+				if (is_string($ret) && strlen($ret) > 13 && $ret == $hash) {
+					return true;
+				}
+
+			}
+
+			if ($hash != '' && $password == $hash) {
+
+				return true; // Password hasn't been hashed (yet)
+
+			}
+
+			return false;
+
+		}
+
+		public function password_needs_rehash($hash) {
+
+			if (function_exists('password_needs_rehash')) {
+
+				return password_needs_rehash($hash, PASSWORD_DEFAULT); // Use whenever possible
+
+			} else if (CRYPT_BLOWFISH) {
+
+				if (substr($hash, 0, 4) == '$2y$' && strlen($hash) == 60) {
+					list($cost) = sscanf($hash, "$2y$%d$");
+					if ($cost >= 10) {
+						return false;
 					}
-
-					$db_hash = $matches[1];
-					$db_salt = $matches[2];
-
-				} else if ($password === NULL) {
-
-					$password = $db_pass; // DB value check, either a plain text or just a md5() hashed value stored
-
-				} else if ($db_pass !== NULL && $db_pass !== '') { // NULL when setting password for first time, or empty string if unknown user
-
-					exit_with_error('Unrecognised db pass "' . $db_pass . '" for user id "' . $user_id . '"');
-
 				}
 
-			//--------------------------------------------------
-			// No salt provided, so create one
+			} else if (preg_match('/^([a-z0-9]{32})-([a-z]{10})$/i', $hash)) { // Old hashing method
 
-				if ($db_salt == '') {
-					for ($k=0; $k<10; $k++) {
-						$db_salt .= chr(mt_rand(97,122));
-					}
-				}
+				return false;
 
-			//--------------------------------------------------
-			// Generate hash
+			}
 
-				if (strlen($password) != 32) { // DB value may already be hashed, or client side (JS?) may have already MD5'ed the value.
-					$password = md5($password);
-				}
-
-				$return_hash = md5(md5($user_id) . $password . md5($db_salt)); // User ID bind's to account, while salt tries to remain unknown
-
-					// SELECT * FROM user WHERE pass = CONCAT(MD5(CONCAT(MD5(id), MD5("XXX"), MD5(RIGHT(pass, 10)))), RIGHT(pass, 11))
-
-			//--------------------------------------------------
-			// Return
-
-				return $return_hash . '-' . $db_salt;
+			return true;
 
 		}
 
@@ -225,7 +266,7 @@
 			//--------------------------------------------------
 			// Hash password
 
-				$db_pass = $this->password_hash($user_id, $new_password);
+				$db_hash = $this->password_hash($user_id, $new_password);
 
 			//--------------------------------------------------
 			// Update
@@ -234,7 +275,7 @@
 								' . $db->escape_field($this->db_table_name) . '
 							SET
 								' . $db->escape_field($this->db_table_fields['edited']) . ' = "' . $db->escape(date('Y-m-d H:i:s')) . '",
-								' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($db_pass) . '"
+								' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($db_hash) . '"
 							WHERE
 								' . $this->db_where_sql . ' AND
 								' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($user_id) . '" AND
@@ -389,32 +430,10 @@
 
 				if ($row = $db->fetch_assoc()) {
 					$db_id = $row['id'];
-					$db_pass = $row['password']; // Blank password (disabled account) excluded in query
+					$db_hash = $row['password']; // Blank password (disabled account) excluded in query
 				} else {
 					$db_id = 0;
-					$db_pass = '';
-				}
-
-			//--------------------------------------------------
-			// Check the db password has been hashed
-
-				$new_pass = $this->password_hash($db_id, NULL, $db_pass);
-
-				if ($db_id > 0 && $new_pass != $db_pass) {
-
-					$db_pass = $new_pass;
-
-					$db->query('UPDATE
-									' . $db->escape_field($this->db_table_name) . '
-								SET
-									' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($db_pass) . '"
-								WHERE
-									' . $this->db_where_sql . ' AND
-									' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($db_id) . '" AND
-									' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"
-								LIMIT
-									1');
-
+					$db_hash = '';
 				}
 
 			//--------------------------------------------------
@@ -424,14 +443,31 @@
 			// don't want to return early, as that would show
 			// the account exists.
 
-				$input_hash = $this->password_hash($db_id, $password, $db_pass);
+				$valid = $this->password_verify($db_id, $password, $db_hash);
 
 			//--------------------------------------------------
 			// Result
 
 				if ($db_id > 0) {
 
-					if ($input_hash == $db_pass) {
+					if ($valid == $db_hash) {
+
+						if ($this->password_needs_rehash($db_hash)) {
+
+							$new_hash = $this->password_hash($db_id, $password);
+
+							$db->query('UPDATE
+											' . $db->escape_field($this->db_table_name) . '
+										SET
+											' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($new_hash) . '"
+										WHERE
+											' . $this->db_where_sql . ' AND
+											' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($db_id) . '" AND
+											' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"
+										LIMIT
+											1');
+
+						}
 
 						return $db_id;
 
