@@ -140,7 +140,7 @@
 					exit_with_error('Cannot generate password salt', $hash_salt);
 				}
 
-				$hash_format = '$2y$10$' . $hash_salt;
+				$hash_format = '$2a$10$' . $hash_salt;
 
 				$ret = crypt($password, $hash_format);
 
@@ -208,8 +208,8 @@
 
 			} else if (CRYPT_BLOWFISH) {
 
-				if (substr($hash, 0, 4) == '$2y$' && strlen($hash) == 60) {
-					list($cost) = sscanf($hash, "$2y$%d$");
+				if (substr($hash, 0, 4) == '$2a$' && strlen($hash) == 60) {
+					list($cost) = sscanf($hash, "$2a$%d$");
 					if ($cost >= 10) {
 						return false;
 					}
