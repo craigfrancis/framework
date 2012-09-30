@@ -145,7 +145,7 @@
 				$hash_result = crypt($password, ($hash_format . $hash_salt));
 
 				if (!is_string($hash_result) || strlen($hash_result) <= 13) {
-					exit_with_error('Error when creating crypt version of password', $hash_result);
+					exit_with_error('Error when creating crypt version of password', $hash_result . "\n" . $hash_format);
 				}
 
 				return $hash_result;
