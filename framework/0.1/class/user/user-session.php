@@ -146,8 +146,7 @@
 				$db->query('UPDATE
 								' . $db->escape_field($this->db_table_name) . '
 							SET
-								pass_hash = "' . $db->escape($pass_hash) . '",
-								pass_salt = "' . $db->escape($pass_salt) . '"
+								pass = "' . $db->escape($pass_hash . '-' . $pass_salt) . '"
 							WHERE
 								' . $this->db_where_sql . ' AND
 								user_id = user_id AND
@@ -254,8 +253,7 @@
 
 					$db->query('SELECT
 									user_id,
-									pass_hash,
-									pass_salt,
+									pass,
 									ip
 								FROM
 									' . $db->escape_field($this->db_table_name) . '
@@ -266,9 +264,15 @@
 
 						$ip_test = ($this->lock_to_ip == false || config::get('request.ip') == $row['ip']);
 
-						$pass_hash = md5(md5($session_id) . md5($row['user_id']) . md5($session_pass) . md5($row['pass_salt']));
+						if (preg_match('/^([a-z0-9]{32})-([a-z]{10})$/i', $row['pass'], $matches)) { // Old hashing method
+							$db_hash = $matches[1];
+							$db_salt = $matches[2];
+						} else {
+							$db_hash = '';
+							$db_salt = '';
+						}
 
-						if ($ip_test && $pass_hash == $row['pass_hash']) {
+						if ($ip_test && $db_hash != '' && $db_hash == md5(md5($session_id) . md5($row['user_id']) . md5($session_pass) . md5($db_salt))) {
 
 							//--------------------------------------------------
 							// Update the session - keep active

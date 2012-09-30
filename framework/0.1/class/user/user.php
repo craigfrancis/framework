@@ -824,8 +824,7 @@
 		debug_require_db_table('user_session', '
 				CREATE TABLE [TABLE] (
 					id int(11) NOT NULL AUTO_INCREMENT,
-					pass_hash varchar(32) NOT NULL,
-					pass_salt varchar(10) NOT NULL,
+					pass tinytext NOT NULL,
 					user_id int(11) NOT NULL,
 					ip tinytext NOT NULL,
 					created datetime NOT NULL,
