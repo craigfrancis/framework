@@ -136,6 +136,9 @@
 			} else if (CRYPT_BLOWFISH) {
 
 				$hash_salt = substr(str_replace('+', '.', base64_encode(random_bytes(100))), 0, 22);
+				if (strlen($hash_salt) != 22) {
+					exit_with_error('Cannot generate password salt', $hash_salt);
+				}
 
 				$hash_format = '$2y$10$';
 
