@@ -255,7 +255,7 @@
 
 						$ip_test = ($this->lock_to_ip == false || config::get('request.ip') == $row['ip']);
 
-						if (preg_match('/^([a-z0-9]{32})-([a-z]{10})$/i', $row['pass'], $matches)) { // Old hashing method
+						if (preg_match('/^([a-z0-9]{32})-([a-z]{10})$/i', $row['pass'], $matches)) {
 							$db_hash = $matches[1];
 							$db_salt = $matches[2];
 						} else {
