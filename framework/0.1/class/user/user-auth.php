@@ -140,15 +140,15 @@
 					exit_with_error('Cannot generate password salt', $hash_salt);
 				}
 
-				$hash_format = '$2y$10$';
+				$hash_format = '$2y$10$' . $hash_salt;
 
-				$hash_result = crypt($password, ($hash_format . $hash_salt));
+				$ret = crypt($password, $hash_format);
 
-				if (!is_string($hash_result) || strlen($hash_result) <= 13) {
-					exit_with_error('Error when creating crypt version of password', $hash_result . "\n" . $hash_format);
+				if (!is_string($ret) || strlen($ret) <= 13) {
+					exit_with_error('Error when creating crypt version of password', $hash_format . "\n" . $ret);
 				}
 
-				return $hash_result;
+				return $ret;
 
 			} else {
 
