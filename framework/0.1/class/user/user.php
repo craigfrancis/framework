@@ -116,6 +116,7 @@
 							'new_pass_invalid_token' => 'The link to reset your password is incorrect or has expired.',
 							'login_invalid_identification' => 'Invalid log-in details.',
 							'login_invalid_password' => 'Invalid log-in details.',
+							'login_frequent_failure' => 'Too many failed logins.',
 							'save_details_invalid_password' => 'Your current password is incorrect.',
 							'save_details_invalid_new_password_repeat' => 'Your new passwords do not match.',
 							'save_details_invalid_new_identification' => 'The email address supplied is already in use.',
@@ -646,6 +647,10 @@
 					} else if ($result === 'invalid_password') {
 
 						$form->error_add($this->text['login_invalid_password']);
+
+					} else if ($result === 'frequent_failure') {
+
+						$form->error_add($this->text['login_frequent_failure']);
 
 					} else {
 

@@ -126,7 +126,17 @@
 			//--------------------------------------------------
 			// Create a new session
 
-				$session_id = $this->_session_create_record($user_id);
+				$db->insert($this->db_table_name, array(
+						'id' => '',
+						'pass' => '',
+						'user_id' => $user_id,
+						'ip' => config::get('request.ip'),
+						'created' => date('Y-m-d H:i:s'),
+						'last_used' => date('Y-m-d H:i:s'),
+						'deleted' => '0000-00-00 00:00:00',
+					));
+
+				$session_id = $db->insert_id();
 
 			//--------------------------------------------------
 			// Create the authentication token
@@ -160,26 +170,6 @@
 
 				session::set($session_name . '_id', $session_id);
 				session::set($session_name . '_pass', $pass_orig); // Password support added so an "auth_token" can be passed to the user.
-
-		}
-
-		protected function _session_create_record($user_id) {
-
-			//--------------------------------------------------
-			// Create a new session
-
-				$db = $this->user_obj->db_get();
-
-				$db->insert($this->db_table_name, array(
-						'id' => '',
-						'user_id' => $user_id,
-						'ip' => config::get('request.ip'),
-						'created' => date('Y-m-d H:i:s'),
-						'last_used' => date('Y-m-d H:i:s'),
-						'deleted' => '0000-00-00 00:00:00',
-					));
-
-				return $db->insert_id();
 
 		}
 
@@ -244,6 +234,7 @@
 
 					$where_sql = $this->db_where_sql . ' AND
 									user_id = user_id AND
+									pass != "" AND
 									id = "' . $db->escape($session_id) . '" AND
 									deleted = "0000-00-00 00:00:00"';
 

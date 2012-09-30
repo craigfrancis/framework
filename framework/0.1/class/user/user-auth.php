@@ -9,6 +9,7 @@
 
 		protected $db_table_name;
 		protected $db_table_reset_name;
+		protected $db_table_session_name;
 		protected $db_table_fields;
 		protected $db_where_sql;
 
@@ -28,6 +29,7 @@
 
 				$this->db_table_name = DB_PREFIX . 'user';
 				$this->db_table_reset_name = DB_PREFIX . 'user_new_password';
+				$this->db_table_session_name = DB_PREFIX . 'user_session';
 
 				$this->db_where_sql = 'true';
 
@@ -454,42 +456,84 @@
 				$valid = $this->password_verify($db_id, $password, $db_hash);
 
 			//--------------------------------------------------
+			// Too many failed logins?
+
+				$db->query('SELECT
+								created
+							FROM
+								' . $db->escape_field($this->db_table_session_name) . '
+							WHERE
+								(
+									user_id = "' . $db->escape($db_id) . '" OR
+									ip = "' . $db->escape(config::get('request.ip')) . '"
+								) AND
+								pass = "" AND
+								created > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-30 minutes'))) . '" AND
+								deleted = "0000-00-00 00:00:00"');
+
+				if ($db->num_rows() >= 5) {
+					$error = 'frequent_failure';
+				} else {
+					$error = '';
+				}
+
+			//--------------------------------------------------
 			// Result
 
-				if ($db_id > 0) {
+				if ($error == '') {
+					if ($db_id > 0) {
 
-					if ($valid == $db_hash) {
+						if ($valid == $db_hash) {
 
-						if ($this->password_needs_rehash($db_hash)) {
+							if ($this->password_needs_rehash($db_hash)) {
 
-							$new_hash = $this->password_hash($db_id, $password);
+								$new_hash = $this->password_hash($db_id, $password);
 
-							$db->query('UPDATE
-											' . $db->escape_field($this->db_table_name) . '
-										SET
-											' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($new_hash) . '"
-										WHERE
-											' . $this->db_where_sql . ' AND
-											' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($db_id) . '" AND
-											' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"
-										LIMIT
-											1');
+								$db->query('UPDATE
+												' . $db->escape_field($this->db_table_name) . '
+											SET
+												' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($new_hash) . '"
+											WHERE
+												' . $this->db_where_sql . ' AND
+												' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($db_id) . '" AND
+												' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"
+											LIMIT
+												1');
+
+							}
+
+							return $db_id; // Success
+
+						} else {
+
+							$error = 'invalid_password';
 
 						}
 
-						return $db_id;
-
 					} else {
 
-						return 'invalid_password';
+						$error = 'invalid_identification';
 
 					}
-
-				} else {
-
-					return 'invalid_identification';
-
 				}
+
+			//--------------------------------------------------
+			// Record failure
+
+				$db->insert($this->db_table_session_name, array(
+						'id' => '',
+						'pass' => '', // Will remain blank to record failure
+						'user_id' => $db_id,
+						'ip' => config::get('request.ip'),
+						'created' => date('Y-m-d H:i:s'),
+						'last_used' => date('Y-m-d H:i:s'),
+						'deleted' => '0000-00-00 00:00:00',
+					));
+
+			//--------------------------------------------------
+			// Return error
+
+				return $error;
 
 		}
 
