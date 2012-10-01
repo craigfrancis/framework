@@ -34,6 +34,8 @@
 				$values_insert = $values_update;
 				$values_insert['created'] = date('Y-m-d H:i:s');
 
+				$db = $this->db_get();
+
 				$db->insert(DB_PREFIX . 'system_lock_worklist', $values_insert, $values_update);
 
 			}
