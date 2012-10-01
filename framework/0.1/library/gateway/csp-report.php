@@ -36,7 +36,7 @@
 
 				$db = $this->db_get();
 
-				$db->insert(DB_PREFIX . 'system_lock_worklist', $values_insert, $values_update);
+				$db->insert(DB_PREFIX . 'report_csp', $values_insert, $values_update);
 
 			}
 
