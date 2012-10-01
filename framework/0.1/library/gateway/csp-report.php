@@ -34,9 +34,11 @@
 				$values_insert = $values_update;
 				$values_insert['created'] = date('Y-m-d H:i:s');
 
-				$db = $this->db_get();
+				exit_with_error('Content-Security-Policy failure', var_export($data_array, true) . "\n" . var_export($values_insert, true));
 
-				$db->insert(DB_PREFIX . 'report_csp', $values_insert, $values_update);
+				// $db = $this->db_get();
+                // 
+				// $db->insert(DB_PREFIX . 'report_csp', $values_insert, $values_update);
 
 			}
 
