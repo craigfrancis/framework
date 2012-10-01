@@ -310,4 +310,32 @@
 		mb_detect_order(array('UTF-8', 'ASCII'));
 	}
 
+//--------------------------------------------------
+// Content security policy
+
+	$csp = config::get('output.csp_directives');
+	if (is_array($csp)) {
+
+		if (!isset($csp['report-uri'])) {
+			$csp['report-uri'] = '/a/api/csp-report/';
+		}
+
+		$output = array();
+		foreach ($csp as $directive => $value) {
+			$output[] = $directive . ' ' . str_replace('"', "'", $value);
+		}
+
+		$header = 'X-Content-Security-Policy';
+		if (SERVER == 'live') {
+			$header .= '-Report-Only';
+		}
+
+		exit($header . ': ' . implode('; ', $output));
+
+		unset($output, $header);
+
+	}
+
+	unset($csp);
+
 ?>
