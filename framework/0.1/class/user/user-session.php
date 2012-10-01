@@ -235,7 +235,7 @@
 
 						$ip_test = ($this->lock_to_ip == false || config::get('request.ip') == $row['ip']);
 
-						if (preg_match('/^([a-z0-9]{32})-([a-z]{10})$/i', $row['pass'], $matches)) {
+						if (preg_match('/^([a-z0-9]{32})-([a-z]{10})$/i', $row['pass'], $matches)) { // TODO: Remove
 							if ($matches[1] == md5(md5($session_id) . md5($row['user_id']) . md5($session_pass) . md5($matches[2]))) {
 								$row['pass'] = $session_pass;
 							}

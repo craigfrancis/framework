@@ -19,7 +19,7 @@
 			$record = true;
 
 			if ($report['blocked-uri'] == 'http://nikkomsgchannel') $record = false;
-			if (substr($report['blocked-uri'], 0, 19) == 'chrome-extension://') $record = false;
+			//if (substr($report['blocked-uri'], 0, 19) == 'chrome-extension://') $record = false;
 
 			if ($record) {
 
@@ -28,9 +28,9 @@
 				$values_update = array(
 					'blocked_uri'        => $report['blocked-uri'],
 					'violated_directive' => $report['violated-directive'],
-					'original_policy'    => $report['original-policy'],
 					'referrer'           => $report['referrer'],
 					'document_uri'       => $report['document-uri'],
+					'original_policy'    => $report['original-policy'],
 					'json'               => $data_str,
 					'updated'            => date('Y-m-d H:i:s'),
 				);

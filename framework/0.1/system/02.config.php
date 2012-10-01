@@ -310,35 +310,4 @@
 		mb_detect_order(array('UTF-8', 'ASCII'));
 	}
 
-//--------------------------------------------------
-// Content security policy
-
-	$csp = config::get('output.csp_directives');
-	if (is_array($csp)) {
-
-		if (!isset($csp['report-uri'])) {
-			$csp['report-uri'] = '/a/api/csp-report/';
-		}
-
-		$output = array();
-		foreach ($csp as $directive => $value) {
-			$output[] = $directive . ' ' . str_replace('"', "'", $value);
-		}
-
-		// $header = 'Content-Security-Policy';
-		// $header = 'X-Content-Security-Policy';
-		$header = 'X-WebKit-CSP'; // For now only Chrome supports 'unsafe-inline' - https://bugzilla.mozilla.org/show_bug.cgi?id=763879
-
-		if (SERVER == 'live') {
-			$header .= '-Report-Only';
-		}
-
-		// header($header . ': ' . implode('; ', $output));
-
-		unset($output, $header);
-
-	}
-
-	unset($csp);
-
 ?>
