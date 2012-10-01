@@ -8,7 +8,7 @@
 //   http://www.openwall.com/phpass/
 //
 // Function definitions based on:
-//   TODO
+//   https://wiki.php.net/rfc/password_hash
 //
 // Additional notes:
 //   https://github.com/ircmaxell/password_compat/blob/master/lib/password.php
@@ -23,7 +23,7 @@
 
 			if (function_exists('password_hash')) {
 
-				return password_hash($password); // TODO: Check if second argument should be 'PASSWORD_DEFAULT'
+				return password_hash($password, PASSWORD_DEFAULT);
 
 			} else if (CRYPT_USE && CRYPT_BLOWFISH) {
 
