@@ -333,7 +333,7 @@
 			$header .= '-Report-Only';
 		}
 
-		header($header . ': ' . implode('; ', $output));
+		// header($header . ': ' . implode('; ', $output));
 
 		unset($output, $header);
 
