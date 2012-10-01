@@ -364,14 +364,19 @@
 				// Gateways
 
 					$gateway_urls = array();
-					$gateway_dir = APP_ROOT . '/gateway/';
+					$gateway_dirs = array(
+							FRAMEWORK_ROOT . '/library/gateway/',
+							APP_ROOT . '/gateway/',
+						);
 
-					if ($handle = opendir($gateway_dir)) {
-						while (false !== ($file = readdir($handle))) {
-							if (is_file($gateway_dir . $file) && preg_match('/^([a-zA-Z0-9_\-]+)\.php$/', $file, $matches)) {
+					foreach ($gateway_dirs as $gateway_dir) {
+						if ($handle = opendir($gateway_dir)) {
+							while (false !== ($file = readdir($handle))) {
+								if (is_file($gateway_dir . $file) && preg_match('/^([a-zA-Z0-9_\-]+)\.php$/', $file, $matches)) {
 
-								$gateway_urls[$matches[1]] = gateway_url($matches[1]);
+									$gateway_urls[$matches[1]] = gateway_url($matches[1]);
 
+								}
 							}
 						}
 					}
@@ -741,6 +746,10 @@
 					$gateway = $this;
 
 					$api_path = APP_ROOT . '/gateway/' . safe_file_name($this->api) . '.php';
+
+					if (!is_file($api_path)) {
+						$api_path = FRAMEWORK_ROOT . '/library/gateway/' . safe_file_name($this->api) . '.php';
+					}
 
 					if (is_file($api_path)) {
 						require_once($api_path);
