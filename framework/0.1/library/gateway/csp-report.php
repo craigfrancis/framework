@@ -18,8 +18,8 @@
 
 			$report = true;
 
-			if ($report['blocked-uri'] == 'http://nikkomsgchannel') $report = false;
-			if (substr($report['blocked-uri'], 0, 19) == 'chrome-extension://') $report = false;
+// 			if ($report['blocked-uri'] == 'http://nikkomsgchannel') $report = false;
+// 			if (substr($report['blocked-uri'], 0, 19) == 'chrome-extension://') $report = false;
 
 			if ($report) {
 
