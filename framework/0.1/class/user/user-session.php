@@ -124,11 +124,16 @@
 				}
 
 			//--------------------------------------------------
+			// Session pass
+
+				$session_pass = md5(uniqid(mt_rand(), true));
+
+			//--------------------------------------------------
 			// Create a new session
 
 				$db->insert($this->db_table_name, array(
 						'id' => '',
-						'pass' => '',
+						'pass' => $session_pass, // Using CRYPT_BLOWFISH in password::hash(), makes page loading too slow!
 						'user_id' => $user_id,
 						'ip' => config::get('request.ip'),
 						'created' => date('Y-m-d H:i:s'),
@@ -139,37 +144,12 @@
 				$session_id = $db->insert_id();
 
 			//--------------------------------------------------
-			// Create the authentication token
-
-				$pass_orig = md5(uniqid(mt_rand(), true));
-
-				$pass_salt = '';
-				for ($k=0; $k<10; $k++) {
-					$pass_salt .= chr(mt_rand(97,122));
-				}
-
-				$pass_hash = md5(md5($session_id) . md5($user_id) . md5($pass_orig) . md5($pass_salt));
-
-			//--------------------------------------------------
-			// Set the session password
-
-				$db->query('UPDATE
-								' . $db->escape_field($this->db_table_name) . '
-							SET
-								pass = "' . $db->escape($pass_hash . '-' . $pass_salt) . '"
-							WHERE
-								' . $this->db_where_sql . ' AND
-								user_id = user_id AND
-								id = "' . $db->escape($session_id) . '" AND
-								deleted = "0000-00-00 00:00:00"');
-
-			//--------------------------------------------------
 			// Store
 
 				$session_name = $this->user_obj->session_name_get();
 
 				session::set($session_name . '_id', $session_id);
-				session::set($session_name . '_pass', $pass_orig); // Password support added so an "auth_token" can be passed to the user.
+				session::set($session_name . '_pass', $session_pass); // Password support added so an "auth_token" can be passed to the user.
 
 		}
 
@@ -256,14 +236,12 @@
 						$ip_test = ($this->lock_to_ip == false || config::get('request.ip') == $row['ip']);
 
 						if (preg_match('/^([a-z0-9]{32})-([a-z]{10})$/i', $row['pass'], $matches)) {
-							$db_hash = $matches[1];
-							$db_salt = $matches[2];
-						} else {
-							$db_hash = '';
-							$db_salt = '';
+							if ($matches[1] == md5(md5($session_id) . md5($row['user_id']) . md5($session_pass) . md5($matches[2]))) {
+								$row['pass'] = $session_pass;
+							}
 						}
 
-						if ($ip_test && $db_hash != '' && $db_hash == md5(md5($session_id) . md5($row['user_id']) . md5($session_pass) . md5($db_salt))) {
+						if ($ip_test && $row['pass'] != '' && $session_pass == $row['pass']) {
 
 							//--------------------------------------------------
 							// Update the session - keep active

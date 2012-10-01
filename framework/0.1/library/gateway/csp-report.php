@@ -2,49 +2,49 @@
 
 	$data_str = file_get_contents('php://input');
 
-	if (substr($data_str, 0, 1) == '{') {
+	if ($data_str != '') {
 
 		$data_array = json_decode($data_str, true);
 
 		if (isset($data_array['csp-report'])) {
 
 			$report = array_merge(array(
+					'blocked-uri'        => '',
 					'violated-directive' => '',
 					'original-policy'    => '',
-					'blocked-uri'        => '',
 					'referrer'           => '',
 					'document-uri'       => '',
 				), $data_array['csp-report']);
 
-			$report = true;
+			$record = true;
 
-// 			if ($report['blocked-uri'] == 'http://nikkomsgchannel') $report = false;
-// 			if (substr($report['blocked-uri'], 0, 19) == 'chrome-extension://') $report = false;
+			if ($report['blocked-uri'] == 'http://nikkomsgchannel') $record = false;
+			if (substr($report['blocked-uri'], 0, 19) == 'chrome-extension://') $record = false;
 
-			if ($report) {
+			if ($record) {
+
+				$db = $this->db_get();
 
 				$values_update = array(
+					'blocked_uri'        => $report['blocked-uri'],
 					'violated_directive' => $report['violated-directive'],
 					'original_policy'    => $report['original-policy'],
-					'blocked_uri'        => $report['blocked-uri'],
 					'referrer'           => $report['referrer'],
 					'document_uri'       => $report['document-uri'],
+					'json'               => $data_str,
+					'updated'            => date('Y-m-d H:i:s'),
 				);
 
 				$values_insert = $values_update;
 				$values_insert['created'] = date('Y-m-d H:i:s');
 
-				exit_with_error('Content-Security-Policy failure', var_export($data_array, true) . "\n" . var_export($values_insert, true));
-
-				// $db = $this->db_get();
-                // 
-				// $db->insert(DB_PREFIX . 'report_csp', $values_insert, $values_update);
+				$db->insert(DB_PREFIX . 'report_csp', $values_insert, $values_update);
 
 			}
 
 		} else {
 
-			exit_with_error('Content-Security-Policy failure', var_export($data_array, true));
+			exit_with_error('Content-Security-Policy failure', $data_str);
 
 		}
 
