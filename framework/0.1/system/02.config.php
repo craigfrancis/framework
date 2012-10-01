@@ -325,12 +325,15 @@
 			$output[] = $directive . ' ' . str_replace('"', "'", $value);
 		}
 
-		$header = 'X-Content-Security-Policy';
+		// $header = 'Content-Security-Policy';
+		// $header = 'X-Content-Security-Policy';
+		$header = 'X-WebKit-CSP'; // For now only Chrome supports 'unsafe-inline' - https://bugzilla.mozilla.org/show_bug.cgi?id=763879
+
 		if (SERVER == 'live') {
 			$header .= '-Report-Only';
 		}
 
-		exit($header . ': ' . implode('; ', $output));
+		header($header . ': ' . implode('; ', $output));
 
 		unset($output, $header);
 
