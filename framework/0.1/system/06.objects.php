@@ -490,6 +490,9 @@
 
 							$output = array();
 							foreach ($csp as $directive => $value) {
+								if (is_array($value)) {
+									$value = implode(' ', $value);
+								}
 								$output[] = $directive . ' ' . str_replace('"', "'", $value);
 							}
 
