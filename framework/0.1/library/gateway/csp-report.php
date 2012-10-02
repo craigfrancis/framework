@@ -32,6 +32,7 @@
 					'document_uri'       => $report['document-uri'],
 					'original_policy'    => $report['original-policy'],
 					'json'               => $data_str,
+					'ip'                 => config::get('request.ip'),
 					'updated'            => date('Y-m-d H:i:s'),
 				);
 
