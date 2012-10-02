@@ -417,15 +417,21 @@
 			//--------------------------------------------------
 			// Record failure
 
-				$db->insert($this->db_table_session_name, array(
-						'id' => '',
-						'pass' => '', // Will remain blank to record failure
-						'user_id' => $db_id,
-						'ip' => config::get('request.ip'),
-						'created' => date('Y-m-d H:i:s'),
-						'last_used' => date('Y-m-d H:i:s'),
-						'deleted' => '0000-00-00 00:00:00',
-					));
+				$failure_ip = config::get('request.ip');
+
+				if (!in_array($failure_ip, config::get('user.ip_whitelist', array()))) {
+
+					$db->insert($this->db_table_session_name, array(
+							'id' => '',
+							'pass' => '', // Will remain blank to record failure
+							'user_id' => $db_id,
+							'ip' => $failure_ip,
+							'created' => date('Y-m-d H:i:s'),
+							'last_used' => date('Y-m-d H:i:s'),
+							'deleted' => '0000-00-00 00:00:00',
+						));
+
+				}
 
 			//--------------------------------------------------
 			// Return error

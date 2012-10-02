@@ -1,5 +1,7 @@
 <?php
 
+		// http://www.html5rocks.com/en/tutorials/security/content-security-policy/
+
 	$data_str = file_get_contents('php://input');
 
 	if ($data_str != '') {
@@ -18,7 +20,7 @@
 
 			$record = true;
 
-			if ($report['blocked-uri'] == 'http://nikkomsgchannel') $record = false;
+			//if ($report['blocked-uri'] == 'http://nikkomsgchannel') $record = false;
 			//if (substr($report['blocked-uri'], 0, 19) == 'chrome-extension://') $record = false;
 
 			if ($record) {
