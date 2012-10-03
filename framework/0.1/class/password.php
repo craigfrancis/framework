@@ -15,7 +15,7 @@
 //
 //--------------------------------------------------
 
-	define('CRYPT_USE', false); // TODO: Remove
+	define('CRYPT_USE', true); // TODO: Remove
 
 	class password_base extends check {
 
