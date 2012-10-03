@@ -832,6 +832,7 @@
 					pass tinytext NOT NULL,
 					user_id int(11) NOT NULL,
 					ip tinytext NOT NULL,
+					browser tinytext NOT NULL,
 					created datetime NOT NULL,
 					last_used datetime NOT NULL,
 					deleted datetime NOT NULL,

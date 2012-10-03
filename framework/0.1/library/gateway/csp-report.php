@@ -35,6 +35,7 @@
 					'original_policy'    => $report['original-policy'],
 					'json'               => $data_str,
 					'ip'                 => config::get('request.ip'),
+					'browser'            => config::get('request.browser'),
 					'updated'            => date('Y-m-d H:i:s'),
 				);
 

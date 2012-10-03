@@ -426,6 +426,7 @@
 							'pass' => '', // Will remain blank to record failure
 							'user_id' => $db_id,
 							'ip' => $failure_ip,
+							'browser' => config::get('request.browser'),
 							'created' => date('Y-m-d H:i:s'),
 							'last_used' => date('Y-m-d H:i:s'),
 							'deleted' => '0000-00-00 00:00:00',

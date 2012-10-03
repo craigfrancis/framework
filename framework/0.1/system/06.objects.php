@@ -496,11 +496,14 @@
 								$output[] = $directive . ' ' . str_replace('"', "'", $value);
 							}
 
-							// $header = 'Content-Security-Policy';
-							// $header = 'X-Content-Security-Policy';
-							$header = 'X-WebKit-CSP'; // For now only Chrome supports 'unsafe-inline' - https://bugzilla.mozilla.org/show_bug.cgi?id=763879
+							if (stripos(config::get('request.browser'), 'WebKit') !== false) {
+								$header = 'X-WebKit-CSP';
+							} else {
+								$header = 'Content-Security-Policy';
+								// $header = 'X-Content-Security-Policy'; // Firefox does not support 'unsafe-inline' - https://bugzilla.mozilla.org/show_bug.cgi?id=763879#c5
+							}
 
-							if (SERVER != 'stage') {
+							if (!config::get('output.csp_active', (SERVER == 'stage'))) {
 								$header .= '-Report-Only';
 							}
 
