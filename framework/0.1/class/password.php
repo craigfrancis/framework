@@ -15,8 +15,6 @@
 //
 //--------------------------------------------------
 
-	define('CRYPT_USE', true); // TODO: Remove
-
 	class password_base extends check {
 
 		static function hash($password, $record_id = 0) {
@@ -25,7 +23,7 @@
 
 				return password_hash($password, PASSWORD_DEFAULT);
 
-			} else if (CRYPT_USE && CRYPT_BLOWFISH) {
+			} else if (CRYPT_BLOWFISH) {
 
 				$hash_salt = base64_encode(random_bytes(100));
 				$hash_salt = str_replace('+', '.', $hash_salt);
@@ -105,7 +103,7 @@
 
 				return password_needs_rehash($hash, PASSWORD_DEFAULT); // Use whenever possible
 
-			} else if (CRYPT_USE && CRYPT_BLOWFISH) {
+			} else if (CRYPT_BLOWFISH) {
 
 				if (strlen($hash) == 60 && preg_match('/^\$2([axy])\$([0-9]+)\$/', $hash, $matches)) {
 					if ($matches[1] == 'a' && version_compare(PHP_VERSION, '5.3.7', '>=')) {
