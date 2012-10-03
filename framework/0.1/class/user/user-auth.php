@@ -368,7 +368,7 @@
 								created > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-30 minutes'))) . '" AND
 								deleted = "0000-00-00 00:00:00"');
 
-				if ($db->num_rows() >= 5) {
+				if ($db->num_rows() >= 50) {
 					$error = 'frequent_failure';
 				} else {
 					$error = '';
