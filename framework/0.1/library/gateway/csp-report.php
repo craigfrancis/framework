@@ -48,7 +48,8 @@
 
 		} else {
 
-			exit_with_error('Content-Security-Policy failure', $data_str);
+			// TODO: Support Safari with url-encoded version
+			//exit_with_error('Content-Security-Policy failure', $data_str);
 
 		}
 
