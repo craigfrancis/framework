@@ -496,18 +496,22 @@
 								$output[] = $directive . ' ' . str_replace('"', "'", $value);
 							}
 
-							if (stripos(config::get('request.browser'), 'WebKit') !== false) {
+							if (stripos(config::get('request.browser'), 'chrome') !== false) { // Webkit supports it, but Safari 5 has issues (report in url-encoded format, and blocking styles randomly).
+
 								$header = 'X-WebKit-CSP';
+
+								if (!config::get('output.csp_active', (SERVER == 'stage'))) {
+									$header .= '-Report-Only';
+								}
+
+								header($header . ': ' . implode('; ', $output));
+
 							} else {
-								$header = 'Content-Security-Policy';
+
+								// $header = 'Content-Security-Policy';
 								// $header = 'X-Content-Security-Policy'; // Firefox does not support 'unsafe-inline' - https://bugzilla.mozilla.org/show_bug.cgi?id=763879#c5
-							}
 
-							if (!config::get('output.csp_active', (SERVER == 'stage'))) {
-								$header .= '-Report-Only';
 							}
-
-							header($header . ': ' . implode('; ', $output));
 
 						}
 
