@@ -18,12 +18,19 @@
 					'document-uri'       => '',
 				), $data_array['csp-report']);
 
-			$record = true;
+			$ignore_uris = config::get('output.csp_report_ignore');
 
-			//if ($report['blocked-uri'] == 'http://nikkomsgchannel') $record = false;
-			//if (substr($report['blocked-uri'], 0, 19) == 'chrome-extension://') $record = false;
+			if ($ignore_uris == 'defaults') {
 
-			if ($record) {
+				$ignore_uris = array(
+					'chrome-extension://lifbcibllhkdhoafpjfnlhfpfgnpldfl', // Skype
+					'http://nikkomsgchannel', // Rapport
+					'http://edge.crtinv.com/', // Sterkly Revenue Suite (adds banners to websites)
+				);
+
+			}
+
+			if (!is_array($ignore_uris) || !in_array($report['blocked-uri'], $ignore_uris)) {
 
 				$db = $this->db_get();
 
