@@ -1,9 +1,9 @@
 <?php
 
 //--------------------------------------------------
-// Cleanup task
+// Cleanup job
 
-	class cleanup_task extends task {
+	class cleanup_job extends job {
 
 		public function email_addresses_get() {
 			return array(
