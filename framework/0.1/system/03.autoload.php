@@ -5,7 +5,7 @@
 		//--------------------------------------------------
 		// Non overrides
 
-			if (in_array($class_name, array('controller', 'view', 'layout'))) {
+			if (in_array($class_name, array('controller', 'view', 'template'))) {
 				return false;
 			}
 

@@ -142,9 +142,9 @@
 		}
 
 	//--------------------------------------------------
-	// Layout
+	// Template
 
-		class layout_base extends base {
+		class template_base extends base {
 
 			private $view_html = '';
 			private $view_processed = false;
@@ -533,7 +533,7 @@
 				//--------------------------------------------------
 				// Include
 
-					require($this->layout_path_get());
+					require($this->template_path_get());
 
 				//--------------------------------------------------
 				// If view_get_html() was not called
@@ -544,23 +544,23 @@
 
 			}
 
-			private function layout_path_get() {
+			private function template_path_get() {
 
 				if (config::get('debug.level') >= 4) {
-					debug_progress('Find layout', 2);
+					debug_progress('Find template', 2);
 				}
 
-				$layout_path = APP_ROOT . '/layouts/' . safe_file_name(config::get('view.layout')) . '.ctp';
+				$template_path = APP_ROOT . '/templates/' . safe_file_name(config::get('view.template')) . '.ctp';
 
 				if (config::get('debug.level') >= 3) {
-					debug_note_html('<strong>Layout</strong>: ' . html(str_replace(ROOT, '', $layout_path)), 'H');
+					debug_note_html('<strong>Template</strong>: ' . html(str_replace(ROOT, '', $template_path)), 'H');
 				}
 
-				if (!is_file($layout_path)) {
+				if (!is_file($template_path)) {
 
-					$layout_path = FRAMEWORK_ROOT . '/library/view/layout.ctp';
+					$template_path = FRAMEWORK_ROOT . '/library/view/template.ctp';
 
-					resources::head_add_html("\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(FRAMEWORK_ROOT . '/library/view/layout.css')) . "\n\t" . '</style>');
+					resources::head_add_html("\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(FRAMEWORK_ROOT . '/library/view/template.css')) . "\n\t" . '</style>');
 
 				}
 
@@ -568,7 +568,7 @@
 					debug_progress('Done', 3);
 				}
 
-				return $layout_path;
+				return $template_path;
 
 			}
 
@@ -579,13 +579,13 @@
 
 		class view_base extends base {
 
-			protected $layout;
+			protected $template;
 
-			public function __construct($layout = NULL) {
-				if ($layout === NULL) {
-					$this->layout = new layout();
+			public function __construct($template = NULL) {
+				if ($template === NULL) {
+					$this->template = new template();
 				} else {
-					$this->layout = $layout;
+					$this->template = $template;
 				}
 			}
 
@@ -597,18 +597,18 @@
 
 				require_once($this->view_path_get());
 
-				$this->layout->view_add_html(ob_get_clean());
-				$this->layout->render();
+				$this->template->view_add_html(ob_get_clean());
+				$this->template->render();
 
 			}
 
 			public function add_html($html) {
-				$this->layout->view_add_html($html);
+				$this->template->view_add_html($html);
 			}
 
 			public function render_html($html) {
-				$this->layout->view_add_html($html);
-				$this->layout->render();
+				$this->template->view_add_html($html);
+				$this->template->render();
 			}
 
 			public function render_error($error) {
@@ -710,8 +710,8 @@
 			}
 		}
 
-		if (!class_exists('layout')) {
-			class layout extends layout_base {
+		if (!class_exists('template')) {
+			class template extends template_base {
 			}
 		}
 

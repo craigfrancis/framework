@@ -131,7 +131,7 @@
 		// View variables
 
 			config::set('view.variables', array());
-			config::set('view.layout', 'default');
+			config::set('view.template', 'default');
 
 		//--------------------------------------------------
 		// Routes
@@ -182,7 +182,7 @@
 			//--------------------------------------------------
 			// Cleanup
 
-				unset($layout, $view);
+				unset($view);
 
 				if (config::get('debug.level') >= 4) {
 					debug_progress('View render', 1);
