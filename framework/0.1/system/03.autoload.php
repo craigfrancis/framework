@@ -19,7 +19,7 @@
 				$class_file_name = str_replace('_', '-', substr($class_name, 11));
 
 				$paths = array(
-						APP_ROOT . '/support/controller/' . $class_file_name . '.php',
+						APP_ROOT . '/library/controller/' . $class_file_name . '.php',
 						FRAMEWORK_ROOT . '/library/controller/' . $class_file_name . '.php',
 					);
 
@@ -43,8 +43,8 @@
 					$paths = array();
 				} else {
 					$paths = array(
-							APP_ROOT . '/support/class/' . $class_file_name . '.php',
-							APP_ROOT . '/support/class/' . $folder . '/' . $class_file_name . '.php',
+							APP_ROOT . '/library/class/' . $class_file_name . '.php',
+							APP_ROOT . '/library/class/' . $folder . '/' . $class_file_name . '.php',
 						);
 				}
 

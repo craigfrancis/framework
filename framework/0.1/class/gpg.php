@@ -193,7 +193,7 @@
 				$key_exists = $this->_key_exists($key);
 				if (!$key_exists) {
 
-					$public_key_path = APP_ROOT . '/support/gpg/' . $key . '.key.pub';
+					$public_key_path = APP_ROOT . '/library/gpg/' . $key . '.key.pub';
 					if (is_file($public_key_path)) {
 						$result = $this->_exec('--import ' . escapeshellarg($public_key_path));
 						$result = $this->_exec('--batch --yes --passphrase ' . escapeshellarg($this->default_pass_phrase) . ' --local-user ' . escapeshellarg($this->private_key_email) . ' --sign-key ' . escapeshellarg($key));

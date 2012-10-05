@@ -114,7 +114,7 @@
 
 			public function run() {
 
-				$include_path = APP_ROOT . '/config/setup.php';
+				$include_path = APP_ROOT . '/setup/setup.php';
 				if (is_file($include_path)) {
 					require_once($include_path);
 				}
@@ -692,7 +692,7 @@
 	//--------------------------------------------------
 	// Include
 
-		$include_path = APP_ROOT . '/config/objects.php';
+		$include_path = APP_ROOT . '/setup/objects.php';
 		if (is_file($include_path)) {
 			require_once($include_path);
 		}

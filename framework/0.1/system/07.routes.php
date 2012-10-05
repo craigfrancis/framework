@@ -100,7 +100,7 @@
 
 		if (substr($route_path, 0, 12) == '/sitemap.xml') {
 
-			$sitemap_path = APP_ROOT . '/config/sitemap.php';
+			$sitemap_path = APP_ROOT . '/setup/sitemap.php';
 
 			if (!is_file($sitemap_path)) {
 				$sitemap_path = FRAMEWORK_ROOT . '/library/view/sitemap.php';
@@ -370,7 +370,7 @@
 
 	$routes = array();
 
-	$include_path = APP_ROOT . '/config/routes.php';
+	$include_path = APP_ROOT . '/setup/routes.php';
 	if (is_file($include_path)) {
 		require_once($include_path);
 	}
