@@ -6,7 +6,7 @@
 	class view extends view_base {
 	}
 
-	class layout extends layout_base {
+	class template extends template_base {
 	}
 
 ?>
