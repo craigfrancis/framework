@@ -171,12 +171,12 @@
 
 				mime_set('text/plain');
 
-				$ran_tasks = $maintenance->run();
+				$ran_jobs = $maintenance->run();
 
 				echo 'Done @ ' . date('Y-m-d H:i:s') . "\n\n";
 
-				foreach ($ran_tasks as $task) {
-					echo '- ' . $task . "\n";
+				foreach ($ran_jobs as $job) {
+					echo '- ' . $job . "\n";
 				}
 
 				exit();

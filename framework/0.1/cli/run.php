@@ -352,18 +352,18 @@
 
 					$maintenance = new maintenance();
 
-					$ran_tasks = $maintenance->run();
+					$ran_jobs = $maintenance->run();
 
 					if ($debug_show) {
 
 						echo "\n";
 						echo 'Done @ ' . date('Y-m-d H:i:s') . "\n\n";
 
-						foreach ($ran_tasks as $task) {
-							echo '- ' . $task . "\n";
+						foreach ($ran_jobs as $job) {
+							echo '- ' . $job . "\n";
 						}
 
-						if (count($ran_tasks) > 0) {
+						if (count($ran_jobs) > 0) {
 							echo "\n";
 						}
 

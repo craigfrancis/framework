@@ -14,13 +14,13 @@
 
 ***************************************************/
 
-// TODO: Add an admin interface somewhere which can show the tasks being run, can cancel them, or stack them up.
+// TODO: Add an admin interface somewhere which can show the jobs being run, can cancel them, or stack them up.
 
 //--------------------------------------------------
 // Is enabled
 
 	if (config::get('maintenance.active') !== true) {
-		exit_with_error('Maintenance tasks disabled.');
+		exit_with_error('Maintenance jobs disabled.');
 	}
 
 //--------------------------------------------------
@@ -31,9 +31,9 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $tasks_dir;
-			private $tasks_run;
-			private $task_paths;
+			private $jobs_dir;
+			private $jobs_run;
+			private $job_paths;
 			private $run_id = NULL;
 
 		//--------------------------------------------------
@@ -42,23 +42,23 @@
 			public function __construct() {
 
 				//--------------------------------------------------
-				// Tasks
+				// Jobs
 
-					$this->tasks_dir = APP_ROOT . '/tasks/';
-					$this->tasks_run = array();
-					$this->task_paths = array();
+					$this->jobs_dir = APP_ROOT . '/jobs/';
+					$this->jobs_run = array();
+					$this->job_paths = array();
 
-					if ($handle = opendir($this->tasks_dir)) {
+					if ($handle = opendir($this->jobs_dir)) {
 						while (false !== ($file = readdir($handle))) {
-							if (is_file($this->tasks_dir . $file) && preg_match('/^([0-9]+\.)?([a-zA-Z0-9_\-]+)\.php$/', $file, $matches)) {
+							if (is_file($this->jobs_dir . $file) && preg_match('/^([0-9]+\.)?([a-zA-Z0-9_\-]+)\.php$/', $file, $matches)) {
 
-								$this->task_paths[$matches[2]] = $this->tasks_dir . $file;
+								$this->job_paths[$matches[2]] = $this->jobs_dir . $file;
 
 							}
 						}
 					}
 
-					asort($this->task_paths);
+					asort($this->job_paths);
 
 			}
 
@@ -148,7 +148,7 @@
 					while ($row = $db->fetch_assoc($r)) {
 
 						$db->query('DELETE FROM
-										' . DB_PREFIX . 'maintenance_task
+										' . DB_PREFIX . 'maintenance_job
 									WHERE
 										run_id = "' . $db->escape($row['id']) . '"');
 
@@ -160,26 +160,26 @@
 					}
 
 				//--------------------------------------------------
-				// Tasks
+				// Jobs
 
-					foreach ($this->task_paths as $task_name => $task_path) {
-						if (!in_array($task_name, $this->tasks_run)) {
+					foreach ($this->job_paths as $job_name => $job_path) {
+						if (!in_array($job_name, $this->jobs_run)) {
 
 							//--------------------------------------------------
 							// Action object
 
-								$task = new task($task_name, $this, $this->run_id);
+								$job = new job($job_name, $this, $this->run_id);
 
-								$success = $task->run_wrapper();
+								$success = $job->run_wrapper();
 
 								if ($success !== false) {
-									$this->tasks_run[] = $task_name;
+									$this->jobs_run[] = $job_name;
 								}
 
 							//--------------------------------------------------
 							// If we should halt this maintenance run
 
-								$halt_maintenance_run = $task->halt_maintenance_run();
+								$halt_maintenance_run = $job->halt_maintenance_run();
 								if ($halt_maintenance_run) {
 									break;
 								}
@@ -200,22 +200,22 @@
 									1');
 
 				//--------------------------------------------------
-				// Return list of ran tasks
+				// Return list of ran jobs
 
-					return $this->tasks_run;
+					return $this->jobs_run;
 
 			}
 
-			public function require_task_run($task_name) {
+			public function require_job_run($job_name) {
 
-				if (!in_array($task_name, $this->tasks_run)) {
+				if (!in_array($job_name, $this->jobs_run)) {
 
-					$task = new task($task_name, $this, $this->run_id);
+					$job = new job($job_name, $this, $this->run_id);
 
-					$success = $task->run_wrapper(true);
+					$success = $job->run_wrapper(true);
 
 					if ($success) {
-						$this->tasks_run[] = $task_name;
+						$this->jobs_run[] = $job_name;
 					}
 
 					return $success;
@@ -226,14 +226,14 @@
 
 			}
 
-			public function execute($task_name) {
+			public function execute($job_name) {
 
-				$task = $this->task_get($task_name);
+				$job = $this->job_get($job_name);
 
-				$success = $task->run_wrapper(true);
+				$success = $job->run_wrapper(true);
 
 				if ($success) {
-					$this->tasks_run[] = $task_name;
+					$this->jobs_run[] = $job_name;
 				}
 
 				return $success;
@@ -241,15 +241,15 @@
 			}
 
 		//--------------------------------------------------
-		// Return task
+		// Return job
 
-			public function task_get($task_name) {
-				return new task($task_name, $this);
+			public function job_get($job_name) {
+				return new job($job_name, $this);
 			}
 
-			public function task_path_get($task_name) {
-				if (isset($this->task_paths[$task_name])) {
-					return $this->task_paths[$task_name];
+			public function job_path_get($job_name) {
+				if (isset($this->job_paths[$job_name])) {
+					return $this->job_paths[$job_name];
 				} else {
 					return false;
 				}
@@ -261,13 +261,13 @@
 			public function test() {
 
 				//--------------------------------------------------
-				// Execute task
+				// Execute job
 
-					$task_name = request('execute');
+					$job_name = request('execute');
 
-					if (isset($this->task_paths[$task_name])) {
+					if (isset($this->job_paths[$job_name])) {
 
-						$output = $this->execute($task_name);
+						$output = $this->execute($job_name);
 
 						if ($output !== false && $output === '') {
 							$output = '<p>No output.</p>';
@@ -278,17 +278,17 @@
 					}
 
 				//--------------------------------------------------
-				// Create simple index of tasks
+				// Create simple index of jobs
 
-					$this->title_set('Maintenance tasks');
+					$this->title_set('Maintenance jobs');
 
 					$html = '
-						<h2>Tasks</h2>
+						<h2>Jobs</h2>
 						<ul>';
 
-					foreach ($this->task_paths as $task_name => $task_path) {
+					foreach ($this->job_paths as $job_name => $job_path) {
 						$html .= '
-								<li><a href="' . html(url('./', array('execute' => $task_name))) . '">' . html(ref_to_human($task_name)) . '</a></li>';
+								<li><a href="' . html(url('./', array('execute' => $job_name))) . '">' . html(ref_to_human($job_name)) . '</a></li>';
 					}
 
 					$html .= '
@@ -304,12 +304,12 @@
 //--------------------------------------------------
 // Action class
 
-	class task_base extends base {
+	class job_base extends base {
 
 		//--------------------------------------------------
 		// Variables
 
-			protected $task_name = NULL;
+			protected $job_name = NULL;
 			protected $maintenance = NULL;
 			protected $run_id = NULL;
 			protected $mode = NULL;
@@ -319,12 +319,12 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($task_name, $maintenance, $run_id = 0, $mode = 'wrapper') {
+			public function __construct($job_name, $maintenance, $run_id = 0, $mode = 'wrapper') {
 
 				//--------------------------------------------------
 				// Details
 
-					$this->task_name = $task_name;
+					$this->job_name = $job_name;
 					$this->maintenance = $maintenance;
 					$this->run_id = $run_id;
 					$this->mode = $mode;
@@ -339,9 +339,9 @@
 						$db->query('SELECT
 										created
 									FROM
-										' . DB_PREFIX . 'maintenance_task
+										' . DB_PREFIX . 'maintenance_job
 									WHERE
-										task = "' . $db->escape($this->task_name) . '"
+										job = "' . $db->escape($this->job_name) . '"
 									ORDER BY
 										created DESC
 									LIMIT
@@ -361,25 +361,25 @@
 			}
 
 		//--------------------------------------------------
-		// Task setup functions
+		// Job setup functions
 
 			public function email_addresses_get() {
 				return array();
 			}
 
 			public function should_run() {
-				return true; // This task should always run
+				return true; // This job should always run
 			}
 
 		//--------------------------------------------------
-		// Task support functions
+		// Job support functions
 
 			public function halt_maintenance_run() {
 				return $this->halt_maintenance_run;
 			}
 
-			protected function require_task_run($task_name) {
-				return $this->maintenance->require_task_run($task_name);
+			protected function require_job_run($job_name) {
+				return $this->maintenance->require_job_run($job_name);
 			}
 
 			protected function error_fatal($error = NULL) {
@@ -389,7 +389,7 @@
 					report_add($error, 'error');
 
 					if (config::get('output.mime') == 'text/plain') {
-						echo ucfirst($this->task_name) . ' - Fatal Error:' . "\n";
+						echo ucfirst($this->job_name) . ' - Fatal Error:' . "\n";
 						echo ' ' . $error . "\n\n";
 					}
 
@@ -403,7 +403,7 @@
 					report_add($error, 'error');
 
 					if (config::get('output.mime') == 'text/plain') {
-						echo ucfirst($this->task_name) . ' - Harmless Error:' . "\n";
+						echo ucfirst($this->job_name) . ' - Harmless Error:' . "\n";
 						echo ' ' . $error . "\n\n";
 					}
 
@@ -439,85 +439,85 @@
 
 					$gateway = $this;
 
-					$task_object = str_replace('-', '_', $this->task_name) . '_task';
+					$job_object = str_replace('-', '_', $this->job_name) . '_job';
 
-					$task_path = $this->maintenance->task_path_get($this->task_name);
+					$job_path = $this->maintenance->job_path_get($this->job_name);
 
-					if (is_file($task_path)) {
+					if (is_file($job_path)) {
 
 						ob_start();
 
-						if (!class_exists($task_object)) {
-							require_once($task_path);
+						if (!class_exists($job_object)) {
+							require_once($job_path);
 						}
 
-						$task_output_html = ob_get_clean();
+						$job_output_html = ob_get_clean();
 
 					} else {
 
-						return $this->error_fatal('Could not load task "' . $this->task_name . '"');
+						return $this->error_fatal('Could not load job "' . $this->job_name . '"');
 
 					}
 
 				//--------------------------------------------------
 				// Email title
 
-					$email_title = ref_to_human($this->task_name) . ' @ ' . date('Y-m-d H:i:s');
+					$email_title = ref_to_human($this->job_name) . ' @ ' . date('Y-m-d H:i:s');
 
 					$email_addresses = array();
 
 				//--------------------------------------------------
 				// Object mode support
 
-					if (class_exists($task_object)) {
+					if (class_exists($job_object)) {
 
 						//--------------------------------------------------
 						// Setup
 
-							$task = new $task_object($this->task_name, $this->maintenance, $this->run_id, 'run');
+							$job = new $job_object($this->job_name, $this->maintenance, $this->run_id, 'run');
 
 						//--------------------------------------------------
 						// Should run
 
-							if (!$force && !$task->should_run()) {
+							if (!$force && !$job->should_run()) {
 								return false;
 							}
 
 						//--------------------------------------------------
 						// Prep
 
-							$prep_result = $task->prep();
+							$prep_result = $job->prep();
 
 						//--------------------------------------------------
 						// Run
 
 							if (is_string($prep_result) && strlen($prep_result) > 0) {
 
-								$task_output_html = $prep_result;
+								$job_output_html = $prep_result;
 
-							} else if ($prep_result !== false && $task->halt_maintenance_run() === false) {
+							} else if ($prep_result !== false && $job->halt_maintenance_run() === false) {
 
-								$task_output_html = trim($task->run());
+								$job_output_html = trim($job->run());
 
 							} else {
 
-								$task_output_html = '';
+								$job_output_html = '';
 
 							}
 
 						//--------------------------------------------------
 						// Email
 
-							if (method_exists($task, 'email_title_get')) {
-								$email_title = $task->email_title_get();
+							if (method_exists($job, 'email_title_get')) {
+								$email_title = $job->email_title_get();
 							}
 
-							$email_addresses = $task->email_addresses_get();
+							$email_addresses = $job->email_addresses_get();
 
 						//--------------------------------------------------
 						// Halt of maintenance run
 
-							if ($task->halt_maintenance_run() == true) {
+							if ($job->halt_maintenance_run() == true) {
 								$this->halt_maintenance_run = true;
 							}
 
@@ -530,17 +530,17 @@
 
 					if ($this->run_id > 0 && $this->halt_maintenance_run === false) {
 
-						$db->query('INSERT INTO ' . DB_PREFIX . 'maintenance_task (
+						$db->query('INSERT INTO ' . DB_PREFIX . 'maintenance_job (
 										id,
-										task,
+										job,
 										run_id,
 										output,
 										created
 									) VALUES (
 										"",
-										"' . $db->escape($this->task_name) . '",
+										"' . $db->escape($this->job_name) . '",
 										"' . $db->escape($this->run_id) . '",
-										"' . $db->escape($task_output_html) . '",
+										"' . $db->escape($job_output_html) . '",
 										"' . $db->escape(date('Y-m-d H:i:s')) . '"
 									)');
 
@@ -549,7 +549,7 @@
 				//--------------------------------------------------
 				// Send
 
-					if ($this->run_id > 0 && $this->halt_maintenance_run === false && $task_output_html != '') {
+					if ($this->run_id > 0 && $this->halt_maintenance_run === false && $job_output_html != '') {
 
 						if (isset($email_addresses[SERVER])) {
 							$email_addresses = $email_addresses[SERVER];
@@ -557,7 +557,7 @@
 
 						$email = new email();
 						$email->subject_set($email_title);
-						$email->body_html_add($task_output_html);
+						$email->body_html_add($job_output_html);
 						$email->send($email_addresses);
 
 					}
@@ -565,7 +565,7 @@
 				//--------------------------------------------------
 				// Return
 
-					return $task_output_html;
+					return $job_output_html;
 
 			}
 
@@ -585,15 +585,15 @@
 					UNIQUE KEY run_end (run_end)
 				);');
 
-		debug_require_db_table('maintenance_task', '
+		debug_require_db_table('maintenance_job', '
 				CREATE TABLE [TABLE] (
 					id int(11) NOT NULL AUTO_INCREMENT,
-					task varchar(20) NOT NULL,
+					job varchar(20) NOT NULL,
 					run_id int(11) NOT NULL,
 					output text NOT NULL,
 					created datetime NOT NULL,
 					PRIMARY KEY (id),
-					KEY task (task, created)
+					KEY job (job, created)
 				);');
 
 	}
