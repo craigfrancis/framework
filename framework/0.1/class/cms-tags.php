@@ -49,9 +49,9 @@
 
 class cms_tags_base extends check {
 
-	var $preserved_inline_tags;
-	var $indent_level;
-	var $config;
+	private $preserved_inline_tags;
+	private $indent_level;
+	private $config;
 
 	public function __construct($config = NULL) {
 		$this->preserved_inline_tags = array();

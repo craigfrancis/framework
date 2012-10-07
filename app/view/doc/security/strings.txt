@@ -1,0 +1,40 @@
+
+### Overview
+
+When referring to a "string" in programming, we are typically talking about a string of characters.
+
+For example, to record someones name, the 3 characters that make up the name "Amy" can be called a string. We're not talking about a piece of string, the proverbial one we referrer to when being asked how long something will take to finish.
+
+The great thing about strings is that they are very simple, just being a set of characters. This makes them a fantastic way to transfer data from one system/program to another... yes there is the issue of encoding (e.g. UTF-8), but thats something for another day.
+
+Even when programs are working with text files, their just a string of characters.
+
+---
+
+### Simplicity
+
+To keep things as simple as possible, pretty much every part of a UNIX system transfers data with strings, and we can see this in action when running something like the following:
+
+	grep "test" file.txt | sort | uniq
+
+This compromises of 3 separate commands (programs), which have very separate roles, and they are very good at what they do.
+
+- We start with the `grep` command looking though "file.txt", where it treats the file as a string of characters. It breaks it into individual lines, and in this case, the output created is a new string made up of the lines which contain the word "test".
+
+- This goes into the `sort` command, which breaks it down again into lines, sorts them alphabetically, then creates a single string as its output.
+
+- This goes into the `uniq` command, which works though the string, breaking it into lines, and comparing each line with the previous one, if it's the same it ignores it, otherwise it sends it to the output, as a string.
+
+---
+
+### The problems
+
+The problem with strings though is interpreting/understanding them... something EVERY programmer needs to understand.
+
+This comes into play as security problems in a number of ways:
+
+- [SQL injection](/doc/security/strings/sql-injection/)
+- [HTML injection](/doc/security/strings/html-injection/)
+- [Header injection](/doc/security/strings/header-injection/)
+- [URL manipulation](/doc/security/strings/url-manipulation/)
+- [Path manipulation](/doc/security/strings/path-manipulation/)
