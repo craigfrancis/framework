@@ -85,6 +85,8 @@
 						$page_ref = 'home';
 					}
 
+					$page_ref = 'p_' . $page_ref;
+
 					config::set('output.page_ref', $page_ref);
 
 				}

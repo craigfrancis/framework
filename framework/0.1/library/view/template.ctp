@@ -99,7 +99,7 @@
 	<![endif]-->
 
 </head>
-<body id="p_<?= html($this->page_ref_get()) ?>">
+<body id="<?= html($this->page_ref_get()) ?>">
 
 	<div id="page_wrapper">
 
