@@ -4,6 +4,6 @@
 
 	<?php if (config::get('debug.level') > 0) { ?>
 
-		<p><?= html(config::get('view.path')) ?></p>
+		<p><?= html(str_replace(ROOT, '', config::get('view.path'))) ?></p>
 
 	<?php } ?>

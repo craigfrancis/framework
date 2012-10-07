@@ -672,9 +672,6 @@
 							$view_path = FRAMEWORK_ROOT . '/library/view/error-page-not-found.ctp';
 						}
 
-						config::set('view.path', $view_path);
-						config::set('view.folders', array('error', $error));
-
 					}
 
 				//--------------------------------------------------
