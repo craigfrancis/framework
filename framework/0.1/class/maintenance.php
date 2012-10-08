@@ -119,13 +119,11 @@
 						exit_with_error('Maintenance script is already running (A).');
 					}
 
-					$db->query('INSERT INTO ' . DB_PREFIX . 'maintenance (
-									run_start,
-									run_end
-								) VALUES (
-									"' . $db->escape(date('Y-m-d H:i:s')) . '",
-									"0000-00-00 00:00:00"
-								)');
+					$db->insert(DB_PREFIX . 'maintenance', array(
+							'id'        => '',
+							'run_start' => date('Y-m-d H:i:s'),
+							'run_end'   => '0000-00-00 00:00:00',
+						));
 
 					$this->run_id = $db->insert_id();
 
@@ -530,19 +528,12 @@
 
 					if ($this->run_id > 0 && $this->halt_maintenance_run === false) {
 
-						$db->query('INSERT INTO ' . DB_PREFIX . 'maintenance_job (
-										id,
-										job,
-										run_id,
-										output,
-										created
-									) VALUES (
-										"",
-										"' . $db->escape($this->job_name) . '",
-										"' . $db->escape($this->run_id) . '",
-										"' . $db->escape($job_output_html) . '",
-										"' . $db->escape(date('Y-m-d H:i:s')) . '"
-									)');
+						$db->insert(DB_PREFIX . 'maintenance_job', array(
+								'job'     => $this->job_name,
+								'run_id'  => $this->run_id,
+								'output'  => $job_output_html,
+								'created' => date('Y-m-d H:i:s'),
+							));
 
 					}
 

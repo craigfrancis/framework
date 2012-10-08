@@ -180,19 +180,13 @@
 									WHERE
 										request_date < "' . $db->escape(date('Y-m-d H:i:s', strtotime('-1 month'))) . '"');
 
-						$db->query('INSERT INTO ' . DB_PREFIX . 'gateway_log (
-										id,
-										gateway,
-										request_url,
-										request_data,
-										request_date
-									) VALUES (
-										"",
-										"' . $db->escape($gateway_name) . '",
-										"' . $db->escape($gateway_url) . '",
-										"' . $db->escape(debug_dump($data)) . '",
-										"' . $db->escape(date('Y-m-d H:i:s')) . '"
-									)');
+						$db->insert(DB_PREFIX . 'gateway_log', array(
+								'id'           => '',
+								'gateway'      => $gateway_name,
+								'request_url'  => $gateway_url,
+								'request_data' => debug_dump($data),
+								'request_date' => date('Y-m-d H:i:s'),
+							));
 
 						$log_id = $db->insert_id();
 
@@ -628,19 +622,13 @@
 						//--------------------------------------------------
 						// Store
 
-							$db->query('INSERT INTO ' . DB_PREFIX . 'gateway_pass (
-											client,
-											pass,
-											gateway,
-											created,
-											used
-										) VALUES (
-											"' . $db->escape($client) . '",
-											"' . $db->escape($db_pass) . '",
-											"' . $db->escape($this->api) . '",
-											"' . $db->escape(date('Y-m-d H:i:s')) . '",
-											""
-										)');
+							$db->insert(DB_PREFIX . 'gateway_pass', array(
+									'client'  => $client,
+									'pass'    => $db_pass,
+									'gateway' => $this->api,
+									'created' => date('Y-m-d H:i:s'),
+									'used'    => '0000-00-00 00:00:00',
+								));
 
 						//--------------------------------------------------
 						// Return

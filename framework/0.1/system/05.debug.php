@@ -50,23 +50,14 @@
 
 			$db = new db();
 
-			$db->query('INSERT INTO ' . DB_PREFIX . 'report (
-							id,
-							type,
-							created,
-							message,
-							request,
-							referrer,
-							ip
-						) VALUES (
-							"",
-							"' . $db->escape($type) . '",
-							"' . $db->escape(date('Y-m-d H:i:s')) . '",
-							"' . $db->escape($message) . '",
-							"' . $db->escape(config::get('request.url')) . '",
-							"' . $db->escape(config::get('request.referrer')) . '",
-							"' . $db->escape(config::get('request.ip')) . '"
-						)');
+			$db->insert(DB_PREFIX . 'report', array(
+					'type'     => $type,
+					'created'  => date('Y-m-d H:i:s'),
+					'message'  => $message,
+					'request'  => config::get('request.url'),
+					'referrer' => config::get('request.referrer'),
+					'ip'       => config::get('request.ip'),
+				));
 
 	}
 

@@ -416,27 +416,19 @@
 
 					if ($latitude !== NULL && $cached == false) {
 
-						$db->query('INSERT INTO ' . DB_PREFIX . 'nearest_search_cache (
-										search,
-										country,
-										latitude,
-										longitude,
-										accuracy,
-										created,
-										edited
-									) VALUES (
-										"' . $db->escape($search_query) . '",
-										"' . $db->escape($country) . '",
-										"' . $db->escape($latitude) . '",
-										"' . $db->escape($longitude) . '",
-										"' . $db->escape($accuracy) . '",
-										"' . $db->escape(date('Y-m-d H:i:s')) . '",
-										"' . $db->escape(date('Y-m-d H:i:s')) . '"
-									) ON DUPLICATE KEY UPDATE
-										latitude = "' . $db->escape($latitude) . '",
-										longitude = "' . $db->escape($longitude) . '",
-										accuracy = "' . $db->escape($accuracy) . '",
-										edited = "' . $db->escape(date('Y-m-d H:i:s')) . '"');
+						$values_update = array(
+							'search'    => $search_query,
+							'country'   => $country,
+							'latitude'  => $latitude,
+							'longitude' => $longitude,
+							'accuracy'  => $accuracy,
+							'edited'    => date('Y-m-d H:i:s'),
+						);
+
+						$values_insert = $values_update;
+						$values_insert['created'] = date('Y-m-d H:i:s');
+
+						$db->insert(DB_PREFIX . 'nearest_search_cache', $values_insert, $values_update);
 
 					}
 

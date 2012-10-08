@@ -204,15 +204,11 @@
 				//--------------------------------------------------
 				// Store
 
-					$db->query('INSERT INTO ' . DB_T_PREFIX . 'order_transaction (
-									id,
-									xml,
-									created
-								) VALUES (
-									"",
-									"' . $db->escape($xml) . '",
-									"' . $db->escape(date('Y-m-d H:i:s')) . '"
-								)');
+					$db->insert(DB_PREFIX . 'order_transaction', array(
+							'id'      => '',
+							'xml'     => $xml,
+							'created' => date('Y-m-d H:i:s'),
+						));
 
 				//--------------------------------------------------
 				// Check auth
