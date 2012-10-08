@@ -130,7 +130,7 @@
 				$actions = array('action_index' => $route_stack);
 
 				$next_action = str_replace('-', '_', reset($route_stack));
-				if ($next_action !== false) {
+				if ($next_action) {
 					$actions['action_' . $next_action] = $route_stack;
 					array_shift($actions['action_' . $next_action]);
 				}
