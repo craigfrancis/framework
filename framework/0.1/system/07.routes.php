@@ -58,7 +58,7 @@
 
 		if (substr($route_path, 0, 11) == '/robots.txt') {
 
-			$robots_path = APP_ROOT . '/view/robots.txt';
+			$robots_path = VIEW_ROOT . '/robots.txt';
 
 			if (!is_file($robots_path)) {
 				$robots_path = FRAMEWORK_ROOT . '/library/view/robots.txt';

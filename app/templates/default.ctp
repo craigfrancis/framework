@@ -63,6 +63,23 @@
 			$doc_nav->sub_nav_add('/doc/structure/', 'Structure', $structure_nav);
 
 		//--------------------------------------------------
+		// Setup
+
+			$setup_nav = new nav();
+			$setup_nav->link_add('#', 'Config');
+			$setup_nav->link_add('#', 'Controllers');
+			$setup_nav->link_add('#', 'Templates');
+			$setup_nav->link_add('#', 'Views');
+			$setup_nav->link_add('#', 'Gateways');
+			$setup_nav->link_add('#', 'Jobs');
+			$setup_nav->link_add('#', 'Favicon');
+			$setup_nav->link_add('#', 'Robots (txt)');
+			$setup_nav->link_add('#', 'Sitemap (xml)');
+			$setup_nav->link_add('#', 'Testing'); // http://seleniumhq.org/
+
+			$doc_nav->sub_nav_add('/doc/setup/', 'Setup', $setup_nav);
+
+		//--------------------------------------------------
 		// Helpers
 
 			$helpers_nav = new nav();

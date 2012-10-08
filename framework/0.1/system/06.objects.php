@@ -61,7 +61,7 @@
 
 				if ($page_ref === NULL) {
 
-					$page_ref_mode = config::get('output.page_ref_mode');
+					$page_ref_mode = config::get('output.page_ref_mode', 'route');
 
 					if ($page_ref_mode == 'route') {
 
@@ -615,7 +615,8 @@
 
 			public function render_error($error) {
 
-				config::set('route.path', '/error/' . $error . '/');
+				config::set('route.path', '/error/' . safe_file_name($error) . '/');
+				config::set('view.path', VIEW_ROOT . '/error/' . safe_file_name($error) . '.ctp'); // Will be replaced, but set so its shown on default error page.
 				config::set('output.error', $error);
 				config::set('output.page_ref', 'error-' . $error);
 
@@ -666,9 +667,9 @@
 							error_log('File does not exist: ' . config::get('request.uri'), 4);
 						}
 
-						$view_path = APP_ROOT . '/view/error/' . $error . '.ctp';
+						$view_path = VIEW_ROOT . '/error/' . safe_file_name($error) . '.ctp';
 						if (!is_file($view_path)) {
-							$view_path = FRAMEWORK_ROOT . '/library/view/error-' . $error . '.ctp';
+							$view_path = FRAMEWORK_ROOT . '/library/view/error-' . safe_file_name($error) . '.ctp';
 						}
 						if (!is_file($view_path)) {
 							$view_path = FRAMEWORK_ROOT . '/library/view/error-page-not-found.ctp';
