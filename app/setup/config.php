@@ -70,6 +70,15 @@
 	}
 
 //--------------------------------------------------
+// Content security policy
+
+	// $config['output.csp_active'] = true;
+
+	// $config['output.csp_directives'] = array(
+	// 		'default-src' => array('"self"'),
+	// 	);
+
+//--------------------------------------------------
 // Output
 
 	$config['output.site_name'] = 'PHP Prime';

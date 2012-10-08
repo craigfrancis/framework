@@ -151,6 +151,7 @@
 			private $view_html = '';
 			private $view_processed = false;
 			private $message = NULL;
+			private $template_footer = NULL;
 
 			public function message_get() {
 				return $this->message;
@@ -481,6 +482,34 @@
 						unset($mime_xml);
 
 					//--------------------------------------------------
+					// Debug
+
+						if (config::get('debug.level') > 0 && config::get('debug.show') === true) {
+
+							$output_mime = config::get('output.mime');
+
+							if ($output_mime == 'text/html' || $output_mime == 'application/xhtml+xml') {
+
+								$debug_ref = time() . '-' . mt_rand(100000, 999999);
+
+								$session_notes = session::get('debug.notes');
+								$session_notes[$debug_ref] = config::get('debug.notes');
+
+								session::set('debug.notes', $session_notes);
+
+								resources::js_add(gateway_url('framework-debug', array('ref' => $debug_ref)), 'defer');
+
+							} else if ($output_mime == 'text/plain') {
+
+								$this->template_footer = debug_notes_format('text', config::get('debug.notes'));
+
+							}
+
+							unset($output_mime, $debug_ref, $session_notes);
+
+						}
+
+					//--------------------------------------------------
 					// Content security policy
 
 						$csp = config::get('output.csp_directives');
@@ -515,9 +544,31 @@
 
 							}
 
+							if (config::get('debug.level') > 0) {
+
+								debug_require_db_table('report_csp', '
+										CREATE TABLE [TABLE] (
+											blocked_uri varchar(100) NOT NULL,
+											violated_directive varchar(100) NOT NULL,
+											referrer tinytext NOT NULL,
+											document_uri tinytext NOT NULL,
+											original_policy text NOT NULL,
+											json text NOT NULL,
+											ip tinytext NOT NULL,
+											browser tinytext NOT NULL,
+											created datetime NOT NULL,
+											updated datetime NOT NULL,
+											PRIMARY KEY (blocked_uri,violated_directive)
+										);');
+
+							}
+
 						}
 
-						unset($csp, $output, $header);
+					//--------------------------------------------------
+					// Cleanup
+
+						unset($mime_xml, $csp, $output, $header);
 
 				//--------------------------------------------------
 				// Local variables
@@ -544,6 +595,13 @@
 						echo $this->view_get_html();
 					}
 
+				//--------------------------------------------------
+				// Template footer
+
+					if ($this->template_footer !== NULL) {
+						echo $this->template_footer;
+					}
+
 			}
 
 			private function template_path_get() {
@@ -562,7 +620,7 @@
 
 					$template_path = FRAMEWORK_ROOT . '/library/view/template.ctp';
 
-					resources::head_add_html("\n\n\t" . '<style type="text/css">' . "\n\t\t" . str_replace("\n", "\n\t\t", file_get_contents(FRAMEWORK_ROOT . '/library/view/template.css')) . "\n\t" . '</style>');
+					resources::css_add(gateway_url('framework-file', array('file' => 'template.css')));
 
 				}
 

@@ -581,7 +581,7 @@
 			protected function client_verify() {
 
 				//--------------------------------------------------
-				// Return the required values for this script
+				// Supplied details
 
 					$pass = request('pass');
 					$client = request('client');

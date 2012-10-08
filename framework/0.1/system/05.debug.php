@@ -320,7 +320,7 @@
 //--------------------------------------------------
 // Config
 
-	function debug_config_html($prefix = '') {
+	function debug_config_html($prefix = '') { // Used in CLI, so don't check on debug.level
 
 		$config = config::get_all($prefix);
 
@@ -471,6 +471,8 @@
 
 				$db->query('SHOW TABLES LIKE "' . $db->escape(DB_PREFIX . $table) . '"');
 				if ($db->num_rows() == 0) {
+					http_response_code(500);
+					mime_set('text/html');
 					exit('Missing table <strong>' . html(DB_PREFIX . $table) . '</strong>:<br /><br />' . nl2br(html(trim(str_replace('[TABLE]', DB_PREFIX . $table, $sql)))));
 				}
 
@@ -746,26 +748,12 @@
 			}
 
 		//--------------------------------------------------
-		// Debug shutdown
+		// Debug notes
 
-			function debug_shutdown($buffer) {
-
-				//--------------------------------------------------
-				// Suppression
-
-					if (config::get('debug.show') == false) {
-						return $buffer;
-					}
+			function debug_notes_format($mode, $notes) {
 
 				//--------------------------------------------------
-				// Default CSS
-
-					$css_text = 'font: normal normal 12px/14px monospace; text-align: left; text-decoration: none;';
-					$css_block = 'font: normal normal 12px/14px monospace; padding: 5px; margin: 5px 0; color: #000; border: 1px solid #000; clear: both;';
-					$css_para = 'padding: 0; margin: 0; ' . $css_text;
-
-				//--------------------------------------------------
-				// Time taken
+				// Setup
 
 					$output_types = array(
 							'C' => 'Config',
@@ -774,10 +762,12 @@
 							'L' => 'Log',
 						);
 
-					$output_html = array();
-					foreach ($output_types as $type => $label) {
-						$output_html[$type] = '';
-					}
+					$css_text = 'font: normal normal 12px/14px monospace; text-align: left; text-decoration: none;';
+					$css_block = 'font: normal normal 12px/14px monospace; padding: 5px; margin: 5px 0; color: #000; border: 1px solid #000; clear: both;';
+					$css_para = 'padding: 0; margin: 0; ' . $css_text;
+
+				//--------------------------------------------------
+				// Time taken
 
 					$output_time = '';
 
@@ -788,103 +778,105 @@
 					$output_time .= 'Total time: ' . html(debug_run_time()) . "\n";
 					$output_time .= 'Query time: ' . html(config::get('debug.db_time')) . "";
 
-					$output_html['L'] .= '		<div style="' . html($css_block) . ' background: #FFF;">' . "\n";
-					$output_html['L'] .= '			<pre style="' . html($css_para) . ';">' . html($output_time) . '</pre>' . "\n";
-					$output_html['L'] .= '		</div>' . "\n";
+					if ($mode == 'html') {
 
-					$output_text  = "\n\n\n\n\n\n\n\n\n\n";
-					$output_text .= '--------------------------------------------------' . "\n\n";
-					$output_text .= $output_time . "\n\n";
+						$output_html = array();
+						foreach ($output_types as $type => $label) {
+							$output_html[$type] = '';
+						}
+
+						$output_html['L'] .= '		<div style="' . html($css_block) . ' background: #FFF;">' . "\n";
+						$output_html['L'] .= '			<pre style="' . html($css_para) . ';">' . html($output_time) . '</pre>' . "\n";
+						$output_html['L'] .= '		</div>' . "\n";
+
+					} else {
+
+						$output_text  = "\n\n\n\n\n\n\n\n\n\n";
+						$output_text .= '--------------------------------------------------' . "\n\n";
+						$output_text .= $output_time . "\n\n";
+
+					}
 
 				//--------------------------------------------------
 				// Notes
-
-					$notes = config::get('debug.notes');
 
 					foreach ($notes as $note) {
 
 						$type = $note['type'];
 
-						if (!isset($output_html[$type])) {
-							$output_html[$type] = '';
+						if ($mode == 'html') {
+
+							if (!isset($output_html[$type])) {
+								$output_html[$type] = '';
+							}
+
+							$output_html[$type] .= '		<div style="' . html($css_block) . ' background: ' . html($note['colour']) . '">' . "\n";
+							$output_html[$type] .= '			<p style="' . html($css_para) . '">' . $note['html'] . '</p>' . "\n";
+
+							if ($note['time'] !== NULL) {
+								$output_html[$type] .= '			<p style="' . html($css_para) . '">Time Elapsed: ' . html($note['time']) . '</p>' . "\n";
+							}
+
+							if (isset($note['extra_html']) && $note['extra_html'] != '') {
+								$output_html[$type] .= $note['extra_html'];
+							}
+
+							$output_html[$type] .= '		</div>' . "\n";
+
+						} else {
+
+							$output_text .= '--------------------------------------------------' . "\n\n";
+							$output_text .= html_decode(strip_tags($note['html'])) . "\n\n";
+
+							if ($note['time'] !== NULL) {
+								$output_text .= 'Time Elapsed: ' . $note['time'] . "\n\n";
+							}
+
 						}
-
-						$output_html[$type] .= '		<div style="' . html($css_block) . ' background: ' . html($note['colour']) . '">' . "\n";
-						$output_html[$type] .= '			<p style="' . html($css_para) . '">' . $note['html'] . '</p>' . "\n";
-
-						$output_text .= '--------------------------------------------------' . "\n\n";
-						$output_text .= html_decode(strip_tags($note['html'])) . "\n\n";
-
-						if ($note['time'] !== NULL) {
-							$output_html[$type] .= '			<p style="' . html($css_para) . '">Time Elapsed: ' . html($note['time']) . '</p>' . "\n";
-							$output_text .= 'Time Elapsed: ' . $note['time'] . "\n\n";
-						}
-
-						if (isset($note['extra_html']) && $note['extra_html'] != '') {
-							$output_html[$type] .= $note['extra_html'];
-						}
-
-						$output_html[$type] .= '		</div>' . "\n";
 
 					}
 
 				//--------------------------------------------------
-				// Wrapper
+				// Return, with wrapper
 
-					$output_links_html = '';
-					$output_data_html = '';
+					if ($mode == 'html') {
 
-					foreach ($output_html as $type => $html) {
-						if ($html !== '') {
+						$output_links_html = '';
+						$output_data_html = '';
 
-							$node_id = 'debug_output_' . $type;
+						foreach ($output_html as $type => $html) {
+							if ($html !== '') {
 
-							$output_links_html .= '<a href="#' . html($node_id) . '"' . (isset($output_types[$type]) ? ' title="' . html($output_types[$type]) . '"' : '') . ' style="padding: 1px; color: #DDD; background: #FFF; ' . html($css_text) . '" onclick="var debug_ref = document.getElementById(\'' . addslashes($node_id) . '\'); var debug_open = debug_ref.style.display == \'block\'; this.style.color = (debug_open ? \'#DDD\' : \'#000\'); document.getElementById(\'' . addslashes($node_id) . '\').style.display = (debug_open ? \'none\' : \'block\'); this.scrollIntoView(); return false;">[' . html($type) . ']</a>';
+								$node_id = 'debug_output_' . $type;
 
-							$output_data_html .= '	<div style="display: ' . html(config::get('debug.default_show') === true ? 'block' : 'none') . ';" id="' . html($node_id) . '">' . "\n";
-							$output_data_html .= $html . "\n";
-							$output_data_html .= '	</div>' . "\n";
+								$output_links_html .= '<a href="#' . html($node_id) . '"' . (isset($output_types[$type]) ? ' title="' . html($output_types[$type]) . '"' : '') . ' style="padding: 1px; color: #DDD; background: #FFF; ' . html($css_text) . '" onclick="var debug_ref = document.getElementById(\'' . addslashes($node_id) . '\'); var debug_open = debug_ref.style.display == \'block\'; this.style.color = (debug_open ? \'#DDD\' : \'#000\'); document.getElementById(\'' . addslashes($node_id) . '\').style.display = (debug_open ? \'none\' : \'block\'); this.scrollIntoView(); return false;">[' . html($type) . ']</a>';
 
+								$output_data_html .= '	<div style="display: ' . html(config::get('debug.default_show') === true ? 'block' : 'none') . ';" id="' . html($node_id) . '">' . "\n";
+								$output_data_html .= $html . "\n";
+								$output_data_html .= '	</div>' . "\n";
+
+							}
 						}
-					}
 
-					$output_wrapper_html  = "\n\n<!-- START OF DEBUG -->\n\n";
-					$output_wrapper_html .= '<div style="margin: 0; padding: 10px; clear: both; text-align: left;">' . "\n";
-					$output_wrapper_html .= '	<p style="text-align: left; padding: 0; margin: 0; ' . html($css_text) . '">' . $output_links_html . '</p>' . "\n";
-					$output_wrapper_html .= $output_data_html;
-					$output_wrapper_html .= '</div>' . "\n\n<!-- END OF DEBUG -->\n\n";
+						$output_wrapper_html  = '<div style="margin: 0; padding: 10px; clear: both; text-align: left;">' . "\n";
+						$output_wrapper_html .= '	<p style="text-align: left; padding: 0; margin: 0; ' . html($css_text) . '">' . $output_links_html . '</p>' . "\n";
+						$output_wrapper_html .= $output_data_html;
+						$output_wrapper_html .= '</div>';
 
-					$output_html = $output_wrapper_html;
-
-				//--------------------------------------------------
-				// Add
-
-					$pos = strpos(strtolower($buffer), '</body>');
-					if ($pos !== false && config::get('output.mime') != 'text/plain') {
-
-				 		return substr($buffer, 0, $pos) . $output_html . substr($buffer, $pos);
+						return $output_wrapper_html;
 
 					} else {
 
-						if (config::get('output.mime') == 'application/xhtml+xml') {
-							mime_set('text/html');
-						}
+						$output_text = str_replace('&#xA0;', ' ', $output_text); // From HTML notes mostly
+						$output_text = str_replace('<br />', '', $output_text);
+						$output_text = str_replace('<strong>', '', $output_text);
+						$output_text = str_replace('</strong>', '', $output_text);
 
-						if (config::get('output.mime') == 'text/plain') {
-							$output_text = str_replace('&#xA0;', ' ', $output_text);
-							$output_text = str_replace('<br />', '', $output_text);
-							$output_text = str_replace('<strong>', '', $output_text);
-							$output_text = str_replace('</strong>', '', $output_text);
-				 			return $buffer . $output_text;
-						} else {
-				 			return $buffer . $output_html;
-						}
+						return $output_text;
 
 					}
 
 			}
-
-			ob_start('debug_shutdown');
 
 	}
 
