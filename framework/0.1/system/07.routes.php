@@ -258,8 +258,8 @@
 
 					$expires = (60*60*24*365);
 					header('Vary: Accept-Encoding'); // http://support.microsoft.com/kb/824847
-					header('Cache-Control: public, max-age=' . head($expires)); // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
 					header('Pragma: public'); // For HTTP/1.0 compatibility
+					header('Cache-Control: public, max-age=' . head($expires)); // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
 					header('Expires: ' . head(gmdate('D, d M Y H:i:s', time() + $expires)) . ' GMT');
 					header('Last-Modified: ' . head(gmdate('D, d M Y H:i:s', $files_mtime)) . ' GMT');
 					header('Etag: ' . head($files_mtime));

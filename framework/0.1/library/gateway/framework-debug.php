@@ -36,9 +36,16 @@
 	session::set('debug.notes', $session_notes);
 
 //--------------------------------------------------
-// Return JavaScript
+// Headers
 
 	mime_set('application/javascript');
+
+	header('Pragma: no-cache');
+	header('Cache-control: private, no-cache, must-revalidate');
+	header('Expires: Sat, 01 Jan 2000 01:00:00 GMT');
+
+//--------------------------------------------------
+// Return JavaScript
 
 	echo 'var debug_notes = ' . json_encode($notes) . ';' . "\n";
 

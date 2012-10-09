@@ -463,9 +463,9 @@
 					// No-cache headers
 
 						if (config::get('output.no_cache', false)) {
-							header('Cache-control: private, no-cache, must-revalidate');
-							header('Expires: Mon, 26 Jul 1997 01:00:00 GMT');
 							header('Pragma: no-cache');
+							header('Cache-control: private, no-cache, must-revalidate');
+							header('Expires: Sat, 01 Jan 2000 01:00:00 GMT');
 						}
 
 					//--------------------------------------------------
@@ -503,7 +503,7 @@
 								//--------------------------------------------------
 								// Resources
 
-									resources::js_add(gateway_url('framework-debug', array('ref' => $debug_ref)), 'defer');
+									resources::js_add(gateway_url('framework-debug', array('ref' => $debug_ref)), 'async');
 									resources::css_add(gateway_url('framework-file', array('file' => 'debug.css')));
 
 							} else if ($output_mime == 'text/plain') {

@@ -3,20 +3,39 @@
 //--------------------------------------------------
 // Requested file
 
-	$file = request('file');
+	$file_name = request('file');
 
-	if ($file == 'template.css' || $file == 'debug.css') {
+	if ($file_name == 'template.css' || $file_name == 'debug.css') {
 
-		// These files shouldn't be cacheable, its a temporary file
-		// that can be used before a site specific template is created.
+		//--------------------------------------------------
+		// Path
 
-		mime_set('text/css');
+			$file_path = FRAMEWORK_ROOT . '/library/view/' . $file_name;
 
-		readfile(FRAMEWORK_ROOT . '/library/view/' . $file);
+		//--------------------------------------------------
+		// Headers
+
+			mime_set('text/css');
+
+			$expires = (60*30);
+
+			header('Vary: Accept-Encoding');
+			header('Pragma: public');
+			header('Cache-Control: public, max-age=' . head($expires));
+			header('Expires: ' . head(gmdate('D, d M Y H:i:s', time() + $expires)) . ' GMT');
+			header('Last-Modified: ' . head(gmdate('D, d M Y H:i:s', filemtime($file_path))) . ' GMT');
+
+		//--------------------------------------------------
+		// Content
+
+			readfile($file_path);
 
 	} else {
 
-		render_error('page-not-found');
+		//--------------------------------------------------
+		// Error
+
+			render_error('page-not-found');
 
 	}
 
