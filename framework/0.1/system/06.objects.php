@@ -553,7 +553,7 @@
 								$output[] = $directive . ' ' . str_replace('"', "'", $value);
 							}
 
-							if (stripos(config::get('request.browser'), 'chrome') !== false) { // Webkit supports it, but Safari 5 has issues (report in url-encoded format, and blocking styles randomly).
+							if (stripos(config::get('request.browser'), 'webkit') !== false) {
 
 								$header = 'X-WebKit-CSP';
 
@@ -579,7 +579,7 @@
 											referrer tinytext NOT NULL,
 											document_uri tinytext NOT NULL,
 											original_policy text NOT NULL,
-											json text NOT NULL,
+											data_raw text NOT NULL,
 											ip tinytext NOT NULL,
 											browser tinytext NOT NULL,
 											created datetime NOT NULL,
