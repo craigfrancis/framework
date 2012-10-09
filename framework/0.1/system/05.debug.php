@@ -151,7 +151,8 @@
 
 					if ($hidden_info !== NULL) {
 						echo '
-							<p style="border: 1px solid #000; padding: 1em; margin: 0 0 1em 0;">' . nl2br(html($hidden_info)) . '</p>';
+							<hr />
+							<p>' . nl2br(html($hidden_info)) . '</p>';
 					}
 
 					echo '
@@ -318,7 +319,7 @@
 		ksort($config);
 
 		$config_html  = ($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
-		$config_html .= '<div style="margin: 0; padding: 0 0 0 3em;">';
+		$config_html .= '<div class="debug_keys">';
 
 		foreach ($config as $key => $value) {
 			if (!in_array($key, array('db.link'))) {
@@ -327,7 +328,7 @@
 				} else {
 					$value_html = html(debug_dump($value, 1));
 				}
-				$config_html .= "\n" . '  <p style="margin: 0; padding: 0; text-indent: -2em; font: normal normal 12px/14px monospace;"><strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html . '</p>';
+				$config_html .= "\n" . '  <p><strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html . '</p>';
 			}
 		}
 
@@ -346,7 +347,7 @@
 		ksort($constants['user']);
 
 		$constants_html  = 'Constants:';
-		$constants_html .= '<div style="margin: 0; padding: 0 0 0 3em;">';
+		$constants_html .= '<div class="debug_keys">';
 
 		foreach ($constants['user'] as $key => $value) {
 			if ($key == 'ENCRYPTION_KEY') {
@@ -354,7 +355,7 @@
 			} else {
 				$value_html = html(debug_dump($value));
 			}
-			$constants_html .= "\n" . '  <p style="margin: 0; padding: 0; text-indent: -2em; font: normal normal 12px/14px monospace;"><strong>' . html($key) . '</strong>: ' . $value_html . '</p>';
+			$constants_html .= "\n" . '  <p><strong>' . html($key) . '</strong>: ' . $value_html . '</p>';
 		}
 
 		return $constants_html . '</div>';
@@ -372,7 +373,7 @@
 			function debug_progress($label, $indent = 0) {
 				$debug_run_time = debug_run_time();
 				$debug_diff = round(($debug_run_time - config::get('debug.progress')), 4);
-				debug_note_html(str_repeat('&#xA0; &#xA0; ', $indent) . $debug_run_time . ' / ' . str_pad($debug_diff, 6, '0') . ' - ' . ($debug_diff > 0.0005 ? '<strong style="color: #F00;">' : '') . $label . ($debug_diff > 0.0005 ? '</strong>' : ''));
+				debug_note_html(str_repeat('&#xA0; &#xA0; ', $indent) . $debug_run_time . ' / ' . str_pad($debug_diff, 6, '0') . ' - ' . ($debug_diff > 0.0005 ? '<strong class="warning">' : '') . $label . ($debug_diff > 0.0005 ? '</strong>' : ''));
 				config::set('debug.progress', $debug_run_time);
 			}
 
@@ -523,7 +524,7 @@
 					if (preg_match('/^\W*\(?\W*SELECT/i', $query)) {
 
 						$explain_html .= '
-							<table style="border-spacing: 0; border-width: 0 1px 1px 0; border-style: solid; border-color: #000; margin: 1em 0 0 0; font: normal normal 12px/14px monospace;">';
+							<table>';
 
 						$headers_printed = false;
 
@@ -537,7 +538,7 @@
 										<tr>';
 									foreach ($row as $key => $value) {
 										$explain_html .= '
-											<th style="border-width: 1px 0 0 1px; border-style: solid; border-color: #000; padding: 0.2em;">' . html($key) . '</th>';
+											<th>' . html($key) . '</th>';
 									}
 									$explain_html .= '
 										</tr>';
@@ -547,7 +548,7 @@
 									<tr>';
 								foreach ($row as $key => $value) {
 									$explain_html .= '
-										<td style="border-width: 1px 0 0 1px; border-style: solid; border-color: #000; padding: 0.2em;">' . ($key == 'type' ? '<a href="http://dev.mysql.com/doc/refman/5.0/en/explain.html#id2772158" style="color: #000; background: #CCF; font: normal normal 12px/14px monospace; text-decoration: none;">' : '') . ($value == '' ? '&#xA0;' : html($value)) . ($key == 'type' ? '</a>' : '') . '</td>';
+										<td>' . ($key == 'type' ? '<a href="http://dev.mysql.com/doc/refman/5.0/en/explain.html#id2772158">' : '') . ($value == '' ? '&#xA0;' : html($value)) . ($key == 'type' ? '</a>' : '') . '</td>';
 								}
 								$explain_html .= '
 									</tr>';
@@ -649,11 +650,8 @@
 											echo '	<h1>Error</h1>' . "\n";
 											echo '	<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>' . "\n";
 											echo '	<p>Missing reference to "' . html(str_replace('`', '', $required_clause)) . '" column on the table "' . html($table[1]) . '".</p>' . "\n";
-											echo '	<p style="padding: 0 0 0 1em; white-space: pre;">' . "\n";
-											echo "\n\n";
-											echo $query_html . "\n";
-											echo "\n\n";
-											echo '	</p>' . "\n";
+											echo '	<hr />' . "\n";
+											echo '	<p><pre>' . "\n\n" . $query_html . "\n\n" . '</pre></p>' . "\n";
 											echo '</div>' . "\n";
 
 											exit();
@@ -671,11 +669,11 @@
 						if (count($tables) > 0) {
 
 							$text_html .= '
-								<ul style="margin: 0; padding: 0; margin: 1em 0 1em 2em; background: #CCF; color: #000; font: normal normal 12px/14px monospace;">';
+								<ul>';
 
 							foreach ($tables as $table) {
 								$text_html .= '
-									<li style="padding: 0; margin: 0; background: #CCF; color: #000; font: normal normal 12px/14px monospace; text-align: left;">' . preg_replace('/: (.*)/', ': <strong>$1</strong>', html($table)) . '</li>';
+									<li>' . preg_replace('/: (.*)/', ': <strong>$1</strong>', html($table)) . '</li>';
 							}
 
 							$text_html .= '
@@ -702,7 +700,7 @@
 					$single_line = (strpos($query_html, "\n") === false);
 
 					$html  = '<strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')<br />' . "\n";
-					$html .= '<p style="margin: 0; padding: 0; font: normal normal 12px/14px monospace; white-space: pre;">' . ($single_line ? '' : "\n") . $query_html . ($single_line ? '' : "\n\n") . '</p>';
+					$html .= '<pre class="debug_sql">' . ($single_line ? '' : "\n") . $query_html . ($single_line ? '' : "\n\n") . '</pre>';
 
 					config::array_push('debug.notes', array(
 							'type' => (defined('FRAMEWORK_INIT_TIME') ? 'L' : 'S'),
@@ -735,137 +733,6 @@
 							ip tinytext NOT NULL,
 							PRIMARY KEY  (id)
 						);');
-
-			}
-
-		//--------------------------------------------------
-		// Debug notes
-
-			function debug_notes_format($mode, $notes) {
-
-				//--------------------------------------------------
-				// Setup
-
-					$output_types = array(
-							'C' => 'Config',
-							'H' => 'Help',
-							'S' => 'Setup',
-							'L' => 'Log',
-						);
-
-					$css_text = 'font: normal normal 12px/14px monospace; text-align: left; text-decoration: none;';
-					$css_block = 'font: normal normal 12px/14px monospace; padding: 5px; margin: 5px 0; color: #000; border: 1px solid #000; clear: both;';
-					$css_para = 'padding: 0; margin: 0; ' . $css_text;
-
-				//--------------------------------------------------
-				// Time taken
-
-					$output_time = '';
-
-					if (defined('FRAMEWORK_INIT_TIME')) {
-						$output_time .= 'Setup time: ' . html(FRAMEWORK_INIT_TIME) . "\n";
-					}
-
-					$output_time .= 'Total time: ' . html(debug_run_time()) . "\n";
-					$output_time .= 'Query time: ' . html(config::get('debug.db_time')) . "";
-
-					if ($mode == 'html') {
-
-						$output_html = array();
-						foreach ($output_types as $type => $label) {
-							$output_html[$type] = '';
-						}
-
-						$output_html['L'] .= '		<div style="' . html($css_block) . ' background: #FFF;">' . "\n";
-						$output_html['L'] .= '			<pre style="' . html($css_para) . ';">' . html($output_time) . '</pre>' . "\n";
-						$output_html['L'] .= '		</div>' . "\n";
-
-					} else {
-
-						$output_text  = "\n\n\n\n\n\n\n\n\n\n";
-						$output_text .= '--------------------------------------------------' . "\n\n";
-						$output_text .= $output_time . "\n\n";
-
-					}
-
-				//--------------------------------------------------
-				// Notes
-
-					foreach ($notes as $note) {
-
-						$type = $note['type'];
-
-						if ($mode == 'html') {
-
-							if (!isset($output_html[$type])) {
-								$output_html[$type] = '';
-							}
-
-							$output_html[$type] .= '		<div style="' . html($css_block) . ' background: ' . html($note['colour']) . '">' . "\n";
-							$output_html[$type] .= '			<p style="' . html($css_para) . '">' . $note['html'] . '</p>' . "\n";
-
-							if ($note['time'] !== NULL) {
-								$output_html[$type] .= '			<p style="' . html($css_para) . '">Time Elapsed: ' . html($note['time']) . '</p>' . "\n";
-							}
-
-							if (isset($note['extra_html']) && $note['extra_html'] != '') {
-								$output_html[$type] .= $note['extra_html'];
-							}
-
-							$output_html[$type] .= '		</div>' . "\n";
-
-						} else {
-
-							$output_text .= '--------------------------------------------------' . "\n\n";
-							$output_text .= html_decode(strip_tags($note['html'])) . "\n\n";
-
-							if ($note['time'] !== NULL) {
-								$output_text .= 'Time Elapsed: ' . $note['time'] . "\n\n";
-							}
-
-						}
-
-					}
-
-				//--------------------------------------------------
-				// Return, with wrapper
-
-					if ($mode == 'html') {
-
-						$output_links_html = '';
-						$output_data_html = '';
-
-						foreach ($output_html as $type => $html) {
-							if ($html !== '') {
-
-								$node_id = 'debug_output_' . $type;
-
-								$output_links_html .= '<a href="#' . html($node_id) . '"' . (isset($output_types[$type]) ? ' title="' . html($output_types[$type]) . '"' : '') . ' style="padding: 1px; color: #DDD; background: #FFF; ' . html($css_text) . '" onclick="var debug_ref = document.getElementById(\'' . addslashes($node_id) . '\'); var debug_open = debug_ref.style.display == \'block\'; this.style.color = (debug_open ? \'#DDD\' : \'#000\'); document.getElementById(\'' . addslashes($node_id) . '\').style.display = (debug_open ? \'none\' : \'block\'); this.scrollIntoView(); return false;">[' . html($type) . ']</a>';
-
-								$output_data_html .= '	<div style="display: ' . html(config::get('debug.default_show') === true ? 'block' : 'none') . ';" id="' . html($node_id) . '">' . "\n";
-								$output_data_html .= $html . "\n";
-								$output_data_html .= '	</div>' . "\n";
-
-							}
-						}
-
-						$output_wrapper_html  = '<div style="margin: 0; padding: 10px; clear: both; text-align: left;">' . "\n";
-						$output_wrapper_html .= '	<p style="text-align: left; padding: 0; margin: 0; ' . html($css_text) . '">' . $output_links_html . '</p>' . "\n";
-						$output_wrapper_html .= $output_data_html;
-						$output_wrapper_html .= '</div>';
-
-						return $output_wrapper_html;
-
-					} else {
-
-						$output_text = str_replace('&#xA0;', ' ', $output_text); // From HTML notes mostly
-						$output_text = str_replace('<br />', '', $output_text);
-						$output_text = str_replace('<strong>', '', $output_text);
-						$output_text = str_replace('</strong>', '', $output_text);
-
-						return $output_text;
-
-					}
 
 			}
 

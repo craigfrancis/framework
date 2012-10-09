@@ -7,6 +7,7 @@
 
 	<?php if ($hidden_info !== NULL) { ?>
 
-		<p style="border: 1px solid #000; padding: 1em; margin: 0 0 1em 0;"><?= nl2br(html($hidden_info)) ?></p>
+		<hr />
+		<p><?= nl2br(html($hidden_info)) ?></p>
 
 	<?php } ?>

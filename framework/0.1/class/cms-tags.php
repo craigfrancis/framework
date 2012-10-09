@@ -870,7 +870,7 @@ class cms_tags_base extends check {
 		//--------------------------------------------------
 		// Return the output in its wrapper
 
-			return '<p' . ($align === NULL ? '' : ' style="text-align: ' . html($align) . ';"') . '>' . $item_html . '</p>';
+			return '<p' . ($align === NULL ? '' : ' class="' . html($align) . ';"') . '>' . $item_html . '</p>';
 
 	}
 

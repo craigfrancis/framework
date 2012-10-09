@@ -1,0 +1,97 @@
+
+	#debug_wrapper,
+	#debug_wrapper #debug_links,
+	#debug_wrapper #debug_links a.debug_link,
+	#debug_wrapper .debug_output,
+	#debug_wrapper .debug_output .note,
+	#debug_wrapper .debug_output .note a,
+	#debug_wrapper .debug_output .note pre,
+	#debug_wrapper .debug_output .note div,
+	#debug_wrapper .debug_output .note table,
+	#debug_wrapper .debug_output .note table th,
+	#debug_wrapper .debug_output .note table td,
+	#debug_wrapper .debug_output .note ul,
+	#debug_wrapper .debug_output .note ul li,
+	#debug_wrapper .debug_output .note .debug_keys,
+	#debug_wrapper .debug_output .note .debug_keys p {
+		color: #000;
+		background: inherit;
+		padding: 0;
+		margin: 0;
+		font: normal normal 12px/14px monospace;
+		text-align: left;
+		text-decoration: none;
+	}
+
+	#debug_wrapper {
+		margin: 0;
+		padding: 0;
+		clear: both;
+	}
+
+	#debug_wrapper #debug_links a.debug_link {
+		padding: 1px;
+		color: #DDD;
+		background: #FFF;
+	}
+
+	#debug_wrapper .debug_output {
+		margin: 0;
+		padding: 0 5px;
+		clear: both;
+		text-align: left;
+	}
+
+	#debug_wrapper .debug_output .note {
+		padding: 5px;
+		margin: 5px 0;
+		border: 1px solid #000;
+		clear: both;
+		overflow: auto;
+	}
+
+	#debug_wrapper .debug_output .note a {
+		color: #00F;
+		background: inherit;
+	}
+
+	#debug_wrapper .debug_output .note strong.warning {
+		color: #F00;
+	}
+
+	#debug_wrapper .debug_output .note span.comment {
+		color: #999;
+	}
+
+	#debug_wrapper .debug_output .note pre {
+		display: block;
+	}
+
+	#debug_wrapper .debug_output .note ul {
+		margin: 10px 0 5px 2em;
+	}
+
+	#debug_wrapper .debug_output .note table {
+		border-spacing: 0;
+		border-width: 0 1px 1px 0;
+		border-style: solid;
+		border-color: #000;
+		margin: 10px 0 0 0;
+	}
+
+	#debug_wrapper .debug_output .note table th,
+	#debug_wrapper .debug_output .note table td {
+		border-width: 1px 0 0 1px;
+		border-style: solid;
+		border-color: #000;
+		padding: 0.2em;
+	}
+
+	#debug_wrapper .debug_output .note .debug_keys {
+		margin: 0;
+		padding: 0 0 0 3em;
+	}
+
+	#debug_wrapper .debug_output .note .debug_keys p {
+		text-indent: -2em;
+	}

@@ -285,7 +285,7 @@
 			$note_html .= '&#xA0; Methods:<br />' . "\n";
 
 			foreach (config::get('request.folders') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->request_folder_get(' . html($id) . '); <span style="color: #999;">// ' . html($value) . '</span><br />' . "\n";
+				$note_html .= '&#xA0; &#xA0; $this->request_folder_get(' . html($id) . '); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
 			}
 
 			$note_html .= '&#xA0; &#xA0; $this->view_path_set(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
@@ -294,7 +294,7 @@
 			$note_html .= '&#xA0; &#xA0; $this->title_full_set(\'Custom page title.\');<br />' . "\n";
 
 			foreach (config::get('output.title_folders') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->title_folder_set(' . html($id) . ', \'new_value\'); <span style="color: #999;">// ' . html($value) . '</span><br />' . "\n";
+				$note_html .= '&#xA0; &#xA0; $this->title_folder_set(' . html($id) . ', \'new_value\'); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
 			}
 
 			$note_html .= '&#xA0; &#xA0; $this->message_set(\'The item has been updated.\');<br />' . "\n";

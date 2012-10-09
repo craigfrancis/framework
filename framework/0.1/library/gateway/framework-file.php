@@ -5,14 +5,14 @@
 
 	$file = request('file');
 
-	if ($file == 'template.css') {
+	if ($file == 'template.css' || $file == 'debug.css') {
 
-		// This file shouldn't really be cacheable, its a temporary file
+		// These files shouldn't be cacheable, its a temporary file
 		// that can be used before a site specific template is created.
 
 		mime_set('text/css');
 
-		readfile(FRAMEWORK_ROOT . '/library/view/template.css');
+		readfile(FRAMEWORK_ROOT . '/library/view/' . $file);
 
 	} else {
 

@@ -151,7 +151,7 @@
 			private $view_html = '';
 			private $view_processed = false;
 			private $message = NULL;
-			private $template_footer = NULL;
+			private $debug_output = NULL;
 
 			public function message_get() {
 				return $this->message;
@@ -490,18 +490,44 @@
 
 							if ($output_mime == 'text/html' || $output_mime == 'application/xhtml+xml') {
 
-								$debug_ref = time() . '-' . mt_rand(100000, 999999);
+								//--------------------------------------------------
+								// Store notes
 
-								$session_notes = session::get('debug.notes');
-								$session_notes[$debug_ref] = config::get('debug.notes');
+									$debug_ref = time() . '-' . mt_rand(100000, 999999);
 
-								session::set('debug.notes', $session_notes);
+									$session_notes = session::get('debug.notes');
+									$session_notes[$debug_ref] = config::get('debug.notes');
 
-								resources::js_add(gateway_url('framework-debug', array('ref' => $debug_ref)), 'defer');
+									session::set('debug.notes', $session_notes);
+
+								//--------------------------------------------------
+								// Resources
+
+									resources::js_add(gateway_url('framework-debug', array('ref' => $debug_ref)), 'defer');
+									resources::css_add(gateway_url('framework-file', array('file' => 'debug.css')));
 
 							} else if ($output_mime == 'text/plain') {
 
-								$this->template_footer = debug_notes_format('text', config::get('debug.notes'));
+								//--------------------------------------------------
+								// Notes
+
+									$this->debug_output = '';
+
+									foreach (config::get('debug.notes') as $note) {
+
+										$this->debug_output .= '--------------------------------------------------' . "\n\n";
+										$this->debug_output .= html_decode(strip_tags($note['html'])) . "\n\n";
+
+										if ($note['time'] !== NULL) {
+											$this->debug_output .= 'Time Elapsed: ' . $note['time'] . "\n\n";
+										}
+
+									}
+
+									$this->debug_output = str_replace('&#xA0;', ' ', $this->debug_output); // From HTML notes mostly
+									$this->debug_output = str_replace('<br />', '', $this->debug_output);
+									$this->debug_output = str_replace('<strong>', '', $this->debug_output);
+									$this->debug_output = str_replace('</strong>', '', $this->debug_output);
 
 							}
 
@@ -596,10 +622,28 @@
 					}
 
 				//--------------------------------------------------
-				// Template footer
+				// Debug output
 
-					if ($this->template_footer !== NULL) {
-						echo $this->template_footer;
+					if ($this->debug_output !== NULL) {
+
+						//--------------------------------------------------
+						// Time taken
+
+							$output_text  = "\n\n\n\n\n\n\n\n\n\n";
+							$output_text .= '--------------------------------------------------' . "\n\n";
+
+							if (defined('FRAMEWORK_INIT_TIME')) {
+								$output_text .= 'Setup time: ' . html(FRAMEWORK_INIT_TIME) . "\n";
+							}
+
+							$output_text .= 'Total time: ' . html(debug_run_time()) . "\n";
+							$output_text .= 'Query time: ' . html(config::get('debug.db_time')) . "\n\n";
+
+						//--------------------------------------------------
+						// Send
+
+							echo $output_text . $this->debug_output;
+
 					}
 
 			}

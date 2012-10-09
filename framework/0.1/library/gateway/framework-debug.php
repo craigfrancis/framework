@@ -40,7 +40,7 @@
 
 	mime_set('application/javascript');
 
-	echo 'var debug_html = ' . json_encode(debug_notes_format('html', $notes)) . ';' . "\n";
+	echo 'var debug_notes = ' . json_encode($notes) . ';' . "\n";
 
 	readfile(FRAMEWORK_ROOT . '/library/view/debug.js');
 
