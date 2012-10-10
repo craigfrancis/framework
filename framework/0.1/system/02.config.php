@@ -1,7 +1,73 @@
 <?php
 
 //--------------------------------------------------
-// Site configuration
+// Default values
+
+	//--------------------------------------------------
+	// Start
+
+		$config = array();
+
+	//--------------------------------------------------
+	// Request
+
+		if (!isset($_SERVER['REQUEST_URI']) && isset($_SERVER['SCRIPT_FILENAME'])) {
+			$_SERVER['REQUEST_URI'] = preg_replace('/^' . preg_quote(ROOT, '/') . '/', '', realpath($_SERVER['SCRIPT_FILENAME']));
+		}
+
+		$config['request.https']    = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on');
+		$config['request.method']   = (isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET');
+		$config['request.domain']   = (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '');
+		$config['request.uri']      = (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : './');
+		$config['request.query']    = (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '');
+		$config['request.browser']  = (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
+		$config['request.accept']   = (isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : '');
+		$config['request.referrer'] = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
+
+		if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			$config['request.ip'] = 'XForward=[' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ']';
+		} else if (isset($_SERVER['REMOTE_ADDR'])) {
+			$config['request.ip'] = $_SERVER['REMOTE_ADDR'];
+		} else {
+			$config['request.ip'] = '127.0.0.1'; // Probably CLI
+		}
+
+		$uri = $config['request.uri'];
+		$pos = strpos($uri, '?');
+		if ($pos !== false) {
+			$path = substr($uri, 0, $pos);
+		} else {
+			$path = $uri;
+		}
+
+		$config['request.path'] = $path;
+		$config['request.folders'] = path_to_array($path);
+
+		if (defined('CLI_MODE')) {
+			$config['request.url'] = 'file://' . $uri;
+		} else {
+			$config['request.url'] = ($config['request.https'] ? 'https://' : 'http://') . config::get('request.domain') . $uri;
+		}
+
+		unset($uri, $path, $pos);
+
+	//--------------------------------------------------
+	// URL
+
+		$config['url.prefix'] = '';
+		$config['url.default_format'] = 'absolute';
+
+	//--------------------------------------------------
+	// App config
+
+		$include_path = APP_ROOT . '/setup/config.php';
+
+		if (is_file($include_path)) {
+			require_once($include_path);
+		}
+
+//--------------------------------------------------
+// Convert to object
 
 	class config extends check {
 
@@ -89,69 +155,6 @@
 			trigger_error('Clone of config object is not allowed.', E_USER_ERROR);
 		}
 
-	}
-
-//--------------------------------------------------
-// Pre app specified defaults
-
-	//--------------------------------------------------
-	// Request
-
-		if (!isset($_SERVER['REQUEST_URI']) && isset($_SERVER['SCRIPT_FILENAME'])) {
-			$_SERVER['REQUEST_URI'] = preg_replace('/^' . preg_quote(ROOT, '/') . '/', '', realpath($_SERVER['SCRIPT_FILENAME']));
-		}
-
-		config::set('request.https', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'));
-		config::set('request.method', (isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET'));
-		config::set('request.domain', (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''));
-		config::set('request.uri', (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : './'));
-		config::set('request.query', (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : ''));
-		config::set('request.browser', (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''));
-		config::set('request.accept', (isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : ''));
-		config::set('request.referrer', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : ''));
-
-		if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-			config::set('request.ip', 'XForward=[' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ']');
-		} else if (isset($_SERVER['REMOTE_ADDR'])) {
-			config::set('request.ip', $_SERVER['REMOTE_ADDR']);
-		} else {
-			config::set('request.ip', '127.0.0.1'); // Probably CLI
-		}
-
-		$uri = config::get('request.uri');
-		$pos = strpos($uri, '?');
-		if ($pos !== false) {
-			$path = substr($uri, 0, $pos);
-		} else {
-			$path = $uri;
-		}
-
-		config::set('request.path', $path);
-		config::set('request.folders', path_to_array($path));
-
-		if (defined('CLI_MODE')) {
-			config::set('request.url', 'file://' . $uri);
-		} else {
-			config::set('request.url', (config::get('request.https') ? 'https://' : 'http://') . config::get('request.domain') . $uri);
-		}
-
-		unset($uri, $path, $pos);
-
-	//--------------------------------------------------
-	// URL
-
-		config::set('url.prefix', '');
-		config::set('url.default_format', 'absolute');
-
-//--------------------------------------------------
-// App config
-
-	$config = array();
-
-	$include_path = APP_ROOT . '/setup/config.php';
-
-	if (is_file($include_path)) {
-		require_once($include_path);
 	}
 
 	foreach ($config as $key => $value) { // Using an array so any project can include the config file.
@@ -294,12 +297,7 @@
 		config::set_default('gateway.url', config::get('url.prefix') . '/a/api');
 		config::set_default('gateway.server', SERVER);
 		config::set_default('gateway.error_url', NULL);
-
-	//--------------------------------------------------
-	// Maintenance
-
-		config::set_default('maintenance.active', true);
-		config::set_default('maintenance.url', '/maintenance/');
+		config::set_default('gateway.maintenance', true);
 
 //--------------------------------------------------
 // Character set
