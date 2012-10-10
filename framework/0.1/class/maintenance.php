@@ -17,13 +17,6 @@
 // TODO: Add an admin interface somewhere which can show the jobs being run, can cancel them, or stack them up.
 
 //--------------------------------------------------
-// Is enabled
-
-	if (config::get('maintenance.active') !== true) {
-		exit_with_error('Maintenance jobs disabled.');
-	}
-
-//--------------------------------------------------
 // Maintenance class
 
 	class maintenance_base extends base {

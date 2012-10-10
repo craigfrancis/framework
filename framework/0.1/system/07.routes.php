@@ -131,7 +131,7 @@
 
 				$success = $gateway->run($matches[1], $matches[2]);
 
-				if (!$success) {
+				if ($success === false) {
 					render_error('page-not-found');
 				}
 
@@ -149,43 +149,6 @@
 		}
 
 		unset($gateway_url);
-
-	//--------------------------------------------------
-	// Maintenance
-
-		$maintenance_url = config::get('maintenance.url');
-
-		if ($maintenance_url !== NULL && prefix_match($maintenance_url, $route_path)) {
-
-			config::set('output.mode', 'maintenance');
-
-			$maintenance = new maintenance();
-
-			if (SERVER == 'stage' && prefix_match(str_replace('//', '/', $maintenance_url . '/test/'), $route_path)) {
-
-				$maintenance->test();
-
-				exit();
-
-			} else {
-
-				mime_set('text/plain');
-
-				$ran_jobs = $maintenance->run();
-
-				echo 'Done @ ' . date('Y-m-d H:i:s') . "\n\n";
-
-				foreach ($ran_jobs as $job) {
-					echo '- ' . $job . "\n";
-				}
-
-				exit();
-
-			}
-
-		}
-
-		unset($maintenance_url);
 
 //--------------------------------------------------
 // Assets containing file modification time

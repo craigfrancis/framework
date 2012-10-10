@@ -487,7 +487,7 @@
 					if ($sub_path == '') {
 						$sub_path = NULL;
 					} else {
-						if (substr($sub_path, 1, 1) != '/') {
+						if (substr($sub_path, 0, 1) != '/') {
 							$sub_path = '/' . $sub_path;
 						}
 						if (substr($sub_path, -1) != '/') {
@@ -751,14 +751,21 @@
 					$api_object = str_replace('-', '_', $this->api) . '_api';
 
 					if (class_exists($api_object)) {
+
 						$api = new $api_object($this->api, $this->sub_path, $this->gateway, 'run');
-						$api->run();
+
+						$result = $api->run();
+
+					} else {
+
+						$result = true;
+
 					}
 
 				//--------------------------------------------------
 				// Success
 
-					return true;
+					return $result;
 
 			}
 
