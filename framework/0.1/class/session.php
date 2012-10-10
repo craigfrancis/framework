@@ -6,6 +6,12 @@
 
 	class session_base extends check {
 
+		public static function open() {
+
+			return (config::get('session.id') !== NULL);
+
+		}
+
 		public static function set($variable, $value = NULL) {
 
 			session::start();

@@ -437,6 +437,52 @@
 	}
 
 //--------------------------------------------------
+// Cache headers
+
+	function http_cache_headers($expires, $last_modified = NULL, $etag = NULL) {
+
+		if ($expires > 0) {
+
+			$pragma = (session::open() ? 'private' : 'public');
+
+			header('Vary: Accept-Encoding'); // http://support.microsoft.com/kb/824847
+			header('Pragma: ' . head($pragma)); // For HTTP/1.0 compatibility
+			header('Cache-Control: ' . head($pragma) . ', max-age=' . head($expires)); // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
+			header('Expires: ' . head(gmdate('D, d M Y H:i:s', time() + $expires)) . ' GMT');
+
+			if ($last_modified !== NULL) {
+
+				header('Last-Modified: ' . head(gmdate('D, d M Y H:i:s', $last_modified)) . ' GMT');
+
+				if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $last_modified) {
+					http_response_code(304);
+					exit();
+				}
+
+			}
+
+			if ($etag !== NULL) {
+
+				header('Etag: ' . head($etag));
+
+				if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && trim($_SERVER['HTTP_IF_NONE_MATCH']) == $etag) {
+					http_response_code(304);
+					exit();
+				}
+
+			}
+
+		} else {
+
+			header('Pragma: no-cache');
+			header('Cache-control: private, no-cache, must-revalidate');
+			header('Expires: Sat, 01 Jan 2000 01:00:00 GMT');
+
+		}
+
+	}
+
+//--------------------------------------------------
 // Set http response code
 
 	if (!function_exists('http_response_code')) {

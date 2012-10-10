@@ -308,7 +308,7 @@
 
 					$files[] = array(
 							'path' => gateway_url('js-code', array('ref' => $js_ref)),
-							'attributes' => array($obj->js_code_mode),
+							'attributes' => ($obj->js_code_mode == 'inline' ? array() : array($obj->js_code_mode)),
 						);
 
 			}

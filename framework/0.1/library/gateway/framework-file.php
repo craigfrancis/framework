@@ -17,13 +17,7 @@
 
 			mime_set('text/css');
 
-			$expires = (60*30);
-
-			header('Vary: Accept-Encoding');
-			header('Pragma: public');
-			header('Cache-Control: public, max-age=' . head($expires));
-			header('Expires: ' . head(gmdate('D, d M Y H:i:s', time() + $expires)) . ' GMT');
-			header('Last-Modified: ' . head(gmdate('D, d M Y H:i:s', filemtime($file_path))) . ' GMT');
+			http_cache_headers((60*30), filemtime($file_path));
 
 		//--------------------------------------------------
 		// Content

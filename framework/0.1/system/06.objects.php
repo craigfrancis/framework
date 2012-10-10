@@ -463,9 +463,7 @@
 					// No-cache headers
 
 						if (config::get('output.no_cache', false)) {
-							header('Pragma: no-cache');
-							header('Cache-control: private, no-cache, must-revalidate');
-							header('Expires: Sat, 01 Jan 2000 01:00:00 GMT');
+							http_cache_headers(0);
 						}
 
 					//--------------------------------------------------
