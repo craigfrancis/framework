@@ -152,6 +152,30 @@
 			private $view_processed = false;
 			private $message = NULL;
 			private $debug_output = NULL;
+			private $tracking_enabled = NULL;
+
+			public function __construct() {
+
+				//--------------------------------------------------
+				// Do not track header support
+
+					$this->tracking_enabled = config::get('output.tracking', (SERVER == 'live'));
+
+					if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
+
+						$this->tracking_enabled = false;
+
+					} else if (function_exists('getallheaders')) {
+
+						foreach (getallheaders() as $name => $value) {
+							if (strtolower($name) == 'dnt' && $value == 1) {
+								$this->tracking_enabled = false;
+							}
+						}
+
+					}
+
+			}
 
 			public function message_get() {
 				return $this->message;
@@ -178,65 +202,14 @@
 					}
 
 				//--------------------------------------------------
-				// Start
-
-					$html = '';
-
-				//--------------------------------------------------
-				// Google analytics
-
-					$google_analytics_code = config::get('tracking.google_analytics.code');
-					if ($google_analytics_code !== NULL) {
-
-						$html .= "\n";
-						$html .= '	<script type="text/javascript">' . "\n";
-						$html .= '	//<![CDATA[' . "\n";
-						$html .= "\n";
-						$html .= '		var _gaq = _gaq || [];' . "\n";
-						$html .= '		_gaq.push(["_setAccount", "' . html($google_analytics_code) . '"]);' . "\n";
-						$html .= '		_gaq.push(["_trackPageview"]);' . "\n";
-						$html .= "\n";
-						$html .= '		(function() {' . "\n";
-						$html .= '			var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true; ga.src = "https://ssl.google-analytics.com/ga.js"' . "\n";
-						$html .= '			var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s);' . "\n";
-						$html .= '		})();' . "\n";
-						$html .= "\n";
-						$html .= '	//]]>' . "\n";
-						$html .= '	</script>';
-
-					}
-
-				//--------------------------------------------------
 				// Return
 
-					return $html;
+					return '';
 
 			}
 
 			public function tracking_allowed_get() {
-
-				//--------------------------------------------------
-				// Do not track header support
-
-					if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
-
-						return false;
-
-					} else if (function_exists('getallheaders')) {
-
-						foreach (getallheaders() as $name => $value) {
-							if (strtolower($name) == 'dnt' && $value == 1) {
-								return false;
-							}
-						}
-
-					}
-
-				//--------------------------------------------------
-				// If on live server
-
-					return (SERVER == 'live');
-
+				return $this->tracking_enabled;
 			}
 
 			public function css_get($mode) {
@@ -480,6 +453,28 @@
 						unset($mime_xml);
 
 					//--------------------------------------------------
+					// Google analytics
+
+						if ($this->tracking_allowed_get()) {
+
+							$google_analytics_code = config::get('tracking.google_analytics.code');
+							if ($google_analytics_code !== NULL) {
+
+								$js_code  = 'var _gaq = _gaq || [];' . "\n";
+								$js_code .= '_gaq.push(["_setAccount", "' . html($google_analytics_code) . '"]);' . "\n";
+								$js_code .= '_gaq.push(["_trackPageview"]);' . "\n\n";
+								$js_code .= '(function() {' . "\n";
+								$js_code .= '	var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true;' . "\n";
+								$js_code .= '	ga.src = ("https:" == document.location.protocol ? "https://ssl" : "http://www") + ".google-analytics.com/ga.js";' . "\n";
+								$js_code .= '	var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s);' . "\n";
+								$js_code .= '})();' . "\n";
+
+								resources::js_code_add($js_code);
+
+							}
+						}
+
+					//--------------------------------------------------
 					// Debug
 
 						if (config::get('debug.level') > 0 && config::get('debug.show') === true) {
@@ -656,11 +651,7 @@
 				}
 
 				if (!is_file($template_path)) {
-
 					$template_path = FRAMEWORK_ROOT . '/library/view/template.ctp';
-
-					resources::css_add(gateway_url('framework-file', array('file' => 'template.css')));
-
 				}
 
 				if (config::get('debug.level') >= 4) {
