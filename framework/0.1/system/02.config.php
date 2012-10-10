@@ -46,7 +46,7 @@
 		if (defined('CLI_MODE')) {
 			$config['request.url'] = 'file://' . $uri;
 		} else {
-			$config['request.url'] = ($config['request.https'] ? 'https://' : 'http://') . config::get('request.domain') . $uri;
+			$config['request.url'] = ($config['request.https'] ? 'https://' : 'http://') . $config['request.domain'] . $uri;
 		}
 
 		unset($uri, $path, $pos);
