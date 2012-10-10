@@ -491,19 +491,16 @@
 							if ($output_mime == 'text/html' || $output_mime == 'application/xhtml+xml') {
 
 								//--------------------------------------------------
-								// Store notes
+								// JS
 
-									$debug_ref = time() . '-' . mt_rand(100000, 999999);
-
-									$session_notes = session::get('debug.notes');
-									$session_notes[$debug_ref] = config::get('debug.notes');
-
-									session::set('debug.notes', $session_notes);
+									$js_code  = 'var debug_notes = ' . json_encode(config::get('debug.notes')) . ';' . "\n";
+									$js_code .= file_get_contents(FRAMEWORK_ROOT . '/library/view/debug.js');
 
 								//--------------------------------------------------
 								// Resources
 
-									resources::js_add(gateway_url('framework-debug', array('ref' => $debug_ref)), 'async');
+									resources::js_code_add($js_code, 'async');
+
 									resources::css_add(gateway_url('framework-file', array('file' => 'debug.css')));
 
 							} else if ($output_mime == 'text/plain') {

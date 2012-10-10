@@ -4,6 +4,8 @@
 
 		private $head_html = '';
 		private $js_files = array();
+		private $js_code_data = '';
+		private $js_code_mode = NULL;
 		private $css_files_main = array();
 		private $css_files_alternate = array();
 
@@ -26,6 +28,36 @@
 					'path' => $path,
 					'attributes' => $attributes,
 				);
+		}
+
+		public static function js_code_add($code, $mode = 'inline') {
+			
+			$obj = resources::instance_get();
+
+			$obj->js_code_data .= $code;
+
+			if ($mode == 'inline') {
+
+				$obj->js_code_mode = $mode;
+
+			} else if ($mode == 'defer') {
+
+				if ($obj->js_code_mode === NULL || $obj->js_code_mode == 'async') {
+					$obj->js_code_mode = $mode;
+				}
+
+			} else if ($mode == 'async') {
+
+				if ($obj->js_code_mode === NULL) {
+					$obj->js_code_mode = $mode;
+				}
+
+			} else {
+
+				exit_with_error('Unrecognised js code mode (inline/defer/async)');
+
+			}
+
 		}
 
 		public static function css_add($path, $media = 'all') {
@@ -257,6 +289,28 @@
 						$files[$id]['path'] = dirname($file['path']) . '/' . filemtime(PUBLIC_ROOT . $file['path']) . '-' . basename($file['path']);
 					}
 				}
+			}
+
+			if ($type == 'js' && $obj->js_code_data != '') {
+
+				//--------------------------------------------------
+				// Store in session
+
+					$js_ref = time() . '-' . mt_rand(100000, 999999);
+
+					$session_js = session::get('output.js_code');
+					$session_js[$js_ref] = $obj->js_code_data;
+
+					session::set('output.js_code', $session_js);
+
+				//--------------------------------------------------
+				// Add to array
+
+					$files[] = array(
+							'path' => gateway_url('js-code', array('ref' => $js_ref)),
+							'attributes' => array($obj->js_code_mode),
+						);
+
 			}
 
 			return $files;
