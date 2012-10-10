@@ -297,7 +297,7 @@
 		config::set_default('gateway.url', config::get('url.prefix') . '/a/api');
 		config::set_default('gateway.server', SERVER);
 		config::set_default('gateway.error_url', NULL);
-		config::set_default('gateway.maintenance', true);
+		config::set_default('gateway.maintenance', false);
 
 //--------------------------------------------------
 // Character set
