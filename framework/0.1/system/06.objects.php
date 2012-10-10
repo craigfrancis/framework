@@ -553,7 +553,7 @@
 								$output[] = $directive . ' ' . str_replace('"', "'", $value);
 							}
 
-							if (stripos(config::get('request.browser'), 'webkit') !== false) {
+							if (stripos(config::get('request.browser'), 'chrome') !== false) { // Safari 5.1.7 is still widely used, and very buggy (not loading styles)
 
 								$header = 'X-WebKit-CSP';
 
