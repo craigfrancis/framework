@@ -306,13 +306,17 @@
 		return $output;
 	}
 
-	function cut_to_words($text, $words) {
+	function cut_to_words($text, $words, $trim = true) {
 		$text = strip_tags($text);
-		$text = explode(' ', $text, $words + 1);
+		$text = preg_split('/\s+/', $text, $words + 1);
 		if (count($text) > $words) {
-			$dump_data = array_pop($text);
+			array_pop($text);
 		}
-		return implode(' ', $text);
+		$text = implode(' ', $text);
+		if ($trim) {
+			$text = preg_replace('/\W+$/', '', $text); // End characters, e.g. full stops
+		}
+		return $text;
 	}
 
 	function is_assoc($array) {
