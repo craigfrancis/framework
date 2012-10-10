@@ -491,7 +491,7 @@
 								//--------------------------------------------------
 								// JS
 
-									$js_code  = 'var debug_notes = ' . json_encode(config::get('debug.notes')) . ';' . "\n";
+									$js_code  = "\n\n" . 'var debug_notes = ' . json_encode(config::get('debug.notes')) . ';' . "\n";
 									$js_code .= file_get_contents(FRAMEWORK_ROOT . '/library/view/debug.js');
 
 								//--------------------------------------------------
