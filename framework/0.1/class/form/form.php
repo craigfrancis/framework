@@ -724,6 +724,16 @@
 					}
 
 				//--------------------------------------------------
+				// Max input variables
+
+					$input_vars_max = intval(ini_get('max_input_vars'));
+					$input_vars_sent = count($_REQUEST);
+
+					if ($input_vars_max > 0 && $input_vars_max <= $input_vars_sent) {
+						exit_with_error('The form submitted too many values for this server.', 'Maximum input variables: ' . $input_vars_max . ' (max_input_vars)');
+					}
+
+				//--------------------------------------------------
 				// Fields
 
 					foreach ($this->fields as $field) {
@@ -1263,11 +1273,6 @@
 					}
 
 				//--------------------------------------------------
-				// Field count check
-
-					// TODO: max_input_vars
-
-				//--------------------------------------------------
 				// Return
 
 					return $html;
@@ -1291,6 +1296,7 @@
 
 					$html = '
 							<div class="row submit">';
+
 					foreach ($buttons as $attributes) {
 						if (!is_array($attributes)) {
 							$attributes = array('value' => $attributes);
@@ -1301,6 +1307,7 @@
 						$html .= '
 								' . html_tag('input', array_merge(array('type' => 'submit', 'name' => $this->form_button_name), $attributes));
 					}
+
 					return $html . '
 							</div>';
 
@@ -1324,13 +1331,6 @@
 							' . $this->html_submit() . '
 						</fieldset>
 					' . $this->html_end() . "\n";
-			}
-
-			public function __toString() { // (PHP 5.2)
-				if (SERVER == 'stage') {
-					return 'depreciated - use $form->html()';
-				}
-				return $this->html();
 			}
 
 	}
