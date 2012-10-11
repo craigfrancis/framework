@@ -989,13 +989,6 @@
 			return csv(html_decode(strip_tags($html)));
 		}
 
-		public function __toString() { // (PHP 5.2)
-			if (SERVER == 'stage') {
-				return 'depreciated - use $table->html()';
-			}
-			return $this->html();
-		}
-
 	}
 
 	class table_row_base extends check {
