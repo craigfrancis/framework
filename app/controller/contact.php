@@ -81,6 +81,12 @@
 				}
 
 			//--------------------------------------------------
+			// JavaScript
+
+				resources::js_add('/a/js/contact.js');
+				resources::js_code_add($form->validation_js());
+
+			//--------------------------------------------------
 			// Variables
 
 				$this->set('form', $form);
