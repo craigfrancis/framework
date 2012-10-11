@@ -1,0 +1,227 @@
+//--------------------------------------------------
+// SQL Injection ideas
+
+		Trying to remove the use of:
+
+			$db->escape($variable)
+			$db->escapeLike($variable)
+			DB_PREFIX
+
+		Escaping field and table names?
+
+		Running a sub-query when looping though results:
+
+			while ($row = $db->fetch_assoc(XXX)) {
+			}
+
+		Handle INSERT ... ON DUPLICATE KEY UPDATE
+
+		Handle UPDATE ... SET field = field + 1
+
+	//--------------------------------------------------
+	// Database
+
+		class database {
+
+			function query() {
+				debug(func_get_args());
+			}
+
+		}
+
+		$field = 'name';
+		$value = 'john';
+
+		$db = new database();
+		$db->query('SELECT', $field, 'FROM `table` WHERE field = ', $value, 'AND test = ', $value);
+
+		// How would you tell which is a variable to be escaped or not... can't alternate, can't check if variable is named $where_sql
+
+	//--------------------------------------------------
+	// Query 1
+
+		class query1 {
+			function s($sql) {
+				echo ' ' . $sql . ' ';
+				return $this;
+			}
+			function f($field) {
+				echo '`' . $field . '`';
+				return $this;
+			}
+			function t($text) {
+				echo '"' . $text . '"';
+				return $this;
+			}
+		}
+
+		$q = new query1();
+		$q->s('SELECT')->f('name')->s('FROM')->f('table')->s('WHERE')->f('field')->s('=')->t($value);
+
+		echo "\n<br />\n<br />";
+
+		// How long would this get?!
+
+	//--------------------------------------------------
+	// Query 2
+
+		class query2 {
+			function sql($sql) {
+				echo ' ' . $sql . ' ';
+				return $this;
+			}
+			function t($text) {
+				echo '"' . $text . '"';
+				return $this;
+			}
+		}
+
+		$query = new query2();
+		$query->sql('SELECT
+						name
+					FROM
+						table
+					WHERE
+						field = ')->t($value)->sql('
+					LIMIT
+						5');
+
+		echo "\n<br />\n<br />";
+
+		// And what stops the developer still doing string concatenation, or not passing it thought the t() function?
+
+	//--------------------------------------------------
+	// Next...
+
+		$query1 = new db_select();
+		$query1 = $db->query_get();
+
+		$query1->fields_sql_set('field', 'testing', 'example');
+		$query1->from_sql_set('table LEFT JOIN next AS n ON n.id = t.child_id');
+		$query1->where_sql_set('t.id = ' . $query1->escape($value));
+
+			while ($row = $query1->fetch_assoc()) {
+				$query2 = ...
+			}
+
+		// Broken up into component parts, but still needing custom escaping
+
+//--------------------------------------------------
+// Alternative methods
+
+	Return a special object for queries
+
+		$db = $this->db_get();
+
+		$rs_1 = $db->query('SELECT
+							FROM');
+
+		while ($row = $rs_1->fetch_assoc()) {
+		}
+
+		$rst = $this->db_query('INSERT INTO table (
+								) VALUES (
+								)');
+
+	Can be called statically or dynamically:
+
+		$rst_a = db::query('
+			SELECT
+			FROM');
+
+		$rst_a = $db->query('
+			SELECT
+			FROM');
+
+		$rst_a = $this->db->query('
+			SELECT
+			FROM');
+
+		When called statically, use
+		variable from config?
+
+	Useful for the form object which may need to
+	known which $link to use:
+
+		$form = new form(
+				'database_table' => array(DB_PREFIX . 'example_table', 'a', $db), // Alias and database connection
+			);
+
+		if ($db === NULL) {
+			$db = db; // ???
+		}
+
+	How about a generic
+
+		$rst_a = db_query('SELECT
+							FROM');
+
+	With a record set:
+
+		$rs = db::query('SELECT
+							FROM');
+
+		$rst = db:q('SELECT
+					FROM');
+
+		$rst = $my_db:q('SELECT
+						FROM');
+
+		$rst = $this->db:q('SELECT
+							FROM');
+
+	In this example, we could return a "db_result" object,
+	which could be used in the form of:
+
+		if ($rst->num_rows() > 0) {
+		}
+
+		while ($rst->next()) {
+			$user[]['address'] = $rst->fetch_assoc();
+			$user[]['address'] = $rst->get('address');
+			$user[]['address'] = $rst->get_address();
+			$user[]['address'] = $rst->address;
+		}
+
+		This may be helpful when searching for all
+		references to address... but remember tab
+		completion.
+
+	Other selects
+
+		db('SELECT
+				*
+			FROM
+				' . DB_PREFIX . 'table_name
+			WHERE
+				field = val';
+
+		db::ex('SELECT
+					*
+				FROM
+					' . DB_PREFIX . 'table_name
+				WHERE
+					field = val';
+
+		$db->query('SELECT
+						*
+					FROM
+						' . DB_PREFIX . 'table_name
+					WHERE
+						field = val');
+
+	More selects
+
+		$rs = DB::query('SELECT
+						FROM');
+
+		db::ex('SELECT
+				FROM');
+
+		$db->query('SELECT
+					FROM');
+
+		$this->query('SELECT
+					FROM');
+
+//--------------------------------------------------
