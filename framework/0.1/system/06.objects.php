@@ -469,7 +469,7 @@
 								$js_code .= '	var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s);' . "\n";
 								$js_code .= '})();' . "\n";
 
-								resources::js_code_add($js_code);
+								resources::js_code_add($js_code, 'async');
 
 							}
 						}
