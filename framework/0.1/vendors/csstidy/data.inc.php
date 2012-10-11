@@ -68,7 +68,6 @@ $GLOBALS['csstidy']['at_rules'] = array('page' => 'is','font-face' => 'is','char
  /**
  * Properties that need a value with unit
  *
- * @todo CSS3 properties
  * @see compress_numbers();
  * @global array $GLOBALS['csstidy']['unit_values']
  * @version 1.2
@@ -82,7 +81,6 @@ $GLOBALS['csstidy']['unit_values'] = array ('background', 'background-position',
 /**
  * Properties that allow <color> as value
  *
- * @todo CSS3 properties
  * @see compress_numbers();
  * @global array $GLOBALS['csstidy']['color_values']
  * @version 1.0
@@ -101,7 +99,6 @@ $GLOBALS['csstidy']['color_values'][] = 'outline-color';
 /**
  * Default values for the background properties
  *
- * @todo Possibly property names will change during CSS3 development
  * @global array $GLOBALS['csstidy']['background_prop_default']
  * @see dissolve_short_bg()
  * @see merge_bg()
@@ -257,7 +254,6 @@ $GLOBALS['csstidy']['replace_colors']['yellowgreen'] = '#9ACD32';
  * A list of all shorthand properties that are devided into four properties and/or have four subvalues
  *
  * @global array $GLOBALS['csstidy']['shorthands']
- * @todo Are there new ones in CSS3?
  * @see dissolve_4value_shorthands()
  * @see merge_4value_shorthands()
  * @version 1.0
@@ -274,7 +270,6 @@ $GLOBALS['csstidy']['shorthands']['-moz-border-radius'] = 0;
  * All CSS Properties. Needed for csstidy::property_is_next()
  *
  * @global array $GLOBALS['csstidy']['all_properties']
- * @todo Add CSS3 properties
  * @version 1.0
  * @see csstidy::property_is_next()
  */

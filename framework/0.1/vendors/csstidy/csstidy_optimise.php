@@ -644,7 +644,6 @@ class csstidy_optimise
      * @return array
      * @version 1.0
      * @see merge_bg()
-     * @todo full CSS 3 compliance
      */
     function dissolve_short_bg($str_value)
     {
@@ -730,7 +729,6 @@ class csstidy_optimise
      * @return array
      * @version 1.0
      * @see dissolve_short_bg()
-     * @todo full CSS 3 compliance
      */
     function merge_bg($input_css)
     {
