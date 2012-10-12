@@ -344,15 +344,6 @@
 				}
 
 			//--------------------------------------------------
-			// Hash the users password - always run, so timing
-			// will always be about the same... taking that the
-			// hashing process is computationally expensive we
-			// don't want to return early, as that would show
-			// the account exists.
-
-				$valid = password::verify($password, $db_hash, $db_id);
-
-			//--------------------------------------------------
 			// Too many failed logins?
 
 				$db->query('SELECT
@@ -372,6 +363,18 @@
 					$error = 'frequent_failure';
 				} else {
 					$error = '';
+				}
+
+			//--------------------------------------------------
+			// Hash the users password - always run, so timing
+			// will always be about the same... taking that the
+			// hashing process is computationally expensive we
+			// don't want to return early, as that would show
+			// the account exists... but don't run for frequent
+			// failures, as this could help towards a DOS attack
+
+				if ($error == '') {
+					$valid = password::verify($password, $db_hash, $db_id);
 				}
 
 			//--------------------------------------------------
