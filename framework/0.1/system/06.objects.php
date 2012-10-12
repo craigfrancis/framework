@@ -475,7 +475,7 @@
 
 					//--------------------------------------------------
 					// Debug
-
+mime_set('text/plain');
 						if (config::get('debug.level') > 0 && config::get('debug.show') === true) {
 
 							$output_mime = config::get('output.mime');
@@ -512,11 +512,6 @@
 										}
 
 									}
-
-									$this->debug_output = str_replace('&#xA0;', ' ', $this->debug_output); // From HTML notes mostly
-									$this->debug_output = str_replace('<br />', '', $this->debug_output);
-									$this->debug_output = str_replace('<strong>', '', $this->debug_output);
-									$this->debug_output = str_replace('</strong>', '', $this->debug_output);
 
 							}
 
