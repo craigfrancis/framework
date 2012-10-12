@@ -21,10 +21,6 @@
 	// 		// Need to be able to pull in config on init... e.g. new ve_calendar(array('full' => true));
 	// 	}
 	//
-	// 	public function __toString() {
-	// 		// Like construct, perhaps the __toString is in "ve_base" (final)... and then have a custom "print" method.
-	// 	}
-	//
 	// }
 
 ?>
