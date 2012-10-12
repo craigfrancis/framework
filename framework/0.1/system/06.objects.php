@@ -464,8 +464,7 @@
 								$js_code .= '_gaq.push(["_setAccount", "' . html($google_analytics_code) . '"]);' . "\n";
 								$js_code .= '_gaq.push(["_trackPageview"]);' . "\n\n";
 								$js_code .= '(function() {' . "\n";
-								$js_code .= '	var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true;' . "\n";
-								$js_code .= '	ga.src = ("https:" == document.location.protocol ? "https://ssl" : "http://www") + ".google-analytics.com/ga.js";' . "\n";
+								$js_code .= '	var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true; ga.src = "https://ssl.google-analytics.com/ga.js";' . "\n";
 								$js_code .= '	var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s);' . "\n";
 								$js_code .= '})();' . "\n";
 
