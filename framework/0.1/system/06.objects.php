@@ -475,7 +475,7 @@
 
 					//--------------------------------------------------
 					// Debug
-mime_set('text/plain');
+
 						if (config::get('debug.level') > 0 && config::get('debug.show') === true) {
 
 							$output_mime = config::get('output.mime');
