@@ -61,7 +61,11 @@
 			$robots_path = VIEW_ROOT . '/robots.txt';
 
 			if (!is_file($robots_path)) {
-				$robots_path = FRAMEWORK_ROOT . '/library/view/robots.txt';
+				if (SERVER == 'live') {
+					$robots_path = FRAMEWORK_ROOT . '/library/view/robots.allow.txt';
+				} else {
+					$robots_path = FRAMEWORK_ROOT . '/library/view/robots.disallow.txt';
+				}
 			}
 
 			header('Content-type: text/plain; charset=' . head(config::get('output.charset')));
