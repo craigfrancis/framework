@@ -62,9 +62,9 @@
 
 			if (!is_file($robots_path)) {
 				if (SERVER == 'live') {
-					$robots_path = FRAMEWORK_ROOT . '/library/view/robots.allow.txt';
+					$robots_path = FRAMEWORK_ROOT . '/library/view/robots-allow.txt';
 				} else {
-					$robots_path = FRAMEWORK_ROOT . '/library/view/robots.disallow.txt';
+					$robots_path = FRAMEWORK_ROOT . '/library/view/robots-disallow.txt';
 				}
 			}
 
