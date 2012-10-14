@@ -126,7 +126,7 @@
 			//--------------------------------------------------
 			// Session pass
 
-				$session_pass = md5(uniqid(mt_rand(), true));
+				$session_pass = uniqid(mt_rand(), true);
 
 			//--------------------------------------------------
 			// Create a new session
@@ -149,6 +149,7 @@
 
 				$session_name = $this->user_obj->session_name_get();
 
+				session::regenerate();
 				session::set($session_name . '_id', $session_id);
 				session::set($session_name . '_pass', $session_pass); // Password support added so an "auth_token" can be passed to the user.
 

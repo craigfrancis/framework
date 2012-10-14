@@ -44,8 +44,12 @@
 
 			session::destroy();
 			session::start();
-			session_regenerate_id();
+			session::regenerate();
 
+		}
+
+		public static function regenerate() {
+			session_regenerate_id();
 		}
 
 		public static function destroy() {
@@ -104,7 +108,7 @@
 
 						if (count($_SESSION) == 0) {
 
-							session_regenerate_id(); // Don't want UA telling us the ID to use
+							session::regenerate(); // Don't want UA telling us the ID to use
 
 							config::set('session.id', session_id());
 
