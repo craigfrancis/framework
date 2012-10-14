@@ -537,7 +537,9 @@
 								$output[] = $directive . ' ' . str_replace('"', "'", $value);
 							}
 
-							if (stripos(config::get('request.browser'), 'chrome') !== false) { // Safari 5.1.7 is still widely used, and very buggy (not loading styles)
+							$header = NULL;
+
+							if (stripos(config::get('request.browser'), 'chrome') !== false) {
 
 								$header = 'X-WebKit-CSP';
 
@@ -545,13 +547,19 @@
 									$header .= '-Report-Only';
 								}
 
-								header($header . ': ' . implode('; ', $output));
+							} else if (stripos(config::get('request.browser'), 'safari') !== false) {
+
+								$header = 'X-WebKit-CSP-Report-Only'; // Safari 5.1.7 is still widely used, and very buggy (not loading styles)
 
 							} else {
 
 								// $header = 'Content-Security-Policy';
-								// $header = 'X-Content-Security-Policy'; // Firefox does not support 'unsafe-inline' - https://bugzilla.mozilla.org/show_bug.cgi?id=763879#c5
+								$header = 'X-Content-Security-Policy-Report-Only'; // Firefox does not support 'unsafe-inline' - https://bugzilla.mozilla.org/show_bug.cgi?id=763879#c5
 
+							}
+
+							if ($header !== NULL) {
+								header($header . ': ' . implode('; ', $output));
 							}
 
 							if (config::get('debug.level') > 0) {

@@ -20,7 +20,7 @@
 
 		$report = array_merge($report, $data_array['csp-report']);
 
-	} else if (request('document-url') !== NULL) {
+	} else if (request('document-url') !== NULL) { // Safari
 
 		$report['document-uri'] = request('document-url');
 		$report['violated-directive'] = request('violated-directive');
@@ -29,6 +29,10 @@
 
 		exit_with_error('Content-Security-Policy failure', $data_raw);
 
+	}
+
+	if ($report['referrer'] == '') {
+		$report['referrer'] = config::get('request.referrer'); // Safari
 	}
 
 //--------------------------------------------------
@@ -40,8 +44,8 @@
 
 		$ignore_uris = array(
 			'chrome-extension://lifbcibllhkdhoafpjfnlhfpfgnpldfl', // Skype
-			'http://nikkomsgchannel', // Rapport
-			'http://edge.crtinv.com/', // Sterkly Revenue Suite (adds banners to websites)
+			// 'http://nikkomsgchannel', // Rapport (TODO: Re-enable)
+			// 'http://edge.crtinv.com/', // Sterkly Revenue Suite (adds banners to websites)
 		);
 
 	}
@@ -53,23 +57,33 @@
 //--------------------------------------------------
 // Record
 
-	$db = $this->db_get();
+	$handler = config::get('output.csp_report_handle');
 
-	$values_update = array(
-		'blocked_uri'        => $report['blocked-uri'],
-		'violated_directive' => $report['violated-directive'],
-		'referrer'           => $report['referrer'],
-		'document_uri'       => $report['document-uri'],
-		'original_policy'    => $report['original-policy'],
-		'data_raw'           => $data_raw,
-		'ip'                 => config::get('request.ip'),
-		'browser'            => config::get('request.browser'),
-		'updated'            => date('Y-m-d H:i:s'),
-	);
+	if ($handler) {
 
-	$values_insert = $values_update;
-	$values_insert['created'] = date('Y-m-d H:i:s');
+		call_user_func($handler, $report, $data_raw);
 
-	$db->insert(DB_PREFIX . 'report_csp', $values_insert, $values_update);
+	} else {
+
+		$db = $this->db_get();
+
+		$values_update = array(
+			'blocked_uri'        => $report['blocked-uri'],
+			'violated_directive' => $report['violated-directive'],
+			'referrer'           => $report['referrer'],
+			'document_uri'       => $report['document-uri'],
+			'original_policy'    => $report['original-policy'],
+			'data_raw'           => $data_raw,
+			'ip'                 => config::get('request.ip'),
+			'browser'            => config::get('request.browser'),
+			'updated'            => date('Y-m-d H:i:s'),
+		);
+
+		$values_insert = $values_update;
+		$values_insert['created'] = date('Y-m-d H:i:s');
+
+		$db->insert(DB_PREFIX . 'report_csp', $values_insert, $values_update);
+
+	}
 
 ?>
