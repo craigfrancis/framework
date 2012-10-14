@@ -43,7 +43,8 @@
 	if ($ignore_uris == 'defaults') {
 
 		$ignore_uris = array(
-			'chrome-extension://lifbcibllhkdhoafpjfnlhfpfgnpldfl', // Skype
+			// 'chrome-extension://lifbcibllhkdhoafpjfnlhfpfgnpldfl', // Skype
+			// 'chrome-extension://pioclpoplcdbaefihamjohnefbikjilc', // Evernote Web Clipper
 			// 'http://nikkomsgchannel', // Rapport (TODO: Re-enable)
 			// 'http://edge.crtinv.com/', // Sterkly Revenue Suite (adds banners to websites)
 		);
