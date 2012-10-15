@@ -17,9 +17,6 @@
 	//--------------------------------------------------
 	// DB variables
 
-		config::set_default('debug.db', (config::get('debug.level') > 1));
-		config::set_default('debug.db_required_fields', array('deleted'));
-
 		config::set('debug.db_time', 0);
 
 //--------------------------------------------------

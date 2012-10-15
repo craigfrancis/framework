@@ -289,6 +289,8 @@
 
 		config::set_default('debug.level', (SERVER == 'stage' ? 3 : 0)); // 0 not running, 1 for execution time, 2 to also include application logs, 3 for framework logs, 4+ for framework debugging.
 		config::set_default('debug.show', true); // Only relevant when running.
+		config::set_default('debug.db', (config::get('debug.level') > 1));
+		config::set_default('debug.db_required_fields', array('deleted'));
 
 	//--------------------------------------------------
 	// Gateway
