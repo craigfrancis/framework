@@ -67,7 +67,7 @@
 		}
 
 //--------------------------------------------------
-// Convert to object
+// Config object
 
 	class config extends check {
 
@@ -156,6 +156,9 @@
 		}
 
 	}
+
+//--------------------------------------------------
+// Add values to object
 
 	foreach ($config as $key => $value) { // Using an array so any project can include the config file.
 		config::set($key, $value);

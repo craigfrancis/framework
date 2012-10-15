@@ -177,11 +177,11 @@
 
 		$config_php = file_get_contents($path_config);
 
-		$config_start = strpos($config_php, '//--------------------------------------------------');
+		$config_start = strpos($config_php, '// Config object');
 		$config_end = strpos($config_php, '//--------------------------------------------------', ($config_start + 1));
 
 		$config_php = substr($config_php, $config_start, ($config_end - $config_start));
-
+		$config_php = '//--------------------------------------------------' . "\n" . $config_php;
 		$config_php = str_replace(' extends check', '', $config_php);
 
 		$output_php .= $config_php;

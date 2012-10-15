@@ -9,6 +9,7 @@
 			protected $zero_to_blank;
 			protected $min_value;
 			protected $max_value;
+			protected $step_value;
 
 		//--------------------------------------------------
 		// Setup
@@ -27,6 +28,7 @@
 					$this->zero_to_blank = false;
 					$this->min_value = NULL;
 					$this->max_value = NULL;
+					$this->step_value = 'any';
 					$this->type = 'number';
 					$this->input_type = 'number';
 
@@ -94,6 +96,20 @@
 
 			}
 
+			public function step_value_set($error, $step = 1) {
+				$this->step_value_set_html(html($error), $step);
+			}
+
+			public function step_value_set_html($error_html, $step = 1) {
+
+				if ($this->form_submitted && $this->value != '' && abs((round($this->value / $step) * $step) - $this->value) > 0.00001) { // ref 'epsilon' on http://php.net/manual/en/language.types.float.php
+					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $step, $error_html));
+				}
+
+				$this->step_value = $step;
+
+			}
+
 		//--------------------------------------------------
 		// Value
 
@@ -135,6 +151,10 @@
 
 				if ($this->max_value !== NULL) {
 					$attributes['max'] = $this->max_value;
+				}
+
+				if ($this->step_value !== NULL) {
+					$attributes['step'] = $this->step_value;
 				}
 
 				if (isset($attributes['value']) && $attributes['value'] == '') {
