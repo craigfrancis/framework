@@ -225,7 +225,7 @@
 
 		config::set_default('output.site_name', 'Company Name');
 		config::set_default('output.lang', 'en-GB');
-		config::set_default('output.mime', 'text/html');
+		config::set_default('output.mime', (SERVER == 'stage' ? 'application/xhtml+xml' : 'text/html'));
 		config::set_default('output.charset', 'UTF-8');
 		config::set_default('output.error', false);
 		config::set_default('output.no_cache', false);
