@@ -85,6 +85,7 @@
 
 					ini_set('session.use_cookies', true);
 					ini_set('session.use_only_cookies', true); // Prevent session fixation though the URL
+					ini_set('session.cookie_secure', https_only());
 					ini_set('session.cookie_httponly', true); // Not available to JS
 
 					session_name(config::get('session.name'));

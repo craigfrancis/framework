@@ -31,7 +31,7 @@
 
 				if (!isset($config['path']))      $config['path']      = '/';
 				if (!isset($config['domain']))    $config['domain']    = NULL;
-				if (!isset($config['secure']))    $config['secure']    = false;
+				if (!isset($config['secure']))    $config['secure']    = https_only();
 				if (!isset($config['http_only'])) $config['http_only'] = true;
 
 			//--------------------------------------------------

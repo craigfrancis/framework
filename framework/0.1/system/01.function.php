@@ -641,6 +641,11 @@
 		return in_array('https', config::get('output.protocols'));
 	}
 
+	function https_only() {
+		$protocols = config::get('output.protocols');
+		return (count($protocols) == 1 && in_array('https', $protocols));
+	}
+
 	function https_required() {
 
 		if (https_available() && !config::get('request.https') && config::get('request.method') == 'GET') {
