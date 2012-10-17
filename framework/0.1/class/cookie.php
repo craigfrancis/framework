@@ -92,11 +92,11 @@
 
 			$cookie = $_COOKIE[$variable_full];
 
-			if (!config::get('cookie.protect', false)) {
+			if (!config::get('cookie.protect', false) && (!isset($cookie[40]) || $cookie[40] !== '~')) { // TODO: Remove
 
 				return $cookie;
 
-			} else if (isset($cookie[40]) AND $cookie[40] === '~') { // sha1 length is 40 characters
+			} else if (isset($cookie[40]) && $cookie[40] === '~') { // sha1 length is 40 characters
 
 				list($hash, $value) = explode('~', $cookie, 2); // Separate the salt and the value
 
