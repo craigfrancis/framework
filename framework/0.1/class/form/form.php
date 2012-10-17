@@ -158,14 +158,16 @@
 				//--------------------------------------------------
 				// Generate a csrf_token if one does not exist
 
-					$this->csrf_token = cookie::get('csrf');
+					$this->csrf_token = session::get('csrf');
 					$this->csrf_error_html = 'The request did not appear to come from a trusted source, please try again.';
 
 					if ($this->csrf_token == '') {
 						$this->csrf_token = mt_rand(1000000, 9999999);
 					}
 
-					cookie::set('csrf', $this->csrf_token);
+					session::set('csrf', $this->csrf_token);
+
+					cookie::init(); // Send 'cookie_check'
 
 				//--------------------------------------------------
 				// Dest support
@@ -715,7 +717,7 @@
 
 							cookie::require_support();
 
-							$note = 'COOKIE:' . $this->csrf_token . ' != ' . $this->form_method . ':' . $csrf_token;
+							$note = 'SESSION:' . $this->csrf_token . ' != ' . $this->form_method . ':' . $csrf_token;
 
 							$this->_field_error_add_html(-1, $this->csrf_error_html, $note);
 
