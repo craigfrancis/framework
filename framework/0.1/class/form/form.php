@@ -159,6 +159,11 @@
 				// Generate a csrf_token if one does not exist
 
 					$this->csrf_token = session::get('csrf');
+
+					if ($this->csrf_token === NULL) {
+						$this->csrf_token = cookie::get('csrf'); // TODO: Remove
+					}
+
 					$this->csrf_error_html = 'The request did not appear to come from a trusted source, please try again.';
 
 					if ($this->csrf_token == '') {
