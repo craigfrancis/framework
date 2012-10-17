@@ -49,7 +49,7 @@
 		}
 
 		public static function regenerate() {
-			session_regenerate_id();
+			session_regenerate_id(true); // Also delete old session file
 		}
 
 		public static function destroy() {
