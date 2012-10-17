@@ -1,7 +1,5 @@
 <?php
 
-		// http://www.html5rocks.com/en/tutorials/security/content-security-policy/
-
 //--------------------------------------------------
 // Get report array
 
@@ -39,17 +37,6 @@
 // Ignored URIs
 
 	$ignore_uris = config::get('output.csp_report_ignore');
-
-	if ($ignore_uris == 'defaults') {
-
-		$ignore_uris = array(
-			// 'chrome-extension://lifbcibllhkdhoafpjfnlhfpfgnpldfl', // Skype
-			// 'chrome-extension://pioclpoplcdbaefihamjohnefbikjilc', // Evernote Web Clipper
-			// 'http://nikkomsgchannel', // Rapport (TODO: Re-enable)
-			// 'http://edge.crtinv.com/', // Sterkly Revenue Suite (adds banners to websites)
-		);
-
-	}
 
 	if (is_array($ignore_uris) && in_array($report['blocked-uri'], $ignore_uris)) {
 		exit();
