@@ -296,7 +296,7 @@
 				//--------------------------------------------------
 				// Store in session
 
-					$js_ref = time() . '-' . mt_rand(100000, 999999);
+					$js_ref = time() . '-' . mt_rand(1000000, 9999999);
 
 					$session_js = session::get('output.js_code');
 					$session_js[$js_ref] = $obj->js_code_data;
