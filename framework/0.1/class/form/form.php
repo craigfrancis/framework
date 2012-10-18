@@ -156,16 +156,19 @@
 					$this->form_id_set('form_' . $form_id);
 
 				//--------------------------------------------------
-				// Generate a csrf_token if one does not exist
+				// CSRF setup
 
-					$this->csrf_token = session::get('csrf');
 					$this->csrf_error_html = 'The request did not appear to come from a trusted source, please try again.';
 
-					if ($this->csrf_token == '') {
-						$this->csrf_token = mt_rand(1000000, 9999999);
-					}
+					$this->csrf_token = session::get('csrf');
 
-					session::set('csrf', $this->csrf_token);
+					if ($this->csrf_token == '') {
+
+						$this->csrf_token = mt_rand(1000000, 9999999);
+
+						session::set('csrf', $this->csrf_token);
+
+					}
 
 					cookie::init(); // Send 'cookie_check'
 
