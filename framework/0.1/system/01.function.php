@@ -428,7 +428,7 @@
 
 		mime_set($mime);
 
-		header('Content-disposition: ' . head($mode) . '; filename="' . head($name) . '"');
+		header('Content-Disposition: ' . head($mode) . '; filename="' . head($name) . '"');
 		header('Accept-Ranges: bytes');
 		header('Content-Length: ' . head(strlen($content)));
 
@@ -537,7 +537,7 @@
 					break;
 				}
 
-				$protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
+				$protocol = head(isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
 
 				header($protocol . ' ' . $code . ' ' . $text);
 
