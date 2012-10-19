@@ -559,7 +559,7 @@
 							}
 
 							if ($header !== NULL) {
-								header($header . ': ' . implode('; ', $output));
+								header($header . ': ' . head(implode('; ', $output)));
 							}
 
 							if (config::get('debug.level') > 0) {
