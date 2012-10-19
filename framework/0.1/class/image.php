@@ -745,21 +745,21 @@
 
 			public function output_png($compression = 0) {
 				if ($this->image_ref) {
-					header('Content-type: image/png');
+					header('Content-Type: image/png');
 					imagepng($this->image_ref, NULL, $compression);
 				}
 			}
 
 			public function output_gif() {
 				if ($this->image_ref) {
-					header('Content-type: image/gif');
+					header('Content-Type: image/gif');
 					imagegif($this->image_ref);
 				}
 			}
 
 			public function output_jpg($quality = 80) {
 				if ($this->image_ref) {
-					header('Content-type: image/jpeg');
+					header('Content-Type: image/jpeg');
 					imagejpeg($this->image_ref, NULL, $quality);
 				}
 			}

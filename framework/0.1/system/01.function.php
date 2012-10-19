@@ -394,7 +394,7 @@
 			config::set('output.mime', $mime_type);
 		}
 
-		header('Content-type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
+		header('Content-Type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
 
 	}
 

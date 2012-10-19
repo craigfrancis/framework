@@ -68,7 +68,7 @@
 				}
 			}
 
-			header('Content-type: text/plain; charset=' . head(config::get('output.charset')));
+			header('Content-Type: text/plain; charset=' . head(config::get('output.charset')));
 
 			config::set('debug.show', false);
 
@@ -89,7 +89,7 @@
 				$favicon_path = FRAMEWORK_ROOT . '/library/view/favicon.ico';
 			}
 
-			header('Content-type: image/vnd.microsoft.icon; charset=' . head(config::get('output.charset')));
+			header('Content-Type: image/vnd.microsoft.icon; charset=' . head(config::get('output.charset')));
 
 			config::set('debug.show', false);
 
@@ -110,7 +110,7 @@
 				$sitemap_path = FRAMEWORK_ROOT . '/library/view/sitemap.php';
 			}
 
-			header('Content-type: application/xml; charset=' . head(config::get('output.charset')));
+			header('Content-Type: application/xml; charset=' . head(config::get('output.charset')));
 
 			config::set('debug.show', false);
 
