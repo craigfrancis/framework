@@ -410,11 +410,11 @@
 
 		mime_set($mime);
 
-		header('Content-disposition: ' . head($mode) . '; filename="' . head($name) . '"');
+		header('Content-Disposition: ' . head($mode) . '; filename="' . head($name) . '"');
 		header('Accept-Ranges: bytes');
 		header('Content-Length: ' . head(filesize($path)));
 
-		header('Cache-control:'); // IE6 does not like 'attachment' files on HTTPS
+		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS
 		header('Expires: ' . head(date('D, d M Y 00:00:00')) . ' GMT');
 		header('Pragma:');
 
@@ -432,7 +432,7 @@
 		header('Accept-Ranges: bytes');
 		header('Content-Length: ' . head(strlen($content)));
 
-		header('Cache-control:'); // IE6 does not like 'attachment' files on HTTPS
+		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS
 		header('Expires: ' . head(date('D, d M Y 00:00:00')) . ' GMT');
 		header('Pragma:');
 
@@ -479,7 +479,7 @@
 		} else {
 
 			header('Pragma: no-cache');
-			header('Cache-control: private, no-cache, must-revalidate');
+			header('Cache-Control: private, no-cache, no-store, must-revalidate');
 			header('Expires: Sat, 01 Jan 2000 01:00:00 GMT');
 
 		}
