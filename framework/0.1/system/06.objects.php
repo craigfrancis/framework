@@ -153,43 +153,43 @@
 			private $message = NULL;
 			private $debug_output = NULL;
 			private $tracking_enabled = NULL;
-
-			public function __construct() {
-
-				//--------------------------------------------------
-				// Do not track header support
-
-					$this->tracking_enabled = config::get('output.tracking', (SERVER == 'live'));
-
-					if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
-
-						$this->tracking_enabled = false;
-
-					} else if (function_exists('getallheaders')) {
-
-						foreach (getallheaders() as $name => $value) {
-							if (strtolower($name) == 'dnt' && $value == 1) {
-								$this->tracking_enabled = false;
-							}
-						}
-
-					}
-
-			}
+			private $js_enabled = true;
 
 			public function message_get() {
+
+				if ($this->message === NULL) {
+					if (session::open() || !headers_sent()) {
+
+						$this->message = session::get('message');
+
+						if ($this->message !== NULL) {
+							session::delete('message');
+						}
+
+					} else {
+
+						$this->message = 'Cannot get message, as session has not been started before output.';
+
+					}
+				}
+
 				return $this->message;
+
 			}
 
 			public function message_get_html() {
-				if ($this->message == '') {
+
+				$message = $this->message_get();
+
+				if ($message == '') {
 					return '';
 				} else {
 					return '
 						<div id="page_message">
-							<p>' . html($this->message) . '</p>
+							<p>' . html($message) . '</p>
 						</div>';
 				}
+
 			}
 
 			public function tracking_get_html() {
@@ -209,7 +209,29 @@
 			}
 
 			public function tracking_allowed_get() {
+
+				if ($this->tracking_enabled === NULL) {
+
+					$this->tracking_enabled = config::get('output.tracking', (SERVER == 'live'));
+
+					if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
+
+						$this->tracking_enabled = false;
+
+					} else if (function_exists('getallheaders')) {
+
+						foreach (getallheaders() as $name => $value) {
+							if (strtolower($name) == 'dnt' && $value == 1) {
+								$this->tracking_enabled = false;
+							}
+						}
+
+					}
+
+				}
+
 				return $this->tracking_enabled;
+
 			}
 
 			public function css_get($mode) {
@@ -342,9 +364,9 @@
 					}
 
 				//--------------------------------------------------
-				// Javascript - after CSS
+				// Javascript (after CSS)
 
-					if (session::get('js_disable') != 'true') {
+					if ($this->js_enabled) {
 
 						$js_prefix = config::get('output.js_path_prefix', '');
 						$js_files = array();
@@ -366,10 +388,10 @@
 							}
 						}
 
-					}
+						if (config::get('debug.level') >= 4) {
+							debug_progress('JavaScript', 3);
+						}
 
-					if (config::get('debug.level') >= 4) {
-						debug_progress('JavaScript', 3);
 					}
 
 				//--------------------------------------------------
@@ -422,14 +444,6 @@
 					}
 
 				//--------------------------------------------------
-				// Message
-
-					$this->message = session::get('message');
-					if ($this->message !== NULL) {
-						session::delete('message');
-					}
-
-				//--------------------------------------------------
 				// Headers
 
 					//--------------------------------------------------
@@ -451,27 +465,6 @@
 						}
 
 						unset($mime_xml);
-
-					//--------------------------------------------------
-					// Google analytics
-
-						if ($this->tracking_allowed_get()) {
-
-							$google_analytics_code = config::get('tracking.google_analytics.code');
-							if ($google_analytics_code !== NULL) {
-
-								$js_code  = 'var _gaq = _gaq || [];' . "\n";
-								$js_code .= '_gaq.push(["_setAccount", "' . html($google_analytics_code) . '"]);' . "\n";
-								$js_code .= '_gaq.push(["_trackPageview"]);' . "\n\n";
-								$js_code .= '(function() {' . "\n";
-								$js_code .= '	var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true; ga.src = "https://ssl.google-analytics.com/ga.js";' . "\n";
-								$js_code .= '	var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s);' . "\n";
-								$js_code .= '})();' . "\n";
-
-								resources::js_code_add($js_code, 'async');
-
-							}
-						}
 
 					//--------------------------------------------------
 					// Debug
@@ -581,12 +574,56 @@
 
 							}
 
+							unset($csp, $output, $header);
+
+						}
+
+				//--------------------------------------------------
+				// JavaScript
+
+					//--------------------------------------------------
+					// JS Files
+
+						$js_state = request('js', 'GET');
+
+						if ($js_state == 'disabled') {
+
+							cookie::set('js_disable', 'true');
+
+							$this->js_enabled = false;
+
+						} else if ($js_state != '') {
+
+							cookie::delete('js_disable');
+
+							$this->js_enabled = true;
+
+						} else {
+
+							$this->js_enabled = (cookie::get('js_disable') != 'true');
+
 						}
 
 					//--------------------------------------------------
-					// Cleanup
+					// Google analytics
 
-						unset($mime_xml, $csp, $output, $header);
+						$google_analytics_code = config::get('tracking.google_analytics.code');
+
+						if ($google_analytics_code !== NULL && $this->tracking_allowed_get()) {
+
+							$js_code  = 'var _gaq = _gaq || [];' . "\n";
+							$js_code .= '_gaq.push(["_setAccount", "' . html($google_analytics_code) . '"]);' . "\n";
+							$js_code .= '_gaq.push(["_trackPageview"]);' . "\n\n";
+							$js_code .= '(function() {' . "\n";
+							$js_code .= '	var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true; ga.src = "https://ssl.google-analytics.com/ga.js";' . "\n";
+							$js_code .= '	var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s);' . "\n";
+							$js_code .= '})();' . "\n";
+
+							resources::js_code_add($js_code, 'async');
+
+						}
+
+						unset($google_analytics_code, $js_code);
 
 				//--------------------------------------------------
 				// Local variables

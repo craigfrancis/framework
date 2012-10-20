@@ -93,6 +93,7 @@
 			private $db_fields;
 			private $db_values;
 			private $db_save_disabled;
+			private $csrf_session;
 			private $csrf_token;
 			private $csrf_error_html;
 			private $saved_values_data;
@@ -159,18 +160,19 @@
 				// CSRF setup
 
 					$this->csrf_error_html = 'The request did not appear to come from a trusted source, please try again.';
-
-					$this->csrf_token = session::get('csrf');
+					$this->csrf_session = (class_exists('session', false) && session::open());
+					$this->csrf_token = ($this->csrf_session ? session::get('csrf') : cookie::get('csrf'));
 
 					if ($this->csrf_token == '') {
-
 						$this->csrf_token = mt_rand(1000000, 9999999);
-
-						session::set('csrf', $this->csrf_token);
-
 					}
 
-					cookie::init(); // Send 'cookie_check'
+					if ($this->csrf_session) {
+						session::set('csrf', $this->csrf_token);
+						cookie::init(); // Send 'cookie_check'
+					} else {
+						cookie::set('csrf', $this->csrf_token);
+					}
 
 				//--------------------------------------------------
 				// Dest support
@@ -584,7 +586,7 @@
 
 					$this->saved_values_used = false;
 
-					if (session::get('save_request_url') == config::get('request.uri') && config::get('request.method') == 'GET' && $this->form_method == 'POST') {
+					if (session::open() && session::get('save_request_url') == config::get('request.uri') && config::get('request.method') == 'GET' && $this->form_method == 'POST') {
 
 						$data = session::get('save_request_data');
 

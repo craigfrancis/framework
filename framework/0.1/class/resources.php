@@ -4,6 +4,7 @@
 
 		private $head_html = '';
 		private $js_files = array();
+		private $js_code_ref = NULL;
 		private $js_code_data = '';
 		private $js_code_mode = NULL;
 		private $css_files_main = array();
@@ -31,8 +32,16 @@
 		}
 
 		public static function js_code_add($code, $mode = 'inline') {
-			
+
 			$obj = resources::instance_get();
+
+			if ($obj->js_code_ref === NULL) {
+
+				$obj->js_code_ref = time() . '-' . mt_rand(1000000, 9999999);
+
+				session::start();
+
+			}
 
 			$obj->js_code_data .= $code;
 
@@ -94,15 +103,21 @@
 
 					$css_name = request('style', 'GET');
 
-					if ($css_name != '' && isset($css_types[$css_name])) {
+					if (isset($css_types[$css_name])) {
 
-						session::set('style', $css_name);
+						cookie::set('style', $css_name);
 
 						$style_set = true;
 
+					} else if ($css_name != '') {
+
+						cookie::delete('style');
+
+						$css_name = '';
+
 					} else {
 
-						$css_name = session::get('style');
+						$css_name = cookie::get('style');
 
 					}
 
@@ -296,10 +311,8 @@
 				//--------------------------------------------------
 				// Store in session
 
-					$js_ref = time() . '-' . mt_rand(1000000, 9999999);
-
 					$session_js = session::get('output.js_code');
-					$session_js[$js_ref] = $obj->js_code_data;
+					$session_js[$obj->js_code_ref] = $obj->js_code_data;
 
 					session::set('output.js_code', $session_js);
 
@@ -307,7 +320,7 @@
 				// Add to array
 
 					$files[] = array(
-							'path' => gateway_url('js-code', array('ref' => $js_ref)),
+							'path' => gateway_url('js-code', array('ref' => $obj->js_code_ref)),
 							'attributes' => ($obj->js_code_mode == 'inline' ? array() : array($obj->js_code_mode)),
 						);
 
