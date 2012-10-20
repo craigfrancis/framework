@@ -58,26 +58,6 @@
 
 			}
 
-			public function db_field_set($field, $field_key = 'value') {
-
-				$this->_db_field_set($field, $field_key);
-
-				$field_setup = $this->form->db_field_get($field);
-
-				if ($field_setup['type'] == 'enum' || $field_setup['type'] == 'set') {
-
-					$options = $this->form->db_field_options_get($field);
-
-					if (($key = array_search('', $options)) !== false) { // If you want a blank option, use label_option_set, and remove the required_error.
-						unset($options[$key]);
-					}
-
-					$this->options_set($options);
-
-				}
-
-			}
-
 			public function key_select_set($by_key) { // Use the values of the array, rather than the keys
 
 				if (count($this->option_values) > 0) {
@@ -95,6 +75,26 @@
 				}
 
 				$this->re_index_keys = ($re_index == true);
+
+			}
+
+			public function db_field_set($field, $field_key = 'value') {
+
+				$this->_db_field_set($field, $field_key);
+
+				$field_setup = $this->form->db_field_get($field);
+
+				if ($field_setup['type'] == 'enum' || $field_setup['type'] == 'set') {
+
+					$options = $this->form->db_field_options_get($field);
+
+					if (($key = array_search('', $options)) !== false) { // If you want a blank option, use label_option_set, and remove the required_error.
+						unset($options[$key]);
+					}
+
+					$this->options_set($options);
+
+				}
 
 			}
 
