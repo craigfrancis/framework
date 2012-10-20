@@ -46,7 +46,13 @@
 			}
 
 			public function re_index_keys_set($re_index) { // Doing this makes detection of the label option more error prone
+
+				if (count($this->option_values) > 0) {
+					exit_with_error('Cannot call re_index_keys_set() after db_field_set() or options_set()');
+				}
+
 				$this->re_index_keys = ($re_index == true);
+
 			}
 
 			public function options_set($options) {
