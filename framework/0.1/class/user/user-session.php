@@ -149,7 +149,7 @@
 
 				$session_name = $this->user_obj->session_name_get();
 
-				session::regenerate();
+				session::regenerate(); // State change, new session id (additional check against session fixation)
 				session::set($session_name . '_id', $session_id);
 				session::set($session_name . '_pass', $session_pass); // Password support added so an "auth_token" can be passed to the user.
 
@@ -319,6 +319,7 @@
 
 				$session_name = $this->user_obj->session_name_get();
 
+				session::regenerate(); // State change, new session id
 				session::delete($session_name . '_id');
 				session::delete($session_name . '_pass');
 
