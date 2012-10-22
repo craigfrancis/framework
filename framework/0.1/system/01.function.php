@@ -555,28 +555,6 @@
 	}
 
 //--------------------------------------------------
-// Browser name
-
-	function browser_name($user_agent = NULL) { // Only use this for logging, the output will change and cannot be trusted
-		if ($user_agent === NULL) {
-			$user_agent = config::get('request.browser');
-		}
-		if (stripos($user_agent, 'chrome') !== false) {
-			return 'Chrome';
-		} else if (stripos($user_agent, 'safari') !== false) {
-			return 'Safari';
-		} else if (stripos($user_agent, 'firefox') !== false) {
-			return 'Firefox';
-		} else if (stripos($user_agent, 'opera') !== false) {
-			return 'Opera';
-		} else if (stripos($user_agent, 'msie') !== false) {
-			return 'IE';
-		} else {
-			return 'Other';
-		}
-	}
-
-//--------------------------------------------------
 // Render an error page (shortcut)
 
 	function render_error($error) {
