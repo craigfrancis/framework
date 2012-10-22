@@ -518,16 +518,18 @@
 						$csp = config::get('output.csp_directives');
 						if (is_array($csp)) {
 
-							if (!isset($csp['report-uri'])) {
+							if (!array_key_exists('report-uri', $csp)) { // isset returns false for NULL
 								$csp['report-uri'] = '/a/api/csp-report/';
 							}
 
 							$output = array();
 							foreach ($csp as $directive => $value) {
-								if (is_array($value)) {
-									$value = implode(' ', $value);
+								if ($value !== NULL) {
+									if (is_array($value)) {
+										$value = implode(' ', $value);
+									}
+									$output[] = $directive . ' ' . str_replace('"', "'", $value);
 								}
-								$output[] = $directive . ' ' . str_replace('"', "'", $value);
 							}
 
 							$header = NULL;

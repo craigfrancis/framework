@@ -134,8 +134,6 @@
 				// Check the browser hasn't changed... really not
 				// a good sign regarding session fixation
 
-session::set('session.browser', config::get('request.browser')); // TODO: Remove
-
 					$session_browser = session::get('session.browser');
 
 					if ($session_browser != '' && $session_browser != config::get('request.browser')) {
