@@ -168,7 +168,7 @@
 
 			$route_files = array();
 			foreach (explode(',', $route_file) as $path) {
-				$route_files[] = realpath(PUBLIC_ROOT . $route_dir . '/' . $path . '.' . $route_ext);
+				$route_files[] = PUBLIC_ROOT . $route_dir . '/' . $path . '.' . $route_ext;
 			}
 
 		} else if (preg_match('/^(.*)\/([0-9]+)-([^\/]*).(js|css)$/', $route_path, $matches)) {
@@ -177,7 +177,7 @@
 			$route_mtime = $matches[2];
 			$route_file = $matches[3];
 			$route_ext = $matches[4];
-			$route_files = array(realpath(PUBLIC_ROOT . $route_dir . '/' . $route_file . '.' . $route_ext));
+			$route_files = array(PUBLIC_ROOT . $route_dir . '/' . $route_file . '.' . $route_ext);
 
 		} else {
 
@@ -188,25 +188,36 @@
 		if ($route_mtime > 0) {
 
 			$files_mtime = 0;
+			$files_realpath = array();
 
 			foreach ($route_files as $path) {
-				if (prefix_match(PUBLIC_ROOT, $path) && is_file($path)) {
 
-					if (!is_readable($path)) {
-						exit_with_error('Cannot access: ' . str_replace(PUBLIC_ROOT, '', $path));
+				$realpath = realpath($path);
+
+				if (prefix_match(PUBLIC_ROOT, $realpath) && is_file($realpath)) {
+
+					if (!is_readable($realpath)) {
+						exit_with_error('Cannot access: ' . str_replace(PUBLIC_ROOT, '', $realpath));
 					}
 
-					$file_modified = filemtime($path);
+					$file_modified = filemtime($realpath);
 					if ($files_mtime < $file_modified) {
 						$files_mtime = $file_modified;
 					}
 
+					$files_realpath[] = $realpath;
+
 				} else {
+
+					if (function_exists('debug_note')) {
+						debug_note('Missing file: ' . $path);
+					}
 
 					$files_mtime = 0;
 					break;
 
 				}
+
 			}
 
 			if ($route_mtime == $files_mtime) {
@@ -269,8 +280,8 @@
 							}
 
 							$files_contents = '';
-							foreach ($route_files as $path) {
-								$files_contents .= file_get_contents($path) . "\n";
+							foreach ($files_realpath as $realpath) {
+								$files_contents .= file_get_contents($realpath) . "\n";
 							}
 
 							if ($route_ext == 'js') {
@@ -287,15 +298,15 @@
 
 						}
 
-						$route_files = array($cache_file_time);
+						$files_realpath = array($cache_file_time);
 
 					}
 
 				//--------------------------------------------------
 				// Sent output
 
-					foreach ($route_files as $path) {
-						readfile($path);
+					foreach ($files_realpath as $realpath) {
+						readfile($realpath);
 					}
 
 					exit();
@@ -317,7 +328,7 @@
 
 		}
 
-		unset($route_dir, $route_mtime, $route_file, $route_ext, $route_files, $path);
+		unset($route_dir, $route_mtime, $route_file, $route_ext, $route_files, $path, $files_realpath, $realpath);
 
 	}
 
