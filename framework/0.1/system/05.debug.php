@@ -126,7 +126,7 @@
 					mime_set('text/html');
 				}
 
-				if (class_exists('view') && class_exists('template')) {
+				if (class_exists('view') && class_exists('template') && config::get('output.error') !== 'system') { // Avoid looping
 
 					config::array_set('view.variables', 'message', $message);
 					config::array_set('view.variables', 'hidden_info', $hidden_info);
