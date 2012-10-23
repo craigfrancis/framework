@@ -137,7 +137,8 @@
 					$session_browser = session::get('session.browser');
 
 					if ($session_browser != '' && $session_browser != config::get('request.browser')) {
-						exit_with_error('Your session appears to have been used by multiple browsers.', 'Was: ' . $session_browser . "\n" . 'Now: ' . config::get('request.browser') . '"');
+// IE9 switches to saying "IE7" for computability view
+//						exit_with_error('Your session appears to have been used by multiple browsers.', 'Was: ' . $session_browser . "\n" . 'Now: ' . config::get('request.browser') . '"');
 					}
 
 				//--------------------------------------------------
