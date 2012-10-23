@@ -209,9 +209,7 @@
 
 				} else {
 
-					if (function_exists('debug_note')) {
-						debug_note('Missing file: ' . $path);
-					}
+					config::set('view.path', $path); // Show on 404 page the missing path (debug mode)
 
 					$files_mtime = 0;
 					break;
