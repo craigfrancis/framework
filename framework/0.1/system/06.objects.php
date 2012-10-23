@@ -609,12 +609,13 @@
 					//--------------------------------------------------
 					// Google analytics
 
-						$google_analytics_code = config::get('tracking.google_analytics.code');
+						$tracking_ga_code = config::get('tracking.ga_code');
+						$tracking_js_path = config::get('tracking.js_path');
 
-						if ($google_analytics_code !== NULL && $this->tracking_allowed_get()) {
+						if ($tracking_ga_code !== NULL && $this->tracking_allowed_get()) {
 
 							$js_code  = 'var _gaq = _gaq || [];' . "\n";
-							$js_code .= '_gaq.push(["_setAccount", "' . html($google_analytics_code) . '"]);' . "\n";
+							$js_code .= '_gaq.push(["_setAccount", "' . html($tracking_ga_code) . '"]);' . "\n";
 							$js_code .= '_gaq.push(["_trackPageview"]);' . "\n\n";
 							$js_code .= '(function() {' . "\n";
 							$js_code .= '	var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true; ga.src = "https://ssl.google-analytics.com/ga.js";' . "\n";
@@ -625,7 +626,13 @@
 
 						}
 
-						unset($google_analytics_code, $js_code);
+						if ($tracking_js_path !== NULL && $this->tracking_allowed_get()) {
+
+							resources::js_add($tracking_js_path);
+
+						}
+
+						unset($tracking_ga_code, $tracking_js_path, $js_code);
 
 				//--------------------------------------------------
 				// Local variables

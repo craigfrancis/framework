@@ -86,7 +86,7 @@
 //--------------------------------------------------
 // Tracking
 
-	// $config['tracking.google_analytics.code'] = 'GA-';
+	// $config['tracking.ga_code'] = 'GA-';
 
 //--------------------------------------------------
 // Pagination

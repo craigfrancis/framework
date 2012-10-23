@@ -248,7 +248,7 @@
 				$grouped_files = array(); // Local files that can be grouped
 
 				foreach ($files as $id => $file) {
-					if (substr($file['path'], 0, 1) == '/' && substr($file['path'], -3) == '.js' && count($file['attributes']) == 0) {
+					if (substr($file['path'], 0, 1) == '/' && substr($file['path'], -3) == '.js' && count($file['attributes']) == 0 && is_file(PUBLIC_ROOT . $file['path'])) {
 						$grouped_files[$id] = $file['path'];
 					}
 				}
