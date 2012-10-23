@@ -118,7 +118,6 @@
 
 							session::set('session.key', $config_key);
 							session::set('session.age', time());
-							session::set('session.browser', config::get('request.browser'));
 
 						} else {
 
@@ -131,15 +130,14 @@
 					}
 
 				//--------------------------------------------------
-				// Check the browser hasn't changed... really not
-				// a good sign regarding session fixation
+				// Check the browser hasn't changed... does not work
+				// with IE switching to computability view (IE8/9),
+				// or if the user has Chrome Frame installed.
 
-					$session_browser = session::get('session.browser');
-
-					if ($session_browser != '' && $session_browser != config::get('request.browser')) {
-// IE9 switches to saying "IE7" for computability view
-//						exit_with_error('Your session appears to have been used by multiple browsers.', 'Was: ' . $session_browser . "\n" . 'Now: ' . config::get('request.browser') . '"');
-					}
+					// $session_browser = session::get('session.browser');
+					// if ($session_browser != '' && $session_browser != config::get('request.browser')) {
+					// 	exit_with_error('Your session appears to have been used by multiple browsers.', 'Was: ' . $session_browser . "\n" . 'Now: ' . config::get('request.browser') . '"');
+					// }
 
 				//--------------------------------------------------
 				// Check if we need to re-generate the ID... just
