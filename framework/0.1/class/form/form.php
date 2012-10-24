@@ -423,7 +423,9 @@
 
 					$this->db_fields = array();
 
-					$rst = $db->query('SELECT * FROM ' . $this->db_table_name_sql . ' LIMIT 0', false); // Don't return ANY data, and don't run debug (can't have it asking for "deleted" columns).
+					$db->query('SELECT * FROM ' . $this->db_table_name_sql . ' LIMIT 0', false); // Don't return ANY data, and don't run debug (can't have it asking for "deleted" columns).
+
+					$rst = $db->result_get();
 
 					for ($k = (mysql_num_fields($rst) - 1); $k >= 0; $k--) {
 

@@ -128,15 +128,17 @@
 				//--------------------------------------------------
 				// Cleanup
 
-					$r = $db->query('SELECT
-										id
-									FROM
-										' . DB_PREFIX . 'maintenance
-									WHERE
-										run_end != "0000-00-00 00:00:00" AND
-										run_end < "' . $db->escape(date('Y-m-d H:i:s', strtotime('-1 month'))) . '"');
+					$sql = 'SELECT
+								id
+							FROM
+								' . DB_PREFIX . 'maintenance
+							WHERE
+								run_end != "0000-00-00 00:00:00" AND
+								run_end < "' . $db->escape(date('Y-m-d H:i:s', strtotime('-1 month'))) . '"';
 
-					while ($row = $db->fetch_assoc($r)) {
+					$rst = $db->query($sql);
+
+					while ($row = $rst->fetch_assoc()) {
 
 						$db->query('DELETE FROM
 										' . DB_PREFIX . 'maintenance_job

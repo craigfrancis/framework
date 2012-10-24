@@ -222,7 +222,7 @@
 					$db = $this->db_get();
 
 					$rst = $db->select($this->config['table_sql'], $fields, $sql_where);
-					while ($row = $db->fetch_assoc($rst)) {
+					while ($row = $rst->fetch_assoc()) {
 
 						$radians_lat2 = $row[$this->config['field_latitude']] * $pi / 180;
 						$radians_long2 = $row[$this->config['field_longitude']] * $pi / 180;
@@ -469,7 +469,7 @@
 					$db = $this->db_get();
 
 					$rst = $db->select($this->config['table_sql'], $fields, $this->config['where_sql']);
-					while ($row = $db->fetch_assoc($rst)) {
+					while ($row = $rst->fetch_assoc()) {
 
 						$existing_accuracy_latitude = strlen($row[$this->config['field_latitude']]);
 						$existing_accuracy_longitude = strlen($row[$this->config['field_longitude']]);

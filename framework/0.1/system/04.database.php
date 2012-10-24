@@ -50,27 +50,23 @@
 			if (!$this->result) {
 				$this->_error($query);
 			}
-			return $this->result;
+			return new db_result($this->link, $this->result);
 		}
 
-		public function num_rows($result = null) {
-			if ($result === null) $result = $this->result;
-			return mysql_num_rows($result);
+		public function num_rows() {
+			return mysql_num_rows($this->result);
 		}
 
-		public function fetch_assoc($result = null) {
-			if ($result === null) $result = $this->result;
-			return mysql_fetch_assoc($result);
+		public function fetch_assoc() {
+			return mysql_fetch_assoc($this->result);
 		}
 
-		public function fetch_array($result = null) {
-			if ($result === null) $result = $this->result;
-			return mysql_fetch_array($result);
+		public function fetch_array() {
+			return mysql_fetch_array($this->result);
 		}
 
-		public function result($row, $col, $result = null) {
-			if ($result === null) $result = $this->result;
-			return mysql_result($result, $row, $col);
+		public function result($row, $col) {
+			return mysql_result($this->result, $row, $col);
 		}
 
 		public function insert_id() {
@@ -106,11 +102,11 @@
 
 			if ($on_duplicate === NULL) {
 
-				$this->result = $this->query('INSERT INTO ' . $table_sql . ' ('. $fields_sql . ') VALUES (' . $values_sql . ')');
+				return $this->query('INSERT INTO ' . $table_sql . ' ('. $fields_sql . ') VALUES (' . $values_sql . ')');
 
 			} else if (!is_array($on_duplicate)) {
 
-				$this->result = $this->query('INSERT INTO ' . $table_sql . ' ('. $fields_sql . ') VALUES (' . $values_sql . ') ON DUPLICATE KEY UPDATE ' . $on_duplicate);
+				return $this->query('INSERT INTO ' . $table_sql . ' ('. $fields_sql . ') VALUES (' . $values_sql . ') ON DUPLICATE KEY UPDATE ' . $on_duplicate);
 
 			} else {
 
@@ -120,11 +116,9 @@
 				}
 				$set_sql = implode(', ', $set_sql);
 
-				$this->result = $this->query('INSERT INTO ' . $table_sql . ' ('. $fields_sql . ') VALUES (' . $values_sql . ') ON DUPLICATE KEY UPDATE ' . $set_sql);
+				return $this->query('INSERT INTO ' . $table_sql . ' ('. $fields_sql . ') VALUES (' . $values_sql . ') ON DUPLICATE KEY UPDATE ' . $set_sql);
 
 			}
-
-			return $this->result; // insert_id or affected_rows
 
 		}
 
@@ -136,8 +130,7 @@
 			}
 			$set_sql = implode(', ', $set_sql);
 
-			$this->result = $this->query('UPDATE ' . $table_sql . ' SET '. $set_sql . ' WHERE ' . $where_sql);
-			return $this->result; // affected_rows
+			return $this->query('UPDATE ' . $table_sql . ' SET '. $set_sql . ' WHERE ' . $where_sql);
 
 		}
 
@@ -155,16 +148,18 @@
 
 			$limit_sql = ($limit === NULL ? '' : ' LIMIT ' . intval($limit));
 
-			$this->result = $this->query('SELECT ' . $fields_sql . ' FROM ' . $table_sql . ' WHERE ' . $where_sql . $limit_sql);
-			return $this->result; // num_rows or fetch_assoc
+			return $this->query('SELECT ' . $fields_sql . ' FROM ' . $table_sql . ' WHERE ' . $where_sql . $limit_sql);
 
 		}
 
 		public function delete($table_sql, $where_sql) {
 
-			$this->result = $this->query('DELETE FROM ' . $table_sql . ' WHERE ' . $where_sql);
-			return $this->result; // affected_rows
+			return $this->query('DELETE FROM ' . $table_sql . ' WHERE ' . $where_sql);
 
+		}
+
+		public function result_get() {
+			return $this->result;
 		}
 
 		public function link_get() {
@@ -241,6 +236,38 @@
 				exit('<p>I have an error: <br />' . htmlentities($use_query_as_error ? $query : $extra) . '</p>');
 			}
 
+		}
+
+	}
+
+	class db_result extends check {
+
+		private $link;
+		private $result;
+
+		public function __construct($link, $result) {
+			$this->link = $link;
+			$this->result = $result;
+		}
+
+		public function num_rows() {
+			return mysql_num_rows($this->result);
+		}
+
+		public function fetch_assoc() {
+			return mysql_fetch_assoc($this->result);
+		}
+
+		public function fetch_array() {
+			return mysql_fetch_array($this->result);
+		}
+
+		public function insert_id() {
+			return mysql_insert_id($this->link);
+		}
+
+		public function affected_rows() {
+			return mysql_affected_rows($this->link);
 		}
 
 	}
