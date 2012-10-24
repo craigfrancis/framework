@@ -393,7 +393,7 @@
 					$output_html .= '
 							<tr>';
 
-					foreach ($heading_row as $col_id => $heading_info) {
+					foreach ($heading_row as $heading_info) {
 
 						//--------------------------------------------------
 						// HTML content, url, and class
