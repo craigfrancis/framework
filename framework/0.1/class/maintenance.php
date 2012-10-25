@@ -92,7 +92,7 @@
 									run_end = "0000-00-00 00:00:00" AND
 									run_start < "' . $db->escape(date('Y-m-d H:i:s', strtotime('-2 hours'))) . '"');
 
-					if ($row = $db->fetch_assoc()) {
+					if ($row = $db->fetch_row()) {
 
 						$db->query('DELETE FROM
 										' . DB_PREFIX . 'maintenance
@@ -136,9 +136,7 @@
 								run_end != "0000-00-00 00:00:00" AND
 								run_end < "' . $db->escape(date('Y-m-d H:i:s', strtotime('-1 month'))) . '"';
 
-					$rst = $db->query($sql);
-
-					while ($row = $rst->fetch_assoc()) {
+					foreach ($db->fetch_all($sql) as $row) {
 
 						$db->query('DELETE FROM
 										' . DB_PREFIX . 'maintenance_job
@@ -340,7 +338,7 @@
 									LIMIT
 										1');
 
-						if ($row = $db->fetch_assoc()) {
+						if ($row = $db->fetch_row()) {
 							$this->last_run = strtotime($row['created']);
 						}
 

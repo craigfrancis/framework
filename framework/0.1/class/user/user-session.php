@@ -233,7 +233,7 @@
 								WHERE
 									' . $where_sql);
 
-					if ($row = $db->fetch_assoc()) {
+					if ($row = $db->fetch_row()) {
 
 						$ip_test = ($this->lock_to_ip == false || config::get('request.ip') == $row['ip']);
 

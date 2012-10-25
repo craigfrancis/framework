@@ -74,7 +74,7 @@
 							LIMIT
 								1');
 
-				if ($row = $db->fetch_assoc()) {
+				if ($row = $db->fetch_row()) {
 					return $row['id'];
 				} else {
 					return false;
@@ -100,7 +100,7 @@
 							LIMIT
 								1');
 
-				if ($row = $db->fetch_assoc()) {
+				if ($row = $db->fetch_row()) {
 					return $row['identification'];
 				} else {
 					return false;
@@ -149,7 +149,7 @@
 								LIMIT
 									1');
 
-					if ($row = $db->fetch_assoc()) {
+					if ($row = $db->fetch_row()) {
 
 						if ((strtotime($row['edited']) + 60*30) > time()) {
 							return 'recently_changed';
@@ -214,7 +214,7 @@
 								created > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-60 minutes'))) . '" AND
 								used = "0000-00-00 00:00:00"');
 
-				if ($row = $db->fetch_assoc()) {
+				if ($row = $db->fetch_row()) {
 
 					$request_id = $row['id'];
 					$request_pass = $row['pass'];
@@ -279,7 +279,7 @@
 								created > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-90 minutes'))) . '" AND
 								used = "0000-00-00 00:00:00"');
 
-				if ($row = $db->fetch_assoc()) {
+				if ($row = $db->fetch_row()) {
 
 					return array(
 							'request_id' => $request_id,
@@ -335,7 +335,7 @@
 							LIMIT
 								1');
 
-				if ($row = $db->fetch_assoc()) {
+				if ($row = $db->fetch_row()) {
 					$db_id = $row['id'];
 					$db_hash = $row['password']; // Blank password (disabled account) excluded in query (above)
 				} else {

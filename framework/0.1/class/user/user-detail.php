@@ -77,7 +77,7 @@
 
 			$db->select($this->db_table_get_sql(), $fields, $this->db_where_get_sql($user_id), 1);
 
-			if ($row = $db->fetch_assoc()) {
+			if ($row = $db->fetch_row()) {
 				return $row;
 			} else {
 				return false;

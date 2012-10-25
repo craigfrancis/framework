@@ -206,7 +206,7 @@
 		$output_php .= '		public function __construct() {' . "\n";
 		$output_php .= '			$this->link = $GLOBALS[\'db\']->link;' . "\n";
 		$output_php .= '		}' . "\n";
-		$output_php .= '		public function fetch_assoc($result = null) {' . "\n";
+		$output_php .= '		public function fetch_row($result = null) {' . "\n";
 		$output_php .= '			return $this->fetchAssoc($result);' . "\n";
 		$output_php .= '		}' . "\n";
 		$output_php .= '		public function insert_id() {' . "\n";

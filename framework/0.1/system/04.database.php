@@ -40,33 +40,50 @@
 			return $field_sql;
 		}
 
-		public function query($query, $run_debug = true) {
+		public function query($sql, $run_debug = true) {
 			$this->connect();
 			if ($run_debug && function_exists('debug_database')) {
-				$this->result = debug_database($this, $query);
+				$this->result = debug_database($this, $sql);
 			} else {
-				$this->result = mysql_query($query, $this->link);
+				$this->result = mysql_query($sql, $this->link);
 			}
 			if (!$this->result) {
-				$this->_error($query);
+				$this->_error($sql);
 			}
-			return new db_result($this->link, $this->result);
+			return $this->result;
 		}
 
-		public function num_rows() {
-			return mysql_num_rows($this->result);
+		public function num_rows($result = null) {
+			if ($result === null) $result = $this->result;
+			return mysql_num_rows($result);
 		}
 
-		public function fetch_assoc() {
-			return mysql_fetch_assoc($this->result);
+		public function fetch($sql = NULL) {
+			if ($sql !== NULL) {
+				$this->query($sql);
+			}
+			return $this->fetch_row();
 		}
 
-		public function fetch_array() {
-			return mysql_fetch_array($this->result);
+		public function fetch_all($sql = NULL) {
+			$data = array();
+			if ($sql !== NULL) {
+				$this->query($sql);
+			}
+			while ($row = mysql_fetch_assoc($this->result)) {
+				$data[] = $row;
+			}
+			return $data;
 		}
 
-		public function result($row, $col) {
-			return mysql_result($this->result, $row, $col);
+		public function fetch_row($result = null) {
+			if ($result === null) $result = $this->result;
+			return mysql_fetch_assoc($result);
+		}
+
+		public function result($row, $col, $result = null) {
+			if ($result === null) $result = $this->result;
+			return mysql_result($result, $row, $col);
 		}
 
 		public function insert_id() {
@@ -78,8 +95,8 @@
 		}
 
 		public function enum_values($table_sql, $field) {
-			$this->query('SHOW COLUMNS FROM ' . $table_sql . ' LIKE "' . $this->escape($field) . '"');
-			if ($row = $this->fetch_assoc()) {
+			$sql = 'SHOW COLUMNS FROM ' . $table_sql . ' LIKE "' . $this->escape($field) . '"';
+			if ($row = $this->fetch($sql)) {
 				return explode("','", preg_replace("/(enum|set)\('(.*?)'\)/", '\2', $row['Type']));
 			} else {
 				$this->_error('Could not return enum values for field "' . $field . '"');
@@ -158,10 +175,6 @@
 
 		}
 
-		public function result_get() {
-			return $this->result;
-		}
-
 		public function link_get() {
 			return $this->link;
 		}
@@ -204,7 +217,7 @@
 
 					if ($charset !== NULL) {
 						if (function_exists('mysql_set_charset')) {
-						 	mysql_set_charset($charset, $this->link);
+							mysql_set_charset($charset, $this->link);
 						} else {
 							mysql_query('SET NAMES ' . $charset, $this->link);
 						}
@@ -236,38 +249,6 @@
 				exit('<p>I have an error: <br />' . htmlentities($use_query_as_error ? $query : $extra) . '</p>');
 			}
 
-		}
-
-	}
-
-	class db_result extends check {
-
-		private $link;
-		private $result;
-
-		public function __construct($link, $result) {
-			$this->link = $link;
-			$this->result = $result;
-		}
-
-		public function num_rows() {
-			return mysql_num_rows($this->result);
-		}
-
-		public function fetch_assoc() {
-			return mysql_fetch_assoc($this->result);
-		}
-
-		public function fetch_array() {
-			return mysql_fetch_array($this->result);
-		}
-
-		public function insert_id() {
-			return mysql_insert_id($this->link);
-		}
-
-		public function affected_rows() {
-			return mysql_affected_rows($this->link);
 		}
 
 	}

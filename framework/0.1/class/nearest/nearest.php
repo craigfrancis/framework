@@ -221,8 +221,8 @@
 
 					$db = $this->db_get();
 
-					$rst = $db->select($this->config['table_sql'], $fields, $sql_where);
-					while ($row = $rst->fetch_assoc()) {
+					$db->select($this->config['table_sql'], $fields, $sql_where);
+					foreach ($db->fetch_all() as $row) {
 
 						$radians_lat2 = $row[$this->config['field_latitude']] * $pi / 180;
 						$radians_long2 = $row[$this->config['field_longitude']] * $pi / 180;
@@ -344,7 +344,7 @@
 										country = "' . $db->escape($country) . '" AND
 										edited > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-1 week'))) . '"');
 
-						if ($row = $db->fetch_assoc()) {
+						if ($row = $db->fetch_row()) {
 							$latitude = $row['latitude'];
 							$longitude = $row['longitude'];
 							$accuracy = $row['accuracy'];
@@ -403,7 +403,7 @@
 									LIMIT
 										1');
 
-						if ($row = $db->fetch_assoc()) {
+						if ($row = $db->fetch_row()) {
 							$latitude = $row['latitude'];
 							$longitude = $row['longitude'];
 							$accuracy = 3;
@@ -468,8 +468,8 @@
 
 					$db = $this->db_get();
 
-					$rst = $db->select($this->config['table_sql'], $fields, $this->config['where_sql']);
-					while ($row = $rst->fetch_assoc()) {
+					$db->select($this->config['table_sql'], $fields, $this->config['where_sql']);
+					foreach ($db->fetch_all() as $row) {
 
 						$existing_accuracy_latitude = strlen($row[$this->config['field_latitude']]);
 						$existing_accuracy_longitude = strlen($row[$this->config['field_longitude']]);

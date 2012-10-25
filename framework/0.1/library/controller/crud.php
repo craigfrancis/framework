@@ -325,7 +325,7 @@
 								LIMIT
 									' . $paginator->limit_get_sql());
 
-					while ($row = $db->fetch_assoc()) {
+					while ($row = $db->fetch_row()) {
 
 						$row['edit_url'] = url('./edit/', array('id' => $row['id']));
 						$row['delete_url'] = url('./delete/', array('id' => $row['id']));
@@ -435,7 +435,7 @@
 									WHERE
 										' . $where_sql);
 
-						if ($row = $db->fetch_assoc()) {
+						if ($row = $db->fetch_row()) {
 
 							$this->item_name = $row['title'];
 
@@ -588,7 +588,7 @@
 									' . $this->db_field_id_sql . ' = "' . $db->escape($id) . '" AND
 									' . $this->db_where_sql);
 
-					if ($row = $db->fetch_assoc()) {
+					if ($row = $db->fetch_row()) {
 
 						$this->item_name = $row['title'];
 
@@ -731,7 +731,7 @@
 				$db_fields = array();
 
 				$db->query('SHOW COLUMNS FROM ' .  $this->db_table_name_sql);
-				while ($row = $db->fetch_assoc()) {
+				while ($row = $db->fetch_row()) {
 					$db_fields[$row['Field']] = array(
 							'type' => $row['Type'],
 							'name' => ref_to_human($row['Field']),

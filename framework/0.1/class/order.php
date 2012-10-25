@@ -116,7 +116,7 @@
 							WHERE
 								' . $where_sql);
 
-				if ($row = $db->fetch_assoc()) {
+				if ($row = $db->fetch_row()) {
 					$this->order_id = $id;
 					$this->order_pass = $row['pass'];
 					$this->order_paid = $row['paid'];
