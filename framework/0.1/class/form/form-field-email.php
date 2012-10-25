@@ -40,7 +40,7 @@
 				}
 
 				$this->format_error_set = true;
-				$this->validation_js[] = 'if (f.val != "" && !f.val.match(/^\w[-.+\'\w]*@(\w[-._\w]*\.[a-zA-Z]{2,}.*)$/)) f.errors.push({"type": "format", "html": "' . addslashes($error_html) . '"});';
+				$this->validation_js[] = 'if (f.val != "" && !f.val.match(/^\w[-.+\'\w]*@(\w[-._\w]*\.[a-zA-Z]{2,}.*)$/)) f.errors.push({"type": "format", "html": ' . json_encode($error_html) . '});';
 
 			}
 

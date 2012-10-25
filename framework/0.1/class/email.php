@@ -106,9 +106,9 @@
 				//--------------------------------------------------
 				// Default headers for tracking
 
-					$this->header_set('X-Request-IP', '"' . addslashes(config::get('request.ip')) . '"');
-					$this->header_set('X-Request-UA', '"' . addslashes(config::get('request.browser')) . '"');
-					$this->header_set('X-Request-Script', '"' . addslashes(config::get('request.url')) . '"');
+					$this->header_set('X-Request-IP', json_encode(config::get('request.ip')));
+					$this->header_set('X-Request-UA', json_encode(config::get('request.browser')));
+					$this->header_set('X-Request-Script', json_encode(config::get('request.url')));
 
 			}
 

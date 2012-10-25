@@ -81,7 +81,7 @@
 			return mysql_fetch_assoc($result);
 		}
 
-		public function result($row, $col, $result = null) {
+		public function fetch_result($row = 0, $col = 0, $result = null) {
 			if ($result === null) $result = $this->result;
 			return mysql_result($result, $row, $col);
 		}

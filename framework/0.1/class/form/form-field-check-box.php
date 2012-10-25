@@ -71,7 +71,7 @@
 				}
 
 				$this->required = ($error_html !== NULL);
-				$this->validation_js[] = 'if (!f.val) f.errors.push({"type": "required_error", "html": "' . addslashes($error_html) . '"});';
+				$this->validation_js[] = 'if (!f.val) f.errors.push({"type": "required_error", "html": ' . json_encode($error_html) . '});';
 
 			}
 

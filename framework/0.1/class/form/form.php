@@ -693,8 +693,8 @@
 				$js = "\n" . 'var ' . $object . ' = {';
 				foreach ($this->fields as $field) {
 					$id = $field->id_get();
-					$js .= "\n\t" . '"' . addslashes($id) . '": function() {';
-					$js .= "\n\t\t" . 'var f = {"ref": document.getElementById("' . addslashes($id) . '"), "val": null, "errors": []};';
+					$js .= "\n\t" . json_encode($id) . ': function() {';
+					$js .= "\n\t\t" . 'var f = {"ref": document.getElementById(' . json_encode($id) . '), "val": null, "errors": []};';
 					$js .= $field->_validation_js();
 					$js .= "\n\t\t" . 'return f;';
 					$js .= "\n\t" . '},';

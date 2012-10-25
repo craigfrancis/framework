@@ -298,7 +298,7 @@
 								WHERE
 									' . $where_sql);
 
-					$result_count = $db->result(0, 0);
+					$result_count = $db->retch_result();
 
 					$paginator = new paginator($result_count);
 
