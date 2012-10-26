@@ -142,7 +142,12 @@
 		$output_php .= '	}' . "\n";
 		$output_php .= "\n";
 		$output_php .= '	function human_to_ref($text) {' . "\n";
-		$output_php .= '		return human2camel($text);' . "\n";
+		$output_php .= '		$text = strtolower($text);' . "\n";
+		$output_php .= '		$text = preg_replace(\'/[^a-z0-9_]/i\', \'_\', $text);' . "\n";
+		$output_php .= '		$text = preg_replace(\'/__+/\', \'_\', $text);' . "\n";
+		$output_php .= '		$text = preg_replace(\'/_+$/\', \'\', $text);' . "\n";
+		$output_php .= '		$text = preg_replace(\'/^_+/\', \'\', $text);' . "\n";
+		$output_php .= '		return $text;' . "\n";
 		$output_php .= '	}' . "\n";
 		$output_php .= "\n";
 		$output_php .= '	function file_size_to_human($size) {' . "\n";
