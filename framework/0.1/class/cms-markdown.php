@@ -39,10 +39,6 @@ class cms_markdown_base extends check {
 	private $escape_chars = '\`*_{}[]()>#+-.!';
 	private $escape_chars_re;
 
-	# Change to `true` to disallow markup or entities.
-	private $no_markup = false;
-	private $no_entities = false;
-
 	# Predefined urls and titles for reference links and images.
 	private $predef_urls = array();
 	private $predef_titles = array();
@@ -164,11 +160,6 @@ class cms_markdown_base extends check {
 		# Make sure $text ends with a couple of newlines:
 		$text .= "\n\n";
 
-		# html encode
-		if ($this->config['allow_html_code'] !== true) {
-			$text = str_replace('<', '&lt;', $text); // Replacing ">" double escapes it.
-		}
-
 		# Convert all tabs to spaces.
 		$text = $this->detab($text);
 
@@ -243,7 +234,7 @@ class cms_markdown_base extends check {
 
 
 	function hashHTMLBlocks($text) {
-		if ($this->no_markup)  return $text;
+		if (!$this->config['allow_html_code'])  return $text;
 
 		$less_than_tab = $this->config['tab_width'] - 1;
 
@@ -1281,7 +1272,7 @@ class cms_markdown_base extends check {
 	# be encoded. Valid character entities are left alone unless the
 	# no-entities mode is set.
 	#
-		if ($this->no_entities) {
+		if (!$this->config['allow_html_code']) {
 			$text = str_replace('&', '&amp;', $text);
 		} else {
 			# Ampersand-encoding based entirely on Nat Irons's Amputator
@@ -1389,7 +1380,7 @@ class cms_markdown_base extends check {
 				|
 					(?<![`\\\\])
 					`+						# code span marker
-			'.( $this->no_markup ? '' : '
+			'.( !$this->config['allow_html_code'] ? '' : '
 				|
 					<!--    .*?     -->		# comment
 				|

@@ -1,0 +1,55 @@
+
+PHP Prime is a basic framework which is loosely based on the MVC structure.
+
+A typical request is processed by using the URL, e.g.
+
+	http://www.example.com/admin/news/edit/123/
+
+If you are running the website in [development mode](/doc/setup/config/), PHP Prime will add some [debug notes](/doc/setup/debug/) to explain how the request was handled.
+
+But it will start by looking for a [controller](/doc/setup/controllers/) which can handle the request. For example, you may have something like:
+
+	/app/controller/admin/news.php
+
+	<?php
+
+		class admin_news_controller extends controller {
+
+			public function action_index() {
+			}
+
+			public function action_edit($id = NULL) {
+
+				$form = new form();
+
+				// Code for the edit page
+
+				$this->set('form', $form);
+
+			}
+
+		}
+
+	?>
+
+The output for the page will be created by a [view file](/doc/setup/views/), which is also based on the requested URL:
+
+	/app/view/admin/news/edit.ctp
+
+		<h1>Edit Article</h1>
+
+		<?= $form->html(); ?>
+
+In this case the [form object](/doc/helpers/form/) is a helper which gives you allot of functionality and security, and is one of the main features of PHP Prime.
+
+Finally this output is added to a [template](/doc/setup/templates/), which is where the common HTML for the website is added (such as the site navigation).
+
+---
+
+From here I urge you to at least scan over the notes on [security](/doc/security/), which applies to all websites/frameworks.
+
+But to begin with PHP Prime, you need to:
+
+1. [Download](https://github.com/craigfrancis/framework) the framework code.
+2. [Create](/doc/structure/) the folders for your website.
+3. [Start](/doc/setup/views/) with a view file.

@@ -1,0 +1,13 @@
+The main security problem with all websites is how [strings of characters](/doc/security/strings/) are handled though the system.
+
+When we store a customers name, they are seen by the computer as a string of characters. But depending on what we are doing to those characters, they need to be escaped so whatever will see them next won't try to interpret them. For example, the apostrophe (or single quote) in "O'briain" if sent to a database in SQL, could be seen as the special character which says that the name has finished and what happens afterwards is code to be executed.
+
+Once you have a good understanding of [strings](/doc/security/strings/), then you can cover some of the finer points of web security:
+
+* [Strings](/doc/security/csrf/) - yes, its really important.
+* [Cross site request forgery](/doc/security/csrf/) - aka CSRF.
+* [Site framing](/doc/security/framing/) - used in click jacking.
+* [Strict transport security](/doc/security/transport/) - to avoid "man in the middle" attacks.
+* [Content security policy](/doc/security/csp/) - for added protection against XSS.
+* [Login and passwords](/doc/security/logins/) - when authenticating users.
+* [File uploads](/doc/security/files/) - and what happens to those files.

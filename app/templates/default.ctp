@@ -15,7 +15,7 @@
 		// Start
 
 			$doc_nav = new nav();
-			$doc_nav->link_add('#', 'Introduction');
+			$doc_nav->link_add('/doc/introduction/', 'Introduction');
 
 		//--------------------------------------------------
 		// Security
@@ -28,13 +28,13 @@
 			$security_string_nav->link_add('/doc/security/strings/path-manipulation/', 'Path manipulation'); // File uploads going to custom location (e.g. ".."), see safe_file_name()
 
 			$security_nav = new nav();
-			$security_nav->sub_nav_add('/doc/security/strings/', 'Strings', $security_string_nav, NULL, true);
-			$security_nav->link_add('#', 'Cross site request forgery');
-			$security_nav->link_add('#', 'Site framing'); // X-Frame-Options header
-			$security_nav->link_add('#', 'Strict transport security');
-			$security_nav->link_add('#', 'Content security policy');
-			$security_nav->link_add('#', 'Login and passwords'); // Identification/verification, multiple sessions, failed logins, password hashing (slow), lost passwords
-			$security_nav->link_add('#', 'File uploads'); // Uploading a php file to a public location, or images containing exploits.
+			$security_nav->sub_nav_add('/doc/security/strings/', 'Strings', $security_string_nav);
+			$security_nav->link_add('/doc/security/csrf/', 'Cross site request forgery');
+			$security_nav->link_add('/doc/security/framing/', 'Site framing'); // X-Frame-Options header
+			$security_nav->link_add('/doc/security/transport/', 'Strict transport security');
+			$security_nav->link_add('/doc/security/csp/', 'Content security policy');
+			$security_nav->link_add('/doc/security/logins/', 'Login and passwords'); // Identification/verification, multiple sessions, failed logins, password hashing (slow), lost passwords
+			$security_nav->link_add('/doc/security/files/', 'File uploads'); // Uploading a php file to a public location, or images containing exploits.
 
 			$doc_nav->sub_nav_add('/doc/security/', 'Security', $security_nav);
 
@@ -66,16 +66,17 @@
 		// Setup
 
 			$setup_nav = new nav();
-			$setup_nav->link_add('#', 'Config');
-			$setup_nav->link_add('#', 'Controllers');
-			$setup_nav->link_add('#', 'Templates');
-			$setup_nav->link_add('#', 'Views');
-			$setup_nav->link_add('#', 'Gateways');
-			$setup_nav->link_add('#', 'Jobs');
-			$setup_nav->link_add('#', 'Favicon');
-			$setup_nav->link_add('#', 'Robots (txt)');
-			$setup_nav->link_add('#', 'Sitemap (xml)');
-			$setup_nav->link_add('#', 'Testing'); // http://seleniumhq.org/
+			$setup_nav->link_add('/doc/setup/config/', 'Config');
+			$setup_nav->link_add('/doc/setup/debug/', 'Debug');
+			$setup_nav->link_add('/doc/setup/controllers/', 'Controllers');
+			$setup_nav->link_add('/doc/setup/views/', 'Views');
+			$setup_nav->link_add('/doc/setup/templates/', 'Templates');
+			$setup_nav->link_add('/doc/setup/', 'Gateways');
+			$setup_nav->link_add('/doc/setup/', 'Jobs');
+			$setup_nav->link_add('/doc/setup/', 'Favicon');
+			$setup_nav->link_add('/doc/setup/', 'Robots (txt)');
+			$setup_nav->link_add('/doc/setup/', 'Sitemap (xml)');
+			$setup_nav->link_add('/doc/setup/', 'Testing'); // http://seleniumhq.org/
 
 			$doc_nav->sub_nav_add('/doc/setup/', 'Setup', $setup_nav);
 
@@ -83,18 +84,18 @@
 		// Helpers
 
 			$helpers_nav = new nav();
-			$helpers_nav->link_add('#', 'Config');
-			$helpers_nav->link_add('#', 'Functions'); // debug, escaping (html/csv), string (format_currency), mime_set/render_error, redirect
-			$helpers_nav->link_add('#', 'Session');
-			$helpers_nav->link_add('#', 'Cookie');
-			$helpers_nav->link_add('#', 'URL');
-			$helpers_nav->link_add('#', 'Email');
-			$helpers_nav->link_add('#', 'File');
-			$helpers_nav->link_add('#', 'Navigation');
-			$helpers_nav->link_add('#', 'Table');
-			$helpers_nav->link_add('#', 'Paginator');
-			$helpers_nav->link_add('#', 'Form'); // inc save_request_restore/save_request_redirect
-			$helpers_nav->link_add('#', 'User');
+			$helpers_nav->link_add('/doc/helpers/', 'Config');
+			$helpers_nav->link_add('/doc/helpers/', 'Functions'); // debug, escaping (html/csv), string (format_currency), mime_set/render_error, redirect
+			$helpers_nav->link_add('/doc/helpers/', 'Session');
+			$helpers_nav->link_add('/doc/helpers/', 'Cookie');
+			$helpers_nav->link_add('/doc/helpers/', 'URL');
+			$helpers_nav->link_add('/doc/helpers/', 'Email');
+			$helpers_nav->link_add('/doc/helpers/', 'File');
+			$helpers_nav->link_add('/doc/helpers/', 'Navigation');
+			$helpers_nav->link_add('/doc/helpers/', 'Table');
+			$helpers_nav->link_add('/doc/helpers/', 'Paginator');
+			$helpers_nav->link_add('/doc/helpers/form/', 'Form'); // inc save_request_restore/save_request_redirect
+			$helpers_nav->link_add('/doc/helpers/', 'User');
 
 			$doc_nav->sub_nav_add('/doc/helpers/', 'Helpers', $helpers_nav);
 

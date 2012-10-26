@@ -14,6 +14,10 @@
 
 				$request_path = config::get('request.path');
 
+				if ($request_path == '/doc/') {
+					redirect(url('/doc/introduction/'));
+				}
+
 				if (substr($request_path, 0, 5)  == '/doc/') $request_path = substr($request_path, 5);
 				if (substr($request_path, -1)    == '/')     $request_path = substr($request_path, 0, -1);
 
