@@ -43,8 +43,7 @@
 		public static function reset() {
 
 			session::destroy();
-			session::start();
-			session::regenerate();
+			session::start(); // Will also regenerate a new session id
 
 		}
 
@@ -117,7 +116,6 @@
 							session::regenerate(); // Don't want UA telling us the ID to use
 
 							session::set('session.key', $config_key);
-							session::set('session.age', time());
 
 						} else {
 
@@ -144,11 +142,19 @@
 				// incase it has been exposed to a 3rd party it
 				// reduces the window in which they can use it
 
-					if (session::get('session.age') < (time() - 300)) {
+					if (config::get('output.mode') === NULL) { // Not a gateway/maintenance/asset script
 
-						session::set('session.age', time());
+						$session_age = session::get('session.age');
 
-						session::regenerate();
+						if ($session_age === NULL || $session_age < (time() - 300)) {
+
+							session::set('session.age', time());
+
+							if ($session_age !== NULL) {
+								session::regenerate();
+							}
+
+						}
 
 					}
 

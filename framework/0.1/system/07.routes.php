@@ -104,6 +104,8 @@
 
 		if (substr($route_path, 0, 12) == '/sitemap.xml') {
 
+			config::set('output.mode', 'sitemap');
+
 			$sitemap_path = APP_ROOT . '/setup/sitemap.php';
 
 			if (!is_file($sitemap_path)) {
@@ -224,6 +226,7 @@
 				// Headers and browser caching
 
 					config::set('debug.show', false);
+					config::set('output.mode', 'asset');
 
 					$mime_types = array(
 							'css' => 'text/css',
