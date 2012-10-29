@@ -23,9 +23,11 @@
 			$security_string_nav = new nav();
 			$security_string_nav->link_add('/doc/security/strings/sql-injection/', 'SQL injection');
 			$security_string_nav->link_add('/doc/security/strings/html-injection/', 'HTML injection');
-			$security_string_nav->link_add('/doc/security/strings/header-injection/', 'Header injection');
 			$security_string_nav->link_add('/doc/security/strings/url-manipulation/', 'URL manipulation');
-			$security_string_nav->link_add('/doc/security/strings/path-manipulation/', 'Path manipulation'); // File uploads going to custom location (e.g. ".."), see safe_file_name()
+			$security_string_nav->link_add('/doc/security/strings/header-injection/', 'Header injection');
+			$security_string_nav->link_add('/doc/security/strings/cli-injection/', 'CLI Injection');
+			$security_string_nav->link_add('/doc/security/strings/regexp-injection/', 'RegExp Injection');
+			$security_string_nav->link_add('/doc/security/strings/path-manipulation/', 'Path manipulation');
 
 			$security_nav = new nav();
 			$security_nav->sub_nav_add('/doc/security/strings/', 'Strings', $security_string_nav);
@@ -39,44 +41,23 @@
 			$doc_nav->sub_nav_add('/doc/security/', 'Security', $security_nav);
 
 		//--------------------------------------------------
-		// Structure
-
-			$structure_app_nav = new nav();
-			$structure_app_nav->link_add('#', 'Controller');
-			$structure_app_nav->link_add('#', 'Gateway');
-			$structure_app_nav->link_add('#', 'Jobs');
-			$structure_app_nav->link_add('#', 'Library');
-			$structure_app_nav->link_add('#', 'Public');
-			$structure_app_nav->link_add('#', 'Setup');
-			$structure_app_nav->link_add('#', 'Templates');
-			$structure_app_nav->link_add('#', 'View');
-
-			$structure_nav = new nav();
-			$structure_nav->sub_nav_add('/doc/structure/app/', 'App', $structure_app_nav);
-			$structure_nav->link_add('#', 'Files');
-			$structure_nav->link_add('#', 'Framework');
-			$structure_nav->link_add('#', 'Httpd');
-			$structure_nav->link_add('#', 'Logs');
-			$structure_nav->link_add('#', 'Private');
-			$structure_nav->link_add('#', 'Resources');
-
-			$doc_nav->sub_nav_add('/doc/structure/', 'Structure', $structure_nav);
-
-		//--------------------------------------------------
 		// Setup
 
 			$setup_nav = new nav();
+			$setup_nav->link_add('/doc/setup/structure/', 'Structure');
+			$setup_nav->link_add('/doc/setup/bootstrap/', 'Bootstrap');
 			$setup_nav->link_add('/doc/setup/config/', 'Config');
+			$setup_nav->link_add('/doc/setup/constants/', 'Constants');
 			$setup_nav->link_add('/doc/setup/debug/', 'Debug');
 			$setup_nav->link_add('/doc/setup/controllers/', 'Controllers');
 			$setup_nav->link_add('/doc/setup/views/', 'Views');
 			$setup_nav->link_add('/doc/setup/templates/', 'Templates');
-			$setup_nav->link_add('/doc/setup/', 'Gateways');
-			$setup_nav->link_add('/doc/setup/', 'Jobs');
-			$setup_nav->link_add('/doc/setup/', 'Favicon');
-			$setup_nav->link_add('/doc/setup/', 'Robots (txt)');
-			$setup_nav->link_add('/doc/setup/', 'Sitemap (xml)');
-			$setup_nav->link_add('/doc/setup/', 'Testing'); // http://seleniumhq.org/
+			$setup_nav->link_add('/doc/setup/gateways/', 'Gateways');
+			$setup_nav->link_add('/doc/setup/jobs/', 'Jobs');
+			$setup_nav->link_add('/doc/setup/favicon/', 'Favicon');
+			$setup_nav->link_add('/doc/setup/robots/', 'Robots (txt)');
+			$setup_nav->link_add('/doc/setup/sitemap/', 'Sitemap (xml)');
+			$setup_nav->link_add('/doc/setup/testing/', 'Testing');
 
 			$doc_nav->sub_nav_add('/doc/setup/', 'Setup', $setup_nav);
 
@@ -84,18 +65,19 @@
 		// Helpers
 
 			$helpers_nav = new nav();
-			$helpers_nav->link_add('/doc/helpers/', 'Config');
-			$helpers_nav->link_add('/doc/helpers/', 'Functions'); // debug, escaping (html/csv), string (format_currency), mime_set/render_error, redirect
-			$helpers_nav->link_add('/doc/helpers/', 'Session');
-			$helpers_nav->link_add('/doc/helpers/', 'Cookie');
-			$helpers_nav->link_add('/doc/helpers/', 'URL');
-			$helpers_nav->link_add('/doc/helpers/', 'Email');
-			$helpers_nav->link_add('/doc/helpers/', 'File');
-			$helpers_nav->link_add('/doc/helpers/', 'Navigation');
-			$helpers_nav->link_add('/doc/helpers/', 'Table');
-			$helpers_nav->link_add('/doc/helpers/', 'Paginator');
-			$helpers_nav->link_add('/doc/helpers/form/', 'Form'); // inc save_request_restore/save_request_redirect
-			$helpers_nav->link_add('/doc/helpers/', 'User');
+			$helpers_nav->link_add('/doc/helpers/config/', 'Config');
+			$helpers_nav->link_add('/doc/helpers/session/', 'Session');
+			$helpers_nav->link_add('/doc/helpers/cookie/', 'Cookie');
+			$helpers_nav->link_add('/doc/helpers/functions/', 'Functions');
+			$helpers_nav->link_add('/doc/helpers/database/', 'Database');
+			$helpers_nav->link_add('/doc/helpers/url/', 'URL');
+			$helpers_nav->link_add('/doc/helpers/form/', 'Form');
+			$helpers_nav->link_add('/doc/helpers/email/', 'Email');
+			$helpers_nav->link_add('/doc/helpers/file/', 'File');
+			$helpers_nav->link_add('/doc/helpers/nav/', 'Navigation');
+			$helpers_nav->link_add('/doc/helpers/table/', 'Table');
+			$helpers_nav->link_add('/doc/helpers/paginator/', 'Paginator');
+			$helpers_nav->link_add('/doc/helpers/user/', 'User');
 
 			$doc_nav->sub_nav_add('/doc/helpers/', 'Helpers', $helpers_nav);
 

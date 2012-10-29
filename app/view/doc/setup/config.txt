@@ -1,2 +1,4 @@
 
-- Development mode
+How the config variables can be accessed by the [config helper](/doc/helpers/config/).
+
+Notes about development mode, aka [debug](/doc/setup/debug/).

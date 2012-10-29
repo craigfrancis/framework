@@ -1,13 +1,11 @@
 
-PHP Prime is a basic framework which is loosely based on the MVC structure.
+PHP Prime is a basic framework, which is loosely based on the MVC structure.
 
-A typical request is processed by using the URL, e.g.
+Where the typical page is built using the URL, e.g.
 
 	http://www.example.com/admin/news/edit/123/
 
-If you are running the website in [development mode](/doc/setup/config/), PHP Prime will add some [debug notes](/doc/setup/debug/) to explain how the request was handled.
-
-But it will start by looking for a [controller](/doc/setup/controllers/) which can handle the request. For example, you may have something like:
+So it will start by looking for a [controller](/doc/setup/controllers/) which can handle the request. For example, you may have something like:
 
 	/app/controller/admin/news.php
 
@@ -32,7 +30,7 @@ But it will start by looking for a [controller](/doc/setup/controllers/) which c
 
 	?>
 
-The output for the page will be created by a [view file](/doc/setup/views/), which is also based on the requested URL:
+Then the output for the page will be created by a [view file](/doc/setup/views/), which is also based on the requested URL:
 
 	/app/view/admin/news/edit.ctp
 
@@ -42,14 +40,40 @@ The output for the page will be created by a [view file](/doc/setup/views/), whi
 
 In this case the [form object](/doc/helpers/form/) is a helper which gives you allot of functionality and security, and is one of the main features of PHP Prime.
 
+If you are running the website in [development mode](/doc/setup/config/), PHP Prime will add some [notes](/doc/setup/debug/) to help explain how the request was handled.
+
 Finally this output is added to a [template](/doc/setup/templates/), which is where the common HTML for the website is added (such as the site navigation).
+
+	<!DOCTYPE html>
+	<html lang="<?= html(config::get('output.lang')) ?>">
+	<head>
+		<?= $this->head_get_html() ?>
+	</head>
+	<body id="<?= html($this->page_ref_get()) ?>">
+
+		<h1><?= html($this->title_get()) ?></h1>
+
+		<div id="page_nav">
+
+			<?= $nav->html(); ?>
+
+		</div>
+
+		<div id="page_content">
+
+			<?= $this->message_get_html() ?>
+
+			<?= $this->view_get_html() ?>
+
+		</div>
+
+	</body>
+	</html>
+
+And yes I use the '[echo shortcut](http://www.php.net/echo)', which is not the same as 'short tags' as of PHP 5.4.
 
 ---
 
 From here I urge you to at least scan over the notes on [security](/doc/security/), which applies to all websites/frameworks.
 
-But to begin with PHP Prime, you need to:
-
-1. [Download](https://github.com/craigfrancis/framework) the framework code.
-2. [Create](/doc/structure/) the folders for your website.
-3. [Start](/doc/setup/views/) with a view file.
+Then your free to [start using the framework](/doc/setup/).

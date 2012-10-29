@@ -1,0 +1,17 @@
+Describe the folders:
+
+	/app/
+		/controller/
+		/gateway/
+		/jobs/
+		/library/
+		/public/
+		/setup/
+		/templates/
+		/view/
+	/files/
+	/framework/
+	/httpd/
+	/logs/
+	/private/
+	/resources/

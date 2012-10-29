@@ -1,0 +1,2 @@
+
+[html function](/doc/helpers/functions/)

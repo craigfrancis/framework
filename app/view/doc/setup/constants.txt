@@ -1,0 +1,8 @@
+
+Free to create your own, but these can be used:
+
+	ROOT            = /
+	APP_ROOT        = /app/
+	VIEW_ROOT       = /app/view/
+	PUBLIC_ROOT     = /app/public/
+	CONTROLLER_ROOT = /app/controller/

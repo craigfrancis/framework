@@ -1,0 +1,4 @@
+
+Can create [helper objects](/doc/helpers/), or your own classes in /app/library/class/.
+
+Also mention the /app/library/controller/ folder.
