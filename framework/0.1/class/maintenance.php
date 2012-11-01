@@ -15,6 +15,7 @@
 ***************************************************/
 
 // TODO: Add an admin interface somewhere which can show the jobs being run, can cancel them, or stack them up.
+// TODO: Handle switching from BST to GMT
 
 //--------------------------------------------------
 // Maintenance class
