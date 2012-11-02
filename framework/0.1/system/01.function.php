@@ -572,7 +572,7 @@
 	function redirect($url, $http_response_code = 302) {
 
 		if (substr($url, 0, 1) == '/') {
-			$url = (config::get('request.https') ? config::get('output.domain_https') : config::get('output.domain_http')) . $url;
+			$url = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain') . $url;
 		}
 
 		$next_html = '<p>Go to <a href="' . html($url) . '">next page</a>.</p>';

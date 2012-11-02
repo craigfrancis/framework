@@ -30,13 +30,6 @@
 			$config['email.from_email'] = 'noreply@phpprime.com';
 			$config['email.contact_us'] = array('craig@craigfrancis.co.uk');
 
-		//--------------------------------------------------
-		// General
-
-			$config['output.mime'] = 'application/xhtml+xml';
-
-			$config['debug.level'] = 4;
-
 	} else if (prefix_match('/www/demo/', ROOT)) {
 
 		//--------------------------------------------------
@@ -68,15 +61,6 @@
 			$config['email.contact_us'] = array('craig@craigfrancis.co.uk');
 
 	}
-
-//--------------------------------------------------
-// Content security policy
-
-	// $config['output.csp_active'] = true;
-
-	// $config['output.csp_directives'] = array(
-	// 		'default-src' => array('"self"'),
-	// 	);
 
 //--------------------------------------------------
 // Output

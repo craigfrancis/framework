@@ -242,7 +242,7 @@
 					$website = config::get('output.domain'); // CLI
 				}
 				if ($website != '') {
-					$website = (config::get('request.https') ? 'https' : 'http') . '://' . $website;
+					$website = (config::get('request.https') ? 'https://' : 'http://') . $website;
 				}
 
 				$request_values = array(

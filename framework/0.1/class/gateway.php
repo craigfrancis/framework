@@ -157,7 +157,7 @@
 					$host_domain = $this->_host_config($gateway_host, 'domain');
 					$host_port = $this->_host_config($gateway_host, 'port');
 
-					$gateway_url = ($host_port == 80 ? 'http' : 'https') . '://' . $host_domain . ':' . $host_port . '/a/api/' . urlencode($gateway_name) . '/?client=' . urlencode($client_name);
+					$gateway_url = ($host_port == 80 ? 'http://' : 'https://') . $host_domain . ':' . $host_port . '/a/api/' . urlencode($gateway_name) . '/?client=' . urlencode($client_name);
 
 				//--------------------------------------------------
 				// Debug

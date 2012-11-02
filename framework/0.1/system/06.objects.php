@@ -513,9 +513,28 @@
 						}
 
 					//--------------------------------------------------
+					// Block framing by default
+
+						header('X-Frame-Options: DENY');
+
+					//--------------------------------------------------
+					// Strict transport security
+
+						if (https_only()) {
+							header('Strict-Transport-Security: max-age=31536000; includeSubDomains'); // HTTPS only (1 year)
+						}
+
+					//--------------------------------------------------
 					// Content security policy
 
 						$csp = config::get('output.csp_directives');
+
+						if (is_string($csp) && $csp != '') {
+							$csp = array(
+									'default-src' => $csp,
+								);
+						}
+
 						if (is_array($csp)) {
 
 							if (!array_key_exists('report-uri', $csp)) { // isset returns false for NULL
@@ -538,7 +557,7 @@
 
 								$header = 'X-WebKit-CSP';
 
-								if (!config::get('output.csp_active', (SERVER == 'stage'))) {
+								if (!config::get('output.csp_active', false)) {
 									$header .= '-Report-Only';
 								}
 

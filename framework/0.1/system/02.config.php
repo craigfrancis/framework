@@ -213,30 +213,21 @@
 	//--------------------------------------------------
 	// Output
 
-		config::set_default('output.protocols', array(config::get('request.https') ? 'https' : 'http'));
+		config::set_default('output.protocols', array('http'));
 		config::set_default('output.domain', config::get('request.domain')); // Can be set for CLI support in app config file
-
-		$protocols = config::get('output.protocols');
-		$domain = config::get('output.domain');
-
-		if ($domain != '') {
-			config::set_default('output.domain_http',  (in_array('http',  $protocols) ? 'http'  : reset($protocols)) . '://'  . $domain);
-			config::set_default('output.domain_https', (in_array('https', $protocols) ? 'https' : reset($protocols)) . '://'  . $domain);
-		}
-
-		unset($protocols, $domain);
-
-		config::set_default('output.site_name', 'Company Name');
 		config::set_default('output.lang', 'en-GB');
 		config::set_default('output.mime', (SERVER == 'stage' ? 'application/xhtml+xml' : 'text/html'));
 		config::set_default('output.charset', 'UTF-8');
 		config::set_default('output.error', false);
 		config::set_default('output.no_cache', false);
+		config::set_default('output.site_name', 'Company Name');
 		config::set_default('output.title_prefix', config::get('output.site_name'));
 		config::set_default('output.title_suffix', '');
 		config::set_default('output.title_divide', ' | ');
 		config::set_default('output.title_error', 'An error has occurred');
 		config::set_default('output.page_ref_mode', 'route');
+		config::set_default('output.csp_active', (SERVER == 'stage'));
+		config::set_default('output.csp_directives', (config::get('output.csp_active') ? array('default-src' => array('"self"')) : NULL));
 		config::set_default('output.block_browsers', array(
 				'/MSIE [1-5]\./',
 				'/MSIE.*; Mac_PowerPC/',
