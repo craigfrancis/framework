@@ -117,7 +117,7 @@
 		}
 
 		public static function salt($variable, $value) {
-			return sha1($variable . '-' . $value . '-' . self::$salt); // FirePHP edits HTTP_USER_AGENT
+			return sha1($variable . '-' . $value . '-' . self::$salt); // FirePHP, IE computability view, and Google Frame change HTTP_USER_AGENT
 		}
 
 		public static function supported() {

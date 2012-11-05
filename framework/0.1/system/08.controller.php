@@ -232,10 +232,10 @@
 
 		if (config::get('debug.level') >= 3) {
 
-			$note_html = 'Controllers:<br />' . "\n";
+			$note_html = '<strong>Controllers</strong>:<br />' . "\n";
 
 			foreach ($controller_log as $log) {
-				$note_html .= '&#xA0; ' . preg_replace('/^([^:]+):/', '<strong>\1</strong>:', html($log)) . '<br />' . "\n";
+				$note_html .= '&#xA0; ' . preg_replace('/^([^:]+:)([^\(\)]*(\(\))?)/', '\1 <strong>\2</strong>', html($log)) . '<br />' . "\n";
 			}
 
 			debug_note_html(str_replace(ROOT, '', $note_html), 'H');
@@ -276,37 +276,14 @@
 			$note_html  = '<strong>Action</strong>: ' . html(str_replace(ROOT, '', $action_controller_path)) . '<br />' . "\n";
 
 			if ($action_controller_name !== NULL) {
-				$note_html .= '&#xA0; Calls:<br />' . "\n";
-				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->before();<br />' . "\n";
-				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->' . html($action_method) . '(' . html(implode(', ', $action_route_stack_pending)) . ');<br />' . "\n";
-				$note_html .= '&#xA0; &#xA0; ' . html($action_controller_name) . '->after();<br />' . "\n";
+				$note_html .= '&#xA0; ' . html($action_controller_name) . '-><strong>before</strong>();<br />' . "\n";
+				$note_html .= '&#xA0; ' . html($action_controller_name) . '-><strong>' . html($action_method) . '</strong>(' . html(implode(', ', $action_route_stack_pending)) . ');<br />' . "\n";
+				$note_html .= '&#xA0; ' . html($action_controller_name) . '-><strong>after</strong>();<br />' . "\n";
 			}
-
-			$note_html .= '&#xA0; Methods:<br />' . "\n";
-
-			foreach (config::get('request.folders') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->request_folder_get(' . html($id) . '); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
-			}
-
-			$note_html .= '&#xA0; &#xA0; $this->view_path_set(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
-			$note_html .= '&#xA0; &#xA0; $this->page_ref_set(\'example_ref\');<br />' . "\n";
-			$note_html .= '&#xA0; &#xA0; $this->title_set(\'Custom page title.\');<br />' . "\n";
-			$note_html .= '&#xA0; &#xA0; $this->title_full_set(\'Custom page title.\');<br />' . "\n";
-
-			foreach (config::get('output.title_folders') as $id => $value) {
-				$note_html .= '&#xA0; &#xA0; $this->title_folder_set(' . html($id) . ', \'new_value\'); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
-			}
-
-			$note_html .= '&#xA0; &#xA0; $this->message_set(\'The item has been updated.\');<br />' . "\n";
-			$note_html .= '&#xA0; &#xA0; resources::js_add(\'/path/to/file.js\');<br />' . "\n";
-			$note_html .= '&#xA0; &#xA0; resources::css_add(\'/path/to/file.css\');<br />' . "\n";
-			$note_html .= '&#xA0; &#xA0; resources::css_auto();<br />' . "\n";
-			$note_html .= '&#xA0; &#xA0; resources::head_add_html(\'&lt;html&gt;\');<br />' . "\n";
-			$note_html .= '&#xA0; &#xA0; render_error(\'page-not-found\');<br />' . "\n";
 
 			debug_note_html($note_html, 'H');
 
-			unset($note_html, $id, $value);
+			unset($note_html);
 
 		}
 
@@ -325,6 +302,39 @@
 		}
 
 		config::set('view.folders', $route_folders);
+
+	}
+
+	if (config::get('debug.level') >= 3) {
+
+		$note_html = '<strong>Methods</strong>:<br />' . "\n";
+
+		foreach (config::get('request.folders') as $id => $value) {
+			$note_html .= '&#xA0; $this-><strong>request_folder_get</strong>(' . html($id) . '); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
+		}
+
+		$note_html .= '&#xA0; $this-><strong>view_path_set</strong>(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
+		$note_html .= '&#xA0; $this-><strong>page_ref_set</strong>(\'example_ref\');<br />' . "\n";
+		$note_html .= '&#xA0; $this-><strong>title_set</strong>(\'Custom page title.\');<br />' . "\n";
+		$note_html .= '&#xA0; $this-><strong>title_full_set</strong>(\'Custom page title.\');<br />' . "\n";
+
+		foreach (config::get('output.title_folders') as $id => $value) {
+			$note_html .= '&#xA0; $this-><strong>title_folder_set</strong>(' . html($id) . ', \'new_value\'); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
+		}
+
+		$note_html .= '&#xA0; $this-><strong>message_set</strong>(\'The item has been updated.\');<br />' . "\n";
+		$note_html .= '&#xA0; resources::<strong>js_add</strong>(\'/path/to/file.js\');<br />' . "\n";
+		$note_html .= '&#xA0; resources::<strong>js_code_add</strong>(\'var x = \' . json_encode($x) . \';\');<br />' . "\n";
+		$note_html .= '&#xA0; resources::<strong>css_auto</strong>();<br />' . "\n";
+		$note_html .= '&#xA0; resources::<strong>css_add</strong>(\'/path/to/file.css\');<br />' . "\n";
+		$note_html .= '&#xA0; resources::<strong>css_alternate_add</strong>(\'/path/to/file.css\', \'print\');<br />' . "\n";
+		$note_html .= '&#xA0; resources::<strong>css_alternate_add</strong>(\'/path/to/file.css\', \'all\', \'Title\');<br />' . "\n";
+		$note_html .= '&#xA0; resources::<strong>head_add_html</strong>(\'&lt;html&gt;\');<br />' . "\n";
+		$note_html .= '&#xA0; <strong>render_error</strong>(\'page-not-found\');<br />' . "\n";
+
+		debug_note_html($note_html, 'H');
+
+		unset($note_html, $id, $value);
 
 	}
 
