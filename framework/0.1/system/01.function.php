@@ -399,6 +399,26 @@
 	}
 
 //--------------------------------------------------
+// CSP additions
+
+	function csp_add_source($directive, $sources) {
+
+		if (!is_array($sources)) {
+			$sources = array($sources);
+		}
+
+		$csp = config::get('output.csp_directives');
+
+		if (!isset($csp[$directive])) {
+			$csp[$directive] = (isset($csp['default-src']) ? $csp['default-src'] : array());
+		}
+		$csp[$directive] = array_merge($csp[$directive], $sources);
+
+		config::set('output.csp_directives', $csp);
+
+	}
+
+//--------------------------------------------------
 // Download
 
 	function http_file_download($path, $mime, $name = NULL, $mode = 'attachment') {
@@ -675,6 +695,13 @@
 		}
 		rmdir($dir);
 	}
+
+//--------------------------------------------------
+// Temporary files
+
+	//function tmp_() {
+	//	$cache_folder
+	//}
 
 //--------------------------------------------------
 // Random bytes - from Drupal/phpPass
