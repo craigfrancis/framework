@@ -319,8 +319,27 @@
 		return $text;
 	}
 
+	function strip_slashes_deep($value) {
+	 	return (is_array($value) ? array_map('strip_slashes_deep', $value) : stripslashes($value));
+	}
+
 	function is_assoc($array) {
 		return (count(array_filter(array_keys($array), 'is_string')) > 0); // http://stackoverflow.com/questions/173400
+	}
+
+//--------------------------------------------------
+// Check that an email address is valid
+
+	function is_email($email) {
+		if (preg_match('/^\w[-.+\'\w]*@(\w[-._\w]*\.[a-zA-Z]{2,}.*)$/', $email, $matches)) {
+			if (config::get('email.check_domain', true) && function_exists('checkdnsrr')) {
+				if (checkdnsrr($matches[1] . '.', 'MX')) return true; // If a 'mail exchange' record exists
+				if (checkdnsrr($matches[1] . '.', 'A'))  return true; // Mail servers can fall back on 'A' records
+			} else {
+				return true; // Skipping domain check, or on a Windows server.
+			}
+		}
+		return false;
 	}
 
 //--------------------------------------------------
@@ -371,31 +390,52 @@
 	}
 
 //--------------------------------------------------
-// Check that an email address is valid
+// Save request support functions - useful if the users
+// session has expired while filling out a long form
 
-	function is_email($email) {
-		if (preg_match('/^\w[-.+\'\w]*@(\w[-._\w]*\.[a-zA-Z]{2,}.*)$/', $email, $matches)) {
-			if (config::get('email.check_domain', true) && function_exists('checkdnsrr')) {
-				if (checkdnsrr($matches[1] . '.', 'MX')) return true; // If a 'mail exchange' record exists
-				if (checkdnsrr($matches[1] . '.', 'A'))  return true; // Mail servers can fall back on 'A' records
-			} else {
-				return true; // Skipping domain check, or on a Windows server.
-			}
+	function save_request_redirect($url, $user = NULL) {
+		session::set('save_request_user', $user);
+		session::set('save_request_url', config::get('request.uri'));
+		session::set('save_request_created', time());
+		session::set('save_request_used', false);
+		if (config::get('request.method') == 'POST') { // If user clicks back after seeing login form it might be as a GET request, so don't loose their POST data from before.
+			session::set('save_request_data', $_POST);
 		}
-		return false;
+		redirect($url);
+	}
+
+	function save_request_restore($current_user = NULL) {
+		$session_user = session::get('save_request_user');
+		$session_used = session::get('save_request_used');
+		if ($session_used === true || ($session_user != '' && $session_user != $current_user)) {
+
+			session::delete('save_request_user');
+			session::delete('save_request_url');
+			session::delete('save_request_created');
+			session::delete('save_request_used');
+			session::delete('save_request_data');
+
+		} else if ($session_used === false) {
+
+			session::set('save_request_used', true);
+
+			if (session::get('save_request_created') > (time() - (60*5))) {
+				$next_url = session::get('save_request_url');
+				if (substr($next_url, 0, 1) == '/') { // Shouldn't be an issue, but make sure we stay on this website
+					redirect($next_url);
+				}
+			}
+
+		}
 	}
 
 //--------------------------------------------------
-// Set mime type
+// Render an error page (shortcut)
 
-	function mime_set($mime_type = NULL) {
-
-		if ($mime_type !== NULL) {
-			config::set('output.mime', $mime_type);
-		}
-
-		header('Content-Type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
-
+	function render_error($error) {
+		$view = new view();
+		$view->render_error($error);
+		exit();
 	}
 
 //--------------------------------------------------
@@ -418,6 +458,50 @@
 		$csp[$directive] = array_merge($csp[$directive], $sources);
 
 		config::set('output.csp_directives', $csp);
+
+	}
+
+//--------------------------------------------------
+// Set mime type
+
+	function mime_set($mime_type = NULL) {
+
+		if ($mime_type !== NULL) {
+			config::set('output.mime', $mime_type);
+		}
+
+		header('Content-Type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
+
+	}
+
+//--------------------------------------------------
+// Function to send the user onto another page.
+// This takes into IE6 into consideration when
+// redirecting from a HTTPS connection to the
+// standard HTTP
+
+	function redirect($url, $http_response_code = 302) {
+
+		if (substr($url, 0, 1) == '/') {
+			$url = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain') . $url;
+		}
+
+		$next_html = '<p>Go to <a href="' . html($url) . '">next page</a>.</p>';
+
+		if (ob_get_length() > 0) {
+			ob_end_flush();
+			exit($next_html);
+		}
+
+		mime_set('text/html');
+
+		if (substr($url, 0, 7) == 'http://' && config::get('request.https') && strpos(config::get('request.browser'), 'MSIE 6') !== false) {
+			header('Refresh: 0; url=' . head($url));
+			exit('<p><a href="' . html($url) . '">Loading...</a></p>');
+		} else {
+			header('Location: ' . head($url), true, $http_response_code);
+			exit($next_html);
+		}
 
 	}
 
@@ -578,86 +662,6 @@
 	}
 
 //--------------------------------------------------
-// Render an error page (shortcut)
-
-	function render_error($error) {
-		$view = new view();
-		$view->render_error($error);
-		exit();
-	}
-
-//--------------------------------------------------
-// Function to send the user onto another page.
-// This takes into IE6 into consideration when
-// redirecting from a HTTPS connection to the
-// standard HTTP
-
-	function redirect($url, $http_response_code = 302) {
-
-		if (substr($url, 0, 1) == '/') {
-			$url = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain') . $url;
-		}
-
-		$next_html = '<p>Go to <a href="' . html($url) . '">next page</a>.</p>';
-
-		if (ob_get_length() > 0) {
-			ob_end_flush();
-			exit($next_html);
-		}
-
-		mime_set('text/html');
-
-		if (substr($url, 0, 7) == 'http://' && config::get('request.https') && strpos(config::get('request.browser'), 'MSIE 6') !== false) {
-			header('Refresh: 0; url=' . head($url));
-			exit('<p><a href="' . html($url) . '">Loading...</a></p>');
-		} else {
-			header('Location: ' . head($url), true, $http_response_code);
-			exit($next_html);
-		}
-
-	}
-
-//--------------------------------------------------
-// Save request support functions - useful if the users
-// session has expired while filling out a long form
-
-	function save_request_redirect($url, $user = NULL) {
-		session::set('save_request_user', $user);
-		session::set('save_request_url', config::get('request.uri'));
-		session::set('save_request_created', time());
-		session::set('save_request_used', false);
-		if (config::get('request.method') == 'POST') { // If user clicks back after seeing login form it might be as a GET request, so don't loose their POST data from before.
-			session::set('save_request_data', $_POST);
-		}
-		redirect($url);
-	}
-
-	function save_request_restore($current_user = NULL) {
-		$session_user = session::get('save_request_user');
-		$session_used = session::get('save_request_used');
-		if ($session_used === true || ($session_user != '' && $session_user != $current_user)) {
-
-			session::delete('save_request_user');
-			session::delete('save_request_url');
-			session::delete('save_request_created');
-			session::delete('save_request_used');
-			session::delete('save_request_data');
-
-		} else if ($session_used === false) {
-
-			session::set('save_request_used', true);
-
-			if (session::get('save_request_created') > (time() - (60*5))) {
-				$next_url = session::get('save_request_url');
-				if (substr($next_url, 0, 1) == '/') { // Shouldn't be an issue, but make sure we stay on this website
-					redirect($next_url);
-				}
-			}
-
-		}
-	}
-
-//--------------------------------------------------
 // HTTPS connections
 
 	function https_available() {
@@ -782,14 +786,6 @@
 
 			return $output;
 
-	}
-
-//--------------------------------------------------
-// A recursive function for running stripslashes
-// on all items of a variable / array.
-
-	function strip_slashes_deep($value) {
-	 	return (is_array($value) ? array_map('strip_slashes_deep', $value) : stripslashes($value));
 	}
 
 //--------------------------------------------------
