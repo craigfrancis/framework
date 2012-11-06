@@ -970,7 +970,7 @@
 			//--------------------------------------------------
 			// Download
 
-				http_string_download($this->csv(), $mime, $file_name, $mode);
+				http_download_string($this->csv(), $mime, $file_name, $mode);
 
 		}
 

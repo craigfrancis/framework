@@ -226,7 +226,7 @@
 		config::set_default('output.title_divide', ' | ');
 		config::set_default('output.title_error', 'An error has occurred');
 		config::set_default('output.page_ref_mode', 'route');
-		config::set_default('output.csp_active', (SERVER == 'stage'));
+		config::set_default('output.csp_enforced', (SERVER == 'stage'));
 		config::set_default('output.csp_directives', (config::get('output.csp_active') ? array('default-src' => array('"self"')) : NULL));
 		config::set_default('output.block_browsers', array(
 				'/MSIE [1-5]\./',
