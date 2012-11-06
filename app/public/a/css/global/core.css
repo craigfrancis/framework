@@ -116,17 +116,47 @@
 		#page_title {
 			color: inherit;
 			background: #AAA;
-			padding: 10px;
 		}
 
 		#page_title h1 {
 			margin: 0;
+			padding: 10px;
 			font-size: 1.5em;
 		}
 
 		#page_title h1 a {
 			color: #000;
 			text-decoration: none;
+		}
+		
+		#page_title ul {
+			margin: 0;
+			overflow: auto;
+			width: 100%; /* IE5+6 Win: Trigger bug to contain floated elements */
+		}
+
+		#page_title ul li {
+			float: left;
+			margin: 0 0 0 2px;
+			padding: 3px 10px;
+			list-style: none;
+			background: #0025e1;
+			-webkit-border-top-left-radius: 6px;
+			-webkit-border-top-right-radius: 6px;
+			-moz-border-radius-topleft: 6px;
+			-moz-border-radius-topright: 6px;
+			border-top-left-radius: 6px;
+			border-top-right-radius: 6px;
+		}
+		
+		#page_title ul li a {
+			color: #FFF;
+			text-decoration: none;
+		}
+		
+		#page_title ul li strong a {
+			font-weight: normal;
+			text-decoration: underline;
 		}
 
 	/*--------------------------------------------------*/
@@ -142,26 +172,34 @@
 		#page_navigation {
 			float: left;
 			width: 160px;
-			padding: 10px 0 0 0;
+			margin: 10px 0 0 0;
 			background: #E0E0E0;
+			-webkit-border-radius: 10px;
+			-moz-border-radius: 10px;
+			border-radius: 10px;
 		}
 
-		#page_navigation h2 {
-			padding: 0 0 0 10px;
-		}
-
+		#page_navigation h2,
 		#page_navigation h3 {
 			font-size: 1em;
-			margin: 0 0 0 10px;
+			padding: 5px 10px;
+			margin: 0;
+			background: #AAA;
+			-webkit-border-top-left-radius: 6px;
+			-webkit-border-top-right-radius: 6px;
+			-moz-border-radius-topleft: 6px;
+			-moz-border-radius-topright: 6px;
+			border-top-left-radius: 6px;
+			border-top-right-radius: 6px;
 		}
 
 		#page_navigation ul {
 			list-style: none;
-			margin: 0 5px 0 20px;
+			margin: 10px 5px 0 10px;
 		}
 
 		#page_navigation ul ul {
-			margin: 10px 0 0 20px;
+			margin: 10px 0 0 15px;
 		}
 
 		#page_navigation li {

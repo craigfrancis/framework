@@ -5,7 +5,7 @@ Where the typical page is built using the URL, e.g.
 
 	http://www.example.com/admin/news/edit/123/
 
-So it will start by looking for a [controller](/doc/setup/controllers/) which can handle the request. For example, you may have something like:
+It will start by looking for a [controller](/doc/setup/controllers/) which can handle the request. For example, you may have something like:
 
 	/app/controller/admin/news.php
 
