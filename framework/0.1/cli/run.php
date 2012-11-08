@@ -229,6 +229,7 @@
 			file_put_contents($setup_folder . '/database.txt', '');
 
 			// TODO
+			// see http://davidwalsh.name/backup-database-xml-php
 
 	}
 
