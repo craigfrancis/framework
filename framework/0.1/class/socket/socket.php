@@ -8,11 +8,14 @@
 		private $login_username;
 		private $login_password;
 		private $request_full;
+		private $request_host;
+		private $request_path;
 		private $response_full;
 		private $response_headers;
 		private $response_data;
 		private $exit_on_error;
 		private $error_string;
+		private $connection;
 
 		public function __construct() {
 			$this->values = array();
@@ -21,11 +24,14 @@
 			$this->login_username = '';
 			$this->login_password = '';
 			$this->request_full = '';
+			$this->request_host = '';
+			$this->request_path = '';
 			$this->response_full = '';
 			$this->response_headers = '';
 			$this->response_data = '';
 			$this->exit_on_error = true;
 			$this->error_string = NULL;
+			$this->connection = NULL;
 		}
 
 		public function value_add($name, $value) {
@@ -54,19 +60,23 @@
 		}
 
 		public function get($url, $data = '') {
-			return $this->_send($url, $data, 'GET');
+			$this->connection_open($url, 'GET', $data);
+			return $this->connection_read();
 		}
 
 		public function post($url, $data = '') {
-			return $this->_send($url, $data, 'POST');
+			$this->connection_open($url, 'POST', $data);
+			return $this->connection_read();
 		}
 
 		public function put($url, $data = '') {
-			return $this->_send($url, $data, 'PUT');
+			$this->connection_open($url, 'PUT', $data);
+			return $this->connection_read();
 		}
 
 		public function delete($url, $data = '') {
-			return $this->_send($url, $data, 'DELETE');
+			$this->connection_open($url, 'DELETE', $data);
+			return $this->connection_read();
 		}
 
 		public function request_full_get() {
@@ -124,7 +134,7 @@
 			return $this->error_string;
 		}
 
-		private function _send($url, $data = '', $method = 'POST') {
+		public function connection_open($url, $method = 'GET', $data = '') {
 
 			//--------------------------------------------------
 			// No error
@@ -282,42 +292,18 @@
 					}
 
 					$this->request_full = $request;
+					$this->request_host = $host;
+					$this->request_path = $path;
 
 			//--------------------------------------------------
 			// Communication
 
-				$fp = @fsockopen($socket_host, $port, $errno, $errstr, 5);
-				if ($fp) {
+				$this->connection = @fsockopen($socket_host, $port, $errno, $errstr, 5);
+				if ($this->connection) {
 
-					//--------------------------------------------------
-					// Send
+					fwrite($this->connection, $request); // Send request
 
-						fwrite($fp, $request);
-
-					//--------------------------------------------------
-					// Receive
-
-						$error_reporting = error_reporting(0); // Dam IIS forgetting close_notify indicator - http://php.net/file
-
-						$response = '';
-						while (!feof($fp)) {
-							$response .= fgets($fp, 2048);
-						}
-						fclose($fp);
-
-						error_reporting($error_reporting);
-
-						$this->response_full = $response;
-
-					//--------------------------------------------------
-					// Split off the header
-
-						$response = str_replace("\r\n", "\n", $response);
-
-						$pos = strpos($response, "\n\n");
-
-						$this->response_headers = trim(substr($response, 0, $pos));
-						$this->response_data = trim(substr($response, ($pos + 2)));
+					return true;
 
 				} else {
 
@@ -331,8 +317,58 @@
 
 				}
 
+		}
+
+		public function connection_get() {
+			return $this->connection;
+		}
+
+		public function connection_read() {
+
 			//--------------------------------------------------
-			// Return
+			// Bad connection
+
+				if (!$this->connection) {
+					return false;
+				}
+
+			//--------------------------------------------------
+			// Receive
+
+				$error_reporting = error_reporting(0); // Dam IIS forgetting close_notify indicator - http://php.net/file
+
+				$response = '';
+				while (!feof($this->connection)) {
+					$response .= fgets($this->connection, 2048);
+				}
+				fclose($this->connection);
+
+				error_reporting($error_reporting);
+
+				$this->response_full = $response;
+
+			//--------------------------------------------------
+			// Split off the header
+
+				if (preg_match('/^(.*?)(\n\n|\r\n\r\n)/ms', $response, $matches)) {
+
+					$this->response_headers = str_replace("\r\n", "\n", $matches[1]);
+					$this->response_data = substr($response, strlen($matches[1] . $matches[2]));
+
+				} else {
+
+					$this->error_string = 'Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")';
+
+					if ($this->exit_on_error) {
+						exit_with_error($this->error_string);
+					} else {
+						return false;
+					}
+
+				}
+
+			//--------------------------------------------------
+			// Success
 
 				return true;
 
