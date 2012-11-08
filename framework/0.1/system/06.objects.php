@@ -527,15 +527,9 @@
 					//--------------------------------------------------
 					// Content security policy
 
-						$csp = config::get('output.csp_directives');
+						if (config::get('output.csp_enabled') === true) {
 
-						if (is_string($csp) && $csp != '') {
-							$csp = array(
-									'default-src' => $csp,
-								);
-						}
-
-						if (is_array($csp)) {
+							$csp = config::get('output.csp_directives');
 
 							if (!array_key_exists('report-uri', $csp)) { // isset returns false for NULL
 								$csp['report-uri'] = '/a/api/csp-report/';
@@ -557,7 +551,7 @@
 
 								$header = 'X-WebKit-CSP';
 
-								if (!config::get('output.csp_active', false)) {
+								if (!config::get('output.csp_enforced', false)) {
 									$header .= '-Report-Only';
 								}
 

@@ -443,18 +443,16 @@
 
 	function csp_add_source($directive, $sources) {
 
-		$csp = config::get('output.csp_directives');
-		if ($csp === NULL) {
-			return false; // CSP not in use
-		}
-
 		if (!is_array($sources)) {
 			$sources = array($sources);
 		}
 
+		$csp = config::get('output.csp_directives');
+
 		if (!isset($csp[$directive])) {
 			$csp[$directive] = (isset($csp['default-src']) ? $csp['default-src'] : array());
 		}
+
 		$csp[$directive] = array_merge($csp[$directive], $sources);
 
 		config::set('output.csp_directives', $csp);
