@@ -572,7 +572,7 @@
 					//--------------------------------------------------
 					// Block framing by default
 
-						header('X-Frame-Options: DENY');
+						header('X-Frame-Options: ' . head(strtoupper(config::get('output.framing', 'DENY'))));
 
 					//--------------------------------------------------
 					// Strict transport security
