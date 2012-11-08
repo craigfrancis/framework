@@ -532,7 +532,7 @@
 							$csp = config::get('output.csp_directives');
 
 							if (!array_key_exists('report-uri', $csp)) { // isset returns false for NULL
-								$csp['report-uri'] = '/a/api/csp-report/';
+								$csp['report-uri'] = gateway_url('csp-report');
 							}
 
 							$output = array();
