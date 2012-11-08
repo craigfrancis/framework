@@ -444,6 +444,63 @@
 					}
 
 				//--------------------------------------------------
+				// JavaScript
+
+					//--------------------------------------------------
+					// JS Files
+
+						$js_state = request('js', 'GET');
+
+						if ($js_state == 'disabled') {
+
+							cookie::set('js_disable', 'true');
+
+							$this->js_enabled = false;
+
+						} else if ($js_state != '') {
+
+							cookie::delete('js_disable');
+
+							$this->js_enabled = true;
+
+						} else {
+
+							$this->js_enabled = (cookie::get('js_disable') != 'true');
+
+						}
+
+					//--------------------------------------------------
+					// Google analytics
+
+						$tracking_ga_code = config::get('tracking.ga_code');
+						$tracking_js_path = config::get('tracking.js_path');
+
+						if ($tracking_ga_code !== NULL && $this->tracking_allowed_get()) {
+
+							$js_code  = 'var _gaq = _gaq || [];' . "\n";
+							$js_code .= '_gaq.push(["_setAccount", "' . html($tracking_ga_code) . '"]);' . "\n";
+							$js_code .= '_gaq.push(["_trackPageview"]);' . "\n\n";
+							$js_code .= '(function() {' . "\n";
+							$js_code .= '	var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true; ga.src = "https://ssl.google-analytics.com/ga.js";' . "\n";
+							$js_code .= '	var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s);' . "\n";
+							$js_code .= '})();' . "\n";
+
+							resources::js_code_add($js_code, 'async');
+
+							csp_add_source('script-src', array('https://ssl.google-analytics.com'));
+							csp_add_source('img-src', array('https://ssl.google-analytics.com'));
+
+						}
+
+						if ($tracking_js_path !== NULL && $this->tracking_allowed_get()) {
+
+							resources::js_add($tracking_js_path);
+
+						}
+
+						unset($tracking_ga_code, $tracking_js_path, $js_code);
+
+				//--------------------------------------------------
 				// Headers
 
 					//--------------------------------------------------
@@ -592,60 +649,6 @@
 							unset($csp, $output, $header);
 
 						}
-
-				//--------------------------------------------------
-				// JavaScript
-
-					//--------------------------------------------------
-					// JS Files
-
-						$js_state = request('js', 'GET');
-
-						if ($js_state == 'disabled') {
-
-							cookie::set('js_disable', 'true');
-
-							$this->js_enabled = false;
-
-						} else if ($js_state != '') {
-
-							cookie::delete('js_disable');
-
-							$this->js_enabled = true;
-
-						} else {
-
-							$this->js_enabled = (cookie::get('js_disable') != 'true');
-
-						}
-
-					//--------------------------------------------------
-					// Google analytics
-
-						$tracking_ga_code = config::get('tracking.ga_code');
-						$tracking_js_path = config::get('tracking.js_path');
-
-						if ($tracking_ga_code !== NULL && $this->tracking_allowed_get()) {
-
-							$js_code  = 'var _gaq = _gaq || [];' . "\n";
-							$js_code .= '_gaq.push(["_setAccount", "' . html($tracking_ga_code) . '"]);' . "\n";
-							$js_code .= '_gaq.push(["_trackPageview"]);' . "\n\n";
-							$js_code .= '(function() {' . "\n";
-							$js_code .= '	var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true; ga.src = "https://ssl.google-analytics.com/ga.js";' . "\n";
-							$js_code .= '	var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s);' . "\n";
-							$js_code .= '})();' . "\n";
-
-							resources::js_code_add($js_code, 'async');
-
-						}
-
-						if ($tracking_js_path !== NULL && $this->tracking_allowed_get()) {
-
-							resources::js_add($tracking_js_path);
-
-						}
-
-						unset($tracking_ga_code, $tracking_js_path, $js_code);
 
 				//--------------------------------------------------
 				// Local variables
