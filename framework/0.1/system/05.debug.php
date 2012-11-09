@@ -315,7 +315,7 @@
 
 		ksort($config);
 
-		$config_html  = ($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
+		$config_html  = html($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
 		$config_html .= '<div class="debug_keys">';
 
 		foreach ($config as $key => $value) {
@@ -368,10 +368,7 @@
 		// Debug progress
 
 			function debug_progress($label, $indent = 0) {
-				$debug_run_time = debug_run_time();
-				$debug_diff = round(($debug_run_time - config::get('debug.progress')), 4);
-				debug_note_html(str_repeat('&#xA0; &#xA0; ', $indent) . $debug_run_time . ' / ' . str_pad($debug_diff, 6, '0') . ' - ' . ($debug_diff > 0.0005 ? '<strong class="warning">' : '') . $label . ($debug_diff > 0.0005 ? '</strong>' : ''));
-				config::set('debug.progress', $debug_run_time);
+				debug_note_html(html(str_repeat('&#xA0; &#xA0; ', $indent) . debug_run_time() . ' - ' . $label));
 			}
 
 		//--------------------------------------------------

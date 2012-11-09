@@ -17,6 +17,7 @@
 
 		$config['request.https']    = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on');
 		$config['request.method']   = (isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET');
+		$config['request.port']     = (isset($_SERVER['SERVER_PORT']) ? strtoupper($_SERVER['SERVER_PORT']) : '');
 		$config['request.domain']   = (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '');
 		$config['request.uri']      = (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : './');
 		$config['request.query']    = (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '');
@@ -283,7 +284,7 @@
 	//--------------------------------------------------
 	// Debug
 
-		config::set_default('debug.level', (SERVER == 'stage' ? 3 : 0)); // 0 not running, 1 for execution time, 2 to also include application logs, 3 for framework logs, 4+ for framework debugging.
+		config::set_default('debug.level', (SERVER == 'stage' ? 4 : 0)); // 0 not running, 1 for execution time, 2 to also include application logs, 3 for framework logs, 4+ for framework debugging.
 		config::set_default('debug.show', true); // Only relevant when running.
 		config::set_default('debug.db', (config::get('debug.level') > 1));
 		config::set_default('debug.db_required_fields', array('deleted'));

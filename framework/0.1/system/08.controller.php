@@ -338,6 +338,6 @@
 
 	}
 
-	unset($controllers, $action_method, $action_controller_id, $action_controller_name, $action_controller_path, $action_route_stack_used, $action_route_stack_pending);
+	unset($controllers, $action_method, $action_controller_id, $action_controller_name, $action_controller_path, $action_route_stack_used, $action_route_stack_pending, $route_folders);
 
 ?>

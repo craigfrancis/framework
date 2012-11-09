@@ -308,25 +308,30 @@
 
 			if ($type == 'js' && $obj->js_code_data != '') {
 
-				//--------------------------------------------------
-				// Store in session
-
-					$session_js = session::get('output.js_code');
-					$session_js[$obj->js_code_ref] = $obj->js_code_data;
-
-					session::set('output.js_code', $session_js);
-
-				//--------------------------------------------------
-				// Add to array
-
-					$files[] = array(
-							'path' => gateway_url('js-code', array('ref' => $obj->js_code_ref)),
-							'attributes' => ($obj->js_code_mode == 'inline' ? array() : array($obj->js_code_mode)),
-						);
+				$files[] = array(
+						'path' => gateway_url('js-code', array('ref' => $obj->js_code_ref)),
+						'attributes' => ($obj->js_code_mode == 'inline' ? array() : array($obj->js_code_mode)),
+					);
 
 			}
 
 			return $files;
+
+		}
+
+		public static function js_code_save() {
+
+			$obj = resources::instance_get();
+
+			if ($obj->js_code_data != '') {
+
+				$session_js = session::get('output.js_code');
+
+				$session_js[$obj->js_code_ref] = $obj->js_code_data;
+
+				session::set('output.js_code', $session_js);
+
+			}
 
 		}
 

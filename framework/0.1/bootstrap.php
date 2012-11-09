@@ -53,31 +53,24 @@
 	if (!defined('FRAMEWORK_INIT_ONLY') || FRAMEWORK_INIT_ONLY !== true) {
 
 		//--------------------------------------------------
-		// Start
-
-			if (config::get('debug.level') >= 4) {
-				debug_progress('Start');
-			}
-
-		//--------------------------------------------------
 		// View variables
 
 			config::set('view.variables', array());
 			config::set('view.template', 'default');
 
 		//--------------------------------------------------
-		// Routes
-
-			require_once(FRAMEWORK_ROOT . '/system/07.routes.php');
-
-			if (config::get('debug.level') >= 4) {
-				debug_progress('Routes');
-			}
-
-		//--------------------------------------------------
 		// Initialisation done
 
 			define('FRAMEWORK_INIT_TIME', debug_run_time());
+
+			if (config::get('debug.level') >= 4) {
+				debug_progress('Setup');
+			}
+
+		//--------------------------------------------------
+		// Routes
+
+			require_once(FRAMEWORK_ROOT . '/system/07.routes.php');
 
 		//--------------------------------------------------
 		// Page setup
@@ -98,46 +91,45 @@
 			//--------------------------------------------------
 			// Controller
 
+				if (config::get('debug.level') >= 4) {
+					debug_progress('Before controller');
+				}
+
 				require_once(FRAMEWORK_ROOT . '/system/08.controller.php');
 
-				if (config::get('debug.level') >= 4) {
-					debug_progress('Controller');
+			//--------------------------------------------------
+			// Local variables
+
+				if (config::get('debug.level') >= 5) {
+
+					$variables_array = get_defined_vars();
+					foreach ($variables_array as $key => $value) {
+						if (substr($key, 0, 1) == '_' || substr($key, 0, 5) == 'HTTP_' || in_array($key, array('GLOBALS'))) {
+							unset($variables_array[$key]);
+						}
+					}
+
+					$variables_html = array('Variables:');
+					foreach ($variables_array as $key => $value) {
+						$variables_html[] = '&#xA0; <strong>' . html($key) . '</strong>: ' . html(debug_dump($value));
+					}
+
+					debug_note_html(implode($variables_html, '<br />' . "\n"));
+
 				}
 
 			//--------------------------------------------------
 			// View
 
+				if (config::get('debug.level') >= 4) {
+					debug_progress('Before view');
+				}
+
 				$view = new view();
 				$view->add_html(ob_get_clean());
 				$view->render();
 
-			//--------------------------------------------------
-			// Cleanup
-
 				unset($view);
-
-				if (config::get('debug.level') >= 4) {
-					debug_progress('View render', 1);
-				}
-
-		//--------------------------------------------------
-		// Final config
-
-			if (config::get('debug.level') >= 5) {
-
-				debug_note_html(debug_config_html(), 'C');
-
-				$variables_array = get_defined_vars();
-				$variables_html = array('Variables:');
-				foreach ($variables_array as $key => $value) {
-					if (substr($key, 0, 1) != '_' && substr($key, 0, 5) != 'HTTP_' && !in_array($key, array('GLOBALS'))) {
-						$variables_html[] = '&#xA0; <strong>' . html($key) . '</strong>: ' . html(debug_dump($value));
-					}
-				}
-
-				debug_note_html(implode($variables_html, '<br />' . "\n"));
-
-			}
 
 	}
 

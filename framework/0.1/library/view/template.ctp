@@ -1,13 +1,6 @@
 <?php
 
 //--------------------------------------------------
-// Debug
-
-	if (config::get('debug.level') >= 4) {
-		debug_progress('Start view', 2);
-	}
-
-//--------------------------------------------------
 // CSS
 
 	resources::css_add(gateway_url('framework-file', array('file' => 'template.css')));
@@ -86,10 +79,6 @@
 
 			}
 
-		}
-
-		if (config::get('debug.level') >= 4) {
-			debug_progress('Navigation', 2);
 		}
 
 ?>

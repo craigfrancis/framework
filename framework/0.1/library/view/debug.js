@@ -39,15 +39,25 @@
 		// Group by type
 
 			debug_types = {
-				'C': {'name': 'Config', 'notes' : []},
-				'H': {'name': 'Help',   'notes' : []},
-				'S': {'name': 'Setup',  'notes' : []},
-				'L': {'name': 'Log',    'notes' : []}
+				'C': {'name': 'Config', 'notes': []},
+				'H': {'name': 'Help',   'notes': []},
+				'S': {'name': 'Setup',  'notes': []},
+				'L': {'name': 'Log',    'notes': []}
 			};
 
 			for (k in debug_notes) {
 				debug_types[debug_notes[k].type].notes.push(debug_notes[k]);
 			}
+
+		//--------------------------------------------------
+		// Loading time
+
+			debug_types['L'].notes.push({
+					'type': 'L',
+					'color': '#F00',
+					'time': null,
+					'html': debug_htmlencode(debug_time)
+				});
 
 		//--------------------------------------------------
 		// Add to DOM
@@ -131,6 +141,12 @@
 
 			body.appendChild(wrapper);
 
+	}
+
+	function debug_htmlencode(text) {
+		var e = document.createElement('div');
+		e.innerText = text;
+		return e.innerHTML;
 	}
 
 	function debug_open_link() {

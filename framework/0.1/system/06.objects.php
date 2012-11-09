@@ -151,7 +151,7 @@
 			private $view_html = '';
 			private $view_processed = false;
 			private $message = NULL;
-			private $debug_output = NULL;
+			private $debug_mode = NULL;
 			private $tracking_enabled = NULL;
 			private $js_enabled = true;
 
@@ -302,13 +302,6 @@
 			public function head_get_html($config = NULL) {
 
 				//--------------------------------------------------
-				// Debug
-
-					if (config::get('debug.level') >= 4) {
-						debug_progress('Start head', 2);
-					}
-
-				//--------------------------------------------------
 				// Content type
 
 					$html = "\n\t" . '<meta charset="' . html(config::get('output.charset')) . '" />';
@@ -328,13 +321,6 @@
 					}
 
 				//--------------------------------------------------
-				// Debug
-
-					if (config::get('debug.level') >= 4) {
-						debug_progress('Meta, title, and favicon', 3);
-					}
-
-				//--------------------------------------------------
 				// Browser on black list (no css/js)
 
 					$browser = config::get('request.browser');
@@ -346,10 +332,6 @@
 						}
 					}
 
-					if (config::get('debug.level') >= 4) {
-						debug_progress('Browser blacklist', 3);
-					}
-
 				//--------------------------------------------------
 				// CSS
 
@@ -357,10 +339,6 @@
 
 					if ($css_html !== '') {
 						$html .= "\n\t" . $css_html;
-					}
-
-					if (config::get('debug.level') >= 4) {
-						debug_progress('CSS', 3);
 					}
 
 				//--------------------------------------------------
@@ -388,20 +366,12 @@
 							}
 						}
 
-						if (config::get('debug.level') >= 4) {
-							debug_progress('JavaScript', 3);
-						}
-
 					}
 
 				//--------------------------------------------------
 				// Extra head HTML
 
 					$html .= resources::head_get_html() . "\n\n";
-
-					if (config::get('debug.level') >= 4) {
-						debug_progress('Extra HTML', 3);
-					}
 
 				//--------------------------------------------------
 				// Return
@@ -411,6 +381,13 @@
 			}
 
 			public function render() {
+
+				//--------------------------------------------------
+				// Debug
+
+					if (config::get('debug.level') >= 4) {
+						debug_progress('Before template');
+					}
 
 				//--------------------------------------------------
 				// Default title
@@ -441,6 +418,8 @@
 
 						$this->title_set($title_default);
 
+						unset($title_default, $title_divide, $k);
+
 					}
 
 				//--------------------------------------------------
@@ -468,6 +447,8 @@
 							$this->js_enabled = (cookie::get('js_disable') != 'true');
 
 						}
+
+						unset($js_state);
 
 					//--------------------------------------------------
 					// Google analytics
@@ -532,40 +513,19 @@
 
 							if ($output_mime == 'text/html' || $output_mime == 'application/xhtml+xml') {
 
-								//--------------------------------------------------
-								// JS
+								$this->debug_mode = 'js';
 
-									$js_code  = "\n\n" . 'var debug_notes = ' . json_encode(config::get('debug.notes')) . ';' . "\n";
-									$js_code .= file_get_contents(FRAMEWORK_ROOT . '/library/view/debug.js');
+								resources::js_code_add("\n", 'async'); // Add something so the file is included
 
-								//--------------------------------------------------
-								// Resources
-
-									resources::js_code_add($js_code, 'async');
-
-									resources::css_add(gateway_url('framework-file', array('file' => 'debug.css')));
+								resources::css_add(gateway_url('framework-file', array('file' => 'debug.css')));
 
 							} else if ($output_mime == 'text/plain') {
 
-								//--------------------------------------------------
-								// Notes
-
-									$this->debug_output = '';
-
-									foreach (config::get('debug.notes') as $note) {
-
-										$this->debug_output .= '--------------------------------------------------' . "\n\n";
-										$this->debug_output .= html_decode(strip_tags($note['html'])) . "\n\n";
-
-										if ($note['time'] !== NULL) {
-											$this->debug_output .= 'Time Elapsed: ' . $note['time'] . "\n\n";
-										}
-
-									}
+								$this->debug_mode = 'inline';
 
 							}
 
-							unset($output_mime, $debug_ref, $session_notes);
+							unset($output_mime);
 
 						}
 
@@ -586,25 +546,9 @@
 
 						if (config::get('output.csp_enabled') === true) {
 
-							$csp = config::get('output.csp_directives');
-
-							if (!array_key_exists('report-uri', $csp)) { // isset returns false for NULL
-								$csp['report-uri'] = gateway_url('csp-report');
-							}
-
-							$output = array();
-							foreach ($csp as $directive => $value) {
-								if ($value !== NULL) {
-									if (is_array($value)) {
-										$value = implode(' ', $value);
-									}
-									$output[] = $directive . ' ' . str_replace('"', "'", $value);
-								}
-							}
-
 							$header = NULL;
 
-							if (stripos(config::get('request.browser'), 'chrome') !== false) {
+							if (stripos(config::get('request.browser'), 'webkit') !== false) {
 
 								$header = 'X-WebKit-CSP';
 
@@ -612,9 +556,9 @@
 									$header .= '-Report-Only';
 								}
 
-							} else if (stripos(config::get('request.browser'), 'safari') !== false) {
-
-								$header = 'X-WebKit-CSP-Report-Only'; // Safari 5.1.7 is still widely used, and very buggy (not loading styles)
+								if (preg_match('/AppleWebKit\/([0-9]+)/', config::get('request.browser'), $matches) && intval($matches[1]) < 536) {
+									$header = NULL; // Safari/534.56.5 (5.1.6) is very buggy (requires the port number to be set, which also breaks 'self')
+								}
 
 							} else {
 
@@ -624,7 +568,25 @@
 							}
 
 							if ($header !== NULL) {
+
+								$csp = config::get('output.csp_directives');
+
+								if (!array_key_exists('report-uri', $csp)) { // isset returns false for NULL
+									$csp['report-uri'] = gateway_url('csp-report');
+								}
+
+								$output = array();
+								foreach ($csp as $directive => $value) {
+									if ($value !== NULL) {
+										if (is_array($value)) {
+											$value = implode(' ', $value);
+										}
+										$output[] = $directive . ' ' . str_replace('"', "'", $value);
+									}
+								}
+
 								header($header . ': ' . head(implode('; ', $output)));
+
 							}
 
 							if (config::get('debug.level') > 0) {
@@ -646,7 +608,7 @@
 
 							}
 
-							unset($csp, $output, $header);
+							unset($csp, $output, $header, $directive, $value, $matches);
 
 						}
 
@@ -678,35 +640,81 @@
 				//--------------------------------------------------
 				// Debug output
 
-					if ($this->debug_output !== NULL) {
+					if ($this->debug_mode !== NULL) {
 
 						//--------------------------------------------------
-						// Time taken
+						// End
 
-							$output_text  = "\n\n\n\n\n\n\n\n\n\n";
-							$output_text .= '--------------------------------------------------' . "\n\n";
-
-							if (defined('FRAMEWORK_INIT_TIME')) {
-								$output_text .= 'Setup time: ' . html(FRAMEWORK_INIT_TIME) . "\n";
+							if (config::get('debug.level') >= 4) {
+								debug_progress('End');
 							}
 
-							$output_text .= 'Total time: ' . html(debug_run_time()) . "\n";
-							$output_text .= 'Query time: ' . html(config::get('debug.db_time')) . "\n\n";
+						//--------------------------------------------------
+						// Database time
+
+							$db_time = config::get('debug.db_time');
+							if ($db_time > 0) {
+								$db_time = str_pad($db_time, 6, '0');
+							} else {
+								$db_time = '0.0000';
+							}
+
+						//--------------------------------------------------
+						// Time text
+
+							$time_text = 'Total time: ' . html(debug_run_time()) . "\n";
+
+							if (defined('FRAMEWORK_INIT_TIME')) {
+								$time_text .= 'Setup time: ' . html(FRAMEWORK_INIT_TIME) . "\n";
+							}
+
+							$time_text .= 'Query time: ' . html($db_time);
 
 						//--------------------------------------------------
 						// Send
 
-							echo $output_text . $this->debug_output;
+							if ($this->debug_mode == 'js') {
+
+								$js_code  = "\n";
+								$js_code .= 'var debug_time = ' . json_encode($time_text) . ';' . "\n";
+								$js_code .= 'var debug_notes = ' . json_encode(config::get('debug.notes')) . ';';
+								$js_code .= file_get_contents(FRAMEWORK_ROOT . '/library/view/debug.js');
+
+								resources::js_code_add($js_code, 'async');
+
+							} else if ($this->debug_mode == 'inline') {
+
+								$output_text  = "\n\n\n\n\n\n\n\n\n\n";
+
+								foreach (config::get('debug.notes') as $note) {
+
+									$output_text .= '--------------------------------------------------' . "\n\n";
+									$output_text .= html_decode(strip_tags($note['html'])) . "\n\n";
+
+									if ($note['time'] !== NULL) {
+										$output_text .= 'Time Elapsed: ' . $note['time'] . "\n\n";
+									}
+
+								}
+
+								$output_text .= '--------------------------------------------------' . "\n\n";
+								$output_text .= $time_text . "\n\n";
+								$output_text .= '--------------------------------------------------' . "\n\n";
+
+								echo $output_text;
+
+							}
 
 					}
+
+				//--------------------------------------------------
+				// Save JS to session - done at the end
+
+					resources::js_code_save();
 
 			}
 
 			private function template_path_get() {
-
-				if (config::get('debug.level') >= 4) {
-					debug_progress('Find template', 2);
-				}
 
 				$template_path = APP_ROOT . '/templates/' . safe_file_name(config::get('view.template')) . '.ctp';
 
@@ -716,10 +724,6 @@
 
 				if (!is_file($template_path)) {
 					$template_path = FRAMEWORK_ROOT . '/library/view/template.ctp';
-				}
-
-				if (config::get('debug.level') >= 4) {
-					debug_progress('Done', 3);
 				}
 
 				return $template_path;
