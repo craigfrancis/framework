@@ -281,7 +281,6 @@
 				}
 
 				if ($this->form_submitted && isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/x-www-form-urlencoded') { // If not set, assume its correct
-					config::set('debug.show', false);
 					exit('<p>The form needs the attribute: <strong>enctype="multipart/form-data"</strong></p>');
 				}
 

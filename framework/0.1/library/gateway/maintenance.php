@@ -5,7 +5,8 @@
 		function run() {
 
 			if (config::get('gateway.maintenance') !== true) {
-				return false;
+				mime_set('text/plain');
+				exit('Disabled');
 			}
 
 			config::set('output.mode', 'maintenance');

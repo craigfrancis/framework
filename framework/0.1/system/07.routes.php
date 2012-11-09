@@ -70,8 +70,6 @@
 
 			header('Content-Type: text/plain; charset=' . head(config::get('output.charset')));
 
-			config::set('debug.show', false);
-
 			readfile($robots_path);
 
 			exit();
@@ -90,8 +88,6 @@
 			}
 
 			header('Content-Type: image/vnd.microsoft.icon; charset=' . head(config::get('output.charset')));
-
-			config::set('debug.show', false);
 
 			readfile($favicon_path);
 
@@ -113,8 +109,6 @@
 			}
 
 			header('Content-Type: application/xml; charset=' . head(config::get('output.charset')));
-
-			config::set('debug.show', false);
 
 			require_once($sitemap_path);
 
@@ -225,7 +219,6 @@
 				//--------------------------------------------------
 				// Headers and browser caching
 
-					config::set('debug.show', false);
 					config::set('output.mode', 'asset');
 
 					$mime_types = array(

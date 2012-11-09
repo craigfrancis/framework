@@ -637,8 +637,6 @@
 
 										if (!$valid) {
 
-											config::set('debug.show', false);
-
 											echo "\n";
 											echo '<div>' . "\n";
 											echo '	<h1>Error</h1>' . "\n";

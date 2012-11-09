@@ -160,11 +160,6 @@
 			private function _send($variables = NULL) {
 
 				//--------------------------------------------------
-				// Disable debug
-
-					config::set('debug.show', false);
-
-				//--------------------------------------------------
 				// Loading contents
 
 					if ($this->template_path !== NULL) {

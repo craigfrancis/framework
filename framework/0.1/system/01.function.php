@@ -508,8 +508,6 @@
 
 	function http_download_file($path, $mime, $name = NULL, $mode = 'attachment') {
 
-		config::set('debug.show', false);
-
 		if ($mime === NULL) $mime = mime_content_type($path); // Please don't rely on this function
 		if ($name === NULL) $name = basename($path);
 
@@ -528,8 +526,6 @@
 	}
 
 	function http_download_string($content, $mime, $name, $mode = 'attachment') {
-
-		config::set('debug.show', false);
 
 		mime_set($mime);
 

@@ -151,7 +151,6 @@
 			private $view_html = '';
 			private $view_processed = false;
 			private $message = NULL;
-			private $debug_mode = NULL;
 			private $tracking_enabled = NULL;
 			private $js_enabled = true;
 
@@ -513,7 +512,7 @@
 
 							if ($output_mime == 'text/html' || $output_mime == 'application/xhtml+xml') {
 
-								$this->debug_mode = 'js';
+								config::set('debug.mode', 'js');
 
 								resources::js_code_add("\n", 'async'); // Add something so the file is included
 
@@ -521,7 +520,7 @@
 
 							} else if ($output_mime == 'text/plain') {
 
-								$this->debug_mode = 'inline';
+								config::set('debug.mode', 'inline');
 
 							}
 
@@ -636,81 +635,6 @@
 					if (!$this->view_processed) {
 						echo $this->view_get_html();
 					}
-
-				//--------------------------------------------------
-				// Debug output
-
-					if ($this->debug_mode !== NULL) {
-
-						//--------------------------------------------------
-						// End
-
-							if (config::get('debug.level') >= 4) {
-								debug_progress('End');
-							}
-
-						//--------------------------------------------------
-						// Database time
-
-							$db_time = config::get('debug.db_time');
-							if ($db_time > 0) {
-								$db_time = str_pad($db_time, 6, '0');
-							} else {
-								$db_time = '0.0000';
-							}
-
-						//--------------------------------------------------
-						// Time text
-
-							$time_text = 'Total time: ' . html(debug_run_time()) . "\n";
-
-							if (defined('FRAMEWORK_INIT_TIME')) {
-								$time_text .= 'Setup time: ' . html(FRAMEWORK_INIT_TIME) . "\n";
-							}
-
-							$time_text .= 'Query time: ' . html($db_time);
-
-						//--------------------------------------------------
-						// Send
-
-							if ($this->debug_mode == 'js') {
-
-								$js_code  = "\n";
-								$js_code .= 'var debug_time = ' . json_encode($time_text) . ';' . "\n";
-								$js_code .= 'var debug_notes = ' . json_encode(config::get('debug.notes')) . ';';
-								$js_code .= file_get_contents(FRAMEWORK_ROOT . '/library/view/debug.js');
-
-								resources::js_code_add($js_code, 'async');
-
-							} else if ($this->debug_mode == 'inline') {
-
-								$output_text  = "\n\n\n\n\n\n\n\n\n\n";
-
-								foreach (config::get('debug.notes') as $note) {
-
-									$output_text .= '--------------------------------------------------' . "\n\n";
-									$output_text .= html_decode(strip_tags($note['html'])) . "\n\n";
-
-									if ($note['time'] !== NULL) {
-										$output_text .= 'Time Elapsed: ' . $note['time'] . "\n\n";
-									}
-
-								}
-
-								$output_text .= '--------------------------------------------------' . "\n\n";
-								$output_text .= $time_text . "\n\n";
-								$output_text .= '--------------------------------------------------' . "\n\n";
-
-								echo $output_text;
-
-							}
-
-					}
-
-				//--------------------------------------------------
-				// Save JS to session - done at the end
-
-					resources::js_code_save();
 
 			}
 

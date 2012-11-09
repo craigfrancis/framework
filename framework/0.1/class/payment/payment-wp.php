@@ -24,7 +24,6 @@
 
 				$data = $this->_settlement_data_get();
 
-				config::set('debug.show', false);
 				mime_set('text/plain');
 
 				exit($data);

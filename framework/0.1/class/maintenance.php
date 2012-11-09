@@ -62,11 +62,6 @@
 			public function run() {
 
 				//--------------------------------------------------
-				// Hide debug output
-
-					config::set('debug.show', false);
-
-				//--------------------------------------------------
 				// Make sure we have plenty of memory
 
 					ini_set('memory_limit', '1024M');
