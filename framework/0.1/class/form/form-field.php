@@ -306,7 +306,7 @@
 			}
 
 			public function autocomplete_set($autocomplete) {
-				$this->autocomplete = ($autocomplete == true);
+				$this->autocomplete = $autocomplete;
 			}
 
 			public function autocomplete_get() {
@@ -450,7 +450,7 @@
 				}
 
 				if ($this->autocomplete !== NULL) {
-					$attributes['autocomplete'] = ($this->autocomplete ? 'on' : 'off');
+					$attributes['autocomplete'] = (is_string($this->autocomplete) ? $this->autocomplete : ($this->autocomplete ? 'on' : 'off'));
 				}
 
 				if ($this->disabled) {

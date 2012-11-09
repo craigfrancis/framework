@@ -235,7 +235,7 @@
 			}
 
 			public function form_autocomplete_set($autocomplete) {
-				$this->autocomplete = ($autocomplete == true);
+				$this->autocomplete = $autocomplete;
 			}
 
 			public function form_autocomplete_get() {
@@ -1070,7 +1070,7 @@
 					);
 
 					if ($this->autocomplete !== NULL) {
-						$attributes['autocomplete'] = ($this->autocomplete ? 'on' : 'off');
+						$attributes['autocomplete'] = ($this->autocomplete && $this->autocomplete !== 'off' ? 'on' : 'off'); // Can only be on/off, unlike a field
 					}
 
 					$attributes = array_merge($attributes, $this->form_attributes);
