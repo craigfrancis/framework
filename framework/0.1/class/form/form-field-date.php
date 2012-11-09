@@ -334,6 +334,11 @@
 						$attributes['autofocus'] = NULL;
 					}
 
+					if ($this->autocomplete === 'bday') {
+						$part_name = array('D' => 'day', 'M' => 'month', 'Y' => 'year');
+						$attributes['autocomplete'] = 'bday-' . $part_name[$part];
+					}
+
 					if (isset($this->input_options[$part])) {
 
 						$html = '
