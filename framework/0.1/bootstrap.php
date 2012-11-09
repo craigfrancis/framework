@@ -61,10 +61,10 @@
 		//--------------------------------------------------
 		// Initialisation done
 
-			define('FRAMEWORK_INIT_TIME', debug_run_time());
+			define('FRAMEWORK_INIT_TIME', debug_time_elapsed());
 
 			if (config::get('debug.level') >= 4) {
-				debug_progress('Setup');
+				debug_progress('Init');
 			}
 
 		//--------------------------------------------------
@@ -82,6 +82,10 @@
 
 			//--------------------------------------------------
 			// Include setup
+
+				if (config::get('debug.level') >= 4) {
+					debug_progress('Before setup');
+				}
 
 				$setup = new setup();
 				$setup->run();
@@ -146,25 +150,16 @@
 					}
 
 				//--------------------------------------------------
-				// Database time
-
-					$db_time = config::get('debug.db_time');
-					if ($db_time > 0) {
-						$db_time = str_pad($db_time, 6, '0');
-					} else {
-						$db_time = '0.0000';
-					}
-
-				//--------------------------------------------------
 				// Time text
 
-					$time_text = 'Total time: ' . html(debug_run_time()) . "\n";
+					$time_query = config::get('debug.time_query');
+					$time_check = config::get('debug.time_check');
 
-					if (defined('FRAMEWORK_INIT_TIME')) {
-						$time_text .= 'Setup time: ' . html(FRAMEWORK_INIT_TIME) . "\n";
-					}
+					$total_time = debug_time_elapsed();
 
-					$time_text .= 'Query time: ' . html($db_time);
+					$time_text  = 'Setup time: ' . debug_time_format(FRAMEWORK_INIT_TIME) . "\n";
+					$time_text .= 'Query time: ' . debug_time_format($time_query) . "\n";
+					$time_text .= 'Total time: ' . debug_time_format($total_time - $time_check) . ' (with checks ' . debug_time_format($total_time) . ')';
 
 				//--------------------------------------------------
 				// Send
@@ -188,7 +183,7 @@
 							$output_text .= html_decode(strip_tags($note['html'])) . "\n\n";
 
 							if ($note['time'] !== NULL) {
-								$output_text .= 'Time Elapsed: ' . $note['time'] . "\n\n";
+								$output_text .= 'Time Elapsed:  ' . $note['time'] . "\n\n";
 							}
 
 						}
@@ -204,7 +199,7 @@
 				//--------------------------------------------------
 				// Cleanup
 
-					unset($db_time, $time_text, $output_text, $js_code);
+					unset($time_query, $time_check, $total_time, $time_text, $output_text, $js_code);
 
 			}
 
@@ -212,6 +207,11 @@
 		// Save JS to session - done at the end
 
 			resources::js_code_save();
+
+		//--------------------------------------------------
+		// Cleanup
+
+			unset($include_path);
 
 	}
 

@@ -41,7 +41,6 @@
 			debug_types = {
 				'C': {'name': 'Config', 'notes': []},
 				'H': {'name': 'Help',   'notes': []},
-				'S': {'name': 'Setup',  'notes': []},
 				'L': {'name': 'Log',    'notes': []}
 			};
 

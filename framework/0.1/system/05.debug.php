@@ -17,7 +17,8 @@
 	//--------------------------------------------------
 	// DB variables
 
-		config::set('debug.db_time', 0);
+		config::set('debug.time_query', 0);
+		config::set('debug.time_check', 0);
 
 //--------------------------------------------------
 // Error reporting
@@ -297,13 +298,12 @@
 //--------------------------------------------------
 // Debug run time
 
-	function debug_run_time() {
+	function debug_time_elapsed() {
+		return round((microtime(true) - config::get('debug.start_time')), 4);
+	}
 
-		$time = round((microtime(true) - config::get('debug.start_time')), 4);
-		$time = str_pad($time, 6, '0');
-
-		return $time;
-
+	function debug_time_format($time) {
+		return ($time == 0 ? '0.0000' : str_pad($time, 6, '0'));
 	}
 
 //--------------------------------------------------
@@ -368,7 +368,8 @@
 		// Debug progress
 
 			function debug_progress($label, $indent = 0) {
-				debug_note_html(html(str_repeat('&#xA0; &#xA0; ', $indent) . debug_run_time() . ' - ' . $label));
+				$time = debug_time_format(debug_time_elapsed() - config::get('debug.time_check'));
+				debug_note_html(html(str_repeat('&#xA0; &#xA0; ', $indent) . $time . ' - ' . $label));
 			}
 
 		//--------------------------------------------------
@@ -404,7 +405,7 @@
 						$note_html = '&#xA0; ' . str_replace("\n", "\n&#xA0; ", $note_html);
 						$note_html = '<strong>' . str_replace(ROOT, '', $call_from_file) . '</strong> (line ' . $call_from_line . '):<br />' . $note_html;
 
-						$time = debug_run_time();
+						$time = debug_time_format(debug_time_elapsed() - config::get('debug.time_check'));
 
 					} else {
 
@@ -420,7 +421,7 @@
 				// Note
 
 					if ($type == NULL) {
-						$type = (defined('FRAMEWORK_INIT_TIME') ? 'L' : 'S');
+						$type = 'L';
 					}
 
 					if ($colour !== NULL) {
@@ -455,7 +456,7 @@
 
 				$db = new db();
 
-				$db->query('SHOW TABLES LIKE "' . $db->escape(DB_PREFIX . $table) . '"');
+				$db->query('SHOW TABLES LIKE "' . $db->escape(DB_PREFIX . $table) . '"', false); // No debug
 				if ($db->num_rows() == 0) {
 					http_response_code(500);
 					mime_set('text/html');
@@ -472,6 +473,11 @@
 					if (config::get('debug.db') !== true) {
 						return mysql_query($query, $db->link_get());
 					}
+
+				//--------------------------------------------------
+				// Full time
+
+					$time_init = microtime(true);
 
 				//--------------------------------------------------
 				// HTML Format for the query
@@ -682,9 +688,11 @@
 
 					$result = mysql_query($query, $db->link_get()) or $db->_error($query);
 
-					$time_total = round((microtime(true) - $time_start), 3);
+					$time_check = round(($time_start - $time_init), 3);
+					$time_query = round((microtime(true) - $time_start), 3);
 
-					config::set('debug.db_time', (config::get('debug.db_time') + $time_total));
+					config::set('debug.time_query', (config::get('debug.time_query') + $time_query));
+					config::set('debug.time_check', (config::get('debug.time_check') + $time_check));
 
 				//--------------------------------------------------
 				// Create debug output
@@ -695,9 +703,9 @@
 					$html .= '<pre class="debug_sql">' . ($single_line ? '' : "\n") . $query_html . ($single_line ? '' : "\n\n") . '</pre>';
 
 					config::array_push('debug.notes', array(
-							'type' => (defined('FRAMEWORK_INIT_TIME') ? 'L' : 'S'),
+							'type' => 'L',
 							'colour' => '#CCF',
-							'time' => $time_total,
+							'time' => debug_time_format($time_query),
 							'html' => $html,
 							'extra_html' => $explain_html . $text_html,
 						));
