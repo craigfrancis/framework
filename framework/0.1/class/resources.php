@@ -7,6 +7,7 @@
 		private $js_code_ref = NULL;
 		private $js_code_data = '';
 		private $js_code_mode = NULL;
+		private $js_code_saved = false;
 		private $css_files_main = array();
 		private $css_files_alternate = array();
 
@@ -43,7 +44,11 @@
 
 			}
 
-			$obj->js_code_data .= $code;
+			if ($obj->js_code_saved) {
+				resources::js_code_save($code);
+			} else {
+				$obj->js_code_data .= $code;
+			}
 
 			if ($mode == 'inline') {
 
@@ -190,7 +195,7 @@
 
 					foreach ($css_types as $css_type_name => $css_type_info) {
 						foreach ($css_type_info['log'] as $log) {
-							$note_html .= '&#xA0; ' . str_replace(' - found', ' - <strong>found</strong>', html($log)) . '<br />';
+							$note_html .= "\n" . '&#xA0; ' . str_replace(' - found', ' - <strong>found</strong>', html($log)) . '<br />';
 						}
 					}
 
@@ -308,6 +313,10 @@
 
 			if ($type == 'js' && $obj->js_code_data != '') {
 
+				$obj->js_code_saved = true;
+
+				resources::js_code_save($obj->js_code_data);
+
 				$files[] = array(
 						'path' => gateway_url('js-code', array('ref' => $obj->js_code_ref)),
 						'attributes' => ($obj->js_code_mode == 'inline' ? array() : array($obj->js_code_mode)),
@@ -319,19 +328,19 @@
 
 		}
 
-		public static function js_code_save() {
+		public static function js_code_save($code) { // Don't call directly, use js_code_add()
 
 			$obj = resources::instance_get();
 
-			if ($obj->js_code_data != '') {
+			$session_js = session::get('output.js_code');
 
-				$session_js = session::get('output.js_code');
-
-				$session_js[$obj->js_code_ref] = $obj->js_code_data;
-
-				session::set('output.js_code', $session_js);
-
+			if (!isset($session_js[$obj->js_code_ref])) {
+				$session_js[$obj->js_code_ref] = '';
 			}
+
+			$session_js[$obj->js_code_ref] .= $code;
+
+			session::set('output.js_code', $session_js);
 
 		}
 

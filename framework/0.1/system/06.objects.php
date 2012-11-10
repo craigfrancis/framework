@@ -506,30 +506,18 @@
 					//--------------------------------------------------
 					// Debug
 
-						if (config::get('debug.level') > 0 && config::get('debug.show') === true) {
+						if (config::get('debug.level') > 0 && config::get('debug.show') && in_array(config::get('output.mime'), array('text/html', 'application/xhtml+xml'))) {
 
-							$output_mime = config::get('output.mime');
+							config::set('debug.mode', 'js');
 
-							if ($output_mime == 'text/html' || $output_mime == 'application/xhtml+xml') {
+							resources::js_code_add("\n", 'async'); // Add something so the file is included, the rest will be added in debug_end()
 
-								config::set('debug.mode', 'js');
-
-								resources::js_code_add("\n", 'async'); // Add something so the file is included
-
-								resources::css_add(gateway_url('framework-file', array('file' => 'debug.css')));
-
-							} else if ($output_mime == 'text/plain') {
-
-								config::set('debug.mode', 'inline');
-
-							}
-
-							unset($output_mime);
+							resources::css_add(gateway_url('framework-file', array('file' => 'debug.css')));
 
 						}
 
 					//--------------------------------------------------
-					// Block framing by default
+					// Framing options
 
 						header('X-Frame-Options: ' . head(strtoupper(config::get('output.framing', 'DENY'))));
 

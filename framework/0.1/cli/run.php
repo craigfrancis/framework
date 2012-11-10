@@ -37,12 +37,6 @@
 
 	function permission_reset($show_output = true) {
 
-		if ($show_output) {
-			while (ob_get_level() > 0) {
-				ob_end_flush();
-			}
-		}
-
 		$reset_paths = array(
 			'App folders' => array(
 					'path' => APP_ROOT,
@@ -371,6 +365,11 @@
 					}
 
 					break;
+
+				case 'd':
+				case 'debug':
+
+					break; // Don't show help
 
 				default:
 

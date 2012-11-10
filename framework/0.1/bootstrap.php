@@ -1,6 +1,11 @@
 <?php
 
 //--------------------------------------------------
+// Start time
+
+	define('FRAMEWORK_TIME_START', microtime(true));
+
+//--------------------------------------------------
 // Version
 
 	if (defined('FRAMEWORK_VERSION')) {
@@ -48,6 +53,15 @@
 	require_once(FRAMEWORK_ROOT . '/system/06.objects.php');
 
 //--------------------------------------------------
+// Initialisation done
+
+	define('FRAMEWORK_TIME_INIT', debug_time_elapsed());
+
+	if (config::get('debug.level') >= 4) {
+		debug_progress('Init');
+	}
+
+//--------------------------------------------------
 // Render
 
 	if (!defined('FRAMEWORK_INIT_ONLY') || FRAMEWORK_INIT_ONLY !== true) {
@@ -57,15 +71,6 @@
 
 			config::set('view.variables', array());
 			config::set('view.template', 'default');
-
-		//--------------------------------------------------
-		// Initialisation done
-
-			define('FRAMEWORK_INIT_TIME', debug_time_elapsed());
-
-			if (config::get('debug.level') >= 4) {
-				debug_progress('Init');
-			}
 
 		//--------------------------------------------------
 		// Routes
@@ -117,7 +122,7 @@
 		//--------------------------------------------------
 		// Debug
 
-			if (config::get('debug.mode') !== NULL) {
+			if (config::get('debug.level') > 0) {
 
 				//--------------------------------------------------
 				// Local variables
@@ -143,70 +148,13 @@
 					}
 
 				//--------------------------------------------------
-				// End
+				// Log end
 
 					if (config::get('debug.level') >= 4) {
 						debug_progress('End');
 					}
 
-				//--------------------------------------------------
-				// Time text
-
-					$time_query = config::get('debug.time_query');
-					$time_check = config::get('debug.time_check');
-
-					$total_time = debug_time_elapsed();
-
-					$time_text  = 'Setup time: ' . debug_time_format(FRAMEWORK_INIT_TIME) . "\n";
-					$time_text .= 'Query time: ' . debug_time_format($time_query) . "\n";
-					$time_text .= 'Total time: ' . debug_time_format($total_time - $time_check) . ' (with checks ' . debug_time_format($total_time) . ')';
-
-				//--------------------------------------------------
-				// Send
-
-					if (config::get('debug.mode') == 'js') {
-
-						$js_code  = "\n";
-						$js_code .= 'var debug_time = ' . json_encode($time_text) . ';' . "\n";
-						$js_code .= 'var debug_notes = ' . json_encode(config::get('debug.notes')) . ';';
-						$js_code .= file_get_contents(FRAMEWORK_ROOT . '/library/view/debug.js');
-
-						resources::js_code_add($js_code, 'async');
-
-					} else if (config::get('debug.mode') == 'inline') {
-
-						$output_text  = "\n\n\n\n\n\n\n\n\n\n";
-
-						foreach (config::get('debug.notes') as $note) {
-
-							$output_text .= '--------------------------------------------------' . "\n\n";
-							$output_text .= html_decode(strip_tags($note['html'])) . "\n\n";
-
-							if ($note['time'] !== NULL) {
-								$output_text .= 'Time Elapsed:  ' . $note['time'] . "\n\n";
-							}
-
-						}
-
-						$output_text .= '--------------------------------------------------' . "\n\n";
-						$output_text .= $time_text . "\n\n";
-						$output_text .= '--------------------------------------------------' . "\n\n";
-
-						echo $output_text;
-
-					}
-
-				//--------------------------------------------------
-				// Cleanup
-
-					unset($time_query, $time_check, $total_time, $time_text, $output_text, $js_code);
-
 			}
-
-		//--------------------------------------------------
-		// Save JS to session - done at the end
-
-			resources::js_code_save();
 
 		//--------------------------------------------------
 		// Cleanup
