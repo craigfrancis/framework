@@ -103,20 +103,60 @@
 					$this->set('section_nav', $doc_nav);
 
 			//--------------------------------------------------
-			// Convert to HTML
+			// Document HTML
 
-				if (!is_file($doc_file_path)) {
-					render_error('page-not-found');
-					exit();
-				}
+				//--------------------------------------------------
+				// Get text
 
-				$doc_text = file_get_contents($doc_file_path);
+					if (!is_file($doc_file_path)) {
+						render_error('page-not-found');
+						exit();
+					}
 
-				$cms_markdown = new cms_markdown();
+					$doc_text = file_get_contents($doc_file_path);
 
-				$doc_html = $cms_markdown->process_html($doc_text);
+				//--------------------------------------------------
+				// Special cases
 
-				$this->set('doc_html', $doc_html);
+					if ($request_path == 'introduction') {
+
+						$controller_example = file_get_contents(ROOT . '/app/controller/contact.php');
+						$controller_example = preg_replace('/^/m', "\t", $controller_example);
+						$controller_example = trim($controller_example);
+
+						$doc_text = str_replace('<?php [SEE EXAMPLE] ?>', $controller_example, $doc_text);
+
+					}
+
+				//--------------------------------------------------
+				// Conversion
+
+					$cms_markdown = new cms_markdown();
+
+					$doc_html = $cms_markdown->process_html($doc_text);
+
+				//--------------------------------------------------
+				// Special cases
+
+					if ($request_path == 'introduction') {
+
+						$replace = array(
+							'/contact/' => '/<strong>contact</strong>/',
+							'/app/view/contact.ctp' => '/app/view/<strong>contact</strong>.ctp',
+							'contact_controller' => '<strong>contact</strong>_controller',
+							'action_index' => 'action_<strong>index</strong>',
+							'new form(' => 'new <strong>form</strong>(',
+							'new email(' => 'new <strong>email</strong>(',
+						);
+
+						$doc_html = str_replace(array_keys($replace), array_values($replace), $doc_html);
+
+					}
+
+				//--------------------------------------------------
+				// Save
+
+					$this->set('doc_html', $doc_html);
 
 			//--------------------------------------------------
 			// View
