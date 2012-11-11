@@ -486,9 +486,12 @@
 
 		$next_html = '<p>Go to <a href="' . html($url) . '">next page</a>.</p>';
 
-		if (ob_get_length() > 0) {
-			ob_end_flush();
-			exit($next_html);
+		$output = '';
+		while (ob_get_level() > 0) {
+			$output = ob_get_clean() . $output;
+		}
+		if ($output != '' || headers_sent()) {
+			exit($output . $next_html);
 		}
 
 		mime_set('text/html');
