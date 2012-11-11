@@ -1,45 +1,21 @@
 
+# Introduction
+
 PHP Prime is a basic framework, which is loosely based on the MVC structure.
 
-Where the typical page is built using the URL, e.g.
+Where the typical page is built using the URL, for example:
 
-	http://www.example.com/admin/news/edit/123/
+	http://www.example.com/contact/
 
-If your just adding a HTML page, then you just need to create a [view file](/doc/setup/views/) such as:
+If you're adding a HTML page, then you just need to create a [view file](/doc/setup/views/) such as:
 
-	/app/view/admin/news/edit.ctp
+	/app/view/contact.ctp
 
-		<h1>Edit Article</h1>
+		<h1>Contact Us</h1>
+		<p>Tel: 1234 567 8900</p>
+		<p>Email: <a href="mailto:admin@example.com">admin@example.com</a></p>
 
-		<?= $form->html(); ?>
-
-In this example we have the variable `$form`, which is a [form helper](/doc/helpers/form/).
-
-To setup these and other variables, you can create a [controller](/doc/setup/controllers/), for example:
-
-	/app/controller/admin/news.php
-
-	<?php
-
-		class admin_news_controller extends controller {
-
-			public function action_edit($id = NULL) {
-
-				$form = new form();
-
-				// Code for the edit page
-
-				$this->set('form', $form);
-
-			}
-
-		}
-
-	?>
-
-If you are running the website in [development mode](/doc/setup/config/), PHP Prime will add some [notes](/doc/setup/debug/) to help explain how the request was handled and where it looked for the controller.
-
-Finally this output is added to a [template](/doc/setup/templates/), which is where the common HTML for the website is added (such as the site navigation).
+The output from this is added to a [template](/doc/setup/templates/), where the common HTML for the website is added (such as the site navigation).
 
 	<!DOCTYPE html>
 	<html lang="<?= html(config::get('output.lang')) ?>">
@@ -67,12 +43,121 @@ Finally this output is added to a [template](/doc/setup/templates/), which is wh
 	</body>
 	</html>
 
-And yes I use the '[echo shortcut](http://www.php.net/echo)', which is not the same as 'short tags' as of PHP 5.4.
+NB: I use the [echo shortcut](http://www.php.net/echo) (<?=), instead of (<?php echo) as it's shorter, easier to read, and no longer considered a short tag as of PHP 5.4.
 
 ---
 
+# Optional controller
+
+You could extend the above by creating a [controller](/doc/setup/controllers/).
+
+If you are running the website in [development mode](/doc/setup/config/), PHP Prime will add some [notes](/doc/setup/debug/) to explain how it searches for the controller.
+
+In this example we use the [form](/doc/helpers/form/) and [email](/doc/helpers/email/) helpers to create a 'contact us' form, which sends an email, and keeps a copy in the database.
+
+It should be noted that the database determines the maximum length of the fields.
+
+	/app/controller/contact.php
+
+	<?php
+
+		class contact_controller extends controller {
+
+			public function action_index() {
+
+				//--------------------------------------------------
+				// Form setup
+
+					$form = new form();
+					$form->form_class_set('basic_form');
+					$form->form_button_set('Send');
+					$form->db_table_set_sql(DB_PREFIX . 'log_contact');
+
+					$field_name = new form_field_text($form, 'Name');
+					$field_name->db_field_set('name');
+					$field_name->min_length_set('Your name is required.');
+					$field_name->max_length_set('Your name cannot be longer than XXX characters.');
+
+					$field_email = new form_field_email($form, 'Email');
+					$field_email->db_field_set('email');
+					$field_email->format_error_set('Your email does not appear to be correct.');
+					$field_email->min_length_set('Your email is required.');
+					$field_email->max_length_set('Your email cannot be longer than XXX characters.');
+
+					$field_message = new form_field_text_area($form, 'Message');
+					$field_message->db_field_set('message');
+					$field_message->min_length_set('Your message is required.');
+					$field_message->max_length_set('Your message cannot be longer than XXX characters.');
+					$field_message->cols_set(40);
+					$field_message->rows_set(5);
+
+				//--------------------------------------------------
+				// Form processing
+
+					if ($form->submitted()) {
+
+						//--------------------------------------------------
+						// Validation
+
+							// $form->error_add('Another error');
+
+						//--------------------------------------------------
+						// Form valid
+
+							if ($form->valid()) {
+
+								//--------------------------------------------------
+								// Email
+
+									$values = $form->data_array_get();
+
+									$email = new email();
+									$email->subject_suffix_set('Contact us');
+									$email->request_table_add($values);
+									$email->send(config::get('email.contact_us'));
+
+								//--------------------------------------------------
+								// Save
+
+									$form->db_save();
+
+								//--------------------------------------------------
+								// Next page
+
+									redirect(url('./thank-you/'));
+
+							}
+
+					} else {
+
+						//--------------------------------------------------
+						// Defaults
+
+							// $field_name->value_set('My name');
+
+					}
+
+				//--------------------------------------------------
+				// Variables
+
+					$this->set('form', $form);
+
+			}
+
+		}
+
+	?>
+
+To quickly create the HTML in the [view](/doc/setup/views/), we could add:
+
+	<?= $form->html(); ?>
+
+---
+
+# Next steps
+
 From here I urge you to at least scan over the notes on [security](/doc/security/), which applies to all websites/frameworks.
 
-You will also notice that when you are in [development mode](/doc/setup/config/), not only do you get the helper notes, the page loads with the XML header to ensure your HTML is pretty strict, and the [CSP header](/doc/security/csp/) is enabled and enforced.
+You will also notice that when you are in [development mode](/doc/setup/config/), not only do you get the helper notes, the page loads with the XML header to ensure your HTML remains strict, and the [CSP header](/doc/security/csp/) is enabled and enforced.
 
-Now your free to [start using the framework](/doc/setup/).
+Now you're free to [start using the framework](/doc/setup/).
