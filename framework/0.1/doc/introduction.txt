@@ -99,7 +99,7 @@ It should be noted that the database determines the maximum length of the fields
 						//--------------------------------------------------
 						// Validation
 
-							// $form->error_add('Another error');
+							// $form->error_add('Example error');
 
 						//--------------------------------------------------
 						// Form valid
@@ -112,19 +112,21 @@ It should be noted that the database determines the maximum length of the fields
 									$values = $form->data_array_get();
 
 									$email = new email();
-									$email->subject_suffix_set('Contact us');
+									$email->subject_set('Contact us');
 									$email->request_table_add($values);
 									$email->send(config::get('email.contact_us'));
 
 								//--------------------------------------------------
 								// Save
 
-									$form->db_save();
+									$form->db_value_set('ip', config::get('request.ip'));
+
+									$record_id = $form->db_insert();
 
 								//--------------------------------------------------
 								// Next page
 
-									redirect(url('./thank-you/'));
+									redirect(url('/contact/thank-you/', array('id' => $record_id)));
 
 							}
 
@@ -136,6 +138,12 @@ It should be noted that the database determines the maximum length of the fields
 							// $field_name->value_set('My name');
 
 					}
+
+				//--------------------------------------------------
+				// JavaScript
+
+					resources::js_add('/a/js/contact.js');
+					resources::js_code_add($form->validation_js());
 
 				//--------------------------------------------------
 				// Variables
