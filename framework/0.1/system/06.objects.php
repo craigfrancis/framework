@@ -504,19 +504,6 @@
 						unset($mime_xml);
 
 					//--------------------------------------------------
-					// Debug
-
-						if (config::get('debug.level') > 0 && config::get('debug.show') && in_array(config::get('output.mime'), array('text/html', 'application/xhtml+xml'))) {
-
-							config::set('debug.mode', 'js');
-
-							resources::js_code_add("\n", 'async'); // Add something so the file is included, the rest will be added in debug_end()
-
-							resources::css_add(gateway_url('framework-file', array('file' => 'debug.css')));
-
-						}
-
-					//--------------------------------------------------
 					// Framing options
 
 						header('X-Frame-Options: ' . head(strtoupper(config::get('output.framing', 'DENY'))));
@@ -598,6 +585,19 @@
 							unset($csp, $output, $header, $directive, $value, $matches);
 
 						}
+
+				//--------------------------------------------------
+				// Debug
+
+					if (config::get('debug.level') > 0 && config::get('debug.show') && in_array(config::get('output.mime'), array('text/html', 'application/xhtml+xml'))) {
+
+						config::set('debug.mode', 'js');
+
+						resources::js_code_add("\n", 'async'); // Add something so the file is included, and session is started. The rest will be added in debug_shutdown()
+
+						resources::css_add(gateway_url('framework-file', array('file' => 'debug.css')));
+
+					}
 
 				//--------------------------------------------------
 				// Local variables

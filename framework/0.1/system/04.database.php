@@ -3,7 +3,12 @@
 	class db extends check {
 
 		private $result;
+		private $connection;
 		private $link;
+
+		public function __construct($connection = 'default') {
+			$this->connection = $connection;
+		}
 
 		public function escape($val) {
 
@@ -179,20 +184,18 @@
 			return $this->link;
 		}
 
-		public function connect($name = NULL, $user = NULL, $pass = NULL, $host = NULL) {
+		private function connect() {
 
 			if (!$this->link) {
 
-				if ($name === NULL && $user === NULL && $pass === NULL && $host === NULL) {
-					$this->link = config::get('db.link');
-				}
+				$this->link = config::array_get('db.link', $this->connection);
 
 				if (!$this->link) {
 
-					if ($name === NULL) $name = config::get('db.name');
-					if ($user === NULL) $user = config::get('db.user');
-					if ($pass === NULL) $pass = config::get('db.pass');
-					if ($host === NULL) $host = config::get('db.host');
+					$name = config::get('db.name');
+					$user = config::get('db.user');
+					$pass = config::get('db.pass');
+					$host = config::get('db.host');
 
 					if (!function_exists('mysql_connect')) {
 						$this->_error('PHP does not have MySQL support - http://www.php.net/mysql_connect', true);
@@ -223,7 +226,7 @@
 						}
 					}
 
-					config::set_default('db.link', $this->link);
+					config::array_set('db.link', $this->connection, $this->link);
 
 				}
 

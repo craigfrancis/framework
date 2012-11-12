@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // Start time
 
-	define('FRAMEWORK_TIME_START', microtime(true));
+	define('FRAMEWORK_START', microtime(true));
 
 //--------------------------------------------------
 // Version
@@ -36,10 +36,14 @@
 	}
 
 //--------------------------------------------------
-// Disable default output buffer
+// Disable output buffers, and error if non-empty
 
+	$output = '';
 	while (ob_get_level() > 0) {
-		ob_end_clean();
+		$output = ob_get_clean() . $output;
+	}
+	if ($output != '') {
+		exit('Pre framework output "' . $output . '"');
 	}
 
 //--------------------------------------------------
@@ -55,7 +59,7 @@
 //--------------------------------------------------
 // Initialisation done
 
-	define('FRAMEWORK_TIME_INIT', debug_time_elapsed());
+	config::set('debug.time_init', debug_time_elapsed());
 
 	if (config::get('debug.level') >= 4) {
 		debug_progress('Init');

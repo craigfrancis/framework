@@ -294,7 +294,7 @@
 // Debug run time
 
 	function debug_time_elapsed() {
-		return round((microtime(true) - FRAMEWORK_TIME_START), 4);
+		return round((microtime(true) - FRAMEWORK_START), 4);
 	}
 
 	function debug_time_format($time) {
@@ -314,7 +314,7 @@
 		$config_html .= '<div class="debug_keys">';
 
 		foreach ($config as $key => $value) {
-			if (!in_array($key, array('db.link'))) {
+			if (!in_array($key, array('db.link', 'debug.time_init', 'debug.time_check', 'debug.time_query'))) {
 				if (in_array($key, array('db.pass', 'debug.notes', 'view.variables'))) {
 					$value_html = '???';
 				} else {
@@ -715,7 +715,7 @@
 		//--------------------------------------------------
 		// End debug
 
-			function debug_end() {
+			function debug_shutdown() {
 
 				//--------------------------------------------------
 				// Ignore
@@ -727,14 +727,12 @@
 				//--------------------------------------------------
 				// Time text
 
-					$time_query = config::get('debug.time_query');
 					$time_check = config::get('debug.time_check');
+					$time_total = debug_time_elapsed();
 
-					$total_time = debug_time_elapsed();
-
-					$time_text  = 'Setup time: ' . debug_time_format(FRAMEWORK_TIME_INIT) . "\n";
-					$time_text .= 'Query time: ' . debug_time_format($time_query) . "\n";
-					$time_text .= 'Total time: ' . debug_time_format($total_time - $time_check) . ' (with checks ' . debug_time_format($total_time) . ')';
+					$time_text  = 'Setup time: ' . debug_time_format(config::get('debug.time_init')) . "\n";
+					$time_text .= 'Query time: ' . debug_time_format(config::get('debug.time_query')) . "\n";
+					$time_text .= 'Total time: ' . debug_time_format($time_total - $time_check) . ' (with checks ' . debug_time_format($time_total) . ')';
 
 				//--------------------------------------------------
 				// Send
@@ -773,7 +771,7 @@
 
 			}
 
-			register_shutdown_function('debug_end');
+			register_shutdown_function('debug_shutdown');
 
 		//--------------------------------------------------
 		// Report table exists

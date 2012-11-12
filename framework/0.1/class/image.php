@@ -29,6 +29,11 @@
 			$image->image_add($image_sub, 10, 123);
 			$image->output_gif();
 
+	//--------------------------------------------------
+	// Other ideas (TODO)
+
+		http://docs.magentocommerce.com/Varien/Varien_Image/Varien_Image.html
+
 ***************************************************/
 
 	define('IMAGE_LOAD_SUCCESS', 0);

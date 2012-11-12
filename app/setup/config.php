@@ -22,6 +22,7 @@
 			$config['db.user'] = 'stage';
 			$config['db.pass'] = 'st8ge';
 			$config['db.name'] = 's-craig-framework';
+
 			$config['db.prefix'] = 'tpl_';
 
 		//--------------------------------------------------
@@ -51,6 +52,7 @@
 			$config['db.user'] = 'craig';
 			$config['db.pass'] = 'cr8ig';
 			$config['db.name'] = 'l-craig-framework';
+
 			$config['db.prefix'] = 'tpl_';
 
 		//--------------------------------------------------

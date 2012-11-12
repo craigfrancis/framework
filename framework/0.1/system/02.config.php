@@ -132,6 +132,15 @@
 			$obj->store[$variable][$key] = $value;
 		}
 
+		public static function array_get($variable, $key, $default = NULL) {
+			$obj = config::instance_get();
+			if (isset($obj->store[$variable][$key])) {
+				return $obj->store[$variable][$key];
+			} else {
+				return $default;
+			}
+		}
+
 		public static function array_search($variable, $value) {
 			$obj = config::instance_get();
 			if (isset($obj->store[$variable]) && is_array($obj->store[$variable])) {
