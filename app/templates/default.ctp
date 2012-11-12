@@ -81,8 +81,6 @@
 
 <!-- END OF PAGE TOP -->
 
-	<?= $this->message_get_html() ?>
-
 	<?= $this->view_get_html() ?>
 
 <!-- START OF PAGE BOTTOM -->
