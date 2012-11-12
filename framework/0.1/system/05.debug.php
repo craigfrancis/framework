@@ -784,21 +784,17 @@
 		//--------------------------------------------------
 		// Report table exists
 
-			if (count(config::get_all('db')) > 0) {
-
-				debug_require_db_table('report', '
-						CREATE TABLE [TABLE] (
-							id int(11) NOT NULL auto_increment,
-							type tinytext NOT NULL,
-							created datetime NOT NULL,
-							message text NOT NULL,
-							request tinytext NOT NULL,
-							referrer tinytext NOT NULL,
-							ip tinytext NOT NULL,
-							PRIMARY KEY  (id)
-						);');
-
-			}
+			debug_require_db_table('report', '
+					CREATE TABLE [TABLE] (
+						id int(11) NOT NULL auto_increment,
+						type tinytext NOT NULL,
+						created datetime NOT NULL,
+						message text NOT NULL,
+						request tinytext NOT NULL,
+						referrer tinytext NOT NULL,
+						ip tinytext NOT NULL,
+						PRIMARY KEY  (id)
+					);');
 
 	}
 
