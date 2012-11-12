@@ -362,9 +362,17 @@
 		//--------------------------------------------------
 		// Debug progress
 
-			function debug_progress($label, $indent = 0) {
+			function debug_progress($label) {
+
 				$time = debug_time_format(debug_time_elapsed() - config::get('debug.time_check'));
-				debug_note_html(html(str_repeat('&#xA0; &#xA0; ', $indent) . $time . ' - ' . $label));
+
+				config::array_push('debug.notes', array(
+						'type' => 'L',
+						'colour' => '#CCC',
+						'time' => NULL,
+						'html' => html($time . ' - ' . $label),
+					));
+
 			}
 
 		//--------------------------------------------------
