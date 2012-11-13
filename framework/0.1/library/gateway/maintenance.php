@@ -15,7 +15,7 @@
 
 			if ($this->sub_path_get() === NULL) {
 
-				redirect('./run/');
+				$maintenance->state();
 
 			} else if ($this->sub_path_get() == '/run/') {
 
@@ -28,10 +28,6 @@
 				foreach ($ran_jobs as $job) {
 					echo '- ' . $job . "\n";
 				}
-
-			} else if ($this->sub_path_get() == '/state/') {
-
-				$maintenance->state();
 
 			} else if (SERVER == 'stage' && $this->sub_path_get() == '/test/') {
 
