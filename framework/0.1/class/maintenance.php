@@ -14,7 +14,6 @@
 
 ***************************************************/
 
-// TODO: Add an admin interface somewhere which can show the jobs being run, can cancel them, or stack them up.
 // TODO: Handle switching from BST to GMT
 
 //--------------------------------------------------
@@ -25,9 +24,9 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $jobs_dir;
-			private $jobs_run;
+			private $job_dir;
 			private $job_paths;
+			private $jobs_run;
 			private $run_id = NULL;
 
 		//--------------------------------------------------
@@ -38,15 +37,15 @@
 				//--------------------------------------------------
 				// Jobs
 
-					$this->jobs_dir = APP_ROOT . '/jobs/';
-					$this->jobs_run = array();
+					$this->job_dir = APP_ROOT . '/job/';
 					$this->job_paths = array();
+					$this->jobs_run = array();
 
-					if ($handle = opendir($this->jobs_dir)) {
+					if ($handle = opendir($this->job_dir)) {
 						while (false !== ($file = readdir($handle))) {
-							if (is_file($this->jobs_dir . $file) && preg_match('/^([0-9]+\.)?([a-zA-Z0-9_\-]+)\.php$/', $file, $matches)) {
+							if (is_file($this->job_dir . $file) && preg_match('/^([0-9]+\.)?([a-zA-Z0-9_\-]+)\.php$/', $file, $matches)) {
 
-								$this->job_paths[$matches[2]] = $this->jobs_dir . $file;
+								$this->job_paths[$matches[2]] = $this->job_dir . $file;
 
 							}
 						}
@@ -243,6 +242,27 @@
 			}
 
 		//--------------------------------------------------
+		// State support
+
+			public function state() {
+
+				//--------------------------------------------------
+				// Create simple index of jobs
+
+					$this->title_set('Maintenance State');
+
+					$html = '
+						<h2>State</h2>
+						<p>TODO</p>';
+
+					$view = new view();
+					$view->render_html($html);
+
+					// An admin interface which can show the jobs being run, can cancel them, or stack them up.
+
+			}
+
+		//--------------------------------------------------
 		// Test support
 
 			public function test() {
@@ -267,7 +287,7 @@
 				//--------------------------------------------------
 				// Create simple index of jobs
 
-					$this->title_set('Maintenance jobs');
+					$this->title_set('Maintenance Jobs');
 
 					$html = '
 						<h2>Jobs</h2>

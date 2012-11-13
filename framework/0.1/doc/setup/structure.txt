@@ -5,7 +5,7 @@ For a quick overview, the folder structure is basically:
 	/app/
 		/controller/
 		/gateway/
-		/jobs/
+		/job/
 		/library/
 			/class/
 			/controller/
@@ -34,7 +34,7 @@ As the name suggests, this is where your [controllers](/doc/setup/controllers/) 
 
 Any [gateway scripts](/doc/setup/gateways/) go here.
 
-### Jobs
+### Job
 
 Any [job scripts](/doc/setup/jobs/) go here, otherwise known as maintenance or cron scripts.
 
