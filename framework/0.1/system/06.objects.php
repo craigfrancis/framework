@@ -628,7 +628,7 @@
 
 			private function template_path_get() {
 
-				$template_path = APP_ROOT . '/templates/' . safe_file_name(config::get('view.template')) . '.ctp';
+				$template_path = APP_ROOT . '/template/' . safe_file_name(config::get('view.template')) . '.ctp';
 
 				if (config::get('debug.level') >= 3) {
 					debug_note_html('<strong>Template</strong>: ' . html(str_replace(ROOT, '', $template_path)), 'H');
