@@ -79,6 +79,34 @@
 				//--------------------------------------------------
 				// Helpers
 
+					$form_setup_nav = new nav();
+					$form_setup_nav->link_add('/doc/helpers/form/setup/', 'Database');
+
+					$form_fields_nav = new nav();
+					$form_fields_nav->link_add('/doc/helpers/form/fields/text/', 'Text');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/text-area/', 'Text area');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/email/', 'Email');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/password/', 'Password');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/number/', 'Number');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/currency/', 'Currency');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/postcode/', 'Postcode');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/url/', 'URL');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/date/', 'Date');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/time/', 'Time');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/select/', 'Select');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/file/', 'File');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/image/', 'Image');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/check-box/', 'Check box');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/check-boxes/', 'Check boxes');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/radios/', 'Radios');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/info/', 'Info');
+					$form_fields_nav->link_add('/doc/helpers/form/fields/html/', 'HTML');
+
+					$form_nav = new nav();
+					$form_nav->link_add('/doc/helpers/form/', 'Introduction');
+					$form_nav->sub_nav_add('/doc/helpers/form/setup/', 'Setup', $form_setup_nav);
+					$form_nav->sub_nav_add('/doc/helpers/form/fields/', 'Fields', $form_fields_nav);
+
 					$helpers_nav = new nav();
 					$helpers_nav->link_add('/doc/helpers/config/', 'Config');
 					$helpers_nav->link_add('/doc/helpers/session/', 'Session');
@@ -86,7 +114,7 @@
 					$helpers_nav->link_add('/doc/helpers/functions/', 'Functions');
 					$helpers_nav->link_add('/doc/helpers/database/', 'Database');
 					$helpers_nav->link_add('/doc/helpers/url/', 'URL');
-					$helpers_nav->link_add('/doc/helpers/form/', 'Form');
+					$helpers_nav->sub_nav_add('/doc/helpers/form/', 'Form', $form_nav);
 					$helpers_nav->link_add('/doc/helpers/email/', 'Email');
 					$helpers_nav->link_add('/doc/helpers/file/', 'File');
 					$helpers_nav->link_add('/doc/helpers/nav/', 'Navigation');
