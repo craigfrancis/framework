@@ -242,7 +242,7 @@
 
 					$table = new table();
 					$table->class_set('basic_table full_width');
-					$table->default_sort_set($this->index_default_sort_field, $this->index_default_sort_order);
+					$table->sort_default_set($this->index_default_sort_field, $this->index_default_sort_order);
 					$table->no_records_set('No ' . $this->item_plural . ' found');
 
 					$this->setup_index_table($table);

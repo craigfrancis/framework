@@ -49,11 +49,14 @@
 
 		private $sort_enabled;
 		private $sort_name;
-		private $sort_field;
+		private $sort_request_field;
+		private $sort_request_order;
+		private $sort_preserved_key;
+		private $sort_preserved_field;
+		private $sort_preserved_order;
 		private $sort_default_field;
 		private $sort_default_order;
 		private $sort_fields;
-		private $sort_order;
 		private $sort_active_asc_prefix_html;
 		private $sort_active_asc_suffix_html;
 		private $sort_active_desc_prefix_html;
@@ -83,11 +86,14 @@
 
 				$this->sort_enabled = false;
 				$this->sort_name = NULL;
-				$this->sort_field = NULL;
+				$this->sort_request_field = NULL;
+				$this->sort_request_order = NULL;
+				$this->sort_preserved_key = NULL;
+				$this->sort_preserved_field = NULL;
+				$this->sort_preserved_order = NULL;
 				$this->sort_default_field = NULL;
 				$this->sort_default_order = NULL;
 				$this->sort_fields = array();
-				$this->sort_order = NULL;
 				$this->sort_active_asc_prefix_html = '';
 				$this->sort_active_asc_suffix_html = '';
 				$this->sort_active_desc_prefix_html = '';
@@ -147,17 +153,36 @@
 			if (($pos = strpos($sort, '-')) !== false) {
 				$order = substr($sort, 0, $pos);
 				if ($order == 'asc' || $order == 'desc') {
-					$this->sort_field = substr($sort, ($pos + 1));
-					$this->sort_order = $order;
+					$this->sort_request_field = substr($sort, ($pos + 1));
+					$this->sort_request_order = $order;
 				}
 			}
 
 		}
 
-		public function default_sort_set($field, $order = 'asc') {
+		public function sort_default_set($field, $order = 'asc') {
 			$this->sort_enabled = true;
 			$this->sort_default_field = $field;
 			$this->sort_default_order = $order;
+		}
+
+		public function sort_preserve_set($preserve) {
+			if ($preserve) {
+
+				$this->sort_preserved_key = 'table.sort_preserved.' . base64_encode(config::get('request.path')) . '.' . $this->table_id;
+
+				$session = session::get($this->sort_preserved_key);
+				if ($session) {
+					list($this->sort_preserved_field, $this->sort_preserved_order) = $session;
+				}
+
+			} else {
+
+				$this->sort_preserved_key = NULL;
+				$this->sort_preserved_field = NULL;
+				$this->sort_preserved_order = NULL;
+
+			}
 		}
 
 		public function sort_field_get() {
@@ -168,23 +193,23 @@
 				$this->sort_name_set();
 			}
 
-			if (in_array($this->sort_field, $this->sort_fields)) { // An unrecognised value supplied by GPC
-
-				return $this->sort_field;
-
-			} else if ($this->sort_default_field !== NULL) {
-
-				return $this->sort_default_field;
-
-			} else {
-
-				$default = reset($this->sort_fields);
-				if ($default === false) {
-					$default = NULL;
-				}
-				return $default;
-
+			if (in_array($this->sort_request_field, $this->sort_fields)) { // Recognised value supplied by GPC
+				return $this->sort_request_field;
 			}
+
+			if (in_array($this->sort_preserved_field, $this->sort_fields)) { // Has been set (not NULL), which came from GPC
+				return $this->sort_preserved_field;
+			}
+
+			if (in_array($this->sort_default_field, $this->sort_fields)) { // Has been set (not NULL)
+				return $this->sort_default_field;
+			}
+
+			$default = reset($this->sort_fields);
+			if ($default === false) {
+				$default = NULL;
+			}
+			return $default;
 
 		}
 
@@ -196,12 +221,16 @@
 				$this->sort_name_set();
 			}
 
-			if ($this->sort_order == 'desc' || $this->sort_order == 'asc') {
-				return $this->sort_order; // Stop bad values from GPC
+			if ($this->sort_request_order == 'desc' || $this->sort_request_order == 'asc') { // Recognised value supplied by GPC
+				return $this->sort_request_order;
 			}
 
-			if ($this->sort_default_order == 'desc' || $this->sort_default_order == 'asc') {
-				return $this->sort_default_order; // Could not have been set
+			if ($this->sort_preserved_order == 'desc' || $this->sort_preserved_order == 'asc') { // Has been set (not NULL), which came from GPC
+				return $this->sort_preserved_order;
+			}
+
+			if ($this->sort_default_order == 'desc' || $this->sort_default_order == 'asc') { // Has been set (not NULL)
+				return $this->sort_default_order;
 			}
 
 			return 'asc';
@@ -371,6 +400,10 @@
 
 				if ($this->sort_enabled && $this->sort_name === NULL) {
 					$this->sort_name_set();
+				}
+
+				if ($this->sort_preserved_key && $this->sort_request_field && $this->sort_request_order) {
+					session::set($this->sort_preserved_key, array($this->sort_request_field, $this->sort_request_order));
 				}
 
 				$current_sort = $this->sort_field_get();
