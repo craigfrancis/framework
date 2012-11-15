@@ -134,7 +134,7 @@
 		$output_php .= '	function html_tag($tag, $attributes) {' . "\n";
 		$output_php .= '		$html = \'<\' . html($tag);' . "\n";
 		$output_php .= '		foreach ($attributes as $name => $value) {' . "\n";
-		$output_php .= '			if ($value != \'\') {' . "\n";
+		$output_php .= '			if ($value !== \'\' && $value !== NULL) { // Allow numerical value 0' . "\n";
 		$output_php .= '				$html .= \' \' . html(is_int($name) ? $value : $name) . \'="\' . html($value) . \'"\';' . "\n";
 		$output_php .= '			}' . "\n";
 		$output_php .= '		}' . "\n";
@@ -267,6 +267,8 @@
 
 //--------------------------------------------------
 // Save
+
+	config::set('debug.show', false);
 
 	mime_set('text/plain');
 	echo $output_php;
