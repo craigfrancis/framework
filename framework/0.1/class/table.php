@@ -201,7 +201,7 @@
 				return $this->sort_preserved_field;
 			}
 
-			if (in_array($this->sort_default_field, $this->sort_fields)) { // Has been set (not NULL)
+			if ($this->sort_default_field !== NULL) { // Has been set (not NULL), but may not be in sort_fields
 				return $this->sort_default_field;
 			}
 
