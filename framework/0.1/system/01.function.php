@@ -36,6 +36,11 @@
 			}
 
 		//--------------------------------------------------
+		// Record it was used (for canonical url)
+
+			config::array_set('request.vars_used', $variable, $method);
+
+		//--------------------------------------------------
 		// Strip slashes (IF NESS)
 
 			if ($value !== NULL && ini_get('magic_quotes_gpc')) {

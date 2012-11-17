@@ -102,6 +102,14 @@
 
 			}
 
+			public function params_get() {
+
+				$this->_path_cache_update();
+
+				return $this->parameters;
+
+			}
+
 		//--------------------------------------------------
 		// Parse
 

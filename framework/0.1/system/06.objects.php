@@ -320,6 +320,38 @@
 					}
 
 				//--------------------------------------------------
+				// Canonical URL
+
+					$canonical_url = config::get('output.canonical');
+
+					if ($canonical_url == 'auto') {
+
+						$canonical_url = new url();
+						$canonical_params = $canonical_url->params_get();
+
+						if (count($canonical_params) > 0) {
+
+							$vars_used = config::get('request.vars_used', array());
+
+							foreach ($canonical_params as $name => $value) {
+								if (!isset($vars_used[$name])) {
+									$canonical_url->param_set($name, NULL);
+								}
+							}
+
+						} else {
+
+							$canonical_url = NULL;
+
+						}
+
+					}
+
+					if ($canonical_url !== NULL) {
+						$html .= "\n\n\t" . '<link rel="canonical" href="' . html($canonical_url) . '" />';
+					}
+
+				//--------------------------------------------------
 				// Browser on black list (no css/js)
 
 					$browser = config::get('request.browser');
