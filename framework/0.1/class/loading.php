@@ -291,7 +291,6 @@
 					header('Refresh: ' . head($refresh_header));
 
 					header('Connection: close');
-					header('Accept-Ranges: bytes');
 					header('Content-Length: ' . head(strlen($output)));
 
 					echo $output;

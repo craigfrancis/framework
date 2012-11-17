@@ -522,7 +522,6 @@
 		mime_set($mime);
 
 		header('Content-Disposition: ' . head($mode) . '; filename="' . head($name) . '"');
-		header('Accept-Ranges: bytes');
 		header('Content-Length: ' . head(filesize($path)));
 
 		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS
@@ -538,7 +537,6 @@
 		mime_set($mime);
 
 		header('Content-Disposition: ' . head($mode) . '; filename="' . head($name) . '"');
-		header('Accept-Ranges: bytes');
 		header('Content-Length: ' . head(strlen($content)));
 
 		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS
