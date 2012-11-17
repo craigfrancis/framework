@@ -262,10 +262,6 @@
 					$files_alternate = resources::get('css_alternate');
 					if (count($files_alternate) > 0) {
 
-						if ($mode == 'html') {
-							$return .= "\n\t";
-						}
-
 						foreach ($files_alternate as $file) {
 
 							if (substr($file['path'], 0, 1) == '/') {
@@ -373,11 +369,7 @@
 				//--------------------------------------------------
 				// CSS
 
-					$css_html = $this->css_get('html');
-
-					if ($css_html !== '') {
-						$html .= "\n\t" . $css_html;
-					}
+					$html .= $this->css_get('html');
 
 				//--------------------------------------------------
 				// Javascript (after CSS)
