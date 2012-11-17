@@ -125,11 +125,12 @@
 
 				if ($this->page_number === NULL || isset($config['variable'])) { // No known page number yet, or the variable has been changed
 
-					$page_number = (isset($_REQUEST[$this->config['variable']]) ? $_REQUEST[$this->config['variable']] : 0);
+					$page_number = intval(request($this->config['variable']));
+					$page_rel = request($this->config['variable'] . '_rel');
 
-					if ($this->config['mode'] == 'form' && isset($_REQUEST[$this->config['variable'] . '_rel'])) {
+					if ($this->config['mode'] == 'form' && $page_rel !== NULL) {
 
-						$page_relative = html($_REQUEST[$this->config['variable'] . '_rel']);
+						$page_relative = html($page_rel);
 
 						if ($page_relative == $this->config['first_html']) {
 
@@ -195,6 +196,16 @@
 
 			if ($this->page_number < 1) {
 				$this->page_number = 1;
+			}
+
+			$url = $this->page_url_get($this->page_number - 1);
+			if ($url !== NULL) {
+				config::array_set('output.links', 'prev', $url);
+			}
+
+			$url = $this->page_url_get($this->page_number + 1);
+			if ($url !== NULL) {
+				config::array_set('output.links', 'next', $url);
 			}
 
 		}

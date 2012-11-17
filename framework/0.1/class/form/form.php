@@ -734,9 +734,8 @@
 				// Max input variables
 
 					$input_vars_max = intval(ini_get('max_input_vars'));
-					$input_vars_sent = count($_REQUEST);
 
-					if ($input_vars_max > 0 && $input_vars_max <= $input_vars_sent) {
+					if ($input_vars_max > 0 && $input_vars_max <= count($_REQUEST)) {
 						exit_with_error('The form submitted too many values for this server.', 'Maximum input variables: ' . $input_vars_max . ' (max_input_vars)');
 					}
 

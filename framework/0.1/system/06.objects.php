@@ -301,25 +301,6 @@
 			public function head_get_html($config = NULL) {
 
 				//--------------------------------------------------
-				// Content type
-
-					$html = "\n\t" . '<meta charset="' . html(config::get('output.charset')) . '" />';
-
-				//--------------------------------------------------
-				// Page title
-
-					$html .= "\n\n\t" . '<title>' . html($this->title_get()) . '</title>';
-
-				//--------------------------------------------------
-				// Favicon
-
-					$favicon_url = config::get('output.favicon_url');
-
-					if ($favicon_url !== NULL) {
-						$html .= "\n\n\t" . '<link rel="shortcut icon" type="image/x-icon" href="' . html($favicon_url) . '" />';
-					}
-
-				//--------------------------------------------------
 				// Canonical URL
 
 					$canonical_url = config::get('output.canonical');
@@ -348,7 +329,33 @@
 					}
 
 					if ($canonical_url !== NULL) {
-						$html .= "\n\n\t" . '<link rel="canonical" href="' . html($canonical_url) . '" />';
+						config::array_set('output.links', 'canonical', $canonical_url);
+					}
+
+				//--------------------------------------------------
+				// Content type
+
+					$html = "\n\t" . '<meta charset="' . html(config::get('output.charset')) . '" />';
+
+				//--------------------------------------------------
+				// Page title
+
+					$html .= "\n\n\t" . '<title>' . html($this->title_get()) . '</title>';
+
+				//--------------------------------------------------
+				// Favicon
+
+					$favicon_url = config::get('output.favicon_url');
+
+					if ($favicon_url !== NULL) {
+						$html .= "\n\n\t" . '<link rel="shortcut icon" type="image/x-icon" href="' . html($favicon_url) . '" />';
+					}
+
+				//--------------------------------------------------
+				// Output links (e.g. canonical/next/prev)
+
+					foreach (config::get('output.links', array()) as $name => $value) {
+						$html .= "\n\t" . '<link rel="' . html($name) . '" href="' . html($value) . '" />';
 					}
 
 				//--------------------------------------------------
