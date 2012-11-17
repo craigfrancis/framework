@@ -111,6 +111,7 @@
 					$helpers_nav->link_add('/doc/helpers/config/', 'Config');
 					$helpers_nav->link_add('/doc/helpers/session/', 'Session');
 					$helpers_nav->link_add('/doc/helpers/cookie/', 'Cookie');
+					$helpers_nav->link_add('/doc/helpers/resources/', 'Resources');
 					$helpers_nav->link_add('/doc/helpers/functions/', 'Functions');
 					$helpers_nav->link_add('/doc/helpers/database/', 'Database');
 					$helpers_nav->link_add('/doc/helpers/url/', 'URL');

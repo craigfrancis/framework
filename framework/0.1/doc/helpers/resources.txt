@@ -1,0 +1,23 @@
+
+Used to add things to the <head> of your document.
+
+This is usually setup in your [template](/doc/setup/templates/).
+
+The [template](/doc/setup/templates/) also discusses the canonical and other rel links.
+
+# JavaScript
+
+	resources::js_add('/path/to/file.js');
+	resources::js_code_add('var x = ' . json_encode($x) . ';');
+
+# CSS
+
+	resources::css_auto();
+
+	resources::css_add('/path/to/file.css');
+	resources::css_alternate_add('/path/to/file.css', 'print');
+	resources::css_alternate_add('/path/to/file.css', 'all', 'Title');
+
+# Extra HTML
+
+	resources::head_add_html('<html>');
