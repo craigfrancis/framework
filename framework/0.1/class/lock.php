@@ -18,7 +18,7 @@
 			private $lock_ref;
 			private $lock_data;
 			private $lock_path;
-			private $lock_file;
+			private $lock_fp;
 
 			private $time_out;
 
@@ -34,7 +34,7 @@
 					$this->lock_ref = $ref;
 					$this->lock_data = array();
 					$this->lock_path = NULL;
-					$this->lock_file = NULL;
+					$this->lock_fp = NULL;
 
 					$this->time_out = strtotime('+30 seconds');
 
@@ -65,9 +65,8 @@
 
 				set_time_limit($this->time_out - time());
 
-				if ($this->lock_file) {
-					$this->lock_data['expires'] = $this->time_out;
-					$this->_data_save();
+				if ($this->lock_fp) {
+					$this->data_set('expires', $this->time_out);
 				}
 
 			}
@@ -81,13 +80,13 @@
 
 			public function data_get($field = NULL) {
 
-				if ($this->lock_file) {
+				if ($this->lock_fp) {
 
-					$data = $this->lock_data['data'];
+					$data = $this->lock_data; // Don't check lock file, it may have been lost (expired), but we still need the data.
 
 				} else if (is_file($this->lock_path)) {
 
-					$data = json_decode(file_get_contents($this->lock_path), true); // as associative array
+					$data = json_decode(file_get_contents($this->lock_path), true); // Read as an associative array
 
 				} else {
 
@@ -105,26 +104,34 @@
 
 			public function data_set($field, $value = NULL) {
 
-				if (!$this->lock_file) {
-					exit_with_error('You do not have the lock, so cannot save data onto it.');
+				if ($this->lock_fp) {
+
+					$info = fstat($this->lock_fp);
+					if ($info['nlink'] > 0 && flock($this->lock_fp, LOCK_EX)) {
+
+						if (is_array($field)) {
+							$this->lock_data = array_merge($this->lock_data, $field);
+						} else {
+							$this->lock_data[$field] = $value;
+						}
+
+						rewind($this->lock_fp); // truncate does not change the file pointer
+						ftruncate($this->lock_fp, 0);
+						fwrite($this->lock_fp, json_encode($this->lock_data));
+
+						flock($this->lock_fp, LOCK_UN);
+
+						return true;
+
+					} else {
+
+						$this->close(); // Has lost the lock
+
+					}
+
 				}
 
-				if (is_array($field)) {
-					$this->lock_data['data'] = array_merge($this->lock_data['data'], $field);
-				} else {
-					$this->lock_data['data'][$field] = $value;
-				}
-
-				$this->_data_save();
-
-			}
-
-			private function _data_save() {
-
-				rewind($this->lock_file);
-				ftruncate($this->lock_file, 0);
-
-				fwrite($this->lock_file, json_encode($this->lock_data));
+				exit_with_error('You do not have the lock, so cannot save data onto it.', 'Try checking $lock->open() before $lock->data_set()');
 
 			}
 
@@ -134,20 +141,23 @@
 			public function open() {
 
 				//--------------------------------------------------
+				// If this object has the lock
+
+					if ($this->lock_fp) {
+
+						$info = fstat($this->lock_fp);
+						if ($info['nlink'] > 0) {
+							return true; // File still exists on filesystem (not unlinked by another process)
+						} else {
+							return false; // Lost the lock, don't try to re-create
+						}
+
+					}
+
+				//--------------------------------------------------
 				// Lock already exists
 
 					if (file_exists($this->lock_path)) {
-
-						if ($this->lock_file) { // This object has the lock, and the file still exists
-
-debug(fstat($this->lock_file));
-debug(ftell($this->lock_file));
-
-// TODO: fopen status
-
-
-							return true;
-						}
 
 						if ($this->data_get('expires') > time()) {
 							return false;
@@ -160,28 +170,22 @@ debug(ftell($this->lock_file));
 				//--------------------------------------------------
 				// Lock file
 
-					$fp = fopen($this->lock_path, 'x+b'); // Returns false if file already exists
+					$this->lock_fp = fopen($this->lock_path, 'x+b'); // Returns false if file already exists
 
-					if ($fp && flock($fp, LOCK_EX)) {
-
-						$this->lock_data = array(
-								'expires' => $this->time_out,
-								'data' => array(),
-							);
-
-						fwrite($fp, json_encode($this->lock_data));
-						flock($fp, LOCK_UN);
-						fclose($fp);
-
-					} else {
-
+					if (!$this->lock_fp || !flock($this->lock_fp, LOCK_EX)) {
 						if (file_exists($this->lock_path)) {
 							return false; // Race condition, where the other thread got the lock first
 						}
-
 						exit_with_error('Cannot create lock file', $this->lock_path);
-
 					}
+
+					$this->lock_data = array(
+							'expires' => $this->time_out,
+						);
+
+					fwrite($this->lock_fp, json_encode($this->lock_data));
+
+					flock($this->lock_fp, LOCK_UN);
 
 				//--------------------------------------------------
 				// Success
@@ -192,9 +196,19 @@ debug(ftell($this->lock_file));
 
 			public function close() {
 
-				unlink($this->lock_path);
+				if ($this->lock_fp) {
 
-				$this->lock_file = NULL;
+					$info = fstat($this->lock_fp);
+					if ($info['nlink'] > 0 && flock($this->lock_fp, LOCK_EX)) {
+						unlink($this->lock_path); // Don't delete if another process now has the lock
+ 						flock($this->lock_fp, LOCK_UN);
+					}
+
+					fclose($this->lock_fp);
+
+					$this->lock_fp = NULL;
+
+				}
 
 			}
 
