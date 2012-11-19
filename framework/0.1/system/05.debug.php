@@ -41,16 +41,20 @@
 		//--------------------------------------------------
 		// Add report to the database
 
-			$db = new db();
+			if (config::get('db.host') !== NULL) {
 
-			$db->insert(DB_PREFIX . 'report', array(
-					'type'     => $type,
-					'created'  => date('Y-m-d H:i:s'),
-					'message'  => $message,
-					'request'  => config::get('request.url'),
-					'referrer' => config::get('request.referrer'),
-					'ip'       => config::get('request.ip'),
-				));
+				$db = new db();
+
+				$db->insert(DB_PREFIX . 'report', array(
+						'type'     => $type,
+						'created'  => date('Y-m-d H:i:s'),
+						'message'  => $message,
+						'request'  => config::get('request.url'),
+						'referrer' => config::get('request.referrer'),
+						'ip'       => config::get('request.ip'),
+					));
+
+			}
 
 	}
 
@@ -784,17 +788,21 @@
 		//--------------------------------------------------
 		// Report table exists
 
-			debug_require_db_table('report', '
-					CREATE TABLE [TABLE] (
-						id int(11) NOT NULL auto_increment,
-						type tinytext NOT NULL,
-						created datetime NOT NULL,
-						message text NOT NULL,
-						request tinytext NOT NULL,
-						referrer tinytext NOT NULL,
-						ip tinytext NOT NULL,
-						PRIMARY KEY  (id)
-					);');
+			if (config::get('db.host') !== NULL) {
+
+				debug_require_db_table('report', '
+						CREATE TABLE [TABLE] (
+							id int(11) NOT NULL auto_increment,
+							type tinytext NOT NULL,
+							created datetime NOT NULL,
+							message text NOT NULL,
+							request tinytext NOT NULL,
+							referrer tinytext NOT NULL,
+							ip tinytext NOT NULL,
+							PRIMARY KEY  (id)
+						);');
+
+			}
 
 	}
 
