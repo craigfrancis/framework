@@ -10,6 +10,40 @@
 
 			if ($form->submitted() && $form->valid()) {
 
+if (false) {
+
+	$path = '/Volumes/WebServer/Projects/craig.framework/private/tmp/lock/test.txt';
+	$ref = @fopen($path, 'x+b');
+	if ($ref) {
+
+		debug(fwrite($ref, 'A'));
+		debug(fgets($ref));
+		debug(is_resource($ref));
+		debug(get_resource_type($ref));
+
+		sleep(1);
+
+		unlink($path);
+		echo "\n<br />\n<br />\n<br />";
+
+		sleep(2);
+
+		debug(fwrite($ref, 'B'));
+		debug(fgets($ref));
+		debug(is_resource($ref));
+		debug(get_resource_type($ref));
+
+		fclose($ref);
+
+	} else {
+
+		unlink($path);
+
+	}
+
+
+} else {
+
 				$lock = new lock('example');
 				$lock->time_out_set(strtotime('+2 seconds'));
 
@@ -46,6 +80,8 @@
 
 
 				}
+
+}
 
 			}
 

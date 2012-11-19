@@ -83,7 +83,7 @@
 
 				if ($this->lock_file) {
 
-					$data = $this->lock_data;
+					$data = $this->lock_data['data'];
 
 				} else if (is_file($this->lock_path)) {
 
@@ -110,9 +110,9 @@
 				}
 
 				if (is_array($field)) {
-					$this->lock_data = array_merge($this->lock_data, $field);
+					$this->lock_data['data'] = array_merge($this->lock_data['data'], $field);
 				} else {
-					$this->lock_data[$field] = $value;
+					$this->lock_data['data'][$field] = $value;
 				}
 
 				$this->_data_save();
@@ -120,9 +120,12 @@
 			}
 
 			private function _data_save() {
+
 				rewind($this->lock_file);
 				ftruncate($this->lock_file, 0);
+
 				fwrite($this->lock_file, json_encode($this->lock_data));
+
 			}
 
 		//--------------------------------------------------
@@ -157,23 +160,28 @@ debug(ftell($this->lock_file));
 				//--------------------------------------------------
 				// Lock file
 
-					$this->lock_file = fopen($this->lock_path, 'x+b'); // Returns false if file already exists
+					$fp = fopen($this->lock_path, 'x+b'); // Returns false if file already exists
 
-					if (!$this->lock_file) {
+					if ($fp && flock($fp, LOCK_EX)) {
+
+						$this->lock_data = array(
+								'expires' => $this->time_out,
+								'data' => array(),
+							);
+
+						fwrite($fp, json_encode($this->lock_data));
+						flock($fp, LOCK_UN);
+						fclose($fp);
+
+					} else {
+
 						if (file_exists($this->lock_path)) {
 							return false; // Race condition, where the other thread got the lock first
 						}
+
 						exit_with_error('Cannot create lock file', $this->lock_path);
+
 					}
-
-				//--------------------------------------------------
-				// Record lock data
-
-					$this->lock_data = array(
-							'expires' => $this->time_out,
-						);
-
-					$this->_data_save();
 
 				//--------------------------------------------------
 				// Success
@@ -184,7 +192,6 @@ debug(ftell($this->lock_file));
 
 			public function close() {
 
-				fclose($this->lock_file);
 				unlink($this->lock_path);
 
 				$this->lock_file = NULL;
