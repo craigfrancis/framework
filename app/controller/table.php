@@ -33,7 +33,7 @@
 				$table_row = new table_row($table);
 
 				$table_row = new table_row($table);
-				$table_row->cell_add('John Smith');
+				$table_row->cell_add('Chlöe Smith');
 				$table_row->cell_add('2012-04-04');
 				$table_row->cell_add('Lorem ipsum dolor sit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.');
 
@@ -44,8 +44,12 @@
 			//--------------------------------------------------
 			// Download
 
-				// $table->csv_download('File.csv', 'attachment');
-				// exit();
+				if (request('download') == 'true') {
+					$table->csv_download('File.csv');
+					exit();
+				}
+
+				$this->set('download_url', url(array('download' => 'true')));
 
 			//--------------------------------------------------
 			// Variables

@@ -723,7 +723,7 @@
 
 						$text = $this->_html_to_text($heading_info['html']);
 
-						$length = strlen($text);
+						$length = mb_strlen($text);
 						if (!isset($col_widths[$col_id]) || $col_widths[$col_id] < $length) {
 							$col_widths[$col_id] = $length;
 						}
@@ -751,7 +751,7 @@
 						}
 
 						foreach ($text as $line) {
-							$length = strlen($line);
+							$length = mb_strlen($line);
 							if (!isset($col_widths[$col_id]) || $col_widths[$col_id] < $length) {
 								$col_widths[$col_id] = $length;
 							}
@@ -791,10 +791,10 @@
 
 					foreach ($heading_row as $col_id => $heading_info) {
 
-						$output .= ($col_id > 0 ? ' ' : '') . '| ' . str_pad($heading_info['text'], $col_widths[$col_id]);
+						$output .= ($col_id > 0 ? ' ' : '') . '| ' . mb_str_pad($heading_info['text'], $col_widths[$col_id]);
 
 						for ($k = 1; $k < $heading_info['colspan']; $k++) {
-							$output .= '   ' . str_pad('', $col_widths[$col_id + $k]);
+							$output .= '   ' . mb_str_pad('', $col_widths[$col_id + $k]);
 						}
 
 						$col_id += $heading_info['colspan'];
@@ -826,10 +826,10 @@
 
 							$text = (isset($cell_info['text'][$line]) ? $cell_info['text'][$line] : '');
 
-							$output .= ($col_id > 0 ? ' ' : '') . '| ' . str_pad($text, $col_widths[$col_id]);
+							$output .= ($col_id > 0 ? ' ' : '') . '| ' . mb_str_pad($text, $col_widths[$col_id]);
 
 							for ($k = 1; $k < $cell_info['colspan']; $k++) {
-								$output .= '   ' . str_pad('', $col_widths[$col_id + $k]);
+								$output .= '   ' . mb_str_pad('', $col_widths[$col_id + $k]);
 							}
 
 							$col_id += $cell_info['colspan'];
@@ -837,7 +837,7 @@
 						}
 
 						while ($col_id < $col_count) {
-							$output .= ($col_id > 0 ? ' ' : '') . '| ' . str_pad('', $col_widths[$col_id]);
+							$output .= ($col_id > 0 ? ' ' : '') . '| ' . mb_str_pad('', $col_widths[$col_id]);
 							$col_id++;
 						}
 
@@ -857,15 +857,6 @@
 		}
 
 		public function csv() {
-
- 			//--------------------------------------------------
-			// Convert character set
-
-				$charset_new = 'ISO-8859-1';
-
-				if ($charset_new != $this->charset_output) {
-					$this->charset_output = $charset_new;
-				}
 
 			//--------------------------------------------------
 			// Headings
@@ -979,16 +970,11 @@
 		public function csv_download($file_name, $mode = NULL) {
 
 			//--------------------------------------------------
-			// Get content (sets charset_output)
+			// Set output charset
 
-				$content = $this->csv();
+				$this->charset_output = 'ISO-8859-1';
 
-			//--------------------------------------------------
-			// Update output.charset
-
-				if ($this->charset_output !== NULL) {
-					config::set('output.charset', $this->charset_output);
-				}
+				config::set('output.charset', $this->charset_output);
 
 			//--------------------------------------------------
 			// Mime type
@@ -1008,7 +994,7 @@
 			//--------------------------------------------------
 			// Download
 
-				http_download_string($content, $mime, $file_name, $mode);
+				http_download_string($this->csv(), $mime, $file_name, $mode);
 
 		}
 

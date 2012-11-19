@@ -332,6 +332,13 @@
 		return (count(array_filter(array_keys($array), 'is_string')) > 0); // http://stackoverflow.com/questions/173400
 	}
 
+	if (!function_exists('mb_str_pad')) {
+		function mb_str_pad($input, $pad_length, $pad_string=' ', $pad_type = STR_PAD_RIGHT) { // from http://php.net/manual/en/function.str-pad.php
+			$diff = strlen($input) - mb_strlen($input);
+			return str_pad($input, $pad_length+$diff, $pad_string, $pad_type);
+		}
+	}
+
 //--------------------------------------------------
 // Check that an email address is valid
 
