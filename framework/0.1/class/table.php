@@ -31,38 +31,38 @@
 
 	class table_base extends check {
 
-		private $table_id;
-		private $headings;
-		private $heading_id;
-		private $footers;
-		private $footer_id;
-		private $rows;
+		protected $table_id;
+		protected $headings;
+		protected $heading_id;
+		protected $footers;
+		protected $footer_id;
+		protected $rows;
 
-		private $id_name;
-		private $class_name;
-		private $current_url;
-		private $no_records_html;
-		private $data_inherit_heading_class;
-		private $footer_inherit_heading_class;
-		private $charset_input;
-		private $charset_output;
+		protected $id_name;
+		protected $class_name;
+		protected $current_url;
+		protected $no_records_html;
+		protected $data_inherit_heading_class;
+		protected $footer_inherit_heading_class;
+		protected $charset_input;
+		protected $charset_output;
 
-		private $sort_enabled;
-		private $sort_name;
-		private $sort_request_field;
-		private $sort_request_order;
-		private $sort_preserved_key;
-		private $sort_preserved_field;
-		private $sort_preserved_order;
-		private $sort_default_field;
-		private $sort_default_order;
-		private $sort_fields;
-		private $sort_active_asc_prefix_html;
-		private $sort_active_asc_suffix_html;
-		private $sort_active_desc_prefix_html;
-		private $sort_active_desc_suffix_html;
-		private $sort_inactive_prefix_html;
-		private $sort_inactive_suffix_html;
+		protected $sort_enabled;
+		protected $sort_name;
+		protected $sort_request_field;
+		protected $sort_request_order;
+		protected $sort_preserved_key;
+		protected $sort_preserved_field;
+		protected $sort_preserved_order;
+		protected $sort_default_field;
+		protected $sort_default_order;
+		protected $sort_fields;
+		protected $sort_active_asc_prefix_html;
+		protected $sort_active_asc_suffix_html;
+		protected $sort_active_desc_prefix_html;
+		protected $sort_active_desc_suffix_html;
+		protected $sort_inactive_prefix_html;
+		protected $sort_inactive_suffix_html;
 
 		public function __construct() {
 
@@ -979,6 +979,11 @@
 		public function csv_download($file_name, $mode = NULL) {
 
 			//--------------------------------------------------
+			// Get content (sets charset_output)
+
+				$content = $this->csv();
+
+			//--------------------------------------------------
 			// Update output.charset
 
 				if ($this->charset_output !== NULL) {
@@ -1003,7 +1008,7 @@
 			//--------------------------------------------------
 			// Download
 
-				http_download_string($this->csv(), $mime, $file_name, $mode);
+				http_download_string($content, $mime, $file_name, $mode);
 
 		}
 
