@@ -1,6 +1,6 @@
 <?php
 
-	class resources extends check {
+	class resources_base extends check {
 
 		private $head_html = '';
 		private $js_files = array();

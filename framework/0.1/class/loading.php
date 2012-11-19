@@ -32,12 +32,13 @@
 
 ***************************************************/
 
-	class loading {
+	class loading_base extends check {
 
 		//--------------------------------------------------
 		// Variables
 
 			private $time_out;
+			private $refresh_frequency;
 			private $refresh_url;
 			private $template_path;
 
