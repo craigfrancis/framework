@@ -1007,10 +1007,11 @@
 		}
 
 		function _html_to_csv($html) {
+			$text = html_decode(strip_tags($html));
 			if ($this->charset_output !== NULL && $this->charset_output != $this->charset_input) {
-				$html = iconv($this->charset_input, $this->charset_output . '//TRANSLIT', $html);
+				$text = iconv($this->charset_input, $this->charset_output . '//TRANSLIT', $text);
 			}
-			return csv(html_decode(strip_tags($html)));
+			return csv($text);
 		}
 
 	}
