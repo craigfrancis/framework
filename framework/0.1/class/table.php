@@ -863,8 +863,8 @@
 
 				$charset_new = 'ISO-8859-1';
 
-				if ($charset_new != $this->charset_input) {
-					$this->charset_input = $charset_new;
+				if ($charset_new != $this->charset_output) {
+					$this->charset_output = $charset_new;
 				}
 
 			//--------------------------------------------------
