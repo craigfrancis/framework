@@ -39,17 +39,16 @@
 
 					}
 
-					$this->set('lock_data', $lock->data_get());
-
 					$lock->close();
 
 				} else {
 
 					$this->set('lock_open', false);
-					$this->set('lock_name', $lock->data_get('name'));
-					$this->set('lock_data', $lock->data_get());
 
 				}
+
+				$this->set('lock_name', $lock->data_get('name'));
+				$this->set('lock_data', $lock->data_get());
 
 			}
 
