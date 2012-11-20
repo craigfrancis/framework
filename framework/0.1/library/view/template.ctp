@@ -97,21 +97,21 @@
 
 	<div id="page_wrapper">
 
-		<div id="page_title">
+		<header id="page_title">
 			<h1><?= html($this->title_get()) ?></h1>
-		</div>
+		</header>
 
 		<div id="page_container">
 
-			<div id="page_navigation">
+			<nav id="page_navigation">
 
 				<h2>Site Navigation</h2>
 
 				<?= $nav->html(); ?>
 
-			</div>
+			</nav>
 
-			<div id="page_content">
+			<div id="page_content" role="main">
 
 
 
@@ -141,14 +141,14 @@
 
 		</div>
 
-		<div id="page_footer">
+		<footer id="page_footer">
 			<h2>Footer</h2>
 			<ul>
 
 				<li class="copyright">© <?= html(config::get('output.site_name', 'Company Name')) ?> <?= html(date('Y')) ?></li>
 
 			</ul>
-		</div>
+		</footer>
 
 	</div>
 
