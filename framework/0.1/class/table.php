@@ -139,6 +139,10 @@
 			$this->class_name = $class_name;
 		}
 
+		public function charset_output_set($charset) {
+			$this->charset_output = $charset;
+		}
+
 		public function sort_name_set($name = NULL) {
 
 			$this->sort_enabled = true;
@@ -972,9 +976,9 @@
 			//--------------------------------------------------
 			// Set output charset
 
-				$this->charset_output = 'ISO-8859-1';
-
-				config::set('output.charset', $this->charset_output);
+				if ($this->charset_output !== NULL) {
+					config::set('output.charset', $this->charset_output);
+				}
 
 			//--------------------------------------------------
 			// Mime type

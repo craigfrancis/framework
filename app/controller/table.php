@@ -45,6 +45,7 @@
 			// Download
 
 				if (request('download') == 'true') {
+					$table->charset_output_set('ISO-8859-1');
 					$table->csv_download('File.csv');
 					exit();
 				}
