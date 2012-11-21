@@ -431,7 +431,7 @@
 
 				if (config::get('debug.level') > 0) {
 
-					debug_require_db_table('gateway_log', '
+					debug_require_db_table(DB_PREFIX . 'gateway_log', '
 							CREATE TABLE [TABLE] (
 								id int(11) NOT NULL auto_increment,
 								gateway tinytext NOT NULL,
@@ -446,7 +446,7 @@
 								KEY request_date (request_date)
 							);');
 
-					debug_require_db_table('gateway_pass', '
+					debug_require_db_table(DB_PREFIX . 'gateway_pass', '
 							CREATE TABLE [TABLE] (
 								client varchar(30) NOT NULL,
 								pass varchar(32) NOT NULL,

@@ -596,7 +596,7 @@
 
 							if (config::get('debug.level') > 0) {
 
-								debug_require_db_table('report_csp', '
+								debug_require_db_table(DB_PREFIX . 'report_csp', '
 										CREATE TABLE [TABLE] (
 											blocked_uri varchar(100) NOT NULL,
 											violated_directive varchar(100) NOT NULL,

@@ -12,11 +12,11 @@
 
 				// public function __construct() {
 				//
-				// 	$this->_setup();
-				//
 				// 	$this->db_table_main = DB_PREFIX . 'user';
 				// 	$this->db_table_session = DB_PREFIX . 'user_session';
 				// 	$this->db_table_reset = DB_PREFIX . 'user_new_password';
+				//
+				// 	$this->_setup();
 				//
 				// 	$this->session->length_set(60*30);
 				// 	$this->session->history_length_set(60*60*24*30);
@@ -101,9 +101,39 @@
 				//--------------------------------------------------
 				// Tables
 
-					$this->db_table_main = DB_PREFIX . 'user';
-					$this->db_table_session = DB_PREFIX . 'user_session';
-					$this->db_table_reset = DB_PREFIX . 'user_new_password';
+					if ($this->db_table_main    === NULL) $this->db_table_main = DB_PREFIX . 'user';
+					if ($this->db_table_session === NULL) $this->db_table_session = DB_PREFIX . 'user_session';
+					if ($this->db_table_reset   === NULL) $this->db_table_reset = DB_PREFIX . 'user_new_password';
+
+					if (config::get('debug.level') > 0) {
+
+						debug_require_db_table($this->db_table_main, '
+								CREATE TABLE [TABLE] (
+									id int(11) NOT NULL AUTO_INCREMENT,
+									email varchar(100) NOT NULL,
+									pass tinytext NOT NULL,
+									created datetime NOT NULL,
+									edited datetime NOT NULL,
+									deleted datetime NOT NULL,
+									PRIMARY KEY (id),
+									UNIQUE KEY email (email)
+								);');
+
+						debug_require_db_table($this->db_table_session, '
+								CREATE TABLE [TABLE] (
+									id int(11) NOT NULL AUTO_INCREMENT,
+									pass tinytext NOT NULL,
+									user_id int(11) NOT NULL,
+									ip tinytext NOT NULL,
+									browser tinytext NOT NULL,
+									created datetime NOT NULL,
+									last_used datetime NOT NULL,
+									deleted datetime NOT NULL,
+									PRIMARY KEY (id),
+									KEY user_id (user_id)
+								);');
+
+					}
 
 				//--------------------------------------------------
 				// Text
@@ -138,6 +168,18 @@
 							'register_duplicate_identification' => 'The email address supplied is already in use.',
 							'register_invalid_password_repeat' => 'Your passwords do not match.'
 						);
+
+					if ($this->identification_type == 'username') {
+						$this->text['identification_label'] = 'Username';
+						$this->text['identification_min_len'] = 'Your username is required.';
+						$this->text['identification_max_len'] = 'Your username cannot be longer than XXX characters.';
+						$this->text['identification_new_label'] = 'Username';
+						$this->text['identification_new_min_len'] = 'Your username is required.';
+						$this->text['identification_new_max_len'] = 'Your username cannot be longer than XXX characters.';
+						$this->text['new_pass_invalid_identification'] = 'Your username has not been recognised';
+						$this->text['save_details_invalid_new_identification'] = 'The username supplied is already in use';
+						$this->text['register_duplicate_identification'] = 'The username supplied is already in use';
+					}
 
 			}
 
@@ -183,22 +225,6 @@
 
 			public function text_get($id) {
 				return $this->text[$id];
-			}
-
-			public function identification_as_username() {
-
-				$this->identification_type = 'username';
-
-				$this->text['identification_label'] = 'Username';
-				$this->text['identification_min_len'] = 'Your username is required.';
-				$this->text['identification_max_len'] = 'Your username cannot be longer than XXX characters.';
-				$this->text['identification_new_label'] = 'Username';
-				$this->text['identification_new_min_len'] = 'Your username is required.';
-				$this->text['identification_new_max_len'] = 'Your username cannot be longer than XXX characters.';
-				$this->text['new_pass_invalid_identification'] = 'Your username has not been recognised';
-				$this->text['save_details_invalid_new_identification'] = 'The username supplied is already in use';
-				$this->text['register_duplicate_identification'] = 'The username supplied is already in use';
-
 			}
 
 			public function identification_type_get() {
@@ -464,6 +490,23 @@
 		// and they can set the new password later
 
 			public function password_reset_url($request_url = NULL) {
+
+				//--------------------------------------------------
+				// Check table exists
+
+					if (config::get('debug.level') > 0) {
+
+						debug_require_db_table($this->db_table_reset, '
+								CREATE TABLE [TABLE] (
+									id int(11) NOT NULL AUTO_INCREMENT,
+									user_id int(11) NOT NULL,
+									pass tinytext NOT NULL,
+									created datetime NOT NULL,
+									used datetime NOT NULL,
+									PRIMARY KEY (id)
+								);');
+
+					}
 
 				//--------------------------------------------------
 				// Form reference + values
@@ -822,49 +865,6 @@
 						}
 
 				}
-
-	}
-
-//--------------------------------------------------
-// Tables exist
-
-	if (config::get('debug.level') > 0) {
-
-		debug_require_db_table('user', '
-				CREATE TABLE [TABLE] (
-					id int(11) NOT NULL AUTO_INCREMENT,
-					email varchar(100) NOT NULL,
-					pass tinytext NOT NULL,
-					created datetime NOT NULL,
-					edited datetime NOT NULL,
-					deleted datetime NOT NULL,
-					PRIMARY KEY (id),
-					UNIQUE KEY email (email)
-				);');
-
-		debug_require_db_table('user_session', '
-				CREATE TABLE [TABLE] (
-					id int(11) NOT NULL AUTO_INCREMENT,
-					pass tinytext NOT NULL,
-					user_id int(11) NOT NULL,
-					ip tinytext NOT NULL,
-					browser tinytext NOT NULL,
-					created datetime NOT NULL,
-					last_used datetime NOT NULL,
-					deleted datetime NOT NULL,
-					PRIMARY KEY (id),
-					KEY user_id (user_id)
-				);');
-
-		debug_require_db_table('user_new_password', '
-				CREATE TABLE [TABLE] (
-					id int(11) NOT NULL AUTO_INCREMENT,
-					user_id int(11) NOT NULL,
-					pass tinytext NOT NULL,
-					created datetime NOT NULL,
-					used datetime NOT NULL,
-					PRIMARY KEY (id)
-				);');
 
 	}
 

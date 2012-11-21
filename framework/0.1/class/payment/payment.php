@@ -78,7 +78,7 @@ debug($this->config);
 
 	if (config::get('debug.level') > 0) {
 
-// 		debug_require_db_table('user', '
+// 		debug_require_db_table(DB_PREFIX . 'order_payment', '
 // 				CREATE TABLE [TABLE] (
 // 					id int(11) NOT NULL AUTO_INCREMENT,
 // 					email varchar(100) NOT NULL,

@@ -555,7 +555,7 @@
 
 	if (config::get('debug.level') > 0) {
 
-		debug_require_db_table('nearest_search_cache', '
+		debug_require_db_table(DB_PREFIX . 'nearest_search_cache', '
 				CREATE TABLE [TABLE] (
 					search varchar(200) NOT NULL,
 					country varchar(10) NOT NULL,
@@ -567,7 +567,7 @@
 					PRIMARY KEY (search,country)
 				);');
 
-		debug_require_db_table('nearest_outcode', '
+		debug_require_db_table(DB_PREFIX . 'nearest_outcode', '
 				CREATE TABLE [TABLE] (
 					outcode varchar(5) NOT NULL default \'\',
 					x int(11) NOT NULL default \'0\',

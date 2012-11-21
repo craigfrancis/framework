@@ -463,11 +463,11 @@
 
 				$db = new db();
 
-				$db->query('SHOW TABLES LIKE "' . $db->escape(DB_PREFIX . $table) . '"', false); // No debug
+				$db->query('SHOW TABLES LIKE "' . $db->escape($table) . '"', false); // No debug
 				if ($db->num_rows() == 0) {
 					http_response_code(500);
 					mime_set('text/html');
-					exit('Missing table <strong>' . html(DB_PREFIX . $table) . '</strong>:<br /><br />' . nl2br(html(trim(str_replace('[TABLE]', DB_PREFIX . $table, $sql)))));
+					exit('Missing table <strong>' . html($table) . '</strong>:<br /><br />' . nl2br(html(trim(str_replace('[TABLE]', $table, $sql)))));
 				}
 
 			}
@@ -790,7 +790,7 @@
 
 			if (config::get('db.host') !== NULL) {
 
-				debug_require_db_table('report', '
+				debug_require_db_table(DB_PREFIX . 'report', '
 						CREATE TABLE [TABLE] (
 							id int(11) NOT NULL auto_increment,
 							type tinytext NOT NULL,

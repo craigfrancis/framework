@@ -576,7 +576,7 @@
 
 	if (config::get('debug.level') > 0) {
 
-		debug_require_db_table('maintenance', '
+		debug_require_db_table(DB_PREFIX . 'maintenance', '
 				CREATE TABLE [TABLE] (
 					id int(11) NOT NULL AUTO_INCREMENT,
 					run_start datetime NOT NULL,
@@ -585,7 +585,7 @@
 					UNIQUE KEY run_end (run_end)
 				);');
 
-		debug_require_db_table('maintenance_job', '
+		debug_require_db_table(DB_PREFIX . 'maintenance_job', '
 				CREATE TABLE [TABLE] (
 					id int(11) NOT NULL AUTO_INCREMENT,
 					job varchar(20) NOT NULL,
