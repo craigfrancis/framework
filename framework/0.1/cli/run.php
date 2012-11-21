@@ -98,7 +98,37 @@
 	function install_run() {
 
 		//--------------------------------------------------
-		// Setup folders
+		// Base folders
+
+			$base_folders = array(
+					'/app/controller/',
+					'/app/gateway/',
+					'/app/job/',
+					'/app/library/',
+					'/app/library/class/',
+					'/app/library/controller/',
+					'/app/public/',
+					'/app/setup/',
+					'/app/template/',
+					'/app/view/',
+					'/backup/',
+					'/files/',
+					'/framework/',
+					'/httpd/',
+					'/logs/',
+					'/private/',
+					'/resources/',
+				);
+
+			foreach ($base_folders as $base_folder) {
+				$path = ROOT . $base_folder;
+				if (!is_dir($path)) {
+					mkdir($path, 0755, true); // Writable for user only
+				}
+			}
+
+		//--------------------------------------------------
+		// File folders
 
 			$setup_folder = APP_ROOT . '/setup';
 
@@ -122,7 +152,7 @@
 					foreach ($folder_children as $path) {
 						$path = $folder_path . $path;
 						if (!is_dir($path)) {
-							mkdir($path, 0777, true);
+							mkdir($path, 0777, true); // Writable by webserver and user
 						}
 					}
 
@@ -155,15 +185,14 @@
 			chmod($temp_folder, 0777);
 
 		//--------------------------------------------------
-		// Database structure
+		// Check database structure
 
 			// TODO
 
 		//--------------------------------------------------
 		// Run install script
 
-			$install_path = 'setup/install.php';
-			$install_root = APP_ROOT . '/' . $install_path;
+			$install_root = APP_ROOT . '/setup/install.php';
 
 			if (is_file($install_root)) {
 				install_run_script($install_root);
@@ -172,79 +201,81 @@
 	}
 
 //--------------------------------------------------
-// Setup
+// Dump functions
 
-	function setup_run() {
+	//--------------------------------------------------
+	// Directories
 
-		//--------------------------------------------------
-		// Create setup folder
+		function dump_dir() {
 
-			$setup_folder = APP_ROOT . '/setup';
-			if (!is_dir($setup_folder)) {
-				mkdir($setup_folder);
-			}
+			//--------------------------------------------------
+			// File folders
 
-		//--------------------------------------------------
-		// Folder structures
+				$folders = array(
+					'files' => FILE_ROOT,
+					'private' => PRIVATE_ROOT,
+				);
 
-			$folders = array(
-				'files' => FILE_ROOT,
-				'private' => PRIVATE_ROOT,
-			);
+				foreach ($folders as $folder_name => $folder_path) {
 
-			foreach ($folders as $folder_name => $folder_path) {
+					if (substr($folder_path, -1) != '/') {
+						$folder_path .= '/';
+					}
+					$folder_path_length = strlen($folder_path);
 
-				if (substr($folder_path, -1) != '/') {
-					$folder_path .= '/';
-				}
-				$folder_path_length = strlen($folder_path);
+					$folder_listing = shell_exec('find ' . escapeshellarg($folder_path) . ' -type d -mindepth 1 ! -path "*/.*" 2>&1');
+					$folder_children = array();
 
-				$folder_listing = shell_exec('find ' . escapeshellarg($folder_path) . ' -type d -mindepth 1 ! -path "*/.*" 2>&1');
-				$folder_children = array();
-
-				foreach (explode("\n", $folder_listing) as $path) {
-					if (substr($path, 0, $folder_path_length) == $folder_path) {
-						$path = substr($path, ($folder_path_length + 1));
-						if (substr($path, 0, 4) != 'tmp') { // Will be created anyway
-							$folder_children[] = $path;
+					foreach (explode("\n", $folder_listing) as $path) {
+						if (substr($path, 0, $folder_path_length) == $folder_path) {
+							$path = substr($path, ($folder_path_length + 1));
+							if (substr($path, 0, 4) != 'tmp') { // Will be created anyway
+								$folder_children[] = $path;
+							}
 						}
 					}
+
+					$setup_file = APP_ROOT . '/setup/dir.' . safe_file_name($folder_name) . '.txt';
+
+					file_put_contents($setup_file, implode("\n", $folder_children));
+
 				}
 
-				$setup_file = $setup_folder . '/dir.' . safe_file_name($folder_name) . '.txt';
+		}
 
-				file_put_contents($setup_file, implode("\n", $folder_children));
+	//--------------------------------------------------
+	// Database
 
-			}
+		function dump_db() {
 
-		//--------------------------------------------------
-		// Database structure
-
-			file_put_contents($setup_folder . '/database.txt', '');
+			file_put_contents(APP_ROOT . '/setup/database.txt', '');
 
 			// TODO
 			// see http://davidwalsh.name/backup-database-xml-php
 
-	}
+		}
 
 //--------------------------------------------------
 // Parse options
 
-	$parameters = array(
+	$main_parameters = array(
 			'h' => 'help',
 			'd::' => 'debug::', // Optional value
 			'c::' => 'config::', // Optional value
 			'g:' => 'gateway:', // Requires value
 			'm' => 'maintenance',
 			'i' => 'install',
-			's' => 'setup',
 			'p' => 'permissions',
 		);
 
+	$extra_parameters = array(
+			'dump::',
+		);
+
 	if (version_compare(PHP_VERSION, '5.3.0', '<')) {
-		$options = getopt(implode('', array_keys($parameters)));
+		$options = getopt(implode('', array_keys($main_parameters)));
 	} else {
-		$options = getopt(implode('', array_keys($parameters)), $parameters);
+		$options = getopt(implode('', array_keys($main_parameters)), array_merge($main_parameters, $extra_parameters));
 	}
 
 //--------------------------------------------------
@@ -320,10 +351,21 @@
 					install_run();
 					break;
 
-				case 's':
-				case 'setup':
+				case 'dump':
 
-					setup_run();
+					$setup_folder = APP_ROOT . '/setup';
+					if (!is_dir($setup_folder)) {
+						mkdir($setup_folder);
+					}
+					unset($setup_folder);
+
+					if (!$option_value || $option_value == 'dir') {
+						dump_dir();
+					}
+					if (!$option_value || $option_value == 'db') {
+						dump_db();
+					}
+
 					break;
 
 				case 'g':

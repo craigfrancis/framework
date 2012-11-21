@@ -17,8 +17,7 @@
  -i
  --install         Run install.
 
- -s
- --setup           Save the site structure to the /setup/ folder.
-
  -p
  --permissions     Correct file and folder permissions.
+
+ --dump[=name]     Save the dir/db structure to the setup folder.
