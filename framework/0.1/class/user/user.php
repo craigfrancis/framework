@@ -140,6 +140,7 @@
 				if ($this->form === NULL) {
 
 					$this->form = new user_form();
+					$this->form->form_button_set('Login');
 					$this->form->user_ref_set($this);
 					$this->form->db_set($this->db_get());
 					$this->form->db_save_disable();
