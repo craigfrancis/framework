@@ -120,11 +120,40 @@
 					'/resources/',
 				);
 
+			$created_folders = 0;
+
 			foreach ($base_folders as $base_folder) {
 				$path = ROOT . $base_folder;
 				if (!is_dir($path)) {
 					mkdir($path, 0755, true); // Writable for user only
+					$created_folders++;
 				}
+			}
+
+			if ($created_folders > 0) {
+
+				$skeleton_files = array(
+						'/app/public/.htaccess',
+						'/app/public/index.php',
+						'/app/setup/config.php',
+						'/app/setup/install.php',
+						'/app/setup/setup.php',
+						'/app/template/default.ctp',
+						'/app/view/home.ctp',
+						'/httpd/config.live',
+					);
+
+				foreach ($skeleton_files as $skeleton_file) {
+					$path = ROOT . $skeleton_file;
+					if (is_dir(dirname($path)) && !is_file($path)) {
+						copy(FRAMEWORK_ROOT . '/skeleton' . $skeleton_file, $path);
+					}
+				}
+
+				if (count(glob(ROOT . '/app/controller/*')) == 0) {
+					copy(FRAMEWORK_ROOT . '/skeleton/app/controller/home.php', ROOT. '/app/controller/home.php');
+				}
+
 			}
 
 		//--------------------------------------------------
