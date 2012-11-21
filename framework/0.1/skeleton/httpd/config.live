@@ -1,0 +1,46 @@
+
+	<virtualhost *:80>
+
+		ServerName www.domain.com
+		ServerAlias 111.111.111.111
+
+		RedirectMatch (.*) https://www.domain.com
+
+	</virtualhost>
+
+	<virtualhost 111.111.111.111:443>
+
+		ServerName www.domain.com
+		DocumentRoot /www/live/company.project/app/public/
+
+		CustomLog /www/live/company.project/logs/access_log combined
+		ErrorLog /www/live/company.project/logs/error_log
+
+		Alias "/a/files" "/www/live/company.project/files/"
+		Alias "/phpMyAdmin" "/www/admin/phpMyAdmin/"
+
+		SSLEngine on
+		SSLCertificateFile /etc/apache2/ssl/www.domain.com.crt
+		SSLCertificateKeyFile /etc/apache2/ssl/www.domain.com.key
+
+	</VirtualHost>
+
+	<Directory "/www/live/company.project/">
+
+		AllowOverride None
+
+		RewriteEngine On
+		RewriteCond %{REQUEST_FILENAME} !^/a/files/
+		RewriteCond %{REQUEST_FILENAME} !-d
+		RewriteCond %{REQUEST_FILENAME} !-f
+		RewriteRule ^(.*)$ /www/live/company.project/app/public/index.php [L]
+
+		ExpiresActive On
+		ExpiresByType image/gif "access plus 2 months"
+		ExpiresByType image/jpg "access plus 2 months"
+		ExpiresByType image/png "access plus 2 months"
+		ExpiresByType image/x-icon "access plus 2 months"
+		ExpiresByType text/css "access plus 2 months"
+		ExpiresByType application/x-javascript "access plus 2 months"
+
+	</Directory>
