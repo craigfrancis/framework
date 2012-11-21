@@ -517,7 +517,7 @@
 
 					$called_from = debug_backtrace();
 
-					if (substr($called_from[1]['file'], -23) == '/system/04.database.php') {
+					if (substr($called_from[1]['file'], -23) == '/includes/04.database.php') {
 						$called_from = $called_from[2];
 					} else {
 						$called_from = $called_from[1];

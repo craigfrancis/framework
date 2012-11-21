@@ -49,12 +49,12 @@
 //--------------------------------------------------
 // Includes
 
-	require_once(FRAMEWORK_ROOT . '/system/01.function.php');
-	require_once(FRAMEWORK_ROOT . '/system/02.config.php');
-	require_once(FRAMEWORK_ROOT . '/system/03.autoload.php');
-	require_once(FRAMEWORK_ROOT . '/system/04.database.php');
-	require_once(FRAMEWORK_ROOT . '/system/05.debug.php');
-	require_once(FRAMEWORK_ROOT . '/system/06.objects.php');
+	require_once(FRAMEWORK_ROOT . '/includes/01.function.php');
+	require_once(FRAMEWORK_ROOT . '/includes/02.config.php');
+	require_once(FRAMEWORK_ROOT . '/includes/03.autoload.php');
+	require_once(FRAMEWORK_ROOT . '/includes/04.database.php');
+	require_once(FRAMEWORK_ROOT . '/includes/05.debug.php');
+	require_once(FRAMEWORK_ROOT . '/includes/06.objects.php');
 
 //--------------------------------------------------
 // Initialisation done
@@ -79,7 +79,7 @@
 		//--------------------------------------------------
 		// Routes
 
-			require_once(FRAMEWORK_ROOT . '/system/07.routes.php');
+			require_once(FRAMEWORK_ROOT . '/includes/07.routes.php');
 
 		//--------------------------------------------------
 		// Page setup
@@ -108,7 +108,7 @@
 					debug_progress('Before controller');
 				}
 
-				require_once(FRAMEWORK_ROOT . '/system/08.controller.php');
+				require_once(FRAMEWORK_ROOT . '/includes/08.controller.php');
 
 			//--------------------------------------------------
 			// View
