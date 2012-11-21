@@ -7,7 +7,6 @@
 
 		protected $user_obj;
 
-		protected $db_table_name;
 		protected $db_where_sql;
 		protected $db_table_fields;
 
@@ -25,8 +24,6 @@
 			//--------------------------------------------------
 			// Table
 
-				$this->db_table_name = DB_PREFIX . 'user';
-
 				$this->db_where_sql = 'true';
 
 				$this->db_table_fields = array(
@@ -36,20 +33,8 @@
 
 		}
 
-		public function db_table_set($table_name) { // Provide override
-			$this->db_table_name = $table_name;
-		}
-
 		public function db_table_field_set($field, $name) { // Provide override
 			$this->db_table_fields[$field] = $name;
-		}
-
-		public function db_table_get_sql() {
-
-			$db = $this->user_obj->db_get();
-
-			return $db->escape_field($this->db_table_name);
-
 		}
 
 		public function db_where_get_sql($user_id) {
@@ -75,7 +60,7 @@
 
 			$db = $this->user_obj->db_get();
 
-			$db->select($this->db_table_get_sql(), $fields, $this->db_where_get_sql($user_id), 1);
+			$db->select($this->user_obj->db_table_main, $fields, $this->db_where_get_sql($user_id), 1);
 
 			if ($row = $db->fetch_row()) {
 				return $row;
@@ -95,7 +80,7 @@
 
 			$values['edited'] = date('Y-m-d H:i:s');
 
-			$db->update($this->db_table_get_sql(), $values, $this->db_where_get_sql($user_id));
+			$db->update($this->user_obj->db_table_main, $values, $this->db_where_get_sql($user_id));
 
 		}
 

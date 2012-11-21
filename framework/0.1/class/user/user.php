@@ -14,6 +14,10 @@
 				//
 				// 	$this->_setup();
 				//
+				// 	$this->db_table_main = DB_PREFIX . 'user';
+				// 	$this->db_table_session = DB_PREFIX . 'user_session';
+				// 	$this->db_table_reset = DB_PREFIX . 'user_new_password';
+				//
 				// 	$this->session->length_set(60*30);
 				// 	$this->session->history_length_set(60*60*24*30);
 				// 	$this->session->allow_concurrent_set(false);
@@ -57,6 +61,10 @@
 
 			protected $db_link;
 
+			public $db_table_main = NULL;
+			public $db_table_session = NULL;
+			public $db_table_reset = NULL;
+
 		//--------------------------------------------------
 		// Setup
 
@@ -89,6 +97,13 @@
 					$this->session->length_set(60*30); // How long a session lasts... 0 for indefinite length
 					$this->session->history_length_set(60*60*24*30); // How long a session history lasts... 0 to delete once expired, -1 to keep data indefinitely
 					$this->session->allow_concurrent_set(false); // If the user can login more than once at a time
+
+				//--------------------------------------------------
+				// Tables
+
+					$this->db_table_main = DB_PREFIX . 'user';
+					$this->db_table_session = DB_PREFIX . 'user_session';
+					$this->db_table_reset = DB_PREFIX . 'user_new_password';
 
 				//--------------------------------------------------
 				// Text
@@ -144,7 +159,7 @@
 					$this->form->user_ref_set($this);
 					$this->form->db_set($this->db_get());
 					$this->form->db_save_disable();
-					$this->form->db_table_set_sql($this->details->db_table_get_sql());
+					$this->form->db_table_set_sql($this->db_table_main);
 
 					if ($this->user_id > 0) {
 						$this->form->db_where_set_sql($this->details->db_where_get_sql($this->user_id));

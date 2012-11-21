@@ -7,7 +7,6 @@
 
 		protected $user_obj;
 
-		protected $db_table_name;
 		protected $db_where_sql;
 
 		protected $length;
@@ -30,8 +29,6 @@
 			//--------------------------------------------------
 			// Table
 
-				$this->db_table_name = DB_PREFIX . 'user_session';
-
 				$this->db_where_sql = 'true';
 
 			//--------------------------------------------------
@@ -43,10 +40,6 @@
 				$this->lock_to_ip = false; // By default this is disabled (AOL users)
 				$this->session_id = 0;
 
-		}
-
-		public function db_table_set($table_name) { // Provide override
-			$this->db_table_name = $table_name;
 		}
 
 		public function length_set($length) {
@@ -76,7 +69,7 @@
 					if ($this->history_length == 0) {
 
 						$db->query('DELETE FROM
-										' . $db->escape_field($this->db_table_name) . '
+										' . $db->escape_field($this->user_obj->db_table_session) . '
 									WHERE
 										' . $this->db_where_sql . ' AND
 										user_id = "' . $db->escape($user_id) . '" AND
@@ -85,7 +78,7 @@
 					} else {
 
 						$db->query('UPDATE
-										' . $db->escape_field($this->db_table_name) . '
+										' . $db->escape_field($this->user_obj->db_table_session) . '
 									SET
 										deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 									WHERE
@@ -102,7 +95,7 @@
 				if ($this->history_length >= 0) {
 
 					$db->query('DELETE FROM
-									' . $db->escape_field($this->db_table_name) . '
+									' . $db->escape_field($this->user_obj->db_table_session) . '
 								WHERE
 									' . $this->db_where_sql . ' AND
 									user_id = user_id AND
@@ -112,7 +105,7 @@
 					if ($this->length > 0) {
 
 						$db->query('DELETE FROM
-										' . $db->escape_field($this->db_table_name) . '
+										' . $db->escape_field($this->user_obj->db_table_session) . '
 									WHERE
 										' . $this->db_where_sql . ' AND
 										user_id = user_id AND
@@ -131,7 +124,7 @@
 			//--------------------------------------------------
 			// Create a new session
 
-				$db->insert($this->db_table_name, array(
+				$db->insert($this->user_obj->db_table_session, array(
 						'id' => '',
 						'pass' => $session_pass, // Using CRYPT_BLOWFISH in password::hash(), makes page loading too slow!
 						'user_id' => $user_id,
@@ -229,7 +222,7 @@
 									pass,
 									ip
 								FROM
-									' . $db->escape_field($this->db_table_name) . '
+									' . $db->escape_field($this->user_obj->db_table_session) . '
 								WHERE
 									' . $where_sql);
 
@@ -243,7 +236,7 @@
 							// Update the session - keep active
 
 								$db->query('UPDATE
-												' . $db->escape_field($this->db_table_name) . '
+												' . $db->escape_field($this->user_obj->db_table_session) . '
 											SET
 												last_used = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 											WHERE
@@ -291,7 +284,7 @@
 					if ($this->history_length == 0) {
 
 						$db->query('DELETE FROM
-										' . $db->escape_field($this->db_table_name) . '
+										' . $db->escape_field($this->user_obj->db_table_session) . '
 									WHERE
 										' . $this->db_where_sql . ' AND
 										user_id = user_id AND
@@ -301,7 +294,7 @@
 					} else {
 
 						$db->query('UPDATE
-										' . $db->escape_field($this->db_table_name) . '
+										' . $db->escape_field($this->user_obj->db_table_session) . '
 									SET
 										deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 									WHERE

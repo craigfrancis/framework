@@ -7,9 +7,6 @@
 
 		protected $user_obj;
 
-		protected $db_table_name;
-		protected $db_table_reset_name;
-		protected $db_table_session_name;
 		protected $db_table_fields;
 		protected $db_where_sql;
 
@@ -27,10 +24,6 @@
 			//--------------------------------------------------
 			// Table
 
-				$this->db_table_name = DB_PREFIX . 'user';
-				$this->db_table_reset_name = DB_PREFIX . 'user_new_password';
-				$this->db_table_session_name = DB_PREFIX . 'user_session';
-
 				$this->db_where_sql = 'true';
 
 				$this->db_table_fields = array(
@@ -42,10 +35,6 @@
 						'deleted' => 'deleted'
 					);
 
-		}
-
-		public function db_table_set($table_name) { // Provide override
-			$this->db_table_name = $table_name;
 		}
 
 		public function db_table_field_set($field, $name) { // Provide override
@@ -66,7 +55,7 @@
 				$db->query('SELECT
 								' . $db->escape_field($this->db_table_fields['id']) . ' AS id
 							FROM
-								' . $db->escape_field($this->db_table_name) . '
+								' . $db->escape_field($this->user_obj->db_table_main) . '
 							WHERE
 								' . $this->db_where_sql . ' AND
 								' . $db->escape_field($this->db_table_fields['identification']) . ' = "' . $db->escape($identification) . '" AND
@@ -92,7 +81,7 @@
 				$db->query('SELECT
 								' . $db->escape_field($this->db_table_fields['identification']) . ' AS identification
 							FROM
-								' . $db->escape_field($this->db_table_name) . '
+								' . $db->escape_field($this->user_obj->db_table_main) . '
 							WHERE
 								' . $this->db_where_sql . ' AND
 								' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($user_id) . '" AND
@@ -116,7 +105,7 @@
 				$db = $this->user_obj->db_get();
 
 				$db->query('UPDATE
-								' . $db->escape_field($this->db_table_name) . '
+								' . $db->escape_field($this->user_obj->db_table_main) . '
 							SET
 								' . $db->escape_field($this->db_table_fields['edited']) . ' = "' . $db->escape(date('Y-m-d H:i:s')) . '",
 								' . $db->escape_field($this->db_table_fields['identification']) . ' = "' . $db->escape($new_identification) . '"
@@ -141,7 +130,7 @@
 					$db->query('SELECT
 									' . $db->escape_field($this->db_table_fields['edited']) . ' AS edited
 								FROM
-									' . $db->escape_field($this->db_table_name) . '
+									' . $db->escape_field($this->user_obj->db_table_main) . '
 								WHERE
 									' . $this->db_where_sql . ' AND
 									' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($user_id) . '" AND
@@ -179,7 +168,7 @@
 			// Update
 
 				$db->query('UPDATE
-								' . $db->escape_field($this->db_table_name) . '
+								' . $db->escape_field($this->user_obj->db_table_main) . '
 							SET
 								' . $db->escape_field($this->db_table_fields['edited']) . ' = "' . $db->escape(date('Y-m-d H:i:s')) . '",
 								' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($db_hash) . '"
@@ -208,7 +197,7 @@
 								id,
 								pass
 							FROM
-								' . $this->db_table_reset_name . '
+								' . $this->user_obj->db_table_reset . '
 							WHERE
 								user_id = "' . $db->escape($user_id) . '" AND
 								created > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-60 minutes'))) . '" AND
@@ -223,7 +212,7 @@
 
 					$request_pass = mt_rand(1000000, 9999999);
 
-					$db->insert($this->db_table_reset_name, array(
+					$db->insert($this->user_obj->db_table_reset, array(
 							'id' => '',
 							'user_id' => $user_id,
 							'pass' => $request_pass,
@@ -271,7 +260,7 @@
 				$db->query('SELECT
 								user_id
 							FROM
-								' . $this->db_table_reset_name . '
+								' . $this->user_obj->db_table_reset . '
 							WHERE
 								id = "' . $db->escape($request_id) . '" AND
 								user_id = user_id AND
@@ -299,7 +288,7 @@
 			$db = $this->user_obj->db_get();
 
 			$db->query('UPDATE
-							' . $this->db_table_reset_name . '
+							' . $this->user_obj->db_table_reset . '
 						SET
 							used = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 						WHERE
@@ -326,7 +315,7 @@
 								' . $db->escape_field($this->db_table_fields['id']) . ' AS id,
 								' . $db->escape_field($this->db_table_fields['password']) . ' AS password
 							FROM
-								' . $db->escape_field($this->db_table_name) . '
+								' . $db->escape_field($this->user_obj->db_table_main) . '
 							WHERE
 								' . $where_sql . ' AND
 								' . $this->db_where_sql . ' AND
@@ -349,7 +338,7 @@
 				$db->query('SELECT
 								created
 							FROM
-								' . $db->escape_field($this->db_table_session_name) . '
+								' . $db->escape_field($this->user_obj->db_table_session) . '
 							WHERE
 								(
 									user_id = "' . $db->escape($db_id) . '" OR
@@ -390,7 +379,7 @@
 								$new_hash = password::hash($password, $db_id);
 
 								$db->query('UPDATE
-												' . $db->escape_field($this->db_table_name) . '
+												' . $db->escape_field($this->user_obj->db_table_main) . '
 											SET
 												' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($new_hash) . '"
 											WHERE
@@ -424,7 +413,7 @@
 
 				if (!in_array($failure_ip, config::get('user.ip_whitelist', array()))) {
 
-					$db->insert($this->db_table_session_name, array(
+					$db->insert($this->user_obj->db_table_session, array(
 							'id' => '',
 							'pass' => '', // Will remain blank to record failure
 							'user_id' => $db_id,
@@ -451,7 +440,7 @@
 
 				$db = $this->user_obj->db_get();
 
-				$db->insert($this->db_table_name, array(
+				$db->insert($this->user_obj->db_table_main, array(
 						$this->db_table_fields['id'] => '',
 						$this->db_table_fields['identification'] => $identification,
 						$this->db_table_fields['created'] => date('Y-m-d H:i:s'),
