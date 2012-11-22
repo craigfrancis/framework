@@ -29,6 +29,7 @@
 		clear: both;
 	}
 
+	#debug_wrapper #debug_links span.debug_time,
 	#debug_wrapper #debug_links a.debug_link {
 		padding: 1px;
 		color: #DDD;

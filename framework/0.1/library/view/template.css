@@ -381,8 +381,7 @@
 		padding: 2em;
 	}
 
-	.basic_table td.view,
-	.basic_table td.delete {
+	.basic_table td.action {
 		text-align: center;
 		width: 4em;
 	}

@@ -391,16 +391,14 @@
 				//--------------------------------------------------
 				// Called from
 
-					$called_from = debug_backtrace();
-
-					if ($called_from[0]['file'] == __FILE__) {
-						$called_from_id = 1;
-					} else {
-						$called_from_id = 0;
+					foreach (debug_backtrace() as $called_from) {
+						if (isset($called_from['file']) && $called_from['file'] != __FILE__) {
+							break;
+						}
 					}
 
-					$call_from_file = $called_from[$called_from_id]['file'];
-					$call_from_line = $called_from[$called_from_id]['line'];
+					$call_from_file = $called_from['file'];
+					$call_from_line = $called_from['line'];
 
 					$system_call = prefix_match(FRAMEWORK_ROOT, $call_from_file);
 
@@ -515,12 +513,10 @@
 				//--------------------------------------------------
 				// Called from
 
-					$called_from = debug_backtrace();
-
-					if (substr($called_from[1]['file'], -23) == '/includes/04.database.php') {
-						$called_from = $called_from[2];
-					} else {
-						$called_from = $called_from[1];
+					foreach (debug_backtrace() as $called_from) {
+						if (isset($called_from['file']) && !prefix_match(FRAMEWORK_ROOT, $called_from['file'])) {
+							break;
+						}
 					}
 
 				//--------------------------------------------------
@@ -751,8 +747,15 @@
 
 					if (config::get('debug.mode') == 'js') {
 
+						config::array_push('debug.notes', array(
+								'type' => 'L',
+								'colour' => '#FFF',
+								'time' => NULL,
+								'html' => nl2br(html($time_text)),
+							));
+
 						$js_code  = "\n";
-						$js_code .= 'var debug_time = ' . json_encode($time_text) . ';' . "\n";
+						$js_code .= 'var debug_time = ' . json_encode(debug_time_format($time_total - $time_check)) . ';' . "\n";
 						$js_code .= 'var debug_notes = ' . json_encode(config::get('debug.notes')) . ';';
 						$js_code .= file_get_contents(FRAMEWORK_ROOT . '/library/view/debug.js');
 

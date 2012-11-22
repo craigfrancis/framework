@@ -28,7 +28,23 @@
 	//--------------------------------------------------
 	// Example setup - with sub navigation
 
+		$config = array(
+			'item_class' => 'xxx',
+			'link_class' => 'xxx',
+			'link_title' => 'xxx',
+			'selected' => true,
+			'nav' => $sub_nav,
+			'open' => true,    // Only used with the sub_nav
+		);
 
+		$sub_nav = new nav();
+		$sub_nav->link_add('/about/1/', 'Page 1');
+		$sub_nav->link_add('/about/2/', 'Page 2');
+		$sub_nav->link_add('/about/3/', 'Page 3');
+
+		$nav = new nav();
+		$nav->link_add('/', 'Home');
+		$nav->link_add('/about/', 'About', array('nav' => $sub_nav));
 
 ***************************************************/
 
@@ -116,7 +132,7 @@
 			}
 		}
 
-		private function _link_add($url, $name, $config, $child_nav = NULL, $child_open = NULL) {
+		public function link_add($url, $name, $config = NULL) {
 
 			//--------------------------------------------------
 			// Next!
@@ -148,8 +164,6 @@
 				$this->navigation[$this->current_group]['links'][$this->current_index]['url'] = $url;
 				$this->navigation[$this->current_group]['links'][$this->current_index]['name'] = $name;
 				$this->navigation[$this->current_group]['links'][$this->current_index]['config'] = $config;
-				$this->navigation[$this->current_group]['links'][$this->current_index]['child_nav'] = $child_nav;
-				$this->navigation[$this->current_group]['links'][$this->current_index]['child_open'] = $child_open;
 
 			//--------------------------------------------------
 			// See if we have a match
@@ -176,14 +190,6 @@
 
 				}
 
-		}
-
-		public function link_add($url, $name, $config = NULL) {
-			$this->_link_add($url, $name, $config);
-		}
-
-		public function sub_nav_add($url, $name, $child_nav, $config = NULL, $child_open = NULL) {
-			$this->_link_add($url, $name, $config, $child_nav, $child_open);
 		}
 
 		public function group_add($name = '', $config = NULL) {
@@ -217,20 +223,14 @@
 						foreach (array_keys($this->navigation[$group_id]['links']) as $link_id) {
 
 							//--------------------------------------------------
-							// Quick variables
-
-								$child_nav = $this->navigation[$group_id]['links'][$link_id]['child_nav'];
-								$child_open = $this->navigation[$group_id]['links'][$link_id]['child_open'];
-
-							//--------------------------------------------------
 							// Configuration
+
+								$link = $this->navigation[$group_id]['links'][$link_id];
 
 								$selected = ($link_id == $this->selected_id);
 
-							//--------------------------------------------------
-							// Create HTML
-
-								$child_html = '';
+								$child_nav = (isset($link['config']['nav']) ? $link['config']['nav'] : NULL);
+								$child_open = (isset($link['config']['open']) ? $link['config']['open'] : NULL);
 
 								if ($child_nav === NULL) {
 									$child_open = false;
@@ -239,6 +239,11 @@
 								if ($child_open === NULL) {
 									$child_open = (($this->expand_all_children) || ($selected == true && $this->automatically_expand_children));
 								}
+
+							//--------------------------------------------------
+							// Create HTML
+
+								$child_html = '';
 
 								if ($child_open) {
 

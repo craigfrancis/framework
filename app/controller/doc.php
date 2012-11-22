@@ -45,7 +45,7 @@
 					$security_string_nav->link_add('/doc/security/strings/path-manipulation/', 'Path manipulation');
 
 					$security_nav = new nav();
-					$security_nav->sub_nav_add('/doc/security/strings/', 'Strings', $security_string_nav);
+					$security_nav->link_add('/doc/security/strings/', 'Strings', array('nav' => $security_string_nav));
 					$security_nav->link_add('/doc/security/csrf/', 'Cross site request forgery');
 					$security_nav->link_add('/doc/security/framing/', 'Site framing'); // X-Frame-Options header
 					$security_nav->link_add('/doc/security/transport/', 'Strict transport security');
@@ -53,7 +53,7 @@
 					$security_nav->link_add('/doc/security/logins/', 'Login and passwords'); // Identification/verification, multiple sessions, failed logins, password hashing (slow), lost passwords
 					$security_nav->link_add('/doc/security/files/', 'File uploads'); // Uploading a php file to a public location, or images containing exploits.
 
-					$doc_nav->sub_nav_add('/doc/security/', 'Security', $security_nav);
+					$doc_nav->link_add('/doc/security/', 'Security', array('nav' => $security_nav));
 
 				//--------------------------------------------------
 				// Setup
@@ -74,7 +74,7 @@
 					$setup_nav->link_add('/doc/setup/sitemap/', 'Sitemap (xml)');
 					$setup_nav->link_add('/doc/setup/testing/', 'Testing');
 
-					$doc_nav->sub_nav_add('/doc/setup/', 'Setup', $setup_nav);
+					$doc_nav->link_add('/doc/setup/', 'Setup', array('nav' => $setup_nav));
 
 				//--------------------------------------------------
 				// Helpers
@@ -104,8 +104,8 @@
 
 					$form_nav = new nav();
 					$form_nav->link_add('/doc/helpers/form/', 'Introduction');
-					$form_nav->sub_nav_add('/doc/helpers/form/setup/', 'Setup', $form_setup_nav);
-					$form_nav->sub_nav_add('/doc/helpers/form/fields/', 'Fields', $form_fields_nav);
+					$form_nav->link_add('/doc/helpers/form/setup/', 'Setup', array('nav' => $form_setup_nav));
+					$form_nav->link_add('/doc/helpers/form/fields/', 'Fields', array('nav' => $form_fields_nav));
 
 					$helpers_nav = new nav();
 					$helpers_nav->link_add('/doc/helpers/config/', 'Config');
@@ -115,7 +115,7 @@
 					$helpers_nav->link_add('/doc/helpers/functions/', 'Functions');
 					$helpers_nav->link_add('/doc/helpers/database/', 'Database');
 					$helpers_nav->link_add('/doc/helpers/url/', 'URL');
-					$helpers_nav->sub_nav_add('/doc/helpers/form/', 'Form', $form_nav);
+					$helpers_nav->link_add('/doc/helpers/form/', 'Form', array('nav' => $form_nav));
 					$helpers_nav->link_add('/doc/helpers/email/', 'Email');
 					$helpers_nav->link_add('/doc/helpers/file/', 'File');
 					$helpers_nav->link_add('/doc/helpers/nav/', 'Navigation');
@@ -123,7 +123,7 @@
 					$helpers_nav->link_add('/doc/helpers/paginator/', 'Paginator');
 					$helpers_nav->link_add('/doc/helpers/user/', 'User');
 
-					$doc_nav->sub_nav_add('/doc/helpers/', 'Helpers', $helpers_nav);
+					$doc_nav->link_add('/doc/helpers/', 'Helpers', array('nav' => $helpers_nav));
 
 				//--------------------------------------------------
 				// Store

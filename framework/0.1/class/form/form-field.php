@@ -22,6 +22,7 @@
 			protected $label_wrapper_tag;
 			protected $input_first;
 			protected $input_class;
+			protected $input_data;
 			protected $input_wrapper_class;
 			protected $input_wrapper_tag;
 			protected $format_class;
@@ -105,6 +106,7 @@
 					$this->label_wrapper_tag = 'span';
 					$this->input_first = false;
 					$this->input_class = NULL;
+					$this->input_data = array();
 					$this->input_wrapper_class = 'input';
 					$this->input_wrapper_tag = 'span';
 					$this->format_class = 'format';
@@ -218,6 +220,10 @@
 
 			public function input_class_set($class) {
 				$this->input_class = $class;
+			}
+
+			public function input_data_set($field, $value) {
+				$this->input_data[$field] = $value;
 			}
 
 			public function input_wrapper_class_set($class) {
@@ -432,6 +438,10 @@
 						'name' => $this->name,
 						'id' => $this->id,
 					);
+
+				foreach ($this->input_data as $field => $value) {
+					$attributes['data-' . $field] = $value;
+				}
 
 				if ($this->input_class !== NULL) {
 					$attributes['class'] = $this->input_class;

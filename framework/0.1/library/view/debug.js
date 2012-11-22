@@ -49,16 +49,6 @@
 			}
 
 		//--------------------------------------------------
-		// Loading time
-
-			debug_types['L'].notes.push({
-					'type': 'L',
-					'color': '#F00',
-					'time': null,
-					'html': debug_htmlencode(debug_time)
-				});
-
-		//--------------------------------------------------
 		// Add to DOM
 
 			wrapper = document.createElement('div');
@@ -135,17 +125,16 @@
 				}
 			}
 
+			var time_text = document.createElement('span');
+			time_text.className = 'debug_time';
+			time_text.appendChild(document.createTextNode(' - ' + debug_time));
+			debug_links.appendChild(time_text);
+
 			wrapper.appendChild(debug_links);
 			wrapper.appendChild(output);
 
 			body.appendChild(wrapper);
 
-	}
-
-	function debug_htmlencode(text) {
-		var e = document.createElement('div');
-		e.innerText = text;
-		return e.innerHTML;
 	}
 
 	function debug_open_link() {
