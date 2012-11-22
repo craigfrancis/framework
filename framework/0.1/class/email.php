@@ -104,7 +104,7 @@
 					$this->boundaries = array();
 
 				//--------------------------------------------------
-				// Default headers for tracking
+				// Default headers for debug
 
 					$this->header_set('X-Request-IP', json_encode(config::get('request.ip')));
 					$this->header_set('X-Request-UA', json_encode(config::get('request.browser')));
