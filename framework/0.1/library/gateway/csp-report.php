@@ -59,7 +59,7 @@
 
 		call_user_func($handler, $report, $data_raw);
 
-	} else {
+	} else if (config::get('db.host') !== NULL) {
 
 		$db = $this->db_get();
 

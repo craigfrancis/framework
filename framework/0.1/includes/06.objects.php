@@ -152,7 +152,34 @@
 			private $view_processed = false;
 			private $message = NULL;
 			private $tracking_enabled = NULL;
+			private $browser_advanced = true;
 			private $js_enabled = true;
+
+			public function tracking_allowed_get() {
+
+				if ($this->tracking_enabled === NULL) {
+
+					$this->tracking_enabled = config::get('output.tracking', (SERVER == 'live'));
+
+					if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
+
+						$this->tracking_enabled = false;
+
+					} else if (function_exists('getallheaders')) {
+
+						foreach (getallheaders() as $name => $value) {
+							if (strtolower($name) == 'dnt' && $value == 1) {
+								$this->tracking_enabled = false;
+							}
+						}
+
+					}
+
+				}
+
+				return $this->tracking_enabled;
+
+			}
 
 			public function message_get() {
 
@@ -188,48 +215,6 @@
 							<p>' . html($message) . '</p>
 						</div>';
 				}
-
-			}
-
-			public function tracking_get_html() {
-
-				//--------------------------------------------------
-				// If allowed
-
-					if (!$this->tracking_allowed_get()) {
-						return '';
-					}
-
-				//--------------------------------------------------
-				// Return
-
-					return '';
-
-			}
-
-			public function tracking_allowed_get() {
-
-				if ($this->tracking_enabled === NULL) {
-
-					$this->tracking_enabled = config::get('output.tracking', (SERVER == 'live'));
-
-					if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
-
-						$this->tracking_enabled = false;
-
-					} else if (function_exists('getallheaders')) {
-
-						foreach (getallheaders() as $name => $value) {
-							if (strtolower($name) == 'dnt' && $value == 1) {
-								$this->tracking_enabled = false;
-							}
-						}
-
-					}
-
-				}
-
-				return $this->tracking_enabled;
 
 			}
 
@@ -355,26 +340,37 @@
 					}
 
 				//--------------------------------------------------
-				// Browser on black list (no css/js)
+				// CSS
 
-					$browser = config::get('request.browser');
-					if ($browser != '') {
-						foreach (config::get('output.block_browsers') as $browser_reg_exp) {
-							if (preg_match($browser_reg_exp, $browser)) {
-								return $html;
-							}
-						}
+					if ($this->browser_advanced) {
+						$html .= $this->css_get('html');
 					}
 
 				//--------------------------------------------------
-				// CSS
+				// Extra head HTML
 
-					$html .= $this->css_get('html');
+					if ($this->browser_advanced) {
+						$html .= resources::head_get_html() . "\n\n";
+					}
 
 				//--------------------------------------------------
-				// Javascript (after CSS)
+				// Return
 
-					if ($this->js_enabled) {
+					return trim($html) . "\n";
+
+			}
+
+			public function foot_get_html() {
+
+				//--------------------------------------------------
+				// Start
+
+					$html = '';
+
+				//--------------------------------------------------
+				// Javascript
+
+					if ($this->js_enabled && $this->browser_advanced) {
 
 						$js_prefix = config::get('output.js_path_prefix', '');
 						$js_files = array();
@@ -399,11 +395,6 @@
 					}
 
 				//--------------------------------------------------
-				// Extra head HTML
-
-					$html .= resources::head_get_html() . "\n\n";
-
-				//--------------------------------------------------
 				// Return
 
 					return trim($html) . "\n";
@@ -418,6 +409,22 @@
 					if (config::get('debug.level') >= 4) {
 						debug_progress('Before template');
 					}
+
+				//--------------------------------------------------
+				// Browser on black list (no css/js)
+
+					$this->browser_advanced = true;
+
+					$browser = config::get('request.browser');
+					if ($browser != '') {
+						foreach (config::get('output.block_browsers') as $browser_reg_exp) {
+							if (preg_match($browser_reg_exp, $browser)) {
+								$this->browser_advanced = false;
+							}
+						}
+					}
+
+					unset($browser, $browser_reg_exp);
 
 				//--------------------------------------------------
 				// Default title
@@ -456,7 +463,7 @@
 				// JavaScript
 
 					//--------------------------------------------------
-					// JS Files
+					// If enabled
 
 						$js_state = request('js', 'GET');
 
@@ -594,7 +601,7 @@
 
 							}
 
-							if (config::get('debug.level') > 0) {
+							if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
 
 								debug_require_db_table(DB_PREFIX . 'report_csp', '
 										CREATE TABLE [TABLE] (

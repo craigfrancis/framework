@@ -18,10 +18,10 @@
 		//--------------------------------------------------
 		// Database
 
-			$config['db.host'] = 'localhost';
-			$config['db.user'] = 'stage';
-			$config['db.pass'] = 'st8ge';
-			$config['db.name'] = 's-company-project';
+			// $config['db.host'] = 'localhost';
+			// $config['db.user'] = 'stage';
+			// $config['db.pass'] = 'st8ge';
+			// $config['db.name'] = 's-company-project';
 
 			$config['db.prefix'] = 'tpl_';
 

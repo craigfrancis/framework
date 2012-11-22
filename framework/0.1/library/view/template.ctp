@@ -152,7 +152,7 @@
 
 	</div>
 
-	<?= $this->tracking_get_html(); ?>
+	<?= $this->foot_get_html(); ?>
 
 </body>
 </html>

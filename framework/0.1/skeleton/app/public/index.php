@@ -7,7 +7,7 @@
 
 	$framework_paths = array(
 			ROOT . '/framework/0.1/bootstrap.php', // Local install
-			dirname(ROOT) . '/craig.framework/framework/0.1/bootstrap.php', // Development
+			'/path/to/bootstrap.php', // Development
 		);
 
 	foreach ($framework_paths as $framework_path) {

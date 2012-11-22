@@ -107,16 +107,24 @@
 
 					if (config::get('debug.level') > 0) {
 
+						if ($this->identification_type == 'username') {
+							$login_field_name = 'username';
+							$login_field_length = 30;
+						} else {
+							$login_field_name = 'email';
+							$login_field_length = 100;
+						}
+
 						debug_require_db_table($this->db_table_main, '
 								CREATE TABLE [TABLE] (
 									id int(11) NOT NULL AUTO_INCREMENT,
-									email varchar(100) NOT NULL,
+									' . $login_field_name . ' varchar(' . $login_field_length . ') NOT NULL,
 									pass tinytext NOT NULL,
 									created datetime NOT NULL,
 									edited datetime NOT NULL,
 									deleted datetime NOT NULL,
 									PRIMARY KEY (id),
-									UNIQUE KEY email (email)
+									UNIQUE KEY ' . $login_field_name . ' (' . $login_field_name . ')
 								);');
 
 						debug_require_db_table($this->db_table_session, '
