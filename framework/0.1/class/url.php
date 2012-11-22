@@ -28,7 +28,6 @@
 		// Setup
 
 			private $path_data = NULL;
-			private $path_extra = array();
 			private $path_cache = NULL;
 
 			private $parameters = array();
@@ -43,8 +42,6 @@
 						$this->param_set($arg);
 					} else if ($k == 0) {
 						$this->parse($arg); // First argument, if set and not an array of parameters.
-					} else {
-						$this->path_extra[] = $arg;
 					}
 				}
 
@@ -174,23 +171,12 @@
 						$query = array_merge($query, $parameters);
 					}
 
-					if (count($this->path_extra) > 0) {
-
-						if (substr($output, -1) != '/') {
-							$output .= '/';
+					foreach ($query as $name => $value) {
+						$pos = strpos($output, '/@' . $name . '/');
+						if ($pos !== false) {
+							$output = substr($output, 0, ($pos + 1)) . urlencode($value) . substr($output, $pos + strlen($name) + 2);
+							unset($query[$name]);
 						}
-
-						foreach ($this->path_extra as $value) {
-							if (isset($query[$value])) {
-								$output .= urlencode($query[$value]) . '/';
-								unset($query[$value]);
-							} else {
-								if (substr($value, -1) != '/') $value .= '/';
-								if (substr($value, 0, 1) == '/') $value = substr($value, 1);
-								$output .= $value;
-							}
-						}
-
 					}
 
 					if (count($query) > 0) {
