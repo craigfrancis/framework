@@ -98,6 +98,13 @@
 	function install_run() {
 
 		//--------------------------------------------------
+		// Check install location
+
+			if (prefix_match(FRAMEWORK_ROOT, ROOT)) {
+				exit('Cannot install within framework folder' . "\n");
+			}
+
+		//--------------------------------------------------
 		// Base folders
 
 			$base_folders = array(
@@ -147,6 +154,7 @@
 						'/app/setup/setup.php',
 						'/app/template/default.ctp',
 						'/app/view/home.ctp',
+						'/app/view/contact.ctp',
 						'/httpd/config.live',
 					);
 
@@ -166,7 +174,7 @@
 						} else if ($skeleton_file == '/app/public/index.php') {
 
 							$parent_dir = dirname(ROOT);
-							if (!prefix_match($parent_dir, FRAMEWORK_ROOT)) {
+							if (prefix_match($parent_dir, FRAMEWORK_ROOT)) {
 								$bootstrap_path = 'dirname(ROOT) . \'' . str_replace($parent_dir, '', FRAMEWORK_ROOT) . '/bootstrap.php\'';
 							} else {
 								$bootstrap_path = '\'' . FRAMEWORK_ROOT . '/bootstrap.php\'';
@@ -189,6 +197,8 @@
 				if (count(glob(ROOT . '/app/controller/*')) == 0) {
 					copy(FRAMEWORK_ROOT . '/skeleton/app/controller/home.php', ROOT. '/app/controller/home.php');
 				}
+
+				permission_reset(false);
 
 			}
 

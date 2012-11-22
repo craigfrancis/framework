@@ -10,6 +10,7 @@
 
 	$nav = new nav();
 	$nav->link_add('/', 'Home');
+	$nav->link_add('/contact/', 'Contact us');
 
 ?>
 <!DOCTYPE html>
