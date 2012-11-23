@@ -41,9 +41,6 @@
 	define('IMAGE_LOAD_ERR_SIZE', 2);
 	define('IMAGE_LOAD_ERR_READ', 3);
 
-	define('IMAGE_ADD_IMAGE_TILE_TOP_LEFT', 0);
-	define('IMAGE_ADD_IMAGE_TILE_CENTER', 1);
-
 	class image_base extends check {
 
 		//--------------------------------------------------
@@ -70,7 +67,20 @@
 		//--------------------------------------------------
 		// Create
 
-			public function create_image($width, $height, $bg_red = 0, $bg_green = 0, $bg_blue = 0) {
+			public function create_image($width, $height, $config = NULL) {
+
+				//--------------------------------------------------
+				// Config
+
+					$defaults = array(
+							'background' => NULL,
+						);
+
+					if (!is_array($config)) {
+						$config = array();
+					}
+
+					$config = array_merge($defaults, $config);
 
 				//--------------------------------------------------
 				// Kill old image
@@ -90,9 +100,8 @@
 				//--------------------------------------------------
 				// Background
 
-					if ($bg_red !== NULL && $bg_green !== NULL && $bg_blue !== NULL) {
-						$background = imagecolorallocate($this->image_ref, $bg_red, $bg_green, $bg_blue);
-						imagefill($this->image_ref, 0, 0, $background);
+					if ($config['background'] !== NULL) {
+						imagefill($this->image_ref, 0, 0, $this->_colour_allocate($this->image_ref, $config['background']));
 					}
 
 			}
@@ -217,6 +226,17 @@
 
 			}
 
+			private function _colour_allocate($image, $colour) {
+				if (is_array($colour)) {
+					if (isset($colour['red']) && isset($colour['green']) && isset($colour['blue'])) {
+						return imagecolorallocate($image, $colour['red'], $colour['green'], $colour['blue']);
+					}
+				} else if (strlen($colour) == 6) {
+					return imagecolorallocate($image, hexdec(substr($colour, 0, 2)), hexdec(substr($colour, 2, 2)), hexdec(substr($colour, 4, 2)));
+				}
+				exit_with_error('TODO: Different types of colour specifications (e.g. hex value)');
+			}
+
 		//--------------------------------------------------
 		// Create canvas (alpha blending support)
 
@@ -254,29 +274,11 @@
 		//--------------------------------------------------
 		// Adding an image
 
-			public function image_add($image, $left = 0, $top = 0, $width = NULL, $height = NULL) {
-				if ($this->image_ref) {
-
-					$return = $this->_load_image($image);
-					if (!is_array($return)) {
-						return $return;
-					}
-
-					if ($width === NULL) $width = $return['width'];
-					if ($height === NULL) $height = $return['height'];
-
-					imagecopyresampled($this->image_ref, $return['ref'], $left, $top, 0, 0, $width, $height, $return['width'], $return['height']);
-
-					return IMAGE_LOAD_SUCCESS;
-
-				}
-			}
-
-			public function image_add_size_and_cut_to_box($image, $box_left, $box_top, $box_width, $box_height, $bg_red = 0, $bg_green = 0, $bg_blue = 0, $config = NULL) {
+			public function image_add($image, $config = NULL) {
 				if ($this->image_ref) {
 
 					//--------------------------------------------------
-					// Image info
+					// Load image
 
 						$return = $this->_load_image($image);
 						if (!is_array($return)) {
@@ -284,200 +286,33 @@
 						}
 
 					//--------------------------------------------------
-					// Calculate how to crop or scale the image
+					// Config
 
-						$source_width = $return['width'];
-						$source_height = $return['height'];
+						$defaults = array(
+								'left' => 0,
+								'top' => 0,
+								'width' => $return['width'],
+								'height' => $return['height'],
+								'watermark' => false,
+							);
 
-						$source_left = 0;
-						$source_top = 0;
+						if (!is_array($config)) {
+							$config = array();
+						}
 
-						if ($return['width'] > $box_width && $return['height'] > $box_height) { // Can only crop when image is big enough
+						$config = array_merge($defaults, $config);
 
-							//--------------------------------------------------
-							// The new size
+					//--------------------------------------------------
+					// Add
 
-								if (($return['width'] / $box_width) > ($return['height'] / $box_height)) {
+						if ($config['watermark']) {
 
-									$new_height = $box_height; // Height is the best dimension for cropping to
-									$new_width = ceil($new_height * ($return['width'] / $return['height']));
-
-								} else {
-
-									$new_width = $box_width; // Width is the best dimension for cropping to
-									$new_height = ceil($new_width * ($return['height'] / $return['width']));
-
-								}
-
-							//--------------------------------------------------
-							// Return back to the source scale
-
-								if ($new_width > $box_width) {
-
-									$source_width = round(($box_width / $box_height) * $source_height);
-
-								} else {
-
-									$source_height = round(($box_height / $box_width) * $source_width);
-
-								}
-
-							//--------------------------------------------------
-							// Start point
-
-								$source_left = round(($return['width'] - $source_width) / 2);
-
-								if (isset($config['position_top']) && $config['position_top'] === true) {
-									$source_top = 0;
-								} else {
-									$source_top = round(($return['height'] - $source_height) / 2);
-								}
+							exit_with_error('TODO: Watermark support');
 
 						} else {
 
-							//--------------------------------------------------
-							// Add a place holder background
+							imagecopyresampled($this->image_ref, $return['ref'], $config['left'], $config['top'], 0, 0, $config['width'], $config['height'], $return['width'], $return['height']);
 
-								if ($bg_red !== NULL && $bg_green !== NULL && $bg_blue !== NULL) {
-									$background = imagecolorallocate($this->image_ref, $bg_red, $bg_green, $bg_blue);
-									imagefilledrectangle($this->image_ref, $box_left, $box_top, ($box_left + $box_width - 1), ($box_top + $box_height - 1), $background);
-								}
-
-							//--------------------------------------------------
-							// If a dimension is too big
-
-								if ($box_width > $source_width) {
-									$box_left += round(($box_width - $source_width) / 2);
-									$box_width = $source_width;
-								}
-
-								if ($box_height > $source_height) {
-									$box_top += round(($box_height - $source_height) / 2);
-									$box_height = $source_height;
-								}
-
-							//--------------------------------------------------
-							// If a dimension is too small
-
-								if ($box_width < $source_width) {
-									$source_left = round(($source_width - $box_width) / 2);
-									$source_width = $box_width;
-								}
-
-								if ($box_height < $source_height) {
-
-									if (isset($config['position_top']) && $config['position_top'] === true) {
-										$source_top = 0;
-									} else {
-										$source_top = round(($source_height - $box_height) / 2);
-									}
-
-									$source_height = $box_height;
-
-								}
-
-						}
-
-						imagecopyresampled($this->image_ref, $return['ref'], $box_left, $box_top, $source_left, $source_top, $box_width, $box_height, $source_width, $source_height);
-
-					//--------------------------------------------------
-					// Return
-
-						return IMAGE_LOAD_SUCCESS;
-
-				}
-			}
-
-			public function image_tile_add($image, $style = IMAGE_ADD_IMAGE_TILE_CENTER) {
-				$this->image_tile_add_to_area($image, $this->image_width, $this->image_height, 0, 0, $style);
-			}
-
-			public function image_tile_add_to_area($image, $area_width, $area_height, $area_left, $area_top, $style = IMAGE_ADD_IMAGE_TILE_CENTER) {
-				if ($this->image_ref) {
-
-					//--------------------------------------------------
-					// Load
-
-						$tile = $this->_load_image($image);
-						if (!is_array($tile)) {
-							return $tile;
-						}
-
-					//--------------------------------------------------
-					// Tile repeat count
-
-						$repeat_l = ceil($area_width / $tile['width']);
-						$repeat_t = ceil($area_height / $tile['height']);
-
-					//--------------------------------------------------
-					// Offset
-
-						if ($style == IMAGE_ADD_IMAGE_TILE_TOP_LEFT) {
-							$offset_left = 0;
-							$offset_top = 0;
-						} else {
-							$offset_left = (0 - round((($repeat_l * $tile['width']) - $area_width) / 2));
-							$offset_top = (0 - round((($repeat_t * $tile['height']) - $area_height) / 2));
-						}
-
-					//--------------------------------------------------
-					// Apply tiles
-
-						for ($l = 0; $l < $repeat_l; $l++) {
-							for ($t = 0; $t < $repeat_t; $t++) {
-
-								//--------------------------------------------------
-								// Grid position
-
-									$dest_left = ($tile['width'] * $l);
-									$dest_top = ($tile['height'] * $t);
-
-								//--------------------------------------------------
-								// Which part of the tile to copy - cuts off the
-								// left and top sides
-
-									$src_left = ($l == 0 ? (0 - $offset_left) : 0);
-									$src_top = ($t == 0 ? (0 - $offset_top) : 0);
-
-								//--------------------------------------------------
-								// Size of the tile area to copy - cuts off the
-								// right and bottom sides
-
-									//--------------------------------------------------
-									// Width
-
-										$src_width = ($area_width - $dest_left) - $offset_left; // Double negative, add offset_left
-										if ($src_width > $tile['width']) {
-											$src_width = $tile['width']; // Not too much
-										}
-
-										$src_width -= $src_left; // If left-side is cut, don't address too much
-
-									//--------------------------------------------------
-									// Height
-
-										$src_height = ($area_height - $dest_top) - $offset_top; // Double negative, add offset_top
-										if ($src_height > $tile['height']) {
-											$src_height = $tile['height']; // Not too much
-										}
-
-										$src_height -= $src_top; // If top-side is cut, don't address too much
-
-								//--------------------------------------------------
-								// Apply the skew to the grid position - where
-								// the 'offset' and 'src' are the same on the
-								// left column or top row... otherwise its only
-								// the 'offset' which is applied from these two.
-
-									$dest_left += $area_left + ($offset_left + $src_left);
-									$dest_top += $area_top + ($offset_top + $src_top);
-
-								//--------------------------------------------------
-								// Copy the tile onto the image, keeping 1:1 ratio
-
-									imagecopyresampled($this->image_ref, $tile['ref'], $dest_left, $dest_top, $src_left, $src_top, $src_width, $src_height, $src_width, $src_height);
-
-							}
 						}
 
 					//--------------------------------------------------
@@ -489,239 +324,222 @@
 			}
 
 		//--------------------------------------------------
-		// Change image size
+		// Rotate
 
-			public function center_to_box($box_width, $box_height, $bg_red = 0, $bg_green = 0, $bg_blue = 0, $scale = true) {
+			public function rotate($degrees, $config = NULL) {
 				if ($this->image_ref) {
 
 					//--------------------------------------------------
-					// Create the canvas
+					// Config
 
-						$new_image = $this->_create_canvas($box_width, $box_height);
+						$defaults = array(
+								'background' => NULL,
+							);
 
-						if ($bg_red !== NULL && $bg_green !== NULL && $bg_blue !== NULL) {
-							$background = imagecolorallocate($new_image, $bg_red, $bg_green, $bg_blue);
-							imagefill($new_image, 0, 0, $background);
+						if (!is_array($config)) {
+							$config = array();
 						}
 
-					//--------------------------------------------------
-					// Configure the centre area
-
-						$width = $this->image_width;
-						$height = $this->image_height;
-
-						if ($scale) {
-
-							if ($width > $box_width) {
-								$height = ceil($box_width * ($height / $width));
-								$width = $box_width;
-							}
-
-							if ($height > $box_height) {
-								$width = ceil($box_height * ($width / $height));
-								$height = $box_height;
-							}
-
-						}
-
-						$left = round(($box_width / 2) - ($width / 2));
-						$top = round(($box_height / 2) - ($height / 2));
-
-						imagecopyresampled($new_image, $this->image_ref, $left, $top, 0, 0, $width, $height, $this->image_width, $this->image_height);
+						$config = array_merge($defaults, $config);
 
 					//--------------------------------------------------
-					// Kill the old image
+					// Rotate
 
-						imagedestroy($this->image_ref);
-
-					//--------------------------------------------------
-					// Replace the image
-
-						$this->image_ref = $new_image;
-						$this->image_width = $box_width;
-						$this->image_height = $box_height;
-
-				}
-			}
-
-			public function cut_to_box($box_width, $box_height, $bg_red = 0, $bg_green = 0, $bg_blue = 0) {
-				$this->center_to_box($box_width, $box_height, $bg_red, $bg_green, $bg_blue, false);
-			}
-
-			public function size_and_cut_to_box($box_width, $box_height, $bg_red = 0, $bg_green = 0, $bg_blue = 0) {
-				if ($this->image_ref) {
-
-					//--------------------------------------------------
-					// Create the canvas
-
-						$new_image = $this->_create_canvas($box_width, $box_height);
-
-						if ($bg_red !== NULL && $bg_green !== NULL && $bg_blue !== NULL) {
-							$background = imagecolorallocate($new_image, $bg_red, $bg_green, $bg_blue);
-							imagefill($new_image, 0, 0, $background);
-						}
-
-					//--------------------------------------------------
-					// Configure the centre area
-
-						$new_width = $this->image_width;
-						$new_height = $this->image_height;
-
-						if ($this->image_width > $box_width && $this->image_height > $box_height) { // Can only crop when image is big enough
-
-							if (($this->image_width / $box_width) > ($this->image_height / $box_height)) {
-
-								$new_height = $box_height; // Height is the best dimension for cropping to
-								$new_width = ceil($new_height * ($this->image_width / $this->image_height));
-
-							} else {
-
-								$new_width = $box_width; // Width is the best dimension for cropping to
-								$new_height = ceil($new_width * ($this->image_height / $this->image_width));
-
-							}
-
-						}
-
-						$left = round(($box_width / 2) - ($new_width / 2));
-						$top = round(($box_height / 2) - ($new_height / 2));
-
-						imagecopyresampled($new_image, $this->image_ref, $left, $top, 0, 0, $new_width, $new_height, $this->image_width, $this->image_height);
-
-					//--------------------------------------------------
-					// Kill the old image
-
-						imagedestroy($this->image_ref);
-
-					//--------------------------------------------------
-					// Replace the image
-
-						$this->image_ref = $new_image;
-						$this->image_width = $box_width;
-						$this->image_height = $box_height;
-
-				}
-			}
-
-			public function max_size($max_width, $max_height) {
-				if ($this->image_ref && ($this->image_width > $max_width || $this->image_height > $max_height)) {
-
-					//--------------------------------------------------
-					// Dimensions
-
-						$new_width = $this->image_width;
-						$new_height = $this->image_height;
-
-						if ($new_width > $max_width) {
-							$new_height = (round($max_width * ($new_height / $new_width)));
-							$new_width = $max_width;
-						}
-
-						if ($new_height > $max_height) {
-							$new_width = (round($max_height * ($new_width / $new_height)));
-							$new_height = $max_height;
-						}
-
-					//--------------------------------------------------
-					// Size
-
-						$new_image = $this->_create_canvas($new_width, $new_height);
-
-						imagecopyresampled($new_image, $this->image_ref, 0, 0, 0, 0, $new_width, $new_height, $this->image_width, $this->image_height);
-
-					//--------------------------------------------------
-					// Kill the old image
-
-						imagedestroy($this->image_ref);
+						$new_image = imagerotate($this->image_ref, $degrees, 0);
 
 					//--------------------------------------------------
 					// Store
 
+						imagedestroy($this->image_ref);
+
 						$this->image_ref = $new_image;
-						$this->image_width = $new_width;
-						$this->image_height = $new_height;
+						$this->image_width = imagesx($this->image_ref);
+						$this->image_height = imagesy($this->image_ref);
 
-				}
-			}
-
-			public function scale_width($width) {
-				if ($this->image_ref) {
-					$height = (round($width * ($this->image_height / $this->image_width)));
-					$this->force_size($width, $height);
-				}
-			}
-
-			public function scale_height($height) {
-				if ($this->image_ref) {
-					$width = (round($height * ($this->image_width / $this->image_height)));
-					$this->force_size($width, $height);
-				}
-			}
-
-			public function force_size($width, $height) {
-				if ($this->image_ref) {
-					$new_image = $this->_create_canvas($width, $height);
-					imagecopyresampled($new_image, $this->image_ref, 0, 0, 0, 0, $width, $height, $this->image_width, $this->image_height);
-					imagedestroy($this->image_ref);
-					$this->image_ref = $new_image;
-					$this->image_width = $width;
-					$this->image_height = $height;
-				}
-			}
-
-			public function crop_size($width, $height, $left = 0, $top = 0) {
-				if ($this->image_ref) {
-					$new_image = $this->_create_canvas($width, $height);
-					imagecopyresampled($new_image, $this->image_ref, 0, 0, $left, $top, $width, $height, $width, $height);
-					imagedestroy($this->image_ref);
-					$this->image_ref = $new_image;
-					$this->image_width = $width;
-					$this->image_height = $height;
 				}
 			}
 
 		//--------------------------------------------------
-		// Rotate image
+		// Resize
 
-			public function rotate($degrees) {
+			public function resize($config) {
 				if ($this->image_ref) {
 
-					// imagerotate($this->image_ref, $degrees, 0);
+					//--------------------------------------------------
+					// Config
 
-					if ($degrees == 90 || $degrees == 270) {
+						$defaults = array(
+								'width' => NULL,
+								'width_min' => NULL,
+								'width_max' => NULL,
+								'height' => NULL,
+								'height_min' => NULL,
+								'height_max' => NULL,
+								'stretch' => false,
+								'crop' => false,
+								'grow' => false,
+								'background' => '000000',
+							);
 
-						$new_width = $this->image_height;
-						$new_height = $this->image_width;
-
-					} else if ($degrees == 180) {
-
-						$new_width = $this->image_width;
-						$new_height = $this->image_height;
-
-					} else {
-
-						return;
-
-					}
-
-					$new_image = $this->_create_canvas($new_width, $new_height);
-
-					for ($i = 0; $i < $this->image_width; $i++) {
-						for ($j = 0; $j < $this->image_height; $j++) {
-							$src_colour = imagecolorat($this->image_ref, $i, $j);
-							switch ($degrees) {
-								case 90:  imagesetpixel($new_image, (($this->image_height - 1) - $j), $i, $src_colour ); break;
-								case 180: imagesetpixel($new_image, ($this->image_width - $i), (($this->image_height - 1) - $j), $src_colour ); break;
-								case 270: imagesetpixel($new_image, $j, ($this->image_width - $i), $src_colour ); break;
-							}
+						if (!is_array($config)) {
+							$config = array();
 						}
-					}
 
-					imagedestroy($this->image_ref);
+						$config = array_merge($defaults, $config);
 
-					$this->image_ref = $new_image;
-					$this->image_width = $new_width;
-					$this->image_height = $new_height;
+					//--------------------------------------------------
+					// Base width/height
+
+						if ($config['width'] > 0 && $config['height'] > 0) {
+
+							$new_width = $config['width'];
+							$new_height = $config['height'];
+
+						} else if ($config['width'] > 0) {
+
+							$new_width = $config['width'];
+
+							if ($config['crop']) {
+								$new_height = $this->image_height;
+							} else {
+								$new_height = (round($new_width * ($this->image_height / $this->image_width)));
+							}
+
+						} else if ($config['height'] > 0) {
+
+							$new_height = $config['height'];
+							$new_width = (round($new_height * ($this->image_width / $this->image_height)));
+
+							if ($config['crop'] && $new_width > $this->image_width) {
+								$new_width = $this->image_width;
+							}
+
+// 							if ($config['crop'] && $new_height > $this->image_height) {
+// 								$new_width = $this->image_width;
+// 							} else {
+//
+// 							}
+
+						} else {
+
+							$new_width = $this->image_width;
+							$new_height = $this->image_height;
+
+						}
+
+					//--------------------------------------------------
+					// Min and max sizes
+
+// $image->resize(array('height' => 300, 'width_min' => 500));
+
+						if ($config['width_min'] > 0 && $new_width < $config['width_min']) {
+							$new_width = $config['width_min'];
+
+// 							$test_height = (round($config['width_min'] * ($new_height / $new_width)));
+// 							if ($test_height > $this->image_height && $test_height > $new_height) {
+// 								$new_height = $test_height;
+// 							}
+
+						}
+
+						if ($config['height_min'] > 0 && $new_height < $config['height_min']) {
+// 							$new_width = (round($config['height_min'] * ($new_width / $new_height)));
+							$new_height = $config['height_min'];
+// 							if ($config['width_min'] > 0 && $config['width_min'] > $this->image_width) {
+// 								if ($new_width > $config['width_min']) {
+// 									$new_width = $config['width_min'];
+// 								}
+// 							} else {
+// 								if ($new_width > $this->image_width) {
+// 									$new_width = $this->image_width;
+// 								}
+// 							}
+						}
+
+						if ($config['width_max'] > 0 && $new_width > $config['width_max']) {
+							$new_height = (round($config['width_max'] * ($new_height / $new_width)));
+							$new_width = $config['width_max'];
+						}
+
+						if ($config['height_max'] > 0 && $new_height > $config['height_max']) {
+							$new_width = (round($config['height_max'] * ($new_width / $new_height)));
+							$new_height = $config['height_max'];
+						}
+
+					//--------------------------------------------------
+					// No change
+
+						if ($new_width == $this->image_width && $new_height == $this->image_height) {
+							return;
+						}
+
+					//--------------------------------------------------
+					// Re-size
+
+						$new_image = $this->_create_canvas($new_width, $new_height);
+
+						if ($config['stretch']) {
+
+							imagecopyresampled($new_image, $this->image_ref, 0, 0, 0, 0, $new_width, $new_height, $this->image_width, $this->image_height);
+
+						} else {
+
+							if ($config['background'] !== NULL) {
+								imagefill($new_image, 0, 0, $this->_colour_allocate($new_image, $config['background']));
+							}
+
+							$dst_width = $this->image_width;
+							$dst_height = $this->image_height;
+
+							if ($config['grow'] && $new_width > $this->image_width && $new_height > $this->image_height) {
+
+								$scaled_width = ceil($new_height * ($this->image_width / $this->image_height));
+								$scaled_height = ceil($new_width * ($this->image_height / $this->image_width));
+
+								if ($scaled_height <= $new_height) {
+									$dst_width = $new_width;
+									$dst_height = $scaled_height;
+								} else if ($scaled_width <= $new_width) {
+									$dst_width = $scaled_width;
+									$dst_height = $new_height;
+								} else {
+									exit_with_error('Error calculating scaled size (' . $new_width . ' x ' . $new_height . ' / ' . $this->image_width . ' x ' . $this->image_height . ')'); // Mathematically impossible?
+								}
+
+							}
+
+							if (!$config['crop']) {
+
+								if ($this->image_width > $new_width) {
+									$dst_width = $new_width;
+									$dst_height = ceil($new_width * ($this->image_height / $this->image_width));
+								}
+
+								if ($this->image_height > $new_height) {
+									$dst_width = ceil($new_height * ($this->image_width / $this->image_height));
+									$dst_height = $new_height;
+								}
+
+							}
+
+							$left = round(($new_width / 2) - ($dst_width / 2));
+							$top = round(($new_height / 2) - ($dst_height / 2));
+
+							imagecopyresampled($new_image, $this->image_ref, $left, $top, 0, 0, $dst_width, $dst_height, $this->image_width, $this->image_height);
+
+						}
+
+					//--------------------------------------------------
+					// Store
+
+						if (isset($new_image)) {
+							imagedestroy($this->image_ref);
+							$this->image_ref = $new_image;
+							$this->image_width = $new_width;
+							$this->image_height = $new_height;
+						} else {
+							exit_with_error('Unknown image resize options', print_r($config, true));
+						}
 
 				}
 			}
@@ -748,23 +566,23 @@
 		//--------------------------------------------------
 		// Print image
 
-			public function output_png($compression = 0) {
+			public function output_png($compression = 6) {
 				if ($this->image_ref) {
-					header('Content-Type: image/png');
+					mime_set('image/png');
 					imagepng($this->image_ref, NULL, $compression);
 				}
 			}
 
 			public function output_gif() {
 				if ($this->image_ref) {
-					header('Content-Type: image/gif');
+					mime_set('image/gif');
 					imagegif($this->image_ref);
 				}
 			}
 
-			public function output_jpg($quality = 80) {
+			public function output_jpg($quality = 75) {
 				if ($this->image_ref) {
-					header('Content-Type: image/jpeg');
+					mime_set('image/jpeg');
 					imagejpeg($this->image_ref, NULL, $quality);
 				}
 			}
@@ -772,7 +590,19 @@
 		//--------------------------------------------------
 		// Save image
 
-			public function save_png($file_path, $compression = 0) {
+			public function save($file_path, $type = 'png') {
+				if ($type == 'png') {
+					$this->save_png($file_path);
+				} else if ($type == 'gif') {
+					$this->save_gif($file_path);
+				} else if ($type == 'jpg') {
+					$this->save_jpg($file_path);
+				} else {
+					exit_with_error('Unknown image type "' . $type . '"');
+				}
+			}
+
+			public function save_png($file_path, $compression = 6) {
 				if ($this->image_ref) {
 					imagepng($this->image_ref, $file_path, $compression);
 					@chmod($file_path, 0666);
@@ -786,15 +616,32 @@
 				}
 			}
 
-			public function save_jpg($file_path, $quality = 80) {
+			public function save_jpg($file_path, $quality = 75) {
 				if ($this->image_ref) {
 					imagejpeg($this->image_ref, $file_path, $quality);
 					@chmod($file_path, 0666);
 				}
 			}
 
-			public function save_tiles($num_tiles_wide, $num_tiles_high, $file_name_prefix, $file_name_ext = 'jpg', $tile_width = 256, $tile_height = 256, $bg_red = 0, $bg_green = 0, $bg_blue = 0, $quality = NULL) {
+			public function save_tiles($num_tiles_wide, $num_tiles_high, $file_name_prefix, $config = NULL) {
 				if ($this->image_ref) {
+
+					//--------------------------------------------------
+					// Config
+
+						$defaults = array(
+								'file_ext' => 'jpg',
+								'tile_width' => 256,
+								'tile_height' => 256,
+								'background' => NULL,
+								'quality' => NULL,
+							);
+
+						if (!is_array($config)) {
+							$config = array();
+						}
+
+						$config = array_merge($defaults, $config);
 
 					//--------------------------------------------------
 					// Create the canvas
@@ -802,30 +649,29 @@
 						//--------------------------------------------------
 						// Start
 
-							$canvas_width = ($num_tiles_wide * $tile_width);
-							$canvas_height = ($num_tiles_high * $tile_height);
+							$canvas_width = ($num_tiles_wide * $config['tile_width']);
+							$canvas_height = ($num_tiles_high * $config['tile_height']);
 
 							$canvas = $this->_create_canvas($canvas_width, $canvas_height);
 
 						//--------------------------------------------------
 						// Background
 
-							if ($bg_red !== NULL && $bg_green !== NULL && $bg_blue !== NULL) {
-								$background = imagecolorallocate($canvas, $bg_red, $bg_green, $bg_blue);
-								imagefill($canvas, 0, 0, $background);
+							if ($config['background'] !== NULL) {
+								imagefill($canvas, 0, 0, $this->_colour_allocate($canvas, $config['background']));
 							}
 
 						//--------------------------------------------------
 						// Add image
 
 							if ($this->image_width > $this->image_height) {
-								$canvas_zoom_max_level = ceil(log(ceil($this->image_width / $tile_width), 2));
+								$canvas_zoom_max_level = ceil(log(ceil($this->image_width / $config['tile_width']), 2));
 							} else {
-								$canvas_zoom_max_level = ceil(log(ceil($this->image_height / $tile_height), 2));
+								$canvas_zoom_max_level = ceil(log(ceil($this->image_height / $config['tile_height']), 2));
 							}
 
-							$canvas_zoom_max_size_width = (intval(pow(2, $canvas_zoom_max_level)) * $tile_width);
-							$canvas_zoom_max_size_height = (intval(pow(2, $canvas_zoom_max_level)) * $tile_height);
+							$canvas_zoom_max_size_width = (intval(pow(2, $canvas_zoom_max_level)) * $config['tile_width']);
+							$canvas_zoom_max_size_height = (intval(pow(2, $canvas_zoom_max_level)) * $config['tile_height']);
 
 							$width = (($this->image_width / $canvas_zoom_max_size_width) * $canvas_width);
 							$height = (($this->image_height / $canvas_zoom_max_size_height) * $canvas_height);
@@ -841,19 +687,19 @@
 						for ($x = 0; $x < $num_tiles_wide; $x++) {
 							for ($y = 0; $y < $num_tiles_high; $y++) {
 
-								$tile = $this->_create_canvas($tile_width, $tile_height);
+								$tile = $this->_create_canvas($config['tile_width'], $config['tile_height']);
 
-								imagecopyresampled($tile, $canvas, 0, 0, ($x * $tile_width), ($y * $tile_width), $tile_width, $tile_height, $tile_width, $tile_height);
+								imagecopyresampled($tile, $canvas, 0, 0, ($x * $config['tile_width']), ($y * $config['tile_width']), $config['tile_width'], $config['tile_height'], $config['tile_width'], $config['tile_height']);
 
-								$file_path = $file_name_prefix . $x . '-' . $y . '.' . $file_name_ext;
+								$file_path = $file_name_prefix . $x . '-' . $y . '.' . $config['file_ext'];
 
-								if ($quality) {
-									if ($file_name_ext == 'png') imagepng($tile, $file_path, $quality);
-									if ($file_name_ext == 'jpg') imagejpeg($tile, $file_path, $quality);
+								if ($config['quality']) {
+									if ($config['file_ext'] == 'png') imagepng($tile, $file_path, $config['quality']);
+									if ($config['file_ext'] == 'jpg') imagejpeg($tile, $file_path, $config['quality']);
 								} else {
-									if ($file_name_ext == 'png') imagepng($tile, $file_path);
-									if ($file_name_ext == 'gif') imagegif($tile, $file_path);
-									if ($file_name_ext == 'jpg') imagejpeg($tile, $file_path);
+									if ($config['file_ext'] == 'png') imagepng($tile, $file_path);
+									if ($config['file_ext'] == 'gif') imagegif($tile, $file_path);
+									if ($config['file_ext'] == 'jpg') imagejpeg($tile, $file_path);
 								}
 
 								@chmod($file_path, 0666);
@@ -894,43 +740,5 @@
 			}
 
 	}
-
-//--------------------------------------------------
-// Copyright (c) 2006, Craig Francis All rights
-// reserved.
-//
-// Redistribution and use in source and binary forms,
-// with or without modification, are permitted provided
-// that the following conditions are met:
-//
-//  * Redistributions of source code must retain the
-//    above copyright notice, this list of
-//    conditions and the following disclaimer.
-//  * Redistributions in binary form must reproduce
-//    the above copyright notice, this list of
-//    conditions and the following disclaimer in the
-//    documentation and/or other materials provided
-//    with the distribution.
-//  * Neither the name of the author nor the names
-//    of its contributors may be used to endorse or
-//    promote products derived from this software
-//    without specific prior written permission.
-//
-// This software is provided by the copyright holders
-// and contributors "as is" and any express or implied
-// warranties, including, but not limited to, the
-// implied warranties of merchantability and fitness
-// for a particular purpose are disclaimed. In no event
-// shall the copyright owner or contributors be liable
-// for any direct, indirect, incidental, special,
-// exemplary, or consequential damages (including, but
-// not limited to, procurement of substitute goods or
-// services; loss of use, data, or profits; or business
-// interruption) however caused and on any theory of
-// liability, whether in contract, strict liability, or
-// tort (including negligence or otherwise) arising in
-// any way out of the use of this software, even if
-// advised of the possibility of such damage.
-//--------------------------------------------------
 
 ?>

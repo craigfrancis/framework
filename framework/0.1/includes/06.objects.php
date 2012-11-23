@@ -18,12 +18,7 @@
 			}
 
 			public function request_folder_get($id) {
-				$folders = config::get('request.folders');
-				if (isset($folders[$id])) {
-					return $folders[$id];
-				} else {
-					return NULL;
-				}
+				return config::array_get('request.folders', $id);
 			}
 
 			public function title_set($title_main) {

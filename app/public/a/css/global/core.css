@@ -62,6 +62,10 @@
 		border-spacing: 0;
 	}
 
+	table td {
+		vertical-align: middle;
+	}
+
 	table thead {
 		display: table-header-group; /* IE6: Wont repeat table headers over multiple printed pages */
 	}

@@ -52,7 +52,7 @@
 			'back_html' => '[«]',
 			'next_html' => '[»]',
 			'last_html' => NULL,
-			'number_pad' => 2,
+			'number_pad' => 0,
 			'link_count' => 9,
 			'link_wrapper_element' => 'span',
 			'extra_html' => NULL, // '<span class="pagination_extra">Page [PAGE] of [COUNT]</span>'

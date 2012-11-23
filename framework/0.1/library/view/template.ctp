@@ -71,7 +71,7 @@
 					$sub_nav->link_add($root_url . $sub_url . '/', ref_to_human($sub_folder));
 				}
 
-				$nav->link_add($root_url, ref_to_human($root_folder), array('nav' => $sub_nav));
+				$nav->link_add($root_url, ref_to_human($root_folder), array('child' => $sub_nav));
 
 			} else {
 

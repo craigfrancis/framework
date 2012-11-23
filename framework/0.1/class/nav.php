@@ -33,7 +33,7 @@
 			'link_class' => 'xxx',
 			'link_title' => 'xxx',
 			'selected' => true,
-			'nav' => $sub_nav,
+			'child' => $sub_nav,
 			'open' => true,    // Only used with the sub_nav
 		);
 
@@ -44,7 +44,7 @@
 
 		$nav = new nav();
 		$nav->link_add('/', 'Home');
-		$nav->link_add('/about/', 'About', array('nav' => $sub_nav));
+		$nav->link_add('/about/', 'About', array('child' => $sub_nav));
 
 ***************************************************/
 
@@ -229,7 +229,7 @@
 
 								$selected = ($link_id == $this->selected_id);
 
-								$child_nav = (isset($link['config']['nav']) ? $link['config']['nav'] : NULL);
+								$child_nav = (isset($link['config']['child']) ? $link['config']['child'] : NULL);
 								$child_open = (isset($link['config']['open']) ? $link['config']['open'] : NULL);
 
 								if ($child_nav === NULL) {

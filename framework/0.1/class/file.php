@@ -40,8 +40,8 @@
 							'file_url' => FILE_URL,
 							'file_folder_division' => NULL, // Set to something like "1000" so the folder structure can by divided into folders /files/008000/8192
 							'file_missing_url' => NULL,
-							'image_type' => 'jpg',
-							'image_missing_url_prefix' => NULL, // If you want to show placeholder images, e.g. /a/img/place-holder/100x100.jpg
+							'image_type' => 'png',
+							'image_placeholder_url' => NULL, // If you want to show placeholder images, e.g. /a/img/place-holder/100x100.jpg
 							'image_missing_url' => NULL,
 						);
 
@@ -183,9 +183,9 @@
 
 					return str_replace('_', '-', $this->config['file_url'] . substr($path, strlen($this->config['file_root'])));
 
-				} else if ($this->config['image_missing_url_prefix'] !== NULL) { // Allow for placeholder images
+				} else if ($this->config['image_placeholder_url'] !== NULL) {
 
-					return $this->config['image_missing_url_prefix'] . '/' . safe_file_name($size) . '.' . safe_file_name($this->config['image_type']);
+					return $this->config['image_placeholder_url'] . '/' . safe_file_name($size) . '.' . safe_file_name($this->config['image_type']);
 
 				} else {
 
@@ -231,17 +231,8 @@
 							mkdir($original_dir, 0777, true); // Most installs will write as the "apache" user, which is a problem if the normal user account can't edit/delete these files.
 						}
 
-						$source_image = new image($path); // The image will be re-saved to ensure no hacked files are uploaded and exposed though the FILE_URL folder.
-
-						if ($this->config['image_type'] == 'png') {
-							$source_image->save_png($original_path);
-						} else if ($this->config['image_type'] == 'jpg') {
-							$source_image->save_jpg($original_path);
-						} else if ($this->config['image_type'] == 'gif') {
-							$source_image->save_gif($original_path);
-						} else {
-							exit_with_error('Unknown image type "' . $this->config['image_type'] . '"');
-						}
+						$source_image = new image($path); // The image needs to be re-saved, ensures no hacked files are uploaded and exposed though the FILE_URL folder.
+						$source_image->save($original_path, $this->config['image_type']);
 
 					}
 
@@ -262,7 +253,19 @@
 								// image does not allow it to confirm to the boundaries... does it
 								// set a background colour, or crop the image?
 
-								$image->save_jpg($this->image_path_get($id, $size));
+								//$image->resize(array('width' => 100, 'crop' => false));
+								//$image->resize(array('width' => 500, 'height' => 100, 'crop' => false));
+								// $image->resize(array('width' => 400, 'height' => 500, 'grow' => true, 'crop' => false));
+
+
+//$image->resize(array('width' => 300, 'height_min' => 500, 'grow' => true, 'crop' => false, 'stretch' => false));
+//$image->resize(array('width' => 300, 'height_min' => 500));
+$image->resize(array('height' => 200, 'crop' => false, 'grow' => true));
+
+$image->output_jpg();
+exit();
+
+								$image->save($this->image_path_get($id, $size), $this->config['image_type']);
 								$image->destroy();
 
 							}
