@@ -1,12 +1,12 @@
 
-	<table class="basic_table">
+	<table class="basic_table test_table">
 		<thead>
 			<tr>
 				<th scope="col">Config</th>
 				<th scope="col">Normal</th>
-				<th scope="col">Crop</th>
-				<th scope="col">Grow</th>
-				<th scope="col">Stretch</th>
+				<th scope="col">Background</th>
+				<th scope="col">Background + Grow</th>
+				<!-- <th scope="col">Stretch</th> -->
 			</tr>
 		</thead>
 		<tbody>
@@ -22,10 +22,10 @@
 					echo '
 						<tr>
 							<td><pre>' . print_r($config, true) . '</pre></td>
-							<td><img src="' . html($url) . '" alt="" /></td>
-							<td><img src="' . html($url->get(array('crop' => 'true'))) . '" alt="" /></td>
-							<td><img src="' . html($url->get(array('grow' => 'true'))) . '" alt="" /></td>
-							<td><img src="' . html($url->get(array('stretch' => 'true'))) . '" alt="" /></td>
+							<td class="image"><img src="' . html($url) . '" alt="" /></td>
+							<td class="image"><img src="' . html($url->get(array('background' => '000000'))) . '" alt="" /></td>
+							<td class="image"><img src="' . html($url->get(array('background' => '000000', 'grow' => 'true'))) . '" alt="" /></td>
+							<!-- <td class="image"><img src="' . html($url->get(array('stretch' => 'true'))) . '" alt="" /></td> -->
 						</tr>';
 
 				}

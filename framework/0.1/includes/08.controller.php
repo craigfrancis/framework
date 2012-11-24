@@ -313,6 +313,7 @@
 			$note_html .= '&#xA0; $this-><strong>request_folder_get</strong>(' . html($id) . '); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
 		}
 
+		$note_html .= '&#xA0; $this-><strong>template_set</strong>(\'default\');<br />' . "\n";
 		$note_html .= '&#xA0; $this-><strong>view_path_set</strong>(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
 		$note_html .= '&#xA0; $this-><strong>page_ref_set</strong>(\'example_ref\');<br />' . "\n";
 		$note_html .= '&#xA0; $this-><strong>title_set</strong>(\'Custom page title.\');<br />' . "\n";

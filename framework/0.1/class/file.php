@@ -247,26 +247,68 @@
 						while (false !== ($size = readdir($handle))) {
 							if (substr($size, 0, 1) != '.' && $size != 'original') {
 
-								$image = new image($original_path); // Need a new copy of the image, so it does not get scaled down, then back up again
+								//--------------------------------------------------
+								// Resize config
 
-								// TODO: See below... but what happens if the aspect ratio of the
-								// image does not allow it to confirm to the boundaries... does it
-								// set a background colour, or crop the image?
+									$config = array();
 
-								//$image->resize(array('width' => 100, 'crop' => false));
-								//$image->resize(array('width' => 500, 'height' => 100, 'crop' => false));
-								// $image->resize(array('width' => 400, 'height' => 500, 'grow' => true, 'crop' => false));
+									$pos = strpos($size, '_');
+									if ($pos !== false) {
+										$details = substr($size, 0, $pos);
+										$background = substr($size, ($pos + 1));
+										if (!preg_match('/^[0-9a-f]{6}$/i', $background)) {
+											exit_with_error('Invalid background colour "' . $background . '" on size folder "' . $size . '"');
+										}
+									} else {
+										$details = $size;
+										$background = NULL;
+									}
 
+									$pos = strpos($details, 'x');
+									if ($pos !== false) {
+										$width = substr($details, 0, $pos);
+										$height = substr($details, ($pos + 1));
+									} else {
+										exit_with_error('Missing "x" in size folder "' . $size . '"');
+									}
 
-//$image->resize(array('width' => 300, 'height_min' => 500, 'grow' => true, 'crop' => false, 'stretch' => false));
-//$image->resize(array('width' => 300, 'height_min' => 500));
-$image->resize(array('height' => 200, 'crop' => false, 'grow' => true));
+									$pos = strpos($width, '-');
+									if ($pos !== false) {
+										$config['width_min'] = substr($width, 0, $pos);
+										$config['width_max'] = substr($width, ($pos + 1));
+									} else {
+										$config['width'] = $width;
+									}
 
-$image->output_jpg();
-exit();
+									$pos = strpos($height, '-');
+									if ($pos !== false) {
+										$config['height_min'] = substr($height, 0, $pos);
+										$config['height_max'] = substr($height, ($pos + 1));
+									} else {
+										$config['height'] = $height;
+									}
 
-								$image->save($this->image_path_get($id, $size), $this->config['image_type']);
-								$image->destroy();
+									foreach ($config as $key => $value) {
+										if ($value == 'X') {
+											unset($config[$key]);
+										} else if (preg_match('/^[0-9]+$/', $value)) {
+											$config[$key] = intval($value);
+										} else {
+											exit_with_error('The "' . $key . '" has the invalid value "' . $value . '" in size folder "' . $size . '"');
+										}
+									}
+
+									if ($background !== NULL) {
+										$config['background'] = $background;
+									}
+
+								//--------------------------------------------------
+								// Load image, resize, and save
+
+									$image = new image($original_path); // Need a new copy of the image, so it does not get scaled down, then back up again
+									$image->resize($config);
+									$image->save($this->image_path_get($id, $size), $this->config['image_type']);
+									$image->destroy();
 
 							}
 						}
@@ -316,9 +358,10 @@ exit();
 
 	if (false) {
 
+		mime_set('text/plain');
+
 		$sizes = array(
 
-				'original',
 				'XxX',
 
 				'Xx100',
@@ -341,7 +384,7 @@ exit();
 				'1-100xX-100',
 				'90-100xX-100',
 
-				'100x100', // Forces the size, either to distort or crop? perhaps 100x100_crop?
+				'100x100',
 				'X-100xX-100',
 				'1-100x1-100',
 				'90-100x90-100',
@@ -351,69 +394,14 @@ exit();
 			);
 
 		foreach ($sizes as $size) {
-			echo $size . "\n";
-			if (preg_match('/^([0-9]+|X)((?:-[0-9]+)?)x([0-9]+|X)((?:-[0-9]+)?)$/', $size, $matches)) {
 
-				list($size, $min_width, $max_width, $min_height, $max_height) = $matches;
+			echo "\n\n" . $size . "\n";
 
-				$max_width = str_replace('-', '', $max_width);
-				$max_height = str_replace('-', '', $max_height);
+			echo debug_dump($config);
 
-				if ($min_width === 'X' && $max_width != '') $min_width = 1;
-				if ($min_height === 'X' && $max_height != '') $min_height = 1;
-
-				if ($min_width === 'X' && $min_height === 'X') {
-
-					echo '  No change' . "\n";
-
-				} else if ($min_width === 'X') {
-
-					if ($max_height === '') {
-						echo '  Fixed height = ' . $min_height . "\n"; // scale_height
-					} else {
-						echo '  Min height = ' . $min_height . "\n";
-						echo '  Max height = ' . $max_height . "\n";
-					}
-
-				} else if ($min_height === 'X') {
-
-					if ($max_width === '') {
-						echo '  Fixed width = ' . $min_width . "\n"; // scale_width
-					} else {
-						echo '  Min width = ' . $min_width . "\n";
-						echo '  Max width = ' . $max_width . "\n";
-					}
-
-				} else if ($max_height === '' && $max_width === '') {
-
-					echo '  Fixed width = ' . $min_width . "\n"; // force_size($width, $height)
-					echo '  Fixed height = ' . $min_height . "\n";
-
-				} else if ($max_height === '') {
-
-					echo '  Min width = ' . $min_width . "\n";
-					echo '  Max width = ' . $max_width . "\n";
-					echo '  Fixed height = ' . $min_height . "\n";
-
-				} else if ($max_width === '') {
-
-					echo '  Fixed width = ' . $min_width . "\n";
-					echo '  Min height = ' . $min_height . "\n";
-					echo '  Max height = ' . $max_height . "\n";
-
-				} else {
-
-					echo '  Min width = ' . $min_width . "\n";
-					echo '  Max width = ' . $max_width . "\n";
-					echo '  Min height = ' . $min_height . "\n";
-					echo '  Max height = ' . $max_height . "\n";
-
-				}
-
-				echo "\n";
-
-			}
 		}
+
+		exit();
 
 	}
 

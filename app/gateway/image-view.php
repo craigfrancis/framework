@@ -12,11 +12,16 @@
 		}
 	}
 
-	foreach (array('stretch', 'crop', 'grow') as $key) {
+	foreach (array('stretch', 'grow') as $key) {
 		$val = request($key);
 		if ($val !== NULL) {
 			$config[$key] = ($val == 'true');
 		}
+	}
+
+	$val = request('background');
+	if (preg_match('/^[0-9a-f]{6}$/i', $val)) {
+		$config['background'] = $val;
 	}
 
 //--------------------------------------------------

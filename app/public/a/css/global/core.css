@@ -437,6 +437,16 @@
 		width: 4em;
 	}
 
+	.test_table td.image {
+		padding: 0 60px 60px 0;
+		background: no-repeat url("../../img/test/background.gif");
+		vertical-align: top;
+	}
+
+	.test_table td.image img {
+		display: block;
+	}
+
 /*--------------------------------------------------*/
 /* Basic nav                                        */
 

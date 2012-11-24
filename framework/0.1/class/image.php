@@ -18,6 +18,7 @@
 		// Load image and send to browser
 
 			$image = new image('1.jpg');
+
 			$image->output_jpg();
 
 		//--------------------------------------------------
@@ -27,12 +28,48 @@
 
 			$image = new image('1.jpg');
 			$image->image_add($image_sub, 10, 123);
+
 			$image->output_gif();
 
-	//--------------------------------------------------
-	// Other ideas (TODO)
+		//--------------------------------------------------
+		// Resize image
 
-		http://docs.magentocommerce.com/Varien/Varien_Image/Varien_Image.html
+			$image = new image('1.jpg'); // Presuming the size is 100x200
+
+			$config = array( // Scales this image to 500x1000
+					'width' => 500,
+				);
+
+			$config = array( // Scales to the biggest dimension (in this case the width), then crops the rest of the other dimension.
+					'width' => 500,
+					'height' => 100,
+				);
+
+			$config = array( // Scaled to 200x400 (to satisfy min width), and would have cropped the image if the max height was 300.
+					'width_min' => 200,
+					'width_max' => 400,
+					'height_min' => 100,
+					'height_max' => 500,
+				);
+
+			$config = array( // Scaled to 200x300, but the picture grows to 150x300, with a black border left/right (no cropping).
+					'width_min' => 200,
+					'width_max' => 400,
+					'height_min' => 100,
+					'height_max' => 300,
+					'background' => '000000',
+				);
+
+			$config = array( // Scaled to 200x300, but the picture stays at 100x200, with a black border.
+					'width_min' => 200,
+					'width_max' => 400,
+					'height_min' => 100,
+					'height_max' => 300,
+					'background' => '000000',
+					'grow' => false,
+				);
+
+			$image->save_png('/path/to/file.png');
 
 ***************************************************/
 
@@ -234,7 +271,7 @@
 				} else if (strlen($colour) == 6) {
 					return imagecolorallocate($image, hexdec(substr($colour, 0, 2)), hexdec(substr($colour, 2, 2)), hexdec(substr($colour, 4, 2)));
 				}
-				exit_with_error('TODO: Different types of colour specifications (e.g. hex value)');
+				exit_with_error('Unknown colour defined', print_r($colour, true));
 			}
 
 		//--------------------------------------------------
@@ -307,7 +344,10 @@
 
 						if ($config['watermark']) {
 
-							exit_with_error('TODO: Watermark support');
+							exit_with_error('TODO: Watermark support'); // aka 'repeating'... true? position/align = [left/centre/right] x [top/middle/bottom], padding of edges?
+
+								// http://fuelphp.com/docs/classes/image.html#/method_watermark
+								// http://docs.magentocommerce.com/Varien/Varien_Image/Varien_Image.html
 
 						} else {
 
@@ -319,6 +359,233 @@
 					// Success
 
 						return IMAGE_LOAD_SUCCESS;
+
+				}
+			}
+
+		//--------------------------------------------------
+		// Resize
+
+			public function resize($config) {
+				if ($this->image_ref) {
+
+					//--------------------------------------------------
+					// Config
+
+						$defaults = array(
+								'width' => NULL,
+								'width_min' => NULL,
+								'width_max' => NULL,
+								'height' => NULL,
+								'height_min' => NULL,
+								'height_max' => NULL,
+								'stretch' => false,
+								'background' => NULL,
+								'grow' => true, // Grow by default, so adding a background matches the behaviour of 'grow and crop'
+							);
+
+						if (!is_array($config)) {
+							$config = array();
+						}
+
+						$config = array_merge($defaults, $config);
+
+					//--------------------------------------------------
+					// Canvas width/height
+
+						if ($config['width'] > 0 && $config['height'] > 0) {
+
+							//--------------------------------------------------
+							// Straight forward forced size
+
+								$canvas_width = $config['width'];
+								$canvas_height = $config['height'];
+
+						} else if ($config['width'] > 0) {
+
+							//--------------------------------------------------
+							// Forced width, calculated height within min/max
+
+								$canvas_width = $config['width'];
+								$canvas_height = (round($canvas_width * ($this->image_height / $this->image_width)));
+
+								if ($config['background'] !== NULL && !$config['grow'] && $canvas_height > $this->image_height) {
+									$canvas_height = $this->image_height; // If making the image larger (with a background and not growing the image), don't cause pointless top/bottom borders (only add left/right).
+								}
+
+								if ($config['height_min'] > 0 && $canvas_height < $config['height_min']) $canvas_height = $config['height_min']; // If below min height, force it larger (cropped width, or black bars high)
+								if ($config['height_max'] > 0 && $canvas_height > $config['height_max']) $canvas_height = $config['height_max']; // If above max height, force is smaller (cropped height, or black bars wide)
+
+						} else if ($config['height'] > 0) {
+
+							//--------------------------------------------------
+							// Forced height, calculated width within min/max
+
+								$canvas_height = $config['height'];
+								$canvas_width = (round($canvas_height * ($this->image_width / $this->image_height)));
+
+								if ($config['background'] !== NULL && !$config['grow'] && $canvas_width > $this->image_width) {
+									$canvas_width = $this->image_width; // If making the image larger (with a background and not growing the image), don't cause pointless left/right borders (only add top/bottom).
+								}
+
+								if ($config['width_min'] > 0 && $canvas_width < $config['width_min']) $canvas_width = $config['width_min'];
+								if ($config['width_max'] > 0 && $canvas_width > $config['width_max']) $canvas_width = $config['width_max'];
+
+						} else {
+
+							//--------------------------------------------------
+							// Assume the same image size
+
+								$canvas_width = $this->image_width;
+								$canvas_height = $this->image_height;
+
+							//--------------------------------------------------
+							// Scale up to satisfy min width/height
+
+								if ($config['width_min'] > 0 && $canvas_width < $config['width_min']) {
+									$canvas_width = $config['width_min'];
+									$canvas_height = (round($canvas_width * ($this->image_height / $this->image_width))); // Scale up to satisfy min width
+								}
+
+								if ($config['height_min'] > 0 && $canvas_height < $config['height_min']) {
+									$canvas_height = $config['height_min'];
+									$canvas_width = (round($canvas_height * ($this->image_width / $this->image_height))); // Scale up to satisfy min height
+								}
+
+							//--------------------------------------------------
+							// Scale down to satisfy max width/height
+
+								if ($config['width_max'] > 0 && $canvas_width > $config['width_max']) {
+
+									$canvas_width = $config['width_max'];
+									$canvas_height = (round($canvas_width * ($this->image_height / $this->image_width))); // Scale down to satisfy min width
+
+									if ($config['height_min'] > 0 && $canvas_height < $config['height_min']) { // If this now drops the height below the min, just force it (to be cropped, or black bars)
+										$canvas_height = $config['height_min'];
+									}
+
+								}
+
+								if ($config['height_max'] > 0 && $canvas_height > $config['height_max']) {
+
+									$canvas_height = $config['height_max'];
+									$canvas_width = (round($canvas_height * ($this->image_width / $this->image_height))); // Scale down to satisfy min height
+
+									if ($config['width_min'] > 0 && $canvas_width < $config['width_min']) { // If this now drops the width below the min, just force it (to be cropped, or black bars)
+										$canvas_width = $config['width_min'];
+									}
+
+								}
+
+						}
+
+					//--------------------------------------------------
+					// No change
+
+						if ($canvas_width == $this->image_width && $canvas_height == $this->image_height) {
+							return;
+						}
+
+					//--------------------------------------------------
+					// Create new image canvas
+
+						$new_image = $this->_create_canvas($canvas_width, $canvas_height);
+
+					//--------------------------------------------------
+					// Copy image onto new canvas (with background)
+
+						if ($config['stretch']) {
+
+							//--------------------------------------------------
+							// Positions
+
+								$dst_width = $canvas_width;
+								$dst_height = $canvas_height;
+
+								$dst_left = 0;
+								$dst_top = 0;
+
+						} else if ($config['background'] === NULL) { // aka 'grow and crop'
+
+							//--------------------------------------------------
+							// Grow to max size
+
+								$scaled_width = ceil($canvas_height * ($this->image_width / $this->image_height));
+								$scaled_height = ceil($canvas_width * ($this->image_height / $this->image_width));
+
+								if ($scaled_height > $canvas_height) { // If scaled up height (matching canvas width) exceeds canvas, use it.
+									$dst_width = $canvas_width;
+									$dst_height = $scaled_height;
+								} else {
+									$dst_width = $scaled_width;
+									$dst_height = $canvas_height;
+								}
+
+							//--------------------------------------------------
+							// Position
+
+								$dst_left = round(($canvas_width / 2) - ($dst_width / 2));
+								$dst_top = round(($canvas_height / 2) - ($dst_height / 2));
+
+						} else {
+
+							//--------------------------------------------------
+							// Set background
+
+								imagefill($new_image, 0, 0, $this->_colour_allocate($new_image, $config['background']));
+
+							//--------------------------------------------------
+							// Size
+
+								$dst_width = $this->image_width;
+								$dst_height = $this->image_height;
+
+								if ($config['grow']) {
+
+									$scaled_width = ceil($canvas_height * ($this->image_width / $this->image_height));
+									$scaled_height = ceil($canvas_width * ($this->image_height / $this->image_width));
+
+									if ($scaled_height <= $canvas_height) { // If scaled up height (matching canvas width) is still within canvas, use it.
+										$dst_width = $canvas_width;
+										$dst_height = $scaled_height;
+									} else {
+										$dst_width = $scaled_width;
+										$dst_height = $canvas_height;
+									}
+
+								}
+
+								if ($this->image_width > $canvas_width) { // Push width down to fit within canvas
+									$dst_width = $canvas_width;
+									$dst_height = ceil($canvas_width * ($this->image_height / $this->image_width));
+								}
+
+								if ($this->image_height > $canvas_height) { // Push height down to fit within canvas
+									$dst_height = $canvas_height;
+									$dst_width = ceil($canvas_height * ($this->image_width / $this->image_height));
+								}
+
+							//--------------------------------------------------
+							// Position
+
+								$dst_left = round(($canvas_width / 2) - ($dst_width / 2));
+								$dst_top = round(($canvas_height / 2) - ($dst_height / 2));
+
+						}
+
+						imagecopyresampled($new_image, $this->image_ref, $dst_left, $dst_top, 0, 0, $dst_width, $dst_height, $this->image_width, $this->image_height);
+
+					//--------------------------------------------------
+					// Store
+
+						if (isset($new_image)) {
+							imagedestroy($this->image_ref);
+							$this->image_ref = $new_image;
+							$this->image_width = $dst_width;
+							$this->image_height = $dst_height;
+						} else {
+							exit_with_error('Unknown image resize options', print_r($config, true));
+						}
 
 				}
 			}
@@ -355,191 +622,6 @@
 						$this->image_ref = $new_image;
 						$this->image_width = imagesx($this->image_ref);
 						$this->image_height = imagesy($this->image_ref);
-
-				}
-			}
-
-		//--------------------------------------------------
-		// Resize
-
-			public function resize($config) {
-				if ($this->image_ref) {
-
-					//--------------------------------------------------
-					// Config
-
-						$defaults = array(
-								'width' => NULL,
-								'width_min' => NULL,
-								'width_max' => NULL,
-								'height' => NULL,
-								'height_min' => NULL,
-								'height_max' => NULL,
-								'stretch' => false,
-								'crop' => false,
-								'grow' => false,
-								'background' => '000000',
-							);
-
-						if (!is_array($config)) {
-							$config = array();
-						}
-
-						$config = array_merge($defaults, $config);
-
-					//--------------------------------------------------
-					// Base width/height
-
-						if ($config['width'] > 0 && $config['height'] > 0) {
-
-							$new_width = $config['width'];
-							$new_height = $config['height'];
-
-						} else if ($config['width'] > 0) {
-
-							$new_width = $config['width'];
-
-							if ($config['crop']) {
-								$new_height = $this->image_height;
-							} else {
-								$new_height = (round($new_width * ($this->image_height / $this->image_width)));
-							}
-
-						} else if ($config['height'] > 0) {
-
-							$new_height = $config['height'];
-							$new_width = (round($new_height * ($this->image_width / $this->image_height)));
-
-							if ($config['crop'] && $new_width > $this->image_width) {
-								$new_width = $this->image_width;
-							}
-
-// 							if ($config['crop'] && $new_height > $this->image_height) {
-// 								$new_width = $this->image_width;
-// 							} else {
-//
-// 							}
-
-						} else {
-
-							$new_width = $this->image_width;
-							$new_height = $this->image_height;
-
-						}
-
-					//--------------------------------------------------
-					// Min and max sizes
-
-// $image->resize(array('height' => 300, 'width_min' => 500));
-
-						if ($config['width_min'] > 0 && $new_width < $config['width_min']) {
-							$new_width = $config['width_min'];
-
-// 							$test_height = (round($config['width_min'] * ($new_height / $new_width)));
-// 							if ($test_height > $this->image_height && $test_height > $new_height) {
-// 								$new_height = $test_height;
-// 							}
-
-						}
-
-						if ($config['height_min'] > 0 && $new_height < $config['height_min']) {
-// 							$new_width = (round($config['height_min'] * ($new_width / $new_height)));
-							$new_height = $config['height_min'];
-// 							if ($config['width_min'] > 0 && $config['width_min'] > $this->image_width) {
-// 								if ($new_width > $config['width_min']) {
-// 									$new_width = $config['width_min'];
-// 								}
-// 							} else {
-// 								if ($new_width > $this->image_width) {
-// 									$new_width = $this->image_width;
-// 								}
-// 							}
-						}
-
-						if ($config['width_max'] > 0 && $new_width > $config['width_max']) {
-							$new_height = (round($config['width_max'] * ($new_height / $new_width)));
-							$new_width = $config['width_max'];
-						}
-
-						if ($config['height_max'] > 0 && $new_height > $config['height_max']) {
-							$new_width = (round($config['height_max'] * ($new_width / $new_height)));
-							$new_height = $config['height_max'];
-						}
-
-					//--------------------------------------------------
-					// No change
-
-						if ($new_width == $this->image_width && $new_height == $this->image_height) {
-							return;
-						}
-
-					//--------------------------------------------------
-					// Re-size
-
-						$new_image = $this->_create_canvas($new_width, $new_height);
-
-						if ($config['stretch']) {
-
-							imagecopyresampled($new_image, $this->image_ref, 0, 0, 0, 0, $new_width, $new_height, $this->image_width, $this->image_height);
-
-						} else {
-
-							if ($config['background'] !== NULL) {
-								imagefill($new_image, 0, 0, $this->_colour_allocate($new_image, $config['background']));
-							}
-
-							$dst_width = $this->image_width;
-							$dst_height = $this->image_height;
-
-							if ($config['grow'] && $new_width > $this->image_width && $new_height > $this->image_height) {
-
-								$scaled_width = ceil($new_height * ($this->image_width / $this->image_height));
-								$scaled_height = ceil($new_width * ($this->image_height / $this->image_width));
-
-								if ($scaled_height <= $new_height) {
-									$dst_width = $new_width;
-									$dst_height = $scaled_height;
-								} else if ($scaled_width <= $new_width) {
-									$dst_width = $scaled_width;
-									$dst_height = $new_height;
-								} else {
-									exit_with_error('Error calculating scaled size (' . $new_width . ' x ' . $new_height . ' / ' . $this->image_width . ' x ' . $this->image_height . ')'); // Mathematically impossible?
-								}
-
-							}
-
-							if (!$config['crop']) {
-
-								if ($this->image_width > $new_width) {
-									$dst_width = $new_width;
-									$dst_height = ceil($new_width * ($this->image_height / $this->image_width));
-								}
-
-								if ($this->image_height > $new_height) {
-									$dst_width = ceil($new_height * ($this->image_width / $this->image_height));
-									$dst_height = $new_height;
-								}
-
-							}
-
-							$left = round(($new_width / 2) - ($dst_width / 2));
-							$top = round(($new_height / 2) - ($dst_height / 2));
-
-							imagecopyresampled($new_image, $this->image_ref, $left, $top, 0, 0, $dst_width, $dst_height, $this->image_width, $this->image_height);
-
-						}
-
-					//--------------------------------------------------
-					// Store
-
-						if (isset($new_image)) {
-							imagedestroy($this->image_ref);
-							$this->image_ref = $new_image;
-							$this->image_width = $new_width;
-							$this->image_height = $new_height;
-						} else {
-							exit_with_error('Unknown image resize options', print_r($config, true));
-						}
 
 				}
 			}

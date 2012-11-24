@@ -94,6 +94,10 @@
 				session::set('message', $message);
 			}
 
+			public function template_set($template) {
+				config::set('view.template', $template);
+			}
+
 			public function view_path_set($view_path) {
 				config::set('view.path', $view_path);
 			}
