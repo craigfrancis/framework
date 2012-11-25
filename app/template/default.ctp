@@ -27,7 +27,8 @@
 
 			$section_nav = new nav();
 			$section_nav->link_add('/', 'Home');
-			$section_nav->link_add('/form-export/', 'Form');
+			$section_nav->link_add('/form/', 'Form');
+			$section_nav->link_add('/image/', 'Image');
 			$section_nav->link_add('/loading/', 'Loading');
 			$section_nav->link_add('/table/', 'Table');
 			$section_nav->link_add('/browser/', 'Browser');

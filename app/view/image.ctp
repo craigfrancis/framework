@@ -1,35 +1,8 @@
 
-	<table class="basic_table test_table">
-		<thead>
-			<tr>
-				<th scope="col">Config</th>
-				<th scope="col">Normal</th>
-				<th scope="col">Background</th>
-				<th scope="col">Background + Grow</th>
-				<!-- <th scope="col">Stretch</th> -->
-			</tr>
-		</thead>
-		<tbody>
-			<?php
+	<p><a href="<?= html(gateway_url('image-export')) ?>">Download</a> stand alone version of image class.</p>
 
-				foreach ($images as $id => $image) {
+	<?php if (isset($testing_url)) { ?>
 
-					$url = $image['url'];
+		<p><a href="<?= html($testing_url) ?>">Testing</a>.</p>
 
-					$config = $image;
-					unset($config['url']);
-
-					echo '
-						<tr>
-							<td><pre>' . print_r($config, true) . '</pre></td>
-							<td class="image"><img src="' . html($url) . '" alt="" /></td>
-							<td class="image"><img src="' . html($url->get(array('background' => '000000'))) . '" alt="" /></td>
-							<td class="image"><img src="' . html($url->get(array('background' => '000000', 'grow' => 'true'))) . '" alt="" /></td>
-							<!-- <td class="image"><img src="' . html($url->get(array('stretch' => 'true'))) . '" alt="" /></td> -->
-						</tr>';
-
-				}
-
-			?>
-		</tbody>
-	</table>
+	<?php } ?>

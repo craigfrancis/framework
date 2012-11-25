@@ -271,6 +271,7 @@
 	config::set('debug.show', false);
 
 	mime_set('text/plain');
+
 	echo $output_php;
 
 	if ($path_output != NULL) {

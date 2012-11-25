@@ -3,73 +3,61 @@
 /***************************************************
 
 	//--------------------------------------------------
-	// License
+	// Load image and send to browser
 
-		This source code is released under the BSD licence,
-		see the end of this script for the full details.
-		It was originally created by Craig Francis in 2006.
+		$image = new image('1.jpg');
 
-		http://www.craigfrancis.co.uk/features/code/phpImage/
+		$image->output_jpg();
 
 	//--------------------------------------------------
-	// Example setup
+	// Load two images
 
-		//--------------------------------------------------
-		// Load image and send to browser
+		$image_sub = new image('2.gif');
 
-			$image = new image('1.jpg');
+		$image = new image('1.jpg');
+		$image->image_add($image_sub, 10, 123);
 
-			$image->output_jpg();
+		$image->output_gif();
 
-		//--------------------------------------------------
-		// Load two images
+	//--------------------------------------------------
+	// Resize image
 
-			$image_sub = new image('2.gif');
+		$image = new image('1.jpg'); // Presuming the size is 100x200
 
-			$image = new image('1.jpg');
-			$image->image_add($image_sub, 10, 123);
+		$config = array( // Scales this image to 500x1000
+				'width' => 500,
+			);
 
-			$image->output_gif();
+		$config = array( // Scales to the biggest dimension (in this case the width), then crops the rest of the other dimension.
+				'width' => 500,
+				'height' => 100,
+			);
 
-		//--------------------------------------------------
-		// Resize image
+		$config = array( // Scaled to 200x400 (to satisfy min width), and would have cropped the image if the max height was 300.
+				'width_min' => 200,
+				'width_max' => 400,
+				'height_min' => 100,
+				'height_max' => 500,
+			);
 
-			$image = new image('1.jpg'); // Presuming the size is 100x200
+		$config = array( // Scaled to 200x300, but the picture grows to 150x300, with a black border left/right (no cropping).
+				'width_min' => 200,
+				'width_max' => 400,
+				'height_min' => 100,
+				'height_max' => 300,
+				'background' => '000000',
+			);
 
-			$config = array( // Scales this image to 500x1000
-					'width' => 500,
-				);
+		$config = array( // Scaled to 200x300, but the picture stays at 100x200, with a black border.
+				'width_min' => 200,
+				'width_max' => 400,
+				'height_min' => 100,
+				'height_max' => 300,
+				'background' => '000000',
+				'grow' => false,
+			);
 
-			$config = array( // Scales to the biggest dimension (in this case the width), then crops the rest of the other dimension.
-					'width' => 500,
-					'height' => 100,
-				);
-
-			$config = array( // Scaled to 200x400 (to satisfy min width), and would have cropped the image if the max height was 300.
-					'width_min' => 200,
-					'width_max' => 400,
-					'height_min' => 100,
-					'height_max' => 500,
-				);
-
-			$config = array( // Scaled to 200x300, but the picture grows to 150x300, with a black border left/right (no cropping).
-					'width_min' => 200,
-					'width_max' => 400,
-					'height_min' => 100,
-					'height_max' => 300,
-					'background' => '000000',
-				);
-
-			$config = array( // Scaled to 200x300, but the picture stays at 100x200, with a black border.
-					'width_min' => 200,
-					'width_max' => 400,
-					'height_min' => 100,
-					'height_max' => 300,
-					'background' => '000000',
-					'grow' => false,
-				);
-
-			$image->save_jpg('/path/to/file.jpg');
+		$image->save_jpg('/path/to/file.jpg');
 
 ***************************************************/
 
@@ -647,21 +635,21 @@
 
 			public function output_png($compression = 6) {
 				if ($this->image_ref) {
-					mime_set('image/png');
+					header('Content-Type: image/png');
 					imagepng($this->image_ref, NULL, $compression);
 				}
 			}
 
 			public function output_gif() {
 				if ($this->image_ref) {
-					mime_set('image/gif');
+					header('Content-Type: image/gif');
 					imagegif($this->image_ref);
 				}
 			}
 
 			public function output_jpg($quality = 75) {
 				if ($this->image_ref) {
-					mime_set('image/jpeg');
+					header('Content-Type: image/jpeg');
 					imagejpeg($this->image_ref, NULL, $quality);
 				}
 			}
