@@ -69,7 +69,7 @@
 					'grow' => false,
 				);
 
-			$image->save_png('/path/to/file.png');
+			$image->save_jpg('/path/to/file.jpg');
 
 ***************************************************/
 
@@ -330,7 +330,7 @@
 								'top' => 0,
 								'width' => $return['width'],
 								'height' => $return['height'],
-								'watermark' => false,
+								'repeat' => NULL,
 							);
 
 						if (!is_array($config)) {
@@ -342,9 +342,9 @@
 					//--------------------------------------------------
 					// Add
 
-						if ($config['watermark']) {
+						if ($config['repeat']) {
 
-							exit_with_error('TODO: Watermark support'); // aka 'repeating'... true? position/align = [left/centre/right] x [top/middle/bottom], padding of edges?
+							exit_with_error('TODO: Repeat support'); // aka 'watermark'... true? position/align = [left/centre/right] x [top/middle/bottom], padding of edges?
 
 								// http://fuelphp.com/docs/classes/image.html#/method_watermark
 								// http://docs.magentocommerce.com/Varien/Varien_Image/Varien_Image.html
@@ -578,14 +578,11 @@
 					//--------------------------------------------------
 					// Store
 
-						if (isset($new_image)) {
-							imagedestroy($this->image_ref);
-							$this->image_ref = $new_image;
-							$this->image_width = $dst_width;
-							$this->image_height = $dst_height;
-						} else {
-							exit_with_error('Unknown image resize options', print_r($config, true));
-						}
+						imagedestroy($this->image_ref);
+
+						$this->image_ref = $new_image;
+						$this->image_width = $canvas_width;
+						$this->image_height = $canvas_height;
 
 				}
 			}
@@ -672,20 +669,23 @@
 		//--------------------------------------------------
 		// Save image
 
-			public function save($file_path, $type = 'png') {
-				if ($type == 'png') {
-					$this->save_png($file_path);
-				} else if ($type == 'gif') {
+			public function save($file_path, $file_type = 'jpg', $quality = NULL) {
+				if ($file_type == 'jpg') {
+					$this->save_jpg($file_path, $quality);
+				} else if ($file_type == 'png') {
+					$this->save_png($file_path, $quality);
+				} else if ($file_type == 'gif') {
 					$this->save_gif($file_path);
-				} else if ($type == 'jpg') {
-					$this->save_jpg($file_path);
 				} else {
-					exit_with_error('Unknown image type "' . $type . '"');
+					exit_with_error('Unknown image type "' . $file_type . '"');
 				}
 			}
 
-			public function save_png($file_path, $compression = 6) {
+			public function save_png($file_path, $compression = NULL) {
 				if ($this->image_ref) {
+					if ($compression === NULL) {
+						$compression = 6;
+					}
 					imagepng($this->image_ref, $file_path, $compression);
 					@chmod($file_path, 0666);
 				}
@@ -698,8 +698,11 @@
 				}
 			}
 
-			public function save_jpg($file_path, $quality = 75) {
+			public function save_jpg($file_path, $quality = NULL) {
 				if ($this->image_ref) {
+					if ($quality === NULL) {
+						$quality = 75;
+					}
 					imagejpeg($this->image_ref, $file_path, $quality);
 					@chmod($file_path, 0666);
 				}
@@ -712,7 +715,7 @@
 					// Config
 
 						$defaults = array(
-								'file_ext' => 'jpg',
+								'file_type' => 'jpg',
 								'tile_width' => 256,
 								'tile_height' => 256,
 								'background' => NULL,
@@ -773,15 +776,15 @@
 
 								imagecopyresampled($tile, $canvas, 0, 0, ($x * $config['tile_width']), ($y * $config['tile_width']), $config['tile_width'], $config['tile_height'], $config['tile_width'], $config['tile_height']);
 
-								$file_path = $file_name_prefix . $x . '-' . $y . '.' . $config['file_ext'];
+								$file_path = $file_name_prefix . $x . '-' . $y . '.' . $config['file_type'];
 
 								if ($config['quality']) {
-									if ($config['file_ext'] == 'png') imagepng($tile, $file_path, $config['quality']);
-									if ($config['file_ext'] == 'jpg') imagejpeg($tile, $file_path, $config['quality']);
+									if ($config['file_type'] == 'png') imagepng($tile, $file_path, $config['quality']);
+									if ($config['file_type'] == 'jpg') imagejpeg($tile, $file_path, $config['quality']);
 								} else {
-									if ($config['file_ext'] == 'png') imagepng($tile, $file_path);
-									if ($config['file_ext'] == 'gif') imagegif($tile, $file_path);
-									if ($config['file_ext'] == 'jpg') imagejpeg($tile, $file_path);
+									if ($config['file_type'] == 'png') imagepng($tile, $file_path);
+									if ($config['file_type'] == 'gif') imagegif($tile, $file_path);
+									if ($config['file_type'] == 'jpg') imagejpeg($tile, $file_path);
 								}
 
 								@chmod($file_path, 0666);
