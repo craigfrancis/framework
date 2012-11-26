@@ -174,6 +174,10 @@
 		//--------------------------------------------------
 		// Image support
 
+			public function image_exists($id, $size = 'original') {
+				return file_exists($this->image_path_get($id, $size));
+			}
+
 			public function image_path_get($id, $size = 'original') {
 				return $this->folder_path_get() . '/' . safe_file_name($size) . '/' . safe_file_name($id) . '.' . safe_file_name($this->config['image_type']);
 			}
@@ -198,18 +202,18 @@
 
 			}
 
-			public function image_exists($id) {
-				return file_exists($this->image_path_get($id));
-			}
+			public function image_html_get($id, $size = 'original', $alt = '') {
 
-			public function image_get_html($id, $alt = '', $size = 'original') {
+				$image_path = $this->image_path_get($id, $size);
 
-				$image_info = getimagesize($this->image_path_get($id, $size));
-				if ($image_info) {
-					return '<img src="' . html($this->image_url_get($id, $size)) . '" alt="' . html($alt) . '" width="' . html($image_info[0]) . '" height="' . html($image_info[1]) . '" />';
-				} else {
-					return 'N/A';
+				if (file_exists($image_path)) {
+					$image_info = getimagesize($image_path);
+					if ($image_info) {
+						return '<img src="' . html($this->image_url_get($id, $size)) . '" alt="' . html($alt) . '" width="' . html($image_info[0]) . '" height="' . html($image_info[1]) . '" />';
+					}
 				}
+
+				return NULL;
 
 			}
 
@@ -231,7 +235,15 @@
 
 						$original_dir = dirname($original_path);
 						if (!is_dir($original_dir)) {
-							mkdir($original_dir, 0777, true); // Most installs will write as the "apache" user, which is a problem if the normal user account can't edit/delete these files.
+							if (SERVER == 'live') {
+								mkdir($original_dir, 0777, true); // Most installs will write as the "apache" user, which is a problem if the normal user account can't edit/delete these files.
+							}
+							if (!is_dir($original_dir)) {
+								exit_with_error('Missing image directory', $original_dir);
+							}
+						}
+						if (!is_writable($original_dir)) {
+							exit_with_error('Cannot write to image directory', $original_dir);
 						}
 
 						$source_image = new image($path); // The image needs to be re-saved, ensures no hacked files are uploaded and exposed though the FILE_URL folder.

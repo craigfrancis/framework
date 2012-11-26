@@ -245,21 +245,7 @@
 
 		}
 
-		public function sort_get_sql() {
-
-			$this->sort_enabled = true;
-
-			$order_by_sql = $this->sort_field_get();
-
-			if (preg_match('/^([^,]+)(,.*)$/', $order_by_sql, $matches)) {
-				return $matches[1] . ' ' . $this->sort_order_get() . $matches[2];
-			} else {
-				return $order_by_sql . ' ' . $this->sort_order_get();
-			}
-
-		}
-
-		public function sort_get_url($field, $order) {
+		public function sort_url_get($field, $order) {
 
 			$this->sort_enabled = true;
 
@@ -273,6 +259,20 @@
 				return url($params);
 			} else {
 				return url($this->current_url, $params);
+			}
+
+		}
+
+		public function sort_get_sql() {
+
+			$this->sort_enabled = true;
+
+			$order_by_sql = $this->sort_field_get();
+
+			if (preg_match('/^([^,]+)(,.*)$/', $order_by_sql, $matches)) {
+				return $matches[1] . ' ' . $this->sort_order_get() . $matches[2];
+			} else {
+				return $order_by_sql . ' ' . $this->sort_order_get();
 			}
 
 		}
@@ -445,7 +445,7 @@
 
 							} else if ($current_sort == $heading_info['sort_name']) {
 
-								$url = $this->sort_get_url($heading_info['sort_name'], ($sort_asc ? 'desc' : 'asc'));
+								$url = $this->sort_url_get($heading_info['sort_name'], ($sort_asc ? 'desc' : 'asc'));
 
 								$heading_html = '<a href="' . html($url) . '">' . ($sort_asc ? $this->sort_active_asc_prefix_html : $this->sort_active_desc_prefix_html) . $heading_info['html'] . ($sort_asc ? $this->sort_active_asc_suffix_html : $this->sort_active_desc_suffix_html) . '</a>';
 
@@ -453,7 +453,7 @@
 
 							} else {
 
-								$url = $this->sort_get_url($heading_info['sort_name'], 'asc');
+								$url = $this->sort_url_get($heading_info['sort_name'], 'asc');
 
 								$heading_html = '<a href="' . html($url) . '">' . $this->sort_inactive_prefix_html . $heading_info['html'] . $this->sort_inactive_suffix_html . '</a>';
 

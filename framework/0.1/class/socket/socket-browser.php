@@ -196,10 +196,10 @@
 		// Link support
 
 			public function link_follow($query) {
-				return $this->_send($this->link_get_url($query));
+				return $this->_send($this->link_url_get($query));
 			}
 
-			public function link_get_url($query) {
+			public function link_url_get($query) {
 
 				//--------------------------------------------------
 				// Node

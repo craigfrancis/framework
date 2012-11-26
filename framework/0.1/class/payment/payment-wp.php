@@ -78,7 +78,7 @@
 				//--------------------------------------------------
 				// Logout URL
 
-					$logout_url = $browser->link_get_url('//a[contains(@href,"logoff=true")]');
+					$logout_url = $browser->link_url_get('//a[contains(@href,"logoff=true")]');
 
 				//--------------------------------------------------
 				// Reports
