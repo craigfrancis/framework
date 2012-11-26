@@ -8,6 +8,7 @@ Usage:
 
 	$cms_markdown = new cms_markdown(array(
 			'allow_html_code' => false,
+			'heading_level' => 2,
 			'tab_width' => 4,
 			'empty_element_suffix' => ' />',
 		));
@@ -91,6 +92,7 @@ class cms_markdown_base extends check {
 		// Boolean (permission) values - default to false
 
 			$this->config['allow_html_code']      = (isset($config['allow_html_code'])      ? $config['allow_html_code']      : false);
+			$this->config['heading_level']        = (isset($config['heading_level'])        ? $config['heading_level']        : 2);
 			$this->config['tab_width']            = (isset($config['tab_width'])            ? $config['tab_width']            : 4);
 			$this->config['empty_element_suffix'] = (isset($config['empty_element_suffix']) ? $config['empty_element_suffix'] : ' />');
 
@@ -779,11 +781,13 @@ class cms_markdown_base extends check {
 			return $matches[0];
 
 		$level = $matches[2]{0} == '=' ? 1 : 2;
+		$level += intval($this->config['heading_level'] - 1);
 		$block = "<h$level>".$this->runSpanGamut($matches[1])."</h$level>";
 		return "\n" . $this->hashBlock($block) . "\n\n";
 	}
 	function _doHeaders_callback_atx($matches) {
 		$level = strlen($matches[1]);
+		$level += intval($this->config['heading_level'] - 1);
 		$block = "<h$level>".$this->runSpanGamut($matches[2])."</h$level>";
 		return "\n" . $this->hashBlock($block) . "\n\n";
 	}

@@ -32,7 +32,7 @@
 					'allow_heading_tags' => false,
 					'no_follow_links' => false,
 					'hide_cms_comments' => false,
-					'heading_level' => 3,
+					'heading_level' => 2,
 				));
 
 		//--------------------------------------------------
@@ -96,7 +96,7 @@ class cms_tags_base extends check {
 			if (isset($config['heading_level'])) {
 				$this->config['heading_level'] = $config['heading_level']; // Valid number checked later
 			} else {
-				$this->config['heading_level'] = NULL;
+				$this->config['heading_level'] = 2;
 			}
 
 	}
@@ -825,10 +825,10 @@ class cms_tags_base extends check {
 
 			} else if (preg_match('/^h([1-6])?$/', $current_block_tag, $matches)) {
 
-				$level = intval($this->config['heading_level']);
+				$level = intval($this->config['heading_level']); // Default 2
 
 				if (isset($matches[1])) {
-					$level += (intval($matches[1]) - 1);
+					$level += (intval($matches[1]) - 1); // If heading_level is set to 2, a h3 would become a <h4>
 				}
 
 				if ($level < 1) $level = 1;
