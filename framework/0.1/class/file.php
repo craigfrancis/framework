@@ -202,14 +202,14 @@
 
 			}
 
-			public function image_html_get($id, $size = 'original', $alt = '') {
+			public function image_html_get($id, $size = 'original', $alt = '', $img_id = NULL) {
 
 				$image_path = $this->image_path_get($id, $size);
 
 				if (file_exists($image_path)) {
 					$image_info = getimagesize($image_path);
 					if ($image_info) {
-						return '<img src="' . html($this->image_url_get($id, $size)) . '" alt="' . html($alt) . '" width="' . html($image_info[0]) . '" height="' . html($image_info[1]) . '" />';
+						return '<img src="' . html($this->image_url_get($id, $size)) . '" alt="' . html($alt) . '" width="' . html($image_info[0]) . '" height="' . html($image_info[1]) . '"' . ($img_id === NULL ? '' : ' id="' . html($img_id) . '"') . ' />';
 					}
 				}
 
