@@ -40,7 +40,7 @@
 				'height_max' => 500,
 			);
 
-		$config = array( // Scaled to 200x300, but the picture grows to 150x300, with a black border left/right (no cropping).
+		$config = array( // Scaled to 200x300, but the picture changes to 150x300, with a black border left/right (no cropping).
 				'width_min' => 200,
 				'width_max' => 400,
 				'height_min' => 100,
@@ -54,7 +54,7 @@
 				'height_min' => 100,
 				'height_max' => 300,
 				'background' => '000000',
-				'grow' => false,
+				'scale' => false,
 			);
 
 		$image->save_jpg('/path/to/file.jpg');
@@ -76,7 +76,8 @@
 			private $image_height = NULL;
 			private $image_type = NULL;
 
-			private $alpha_blending = true;
+			public $alpha_blend = false; // Don't blend by default, and expose value (public) for when this image is being added to another image
+			public $alpha_save = true;
 
 		//--------------------------------------------------
 		// Setup
@@ -144,20 +145,22 @@
 				$this->image_type = $return['type'];
 
 				if (is_object($file_path) && (get_class($file_path) == 'image' || is_subclass_of($file_path, 'image'))) {
-					$this->alpha_blending = $file_path->alpha_blending;
+					$this->alpha_blend = $file_path->alpha_blend;
+					$this->alpha_save = $file_path->alpha_save;
+					$this->_alpha_update($this->image_ref);
 				}
 
 				if (!imageistruecolor($this->image_ref)) { // Happens when using imagecreatefromgif
 
-					// Disabled as this breaks Creative Metier on the SS server when doing a simple load and save on a gif with transparency.
+					// Disabled as this breaks when doing a simple load and save on a gif with transparency.
 
-					// $old_alpha_blending = $this->alpha_blending;
-					// $this->alpha_blending = false; // Don't want blending support for this new canvas, while copy over the transparent gif
+					// $old_alpha_blend = $this->alpha_blend;
+					// $this->alpha_blend = false; // Don't want blending support for this new canvas, while copy over the transparent gif
 					// $new_image = $this->_create_canvas($this->image_width, $this->image_height);
 					// imagecopyresampled($new_image, $this->image_ref, 0, 0, 0, 0, $this->image_width, $this->image_height, $this->image_width, $this->image_height);
 					// imagedestroy($this->image_ref);
 					// $this->image_ref = $new_image;
-					// $this->alpha_blending_set($old_alpha_blending);
+					// $this->alpha_blend_set($old_alpha_blend);
 
 				}
 
@@ -263,15 +266,17 @@
 			}
 
 		//--------------------------------------------------
-		// Create canvas (alpha blending support)
+		// Create canvas (alpha config)
 
 			private function _create_canvas($width, $height) {
 
 				$image = imagecreatetruecolor($width, $height);
-				$image = $this->alpha_blending_update($image);
 
-				if (!$this->alpha_blending) {
-					imagecolortransparent($image, imagecolorallocatealpha($image, 0, 0, 0, 127));
+				$this->_alpha_update($image);
+
+				if (!$this->alpha_blend) {
+					// imagecolortransparent($image, imagecolorallocatealpha($image, 0, 0, 0, 127));
+					// - or -
 					// $background = imagecolorallocatealpha($image, 0, 0, 0, 127); // Does not work when opening and directly saving a gif with transparency
 					// imagefill($image, 0, 0, $background);
 				}
@@ -280,20 +285,19 @@
 
 			}
 
-			public function alpha_blending_set($enabled) {
-				$this->alpha_blending = ($enabled === true);
-				$this->alpha_blending_update($this->image_ref);
+			public function alpha_blend_set($enabled) {
+				$this->alpha_blend = ($enabled === true);
+				$this->_alpha_update($this->image_ref);
 			}
 
-			public function alpha_blending_update($image) {
-				if ($this->alpha_blending) {
-					imagealphablending($image, true); // Must be on (default) for True_type fonts
-					imagesavealpha($image, false);
-				} else {
-					imagealphablending($image, false); // Must be off for 'save alpha'
-					imagesavealpha($image, true);
-				}
-				return $image;
+			public function alpha_save_set($enabled) {
+				$this->alpha_save = ($enabled === true);
+				$this->_alpha_update($this->image_ref);
+			}
+
+			private function _alpha_update($image) {
+				imagealphablending($image, $this->alpha_blend); // Must be on for True_type fonts
+				imagesavealpha($image, $this->alpha_save);
 			}
 
 		//--------------------------------------------------
@@ -305,19 +309,19 @@
 					//--------------------------------------------------
 					// Load image
 
-						$return = $this->_load_image($image);
-						if (!is_array($return)) {
-							return $return;
+						$src = $this->_load_image($image);
+						if (!is_array($src)) {
+							return $src;
 						}
 
 					//--------------------------------------------------
 					// Config
 
 						$defaults = array(
+								'width' => NULL,
+								'height' => NULL,
 								'left' => 0,
 								'top' => 0,
-								'width' => $return['width'],
-								'height' => $return['height'],
 								'repeat' => NULL,
 							);
 
@@ -332,14 +336,20 @@
 
 						if ($config['repeat']) {
 
-							exit_with_error('TODO: Repeat support'); // aka 'watermark'... true? position/align = [left/centre/right] x [top/middle/bottom], padding of edges?
+							$dst_width  = ($config['width']  !== NULL ? $config['width']  : $this->image_width);
+							$dst_height = ($config['height'] !== NULL ? $config['height'] : $this->image_height);
+
+							exit_with_error('TODO: Repeat support'); // aka 'watermark'... true? position/align = [left/centre/right] x [top/middle/bottom] ... width/height is the area on dest to cover, don't stretch (if not set, assume full dest image size)
 
 								// http://fuelphp.com/docs/classes/image.html#/method_watermark
 								// http://docs.magentocommerce.com/Varien/Varien_Image/Varien_Image.html
 
 						} else {
 
-							imagecopyresampled($this->image_ref, $return['ref'], $config['left'], $config['top'], 0, 0, $config['width'], $config['height'], $return['width'], $return['height']);
+							$dst_width  = ($config['width']  !== NULL ? $config['width']  : $src['width']);
+							$dst_height = ($config['height'] !== NULL ? $config['height'] : $src['height']);
+
+							imagecopyresampled($this->image_ref, $src['ref'], $config['left'], $config['top'], 0, 0, $dst_width, $dst_height, $src['width'], $src['height']);
 
 						}
 
@@ -369,7 +379,9 @@
 								'height_max' => NULL,
 								'stretch' => false,
 								'background' => NULL,
-								'grow' => true, // Grow by default, so adding a background matches the behaviour of 'grow and crop'
+								'scale' => true,
+								'left' => NULL,
+								'top' => NULL,
 							);
 
 						if (!is_array($config)) {
@@ -397,8 +409,8 @@
 								$canvas_width = $config['width'];
 								$canvas_height = (round($canvas_width * ($this->image_height / $this->image_width)));
 
-								if ($config['background'] !== NULL && !$config['grow'] && $canvas_height > $this->image_height) {
-									$canvas_height = $this->image_height; // If making the image larger (with a background and not growing the image), don't cause pointless top/bottom borders (only add left/right).
+								if ($config['background'] !== NULL && !$config['scale'] && $canvas_height > $this->image_height) {
+									$canvas_height = $this->image_height; // If making the image larger (with a background and not scaling the image), don't cause pointless top/bottom borders (only add left/right).
 								}
 
 								if ($config['height_min'] > 0 && $canvas_height < $config['height_min']) $canvas_height = $config['height_min']; // If below min height, force it larger (cropped width, or black bars high)
@@ -412,8 +424,8 @@
 								$canvas_height = $config['height'];
 								$canvas_width = (round($canvas_height * ($this->image_width / $this->image_height)));
 
-								if ($config['background'] !== NULL && !$config['grow'] && $canvas_width > $this->image_width) {
-									$canvas_width = $this->image_width; // If making the image larger (with a background and not growing the image), don't cause pointless left/right borders (only add top/bottom).
+								if ($config['background'] !== NULL && !$config['scale'] && $canvas_width > $this->image_width) {
+									$canvas_width = $this->image_width; // If making the image larger (with a background and not scaling the image), don't cause pointless left/right borders (only add top/bottom).
 								}
 
 								if ($config['width_min'] > 0 && $canvas_width < $config['width_min']) $canvas_width = $config['width_min'];
@@ -493,27 +505,34 @@
 								$dst_left = 0;
 								$dst_top = 0;
 
-						} else if ($config['background'] === NULL) { // aka 'grow and crop'
+						} else if ($config['background'] === NULL) { // aka 'crop'
 
 							//--------------------------------------------------
-							// Grow to max size
+							// Scale, possibly to max size
 
-								$scaled_width = ceil($canvas_height * ($this->image_width / $this->image_height));
-								$scaled_height = ceil($canvas_width * ($this->image_height / $this->image_width));
+								$dst_width = $this->image_width;
+								$dst_height = $this->image_height;
 
-								if ($scaled_height > $canvas_height) { // If scaled up height (matching canvas width) exceeds canvas, use it.
-									$dst_width = $canvas_width;
-									$dst_height = $scaled_height;
-								} else {
-									$dst_width = $scaled_width;
-									$dst_height = $canvas_height;
+								if ($config['scale']) {
+
+									$scaled_width = round($canvas_height * ($this->image_width / $this->image_height));
+									$scaled_height = round($canvas_width * ($this->image_height / $this->image_width));
+
+									if ($scaled_height > $canvas_height) { // If scaled up height (matching canvas width) exceeds canvas, use it.
+										$dst_width = $canvas_width;
+										$dst_height = $scaled_height;
+									} else {
+										$dst_width = $scaled_width;
+										$dst_height = $canvas_height;
+									}
+
 								}
 
 							//--------------------------------------------------
 							// Position
 
-								$dst_left = round(($canvas_width / 2) - ($dst_width / 2));
-								$dst_top = round(($canvas_height / 2) - ($dst_height / 2));
+								$dst_left = round($config['left'] !== NULL ? (0 - $config['left']) : (($canvas_width  / 2) - ($dst_width  / 2)));
+								$dst_top  = round($config['top']  !== NULL ? (0 - $config['top'])  : (($canvas_height / 2) - ($dst_height / 2)));
 
 						} else {
 
@@ -528,10 +547,10 @@
 								$dst_width = $this->image_width;
 								$dst_height = $this->image_height;
 
-								if ($config['grow']) {
+								if ($config['scale']) {
 
-									$scaled_width = ceil($canvas_height * ($this->image_width / $this->image_height));
-									$scaled_height = ceil($canvas_width * ($this->image_height / $this->image_width));
+									$scaled_width = round($canvas_height * ($this->image_width / $this->image_height));
+									$scaled_height = round($canvas_width * ($this->image_height / $this->image_width));
 
 									if ($scaled_height <= $canvas_height) { // If scaled up height (matching canvas width) is still within canvas, use it.
 										$dst_width = $canvas_width;
@@ -541,23 +560,23 @@
 										$dst_height = $canvas_height;
 									}
 
-								}
+									if ($this->image_width > $canvas_width) { // Push width down to fit within canvas
+										$dst_width = $canvas_width;
+										$dst_height = ceil($canvas_width * ($this->image_height / $this->image_width));
+									}
 
-								if ($this->image_width > $canvas_width) { // Push width down to fit within canvas
-									$dst_width = $canvas_width;
-									$dst_height = ceil($canvas_width * ($this->image_height / $this->image_width));
-								}
+									if ($this->image_height > $canvas_height) { // Push height down to fit within canvas
+										$dst_height = $canvas_height;
+										$dst_width = ceil($canvas_height * ($this->image_width / $this->image_height));
+									}
 
-								if ($this->image_height > $canvas_height) { // Push height down to fit within canvas
-									$dst_height = $canvas_height;
-									$dst_width = ceil($canvas_height * ($this->image_width / $this->image_height));
 								}
 
 							//--------------------------------------------------
 							// Position
 
-								$dst_left = round(($canvas_width / 2) - ($dst_width / 2));
-								$dst_top = round(($canvas_height / 2) - ($dst_height / 2));
+								$dst_left = round($config['left'] !== NULL ? (0 - $config['left']) : (($canvas_width  / 2) - ($dst_width  / 2)));
+								$dst_top  = round($config['top']  !== NULL ? (0 - $config['top'])  : (($canvas_height / 2) - ($dst_height / 2)));
 
 						}
 
