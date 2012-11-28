@@ -78,9 +78,9 @@
 			//--------------------------------------------------
 			// Set config
 
-				if (is_numeric($config)) { // May be a string
+				if (!is_array($config)) { // May be a string, number, or false (if database did not return record count)
 					$config = array(
-							'items_count' => $config
+							'items_count' => intval($config),
 						);
 				}
 

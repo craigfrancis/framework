@@ -223,6 +223,11 @@
 			public function image_save($id, $path = NULL) { // No path set, then re-save images using the original file.
 
 				//--------------------------------------------------
+				// Make sure we have plenty of memory
+
+					ini_set('memory_limit', '1024M');
+
+				//--------------------------------------------------
 				// Original image
 
 					$original_path = $this->image_path_get($id, 'original');

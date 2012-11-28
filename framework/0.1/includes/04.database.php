@@ -88,7 +88,11 @@
 
 		public function fetch_result($row = 0, $col = 0, $result = null) {
 			if ($result === null) $result = $this->result;
-			return mysql_result($result, $row, $col);
+			if (mysql_num_rows($result) > $row) {
+				return mysql_result($result, $row, $col);
+			} else {
+				return NULL;
+			}
 		}
 
 		public function insert_id() {
