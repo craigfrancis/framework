@@ -98,6 +98,10 @@
 				config::set('view.template', $template);
 			}
 
+			public function template_path_get($template = NULL) {
+				return APP_ROOT . '/template/' . safe_file_name($template !== NULL ? $template : config::get('view.template')) . '.ctp';
+			}
+
 			public function view_path_set($view_path) {
 				config::set('view.path', $view_path);
 			}
@@ -652,7 +656,7 @@
 				//--------------------------------------------------
 				// Include
 
-					require($this->template_path_get());
+					require($this->_template_path_get());
 
 				//--------------------------------------------------
 				// If view_get_html() was not called
@@ -663,9 +667,9 @@
 
 			}
 
-			private function template_path_get() {
+			private function _template_path_get() {
 
-				$template_path = APP_ROOT . '/template/' . safe_file_name(config::get('view.template')) . '.ctp';
+				$template_path = $this->template_path_get();
 
 				if (config::get('debug.level') >= 3) {
 					debug_note_html('<strong>Template</strong>: ' . html(str_replace(ROOT, '', $template_path)), 'H');
