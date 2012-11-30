@@ -713,9 +713,21 @@
 //--------------------------------------------------
 // Temporary files
 
-	//function tmp_() {
-	//	$cache_folder
-	//}
+	function tmp_folder($folder) {
+
+		$path = PRIVATE_ROOT . '/tmp/' . safe_file_name($folder) . '/';
+
+		if (!is_dir($path)) {
+			@mkdir($path, 0777);
+			@chmod($path, 0777); // Probably created with web server user, but needs to be edited/deleted with user account
+		}
+
+		if (!is_dir($path)) exit_with_error('Cannot create "' . $folder . '" temp folder', $path);
+		if (!is_writable($path)) exit_with_error('Cannot write to "' . $folder . '" temp folder', $path);
+
+		return $path;
+
+	}
 
 //--------------------------------------------------
 // Random bytes - from Drupal/phpPass

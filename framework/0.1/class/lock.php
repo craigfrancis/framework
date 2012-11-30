@@ -62,17 +62,7 @@
 				//--------------------------------------------------
 				// Lock path
 
-					$lock_folder = PRIVATE_ROOT . '/tmp/lock/';
-
-					if (!is_dir($lock_folder)) {
-						@mkdir($lock_folder, 0777);
-						@chmod($lock_folder, 0777); // Probably created with web server user, but needs to be deleted with user account
-					}
-
-					if (!is_dir($lock_folder)) exit_with_error('Cannot create lock folder', $lock_folder);
-					if (!is_writable($lock_folder)) exit_with_error('Cannot write to lock folder', $lock_folder);
-
-					$this->lock_path = $lock_folder . safe_file_name($this->lock_type);
+					$this->lock_path = tmp_folder('lock') . safe_file_name($this->lock_type);
 
 					if ($this->lock_ref) {
 						$this->lock_path .= '.' . safe_file_name($this->lock_ref);

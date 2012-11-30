@@ -242,11 +242,11 @@
 
 					if ($route_ext == 'js' && config::get('output.js_min')) {
 
-						$cache_folder = PRIVATE_ROOT . '/tmp/js_min/';
+						$cache_folder = tmp_folder('js_min');
 
 					} else if ($route_ext == 'css' && config::get('output.css_tidy')) {
 
-						$cache_folder = PRIVATE_ROOT . '/tmp/css_tidy/';
+						$cache_folder = tmp_folder('css_tidy');
 
 					} else {
 
@@ -255,14 +255,6 @@
 					}
 
 					if ($cache_folder) {
-
-						if (!is_dir($cache_folder)) {
-							@mkdir($cache_folder, 0777);
-							@chmod($cache_folder, 0777);
-						}
-
-						if (!is_dir($cache_folder)) exit_with_error('Cannot create cache folder', $cache_folder);
-						if (!is_writable($cache_folder)) exit_with_error('Cannot write to cache folder', $cache_folder);
 
 						$cache_file_base = $cache_folder . sha1($route_dir . $route_file . $route_ext);
 						$cache_file_time = $cache_file_base . '-' . $route_mtime;
