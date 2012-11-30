@@ -82,10 +82,6 @@
 
 			}
 
-			public function time_out_get() {
-				return $this->time_out;
-			}
-
 		//--------------------------------------------------
 		// Data
 

@@ -9,8 +9,8 @@
 		// $loading->time_out_set(60 * 10); // Seconds before script will timeout
 		// $loading->refresh_frequency_set(2); // Seconds browser will wait before trying again
 		// $loading->refresh_url_set('...'); // If you want the user to load a different url while waiting (e.g. add a new parameter)
-		// $loading->template_path_set('...'); // For a customised loading page
-		// $loading->template_path_set($this->template_path_get('loading'));
+		// $loading->template_set('loading'); // For a customised loading page
+		// $loading->template_path_set('...');
 		// $loading->template_test();
 
 		$loading->check(); // Will exit() with loading page if still running, return false if not running, or return the session variables if there was a time-out.
@@ -69,40 +69,24 @@
 				$this->time_out = intval($seconds);
 			}
 
-			public function time_out_get() {
-				return $this->time_out;
-			}
-
 			public function refresh_frequency_set($seconds) {
 				$this->refresh_frequency = intval($seconds);
-			}
-
-			public function refresh_frequency_get() {
-				return $this->refresh_frequency;
 			}
 
 			public function refresh_url_set($url) {
 				$this->refresh_url = $url;
 			}
 
-			public function refresh_url_get() {
-				return $this->refresh_url;
-			}
-
 			public function done_url_set($url) {
 				$this->done_url = $url;
 			}
 
-			public function done_url_get() {
-				return $this->done_url;
+			public function template_set($name) {
+				$this->template_path = APP_ROOT . '/template/' . safe_file_name($name) . '.ctp';
 			}
 
 			public function template_path_set($path) {
 				$this->template_path = $path;
-			}
-
-			public function template_path_get() {
-				return $this->template_path;
 			}
 
 			public function template_test() {
