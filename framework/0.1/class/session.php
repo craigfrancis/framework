@@ -84,7 +84,7 @@
 			if (config::get('session.id') === NULL) { // Cannot call session_id(), as this is not reset on session_write_close().
 
 				//--------------------------------------------------
-				// Start
+				// Config
 
 					ini_set('session.use_cookies', true);
 					ini_set('session.use_only_cookies', true); // Prevent session fixation though the URL
@@ -93,7 +93,22 @@
 
 					session_name(config::get('session.name'));
 
-					session_start(); // May warn about headers already being sent, which happens in loading object.
+				//--------------------------------------------------
+				// Start
+
+					$ignore_errors = (headers_sent() && config::get('session.started') === true);
+
+					if ($ignore_errors) {
+						$error_reporting = error_reporting(0); // Don't show warnings about headers, which happens in loading object.
+					}
+
+					session_start();
+
+					if ($ignore_errors) {
+						error_reporting($error_reporting);
+					}
+
+					config::set('session.started', true);
 
 				//--------------------------------------------------
 				// Store session ID - must happen immediately after
