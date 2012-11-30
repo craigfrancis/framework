@@ -242,11 +242,11 @@
 
 					if ($route_ext == 'js' && config::get('output.js_min')) {
 
-						$cache_folder = tmp_folder('js_min');
+						$cache_folder = tmp_folder('js-min');
 
 					} else if ($route_ext == 'css' && config::get('output.css_tidy')) {
 
-						$cache_folder = tmp_folder('css_tidy');
+						$cache_folder = tmp_folder('css-tidy');
 
 					} else {
 
