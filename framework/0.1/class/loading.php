@@ -10,19 +10,23 @@
 		// $loading->refresh_frequency_set(2); // Seconds browser will wait before trying again
 		// $loading->refresh_url_set('...'); // If you want the user to load a different url while waiting (e.g. add a new parameter)
 		// $loading->template_path_set('...'); // For a customised loading page
+		// $loading->template_path_set($this->template_path_get('loading'));
+		// $loading->template_test();
 
 		$loading->check(); // Will exit() with loading page if still running, return false if not running, or return the session variables if there was a time-out.
 
 		if ($form->submitted()) {
 			if ($form->valid()) {
 
-				$loading->start('Starting action.'); // String will replace [MESSAGE] in loading_html, or array for multiple tags.
+				$loading->start('Starting action'); // String will replace [MESSAGE] in loading_html, or array for multiple tags.
 
 				sleep(5);
 
-				$loading->update('Updating progress.');
+				$loading->update('Updating progress');
 
 				sleep(5);
+
+				// $loading->done_url_set(...); // If you want to redirect to a different url
 
 				$loading->done();
 				exit();
@@ -40,12 +44,14 @@
 			private $time_out;
 			private $refresh_frequency;
 			private $refresh_url;
+			private $done_url;
 			private $template_path;
+			private $session_prefix;
 
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct() {
+			public function __construct($ref = NULL) {
 
 				//--------------------------------------------------
 				// Defaults
@@ -53,7 +59,9 @@
 					$this->time_out = 600; // 10 minutes
 					$this->refresh_frequency = 2;
 					$this->refresh_url = NULL;
+					$this->done_url = NULL;
 					$this->template_path = NULL;
+					$this->session_prefix = 'loading.' . base64_encode($ref !== NULL ? $ref : config::get('request.path')) . '.';
 
 			}
 
@@ -81,6 +89,14 @@
 				return $this->refresh_url;
 			}
 
+			public function done_url_set($url) {
+				$this->done_url = $url;
+			}
+
+			public function done_url_get() {
+				return $this->done_url;
+			}
+
 			public function template_path_set($path) {
 				$this->template_path = $path;
 			}
@@ -89,36 +105,60 @@
 				return $this->template_path;
 			}
 
+			public function template_test() {
+				exit($this->_template_get_html());
+			}
+
 		//--------------------------------------------------
 		// Process
 
 			public function check() {
 
-				$start = session::get('loading.time_start', 0);
+				//--------------------------------------------------
+				// If still active
 
-				if ($start > 0) {
+					$start = session::get($this->session_prefix . 'time_start', 0);
 
-					if (($start + $this->time_out) < time()) {
-						$return = session::get('loading.variables');
-						$this->done();
-						return $return;
+					if ($start > 0) {
+
+						if (($start + $this->time_out) < time()) {
+							$return = session::get($this->session_prefix . 'variables');
+							$this->done();
+							return $return;
+						}
+
+						$this->_send(session::get($this->session_prefix . 'variables'));
+
+						exit();
+
 					}
 
-					$this->_send(session::get('loading.variables'));
+				//--------------------------------------------------
+				// Has completed, but needs to redirect
 
-					exit();
+					$done_url = session::get($this->session_prefix . 'done_url');
+					if ($done_url) {
 
-				}
+						session::delete($this->session_prefix . 'done_url');
 
-				return false;
+						redirect($done_url);
+
+					}
+
+				//--------------------------------------------------
+				// Not active
+
+					return false;
 
 			}
 
 			public function start($variables) {
 
-				session::set('loading.time_start', time());
-				session::set('loading.time_update', time());
-				session::set('loading.variables', $variables);
+				session::set($this->session_prefix . 'time_start', time());
+				session::set($this->session_prefix . 'time_update', time());
+				session::set($this->session_prefix . 'variables', $variables);
+
+				session::delete($this->session_prefix . 'done_url');
 
 				$this->_send($variables);
 
@@ -130,12 +170,10 @@
 
 			public function update($variables) {
 
-				$error_reporting = error_reporting(0); // Don't show warnings about headers
 				session::start();
-				error_reporting($error_reporting);
 
-				session::set('loading.time_update', time());
-				session::set('loading.variables', $variables);
+				session::set($this->session_prefix . 'time_update', time());
+				session::set($this->session_prefix . 'variables', $variables);
 
 				session::close(); // So refreshing page can gain lock on session file.
 
@@ -143,13 +181,15 @@
 
 			public function done() {
 
-				$error_reporting = error_reporting(0);
 				session::start();
-				error_reporting($error_reporting);
 
-				session::delete('loading.time_start');
-				session::delete('loading.time_update');
-				session::delete('loading.variables');
+				session::delete($this->session_prefix . 'time_start');
+				session::delete($this->session_prefix . 'time_update');
+				session::delete($this->session_prefix . 'variables');
+
+				if ($this->done_url !== NULL) {
+					session::set($this->session_prefix . 'done_url', $this->done_url);
+				}
 
 				session::close();
 
@@ -158,6 +198,24 @@
 		//--------------------------------------------------
 		// Send
 
+			private function _template_get_html() {
+
+				if ($this->template_path === NULL) {
+
+					exit_with_error('The template path has not been set.');
+
+				} else if (!is_file($this->template_path)) {
+
+					exit_with_error('Could not return template file.', $this->template_path);
+
+				}
+
+				ob_start();
+				require_once($this->template_path);
+				return ob_get_clean();
+
+			}
+
 			private function _send($variables = NULL) {
 
 				//--------------------------------------------------
@@ -165,11 +223,7 @@
 
 					if ($this->template_path !== NULL) {
 
-						if (!is_file($this->template_path)) {
-							exit('Could not return template file "' . $this->template_path . '"');
-						}
-
-						$contents_html = file_get_contents($this->template_path);
+						$contents_html = $this->_template_get_html();
 
 					} else {
 
@@ -206,8 +260,8 @@
 
 					$time = time();
 
-					$time_start = ($time - session::get('loading.time_start', $time));
-					$time_update = ($time - session::get('loading.time_update', $time));
+					$time_start  = ($time - session::get($this->session_prefix . 'time_start', $time));
+					$time_update = ($time - session::get($this->session_prefix . 'time_update', $time));
 
 					$time_diff_start = str_pad(floor($time_start / 60), 2, '0', STR_PAD_LEFT) . ':' . str_pad(intval($time_start % 60), 2, '0', STR_PAD_LEFT);
 					$time_diff_update = str_pad(floor($time_update / 60), 2, '0', STR_PAD_LEFT) . ':' . str_pad(intval($time_update % 60), 2, '0', STR_PAD_LEFT);
