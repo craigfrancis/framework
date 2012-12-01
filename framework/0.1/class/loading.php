@@ -6,17 +6,26 @@
 	// Example setup
 
 		$loading = new loading();
-		// $loading->time_out_set(60 * 10); // Seconds before script will timeout
-		// $loading->refresh_frequency_set(2); // Seconds browser will wait before trying again
-		// $loading->refresh_url_set('...'); // If you want the user to load a different url while waiting (e.g. add a new parameter)
-		// $loading->template_set('loading'); // For a customised loading page
-		// $loading->template_path_set('...');
+
+		$loading = new loading('profile');
+
+		$loading = new loading(array(
+				'profile'           => 'profile', // Use 'loading.profile.*' config
+				'time_out'          => (60 * 10), // Seconds before script will timeout
+				'refresh_frequency' => 2,         // Seconds browser will wait before trying again
+				'refresh_url'       => '/../',    // If you want the user to load a different url while waiting (e.g. add a new parameter)
+				'template_name'     => 'loading', // Customised loading page name (in /app/template/)
+				'template_path'     => '/../',    // Customised loading page path
+			));
+
 		// $loading->template_test();
 
 		$loading->check(); // Will exit() with loading page if still running, return false if not running, or return the session variables if there was a time-out.
 
 		if ($form->submitted()) {
 			if ($form->valid()) {
+
+				// $loading->refresh_url_set('/../'); // Preferred shortcut function rather than using config_set()
 
 				$loading->start('Starting action'); // String will replace [MESSAGE] in loading_html, or array for multiple tags.
 
@@ -26,13 +35,41 @@
 
 				sleep(5);
 
-				// $loading->done_url_set(...); // If you want to redirect to a different url
-
-				$loading->done();
+				// $loading->done();
+				$loading->done('/../'); // Specify a URL if you want to redirect to a different url.
 				exit();
 
 			}
 		}
+
+	//--------------------------------------------------
+	// Example with 'lock'
+
+		$loading = new loading();
+		$loading->check();
+
+		if ($loading->) {
+		}
+
+	//--------------------------------------------------
+	// Optional template 'loading'
+
+		/app/template/loading.ctp
+
+			<!DOCTYPE html>
+			<html lang="<?= html(config::get('output.lang')) ?>" xml:lang="<?= html(config::get('output.lang')) ?>" xmlns="http://www.w3.org/1999/xhtml">
+			<head>
+				<meta charset="<?= html(config::get('output.charset')) ?>" />
+				<title>Loading</title>
+				<link rel="stylesheet" type="text/css" href="<?= html(resources::version_path('/a/css/global/loading.css')) ?>" media="all" />
+			</head>
+			<body>
+				<div id="container">
+					<h1>Loading</h1>
+					<p>[MESSAGE]... [[TIME_START]]</p>
+				</div>
+			</body>
+			</html>
 
 ***************************************************/
 
@@ -41,52 +78,74 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $time_out;
-			private $refresh_frequency;
-			private $refresh_url;
-			private $done_url;
-			private $template_path;
+			private $config = array();
 			private $session_prefix;
 
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($ref = NULL) {
+			public function __construct($config = NULL) {
+				$this->setup($config);
+			}
+
+			protected function setup($config) {
 
 				//--------------------------------------------------
-				// Defaults
+				// Default config
 
-					$this->time_out = 600; // 10 minutes
-					$this->refresh_frequency = 2;
-					$this->refresh_url = NULL;
-					$this->done_url = NULL;
-					$this->template_path = NULL;
-					$this->session_prefix = 'loading.' . base64_encode($ref !== NULL ? $ref : config::get('request.path')) . '.';
+					$this->config = array(
+							'time_out' => 600,
+							'refresh_frequency' => 2,
+							'refresh_url' => NULL,
+							'template_name' => NULL,
+							'template_path' => NULL,
+							'session_prefix' => NULL,
+						);
+
+				//--------------------------------------------------
+				// Set config
+
+					if (is_string($config)) {
+						$profile = $config;
+					} else if (isset($config['profile'])) {
+						$profile = $config['profile'];
+					} else {
+						$profile = NULL;
+					}
+
+					if (!is_array($config)) {
+						$config = array();
+					}
+
+					$config = array_merge(config::get_all('loading.default'), $config);
+
+					if ($profile !== NULL) {
+						$config = array_merge(config::get_all('loading.' . $profile), $config);
+					}
+
+					$this->config_set($config);
+
+				//--------------------------------------------------
+				// Session prefix
+
+					$this->session_prefix = 'loading.' . base64_encode(isset($config['ref']) ? $config['ref'] : config::get('request.path')) . '.';
 
 			}
 
-			public function time_out_set($seconds) {
-				$this->time_out = intval($seconds);
-			}
+			public function config_set($config, $value = NULL) {
 
-			public function refresh_frequency_set($seconds) {
-				$this->refresh_frequency = intval($seconds);
+				if (is_array($config)) {
+					foreach ($config as $key => $value) {
+						$this->config[$key] = $value;
+					}
+				} else {
+					$this->config[$config] = $value;
+				}
+
 			}
 
 			public function refresh_url_set($url) {
-				$this->refresh_url = $url;
-			}
-
-			public function done_url_set($url) {
-				$this->done_url = $url;
-			}
-
-			public function template_set($name) {
-				$this->template_path = APP_ROOT . '/template/' . safe_file_name($name) . '.ctp';
-			}
-
-			public function template_path_set($path) {
-				$this->template_path = $path;
+				$this->config['refresh_url'] = $url;
 			}
 
 			public function template_test() {
@@ -105,7 +164,7 @@
 
 					if ($start > 0) {
 
-						if (($start + $this->time_out) < time()) {
+						if (($start + $this->config['time_out']) < time()) {
 							$return = session::get($this->session_prefix . 'variables');
 							$this->done();
 							return $return;
@@ -146,7 +205,7 @@
 
 				$this->_send($variables);
 
-				set_time_limit($this->time_out);
+				set_time_limit($this->config['time_out']);
 
 				session::close();
 
@@ -163,7 +222,7 @@
 
 			}
 
-			public function done() {
+			public function done($done_url = NULL) {
 
 				session::start();
 
@@ -171,8 +230,8 @@
 				session::delete($this->session_prefix . 'time_update');
 				session::delete($this->session_prefix . 'variables');
 
-				if ($this->done_url !== NULL) {
-					session::set($this->session_prefix . 'done_url', $this->done_url);
+				if ($done_url !== NULL) {
+					session::set($this->session_prefix . 'done_url', $done_url);
 				}
 
 				session::close();
@@ -184,19 +243,43 @@
 
 			private function _template_get_html() {
 
-				if ($this->template_path === NULL) {
+				//--------------------------------------------------
+				// Template path
 
-					exit_with_error('The template path has not been set.');
+					if ($this->config['template_path'] !== NULL) {
 
-				} else if (!is_file($this->template_path)) {
+						$template_path = $this->config['template_path'];
 
-					exit_with_error('Could not return template file.', $this->template_path);
+					} else if ($this->config['template_name'] !== NULL) {
 
-				}
+						$template_path = APP_ROOT . '/template/' . safe_file_name($this->config['template_name']) . '.ctp';
 
-				ob_start();
-				require_once($this->template_path);
-				return ob_get_clean();
+					} else {
+
+						return NULL;
+
+					}
+
+				//--------------------------------------------------
+				// Path error
+
+					if (!is_file($template_path)) {
+
+						session::delete($this->session_prefix . 'time_start');
+						session::delete($this->session_prefix . 'time_update');
+						session::delete($this->session_prefix . 'variables');
+						session::delete($this->session_prefix . 'done_url');
+
+						exit_with_error('Could not return template file.', $template_path);
+
+					}
+
+				//--------------------------------------------------
+				// Process
+
+					ob_start();
+					require_once($template_path);
+					return ob_get_clean();
 
 			}
 
@@ -205,15 +288,11 @@
 				//--------------------------------------------------
 				// Loading contents
 
-					if ($this->template_path !== NULL) {
+					$contents_html = $this->_template_get_html();
 
-						$contents_html = $this->_template_get_html();
-
-					} else {
-
+					if ($contents_html === NULL) {
 						$contents_html  = '<h1>Loading</h1>' . "\n";
 						$contents_html .= '<p>[MESSAGE]... [[TIME_START]]</p>';
-
 					}
 
 				//--------------------------------------------------
@@ -256,12 +335,12 @@
 				//--------------------------------------------------
 				// Refresh URL
 
-					$refresh_url = $this->refresh_url;
+					$refresh_url = $this->config['refresh_url'];
 					if ($refresh_url === NULL) {
 						$refresh_url = url();
 					}
 
-					$refresh_header = $this->refresh_frequency . '; url=' . $refresh_url;
+					$refresh_header = $this->config['refresh_frequency'] . '; url=' . $refresh_url;
 
 					if (strpos($contents_html, '[URL]') !== false) {
 
