@@ -168,6 +168,7 @@
 						$build_up_address .= $f . '/';
 
 						foreach ($css_types as $css_type_name => $css_type_info) {
+
 							$file = $build_up_address . $css_type_name . '.css';
 
 							if (is_file(ASSET_ROOT . $file)) {
@@ -306,7 +307,7 @@
 			if ($version) {
 				foreach ($files as $id => $file) {
 					if (substr($file['path'], 0, 1) == '/' && is_file(PUBLIC_ROOT . $file['path'])) {
-						$files[$id]['path'] = dirname($file['path']) . '/' . filemtime(PUBLIC_ROOT . $file['path']) . '-' . basename($file['path']);
+						$files[$id]['path'] = resources::version_path($file['path']);
 					}
 				}
 			}
@@ -328,7 +329,11 @@
 
 		}
 
-		public static function js_code_save($code) { // Don't call directly, use js_code_add()
+		public static function version_path($path) {
+			return dirname($path) . '/' . filemtime(PUBLIC_ROOT . $path) . '-' . basename($path);
+		}
+
+		private static function js_code_save($code) { // Don't call directly, use js_code_add()
 
 			$obj = resources::instance_get();
 
