@@ -19,7 +19,7 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->_setup($form, $label, $name);
+					$this->setup($form, $label, $name);
 
 				//--------------------------------------------------
 				// Additional field configuration

@@ -21,18 +21,18 @@
 			protected $value_saved;
 
 			public function __construct($form, $label, $name = NULL) {
-				$this->_setup_file($form, $label, $name);
+				$this->setup_file($form, $label, $name);
 			}
 
 		//--------------------------------------------------
 		// Setup
 
-			protected function _setup_file($form, $label, $name = NULL) {
+			protected function setup_file($form, $label, $name = NULL) {
 
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->_setup($form, $label, $name);
+					$this->setup($form, $label, $name);
 
 				//--------------------------------------------------
 				// Form encoding

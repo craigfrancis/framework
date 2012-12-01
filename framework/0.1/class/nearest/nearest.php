@@ -46,10 +46,10 @@
 		// Setup
 
 			public function __construct($config = NULL) {
-				$this->_setup($config);
+				$this->setup($config);
 			}
 
-			protected function _setup($config) {
+			protected function setup($config) {
 
 				//--------------------------------------------------
 				// Default config

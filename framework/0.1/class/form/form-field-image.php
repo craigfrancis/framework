@@ -24,7 +24,7 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->_setup_file($form, $label, $name);
+					$this->setup_file($form, $label, $name);
 
 				//--------------------------------------------------
 				// Additional field configuration

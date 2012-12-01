@@ -27,10 +27,10 @@
 		// Setup
 
 			public function __construct($config = NULL) {
-				$this->_setup($config);
+				$this->setup($config);
 			}
 
-			protected function _setup($config) {
+			protected function setup($config) {
 
 				//--------------------------------------------------
 				// Default config
@@ -63,7 +63,6 @@
 
 					$config = array_merge(config::get_all('file.default'), $config);
 
-					$prefix = 'file';
 					if ($profile !== NULL) {
 						$config = array_merge(config::get_all('file.' . $profile), $config);
 						$config['profile'] = $profile;
