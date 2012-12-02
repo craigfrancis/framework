@@ -6,7 +6,7 @@
 	// Example setup
 
 		$lock = new lock('example');
-		$lock->time_out_set(strtotime('+5 minutes'));
+		$lock->time_out_set(5 * 60);
 
 		if ($lock->open()) {
 
@@ -57,7 +57,7 @@
 					$this->lock_path = NULL;
 					$this->lock_fp = NULL;
 
-					$this->time_out = strtotime('+30 seconds');
+					$this->time_out = (5 * 60);
 
 				//--------------------------------------------------
 				// Lock path
@@ -74,10 +74,10 @@
 
 				$this->time_out = $time;
 
-				set_time_limit($this->time_out - time());
+				set_time_limit($this->time_out);
 
 				if ($this->lock_fp) {
-					$this->data_set('expires', $this->time_out);
+					$this->data_set('expires', ($this->time_out + time()));
 				}
 
 			}
@@ -223,7 +223,7 @@
 						exit_with_error('Cannot create lock file', $this->lock_path);
 					}
 
-					$this->lock_data = array('expires' => $this->time_out); // Resets data, could be re-opening a new lock
+					$this->lock_data = array('expires' => ($this->time_out + time())); // Resets data, could be re-opening a new lock
 
 					fwrite($this->lock_fp, json_encode($this->lock_data));
 
