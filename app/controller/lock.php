@@ -11,7 +11,7 @@
 			if ($form->submitted() && $form->valid()) {
 
 				$lock = new lock('example');
-				$lock->time_out_set(strtotime('+2 seconds'));
+				$lock->time_out_set(2);
 
 				if ($lock->open()) {
 
@@ -33,7 +33,7 @@
 
 					} else {
 
-						$lock->time_out_set(strtotime('+1 hour'));
+						$lock->time_out_set(5 * 60);
 
 						sleep(3);
 
