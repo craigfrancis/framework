@@ -3,34 +3,19 @@
 /***************************************************
 
 	//--------------------------------------------------
-	// Site config
-
-
-
-	//--------------------------------------------------
 	// Example setup
 
-		//--------------------------------------------------
-		// Simple
+		$nearest = new nearest('profile');
 
-			// config::set('nearest.table_sql', 'stores');
+		$nearest = new nearest(array(
+				'table_sql' => 'stores',
+				'max_results' => 10,
+			));
 
-			$nearest = new nearest();
+	//--------------------------------------------------
+	// Example usage
 
-		//--------------------------------------------------
-		// Profile support
 
-			config::set('nearest.profile.table_sql', 'stores');
-
-			$nearest = new nearest('profile');
-
-		//--------------------------------------------------
-		// Custom
-
-			$nearest = new nearest(array(
-					'table_sql' => 'stores',
-					'max_results' => 10,
-				));
 
 ***************************************************/
 
@@ -52,9 +37,20 @@
 			protected function setup($config) {
 
 				//--------------------------------------------------
+				// Profile
+				
+					if (is_string($config)) {
+						$profile = $config;
+					} else if (isset($config['profile'])) {
+						$profile = $config['profile'];
+					} else {
+						exit_with_error('You need to specify a nearest profile');
+					}
+
+				//--------------------------------------------------
 				// Default config
 
-					$this->config = array(
+					$default_config = array(
 							'table_sql' => DB_PREFIX . 'location',
 							'where_sql' => 'true',
 							'field_id_sql' => 'id',
@@ -69,61 +65,28 @@
 							'min_results' => 0,
 						);
 
+					$default_config = array_merge($default_config, config::get_all('nearest.default'));
+
 				//--------------------------------------------------
 				// Set config
-
-					if (is_string($config)) {
-						$profile = $config;
-					} else if (isset($config['profile'])) {
-						$profile = $config['profile'];
-					} else {
-						$profile = NULL;
-					}
 
 					if (!is_array($config)) {
 						$config = array();
 					}
 
-					$prefix = 'nearest';
-					if ($profile !== NULL) {
-						$prefix .= '.' . $profile;
-						$config['profile'] = $profile;
-					}
+					$profile_prefix = 'nearest.' . $profile;
+					$profile_config = config::get_all($profile_prefix);
 
-					$site_config = config::get_all($prefix);
-
-					if (count($site_config) > 0) {
-
-						$config = array_merge($site_config, $config);
-
-					} else if ($profile !== NULL) {
-
-						exit_with_error('Cannot find nearest profile "' . $profile . '" (' . $prefix . '.*)');
-
-					}
-
-					$this->config_set($config);
-
-			}
-
-		//--------------------------------------------------
-		// Configuration
-
-			public function config_set($config, $value = NULL) {
-
-				//--------------------------------------------------
-				// Set
-
-					if (is_array($config)) {
-						foreach ($config as $key => $value) {
-							$this->config[$key] = $value;
-						}
+					if (count($profile_config) > 0) {
+						$config = array_merge($profile_config, $config);
 					} else {
-						$this->config[$config] = $value;
+						exit_with_error('Cannot find config for nearest profile "' . $profile . '" (' . $profile_prefix . '.*)');
 					}
 
+					$this->config = array_merge($default_config, $config);
+
 				//--------------------------------------------------
-				// Get page variables to be re-calculated
+				// Update field name variables
 
 					foreach ($this->config as $key => $value) {
 						if (substr($key, 0, 6) == 'field_' && substr($key, -4) == '_sql' && is_string($value)) {
@@ -136,7 +99,7 @@
 
 			}
 
-			public function db_get() {
+			private function db_get() {
 				if ($this->db_link === NULL) {
 					$this->db_link = new db();
 				}

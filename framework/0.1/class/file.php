@@ -33,9 +33,20 @@
 			protected function setup($config) {
 
 				//--------------------------------------------------
+				// Profile
+
+					if (is_string($config)) {
+						$profile = $config;
+					} else if (isset($config['profile'])) {
+						$profile = $config['profile'];
+					} else {
+						$profile = NULL;
+					}
+
+				//--------------------------------------------------
 				// Default config
 
-					$this->config = array(
+					$default_config = array(
 							'file_root' => FILE_ROOT,
 							'file_url' => FILE_URL,
 							'file_folder_division' => NULL, // Set to something like "1000" so the folder structure can by divided into folders /files/008000/8192
@@ -46,44 +57,21 @@
 							'image_background' => NULL, // If images should not be cropped, but have borders instead (e.g. 000000 for black)
 						);
 
+					$default_config = array_merge($default_config, config::get_all('file.default'));
+
 				//--------------------------------------------------
 				// Set config
-
-					if (is_string($config)) {
-						$profile = $config;
-					} else if (isset($config['profile'])) {
-						$profile = $config['profile'];
-					} else {
-						$profile = NULL;
-					}
 
 					if (!is_array($config)) {
 						$config = array();
 					}
-
-					$config = array_merge(config::get_all('file.default'), $config);
 
 					if ($profile !== NULL) {
 						$config = array_merge(config::get_all('file.' . $profile), $config);
 						$config['profile'] = $profile;
 					}
 
-					$this->config_set($config);
-
-			}
-
-		//--------------------------------------------------
-		// Configuration
-
-			public function config_set($config, $value = NULL) {
-
-				if (is_array($config)) {
-					foreach ($config as $key => $value) {
-						$this->config[$key] = $value;
-					}
-				} else {
-					$this->config[$config] = $value;
-				}
+					$this->config = array_merge($default_config, $config);
 
 			}
 

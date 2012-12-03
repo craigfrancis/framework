@@ -29,6 +29,9 @@
 				'items_count' => $result_count,
 			));
 
+	//--------------------------------------------------
+	// Example usage
+
 		$page_size = $paginator->page_size_get();
 		$page_number = $paginator->page_number_get();
 
@@ -60,7 +63,7 @@
 				//--------------------------------------------------
 				// Default config
 
-					$this->config = array(
+					$default_config = array(
 							'items_per_page' => 24, // Divisible by 1, 2, 3, 4, 6, 12
 							'items_count' => 0,
 							'base_url' => NULL,
@@ -78,6 +81,8 @@
 							'extra_html' => NULL, // '<span class="pagination_extra">Page [PAGE] of [COUNT]</span>'
 						);
 
+					$default_config = array_merge($default_config, config::get_all('paginator'));
+
 				//--------------------------------------------------
 				// Set config
 
@@ -87,27 +92,10 @@
 							);
 					}
 
-					$config = array_merge(config::get_all('paginator'), $config);
-
-					$this->config_set($config);
-
-			}
-
-			public function config_set($config, $value = NULL) {
+					$this->config = array_merge($default_config, $config);
 
 				//--------------------------------------------------
-				// Set
-
-					if (is_array($config)) {
-						foreach ($config as $key => $value) {
-							$this->config[$key] = $value;
-						}
-					} else {
-						$this->config[$config] = $value;
-					}
-
-				//--------------------------------------------------
-				// Get page variables to be re-calculated
+				// Page variables
 
 					$this->url = NULL;
 
