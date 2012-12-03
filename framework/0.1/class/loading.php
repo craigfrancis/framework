@@ -10,24 +10,29 @@
 		$loading = new loading('profile');
 
 		$loading = new loading(array(
-				'profile'           => 'profile', // Use 'loading.profile.*' config
-				'time_out'          => (60 * 10), // Seconds before script will timeout
-				'refresh_frequency' => 2,         // Seconds browser will wait before trying again
-				'refresh_url'       => '/../',    // If you want the user to load a different url while waiting (e.g. add a new parameter)
-				'template_name'     => 'loading', // Customised loading page name (in /app/template/)
-				'template_path'     => '/../',    // Customised loading page path
+				'profile'           => 'profile', // Use 'loading.profile.*' config.
+				'time_out'          => (5 * 60),  // Seconds before script will timeout.
+				'refresh_frequency' => 2,         // Seconds browser will wait before trying again.
+				'refresh_url'       => '/../',    // If you want the user to load a different url while waiting (e.g. add a new parameter).
+				'template_name'     => 'loading', // Customised loading page name (in /app/template/), see example below.
+				'template_path'     => '/../',    // Customised loading page path.
+				'lock_type'         => 'loading', // See lock example below.
+				'lock_ref'          => NULL,
 			));
+
+	//--------------------------------------------------
+	// Example usage
 
 		// $loading->template_test();
 
-		$loading->check(); // Will exit() with loading page if still running, return false if not running, or return the session variables if there was a time-out.
+		$loading->check(); // Will exit() with loading page if still running, return false if not running, or return the variables if there was a time-out.
 
 		if ($form->submitted()) {
 			if ($form->valid()) {
 
-				// $loading->refresh_url_set('/../'); // Preferred shortcut function rather than using config_set()
+				// $loading->refresh_url_set('/../');
 
-				$loading->start('Starting action'); // String will replace [MESSAGE] in loading_html, or array for multiple tags.
+				$loading->start('Starting action'); // String will replace [MESSAGE] in the template, or array for multiple tags.
 
 				sleep(5);
 
@@ -45,16 +50,43 @@
 	//--------------------------------------------------
 	// Example with 'lock'
 
-		$loading = new loading();
+		$loading = new loading(array(
+				'lock_type' => 'loading', // Set to use a lock, the name is passed directly to the lock helper.
+				'lock_ref'  => NULL,      // Optional lock ref (e.g. pass in an ID if you want to lock a specific item).
+			));
+
 		$loading->check();
 
-		if ($loading->) {
+		if ($loading->start('Starting action')) {
+
+			sleep(5);
+
+			$loading->update('Updating progress');
+
+			sleep(5);
+
+			$loading->done();
+			$loading->done('/../'); // Optional URL if you want to redirect users to a new page (e.g. a static thank you page)
+
+		} else {
+
+			// Could not open lock
+
 		}
 
 	//--------------------------------------------------
 	// Optional template 'loading'
 
-		/app/template/loading.ctp
+		/app/public/a/css/global/loading.css
+
+			This file will be used with a template like
+			the one below, or you can create your own.
+
+		/app/template/example.ctp
+
+			This file will be used if 'template_name' is
+			set to 'example', the contents should be
+			something like the following.
 
 			<!DOCTYPE html>
 			<html lang="<?= html(config::get('output.lang')) ?>" xml:lang="<?= html(config::get('output.lang')) ?>" xmlns="http://www.w3.org/1999/xhtml">
@@ -64,7 +96,7 @@
 				<link rel="stylesheet" type="text/css" href="<?= html(resources::version_path('/a/css/global/loading.css')) ?>" media="all" />
 			</head>
 			<body>
-				<div id="container">
+				<div id="page_content" role="main">
 					<h1>Loading</h1>
 					<p>[MESSAGE]... [[TIME_START]]</p>
 				</div>
@@ -79,7 +111,9 @@
 		// Variables
 
 			private $config = array();
-			private $session_prefix;
+			private $lock = NULL;
+			private $started = false;
+			private $session_prefix = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -91,19 +125,7 @@
 			protected function setup($config) {
 
 				//--------------------------------------------------
-				// Default config
-
-					$this->config = array(
-							'time_out' => 600,
-							'refresh_frequency' => 2,
-							'refresh_url' => NULL,
-							'template_name' => NULL,
-							'template_path' => NULL,
-							'session_prefix' => NULL,
-						);
-
-				//--------------------------------------------------
-				// Set config
+				// Profile
 
 					if (is_string($config)) {
 						$profile = $config;
@@ -113,34 +135,39 @@
 						$profile = NULL;
 					}
 
+				//--------------------------------------------------
+				// Default config
+
+					$default_config = array(
+							'time_out' => (5 * 60),
+							'refresh_frequency' => 2,
+							'refresh_url' => NULL,
+							'template_name' => NULL,
+							'template_path' => NULL,
+							'session_prefix' => NULL,
+							'lock_type' => NULL,
+							'lock_ref' => NULL,
+						);
+
+					$default_config = array_merge($default_config, config::get_all('loading.default'));
+
+				//--------------------------------------------------
+				// Set config
+
 					if (!is_array($config)) {
 						$config = array();
 					}
-
-					$config = array_merge(config::get_all('loading.default'), $config);
 
 					if ($profile !== NULL) {
 						$config = array_merge(config::get_all('loading.' . $profile), $config);
 					}
 
-					$this->config_set($config);
+					$this->config = array_merge($default_config, $config);
 
 				//--------------------------------------------------
 				// Session prefix
 
 					$this->session_prefix = 'loading.' . base64_encode(isset($config['ref']) ? $config['ref'] : config::get('request.path')) . '.';
-
-			}
-
-			public function config_set($config, $value = NULL) {
-
-				if (is_array($config)) {
-					foreach ($config as $key => $value) {
-						$this->config[$key] = $value;
-					}
-				} else {
-					$this->config[$config] = $value;
-				}
 
 			}
 
@@ -160,17 +187,32 @@
 				//--------------------------------------------------
 				// If still active
 
-					$start = session::get($this->session_prefix . 'time_start', 0);
+					if (session::get($this->session_prefix . 'started') === true) {
 
-					if ($start > 0) {
+						if ($this->config['lock_type'] !== NULL) {
 
-						if (($start + $this->config['time_out']) < time()) {
-							$return = session::get($this->session_prefix . 'variables');
-							$this->done();
-							return $return;
+							$lock = new lock($this->config['lock_type'], $this->config['lock_ref']);
+
+							// $lock->check() - Can't really test as the other thread has the lock.
+
+							$time_start  = $lock->data_get('time_start');
+							$time_update = $lock->data_get('time_update');
+							$variables   = $lock->data_get('variables');
+
+						} else {
+
+							$time_start  = session::get($this->session_prefix . 'time_start');
+							$time_update = session::get($this->session_prefix . 'time_update');
+							$variables   = session::get($this->session_prefix . 'variables');
+
 						}
 
-						$this->_send(session::get($this->session_prefix . 'variables'));
+						if (($time_start == 0) || (($time_start + $this->config['time_out']) < time())) {
+							$this->_cleanup();
+							return $variables;
+						}
+
+						$this->_send($time_start, $time_update, $variables);
 
 						exit();
 
@@ -197,45 +239,113 @@
 
 			public function start($variables) {
 
-				session::set($this->session_prefix . 'time_start', time());
-				session::set($this->session_prefix . 'time_update', time());
-				session::set($this->session_prefix . 'variables', $variables);
+				$time = time(); // All the same
 
-				session::delete($this->session_prefix . 'done_url');
+				if ($this->config['lock_type'] !== NULL) {
 
-				$this->_send($variables);
+					$lock = new lock($this->config['lock_type'], $this->config['lock_ref']);
+					$lock->time_out_set($this->config['time_out']);
 
-				set_time_limit($this->config['time_out']);
+					if (!$lock->open()) {
+						return false;
+					}
+
+					$this->lock = $lock;
+
+					$this->lock->data_set(array(
+							'time_start' => $time,
+							'time_update' => $time,
+							'variables' => $variables,
+						));
+
+				} else {
+
+					set_time_limit($this->config['time_out']);
+
+					session::set($this->session_prefix . 'time_start', $time);
+					session::set($this->session_prefix . 'time_update', $time);
+					session::set($this->session_prefix . 'variables', $variables);
+
+				}
+
+				session::set($this->session_prefix . 'started', true);
+				session::set($this->session_prefix . 'done_url', NULL);
 
 				session::close();
+
+				$this->started = true;
+
+				$this->_send($time, $time, $variables);
+
+				return true;
 
 			}
 
 			public function update($variables) {
 
-				session::start();
+				if ($this->started) {
+					if ($this->lock) {
 
-				session::set($this->session_prefix . 'time_update', time());
-				session::set($this->session_prefix . 'variables', $variables);
+						if ($this->lock->open()) {
 
-				session::close(); // So refreshing page can gain lock on session file.
+							$this->lock->data_set(array(
+									'time_update' => time(),
+									'variables' => $variables,
+								));
+
+							return true;
+
+						}
+
+					} else {
+
+						session::set($this->session_prefix . 'time_update', time());
+						session::set($this->session_prefix . 'variables', $variables);
+
+						session::close(); // So refreshing page can gain lock on session file.
+
+						return true;
+
+					}
+				}
+
+				return false;
 
 			}
 
 			public function done($done_url = NULL) {
 
-				session::start();
+				if ($this->started) {
 
+					$this->_cleanup();
+
+					if ($this->lock) {
+						$this->lock->close();
+					}
+
+					if ($done_url !== NULL) {
+						session::set($this->session_prefix . 'done_url', $done_url);
+					}
+
+					session::close(); // Always close, as cleanup would have re-opened
+
+				} else if ($done_url !== NULL) {
+
+					redirect($done_url);
+
+				}
+
+			}
+
+		//--------------------------------------------------
+		// Cleanup
+
+			private function _cleanup() {
+				session::delete($this->session_prefix . 'started');
 				session::delete($this->session_prefix . 'time_start');
 				session::delete($this->session_prefix . 'time_update');
 				session::delete($this->session_prefix . 'variables');
-
-				if ($done_url !== NULL) {
-					session::set($this->session_prefix . 'done_url', $done_url);
-				}
-
-				session::close();
-
+				session::delete($this->session_prefix . 'done_url');
 			}
 
 		//--------------------------------------------------
@@ -265,10 +375,7 @@
 
 					if (!is_file($template_path)) {
 
-						session::delete($this->session_prefix . 'time_start');
-						session::delete($this->session_prefix . 'time_update');
-						session::delete($this->session_prefix . 'variables');
-						session::delete($this->session_prefix . 'done_url');
+						$this->_cleanup();
 
 						exit_with_error('Could not return template file.', $template_path);
 
@@ -283,7 +390,7 @@
 
 			}
 
-			private function _send($variables = NULL) {
+			private function _send($time_start, $time_update, $variables) {
 
 				//--------------------------------------------------
 				// Loading contents
@@ -323,11 +430,11 @@
 
 					$time = time();
 
-					$time_start  = ($time - session::get($this->session_prefix . 'time_start', $time));
-					$time_update = ($time - session::get($this->session_prefix . 'time_update', $time));
+					$time_diff_start  = ($time - $time_start);
+					$time_diff_update = ($time - $time_update);
 
-					$time_diff_start = str_pad(floor($time_start / 60), 2, '0', STR_PAD_LEFT) . ':' . str_pad(intval($time_start % 60), 2, '0', STR_PAD_LEFT);
-					$time_diff_update = str_pad(floor($time_update / 60), 2, '0', STR_PAD_LEFT) . ':' . str_pad(intval($time_update % 60), 2, '0', STR_PAD_LEFT);
+					$time_diff_start  = str_pad(floor($time_diff_start  / 60), 2, '0', STR_PAD_LEFT) . ':' . str_pad(intval($time_diff_start  % 60), 2, '0', STR_PAD_LEFT);
+					$time_diff_update = str_pad(floor($time_diff_update / 60), 2, '0', STR_PAD_LEFT) . ':' . str_pad(intval($time_diff_update % 60), 2, '0', STR_PAD_LEFT);
 
 					$contents_html = str_replace('[TIME_START]', html($time_diff_start), $contents_html);
 					$contents_html = str_replace('[TIME_UPDATE]', html($time_diff_update), $contents_html);
@@ -342,7 +449,7 @@
 
 					$refresh_header = $this->config['refresh_frequency'] . '; url=' . $refresh_url;
 
-					if (strpos($contents_html, '[URL]') !== false) {
+					if (strpos($contents_html, '[URL]') !== false) { // Template contains the Meta Tag, Link, or JavaScript (with alternative).
 
 						$contents_html = str_replace('[URL]', html($refresh_url), $contents_html);
 
@@ -350,12 +457,19 @@
 
 						$refresh_html = "\n\t" . '<meta http-equiv="refresh" content="' . html($refresh_header) . '" />' . "\n\n";
 
-						$pos = strpos(strtolower($contents_html), '</head>');
+						$pos = stripos($contents_html, '</head>');
 						if ($pos !== false) {
 
 					 		$contents_html = substr($contents_html, 0, $pos) . $refresh_html . substr($contents_html, $pos);
 
 						} else {
+
+							$css_file = '/css/global/loading.css';
+							if (is_file(ASSET_ROOT . $css_file)) {
+								$css_html = '<link rel="stylesheet" type="text/css" href="' . html(resources::version_path(ASSET_URL . '/css/global/loading.css')) . '" media="all" />';
+							} else {
+								$css_html = '';
+							}
 
 							$contents_html = '<!DOCTYPE html>
 								<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
@@ -363,9 +477,12 @@
 									<meta charset="' . html(config::get('output.charset')) . '" />
 									<title>Loading</title>
 									' . $refresh_html . '
+									' . $css_html . '
 								</head>
 								<body>
-									' . $contents_html . '
+									<div id="page_content" role="main">
+										' . $contents_html . '
+									</div>
 								</body>
 								</html>';
 

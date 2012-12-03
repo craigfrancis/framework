@@ -27,7 +27,7 @@
 
 					sleep(5);
 
-					if (!$lock->open()) {
+					if (!$lock->check()) {
 
 						$this->set('lock_error', 'Lock has expired');
 

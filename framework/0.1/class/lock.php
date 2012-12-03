@@ -12,6 +12,10 @@
 	//--------------------------------------------------
 	// Example usage
 
+		if ($lock->check()) {
+			// Checks to see if the lock we have the lock, but doesn't try to open if not
+		}
+
 		if ($lock->open()) {
 
 			$lock->data_set('name', 'Craig');
@@ -163,10 +167,10 @@
 		//--------------------------------------------------
 		// Process
 
-			public function open() {
+			public function check() {
 
 				//--------------------------------------------------
-				// If this object has the a file pointer
+				// If we have a file pointer
 
 					if ($this->lock_fp && flock($this->lock_fp, LOCK_EX)) {
 
@@ -177,9 +181,25 @@
 						if ($info['nlink'] > 0) {
 							return true; // File still exists on filesystem (not unlinked by another process)
 						} else {
-							return false; // Lost the lock, don't try to re-create
+							return false; // Lost the lock, someone else has unlinked it.
 						}
 
+					}
+
+				//--------------------------------------------------
+				// Nope
+
+					return false;
+
+			}
+
+			public function open() {
+
+				//--------------------------------------------------
+				// If this object still has the lock
+
+					if ($this->check()) {
+						return true;
 					}
 
 				//--------------------------------------------------

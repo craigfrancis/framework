@@ -4,7 +4,10 @@
 
 		public function action_index() {
 
-			$loading = new loading();
+			$loading = new loading(array(
+					'lock_type' => 'example',
+				));
+
 			$loading->check();
 
 			$form = new form();
@@ -12,16 +15,22 @@
 
 			if ($form->submitted() && $form->valid()) {
 
-				$loading->start('Starting action'); // String will replace [MESSAGE] in loading_html, or array for multiple tags.
+				if (!$loading->start('Starting action')) {
+					$form->error_add('The loading process has already been started');
+				}
 
-				sleep(3);
+				if ($form->valid()) {
 
-				$loading->update('Updating');
+					sleep(3);
 
-				sleep(5);
+					$loading->update('Updating');
 
-				$loading->done();
-				exit();
+					sleep(5);
+
+					$loading->done();
+					exit();
+
+				}
 
 			}
 

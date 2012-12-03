@@ -3,6 +3,15 @@
 /***************************************************
 
 	//--------------------------------------------------
+	// Install dependencies
+
+		https://nightly.gpgtools.org/
+
+		MacGPG1-latest.dmg
+
+		sudo ln -s /usr/local/MacGPG1/bin/gpg-zip /usr/local/bin/gpg-zip
+
+	//--------------------------------------------------
 	// Site config
 
 
@@ -68,7 +77,7 @@
 			}
 
 		//--------------------------------------------------
-		// Public ket
+		// Public key
 
 			public function public_key_get() {
 

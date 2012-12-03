@@ -242,14 +242,20 @@
 		//--------------------------------------------------
 		// Empty the /tmp/ folder
 
-			$temp_folder = PRIVATE_ROOT . '/tmp/';
+			$temp_folder = PRIVATE_ROOT . '/tmp';
 			if (is_dir($temp_folder)) {
-				rrmdir($temp_folder);
-				clearstatcache();
-				if (is_dir($temp_folder)) {
-					exit_with_error('Cannot delete/empty the /private/tmp/ folder', $temp_folder);
+				foreach (glob($temp_folder . '/*') as $folder) {
+					rrmdir($folder);
+					clearstatcache();
+					if (is_dir($folder)) {
+						exit_with_error('Cannot delete/empty the /private/tmp/ folder', $folder);
+					}
 				}
+			} else {
+				mkdir($temp_folder, 0777);
 			}
+
+			chmod($temp_folder, 0777);
 
 			if (is_dir(PRIVATE_ROOT . '/.svn')) {
 				$output = execute_command('svn propget svn:ignore ' . escapeshellarg(PRIVATE_ROOT), false);
@@ -259,9 +265,6 @@
 			} else if (is_dir(ROOT . '/.git')) {
 				file_put_contents(PRIVATE_ROOT . '/.gitignore', 'tmp');
 			}
-
-			mkdir($temp_folder, 0777);
-			chmod($temp_folder, 0777);
 
 		//--------------------------------------------------
 		// Check database structure
