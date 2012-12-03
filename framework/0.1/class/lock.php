@@ -6,7 +6,11 @@
 	// Example setup
 
 		$lock = new lock('example');
-		$lock->time_out_set(5 * 60);
+
+		$lock = new lock('item', $id);
+
+	//--------------------------------------------------
+	// Example usage
 
 		if ($lock->open()) {
 
@@ -17,6 +21,14 @@
 					'field_2' => 'BBB',
 					'field_3' => 'CCC',
 				));
+
+			sleep(5);
+
+			if (!$lock->open()) {
+				// Check to see if we still have the lock (not expired)
+			}
+
+			$lock->time_out_set(30); // If more time is needed
 
 			sleep(5);
 
@@ -57,7 +69,7 @@
 					$this->lock_path = NULL;
 					$this->lock_fp = NULL;
 
-					$this->time_out = (5 * 60);
+					$this->time_out = 30;
 
 				//--------------------------------------------------
 				// Lock path
@@ -74,10 +86,12 @@
 
 				$this->time_out = $time;
 
-				set_time_limit($this->time_out);
-
 				if ($this->lock_fp) {
+
+					set_time_limit($this->time_out);
+
 					$this->data_set('expires', ($this->time_out + time()));
+
 				}
 
 			}
@@ -228,6 +242,11 @@
 					fwrite($this->lock_fp, json_encode($this->lock_data));
 
 					flock($this->lock_fp, LOCK_UN); // Must release lock so other processes can open (e.g. reading for expiry)
+
+				//--------------------------------------------------
+				// Update time limit
+
+					set_time_limit($this->time_out);
 
 				//--------------------------------------------------
 				// Success
