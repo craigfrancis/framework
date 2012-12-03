@@ -73,7 +73,7 @@ class cms_markdown_base extends check {
 
 	private $config;
 
-	public function config_set($config) {
+	private function config_set($config) {
 
 		//--------------------------------------------------
 		// If this class was not initialised with a config

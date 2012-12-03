@@ -59,7 +59,7 @@ class cms_tags_base extends check {
 		$this->config_set($config);
 	}
 
-	public function config_set($config) {
+	private function config_set($config) {
 
 		//--------------------------------------------------
 		// If this class was not initialised with a config
