@@ -23,6 +23,9 @@
 			protected $order_pass = NULL;
 			protected $order_paid = NULL;
 
+			protected $db_table_main = NULL;
+			protected $db_table_item = NULL;
+
 		//--------------------------------------------------
 		// Setup
 
@@ -31,6 +34,65 @@
 			}
 
 			protected function setup() {
+
+				//--------------------------------------------------
+				// Tables
+
+					if ($this->db_table_main === NULL) $this->db_table_main = DB_PREFIX . 'order';
+					if ($this->db_table_item === NULL) $this->db_table_item = DB_PREFIX . 'order_item';
+
+					if (config::get('debug.level') > 0) {
+
+						debug_require_db_table($this->db_table_main, '
+								CREATE TABLE [TABLE] (
+									id int(11) NOT NULL AUTO_INCREMENT,
+									pass tinytext NOT NULL,
+									email varchar(100) NOT NULL,
+									created datetime NOT NULL,
+									edited datetime NOT NULL,
+									payment_received datetime NOT NULL,
+									payment_settled datetime NOT NULL,
+									payment_vat float NOT NULL,
+									payment_name tinytext NOT NULL,
+									payment_address_1 tinytext NOT NULL,
+									payment_address_2 tinytext NOT NULL,
+									payment_address_3 tinytext NOT NULL,
+									payment_town_city tinytext NOT NULL,
+									payment_postcode tinytext NOT NULL,
+									payment_country tinytext NOT NULL,
+									payment_telephone tinytext NOT NULL,
+									delivery_different enum(\'false\',\'true\') NOT NULL,
+									delivery_name tinytext NOT NULL,
+									delivery_address_1 tinytext NOT NULL,
+									delivery_address_2 tinytext NOT NULL,
+									delivery_address_3 tinytext NOT NULL,
+									delivery_town_city tinytext NOT NULL,
+									delivery_postcode tinytext NOT NULL,
+									delivery_country tinytext NOT NULL,
+									delivery_telephone tinytext NOT NULL,
+									dispatched datetime NOT NULL,
+									deleted datetime NOT NULL,
+									PRIMARY KEY (id)
+								);');
+
+						debug_require_db_table($this->db_table_item, '
+								CREATE TABLE [TABLE] (
+									id int(11) NOT NULL AUTO_INCREMENT,
+									order_id int(11) NOT NULL,
+									item_type enum(\'product\',\'coupon\',\'discount\',\'delivery\') NOT NULL,
+									item_id int(11) NOT NULL,
+									item_code tinytext NOT NULL,
+									item_name tinytext NOT NULL,
+									price decimal(10,2) NOT NULL,
+									quantity int(11) NOT NULL,
+									created datetime NOT NULL,
+									deleted datetime NOT NULL,
+									PRIMARY KEY (id),
+									KEY order_id (order_id)
+								);');
+
+					}
+
 			}
 
 		//--------------------------------------------------
@@ -60,28 +122,6 @@
 			}
 
 		//--------------------------------------------------
-		// Create
-
-			public function create() {
-
-				if ($this->order_id !== NULL) {
-					exit_with_error('Cannot create a new order when one is already selected (' . $this->order_id . ')');
-				}
-
-				$order_pass = '';
-				for ($k=0; $k<5; $k++) {
-					$order_pass .= chr(mt_rand(97,122));
-				}
-
-				$this->order_id = $db->insert_id();
-				$this->order_pass = $order_pass;
-				$this->order_paid = '0000-00-00 00:00:00';
-
-				session::set('order_ref', $this->ref_get());
-
-			}
-
-		//--------------------------------------------------
 		// Reset
 
 			public function reset() {
@@ -97,6 +137,16 @@
 
 			public function selected() {
 				return ($this->order_id !== NULL);
+			}
+
+			public function select_open() {
+
+				$this->select_by_ref(session::get('order_ref'));
+
+				if ($this->order_paid != '0000-00-00 00:00:00') {
+					$this->_reset();
+				}
+
 			}
 
 			public function select_by_id($id, $pass = NULL) {
@@ -134,16 +184,6 @@
 				}
 			}
 
-			public function select_open() {
-
-				$this->select_by_ref(session::get('order_ref'));
-
-				if ($this->order_paid != '0000-00-00 00:00:00') {
-					$this->_reset();
-				}
-
-			}
-
 		//--------------------------------------------------
 		// Details
 
@@ -152,6 +192,8 @@
 				if ($this->order_id === NULL) {
 					$this->create();
 				}
+
+// Update 'edited'
 
 				$this->_cache_update();
 
@@ -163,25 +205,30 @@
 		//--------------------------------------------------
 		// Items
 
-			public function item_add() {
+			public function item_add($details = NULL) {
 
 				if ($this->order_id === NULL) {
 					$this->create();
 				}
 
+$details = array();
+$quantity = 1;
+
+				$id = $db->insert_id();
+
 				$this->_cache_update();
 
-				return $db->insert_id();
+				return $id;
+
+			}
+
+			public function item_quantity_set($item_id, $quantity) {
+
+				$this->_cache_update();
 
 			}
 
 			public function items_get() {
-			}
-
-			public function item_edit_quantity($item_id, $quantity) {
-
-				$this->_cache_update();
-
 			}
 
 		//--------------------------------------------------
@@ -200,10 +247,41 @@
 		//--------------------------------------------------
 		// Events
 
-			public function payment_paid() {
+			public function payment_received() {
 			}
 
 			public function payment_settled() {
+			}
+
+			public function dispatched() {
+			}
+
+		//--------------------------------------------------
+		// Create
+
+			protected function create() {
+
+				if ($this->order_id !== NULL) {
+					exit_with_error('Cannot create a new order when one is already selected (' . $this->order_id . ')');
+				}
+
+				$order_pass = '';
+				for ($k=0; $k<5; $k++) {
+					$order_pass .= chr(mt_rand(97,122));
+				}
+
+$details = array(
+	'id' => '',
+	'ip' => '',
+);
+
+
+				$this->order_id = $db->insert_id();
+				$this->order_pass = $order_pass;
+				$this->order_paid = '0000-00-00 00:00:00';
+
+				session::set('order_ref', $this->ref_get());
+
 			}
 
 		//--------------------------------------------------
@@ -212,25 +290,6 @@
 			protected function _cache_update() {
 				// If you want to copy the details into a FULLTEXT index field for faster searching
 			}
-
-	}
-
-//--------------------------------------------------
-// Tables exist
-
-	if (config::get('debug.level') > 0) {
-
-// 		debug_require_db_table(DB_PREFIX . 'order', '
-// 				CREATE TABLE [TABLE] (
-// 					id int(11) NOT NULL AUTO_INCREMENT,
-// 					email varchar(100) NOT NULL,
-// 					pass tinytext NOT NULL,
-// 					created datetime NOT NULL,
-// 					edited datetime NOT NULL,
-// 					deleted datetime NOT NULL,
-// 					PRIMARY KEY (id),
-// 					UNIQUE KEY email (email)
-// 				);');
 
 	}
 
