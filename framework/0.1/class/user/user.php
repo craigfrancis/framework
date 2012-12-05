@@ -204,11 +204,13 @@
 			public function form_get() {
 				if ($this->form === NULL) {
 
+					$db = $this->db_get();
+
 					$this->form = new user_form();
 					$this->form->user_ref_set($this);
 					$this->form->db_set($this->db_get());
 					$this->form->db_save_disable();
-					$this->form->db_table_set_sql($this->db_table_main);
+					$this->form->db_table_set_sql($db->escape_field($this->db_table_main));
 
 					if ($this->user_id > 0) {
 						$this->form->db_where_set_sql($this->details->db_where_get_sql($this->user_id));
