@@ -63,7 +63,6 @@
 								// Store
 //exit('#' . $field_name->value_get());
 exit('#' . $field_type->value_get());
-exit('#' . $field_type->value_ref_get());
 exit('Updated?');
 									$form_edit->db_save();
 
