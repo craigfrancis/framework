@@ -32,10 +32,68 @@
 			));
 
 	//--------------------------------------------------
-	// Edit basket
+	// Edit basket with 'delete' links (with CSRF issue)
 
-		$order->table_get_html(array(
+		$order->items_update();
+
+		$table_html = $order->table_get_html(array(
+				'quantity_edit' => 'link',
 			));
+
+	//--------------------------------------------------
+	// Edit basket with 'quantity' select fields
+
+		//--------------------------------------------------
+		// Controller
+
+			$form = new form();
+
+			if ($form->submitted() && $form->valid()) {
+
+				$order->items_update();
+
+				if (strtolower(trim(request('button'))) == 'update totals') {
+					redirect(http_url('/basket/'));
+				} else {
+					redirect(http_url('/basket/checkout/'));
+				}
+
+			}
+
+			$table_html = $order->table_get_html(array(
+					'quantity_edit' => array('type' => 'select'),
+				));
+
+			$this->set('form', $form);
+			$this->set('table_html', $table_html);
+			$this->set('empty_basket', ($order->items_count_get() == 0));
+
+		//--------------------------------------------------
+		// View
+
+			<?= $form->html_start(); ?>
+				<fieldset>
+
+					<?= $form->html_error_list(); ?>
+
+					<?= $order_table_html; ?>
+
+					<?php if (!$empty_basket) { ?>
+
+						<div class="submit">
+							<input type="submit" name="button" value="Update totals" />
+							<input type="submit" name="button" value="Checkout" />
+						</div>
+
+					<?php } ?>
+
+				</fieldset>
+			<?= $form->html_end(); ?>
+
+	//--------------------------------------------------
+	// Checkout page
+
+
 
 ***************************************************/
 
@@ -55,7 +113,8 @@
 			protected $db_table_item = NULL;
 
 			protected $db_link = NULL;
-			protected $table_link = NULL;
+			protected $table = NULL;
+			protected $form = NULL;
 
 			protected $object_table = 'order_table';
 			protected $object_payment = 'payment';
@@ -157,10 +216,35 @@
 			}
 
 			protected function table_get() {
-				if ($this->table_link === NULL) {
-					$this->table_link = new $this->object_table($this);
+				if ($this->table === NULL) {
+					$this->table = new $this->object_table($this);
 				}
-				return $this->table_link;
+				return $this->table;
+			}
+
+			public function form_get() {
+				if ($this->form === NULL) {
+
+					$db = $this->db_get();
+
+					$this->form = new order_form();
+					$this->form->order_ref_set($this);
+					$this->form->db_set($this->db_get());
+					$this->form->db_save_disable();
+					$this->form->db_table_set_sql($db->escape_field($this->db_table_main));
+
+					if ($this->order_id > 0) {
+
+						$where_sql = '
+							id = "' . $db->escape($this->order_id) . '" AND
+							deleted = "0000-00-00 00:00:00"';
+
+						$this->form->db_where_set_sql($where_sql);
+
+					}
+
+				}
+				return $this->form;
 			}
 
 		//--------------------------------------------------
@@ -189,6 +273,8 @@
 				if ($this->order_paid != '0000-00-00 00:00:00') {
 					$this->reset();
 				}
+
+				return ($this->order_id !== NULL);
 
 			}
 
@@ -235,22 +321,73 @@
 			}
 
 		//--------------------------------------------------
-		// Details
+		// Values
 
-			public function details_set($values) {
+			public function save() {
 
-				if ($this->order_id === NULL) {
-					$this->create();
-				}
+				//--------------------------------------------------
+				// Create order
 
-// Update 'edited'
+					if ($this->order_id === NULL) {
+						$this->create();
+					}
 
-				$this->delivery_update();
-				$this->cache_update();
+				//--------------------------------------------------
+				// Validation
+
+					$form = $this->form_get();
+
+					if (!$form->valid()) {
+						return false;
+					}
+
+				//--------------------------------------------------
+				// Update
+
+					$values = $form->data_db_get();
+
+					if (count($values) > 0) {
+						$this->values_set($values);
+					}
+
+				//--------------------------------------------------
+				// Success
+
+					return true;
 
 			}
 
-			public function details_get($fields) {
+			public function values_set($values) {
+
+				//--------------------------------------------------
+				// Create order
+
+					if ($this->order_id === NULL) {
+						$this->create();
+					}
+					
+				//--------------------------------------------------
+				// Update
+
+					$db = $this->db_get();
+
+					$values['edited'] = date('Y-m-d H:i:s');
+
+					$where_sql = '
+						id = "' . $db->escape($this->order_id) . '" AND
+						deleted = "0000-00-00 00:00:00"';
+
+					$db->update($this->db_table_main, $values, $where_sql);
+
+				//--------------------------------------------------
+				// Other updates
+
+					$this->delivery_update();
+					$this->cache_update();
+
+			}
+
+			public function values_get($fields) {
 			}
 
 		//--------------------------------------------------
@@ -331,6 +468,8 @@
 				//--------------------------------------------------
 				// Update
 
+					$db = $this->db_get();
+
 					if ($quantity <= 0) {
 
 						//--------------------------------------------------
@@ -399,6 +538,35 @@
 
 			}
 
+			public function items_update() {
+
+				//--------------------------------------------------
+				// Order not selected
+
+					if ($this->order_id === NULL) {
+						return;
+					}
+
+				//--------------------------------------------------
+				// Delete link
+
+					$delete_id = request('item_delete');
+					if ($delete_id !== NULL) {
+						$this->item_quantity_set($delete_id, 0);
+					}
+
+				//--------------------------------------------------
+				// Select fields
+
+					foreach ($this->items_get() as $item) {
+						$quantity = request('item_quantity_' . $item['id']);
+						if ($quantity !== NULL) {
+							$this->item_quantity_set($item['id'], $quantity);
+						}
+					}
+
+			}
+
 			public function items_count_get() {
 
 				if ($this->order_id === NULL) {
@@ -426,40 +594,52 @@
 
 			public function items_get() {
 
-				if ($this->order_id === NULL) {
-					exit_with_error('An order needs to be selected', 'items_get');
-				}
+				//--------------------------------------------------
+				// Order not open yet
 
-				if ($this->order_items) {
-					return $this->order_items;
-				}
+					if ($this->order_id === NULL) {
+						return array();
+					}
 
-				$db = $this->db_get();
+				//--------------------------------------------------
+				// Cached values
 
-				$sql = 'SELECT
-							*
-						FROM
-							' . $db->escape_field($this->db_table_item) . ' AS oi
-						WHERE
-							oi.order_id = "' . $db->escape($this->order_id) . '" AND
-							oi.type = "item" AND
-							oi.deleted = "0000-00-00 00:00:00"';
+					if ($this->order_items) {
+						return $this->order_items;
+					}
 
-				$items = array();
+				//--------------------------------------------------
+				// Query
 
-				foreach ($db->fetch_all($sql) as $row) {
+					$items = array();
 
-					$details = $row;
-					unset($details['deleted']);
-					unset($details['order_id']);
+					$db = $this->db_get();
 
-					$items[$row['id']] = $details;
+					$sql = 'SELECT
+								*
+							FROM
+								' . $db->escape_field($this->db_table_item) . ' AS oi
+							WHERE
+								oi.order_id = "' . $db->escape($this->order_id) . '" AND
+								oi.type = "item" AND
+								oi.deleted = "0000-00-00 00:00:00"';
 
-				}
+					foreach ($db->fetch_all($sql) as $row) {
 
-				$this->order_items = $items;
+						$details = $row;
+						unset($details['deleted']);
+						unset($details['order_id']);
 
-				return $items;
+						$items[$row['id']] = $details;
+
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					$this->order_items = $items;
+
+					return $items;
 
 			}
 
@@ -495,10 +675,6 @@
 				// Defaults
 
 					$db = $this->db_get();
-
-					if ($this->order_id === NULL) {
-						exit_with_error('An order needs to be selected', 'totals_get');
-					}
 
 					$return = array(
 							'items' => array(),
@@ -584,32 +760,50 @@
 			public function payment_received() {
 
 				//--------------------------------------------------
+				// Details
+
+					if ($this->order_id === NULL) {
+						exit_with_error('An order needs to be selected', 'payment_received');
+					}
+
+				//--------------------------------------------------
 				// Customer email
 
-					$this->email_customer('order-payment-received');
+					$this->_email_customer('order-payment-received');
 
 			}
 
 			public function payment_settled() {
 
 				//--------------------------------------------------
+				// Details
+
+					if ($this->order_id === NULL) {
+						exit_with_error('An order needs to be selected', 'payment_settled');
+					}
+
+				//--------------------------------------------------
 				// Customer email
 
-					$this->email_customer('order-payment-settled');
+					$this->_email_customer('order-payment-settled');
 
 			}
 
 			public function dispatched() {
+
+				//--------------------------------------------------
+				// Details
+
+					if ($this->order_id === NULL) {
+						exit_with_error('An order needs to be selected', 'dispatched');
+					}
+
 			}
 
 		//--------------------------------------------------
 		// Tables
 
 			public function table_get_html($config = NULL) {
-
-				if ($this->order_id === NULL) {
-					exit_with_error('An order needs to be selected', 'table_get_html');
-				}
 
 				$table = $this->table_get();
 
@@ -618,10 +812,6 @@
 			}
 
 			public function table_get_text() {
-
-				if ($this->order_id === NULL) {
-					exit_with_error('An order needs to be selected', 'table_get_text');
-				}
 
 				$table = $this->table_get();
 
@@ -632,7 +822,7 @@
 		//--------------------------------------------------
 		// Emails
 
-			private function email_customer($template) {
+			private function _email_customer($template) {
 
 				//--------------------------------------------------
 				// Does the template exist
@@ -709,7 +899,7 @@
 		// Delivery support
 
 			protected function delivery_price_get() {
-				return 0;
+				return 10;
 			}
 
 			protected function delivery_update() {
@@ -720,9 +910,27 @@
 					$delivery_price = $this->delivery_price_get();
 
 				//--------------------------------------------------
-				// Update delivery record
+				// No change with the 1 record (if more, still replace)
 
 					$db = $this->db_get();
+
+					$sql = 'SELECT
+								oi.price
+							FROM
+								' . $db->escape_field($this->db_table_item) . ' AS oi
+							WHERE
+								oi.order_id = "' . $db->escape($this->order_id) . '" AND
+								oi.type = "delivery" AND
+								oi.deleted = "0000-00-00 00:00:00"';
+
+					$delivery = $db->fetch_all($sql);
+
+					if (count($delivery) == 1 && round($delivery[0]['price'], 2) == round($delivery_price, 2)) {
+						return;
+					}
+
+				//--------------------------------------------------
+				// Replace delivery record
 
 					$db->query('UPDATE
 									' . $db->escape_field($this->db_table_item) . ' AS oi

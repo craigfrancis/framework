@@ -909,7 +909,7 @@
 		//--------------------------------------------------
 		// Field support
 
-			public function field_get($ref, $setup = NULL) {
+			public function field_get($ref, $config = NULL) {
 
 				if (is_numeric($ref)) {
 
@@ -930,9 +930,9 @@
 						$method = 'field_' . $ref . '_get';
 
 						if (method_exists($this, $method)) {
-							$field = $this->$method($setup);
+							$field = $this->$method($config);
 						} else {
-							$field = $this->_field_create($ref, $setup);
+							$field = $this->_field_create($ref, $config);
 						}
 
 						$this->field_refs[$ref] = $field;
@@ -945,7 +945,7 @@
 
 			}
 
-			protected function _field_create($ref, $setup) {
+			protected function _field_create($ref, $config) {
 				exit_with_error('Cannot create the "' . $ref . '" field, missing the "field_' . $ref . '_get" method on "' . get_class($this) . '".');
 			}
 

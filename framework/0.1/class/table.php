@@ -592,7 +592,7 @@
 
 				foreach (array_keys($this->rows) as $row_key) {
 
-					$row_class = trim($this->rows[$row_key]['class_name'] . ($row_count++ % 2 ? ' even' : ''));
+					$row_class = trim($this->rows[$row_key]['class_name'] . ($row_count++ % 2 ? ' even' : ' odd'));
 					$row_id = $this->rows[$row_key]['id_name'];
 
 					$output_html .= '

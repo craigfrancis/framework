@@ -78,7 +78,7 @@
 				}
 
 				if (isset($item['item_code']) && $item['item_code'] != '') {
-					$html = '
+					$html .= '
 						<p>' . html($item['item_code']) . '</p>';
 				}
 
@@ -88,24 +88,65 @@
 
 			public function item_quantity_html($config, $item, $quantity) {
 
-				if (isset($config['quantity_edit_field'])) {
+				//--------------------------------------------------
+				// Config
 
-				} else if (isset($config['quantity_edit_name'])) {
+					if ($config['quantity_edit']) {
 
+						$edit_config = $config['quantity_edit'];
 
-				} else {
+						if (!is_array($edit_config)) {
+							$edit_config = array('type' => $edit_config);
+						}
 
-					$html = html($quantity);
+						$edit_config = array_merge(array(
+								'type' => 'select',
+								'max' => 10,
+								'delete_text' => 'Remove',
+								'url' => NULL,
+							), $edit_config);
 
-				}
+					} else {
 
-				if (isset($config['quantity_delete_name'])) {
+						$edit_config = array('type' => NULL);
 
-					$html .= '<a href="' . url(array($config['quantity_delete_name'] => $item['id'])) . '">Delete</a>';
+					}
 
-				}
+				//--------------------------------------------------
+				// Types
 
-				return $html;
+					if ($edit_config['type'] == 'select') {
+
+						$max = $edit_config['max'];
+						if ($quantity > $max) {
+							$max = $quantity;
+						}
+
+						$html = '<select name="item_quantity_' . html($item['id']) . '">';
+						for ($k = 0; $k <= $max; $k++) {
+							$html .= '<option value="' . html($k) . '"' . ($k == $quantity ? ' selected="selected"' : '') . '>' . html($k == 0 ? $edit_config['delete_text'] : $k) . '</option>';
+						}
+						$html .= '</select>';
+
+					} else if ($edit_config['type'] == 'link') {
+
+						$url = $edit_config['url'];
+						if ($url === NULL) {
+							$url = new url();
+						}
+
+						$html = html($quantity) . ' <br /><a href="' . $url->get(array('item_delete' => $item['id'])) . '">' . html($edit_config['delete_text']) . '</a>';
+
+					} else {
+
+						$html = html($quantity);
+
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $html;
 
 			}
 
@@ -145,69 +186,142 @@
 						<table class="order_table">
 							<thead>
 								<tr>
-									<th scope="col"' . ($show_image ? ' colspan="2"' : '') . '>Item</th>
-									<th scope="col">Quantity</th>
-									<th scope="col">Price</th>
-									<th scope="col">Total</th>
+									<th scope="col" class="item"' . ($show_image ? ' colspan="2"' : '') . '>Item</th>
+									<th scope="col" class="quantity">Quantity</th>
+									<th scope="col" class="price">Price</th>
+									<th scope="col" class="total">Total</th>
 								</tr>
 							</thead>
 							<tbody>';
 
 				//--------------------------------------------------
-				// Items
+				// Body
 
-					foreach ($this->order_items as $item) {
+					if (count($this->order_items) == 0) {
 
-						if ($show_item_url) {
-							$item_url = $this->item_url($config, $item);
-						} else {
-							$item_url = NULL;
-						}
+						//--------------------------------------------------
+						// Empty basket
 
-						$html .= '
-								<tr>';
+								$html .= '
+									<tr class="empty">
+										<td colspan="' . html($show_image ? 5 : 4) . '">Your basket is empty</td>
+									</tr>';
 
-						if ($show_image) {
+					} else {
 
-							if ($show_image_info) {
+						//--------------------------------------------------
+						// Items
 
-								$image_info = $this->item_image_info($config, $item);
+							$k = 0;
 
-								if (is_array($image_info)) {
-									$image_html = '<img src="' . html($image_info['url']) . '" width="' . html($image_info['width']) . '" height="' . html($image_info['height']) . '" />';
+							foreach ($this->order_items as $item) {
+
+								if ($show_item_url) {
+									$item_url = $this->item_url($config, $item);
 								} else {
-									$image_html = '<img src="' . html($image_info) . '" />';
+									$item_url = NULL;
 								}
 
-							} else {
+								$html .= '
+										<tr class="item ' . ($k++ % 2 ? 'even' : 'odd') . '">';
 
-								$image_html = $this->item_image_html($config, $item);
+								if ($show_image) {
+
+									if ($show_image_info) {
+
+										$image_info = $this->item_image_info($config, $item);
+
+										if (is_array($image_info)) {
+											$image_html = '<img src="' . html($image_info['url']) . '" width="' . html($image_info['width']) . '" height="' . html($image_info['height']) . '" />';
+										} else {
+											$image_html = '<img src="' . html($image_info) . '" />';
+										}
+
+									} else {
+
+										$image_html = $this->item_image_html($config, $item);
+
+									}
+
+									if ($item_url) {
+										$html .= '
+												<td class="image"><a href="' . html($item_url) . '">' . $image_html . '</a></td>';
+									} else {
+										$html .= '
+												<td class="image">' . $image_html . '</td>';
+									}
+
+								}
+
+								$html .= '
+											<td class="item">' . $this->item_info_html($config, $item, $item_url) . '</td>
+											<td class="quantity">' . $this->item_quantity_html($config, $item, $item['quantity']) . '</td>
+											<td class="price">' . html(format_currency(($item['price']), $currency_char)) . '</td>
+											<td class="total">' . html(format_currency(($item['quantity'] * $item['price']), $currency_char)) . '</td>
+										</tr>';
 
 							}
 
-							if ($item_url) {
-								$html .= '
-										<td><a href="' . html($item_url) . '">' . $image_html . '</a></td>';
-							} else {
-								$html .= '
-										<td>' . $image_html . '</td>';
-							}
+						//--------------------------------------------------
+						// Totals
 
-						}
+							//--------------------------------------------------
+							// Pre VAT items
 
-						$html .= '
-									<td>' . $this->item_info_html($config, $item, $item_url) . '</td>
-									<td>' . $this->item_quantity_html($config, $item, $item['quantity']) . '</td>
-									<td>' . html(format_currency(($item['price']), $currency_char)) . '</td>
-									<td>' . html(format_currency(($item['quantity'] * $item['price']), $currency_char)) . '</td>
-								</tr>';
+								foreach ($this->order_totals['vat']['item_types'] as $type) {
+									if ($type != 'item') {
+
+										$amount = $this->order_totals['items'][$type];
+
+										$html .= '
+											<tr class="total ' . html($type) . ' ' . ($k++ % 2 ? 'even' : 'odd') . '">
+												<td class="item" colspan="' . html($show_image ? 4 : 3) . '">' . ucfirst($type) . '</td>
+												<td class="total">' . html(format_currency($amount, $currency_char)) . '</td>
+											</tr>';
+
+									}
+								}
+
+							//--------------------------------------------------
+							// Net/VAT values
+
+								$html .= '
+									<tr class="total net ' . ($k++ % 2 ? 'even' : 'odd') . '">
+										<td class="item" colspan="' . html($show_image ? 4 : 3) . '">Net:</td>
+										<td class="total">' . html(format_currency($this->order_totals['amount']['net'], $currency_char)) . '</td>
+									</tr>';
+
+								$html .= '
+									<tr class="total vat ' . ($k++ % 2 ? 'even' : 'odd') . '">
+										<td class="item" colspan="' . html($show_image ? 4 : 3) . '">VAT:</td>
+										<td class="total">' . html(format_currency($this->order_totals['amount']['vat'], $currency_char)) . '</td>
+									</tr>';
+
+							//--------------------------------------------------
+							// VAT exempt items
+
+								foreach ($this->order_totals['items'] as $type => $amount) {
+									if ($type != 'item' && !in_array($type, $this->order_totals['vat']['item_types'])) {
+
+										$html .= '
+											<tr class="total ' . html($type) . ' ' . ($k++ % 2 ? 'even' : 'odd') . '">
+												<td class="item" colspan="' . html($show_image ? 4 : 3) . '">' . ucfirst($type) . '</td>
+												<td class="total">' . html(format_currency($amount, $currency_char)) . '</td>
+											</tr>';
+
+									}
+								}
+
+							//--------------------------------------------------
+							// Total
+
+								$html .= '
+									<tr class="total gross ' . ($k++ % 2 ? 'even' : 'odd') . '">
+										<td class="item" colspan="' . html($show_image ? 4 : 3) . '">Total:</td>
+										<td class="total">' . html(format_currency($this->order_totals['amount']['gross'], $currency_char)) . '</td>
+									</tr>';
 
 					}
-
-				//--------------------------------------------------
-				// Total
-
-debug($this->order_totals);
 
 				//--------------------------------------------------
 				// End
