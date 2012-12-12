@@ -243,6 +243,31 @@
 
 		}
 
+		function file_size_to_bytes($size) { // Inspired by the function get_real_size(), from Moodle (http://moodle.org) by Martin Dougiamas
+
+			$size = trim($size);
+
+			if (strtoupper(substr($size, -1)) == 'B') {
+				$size = substr($size, 0, -1); // Drop the B, as in 10B or 10KB
+			}
+
+			$units = array(
+					'P' => 1125899906842624,
+					'T' => 1099511627776,
+					'G' => 1073741824,
+					'M' => 1048576,
+					'K' => 1024,
+				);
+
+			$unit = strtoupper(substr($size, -1));
+			if (isset($units[$unit])) {
+				$size = (substr($size, 0, -1) * $units[$unit]);
+			}
+
+			return intval($size);
+
+		}
+
 		function timestamp_to_human($input_seconds) {
 
 			//--------------------------------------------------
