@@ -107,31 +107,78 @@
 
 			}
 
-			public function max_size_set($error, $size) {
+			public function max_size_set($error, $size = NULL) {
 				$this->max_size_set_html(html($error), $size);
 			}
 
-			public function max_size_set_html($error_html, $size) {
+			public function max_size_set_html($error_html, $size = NULL) {
 
-				$this->max_size = intval($size);
+				//--------------------------------------------------
+				// Max size server will allow
 
-				if ($this->uploaded) {
+					$this->max_size = 0;
 
-					$error_html = str_replace('XXX', file_size_to_human($this->max_size), $error_html);
+					$server_max = $this->max_size_get();
 
-					if ($_FILES[$this->name]['error'] == 1) $this->form->_field_error_set_html($this->form_field_uid, $error_html, 'ERROR: Exceeds "upload_max_filesize" ' . ini_get('upload_max_filesize'));
-					if ($_FILES[$this->name]['error'] == 2) $this->form->_field_error_set_html($this->form_field_uid, $error_html, 'ERROR: Exceeds "MAX_FILE_SIZE" specified in the html form');
+				//--------------------------------------------------
+				// Set
 
-					if ($_FILES[$this->name]['size'] >= $this->max_size) {
-						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+					if ($size === NULL) {
+						if ($server_max > 0) {
+							$this->max_size = intval($server_max);
+						} else {
+							exit_with_error('Cannot determine max file upload size for this server.');
+						}
+					} else {
+						if ($server_max == 0 || $size <= $server_max) {
+							$this->max_size = intval($size);
+						} else {
+							exit_with_error('The maximum file size the server accepts is "' . file_size_to_human($server_max) . '" (' . $server_max . ')', 'upload_max_filesize = ' . ini_get('upload_max_filesize') . "\n" . 'post_max_size = ' . ini_get('post_max_size'));
+						}
 					}
 
-				}
+				//--------------------------------------------------
+				// Validation on upload
+
+					if ($this->uploaded) {
+
+						$error_html = str_replace('XXX', file_size_to_human($this->max_size), $error_html);
+
+						if ($_FILES[$this->name]['error'] == 1) $this->form->_field_error_set_html($this->form_field_uid, $error_html, 'ERROR: Exceeds "upload_max_filesize" ' . ini_get('upload_max_filesize'));
+						if ($_FILES[$this->name]['error'] == 2) $this->form->_field_error_set_html($this->form_field_uid, $error_html, 'ERROR: Exceeds "MAX_FILE_SIZE" specified in the html form');
+
+						if ($_FILES[$this->name]['size'] >= $this->max_size) {
+							$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+						}
+
+					}
 
 			}
 
 			public function max_size_get() {
-				return $this->max_size;
+
+				$size = $this->max_size;
+
+				if ($size == 0) {
+
+					foreach (array('upload_max_filesize', 'post_max_size') as $ini) {
+
+						if ($limit = ini_get($ini)) {
+
+							$limit = file_size_to_bytes($limit);
+
+							if (($limit > 0) && ($size == 0 || $size > $limit)) {
+								$size = $limit;
+							}
+
+						}
+
+					}
+
+				}
+
+				return $size;
+
 			}
 
 			public function partial_file_error_set($error) {
