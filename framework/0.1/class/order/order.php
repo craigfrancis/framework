@@ -32,7 +32,7 @@
 			));
 
 	//--------------------------------------------------
-	// Edit basket with 'delete' links (with CSRF issue)
+	// Edit basket with 'delete' links (CSRF issue)
 
 		$order->items_update();
 
@@ -93,7 +93,52 @@
 	//--------------------------------------------------
 	// Checkout page
 
+		$order = new order();
 
+		if (!$order->select_open()) {
+			redirect(http_url('/basket/'));
+		}
+
+		$form = $order->form_get();
+		$form->form_class_set('basic_form');
+		$form->form_button_set('Continue');
+
+		$form->print_group_start('Payment details');
+		$form->field_get('payment_name');
+		$form->field_get('payment_address_1');
+		$form->field_get('payment_address_2');
+		$form->field_get('payment_address_3');
+		$form->field_get('payment_town_city');
+		$form->field_get('payment_postcode');
+		$form->field_get('payment_country');
+		$form->field_get('payment_telephone');
+
+		$form->print_group_start('Delivery details');
+		$form->field_get('delivery_different');
+		$form->field_get('delivery_name');
+		$form->field_get('delivery_address_1');
+		$form->field_get('delivery_address_2');
+		$form->field_get('delivery_address_3');
+		$form->field_get('delivery_town_city');
+		$form->field_get('delivery_postcode');
+		$form->field_get('delivery_country');
+		$form->field_get('delivery_telephone');
+
+		if ($form->submitted()) {
+
+			$result = $order->save();
+
+			if ($result) {
+				redirect(http_url('/basket/payment/'));
+			}
+
+		} else {
+
+			// Defaults
+
+		}
+
+		$this->set('form', $form);
 
 ***************************************************/
 
@@ -323,40 +368,6 @@
 		//--------------------------------------------------
 		// Values
 
-			public function save() {
-
-				//--------------------------------------------------
-				// Create order
-
-					if ($this->order_id === NULL) {
-						$this->create();
-					}
-
-				//--------------------------------------------------
-				// Validation
-
-					$form = $this->form_get();
-
-					if (!$form->valid()) {
-						return false;
-					}
-
-				//--------------------------------------------------
-				// Update
-
-					$values = $form->data_db_get();
-
-					if (count($values) > 0) {
-						$this->values_set($values);
-					}
-
-				//--------------------------------------------------
-				// Success
-
-					return true;
-
-			}
-
 			public function values_set($values) {
 
 				//--------------------------------------------------
@@ -365,7 +376,7 @@
 					if ($this->order_id === NULL) {
 						$this->create();
 					}
-					
+
 				//--------------------------------------------------
 				// Update
 
@@ -389,6 +400,87 @@
 
 			public function values_get($fields) {
 			}
+
+		//--------------------------------------------------
+		// Save functionality (e.g. checkout form)
+
+			public function save() {
+
+				//--------------------------------------------------
+				// Create order
+
+					if ($this->order_id === NULL) {
+						$this->create();
+					}
+
+				//--------------------------------------------------
+				// Validation
+
+					$this->validate_save();
+
+					$form = $this->form_get();
+
+					if (!$form->valid()) {
+						return false;
+					}
+
+				//--------------------------------------------------
+				// Update
+
+					$values = $form->data_db_get();
+
+					if (count($values) > 0) {
+						$this->values_set($values);
+					}
+
+				//--------------------------------------------------
+				// Success
+
+					return true;
+
+			}
+
+			public function validate_save() {
+
+				//--------------------------------------------------
+				// Form reference
+
+					$form = $this->form_get();
+
+				//--------------------------------------------------
+				// Optionally required fields
+
+					if ($form->field_exists('delivery_different') && $form->field_get('delivery_different')->value_get() == 'true') {
+
+						if ($form->field_exists('delivery_name') && $form->field_get('delivery_name')->value_get() == '') {
+							$form->field_get('delivery_name')->error_add('Your delivery name is required.');
+						}
+
+						if ($form->field_exists('delivery_address_1') && $form->field_get('delivery_address_1')->value_get() == '') {
+							$form->field_get('delivery_address_1')->error_add('Your delivery address line 1 is required.');
+						}
+
+						if ($form->field_exists('delivery_town_city') && $form->field_get('delivery_town_city')->value_get() == '') {
+							$form->field_get('delivery_town_city')->error_add('Your delivery town or city is required.');
+						}
+
+						if ($form->field_exists('delivery_country') && $form->field_get('delivery_country')->value_get() == '') {
+							$form->field_get('delivery_country')->error_add('Your delivery country is required.');
+						}
+
+						if ($form->field_exists('delivery_postcode') && $form->field_get('delivery_postcode')->value_get() == '') {
+							$form->field_get('delivery_postcode')->error_add('Your delivery postcode is required.');
+						}
+
+						if ($form->field_exists('delivery_telephone') && $form->field_get('delivery_telephone')->value_get() == '') {
+							$form->field_get('delivery_telephone')->error_add('Your delivery telephone number is required.');
+						}
+
+					}
+
+			}
+
+
 
 		//--------------------------------------------------
 		// Items
