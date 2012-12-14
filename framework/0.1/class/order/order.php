@@ -191,7 +191,7 @@
 									edited datetime NOT NULL,
 									payment_received datetime NOT NULL,
 									payment_settled datetime NOT NULL,
-									payment_vat float NOT NULL,
+									payment_tax float NOT NULL,
 									payment_name tinytext NOT NULL,
 									payment_address_1 tinytext NOT NULL,
 									payment_address_2 tinytext NOT NULL,
@@ -747,15 +747,15 @@
 				if ($currency == 'GBP') return '£';
 			}
 
-			public function vat_percent_get() {
-				return config::get('order.vat_percent', 20);
+			public function tax_percent_get() {
+				return config::get('order.tax_percent', 20);
 			}
 
-			public function vat_item_applied_get() {
-				return config::get('order.vat_item_applied', true); // If the price set on items have had vat applied
+			public function tax_item_applied_get() {
+				return config::get('order.tax_item_applied', true); // If the price set on items have had tax applied
 			}
 
-			public function vat_item_types_get() {
+			public function tax_item_types_get() {
 				return array(
 						'item', // Could add 'delivery'
 					);
@@ -771,7 +771,7 @@
 					$return = array(
 							'items' => array(),
 							'amount' => array(),
-							'vat' => array(),
+							'tax' => array(),
 						);
 
 					foreach ($db->enum_values($this->db_table_item, 'type') as $type) {
@@ -783,7 +783,7 @@
 
 					$sql = 'SELECT
 								oi.type,
-								SUM(oi.price) AS total
+								SUM(oi.price * oi.quantity) AS total
 							FROM
 								' . $db->escape_field($this->db_table_item) . ' AS oi
 							WHERE
@@ -799,45 +799,45 @@
 				//--------------------------------------------------
 				// Amounts
 
-					$vat_item_applied = $this->vat_item_applied_get();
-					$vat_item_types = $this->vat_item_types_get();
-					$vat_percent = $this->vat_percent_get();
+					$tax_item_applied = $this->tax_item_applied_get();
+					$tax_item_types = $this->tax_item_types_get();
+					$tax_percent = $this->tax_percent_get();
 
-					$items_total_inc_vat = 0;
-					$items_total_ex_vat = 0;
+					$items_total_inc_tax = 0;
+					$items_total_ex_tax = 0;
 					foreach ($return['items'] as $type => $value) {
-						if (in_array($type, $vat_item_types)) {
-							$items_total_inc_vat += $value;
+						if (in_array($type, $tax_item_types)) {
+							$items_total_inc_tax += $value;
 						} else {
-							$items_total_ex_vat += $value;
+							$items_total_ex_tax += $value;
 						}
 					}
 
-					if ($vat_item_applied) {
+					if ($tax_item_applied) {
 
-						$vat_ratio = (1 + ($vat_percent / 100));
+						$tax_ratio = (1 + ($tax_percent / 100));
 
-						$totals['vat'] = ($items_total_inc_vat - ($items_total_inc_vat / $vat_ratio));
-						$totals['gross'] = $items_total_inc_vat;
-						$totals['net'] = ($totals['gross'] - $totals['vat']);
+						$totals['tax'] = ($items_total_inc_tax - ($items_total_inc_tax / $tax_ratio));
+						$totals['gross'] = $items_total_inc_tax;
+						$totals['net'] = ($totals['gross'] - $totals['tax']);
 
 					} else {
 
-						$totals['net'] = $items_total_inc_vat;
-						$totals['vat'] = (($totals['net'] / 100) * $vat_percent);
-						$totals['gross'] = ($totals['net'] + $totals['vat']);
+						$totals['net'] = $items_total_inc_tax;
+						$totals['tax'] = (($totals['net'] / 100) * $tax_percent);
+						$totals['gross'] = ($totals['net'] + $totals['tax']);
 
 					}
 
-					$totals['gross'] += $items_total_ex_vat;
+					$totals['gross'] += $items_total_ex_tax;
 
 					$return['amount']['net'] = round($totals['net'], 2);
-					$return['amount']['vat'] = round($totals['vat'], 2);
+					$return['amount']['tax'] = round($totals['tax'], 2);
 					$return['amount']['gross'] = round($totals['gross'], 2);
 
-					$return['vat']['percent'] = $vat_percent;
-					$return['vat']['item_applied'] = $vat_item_applied;
-					$return['vat']['item_types'] = $vat_item_types;
+					$return['tax']['percent'] = $tax_percent;
+					$return['tax']['item_applied'] = $tax_item_applied;
+					$return['tax']['item_types'] = $tax_item_types;
 
 				//--------------------------------------------------
 				// Return

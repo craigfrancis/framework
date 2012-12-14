@@ -266,9 +266,9 @@
 						// Totals
 
 							//--------------------------------------------------
-							// Pre VAT items
+							// Pre tax items
 
-								foreach ($this->order_totals['vat']['item_types'] as $type) {
+								foreach ($this->order_totals['tax']['item_types'] as $type) {
 									if ($type != 'item') {
 
 										$amount = $this->order_totals['items'][$type];
@@ -283,7 +283,7 @@
 								}
 
 							//--------------------------------------------------
-							// Net/VAT values
+							// Net/Tax values
 
 								$html .= '
 									<tr class="total net ' . ($k++ % 2 ? 'even' : 'odd') . '">
@@ -292,16 +292,16 @@
 									</tr>';
 
 								$html .= '
-									<tr class="total vat ' . ($k++ % 2 ? 'even' : 'odd') . '">
+									<tr class="total tax ' . ($k++ % 2 ? 'even' : 'odd') . '">
 										<td class="item" colspan="' . html($show_image ? 4 : 3) . '">VAT:</td>
-										<td class="total">' . html(format_currency($this->order_totals['amount']['vat'], $currency_char)) . '</td>
+										<td class="total">' . html(format_currency($this->order_totals['amount']['tax'], $currency_char)) . '</td>
 									</tr>';
 
 							//--------------------------------------------------
-							// VAT exempt items
+							// Tax exempt items
 
 								foreach ($this->order_totals['items'] as $type => $amount) {
-									if ($type != 'item' && !in_array($type, $this->order_totals['vat']['item_types'])) {
+									if ($type != 'item' && !in_array($type, $this->order_totals['tax']['item_types'])) {
 
 										$html .= '
 											<tr class="total ' . html($type) . ' ' . ($k++ % 2 ? 'even' : 'odd') . '">

@@ -8,7 +8,7 @@
 		//--------------------------------------------------
 		// Checkout
 
-			public function checkout($order) {
+			public function checkout($config) {
 			}
 
 		//--------------------------------------------------

@@ -8,30 +8,43 @@
 		// Variables
 
 			protected $provider = NULL;
-			protected $config = NULL;
+
+			private $config = NULL; // Child classes should get the config though methods like parent::_checkout_setup();
+			private $db_link = NULL;
 
 		//--------------------------------------------------
 		// Setup
 
 			public function __construct() {
-				$this->setup();
+				$this->_setup();
 			}
 
-			protected function setup() {
+			protected function _setup() {
 
 				//--------------------------------------------------
 				// Provider
 
-exit(get_class($this));
-					//$this->provider = preg_replace('/[^a-z]+/', '', strtolower($this->provider));
-					$this->provider = 'google';
+					$class_name = get_class($this);
+
+					if (substr($class_name, 0, 8) == 'payment_') { // e.g. "paypal" from "payment_paypal_base"
+						$provider = substr($class_name, 8);
+						if (substr($provider, -5) == '_base') {
+							$provider = substr($provider, 0, -5);
+						}
+					} else {
+						$provider = '';
+					}
+
+					$this->provider = preg_replace('/[^a-z]+/', '', strtolower($provider));
+
+					if ($this->provider == '') {
+						exit_with_error('Cannot determine payment provider from "' . $class_name . '"');
+					}
 
 				//--------------------------------------------------
 				// Config
 
-					$this->config = array_merge(config::get_all('payment'), config::get_all('payment.' . $this->provider));
-
-debug($this->config);
+					$this->config = array_merge(config::get_all('payment.default'), config::get_all('payment.' . $this->provider));
 
 			}
 
@@ -51,24 +64,61 @@ debug($this->config);
 		//--------------------------------------------------
 		// Events
 
-			public function checkout($order) {
-
-				//--------------------------------------------------
-				// Set the provider used
-
-					$order->details_set(array('provider' => $this->provider));
-
-				//--------------------------------------------------
-				// Checkout
-
-					parent::checkout($order);
-
+			public function checkout($config) {
 			}
 
 			public function notification() {
 			}
 
 			public function settlements() {
+			}
+
+		//--------------------------------------------------
+		// Checkout
+
+			protected function _checkout_setup($config_supplied, $config_defaults, $config_required) {
+
+				//--------------------------------------------------
+				// Config
+
+					$dummy_url = https_url('/');
+
+					$config_defaults = array_merge(array(
+							'order' => NULL,
+						), $config_defaults);
+
+					if (!is_array($config_supplied)) {
+						$config_supplied = array(
+								'order' => $config_supplied,
+							);
+					}
+
+					$config = array_merge($config_defaults, $this->config, $config_supplied);
+
+					$this->_checkout_required_config($config, $config_required);
+
+				//--------------------------------------------------
+				// Return config
+
+					return $config;
+
+			}
+
+			protected function _checkout_required_config($config, $required) {
+
+				foreach ($required as $name) {
+					if (!isset($config[$name])) {
+
+						$example  = '$payment->checkout(array(' . "\n";
+						$example .= '		\'order\' => $order,' . "\n";
+						$example .= '		\'' . $name . '\' => \'???\',' . "\n";
+						$example .= '	));' . "\n";
+
+						exit_with_error('The "' . $name . '" config value needs to be set for checkout, either via the config "payment.' . $this->provider . '.' . $name . '", or with:' . "\n\n" . $example);
+
+					}
+				}
+
 			}
 
 	}
