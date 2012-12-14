@@ -24,7 +24,7 @@
 		//--------------------------------------------------
 		// Checkout
 
-			public function checkout($order) {
+			public function checkout($config) {
 
 				//--------------------------------------------------
 				// Send to Google
@@ -36,7 +36,7 @@
 
 						$url_parts = parse_url($path);
 
-						$order_xml = $this->checkout_xml();
+						$order_xml = $this->_checkout_xml($config);
 
 					//--------------------------------------------------
 					// Data
@@ -105,12 +105,12 @@
 
 			}
 
-			protected function checkout_xml($order) {
+			protected function _checkout_xml($config) {
 
 					// http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API.html#urls_for_posting
 
-				$currency = $order->currency_get();
-				$items = $order->items_get();
+				$currency = $config['order']->currency_get();
+				$items = $config['order']->items_get();
 
 				$xml = '<?xml version="1.0" encoding="' . xml($GLOBALS['pageCharset']) . '"?>
 					<checkout-shopping-cart xmlns="http://checkout.google.com/schema/2">
@@ -129,9 +129,9 @@
 
 				}
 
-				$deliveryLocal = $order->getDeliveryPrice('local');
-				$deliveryEurope = $order->getDeliveryPrice('europe');
-				$deliveryOverseas = $order->getDeliveryPrice('overseas');
+				$deliveryLocal = $config['order']->getDeliveryPrice('local');
+				$deliveryEurope = $config['order']->getDeliveryPrice('europe');
+				$deliveryOverseas = $config['order']->getDeliveryPrice('overseas');
 
 				$xml .= '
 							</items>

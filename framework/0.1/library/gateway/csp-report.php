@@ -28,9 +28,9 @@
 		$info  = '--------------------------------------------------' . "\n";
 		$info .= $data_raw . "\n";
 		$info .= '--------------------------------------------------' . "\n";
-		$info .= 'GET: ' . var_export($_GET, true) . "\n";
+		$info .= 'GET: ' . print_r($_GET, true) . "\n";
 		$info .= '--------------------------------------------------' . "\n";
-		$info .= 'POST: ' . var_export($_POST, true) . "\n";
+		$info .= 'POST: ' . print_r($_POST, true) . "\n";
 		$info .= '--------------------------------------------------';
 
 		exit_with_error('Content-Security-Policy failure', $info);

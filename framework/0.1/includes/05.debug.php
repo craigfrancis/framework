@@ -144,7 +144,7 @@
 						</head>
 						<body id="p_error">
 							<h1>System Error</h1>
-							<p>' . html($message) . '</p>';
+							<p>' . nl2br(html($message)) . '</p>';
 
 					if ($hidden_info !== NULL) {
 						echo '
@@ -290,7 +290,7 @@
 					return $variable->_debug_dump();
 				}
 			default:
-				return print_r($variable, true);
+				return trim(preg_replace('/^/m', str_repeat('        ', $level), print_r($variable, true)));
 		}
 	}
 
