@@ -253,7 +253,7 @@
 
 					$html = '
 						<h2>State</h2>
-						<p>TODO</p>';
+						<p>TODO: State of maintenance script</p>';
 
 					$view = new view();
 					$view->render_html($html);

@@ -364,6 +364,14 @@
 		}
 	}
 
+	function cms_admin_html($config) {
+		$cms_admin = config::get('cms_admin');
+		if (!$cms_admin) {
+			$cms_admin = new cms_admin();
+		}
+		return $cms_admin->html($config);
+	}
+
 //--------------------------------------------------
 // Check that an email address is valid
 
