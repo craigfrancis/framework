@@ -95,10 +95,18 @@
 
 		$api_path = config::get('gateway.url') . '/' . urlencode($api_name) . '/';
 
-		if ($parameters !== NULL) {
+		if (is_array($parameters)) {
+
 			return url($api_path, $parameters);
+
 		} else {
+
+			if (is_string($parameters)) {
+				$api_path .= urlencode($parameters) . '/';
+			}
+
 			return url($api_path);
+
 		}
 
 	}

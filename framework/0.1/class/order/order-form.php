@@ -109,20 +109,32 @@
 			}
 
 			public function field_delivery_name_get() {
+
 				$field_delivery_name = new form_field_text($this, 'Name');
 				$field_delivery_name->db_field_set('delivery_name');
 				$field_delivery_name->wrapper_class_add('delivery required');
 				$field_delivery_name->autocomplete_set('shipping name');
 				$field_delivery_name->max_length_set('Your delivery name cannot be longer than XXX characters.');
+
+				if (!$this->field_exists('delivery_different')) {
+					$field_delivery_name->min_length_set('Your delivery name is required.');
+				}
+
 				return $field_delivery_name;
 			}
 
 			public function field_delivery_address_1_get() {
+
 				$field_delivery_address_1 = new form_field_text($this, 'Address line 1');
 				$field_delivery_address_1->db_field_set('delivery_address_1');
 				$field_delivery_address_1->wrapper_class_add('delivery required');
 				$field_delivery_address_1->autocomplete_set('shipping address-line1');
 				$field_delivery_address_1->max_length_set('Your delivery address line 1 cannot be longer than XXX characters.');
+
+				if (!$this->field_exists('delivery_different')) {
+					$field_delivery_address_1->min_length_set('Your delivery address line 1 is required.');
+				}
+
 				return $field_delivery_address_1;
 			}
 
@@ -145,38 +157,62 @@
 			}
 
 			public function field_delivery_town_city_get() {
+
 				$field_delivery_town_city = new form_field_text($this, 'Town or city');
 				$field_delivery_town_city->db_field_set('delivery_town_city');
 				$field_delivery_town_city->wrapper_class_add('delivery required');
 				$field_delivery_town_city->autocomplete_set('shipping locality');
 				$field_delivery_town_city->max_length_set('Your delivery town or city cannot be longer than XXX characters.');
+
+				if (!$this->field_exists('delivery_different')) {
+					$field_delivery_town_city->min_length_set('Your delivery town or city is required.');
+				}
+
 				return $field_delivery_town_city;
 			}
 
 			public function field_delivery_postcode_get() {
+
 				$field_delivery_postcode = new form_field_postcode($this, 'Postcode');
 				$field_delivery_postcode->db_field_set('delivery_postcode');
 				$field_delivery_postcode->wrapper_class_add('delivery required');
 				$field_delivery_postcode->autocomplete_set('shipping postal-code');
 				$field_delivery_postcode->format_error_set('Your delivery postcode does not appear to be correct.');
+
+				if (!$this->field_exists('delivery_different')) {
+					$field_delivery_postcode->min_length_set('Your delivery postcode is required.');
+				}
+
 				return $field_delivery_postcode;
 			}
 
 			public function field_delivery_country_get() {
+
 				$field_delivery_country = new form_field_text($this, 'Country');
 				$field_delivery_country->db_field_set('delivery_country');
 				$field_delivery_country->wrapper_class_add('delivery required');
 				$field_delivery_country->autocomplete_set('shipping country');
 				$field_delivery_country->max_length_set('Your delivery country cannot be longer than XXX characters.');
+
+				if (!$this->field_exists('delivery_different')) {
+					$field_delivery_country->min_length_set('Your delivery country is required.');
+				}
+
 				return $field_delivery_country;
 			}
 
 			public function field_delivery_telephone_get() {
+
 				$field_delivery_telephone = new form_field_text($this, 'Telephone');
 				$field_delivery_telephone->db_field_set('delivery_telephone');
 				$field_delivery_telephone->wrapper_class_add('delivery required');
 				$field_delivery_telephone->autocomplete_set('shipping tel');
 				$field_delivery_telephone->max_length_set('Your delivery telephone number cannot be longer than XXX characters.');
+
+				if (!$this->field_exists('delivery_different')) {
+					$field_delivery_telephone->min_length_set('Your delivery telephone number is required.');
+				}
+
 				return $field_delivery_telephone;
 			}
 

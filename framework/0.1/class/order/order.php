@@ -152,7 +152,6 @@
 			protected $order_created = NULL;
 			protected $order_paid = NULL;
 			protected $order_currency = 'GBP';
-			protected $order_items = NULL; // Cache
 
 			protected $db_table_main = NULL;
 			protected $db_table_item = NULL;
@@ -163,6 +162,8 @@
 
 			protected $object_table = 'order_table';
 			protected $object_payment = 'payment';
+
+			private $order_items = NULL; // Cache
 
 		//--------------------------------------------------
 		// Setup
@@ -391,14 +392,42 @@
 					$db->update($this->db_table_main, $values, $where_sql);
 
 				//--------------------------------------------------
-				// Other updates
+				// Order update
 
-					$this->delivery_update();
-					$this->cache_update();
+					$this->order_update();
 
 			}
 
 			public function values_get($fields) {
+
+				//--------------------------------------------------
+				// Create order
+
+					if ($this->order_id === NULL) {
+						$this->create();
+					}
+
+					if (!is_array($fields)) {
+						exit_with_error('Fields list should be an array');
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					$db = $this->db_get();
+
+					$where_sql = '
+						id = "' . $db->escape($this->order_id) . '" AND
+						deleted = "0000-00-00 00:00:00"';
+
+					$db->select($this->db_table_main, $fields, $where_sql, 1);
+
+					if ($row = $db->fetch_row()) {
+						return $row;
+					} else {
+						return false;
+					}
+
 			}
 
 		//--------------------------------------------------
@@ -464,12 +493,12 @@
 							$form->field_get('delivery_town_city')->error_add('Your delivery town or city is required.');
 						}
 
-						if ($form->field_exists('delivery_country') && $form->field_get('delivery_country')->value_get() == '') {
-							$form->field_get('delivery_country')->error_add('Your delivery country is required.');
-						}
-
 						if ($form->field_exists('delivery_postcode') && $form->field_get('delivery_postcode')->value_get() == '') {
 							$form->field_get('delivery_postcode')->error_add('Your delivery postcode is required.');
+						}
+
+						if ($form->field_exists('delivery_country') && $form->field_get('delivery_country')->value_get() == '') {
+							$form->field_get('delivery_country')->error_add('Your delivery country is required.');
 						}
 
 						if ($form->field_exists('delivery_telephone') && $form->field_get('delivery_telephone')->value_get() == '') {
@@ -530,14 +559,13 @@
 					}
 
 				//--------------------------------------------------
-				// Other updates
+				// Order update
 
 					if ($id !== NULL) {
 
 						$this->order_items = NULL;
 
-						$this->delivery_update();
-						$this->cache_update();
+						$this->order_update();
 
 					}
 
@@ -621,12 +649,11 @@
 					}
 
 				//--------------------------------------------------
-				// Other updates
+				// Order update
 
 					$this->order_items = NULL;
 
-					$this->delivery_update();
-					$this->cache_update();
+					$this->order_update();
 
 			}
 
@@ -701,6 +728,15 @@
 					}
 
 				//--------------------------------------------------
+				// Tax details
+
+					$tax_applied = in_array('item', $this->tax_types_get());
+					$tax_included = in_array('item', $this->tax_included_get());
+					$tax_percent = $this->tax_percent_get();
+
+					$tax_ratio = (1 + ($tax_percent / 100));
+
+				//--------------------------------------------------
 				// Query
 
 					$items = array();
@@ -718,11 +754,40 @@
 
 					foreach ($db->fetch_all($sql) as $row) {
 
-						$details = $row;
-						unset($details['deleted']);
-						unset($details['order_id']);
+						//--------------------------------------------------
+						// Details
 
-						$items[$row['id']] = $details;
+							$details = $row;
+							unset($details['deleted']);
+							unset($details['order_id']);
+
+						//--------------------------------------------------
+						// Price details
+
+							if (!$tax_applied) { // Very unlikely
+
+								$details['price_net']   = round(($row['price']), 2);
+								$details['price_tax']   = 0;
+								$details['price_gross'] = $details['price_net'];
+
+							} else if ($tax_included) {
+
+								$details['price_tax']   = round(($row['price'] - ($row['price'] / $tax_ratio)), 2);
+								$details['price_gross'] = round(($row['price']), 2);
+								$details['price_net']   = round(($details['price_gross'] - $details['price_tax']), 2);
+
+							} else {
+
+								$details['price_net']   = round(($row['price']), 2);
+								$details['price_tax']   = round((($details['price_net'] / 100) * $tax_percent), 2);
+								$details['price_gross'] = round(($details['price_net'] + $details['price_tax']), 2);
+
+							}
+
+						//--------------------------------------------------
+						// Store
+
+							$items[$row['id']] = $details;
 
 					}
 
@@ -738,6 +803,10 @@
 		//--------------------------------------------------
 		// Current basket
 
+			protected function delivery_price_get() {
+				return 10;
+			}
+
 			public function currency_get() {
 				return $this->order_currency;
 			}
@@ -751,17 +820,28 @@
 				return config::get('order.tax_percent', 20);
 			}
 
-			public function tax_item_applied_get() {
-				return config::get('order.tax_item_applied', true); // If the price set on items have had tax applied
+			public function tax_types_get() {
+				return config::get('order.tax_types', array(
+						'item',
+					));
 			}
 
-			public function tax_item_types_get() {
-				return array(
-						'item', // Could add 'delivery'
-					);
+			public function tax_included_get() {
+				return config::get('order.tax_included', array(
+						'item',
+					));
 			}
 
 			public function totals_get() {
+
+				//--------------------------------------------------
+				// Tax details
+
+					$tax_types = $this->tax_types_get();
+					$tax_included = $this->tax_included_get();
+					$tax_percent = $this->tax_percent_get();
+
+					$tax_ratio = (1 + ($tax_percent / 100));
 
 				//--------------------------------------------------
 				// Defaults
@@ -770,16 +850,45 @@
 
 					$return = array(
 							'items' => array(),
-							'amount' => array(),
-							'tax' => array(),
+							'amount' => array(
+									'net' => 0,
+									'tax' => 0,
+									'gross' => 0,
+								),
+							'tax' => array(
+									'percent' => $tax_percent,
+									'types' => $tax_types,
+									'included' => $tax_included,
+								),
 						);
 
 					foreach ($db->enum_values($this->db_table_item, 'type') as $type) {
-						$return['items'][$type] = 0;
+
+						$return['items'][$type] = array(
+								'net' => 0,
+								'tax' => 0,
+								'gross' => 0,
+							);
+
 					}
 
 				//--------------------------------------------------
 				// Items
+
+					$order_items = $this->items_get();
+
+					foreach ($order_items as $item) {
+
+						$return['items']['item']['net'] += $item['price_net'];
+						$return['items']['item']['tax'] += $item['price_tax'];
+						$return['items']['item']['gross'] += $item['price_gross'];
+
+					}
+
+					$totals = $return['items']['item'];
+
+				//--------------------------------------------------
+				// Other items (e.g. delivery)
 
 					$sql = 'SELECT
 								oi.type,
@@ -788,56 +897,54 @@
 								' . $db->escape_field($this->db_table_item) . ' AS oi
 							WHERE
 								oi.order_id = "' . $db->escape($this->order_id) . '" AND
+								oi.type != "item" AND
 								oi.deleted = "0000-00-00 00:00:00"
 							GROUP BY
 								oi.type';
 
 					foreach ($db->fetch_all($sql) as $row) {
-						$return['items'][$row['type']] = $row['total'];
+
+						$taxed = in_array($type, $tax_types);
+
+						if (!$taxed) {
+
+							$total_net   = round($row['total'], 2);
+							$total_tax   = 0;
+							$total_gross = $total_net;
+
+						} else if (in_array($type, $tax_included)) {
+
+							$total_tax   = round(($row['total'] - ($row['total'] / $tax_ratio)), 2);
+							$total_gross = round(($row['total']), 2);
+							$total_net   = round(($total_gross - $total_tax), 2);
+
+						} else {
+
+							$total_net   = round(($row['total']), 2);
+							$total_tax   = round((($total_net / 100) * $tax_percent), 2);
+							$total_gross = round(($total_net + $total_tax), 2);
+
+						}
+
+						$return['items'][$row['type']]['net'] += $total_net;
+						$return['items'][$row['type']]['tax'] += $total_tax;
+						$return['items'][$row['type']]['gross'] += $total_gross;
+
+						if ($taxed) {
+							$totals['net'] += $total_net;
+							$totals['tax'] += $total_tax;
+						}
+
+						$totals['gross'] += $total_gross;
+
 					}
 
 				//--------------------------------------------------
-				// Amounts
-
-					$tax_item_applied = $this->tax_item_applied_get();
-					$tax_item_types = $this->tax_item_types_get();
-					$tax_percent = $this->tax_percent_get();
-
-					$items_total_inc_tax = 0;
-					$items_total_ex_tax = 0;
-					foreach ($return['items'] as $type => $value) {
-						if (in_array($type, $tax_item_types)) {
-							$items_total_inc_tax += $value;
-						} else {
-							$items_total_ex_tax += $value;
-						}
-					}
-
-					if ($tax_item_applied) {
-
-						$tax_ratio = (1 + ($tax_percent / 100));
-
-						$totals['tax'] = ($items_total_inc_tax - ($items_total_inc_tax / $tax_ratio));
-						$totals['gross'] = $items_total_inc_tax;
-						$totals['net'] = ($totals['gross'] - $totals['tax']);
-
-					} else {
-
-						$totals['net'] = $items_total_inc_tax;
-						$totals['tax'] = (($totals['net'] / 100) * $tax_percent);
-						$totals['gross'] = ($totals['net'] + $totals['tax']);
-
-					}
-
-					$totals['gross'] += $items_total_ex_tax;
+				// Round amounts
 
 					$return['amount']['net'] = round($totals['net'], 2);
 					$return['amount']['tax'] = round($totals['tax'], 2);
 					$return['amount']['gross'] = round($totals['gross'], 2);
-
-					$return['tax']['percent'] = $tax_percent;
-					$return['tax']['item_applied'] = $tax_item_applied;
-					$return['tax']['item_types'] = $tax_item_types;
 
 				//--------------------------------------------------
 				// Return
@@ -912,43 +1019,6 @@
 			}
 
 		//--------------------------------------------------
-		// Emails
-
-			private function _email_customer($template) {
-
-				//--------------------------------------------------
-				// Does the template exist
-
-					if (!is_file(PUBLIC_ROOT . '/a/email/' . safe_file_name($template))) {
-						return false;
-					}
-
-				//--------------------------------------------------
-				// Build email
-
-					$email = new email();
-					$email->template_set($template);
-
-				//--------------------------------------------------
-				// Order table
-
-					$url_prefix = https_url('/');
-					if (substr($url_prefix, -1) == '/') {
-						$url_prefix = substr($url_prefix, 0, -1);
-					}
-
-					$config = array(
-							'url_prefix' => $url_prefix, // Images and links get full url
-						);
-
-					$table = $this->table_get();
-
-					$email->template_value_set_text('TABLE', $table->table_get_html($config));
-					$email->template_value_set_html('TABLE', $table->table_get_text($config));
-
-			}
-
-		//--------------------------------------------------
 		// Create
 
 			protected function create($defaults = NULL) {
@@ -988,68 +1058,97 @@
 			}
 
 		//--------------------------------------------------
-		// Delivery support
+		// Order update
 
-			protected function delivery_price_get() {
-				return 10;
-			}
-
-			protected function delivery_update() {
+			protected function order_update() {
 
 				//--------------------------------------------------
-				// Current delivery price
+				// Delivery
 
-					$delivery_price = $this->delivery_price_get();
+					//--------------------------------------------------
+					// Current delivery price
 
-				//--------------------------------------------------
-				// No change with the 1 record (if more, still replace)
+						$delivery_price = $this->delivery_price_get();
 
-					$db = $this->db_get();
+					//--------------------------------------------------
+					// No change with the 1 record (if more, still replace)
 
-					$sql = 'SELECT
-								oi.price
-							FROM
-								' . $db->escape_field($this->db_table_item) . ' AS oi
-							WHERE
-								oi.order_id = "' . $db->escape($this->order_id) . '" AND
-								oi.type = "delivery" AND
-								oi.deleted = "0000-00-00 00:00:00"';
+						$db = $this->db_get();
 
-					$delivery = $db->fetch_all($sql);
-
-					if (count($delivery) == 1 && round($delivery[0]['price'], 2) == round($delivery_price, 2)) {
-						return;
-					}
-
-				//--------------------------------------------------
-				// Replace delivery record
-
-					$db->query('UPDATE
+						$sql = 'SELECT
+									oi.price
+								FROM
 									' . $db->escape_field($this->db_table_item) . ' AS oi
-								SET
-									oi.deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 								WHERE
 									oi.order_id = "' . $db->escape($this->order_id) . '" AND
 									oi.type = "delivery" AND
-									oi.deleted = "0000-00-00 00:00:00"');
+									oi.deleted = "0000-00-00 00:00:00"';
 
-					$db->insert($this->db_table_item, array(
-							'id' => '',
-							'order_id' => $this->order_id,
-							'type' => 'delivery',
-							'price' => $delivery_price,
-							'quantity' => 1,
-							'created' => date('Y-m-d H:i:s'),
-							'deleted' => '0000-00-00 00:00:00',
-						));
+						$delivery = $db->fetch_all($sql);
+
+						if (count($delivery) == 1 && round($delivery[0]['price'], 2) == round($delivery_price, 2)) {
+							return;
+						}
+
+					//--------------------------------------------------
+					// Replace delivery record
+
+						$db->query('UPDATE
+										' . $db->escape_field($this->db_table_item) . ' AS oi
+									SET
+										oi.deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+									WHERE
+										oi.order_id = "' . $db->escape($this->order_id) . '" AND
+										oi.type = "delivery" AND
+										oi.deleted = "0000-00-00 00:00:00"');
+
+						$db->insert($this->db_table_item, array(
+								'id' => '',
+								'order_id' => $this->order_id,
+								'type' => 'delivery',
+								'price' => $delivery_price,
+								'quantity' => 1,
+								'created' => date('Y-m-d H:i:s'),
+								'deleted' => '0000-00-00 00:00:00',
+							));
 
 			}
 
 		//--------------------------------------------------
-		// Cache support
+		// Emails
 
-			protected function cache_update() {
-				// If you want to copy the details into a FULLTEXT index field for faster searching
+			private function _email_customer($template) {
+
+				//--------------------------------------------------
+				// Does the template exist
+
+					if (!is_file(PUBLIC_ROOT . '/a/email/' . safe_file_name($template))) {
+						return false;
+					}
+
+				//--------------------------------------------------
+				// Build email
+
+					$email = new email();
+					$email->template_set($template);
+
+				//--------------------------------------------------
+				// Order table
+
+					$url_prefix = https_url('/');
+					if (substr($url_prefix, -1) == '/') {
+						$url_prefix = substr($url_prefix, 0, -1);
+					}
+
+					$config = array(
+							'url_prefix' => $url_prefix, // Images and links get full url
+						);
+
+					$table = $this->table_get();
+
+					$email->template_value_set_text('TABLE', $table->table_get_html($config));
+					$email->template_value_set_html('TABLE', $table->table_get_text($config));
+
 			}
 
 	}

@@ -176,6 +176,11 @@
 			public function notification() {
 
 				//--------------------------------------------------
+				// Not ready yet
+
+					return false;
+
+				//--------------------------------------------------
 				// Return the text on 'stdin'
 
 					$xml = file_get_contents('php://input');

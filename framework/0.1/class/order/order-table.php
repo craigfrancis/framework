@@ -256,8 +256,8 @@
 								$html .= '
 											<td class="item">' . $this->item_info_html($config, $item, $item_url) . '</td>
 											<td class="quantity">' . $this->item_quantity_html($config, $item, $item['quantity']) . '</td>
-											<td class="price">' . html(format_currency(($item['price']), $currency_char)) . '</td>
-											<td class="total">' . html(format_currency(($item['quantity'] * $item['price']), $currency_char)) . '</td>
+											<td class="price">' . html(format_currency(($item['price_net']), $currency_char)) . '</td>
+											<td class="total">' . html(format_currency(($item['quantity'] * $item['price_net']), $currency_char)) . '</td>
 										</tr>';
 
 							}
@@ -268,7 +268,7 @@
 							//--------------------------------------------------
 							// Pre tax items
 
-								foreach ($this->order_totals['tax']['item_types'] as $type) {
+								foreach ($this->order_totals['tax']['types'] as $type) {
 									if ($type != 'item') {
 
 										$amount = $this->order_totals['items'][$type];
@@ -276,7 +276,7 @@
 										$html .= '
 											<tr class="total ' . html($type) . ' ' . ($k++ % 2 ? 'even' : 'odd') . '">
 												<td class="item" colspan="' . html($show_image ? 4 : 3) . '">' . ucfirst($type) . '</td>
-												<td class="total">' . html(format_currency($amount, $currency_char)) . '</td>
+												<td class="total">' . html(format_currency($amount['net'], $currency_char)) . '</td>
 											</tr>';
 
 									}
@@ -285,28 +285,32 @@
 							//--------------------------------------------------
 							// Net/Tax values
 
-								$html .= '
-									<tr class="total net ' . ($k++ % 2 ? 'even' : 'odd') . '">
-										<td class="item" colspan="' . html($show_image ? 4 : 3) . '">Net:</td>
-										<td class="total">' . html(format_currency($this->order_totals['amount']['net'], $currency_char)) . '</td>
-									</tr>';
+								if (count($this->order_totals['tax']['types']) > 0) { // Don't bother showing if no items show tax
 
-								$html .= '
-									<tr class="total tax ' . ($k++ % 2 ? 'even' : 'odd') . '">
-										<td class="item" colspan="' . html($show_image ? 4 : 3) . '">VAT:</td>
-										<td class="total">' . html(format_currency($this->order_totals['amount']['tax'], $currency_char)) . '</td>
-									</tr>';
+									$html .= '
+										<tr class="total net ' . ($k++ % 2 ? 'even' : 'odd') . '">
+											<td class="item" colspan="' . html($show_image ? 4 : 3) . '">Net:</td>
+											<td class="total">' . html(format_currency($this->order_totals['amount']['net'], $currency_char)) . '</td>
+										</tr>';
+
+									$html .= '
+										<tr class="total tax ' . ($k++ % 2 ? 'even' : 'odd') . '">
+											<td class="item" colspan="' . html($show_image ? 4 : 3) . '">VAT:</td>
+											<td class="total">' . html(format_currency($this->order_totals['amount']['tax'], $currency_char)) . '</td>
+										</tr>';
+
+								}
 
 							//--------------------------------------------------
 							// Tax exempt items
 
 								foreach ($this->order_totals['items'] as $type => $amount) {
-									if ($type != 'item' && !in_array($type, $this->order_totals['tax']['item_types'])) {
+									if ($type != 'item' && !in_array($type, $this->order_totals['tax']['types'])) {
 
 										$html .= '
 											<tr class="total ' . html($type) . ' ' . ($k++ % 2 ? 'even' : 'odd') . '">
 												<td class="item" colspan="' . html($show_image ? 4 : 3) . '">' . ucfirst($type) . '</td>
-												<td class="total">' . html(format_currency($amount, $currency_char)) . '</td>
+												<td class="total">' . html(format_currency($amount['gross'], $currency_char)) . '</td>
 											</tr>';
 
 									}
