@@ -324,6 +324,18 @@
 
 			}
 
+			public function select_paid() {
+
+				$this->select_by_ref(session::get('order_ref'));
+
+				if ($this->order_paid == '0000-00-00 00:00:00') {
+					$this->reset();
+				}
+
+				return ($this->order_id !== NULL);
+
+			}
+
 			public function select_by_ref($ref) {
 
 				if (preg_match('/^([0-9]+)-([a-z]{5})$/', $ref, $matches)) {
@@ -331,6 +343,8 @@
 				} else {
 					$this->reset();
 				}
+
+				return ($this->order_id !== NULL);
 
 			}
 
@@ -363,6 +377,8 @@
 				} else {
 					$this->reset();
 				}
+
+				return ($this->order_id !== NULL);
 
 			}
 
@@ -398,7 +414,7 @@
 
 			}
 
-			public function values_get($fields) {
+			public function values_get($fields = NULL) {
 
 				//--------------------------------------------------
 				// Create order
@@ -407,7 +423,7 @@
 						$this->create();
 					}
 
-					if (!is_array($fields)) {
+					if (!is_array($fields) && $fields !== NULL) {
 						exit_with_error('Fields list should be an array');
 					}
 
@@ -879,9 +895,9 @@
 
 					foreach ($order_items as $item) {
 
-						$return['items']['item']['net'] += $item['price_net'];
-						$return['items']['item']['tax'] += $item['price_tax'];
-						$return['items']['item']['gross'] += $item['price_gross'];
+						$return['items']['item']['net']   += ($item['price_net']   * $item['quantity']);
+						$return['items']['item']['tax']   += ($item['price_tax']   * $item['quantity']);
+						$return['items']['item']['gross'] += ($item['price_gross'] * $item['quantity']);
 
 					}
 
@@ -956,7 +972,7 @@
 		//--------------------------------------------------
 		// Events
 
-			public function payment_received() {
+			public function payment_received($transaction) {
 
 				//--------------------------------------------------
 				// Details
@@ -964,6 +980,14 @@
 					if ($this->order_id === NULL) {
 						exit_with_error('An order needs to be selected', 'payment_received');
 					}
+
+				//--------------------------------------------------
+				// Store
+
+					$this->values_set(array(
+							'payment_received' => date('Y-m-d H:i:s'),
+							'payment_transaction' => $transaction,
+						));
 
 				//--------------------------------------------------
 				// Customer email
@@ -982,13 +1006,20 @@
 					}
 
 				//--------------------------------------------------
+				// Store
+
+					$this->values_set(array(
+							'payment_settled' => date('Y-m-d H:i:s'),
+						));
+
+				//--------------------------------------------------
 				// Customer email
 
 					$this->_email_customer('order-payment-settled');
 
 			}
 
-			public function dispatched() {
+			public function dispatched($values = NULL) {
 
 				//--------------------------------------------------
 				// Details
@@ -996,6 +1027,22 @@
 					if ($this->order_id === NULL) {
 						exit_with_error('An order needs to be selected', 'dispatched');
 					}
+
+				//--------------------------------------------------
+				// Store
+
+					if (!is_array($values)) {
+						$values = array();
+					}
+
+					$this->values_set(array_merge($values, array(
+							'dispatched' => date('Y-m-d H:i:s'),
+						)));
+
+				//--------------------------------------------------
+				// Customer email
+
+					$this->_email_customer('order-dispatched');
 
 			}
 
@@ -1122,7 +1169,7 @@
 				//--------------------------------------------------
 				// Does the template exist
 
-					if (!is_file(PUBLIC_ROOT . '/a/email/' . safe_file_name($template))) {
+					if (!is_dir(PUBLIC_ROOT . '/a/email/' . safe_file_name($template))) {
 						return false;
 					}
 
@@ -1131,6 +1178,15 @@
 
 					$email = new email();
 					$email->template_set($template);
+
+				//--------------------------------------------------
+				// Order details
+
+					$order_details = $this->values_get();
+
+					foreach ($order_details as $field => $value) {
+						$email->template_value_set(strtoupper($field), $value);
+					}
 
 				//--------------------------------------------------
 				// Order table
@@ -1146,8 +1202,13 @@
 
 					$table = $this->table_get();
 
-					$email->template_value_set_text('TABLE', $table->table_get_html($config));
-					$email->template_value_set_html('TABLE', $table->table_get_text($config));
+					$email->template_value_set_text('TABLE', $table->table_get_text($config));
+					$email->template_value_set_html('TABLE', $table->table_get_html($config));
+
+				//--------------------------------------------------
+				// Send to customer
+
+					$email->send($order_details['email']);
 
 			}
 

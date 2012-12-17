@@ -12,6 +12,18 @@
 			}
 
 		//--------------------------------------------------
+		// Email
+
+			public function field_email_get() {
+				$field_email = new form_field_email($this, 'Email');
+				$field_email->db_field_set('email');
+				$field_email->format_error_set('Your email does not appear to be correct.');
+				$field_email->min_length_set('Your email is required.');
+				$field_email->max_length_set('Your email cannot be longer than XXX characters.');
+				return $field_email;
+			}
+
+		//--------------------------------------------------
 		// Payment fields
 
 				//--------------------------------------------------

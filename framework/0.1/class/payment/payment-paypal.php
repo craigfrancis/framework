@@ -266,12 +266,9 @@
 							}
 
 						//--------------------------------------------------
-						// Store details
+						// Mark as paid
 
-							$config['order']->values_set(array(
-									'payment_received' => date('Y-m-d H:i:s'),
-									'payment_transaction' => $transaction,
-								));
+							$config['order']->payment_received($transaction);
 
 					}
 

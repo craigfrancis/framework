@@ -91,7 +91,7 @@
 				//--------------------------------------------------
 				// Config
 
-					if ($config['quantity_edit']) {
+					if (isset($config['quantity_edit'])) {
 
 						$edit_config = $config['quantity_edit'];
 
