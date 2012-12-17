@@ -1,5 +1,7 @@
 <?php
 
+	// TODO: Support multiple file uploads, also see multi-select field.
+
 	class form_field_file_base extends form_field {
 
 		//--------------------------------------------------
