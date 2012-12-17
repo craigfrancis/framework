@@ -68,6 +68,9 @@
 									'return_url',
 								));
 
+						//--------------------------------------------------
+						// Details
+
 							$details['METHOD'] = 'SetExpressCheckout';
 							$details['CANCELURL'] = $config['cancel_url'];
 							$details['RETURNURL'] = $config['return_url'];
@@ -94,7 +97,7 @@
 					}
 
 				//--------------------------------------------------
-				// Order details... yes it needs to be sent twice
+				// Order info... yes it needs to be sent twice
 
 					//--------------------------------------------------
 					// Details
