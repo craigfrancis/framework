@@ -55,8 +55,9 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $subject_prefix;
 			protected $subject_text;
+			protected $subject_default;
+			protected $subject_prefix;
 			protected $from_email;
 			protected $from_name;
 			protected $cc_emails;
@@ -83,8 +84,9 @@
 				//--------------------------------------------------
 				// Defaults
 
-					$this->subject_prefix = config::get('email.subject_prefix');
 					$this->subject_text = '';
+					$this->subject_default = NULL;
+					$this->subject_prefix = config::get('email.subject_prefix');
 					$this->from_email = config::get('email.from_email');
 					$this->from_name = config::get('email.from_name');
 					$this->cc_emails = array();
@@ -116,16 +118,30 @@
 				$this->subject_text = $subject;
 			}
 
+			public function subject_default_set($default) { // Allow <title> in html version to take priority
+				$this->subject_default = $default;
+			}
+
 			public function subject_prefix_set($prefix) {
 				$this->subject_prefix = $prefix;
 			}
 
 			public function subject_get() {
-				$subject = $this->subject_prefix . ($this->subject_prefix != '' && $this->subject_text != '' ? ': ' : '') . $this->subject_text;
+
+				$subject = $this->subject_text;
+
+				if ($subject == '') {
+					$subject = $this->subject_default;
+				}
+
+				$subject = $this->subject_prefix . ($this->subject_prefix != '' && $subject != '' ? ': ' : '') . $subject;
+
 				if ($subject == '') {
 					$subject = config::get('email.from_name');
 				}
+
 				return $subject;
+
 			}
 
 			public function template_set($name) {
@@ -628,7 +644,7 @@
 
 				}
 
-				$content_text = str_replace('[SUBJECT]', $this->subject_get(), $content_text);
+				$content_text = str_replace('[SUBJECT]', $this->subject_text, $content_text);
 				$content_text = str_replace('[BODY]', $this->body_text, $content_text);
 				$content_text = str_replace('[URL]', $this->template_url, $content_text);
 
@@ -665,8 +681,6 @@
 
 				}
 
-				$subject = $this->subject_get();
-
 				if (strpos($content_html, 'DOCTYPE') === false) {
 
 					$template_html = '<!DOCTYPE html>
@@ -674,7 +688,7 @@
 							<head>
 								<meta charset="' . html(config::get('output.charset')) . '" />';
 
-					if ($subject != '') {
+					if ($this->subject_text != '') {
 						$template_html .= '
 								<title>[SUBJECT]</title>';
 					}
@@ -690,12 +704,18 @@
 
 				}
 
-				$content_html = str_replace('[SUBJECT]', html($subject), $content_html);
+				$content_html = str_replace('[SUBJECT]', html($this->subject_text), $content_html);
 				$content_html = str_replace('[BODY]', $this->body_html, $content_html);
 				$content_html = str_replace('[URL]', html($this->template_url), $content_html);
 
 				foreach ($this->template_values_html as $name => $html) {
 					$content_html = str_replace('[' . $name . ']', $html, $content_html);
+				}
+
+				if ($this->subject_text == '') {
+					if (preg_match('/<title>([^<]+)<\/title>/i', $content_html, $matches)) {
+						$this->subject_text = $matches[1];
+					}
 				}
 
 				return $content_html;

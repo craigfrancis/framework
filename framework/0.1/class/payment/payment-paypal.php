@@ -268,7 +268,9 @@
 						//--------------------------------------------------
 						// Mark as paid
 
-							$config['order']->payment_received($transaction);
+							$config['order']->payment_received(array(
+									'payment_transaction' => $transaction,
+								));
 
 					}
 

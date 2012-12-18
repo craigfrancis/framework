@@ -160,6 +160,7 @@
 
 					$defaults = array(
 							'url_prefix' => '',
+							'email_mode' => false,
 						);
 
 					if (!is_array($config)) {
@@ -183,7 +184,7 @@
 				// Start
 
 					$html = '
-						<table class="order_table">
+						<table class="order_table"' . ($config['email_mode'] ? ' cellspacing="0" cellpadding="1" border="1"' : '') . '>
 							<thead>
 								<tr>
 									<th scope="col" class="item"' . ($show_image ? ' colspan="2"' : '') . '>Item</th>
@@ -322,7 +323,7 @@
 								$html .= '
 									<tr class="total gross ' . ($k++ % 2 ? 'even' : 'odd') . '">
 										<td class="item" colspan="' . html($show_image ? 4 : 3) . '">Total:</td>
-										<td class="total">' . html(format_currency($this->order_totals['amount']['gross'], $currency_char)) . '</td>
+										<td class="total"><strong>' . html(format_currency($this->order_totals['amount']['gross'], $currency_char)) . '</strong></td>
 									</tr>';
 
 					}

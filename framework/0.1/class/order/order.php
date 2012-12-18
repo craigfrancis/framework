@@ -972,7 +972,7 @@
 		//--------------------------------------------------
 		// Events
 
-			public function payment_received($transaction) {
+			public function payment_received($values) {
 
 				//--------------------------------------------------
 				// Details
@@ -984,10 +984,13 @@
 				//--------------------------------------------------
 				// Store
 
-					$this->values_set(array(
+					if (!is_array($values)) {
+						$values = array();
+					}
+
+					$this->values_set(array_merge($values, array(
 							'payment_received' => date('Y-m-d H:i:s'),
-							'payment_transaction' => $transaction,
-						));
+						)));
 
 				//--------------------------------------------------
 				// Customer email
@@ -996,7 +999,7 @@
 
 			}
 
-			public function payment_settled() {
+			public function payment_settled($values = NULL) {
 
 				//--------------------------------------------------
 				// Details
@@ -1008,9 +1011,13 @@
 				//--------------------------------------------------
 				// Store
 
-					$this->values_set(array(
+					if (!is_array($values)) {
+						$values = array();
+					}
+
+					$this->values_set(array_merge($values, array(
 							'payment_settled' => date('Y-m-d H:i:s'),
-						));
+						)));
 
 				//--------------------------------------------------
 				// Customer email
@@ -1177,6 +1184,7 @@
 				// Build email
 
 					$email = new email();
+					$email->subject_default_set(link_to_human($template)); // Include a <title> in the html version of the email to override.
 					$email->template_set($template);
 
 				//--------------------------------------------------
@@ -1197,6 +1205,7 @@
 					}
 
 					$config = array(
+							'email_mode' => true,
 							'url_prefix' => $url_prefix, // Images and links get full url
 						);
 
