@@ -36,7 +36,7 @@
 
 		echo $cms_admin->html(array(
 				'path'        => '/',
-				'section'     => 'section',
+				'section'     => 'content',
 				'default'     => 'Lorem ipsum dolor sit amet...',
 				'variables'   => array('count' => 5), // e.g. "You have [COUNT] messages" - note the issue with 1 message (singular) in English
 				'wrapper_tag' => 'div',
@@ -463,8 +463,8 @@
 
 					$defaults = array(
 							'path'        => $this->config['path'],
-							'section'     => 'section',
-							'default'     => 'Lorem ipsum dolor sit amet...',
+							'section'     => 'content',
+							'default'     => NULL,
 							'variables'   => array(),
 							'wrapper_tag' => NULL,
 							'editable'    => $this->config['editable'],
@@ -495,9 +495,13 @@
 
 						$content = reset($this->content[$config['path']][$config['section']]);
 
-					} else {
+					} else if ($config['default'] !== NULL) {
 
 						$content = $config['default'];
+
+					} else {
+
+						$content = $config['section'];
 
 					}
 
