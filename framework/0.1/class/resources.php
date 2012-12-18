@@ -319,7 +319,7 @@
 				resources::js_code_save($obj->js_code_data);
 
 				$files[] = array(
-						'path' => gateway_url('js-code', array('ref' => $obj->js_code_ref)),
+						'path' => gateway_url('js-code', $obj->js_code_ref . '.js'),
 						'attributes' => ($obj->js_code_mode == 'inline' ? array() : array($obj->js_code_mode)),
 					);
 

@@ -636,7 +636,7 @@
 
 						resources::js_code_add("\n", 'async'); // Add something so the file is included, and session is started. The rest will be added in debug_shutdown()
 
-						resources::css_add(gateway_url('framework-file', array('file' => 'debug.css')));
+						resources::css_add(gateway_url('framework-file', 'debug.css'));
 
 					}
 

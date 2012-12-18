@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // CSS
 
-	resources::css_add(gateway_url('framework-file', array('file' => 'template.css')));
+	resources::css_add(gateway_url('framework-file', 'template.css'));
 
 //--------------------------------------------------
 // Navigation

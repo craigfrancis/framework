@@ -3,9 +3,25 @@
 //--------------------------------------------------
 // Requested file
 
-	$file_name = request('file');
+	$file_name = $this->sub_path_get();
 
-	if ($file_name == 'template.css' || $file_name == 'debug.css') {
+	while (true) {
+		if (substr($file_name, 0, 1) == '/') {
+			$file_name = substr($file_name, 1);
+		} else {
+			break;
+		}
+	}
+
+	$pos = strpos($file_name, '/');
+	if ($pos > 0) {
+		$file_name = substr($file_name, 0, $pos);
+	}
+
+//--------------------------------------------------
+// Match
+
+	if ($file_name == 'template.css' || $file_name == 'debug.css' || $file_name == 'cms-admin.js') {
 
 		//--------------------------------------------------
 		// Path
@@ -15,7 +31,11 @@
 		//--------------------------------------------------
 		// Headers
 
-			mime_set('text/css');
+			if (substr($file_name, -4) == '.css') {
+				mime_set('text/css');
+			} else {
+				mime_set('application/javascript');
+			}
 
 			http_cache_headers((60*30), filemtime($file_path));
 

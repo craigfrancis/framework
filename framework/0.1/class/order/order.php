@@ -140,6 +140,14 @@
 
 		$this->set('form', $form);
 
+	//--------------------------------------------------
+	// Admin access
+
+		//--------------------------------------------------
+		// To grant permission
+
+			config::set('order.user_privileged', ADMIN_LOGGED_IN);
+
 ***************************************************/
 
 	class order_base extends check {
@@ -156,12 +164,12 @@
 			protected $db_table_main = NULL;
 			protected $db_table_item = NULL;
 
-			protected $db_link = NULL;
-			protected $table = NULL;
-			protected $form = NULL;
-
 			protected $object_table = 'order_table';
 			protected $object_payment = 'payment';
+
+			private $db_link = NULL;
+			private $table = NULL;
+			private $form = NULL;
 
 			private $order_items = NULL; // Cache
 
@@ -248,10 +256,6 @@
 				} else {
 					return $this->order_id . '-' . $this->order_pass;
 				}
-			}
-
-			public function user_privileged_get() {
-				return false; // Function could return true if admin (used to bypass the "pass" check in select_by_id())
 			}
 
 			public function db_get() { // Public so order table can access
@@ -356,7 +360,7 @@
 					id = "' . $db->escape($id) . '" AND
 					deleted = "0000-00-00 00:00:00"';
 
-				if ($pass !== NULL || !$this->user_privileged_get()) {
+				if ($pass !== NULL || config::get('order.user_privileged', false) !== true) {
 					$where_sql .= ' AND pass = "' . $db->escape($pass) . '"';
 				}
 

@@ -102,7 +102,7 @@
 		} else {
 
 			if (is_string($parameters)) {
-				$api_path .= urlencode($parameters) . '/';
+				$api_path .= urlencode($parameters) . (strpos($parameters, '.') === false ? '/' : ''); // Don't add trailing slash if it looks like a filename (ref 'framework-file')
 			}
 
 			return url($api_path);
@@ -376,6 +376,7 @@
 		$cms_admin = config::get('cms_admin');
 		if (!$cms_admin) {
 			$cms_admin = new cms_admin();
+			config::set('cms_admin', $cms_admin);
 		}
 		return $cms_admin->html($config);
 	}

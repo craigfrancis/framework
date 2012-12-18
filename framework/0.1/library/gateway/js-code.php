@@ -1,9 +1,26 @@
 <?php
 
 //--------------------------------------------------
-// Notes
+// Reference
 
-	$js_ref = request('ref');
+	$js_ref = $this->sub_path_get();
+
+	while (true) {
+		if (substr($js_ref, 0, 1) == '/') {
+			$js_ref = substr($js_ref, 1);
+		} else {
+			break;
+		}
+	}
+
+	$pos = strpos($js_ref, '.js');
+	if ($pos > 0) {
+		$js_ref = substr($js_ref, 0, $pos);
+	}
+
+//--------------------------------------------------
+// Code
+
 	$js_code = '';
 
 	$session_js = session::get('output.js_code');
