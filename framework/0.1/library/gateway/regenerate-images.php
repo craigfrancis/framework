@@ -34,6 +34,8 @@
 
 							$file->image_save($matches[1]);
 
+							set_time_limit(5); // Don't time out
+
 						}
 					}
 					closedir($handle_item);
