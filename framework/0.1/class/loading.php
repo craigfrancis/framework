@@ -119,10 +119,10 @@
 		// Setup
 
 			public function __construct($config = NULL) {
-				$this->setup($config);
+				$this->_setup($config);
 			}
 
-			protected function setup($config) {
+			protected function _setup($config) {
 
 				//--------------------------------------------------
 				// Profile

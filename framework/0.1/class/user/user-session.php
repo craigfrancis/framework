@@ -16,10 +16,10 @@
 		protected $session_id;
 
 		public function __construct($user) {
-			$this->setup($user);
+			$this->_setup($user);
 		}
 
-		protected function setup($user) {
+		protected function _setup($user) {
 
 			//--------------------------------------------------
 			// User object

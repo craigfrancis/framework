@@ -99,10 +99,10 @@
 		// Setup
 
 			public function __construct($config = NULL) {
-				$this->setup($config);
+				$this->_setup($config);
 			}
 
-			protected function setup($config) {
+			protected function _setup($config) {
 
 				//--------------------------------------------------
 				// Profile
@@ -411,9 +411,9 @@
 						$processor = $this->processor_get();
 
 						if ($inline) {
-							$html_inline = $processor->process_inline_html($content_text);
+							$content_html = $processor->process_inline_html($content_text);
 						} else {
-							$html_block = $processor->process_block_html($content_text);
+							$content_html = $processor->process_block_html($content_text);
 						}
 
 					}

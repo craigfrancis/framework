@@ -177,10 +177,10 @@
 		// Setup
 
 			public function __construct() {
-				$this->setup();
+				$this->_setup();
 			}
 
-			protected function setup() {
+			protected function _setup() {
 
 				//--------------------------------------------------
 				// Tables
@@ -267,7 +267,9 @@
 
 			protected function table_get() {
 				if ($this->table === NULL) {
-					$this->table = new $this->object_table($this);
+					$this->table = new $this->object_table();
+					$this->table->order_ref_set($this);
+					$this->table->init();
 				}
 				return $this->table;
 			}
@@ -292,6 +294,8 @@
 						$this->form->db_where_set_sql($where_sql);
 
 					}
+
+					$this->form->init();
 
 				}
 				return $this->form;
@@ -824,7 +828,7 @@
 		// Current basket
 
 			protected function delivery_price_get() {
-				return 10;
+				return 0;
 			}
 
 			public function currency_get() {

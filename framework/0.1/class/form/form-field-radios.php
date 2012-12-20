@@ -10,7 +10,7 @@
 				//--------------------------------------------------
 				// Perform the select field setup
 
-					$this->setup_select($form, $label, $name);
+					$this->_setup_select($form, $label, $name);
 
 				//--------------------------------------------------
 				// Additional field configuration

@@ -1,19 +1,5 @@
 <?php
 
-/***************************************************
-
-	//--------------------------------------------------
-	// Site config
-
-
-
-	//--------------------------------------------------
-	// Example extension
-
-
-
-***************************************************/
-
 	class order_table_base extends check {
 
 		//--------------------------------------------------
@@ -26,21 +12,13 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($order) {
-				$this->setup($order);
+			public function init() {
 			}
 
-			protected function setup($order) {
-
+			public function order_ref_set($order) {
 				$this->order_obj = $order;
 				$this->order_items = $order->items_get();
 				$this->order_totals = $order->totals_get();
-
-				$this->init();
-
-			}
-
-			protected function init() {
 			}
 
 			protected function db_get() {
@@ -270,14 +248,13 @@
 							// Pre tax items
 
 								foreach ($this->order_totals['tax']['types'] as $type) {
-									if ($type != 'item') {
-
-										$amount = $this->order_totals['items'][$type];
+									$amount = $this->order_totals['items'][$type]['net'];
+									if ($type != 'item' && $amount > 0) {
 
 										$html .= '
 											<tr class="total ' . html($type) . ' ' . ($k++ % 2 ? 'even' : 'odd') . '">
-												<td class="item" colspan="' . html($show_image ? 4 : 3) . '">' . ucfirst($type) . '</td>
-												<td class="total">' . html(format_currency($amount['net'], $currency_char)) . '</td>
+												<td class="item" colspan="' . html($show_image ? 4 : 3) . '">' . ucfirst($type) . ':</td>
+												<td class="total">' . html(format_currency($amount, $currency_char)) . '</td>
 											</tr>';
 
 									}
@@ -306,11 +283,11 @@
 							// Tax exempt items
 
 								foreach ($this->order_totals['items'] as $type => $amount) {
-									if ($type != 'item' && !in_array($type, $this->order_totals['tax']['types'])) {
+									if ($type != 'item' && $amount['gross'] > 0 && !in_array($type, $this->order_totals['tax']['types'])) {
 
 										$html .= '
 											<tr class="total ' . html($type) . ' ' . ($k++ % 2 ? 'even' : 'odd') . '">
-												<td class="item" colspan="' . html($show_image ? 4 : 3) . '">' . ucfirst($type) . '</td>
+												<td class="item" colspan="' . html($show_image ? 4 : 3) . '">' . ucfirst($type) . ':</td>
 												<td class="total">' . html(format_currency($amount['gross'], $currency_char)) . '</td>
 											</tr>';
 

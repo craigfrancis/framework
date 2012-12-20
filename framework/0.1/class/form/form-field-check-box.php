@@ -16,7 +16,7 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup_text($form, $label, $name);
+					$this->_setup_text($form, $label, $name);
 
 				//--------------------------------------------------
 				// Value

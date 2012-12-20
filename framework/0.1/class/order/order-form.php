@@ -3,12 +3,53 @@
 	class order_form_base extends form {
 
 		//--------------------------------------------------
-		//
+		// Variables
 
 			protected $order;
+			protected $country_table = NULL;
+			protected $country_options = NULL;
+
+		//--------------------------------------------------
+		// Setup
+
+			public function init() {
+			}
 
 			public function order_ref_set($order) {
-				$this->order = $order;
+				$this->order_obj = $order;
+			}
+
+			public function db_get() {
+				return $this->order_obj->db_get();
+			}
+
+			public function country_options_get() {
+				if ($this->country_table) {
+
+					if ($this->country_options) {
+						return $this->country_options;
+					}
+
+					$this->country_options = array();
+
+					$db = $this->db_get();
+
+					$sql = 'SELECT
+								c.iso_2 AS id,
+								c.name AS name
+							FROM
+								' . $this->country_table . ' AS c
+							ORDER BY
+								name';
+
+					foreach ($db->fetch_all($sql) as $row) {
+						$this->country_options[$row['id']] = $row['name'];
+					}
+
+					return $this->country_options;
+
+				}
+				return NULL;
 			}
 
 		//--------------------------------------------------
@@ -89,12 +130,21 @@
 			}
 
 			public function field_payment_country_get() {
-				$field_payment_country = new form_field_text($this, 'Country');
-				$field_payment_country->db_field_set('payment_country');
-				$field_payment_country->wrapper_class_add('payment required');
-				$field_payment_country->autocomplete_set('billing country');
-				$field_payment_country->min_length_set('Your payment country is required.');
-				$field_payment_country->max_length_set('Your payment country cannot be longer than XXX characters.');
+				$countries = $this->country_options_get();
+				if ($countries) {
+					$field_payment_country = new form_field_select($this, 'Payment country');
+					$field_payment_country->db_field_set('payment_country', 'key');
+					$field_payment_country->options_set($countries);
+					$field_payment_country->label_option_set('');
+					$field_payment_country->required_error_set('Your payment country is required.');
+				} else {
+					$field_payment_country = new form_field_text($this, 'Country');
+					$field_payment_country->db_field_set('payment_country');
+					$field_payment_country->wrapper_class_add('payment required');
+					$field_payment_country->autocomplete_set('billing country');
+					$field_payment_country->min_length_set('Your payment country is required.');
+					$field_payment_country->max_length_set('Your payment country cannot be longer than XXX characters.');
+				}
 				return $field_payment_country;
 			}
 
@@ -199,17 +249,31 @@
 			}
 
 			public function field_delivery_country_get() {
+				$countries = $this->country_options_get();
+				if ($countries) {
 
-				$field_delivery_country = new form_field_text($this, 'Country');
-				$field_delivery_country->db_field_set('delivery_country');
-				$field_delivery_country->wrapper_class_add('delivery required');
-				$field_delivery_country->autocomplete_set('shipping country');
-				$field_delivery_country->max_length_set('Your delivery country cannot be longer than XXX characters.');
+					$field_delivery_country = new form_field_select($this, 'Payment country');
+					$field_delivery_country->db_field_set('delivery_country', 'key');
+					$field_delivery_country->options_set($countries);
+					$field_delivery_country->label_option_set('');
 
-				if (!$this->field_exists('delivery_different')) {
-					$field_delivery_country->min_length_set('Your delivery country is required.');
+					if (!$this->field_exists('delivery_different')) {
+						$field_delivery_country->required_error_set('Your delivery country is required.');
+					}
+
+				} else {
+
+					$field_delivery_country = new form_field_text($this, 'Country');
+					$field_delivery_country->db_field_set('delivery_country');
+					$field_delivery_country->wrapper_class_add('delivery required');
+					$field_delivery_country->autocomplete_set('shipping country');
+					$field_delivery_country->max_length_set('Your delivery country cannot be longer than XXX characters.');
+
+					if (!$this->field_exists('delivery_different')) {
+						$field_delivery_country->min_length_set('Your delivery country is required.');
+					}
+
 				}
-
 				return $field_delivery_country;
 			}
 

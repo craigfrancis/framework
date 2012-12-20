@@ -14,7 +14,7 @@
 				//--------------------------------------------------
 				// Setup
 
-					$this->setup();
+					$this->_setup();
 
 				//--------------------------------------------------
 				// Extra
@@ -60,10 +60,10 @@
 		// Setup
 
 			public function __construct() {
-				$this->setup();
+				$this->_setup();
 			}
 
-			protected function setup() {
+			protected function _setup() {
 
 				//--------------------------------------------------
 				// Defaults
@@ -245,7 +245,7 @@
 					$table->sort_default_set($this->index_default_sort_field, $this->index_default_sort_order);
 					$table->no_records_set('No ' . $this->item_plural . ' found');
 
-					$this->setup_index_table($table);
+					$this->_setup_index_table($table);
 
 				//--------------------------------------------------
 				// Return
@@ -330,7 +330,7 @@
 						$row['edit_url'] = url('./edit/', array('id' => $row['id']));
 						$row['delete_url'] = url('./delete/', array('id' => $row['id']));
 
-						$this->setup_index_add_row($table, $row);
+						$this->_setup_index_add_row($table, $row);
 
 					}
 
@@ -356,7 +356,7 @@
 
 			}
 
-			protected function setup_index_table($table) {
+			protected function _setup_index_table($table) {
 
 				foreach ($this->index_table_fields as $field => $info) {
 					$table->heading_add($info['name'], $field, 'text');
@@ -368,7 +368,7 @@
 
 			}
 
-			protected function setup_index_add_row($table, $row) {
+			protected function _setup_index_add_row($table, $row) {
 
 				$table_row = new table_row($table);
 
@@ -465,7 +465,7 @@
 					$form->db_table_set_sql($this->db_table_name_sql);
 					$form->db_where_set_sql($where_sql);
 
-					$this->setup_edit_form($form, $id);
+					$this->_setup_edit_form($form, $id);
 
 				//--------------------------------------------------
 				// Form processing
@@ -475,7 +475,7 @@
 						//--------------------------------------------------
 						// Validation
 
-							$this->setup_edit_validate($form, $id);
+							$this->_setup_edit_validate($form, $id);
 
 						//--------------------------------------------------
 						// Form valid
@@ -485,7 +485,7 @@
 								//--------------------------------------------------
 								// Save
 
-									$new_id = $this->setup_edit_save($form, $id);
+									$new_id = $this->_setup_edit_save($form, $id);
 
 									if (!is_numeric($new_id)) {
 										exit_with_error('Your setup_edit_save() method on "' . get_class($this) . '" should return the item id.');
@@ -518,7 +518,7 @@
 						//--------------------------------------------------
 						// Defaults
 
-							$this->setup_edit_populate($form, $id);
+							$this->_setup_edit_populate($form, $id);
 
 					}
 
@@ -543,17 +543,17 @@
 
 			}
 
-			protected function setup_edit_form($form, $id) {
+			protected function _setup_edit_form($form, $id) {
 				$this->_setup_edit_form_auto($form, $id);
 			}
 
-			protected function setup_edit_populate($form, $id) {
+			protected function _setup_edit_populate($form, $id) {
 			}
 
-			protected function setup_edit_validate($form, $id) {
+			protected function _setup_edit_validate($form, $id) {
 			}
 
-			protected function setup_edit_save($form, $id) {
+			protected function _setup_edit_save($form, $id) {
 
 				if ($id > 0) {
 					$form->db_save();
@@ -615,7 +615,7 @@
 						//--------------------------------------------------
 						// Validation
 
-							$this->setup_delete_validate($form, $id);
+							$this->_setup_delete_validate($form, $id);
 
 						//--------------------------------------------------
 						// Form valid
@@ -625,7 +625,7 @@
 								//--------------------------------------------------
 								// Delete
 
-									$this->setup_delete_save($form, $id);
+									$this->_setup_delete_save($form, $id);
 
 								//--------------------------------------------------
 								// Thank you message
@@ -661,10 +661,10 @@
 
 			}
 
-			protected function setup_delete_validate($form, $id) {
+			protected function _setup_delete_validate($form, $id) {
 			}
 
-			protected function setup_delete_save($form, $id) {
+			protected function _setup_delete_save($form, $id) {
 
 				$db = $this->db_get();
 

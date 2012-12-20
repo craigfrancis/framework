@@ -62,10 +62,10 @@
 		// Setup
 
 			public function __construct() {
-				$this->setup();
+				$this->_setup();
 			}
 
-			protected function setup() {
+			protected function _setup() {
 
 				$this->socket = new socket();
 				$this->socket->exit_on_error_set(false);
