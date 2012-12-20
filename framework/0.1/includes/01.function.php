@@ -618,10 +618,10 @@
 
 			$pragma = (session::open() ? 'private' : 'public');
 
-			header('Vary: Accept-Encoding'); // http://support.microsoft.com/kb/824847
 			header('Pragma: ' . head($pragma)); // For HTTP/1.0 compatibility
 			header('Cache-Control: ' . head($pragma) . ', max-age=' . head($expires)); // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
 			header('Expires: ' . head(gmdate('D, d M Y H:i:s', time() + $expires)) . ' GMT');
+			header('Vary: User-Agent'); // http://blogs.msdn.com/b/ieinternals/archive/2009/06/17/vary-header-prevents-caching-in-ie.aspx
 
 			if ($last_modified !== NULL) {
 
