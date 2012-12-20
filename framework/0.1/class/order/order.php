@@ -156,9 +156,8 @@
 		// Variables
 
 			protected $order_id = NULL;
-			protected $order_pass = NULL;
-			protected $order_created = NULL;
-			protected $order_paid = NULL;
+			protected $order_data = NULL;
+			protected $order_fields = array();
 			protected $order_currency = 'GBP';
 
 			protected $db_table_main = NULL;
@@ -254,7 +253,7 @@
 				if ($this->order_id === NULL) {
 					return NULL;
 				} else {
-					return $this->order_id . '-' . $this->order_pass;
+					return $this->order_id . '-' . $this->order_data['pass'];
 				}
 			}
 
@@ -307,9 +306,7 @@
 			public function reset() {
 
 				$this->order_id = NULL;
-				$this->order_pass = NULL;
-				$this->order_created = NULL;
-				$this->order_paid = NULL;
+				$this->order_data = NULL;
 
 			}
 
@@ -322,9 +319,9 @@
 
 			public function select_open() {
 
-				$this->select_by_ref(session::get('order_ref'));
+				$selected = $this->select_by_ref(session::get('order_ref'));
 
-				if ($this->order_paid != '0000-00-00 00:00:00') {
+				if ($selected && $this->order_data['payment_received'] != '0000-00-00 00:00:00') {
 					$this->reset();
 				}
 
@@ -334,9 +331,9 @@
 
 			public function select_paid() {
 
-				$this->select_by_ref(session::get('order_ref'));
+				$selected = $this->select_by_ref(session::get('order_ref'));
 
-				if ($this->order_paid == '0000-00-00 00:00:00') {
+				if ($selected && $this->order_data['payment_received'] == '0000-00-00 00:00:00') {
 					$this->reset();
 				}
 
@@ -368,10 +365,13 @@
 					$where_sql .= ' AND pass = "' . $db->escape($pass) . '"';
 				}
 
+				$fields_sql = array();
+				foreach (array_merge(array('pass', 'created', 'payment_received'), $this->order_fields) as $field) {
+					$fields_sql[] = $db->escape_field($field);
+				}
+
 				$db->query('SELECT
-								pass,
-								created,
-								payment_received
+								' . implode(', ', $fields_sql) . '
 							FROM
 								' . $db->escape_field($this->db_table_main) . '
 							WHERE
@@ -379,9 +379,7 @@
 
 				if ($row = $db->fetch_row()) {
 					$this->order_id = $id;
-					$this->order_pass = $row['pass'];
-					$this->order_created = $row['created'];
-					$this->order_paid = $row['payment_received'];
+					$this->order_data = $row;
 				} else {
 					$this->reset();
 				}
@@ -414,6 +412,15 @@
 						deleted = "0000-00-00 00:00:00"';
 
 					$db->update($this->db_table_main, $values, $where_sql);
+
+				//--------------------------------------------------
+				// Local cache
+
+					foreach ($values as $name => $value) {
+						if (isset($this->order_data[$name])) {
+							$this->order_data[$name] = $value;
+						}
+					}
 
 				//--------------------------------------------------
 				// Order update
@@ -600,6 +607,55 @@
 
 			}
 
+			public function items_update() {
+
+				//--------------------------------------------------
+				// Order not selected
+
+					if ($this->order_id === NULL) {
+						return;
+					}
+
+				//--------------------------------------------------
+				// Changes
+
+					$changed = false;
+
+				//--------------------------------------------------
+				// Delete link
+
+					$delete_id = request('item_delete');
+					if ($delete_id !== NULL) {
+						if ($this->_item_quantity_set($delete_id, 0)) {
+							$changed = true;
+						}
+					}
+
+				//--------------------------------------------------
+				// Select fields
+
+					foreach ($this->items_get() as $item) {
+						$quantity = request('item_quantity_' . $item['id']);
+						if ($quantity !== NULL) {
+							if ($this->_item_quantity_set($item['id'], $quantity)) {
+								$changed = true;
+							}
+						}
+					}
+
+				//--------------------------------------------------
+				// Order update
+
+					if ($changed) {
+
+						$this->order_items = NULL;
+
+						$this->order_update();
+
+					}
+
+			}
+
 			public function item_quantity_set($item_id, $quantity) {
 
 				//--------------------------------------------------
@@ -608,6 +664,26 @@
 					if ($this->order_id === NULL) {
 						exit_with_error('An order needs to be selected', 'item_quantity_set');
 					}
+
+				//--------------------------------------------------
+				// Update
+
+					$changed = $this->_item_quantity_set($item['id'], $quantity);
+
+				//--------------------------------------------------
+				// Order update
+
+					if ($changed) {
+
+						$this->order_items = NULL;
+
+						$this->order_update();
+
+					}
+
+			}
+
+			protected function _item_quantity_set($item_id, $quantity) {
 
 				//--------------------------------------------------
 				// Update
@@ -646,6 +722,10 @@
 
 							if ($row = $db->fetch($sql)) {
 
+								if ($row['quantity'] == $quantity) {
+									return false; // No change
+								}
+
 								$row['id'] = '';
 								$row['deleted'] = date('Y-m-d H:i:s');
 
@@ -673,66 +753,18 @@
 					}
 
 				//--------------------------------------------------
-				// Order update
+				// Success
 
-					$this->order_items = NULL;
-
-					$this->order_update();
-
-			}
-
-			public function items_update() {
-
-				//--------------------------------------------------
-				// Order not selected
-
-					if ($this->order_id === NULL) {
-						return;
-					}
-
-				//--------------------------------------------------
-				// Delete link
-
-					$delete_id = request('item_delete');
-					if ($delete_id !== NULL) {
-						$this->item_quantity_set($delete_id, 0);
-					}
-
-				//--------------------------------------------------
-				// Select fields
-
-					foreach ($this->items_get() as $item) {
-						$quantity = request('item_quantity_' . $item['id']);
-						if ($quantity !== NULL) {
-							$this->item_quantity_set($item['id'], $quantity);
-						}
-					}
+					return true;
 
 			}
 
 			public function items_count_get() {
-
-				if ($this->order_id === NULL) {
-					return 0;
+				$items = 0;
+				foreach ($this->items_get() as $item) { // In most cases items_get() is used elsewhere (cached data)... so usually quicker than doing an extra 'SELECT SUM(quantity)'
+					$items += $item['quantity'];
 				}
-
-				$db = $this->db_get();
-
-				$sql = 'SELECT
-							SUM(oi.quantity) AS c
-						FROM
-							' . $db->escape_field($this->db_table_item) . ' AS oi
-						WHERE
-							oi.order_id = "' . $db->escape($this->order_id) . '" AND
-							oi.type = "item" AND
-							oi.deleted = "0000-00-00 00:00:00"';
-
-				if ($row = $db->fetch($sql)) {
-					return $row['c'];
-				} else {
-					return 0;
-				}
-
+				return $items;
 			}
 
 			public function items_get() {
@@ -1085,37 +1117,56 @@
 
 			protected function create($defaults = NULL) {
 
-				if ($this->order_id !== NULL) {
-					exit_with_error('Cannot create a new order when one is already selected (' . $this->order_id . ')');
-				}
+				//--------------------------------------------------
+				// Details
 
-				$order_pass = '';
-				for ($k=0; $k<5; $k++) {
-					$order_pass .= chr(mt_rand(97,122));
-				}
+					if ($this->order_id !== NULL) {
+						exit_with_error('Cannot create a new order when one is already selected (' . $this->order_id . ')');
+					}
 
-				if (!is_array($defaults)) {
-					$defaults = array();
-				}
+				//--------------------------------------------------
+				// Order values
 
-				$date = date('Y-m-d H:i:s');
+					$order_pass = '';
+					for ($k=0; $k<5; $k++) {
+						$order_pass .= chr(mt_rand(97,122));
+					}
 
-				$values = array_merge(array(
-						'id' => '',
-						'pass' => $order_pass,
-						'ip' => config::get('request.ip'),
-						'created' => $date,
-					), $defaults);
+					if (!is_array($defaults)) {
+						$defaults = array();
+					}
 
-				$db = $this->db_get();
-				$db->insert($this->db_table_main, $values);
+					$date = date('Y-m-d H:i:s');
 
-				$this->order_id = $db->insert_id();
-				$this->order_pass = $order_pass;
-				$this->order_created = $date;
-				$this->order_paid = '0000-00-00 00:00:00';
+					$values = array_merge(array(
+							'id' => '',
+							'pass' => $order_pass,
+							'ip' => config::get('request.ip'),
+							'created' => $date,
+						), $defaults);
 
-				session::set('order_ref', $this->ref_get());
+				//--------------------------------------------------
+				// Insert
+
+					$db = $this->db_get();
+					$db->insert($this->db_table_main, $values);
+
+					$this->order_id = $db->insert_id();
+
+				//--------------------------------------------------
+				// Store
+
+					$this->order_data = array();
+
+					foreach ($this->order_fields as $field) {
+						$this->order_data[$field] = NULL;
+					}
+
+					$this->order_data['pass'] = $order_pass;
+					$this->order_data['created'] = $date;
+					$this->order_data['payment_received'] = '0000-00-00 00:00:00';
+
+					session::set('order_ref', $this->ref_get());
 
 			}
 

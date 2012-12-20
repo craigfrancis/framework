@@ -5,7 +5,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $order;
+			protected $order_obj;
 			protected $country_table = NULL;
 			protected $country_options = NULL;
 
