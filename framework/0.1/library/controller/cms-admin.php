@@ -20,6 +20,7 @@
 				$path = request('path');
 				$section = request('section');
 				$wrapper_tag = request('wrapper_tag');
+				$global = request('global');
 				$marker = request('marker');
 				$default = request('default');
 
@@ -124,7 +125,9 @@
 									// Live exists
 
 										$sql = 'SELECT
-													content
+													content,
+													global,
+													marker
 												FROM
 													' . DB_PREFIX . 'cms_text
 												WHERE
@@ -133,7 +136,7 @@
 
 										if ($row = $db->fetch($sql)) {
 
-											if ($row['content'] == $value) {
+											if ($row['content'] == $value && $row['global'] == $global && $row['marker'] == $marker) {
 												continue; // No change
 											} else {
 												$live_exists = true;
@@ -164,6 +167,7 @@
 											$db->insert(DB_PREFIX . 'cms_text', array_merge($version_values, array(
 													'path' => $path,
 													'section' => $section,
+													'global' => strval($global),
 													'marker' => strval($marker),
 													'created' => date('Y-m-d H:i:s'),
 													'revision' => ($live_exists ? '-1' : '0'),
@@ -255,6 +259,7 @@
 				// 			'path' => $path,
 				// 			'section' => $section,
 				// 			'wrapper_tag' => $wrapper_tag,
+				// 			'global' => $global,
 				// 			'marker' => $marker,
 				// 			'revision' => $row['revision'],
 				// 		));

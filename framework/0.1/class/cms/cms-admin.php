@@ -23,7 +23,10 @@
 	//--------------------------------------------------
 	// Full object version
 
+		$cms_admin = new cms_admin('profile');
+
 		$cms_admin = new cms_admin(array(
+				'profile'     => 'example',
 				'revision'    => 0,
 				'processor'   => 'markdown',
 				'editable'    => false, // See above
@@ -42,6 +45,7 @@
 				'wrapper_tag' => 'div',
 				'editable'    => false, // Default from init
 				'log_missing' => true, // Default from init
+				'global'      => false, // Make globally available to all pages (e.g. the page title)
 				'marker'      => 'marker',
 			));
 
@@ -59,13 +63,13 @@
 					'priority' => array(),
 				));
 
-		Version examples:
+		Version example - should be fixed for the profile:
 
 			versions = array(
-					'English' => array('lang' => 'uk'),
-					'French' => array('lang' => 'fr'),
-					'Spanish' => array('lang' => 'es'),
-					'Canadian French' => array('country' => 'ca', 'lang' => 'fr'),
+					'English'         => array('lang' => 'en', 'country' => ''),
+					'French'          => array('lang' => 'fr', 'country' => ''),
+					'Spanish'         => array('lang' => 'es', 'country' => ''),
+					'Canadian French' => array('lang' => 'fr', 'country' => 'ca'),
 				);
 
 		Priority examples:
@@ -73,15 +77,10 @@
 			priority = array('English'); // Try English, then move onto the default.
 
 			priority = array(
-					'Spanish',
-					'English',
-				); // Try Spanish first, then English, then the default.
-
-			priority = array(
 					'Canadian French',
 					'French',
 					'English',
-				); // Try Canadian French first, any French, any English, then the default.
+				); // Try Canadian French first, French, English, then the default.
 
 ***************************************************/
 
@@ -91,12 +90,10 @@
 		// Variables
 
 			protected $config = array();
-			protected $content = array();
+			protected $content = NULL;
 
 			private $db_link = NULL;
-
-			private $processor_name = NULL;
-			private $processor_handle = NULL;
+			private $processor = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -160,6 +157,7 @@
 								CREATE TABLE [TABLE] (
 									path varchar(100) NOT NULL,
 									section varchar(100) NOT NULL,
+									global enum(\'false\',\'true\') NOT NULL,
 									marker tinytext NOT NULL,
 									created datetime NOT NULL,
 									revision int(11) NOT NULL,
@@ -183,116 +181,115 @@
 					}
 
 				//--------------------------------------------------
-				// Return content for this path
+				// Content
 
 					//--------------------------------------------------
-					// Start
+					// Base conditions
 
-						$fields_sql = array(
-								'path',
-								'section',
-								'content',
-							);
-
-						$where_sql = array();
-
-					//--------------------------------------------------
-					// Path
-
-						$where_sql[] = 'path = "' . $db->escape($this->config['path']) . '"';
+						$where_sql = '
+							(
+								path = "' . $db->escape($this->config['path']) . '" OR
+								global = "true"
+							) AND
+							revision = "' . $db->escape($this->config['revision']) . '"';
 
 					//--------------------------------------------------
-					// Revision
+					// Cache exists and up to date
 
-						$where_sql[] = 'revision = "' . $db->escape($this->config['revision']) . '"';
+						$cache_path = tmp_folder('cms-admin') . intval($this->config['revision']) . '-' . base64_encode($this->config['path']);
 
-					//--------------------------------------------------
-					// Priority
+						if (is_file($cache_path)) {
 
-						$priority_sql = array();
-						$priority_fields = array();
+							$sql = 'SELECT
+										MAX(created) AS c
+									FROM
+										' . DB_PREFIX . 'cms_text AS ct
+									WHERE
+										' . $where_sql;
 
-						foreach ($this->config['priority'] as $k => $name) {
-							if (isset($this->config['versions'][$name])) {
-								$priority_fields[$k] = $this->config['versions'][$name];
-							} else {
-								exit_with_error('Cannot find CMS Text version "' . $name . '"');
-							}
-						}
-
-						foreach ($priority_fields as $fields) {
-							$match_sql = array();
-							if (count($fields) == 0) {
-								$priority_sql = array();
-								break;
-							}
-							foreach ($fields as $field => $value) {
-								$field_sql = $db->escape_field($field);
-								$match_sql[] = $field_sql . ' = "' . $db->escape($value) . '"';
-								$fields_sql[] = $field_sql;
-							}
-							$priority_sql[] = '(' . implode(' AND ', $match_sql) . ')';
-						}
-
-						if (count($priority_sql) > 0) {
-							$where_sql[] = '(' . implode(' OR ', $priority_sql) . ')';
-						}
-
-					//--------------------------------------------------
-					// Return
-
-						$this->content = array();
-
-						$sql = 'SELECT
-									' . implode(', ', $fields_sql) . '
-								FROM
-									' . DB_PREFIX . 'cms_text AS ct
-								WHERE
-									' . implode(' AND ', $where_sql);
-
-						foreach ($db->fetch_all($sql) as $row) {
-
-							$match = 0;
-							foreach ($priority_fields as $k => $fields) {
-								foreach ($fields as $field => $value) {
-									if ($row[$field] != $value) {
-										continue 2;
-									}
+							if ($row = $db->fetch($sql)) {
+								if (filemtime($cache_path) > strtotime($row['c'])) {
+									$this->content = unserialize(file_get_contents($cache_path));
 								}
-								$match = $k;
-								break;
 							}
-
-							$this->content[$row['path']][$row['section']][$match] = $row['content'];
 
 						}
 
-				//--------------------------------------------------
-				// Processor
+					//--------------------------------------------------
+					// From database
 
-					if (is_array($this->config['processor'])) {
-						$processor_name = $this->config['processor']['name'];
-						$processor_config = $this->config['processor'];
-					} else {
-						$processor_name = $this->config['processor'];
-						$processor_config = array();
-					}
+						if ($this->content === NULL) {
 
-					if ($processor_name == 'markdown') {
+							//--------------------------------------------------
+							// Processor
 
-						$this->processor_name = $processor_name;
-						$this->processor_handle = new cms_markdown($processor_config);
+								$processor = $this->processor_get();
 
-					} else if ($processor_name == 'tags') {
+							//--------------------------------------------------
+							// Fields
 
-						$this->processor_name = $processor_name;
-						$this->processor_handle = new cms_tags();
+								$fields_sql = array(
+										'path',
+										'section',
+										'content',
+									);
 
-					} else {
+								foreach ($this->config['versions'] as $version_name => $version_fields) {
+									$fields_sql = array_merge($fields_sql, array_keys($version_fields));
+								}
 
-						exit_with_error('Unknown processor "' . $processor_name . '"');
+								$fields_sql = array_unique($fields_sql);
 
-					}
+							//--------------------------------------------------
+							// Return
+
+								$this->content = array();
+
+								$versions = $this->config['versions'];
+								if (count($versions) == 0) {
+									$versions = array('default' => array());
+								}
+
+								$sql = 'SELECT
+											' . implode(', ', $fields_sql) . '
+										FROM
+											' . DB_PREFIX . 'cms_text AS ct
+										WHERE
+											' . $where_sql;
+
+								foreach ($db->fetch_all($sql) as $row) {
+
+									//--------------------------------------------------
+									// HTML
+
+										$html_block = $processor->process_block_html($row['content']);
+										$html_inline = $processor->process_inline_html($row['content']);
+
+									//--------------------------------------------------
+									// Version match
+
+										foreach ($versions as $version_name => $version_fields) {
+											$match = true;
+											foreach ($version_fields as $field_name => $field_value) {
+												if ($row[$field_name] != $field_value) {
+													$match = false;
+												}
+											}
+											if ($match) {
+												$this->content[$row['path']][$row['section']][$version_name]['html_block'] = $html_block;
+												$this->content[$row['path']][$row['section']][$version_name]['html_inline'] = $html_inline;
+												$this->content[$row['path']][$row['section']][$version_name]['source'] = $row['content'];
+											}
+										}
+
+								}
+
+							//--------------------------------------------------
+							// Store
+
+								file_put_contents($cache_path, serialize($this->content));
+
+						}
 
 				//--------------------------------------------------
 				// JavaScript
@@ -313,33 +310,110 @@
 				return $this->db_link;
 			}
 
+			protected function processor_get() {
+
+				if ($this->processor === NULL) {
+
+					if (is_array($this->config['processor'])) {
+						$processor_name = $this->config['processor']['name'];
+						$processor_config = $this->config['processor'];
+					} else {
+						$processor_name = $this->config['processor'];
+						$processor_config = array();
+					}
+
+					if ($processor_name == 'markdown') {
+
+						$this->processor = new cms_markdown($processor_config);
+
+					} else if ($processor_name == 'tags') {
+
+						$this->processor = new cms_tags();
+
+					} else {
+
+						exit_with_error('Unknown processor "' . $processor_name . '"');
+
+					}
+
+				}
+
+				return $this->processor;
+
+			}
+
 		//--------------------------------------------------
 		// Return content
 
 			public function html($config) {
 
 				//--------------------------------------------------
-				// Content
+				// Config
 
-					list($config, $content_text, $content_default) = $this->_section_get($config);
+					$defaults = array(
+							'path'        => $this->config['path'],
+							'section'     => 'content',
+							'default'     => NULL,
+							'variables'   => array(),
+							'wrapper_tag' => NULL,
+							'editable'    => $this->config['editable'],
+							'log_missing' => $this->config['log_missing'],
+							'global'      => false,
+							'marker'      => NULL,
+						);
+
+					if (is_string($config)) {
+
+						$config = array('section' => $config);
+
+					} else if (!is_array($config)) {
+
+						$config = array();
+
+					}
+
+					$config = array_merge($defaults, $config);
 
 				//--------------------------------------------------
-				// Processor
+				// Content
 
-					if ($this->processor_name == 'markdown') {
+					$inline = ($config['wrapper_tag'] != '');
+					$content_html = NULL;
 
-						if ($config['wrapper_tag'] == '') {
-							$content_html = $this->processor_handle->process_html($content_text);
-						} else {
-							$content_html = nl2br(html($content_text));
+					if (isset($this->content[$config['path']][$config['section']])) {
+
+						$content = $this->content[$config['path']][$config['section']];
+						$priority = $this->config['priority'];
+
+						if (!is_array($priority) || count($priority) == 0) {
+							$priority = array(key($content));
 						}
 
-					} else if ($this->processor_name == 'tags') {
+						foreach ($priority as $version) {
+							if (isset($content[$version])) {
+								$content_html = $content[$version][$inline ? 'html_inline' : 'html_block'];
+								break;
+							}
+						}
 
-						if ($config['wrapper_tag'] == '') {
-							$content_html = $this->processor_handle->process_block_html($content_text);
+					}
+
+					$content_default = ($content_html === NULL);
+
+					if ($content_default) {
+
+						if ($config['default'] !== NULL) {
+							$content_text = $config['default'];
 						} else {
-							$content_html = $this->processor_handle->process_inline_html($content_text);
+							$content_text = $config['section'];
+						}
+
+						$processor = $this->processor_get();
+
+						if ($inline) {
+							$html_inline = $processor->process_inline_html($content_text);
+						} else {
+							$html_block = $processor->process_block_html($content_text);
 						}
 
 					}
@@ -380,6 +454,7 @@
 								'path' => $config['path'],
 								'section' => $config['section'],
 								'wrapper_tag' => $config['wrapper_tag'],
+								'global' => ($config['global'] ? 'true' : 'false'),
 								'marker' => $config['marker'],
 								'default' => $config['default'],
 							));
@@ -433,82 +508,6 @@
 				// Return
 
 					return $content_html;
-
-			}
-
-			public function text($config) {
-			}
-
-			public function content($config) {
-
-				//--------------------------------------------------
-				// Content
-
-					list($config, $content_text, $content_default) = $this->_section_get($config);
-
-				//--------------------------------------------------
-				// Return
-
-					return $content_text;
-
-			}
-
-		//--------------------------------------------------
-		// Helper functions
-
-			protected function _section_get($config) {
-
-				//--------------------------------------------------
-				// Config
-
-					$defaults = array(
-							'path'        => $this->config['path'],
-							'section'     => 'content',
-							'default'     => NULL,
-							'variables'   => array(),
-							'wrapper_tag' => NULL,
-							'editable'    => $this->config['editable'],
-							'log_missing' => $this->config['log_missing'],
-							'marker'      => NULL,
-						);
-
-					if (is_string($config)) {
-
-						$config = array('section' => $config);
-
-					} else if (!is_array($config)) {
-
-						$config = array();
-
-					}
-
-					$config = array_merge($defaults, $config);
-
-				//--------------------------------------------------
-				// Content
-
-					$default = (!isset($this->content[$config['path']][$config['section']]));
-
-					if (!$default) {
-
-						ksort($this->content[$config['path']][$config['section']]);
-
-						$content = reset($this->content[$config['path']][$config['section']]);
-
-					} else if ($config['default'] !== NULL) {
-
-						$content = $config['default'];
-
-					} else {
-
-						$content = $config['section'];
-
-					}
-
-				//--------------------------------------------------
-				// Return
-
-					return array($config, $content, $default);
 
 			}
 

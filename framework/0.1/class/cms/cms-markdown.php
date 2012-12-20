@@ -14,9 +14,9 @@ Usage:
 		));
 
 	$cms_markdown = new cms_markdown();
-	$cms_markdown->process_html($text);
+	$cms_markdown->process_block_html($text);
 
-PHP Markdown
+PHP Markdown (1.0.1o)
 	Copyright (c) 2004-2012 Michel Fortin
 	<http://michelf.com/projects/php-markdown/>
 
@@ -98,7 +98,7 @@ class cms_markdown_base extends check {
 
 	}
 
-	public function change_config($key, $value) {
+	public function config_change($key, $value) {
 
 		if (isset($this->config[$key])) {
 			$this->config[$key] = $value;
@@ -107,7 +107,6 @@ class cms_markdown_base extends check {
 		}
 
 	}
-
 
 	# Internal hashes used during transformation.
 	private $urls = array();
@@ -141,11 +140,17 @@ class cms_markdown_base extends check {
 		$this->html_hashes = array();
 	}
 
-	public function process_text($text) {
+	function process_text($text) {
 		return $text;
 	}
 
-	function process_html($text) {
+	function process_inline_html($text) {
+		$text = $this->runSpanGamut($text);
+		$text = $this->unhash($text);
+		return $text;
+	}
+
+	function process_block_html($text) {
 	#
 	# Main function. Performs some preprocessing on the input text
 	# and pass it through the document gamut.

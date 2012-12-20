@@ -162,7 +162,7 @@
 
 					$cms_markdown = new cms_markdown();
 
-					$doc_html = $cms_markdown->process_html($doc_text);
+					$doc_html = $cms_markdown->process_block_html($doc_text);
 
 				//--------------------------------------------------
 				// Special cases

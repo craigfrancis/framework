@@ -101,7 +101,7 @@ class cms_tags_base extends check {
 
 	}
 
-	public function change_config($key, $value) {
+	public function config_change($key, $value) {
 
 		if ($key == 'heading_level') {
 
