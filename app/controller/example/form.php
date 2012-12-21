@@ -35,7 +35,6 @@
 					$field_email->max_length_set('Your email cannot be longer than XXX characters.');
 
 					$field_type = new form_field_select($form_edit, 'Type');
-					// $field_type->key_select_set(false);
 					// $field_type->re_index_keys_set(false);
 					// $field_type->print_hidden_set(true);
 					$field_type->db_field_set('type');
@@ -190,7 +189,6 @@ exit('Updated?');
 					$field_image->file_type_error_set('The image file has an unrecognised file type (XXX).');
 
 					$field_hear = new form_field_select($form, 'Where did you hear about us');
-					// $field_hear->key_select_set(false);
 					// $field_hear->re_index_keys_set(false);
 					$field_hear->print_hidden_set(true);
 					$field_hear->db_field_set('where');

@@ -60,15 +60,12 @@
 
 			}
 
-			public function key_select_set($by_key) { // Use the values of the array, rather than the keys
-
-				if (count($this->option_values) > 0) {
-					exit_with_error('Cannot call key_select_set() after db_field_set() or options_set()');
-				}
-
-				$this->key_select = ($by_key == true);
-
-			}
+			// public function key_select_set($by_key) { // Use the values of the array, rather than the keys
+			// 	if (count($this->option_values) > 0) {
+			// 		exit_with_error('Cannot call key_select_set() after db_field_set() or options_set()');
+			// 	}
+			// 	$this->key_select = ($by_key == true);
+			// }
 
 			public function re_index_keys_set($re_index) { // Doing this makes detection of the label option more error prone
 
