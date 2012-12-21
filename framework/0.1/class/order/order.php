@@ -53,9 +53,9 @@
 				$order->items_update();
 
 				if (strtolower(trim(request('button'))) == 'update totals') {
-					redirect(http_url('/basket/'));
+					redirect(url('/basket/'));
 				} else {
-					redirect(http_url('/basket/checkout/'));
+					redirect(url('/basket/checkout/'));
 				}
 
 			}
@@ -96,7 +96,7 @@
 		$order = new order();
 
 		if (!$order->select_open()) {
-			redirect(http_url('/basket/'));
+			redirect(url('/basket/'));
 		}
 
 		$form = $order->form_get();
@@ -129,7 +129,7 @@
 			$result = $order->save();
 
 			if ($result) {
-				redirect(http_url('/basket/payment/'));
+				redirect(url('/basket/payment/'));
 			}
 
 		} else {
@@ -427,6 +427,15 @@
 
 					$this->order_update();
 
+			}
+
+			public function value_get($field) {
+				if (isset($this->order_data[$field])) {
+					return $this->order_data[$field];
+				} else {
+					$values = $this->values_get(array($field));
+					return $values[$field];
+				}
 			}
 
 			public function values_get($fields = NULL) {
