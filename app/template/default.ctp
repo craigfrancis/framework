@@ -48,7 +48,7 @@
 	<![endif]-->
 
 </head>
-<body id="<?= html($this->page_ref_get()) ?>">
+<body id="<?= html($this->page_id_get()) ?>">
 
 	<div id="page_wrapper">
 

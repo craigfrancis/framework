@@ -191,7 +191,7 @@
 			// Response
 
 				$response = response_get();
-				$response->page_ref_set('p_doc');
+				$response->page_id_set('p_doc');
 				$response->view_path_set(VIEW_ROOT . '/doc.ctp');
 
 		}

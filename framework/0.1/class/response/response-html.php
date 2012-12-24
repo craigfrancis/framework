@@ -3,7 +3,7 @@
 // 	$response = response_get();
 // 	$response->template_set('default');
 // 	$response->view_path_set(VIEW_ROOT . '/file.ctp');
-// 	$response->page_ref_set('example_ref');
+// 	$response->page_id_set('example_id');
 // 	$response->title_set('Custom page title.');
 // 	$response->title_full_set('Custom page title.');
 // 	$response->js_add('/path/to/file.js');
@@ -29,6 +29,8 @@
 			private $browser_advanced = true;
 			private $message = NULL;
 			private $template = NULL;
+			private $title = NULL;
+			private $page_id = NULL;
 			private $error = false;
 			private $variables = array();
 
@@ -332,6 +334,18 @@
 		//--------------------------------------------------
 		// Page title
 
+			public function title_folder_set($id, $name) {
+				config::array_set('output.title_folders', $id, $name);
+			}
+
+			public function title_folder_get($id = NULL) {
+				if ($id !== NULL) {
+					return config::array_get('output.title_folders', $id);
+				} else {
+					return config::get('output.title_folders', array());
+				}
+			}
+
 			public function title_set($title_main) {
 
 				$title_prefix = config::get('output.title_prefix');
@@ -346,15 +360,41 @@
 			}
 
 			public function title_full_set($title) {
-				config::set('output.title', $title); // TODO: Local variable?
-			}
-
-			public function title_folder_set($id, $name) {
-				config::array_set('output.title_folders', $id, $name); // TODO: Local variable?
+				$this->title = $title;
 			}
 
 			public function title_get() {
-				return config::get('output.title');
+
+				if ($this->title === NULL) {
+
+					if ($this->error) {
+
+						$title_default = config::get('output.title_error');
+
+					} else {
+
+						$k = 0;
+
+						$title_default = '';
+						$title_divide = config::get('output.title_divide');
+
+						foreach (config::get('output.title_folders') as $folder) {
+							if ($folder != '') {
+								if ($k++ > 0) {
+									$title_default .= $title_divide;
+								}
+								$title_default .= $folder;
+							}
+						}
+
+					}
+
+					$this->title_set($title_default);
+
+				}
+
+				return $this->title;
+
 			}
 
 		//--------------------------------------------------
@@ -381,47 +421,45 @@
 		//--------------------------------------------------
 		// Page ref
 
-			public function page_ref_set($page_ref) {
-				config::set('output.page_ref', $page_ref); // TODO: Local variable?
+			public function page_id_set($page_id) {
+				$this->page_id = $page_id;
 			}
 
-			public function page_ref_get() {
+			public function page_id_get() {
 
-				$page_ref = config::get('output.page_ref', NULL);
+				$page_id = $this->page_id;
 
-				if ($page_ref === NULL) {
+				if ($page_id === NULL) {
 
-					$page_ref_mode = config::get('output.page_ref_mode', 'route');
+					$mode = config::get('output.page_id', 'route');
 
-					if ($page_ref_mode == 'route') {
+					if ($mode == 'route') {
 
-						$page_ref = human_to_ref(config::get('route.path'));
+						$page_id = human_to_ref(config::get('route.path'));
 
-					} else if ($page_ref_mode == 'view') {
+					} else if ($mode == 'view') {
 
-						$page_ref = human_to_ref($this->view_path_get());
+						$page_id = human_to_ref($this->view_path_get());
 
-					} else if ($page_ref_mode == 'request') {
+					} else if ($mode == 'request') {
 
-						$page_ref = human_to_ref(urldecode(config::get('request.path')));
+						$page_id = human_to_ref(urldecode(config::get('request.path')));
 
 					} else {
 
-						exit_with_error('Unrecognised page ref mode "' . $page_ref_mode . '"');
+						exit_with_error('Unrecognised page ref mode "' . $mode . '"');
 
 					}
 
-					if ($page_ref == '') {
-						$page_ref = 'home';
+					if ($page_id == '') {
+						$page_id = 'home';
 					}
 
-					$page_ref = 'p_' . $page_ref;
-
-					config::set('output.page_ref', $page_ref);
+					$this->page_id = 'p_' . $page_id;
 
 				}
 
-				return $page_ref;
+				return $this->page_id;
 
 			}
 
@@ -912,37 +950,6 @@
 					}
 
 				//--------------------------------------------------
-				// Default title
-
-					if (config::get('output.title') === NULL) {
-
-						if ($this->error) {
-
-							$title_default = config::get('output.title_error');
-
-						} else {
-
-							$k = 0;
-
-							$title_default = '';
-							$title_divide = config::get('output.title_divide');
-
-							foreach (config::get('output.title_folders') as $folder) {
-								if ($folder != '') {
-									if ($k++ > 0) {
-										$title_default .= $title_divide;
-									}
-									$title_default .= $folder;
-								}
-							}
-
-						}
-
-						$this->title_set($title_default);
-
-					}
-
-				//--------------------------------------------------
 				// JavaScript
 
 					//--------------------------------------------------
@@ -1136,7 +1143,7 @@
 
 			public function render_error($error) {
 				$this->error_set($error);
-				$this->page_ref_set('error-' . $error);
+				$this->page_id_set('p_error_' . link_to_ref($error));
 				$this->render();
 			}
 

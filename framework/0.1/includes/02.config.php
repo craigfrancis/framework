@@ -241,7 +241,7 @@
 		config::set_default('output.title_suffix', '');
 		config::set_default('output.title_divide', ' | ');
 		config::set_default('output.title_error', 'An error has occurred');
-		config::set_default('output.page_ref_mode', 'route');
+		config::set_default('output.page_id', 'route');
 		config::set_default('output.framing', 'DENY');
 		config::set_default('output.csp_enabled', true);
 		config::set_default('output.csp_enforced', (SERVER == 'stage'));

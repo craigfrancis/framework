@@ -22,7 +22,7 @@ The output from this is added to a [template](/doc/setup/templates/), where the 
 	<head>
 		<?= $this->head_get_html() ?>
 	</head>
-	<body id="<?= html($this->page_ref_get()) ?>">
+	<body id="<?= html($this->page_id_get()) ?>">
 
 		<h1><?= html($this->title_get()) ?></h1>
 

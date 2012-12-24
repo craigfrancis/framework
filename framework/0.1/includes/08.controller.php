@@ -340,7 +340,7 @@
 		$note_html .= '&#xA0; $response = response_get();<br />' . "\n";
 		$note_html .= '&#xA0; $response-><strong>template_set</strong>(\'default\');<br />' . "\n";
 		$note_html .= '&#xA0; $response-><strong>view_path_set</strong>(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-><strong>page_ref_set</strong>(\'example_ref\');<br />' . "\n";
+		$note_html .= '&#xA0; $response-><strong>page_id_set</strong>(\'example_ref\');<br />' . "\n";
 		$note_html .= '&#xA0; $response-><strong>title_set</strong>(\'Custom page title.\');<br />' . "\n";
 		$note_html .= '&#xA0; $response-><strong>title_full_set</strong>(\'Custom page title.\');<br />' . "\n";
 
