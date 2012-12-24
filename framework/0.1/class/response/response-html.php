@@ -221,9 +221,10 @@
 						if (count($canonical_params) > 0) {
 
 							$vars_used = config::get('request.vars_used', array());
+							$vars_ignore = array('js', 'style');
 
 							foreach ($canonical_params as $name => $value) {
-								if (!isset($vars_used[$name])) {
+								if (!isset($vars_used[$name]) || in_array($name, $vars_ignore)) {
 									$canonical_url->param_set($name, NULL);
 								}
 							}
@@ -414,7 +415,7 @@
 
 				$csp[$directive] = array_merge($csp[$directive], $sources);
 
-				config::set('output.csp_directives', $csp); // TODO: Local variable?
+				config::set('output.csp_directives', $csp);
 
 			}
 
