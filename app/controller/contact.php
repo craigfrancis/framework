@@ -81,8 +81,9 @@
 			//--------------------------------------------------
 			// JavaScript
 
-				resources::js_add('/a/js/contact.js');
-				resources::js_code_add($form->validation_js());
+				$response = response_get();
+				$response->js_add('/a/js/contact.js');
+				$response->js_code_add($form->validation_js());
 
 			//--------------------------------------------------
 			// Variables

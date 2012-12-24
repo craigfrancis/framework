@@ -95,7 +95,7 @@
 				//--------------------------------------------------
 				// Database
 
-					$db = $this->db_get();
+					$db = db_get();
 
 					$db_fields = $this->_db_fields();
 
@@ -352,7 +352,8 @@
 				//--------------------------------------------------
 				// View path
 
-					$this->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view-index.ctp');
+					$response = response_get();
+					$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view-index.ctp');
 
 			}
 
@@ -413,7 +414,7 @@
 				//--------------------------------------------------
 				// Database
 
-					$db = $this->db_get();
+					$db = db_get();
 
 				//--------------------------------------------------
 				// Details
@@ -501,9 +502,9 @@
 								// Thank you message
 
 									if ($action_edit) {
-										$this->message_set('The ' . $this->item_single . ' has been updated.');
+										message_set('The ' . $this->item_single . ' has been updated.');
 									} else {
-										$this->message_set('The ' . $this->item_single . ' has been created.');
+										message_set('The ' . $this->item_single . ' has been created.');
 									}
 
 								//--------------------------------------------------
@@ -539,7 +540,8 @@
 				//--------------------------------------------------
 				// View path
 
-					$this->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view-edit.ctp');
+					$response = response_get();
+					$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view-edit.ctp');
 
 			}
 
@@ -573,7 +575,7 @@
 				//--------------------------------------------------
 				// Database
 
-					$db = $this->db_get();
+					$db = db_get();
 
 				//--------------------------------------------------
 				// Details
@@ -630,7 +632,7 @@
 								//--------------------------------------------------
 								// Thank you message
 
-									$this->message_set('The ' . $this->item_single . ' has been deleted.');
+									message_set('The ' . $this->item_single . ' has been deleted.');
 
 								//--------------------------------------------------
 								// Next page
@@ -657,7 +659,8 @@
 				//--------------------------------------------------
 				// View path
 
-					$this->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view-delete.ctp');
+					$response = response_get();
+					$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view-delete.ctp');
 
 			}
 
@@ -666,7 +669,7 @@
 
 			protected function _setup_delete_save($form, $id) {
 
-				$db = $this->db_get();
+				$db = db_get();
 
 				$db->query('UPDATE
 								' . $this->db_table_name_sql . '
@@ -726,7 +729,7 @@
 
 			private function _db_fields() {
 
-				$db = $this->db_get();
+				$db = db_get();
 
 				$db_fields = array();
 

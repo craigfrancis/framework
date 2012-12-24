@@ -205,7 +205,7 @@
 
 				} else {
 
-					config::set('view.path', $path); // Show on 404 page the missing path (debug mode)
+					// $route_path = $path; // Show on 404 page the missing path (debug mode)
 
 					$files_mtime = 0;
 					break;

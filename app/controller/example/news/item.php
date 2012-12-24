@@ -4,8 +4,9 @@
 
 		public function action_index() {
 
-			resources::head_add_html('<!-- Head comment -->');
-			resources::js_add('/a/js/scripts.js');
+			$response = response_get();
+			$response->head_add_html('<!-- Head comment -->');
+			$response->js_add('/a/js/scripts.js');
 
 			debug_note('Debug note' . "\n" . 'on multiple lines');
 

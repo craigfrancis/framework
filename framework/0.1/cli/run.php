@@ -91,10 +91,6 @@
 //--------------------------------------------------
 // Install
 
-	function install_run_script() {
-		require_once(func_get_arg(0)); // No local variables
-	}
-
 	function install_run() {
 
 		//--------------------------------------------------
@@ -277,7 +273,7 @@
 			$install_root = APP_ROOT . '/setup/install.php';
 
 			if (is_file($install_root)) {
-				install_run_script($install_root);
+				script_run($install_root);
 			}
 
 	}

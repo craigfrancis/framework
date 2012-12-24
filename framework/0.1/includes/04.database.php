@@ -192,46 +192,38 @@
 
 			if (!$this->link) {
 
-				$this->link = config::array_get('db.link', $this->connection);
+				$name = config::get('db.name');
+				$user = config::get('db.user');
+				$pass = config::get('db.pass');
+				$host = config::get('db.host');
 
+				if (!function_exists('mysql_connect')) {
+					$this->_error('PHP does not have MySQL support - http://www.php.net/mysql_connect', true);
+				}
+
+				$this->link = @mysql_connect($host, $user, $pass, true);
 				if (!$this->link) {
+					$this->_error('A connection could not be established with the database - ' . mysql_error(), true);
+				}
 
-					$name = config::get('db.name');
-					$user = config::get('db.user');
-					$pass = config::get('db.pass');
-					$host = config::get('db.host');
+				if (!@mysql_select_db($name, $this->link)) {
+					$this->_error('Selecting the database failed (' . $name . ')', true);
+				}
 
-					if (!function_exists('mysql_connect')) {
-						$this->_error('PHP does not have MySQL support - http://www.php.net/mysql_connect', true);
-					}
+				if (config::get('output.charset') == 'UTF-8') {
+					$charset = 'utf8';
+				} else if (config::get('output.charset') == 'ISO-8859-1') {
+					$charset = 'latin1';
+				} else {
+					$charset = NULL;
+				}
 
-					$this->link = @mysql_connect($host, $user, $pass, true);
-					if (!$this->link) {
-						$this->_error('A connection could not be established with the database - ' . mysql_error(), true);
-					}
-
-					if (!@mysql_select_db($name, $this->link)) {
-						$this->_error('Selecting the database failed (' . $name . ')', true);
-					}
-
-					if (config::get('output.charset') == 'UTF-8') {
-						$charset = 'utf8';
-					} else if (config::get('output.charset') == 'ISO-8859-1') {
-						$charset = 'latin1';
+				if ($charset !== NULL) {
+					if (function_exists('mysql_set_charset')) {
+						mysql_set_charset($charset, $this->link);
 					} else {
-						$charset = NULL;
+						mysql_query('SET NAMES ' . $charset, $this->link);
 					}
-
-					if ($charset !== NULL) {
-						if (function_exists('mysql_set_charset')) {
-							mysql_set_charset($charset, $this->link);
-						} else {
-							mysql_query('SET NAMES ' . $charset, $this->link);
-						}
-					}
-
-					config::array_set('db.link', $this->connection, $this->link);
-
 				}
 
 			}

@@ -295,7 +295,8 @@
 				// JavaScript
 
 					if ($this->config['editable']) {
-						resources::js_add(gateway_url('framework-file', 'cms-admin.js'));
+						$response = response_get();
+						$response->js_add(gateway_url('framework-file', 'cms-admin.js'));
 					}
 
 			}

@@ -497,33 +497,50 @@
 	}
 
 //--------------------------------------------------
+// Run a script with no local variables
+
+	function script_run() {
+		require(func_get_arg(0)); // No local variables
+	}
+
+//--------------------------------------------------
+// Get the database object
+
+	function db_get($connection = 'default') {
+		$db = config::array_get('db.link', $connection);
+		if (!$db) {
+			$db = new db($connection);
+			config::array_set('db.link', $connection, $db);
+		}
+		return $db;
+	}
+
+//--------------------------------------------------
+// Get the current response object
+
+	function response_get() {
+		$response = config::get('output.response');
+		if (!$response) {
+			$response = new response_html();
+			config::set('output.response', $response);
+		}
+		return $response;
+	}
+
+//--------------------------------------------------
 // Render an error page (shortcut)
 
 	function render_error($error) {
-		$view = new view();
-		$view->render_error($error);
+		$response = response_get();
+		$response->render_error($error);
 		exit();
 	}
 
 //--------------------------------------------------
-// CSP additions
+// Set message (shortcut)
 
-	function csp_add_source($directive, $sources) {
-
-		if (!is_array($sources)) {
-			$sources = array($sources);
-		}
-
-		$csp = config::get('output.csp_directives');
-
-		if (!isset($csp[$directive])) {
-			$csp[$directive] = (isset($csp['default-src']) ? $csp['default-src'] : array());
-		}
-
-		$csp[$directive] = array_merge($csp[$directive], $sources);
-
-		config::set('output.csp_directives', $csp);
-
+	function message_set($message) {
+		session::set('message', $message);
 	}
 
 //--------------------------------------------------
@@ -749,6 +766,13 @@
 	}
 
 //--------------------------------------------------
+// Shortcut
+
+	function request_folder_get($id) {
+		return config::array_get('request.folders', $id);
+	}
+
+//--------------------------------------------------
 // Recursively delete a directory
 
 	function rrmdir($dir) {
@@ -763,6 +787,13 @@
 			}
 		}
 		rmdir($dir);
+	}
+
+//--------------------------------------------------
+// Take a path and add versioning info
+
+	function version_path($path) {
+		return dirname($path) . '/' . filemtime(PUBLIC_ROOT . $path) . '-' . basename($path);
 	}
 
 //--------------------------------------------------

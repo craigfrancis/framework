@@ -15,7 +15,7 @@
 //--------------------------------------------------
 // Gateway class
 
-	class gateway_base extends base {
+	class gateway_base extends check {
 
 		//--------------------------------------------------
 		// Variables
@@ -348,8 +348,23 @@
 		// Running of an api (server support)
 
 			public function run($api, $sub_path = NULL) {
-				$api = new api($api, $sub_path, $this);
-				return $api->run_wrapper();
+
+				//--------------------------------------------------
+				// Make sure we have plenty of memory
+
+					ini_set('memory_limit', '1024M');
+
+				//--------------------------------------------------
+				// Run setup
+
+					$this->_run_setup();
+
+				//--------------------------------------------------
+				// Run API
+
+					$api = new api($api, $sub_path, $this);
+					return $api->run_wrapper();
+
 			}
 
 			public function index() {
@@ -378,9 +393,7 @@
 					asort($gateway_urls);
 
 				//--------------------------------------------------
-				// View
-
-					$this->title_set('Gateways');
+				// Response
 
 					$html = '
 						<h2>Gateways</h2>
@@ -394,13 +407,22 @@
 					$html .= '
 						</ul>';
 
-					$view = new view();
-					$view->render_html($html);
+					$response = new response_html();
+					$response->title_set('Gateways');
+					$response->view_add_html($html);
+					$response->render();
 
 			}
 
 		//--------------------------------------------------
 		// Config
+
+			private function _run_setup() {
+				$include_path = APP_ROOT . '/setup/setup.php';
+				if (is_file($include_path)) {
+					require_once($include_path);
+				}
+			}
 
 			private function _config_get($type, $key, $default = NULL) {
 				if (isset($this->config[$type][$key])) {
@@ -465,7 +487,7 @@
 //--------------------------------------------------
 // API Class
 
-	class api_base extends base {
+	class api_base extends check {
 
 		//--------------------------------------------------
 		// Variables
@@ -709,19 +731,6 @@
 					if ($this->mode != 'wrapper') {
 						exit_with_error('Cannot call run_wrapper() at this time.');
 					}
-
-				//--------------------------------------------------
-				// Make sure we have plenty of memory
-
-					ini_set('memory_limit', '1024M');
-
-				//--------------------------------------------------
-				// Include setup
-
-					$setup = new setup();
-					$setup->run();
-
-					unset($setup);
 
 				//--------------------------------------------------
 				// Include the script

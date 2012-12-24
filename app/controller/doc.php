@@ -188,10 +188,11 @@
 					$this->set('doc_html', $doc_html);
 
 			//--------------------------------------------------
-			// View
+			// Response
 
-				$this->page_ref_set('p_doc');
-				$this->view_path_set(VIEW_ROOT . '/doc.ctp');
+				$response = response_get();
+				$response->page_ref_set('p_doc');
+				$response->view_path_set(VIEW_ROOT . '/doc.ctp');
 
 		}
 

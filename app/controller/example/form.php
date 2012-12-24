@@ -68,7 +68,7 @@ exit('Updated?');
 								//--------------------------------------------------
 								// Thank you message
 
-									$this->message_set('The item has been updated.');
+									message_set('The item has been updated.');
 
 								//--------------------------------------------------
 								// Next page

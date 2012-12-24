@@ -93,7 +93,7 @@
 			<head>
 				<meta charset="<?= html(config::get('output.charset')) ?>" />
 				<title>Loading</title>
-				<link rel="stylesheet" type="text/css" href="<?= html(resources::version_path('/a/css/global/loading.css')) ?>" media="all" />
+				<link rel="stylesheet" type="text/css" href="<?= html(version_path('/a/css/global/loading.css')) ?>" media="all" />
 			</head>
 			<body>
 				<div id="page_content" role="main">
@@ -466,7 +466,7 @@
 
 							$css_file = '/css/global/loading.css';
 							if (is_file(ASSET_ROOT . $css_file)) {
-								$css_html = '<link rel="stylesheet" type="text/css" href="' . html(resources::version_path(ASSET_URL . '/css/global/loading.css')) . '" media="all" />';
+								$css_html = '<link rel="stylesheet" type="text/css" href="' . html(version_path(ASSET_URL . '/css/global/loading.css')) . '" media="all" />';
 							} else {
 								$css_html = '';
 							}

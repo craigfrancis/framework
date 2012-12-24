@@ -54,7 +54,6 @@
 	require_once(FRAMEWORK_ROOT . '/includes/03.autoload.php');
 	require_once(FRAMEWORK_ROOT . '/includes/04.database.php');
 	require_once(FRAMEWORK_ROOT . '/includes/05.debug.php');
-	require_once(FRAMEWORK_ROOT . '/includes/06.objects.php');
 
 //--------------------------------------------------
 // Initialisation done
@@ -69,12 +68,6 @@
 // Render
 
 	if (!defined('FRAMEWORK_INIT_ONLY') || FRAMEWORK_INIT_ONLY !== true) {
-
-		//--------------------------------------------------
-		// View variables
-
-			config::set('view.variables', array());
-			config::set('view.template', 'default');
 
 		//--------------------------------------------------
 		// Routes
@@ -96,10 +89,10 @@
 					debug_progress('Before setup');
 				}
 
-				$setup = new setup();
-				$setup->run();
-
-				unset($setup); // Don't allow controller to know about this
+				$include_path = APP_ROOT . '/setup/setup.php';
+				if (is_file($include_path)) {
+					script_run($include_path);
+				}
 
 			//--------------------------------------------------
 			// Controller
@@ -111,15 +104,10 @@
 				require_once(FRAMEWORK_ROOT . '/includes/08.controller.php');
 
 			//--------------------------------------------------
-			// View
+			// Response
 
-				if (config::get('debug.level') >= 4) {
-					debug_progress('Before view');
-				}
-
-				$view = new view();
-				$view->add_html(ob_get_clean());
-				$view->render();
+				$response->view_add_html(ob_get_clean());
+				$response->render();
 
 				unset($view);
 

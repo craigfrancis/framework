@@ -19,7 +19,7 @@
 //--------------------------------------------------
 // Maintenance class
 
-	class maintenance_base extends base {
+	class maintenance_base extends check {
 
 		//--------------------------------------------------
 		// Variables
@@ -66,17 +66,14 @@
 					ini_set('memory_limit', '1024M');
 
 				//--------------------------------------------------
-				// Include setup
+				// Run setup
 
-					$setup = new setup();
-					$setup->run();
-
-					unset($setup);
+					$this->_run_setup();
 
 				//--------------------------------------------------
 				// Clear old locks
 
-					$db = $this->db_get();
+					$db = db_get();
 
 					$db->query('SELECT
 									id,
@@ -192,6 +189,13 @@
 
 			}
 
+			private function _run_setup() {
+				$include_path = APP_ROOT . '/setup/setup.php';
+				if (is_file($include_path)) {
+					require_once($include_path);
+				}
+			}
+
 			public function require_job_run($job_name) {
 
 				if (!in_array($job_name, $this->jobs_run)) {
@@ -249,14 +253,14 @@
 				//--------------------------------------------------
 				// Create simple index of jobs
 
-					$this->title_set('Maintenance State');
-
 					$html = '
 						<h2>State</h2>
 						<p>TODO: State of maintenance script</p>';
 
-					$view = new view();
-					$view->render_html($html);
+					$response = new response_html();
+					$response->title_set('Maintenance State');
+					$response->view_add_html($html);
+					$response->render();
 
 					// An admin interface which can show the jobs being run, can cancel them, or stack them up.
 
@@ -287,8 +291,6 @@
 				//--------------------------------------------------
 				// Create simple index of jobs
 
-					$this->title_set('Maintenance Jobs');
-
 					$html = '
 						<h2>Jobs</h2>
 						<ul>';
@@ -301,8 +303,10 @@
 					$html .= '
 						</ul>';
 
-					$view = new view();
-					$view->render_html($html);
+					$response = new response_html();
+					$response->title_set('Maintenance Jobs');
+					$response->view_add_html($html);
+					$response->render();
 
 			}
 
@@ -311,7 +315,7 @@
 //--------------------------------------------------
 // Action class
 
-	class job_base extends base {
+	class job_base extends check {
 
 		//--------------------------------------------------
 		// Variables
@@ -339,7 +343,7 @@
 				//--------------------------------------------------
 				// Last run
 
-					$db = $this->db_get();
+					$db = db_get();
 
 					if ($this->run_id > 0) {
 
@@ -533,7 +537,7 @@
 				//--------------------------------------------------
 				// Log
 
-					$db = $this->db_get();
+					$db = db_get();
 
 					if ($this->run_id > 0 && $this->halt_maintenance_run === false) {
 

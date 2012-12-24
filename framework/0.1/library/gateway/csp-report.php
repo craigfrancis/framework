@@ -61,7 +61,7 @@
 
 	} else if (config::get('db.host') !== NULL) {
 
-		$db = $this->db_get();
+		$db = db_get();
 
 		$values_update = array(
 			'blocked_uri'        => $report['blocked-uri'],

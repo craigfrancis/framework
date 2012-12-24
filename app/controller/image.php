@@ -16,7 +16,8 @@
 				redirect('../');
 			}
 
-			$this->template_set('blank');
+			$response = response_get();
+			$response->template_set('blank');
 
 			$images = array(
 					array(),

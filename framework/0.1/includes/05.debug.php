@@ -126,13 +126,20 @@
 					mime_set('text/html');
 				}
 
-				if (class_exists('view') && class_exists('template') && config::get('output.error') !== 'system') { // Avoid looping
+				if (function_exists('response_get')) {
+					$response = response_get();
+				} else {
+					$response = NULL;
+				}
 
-					config::array_set('view.variables', 'message', $message);
-					config::array_set('view.variables', 'hidden_info', $hidden_info);
-					config::array_set('view.variables', 'contact_email', $contact_email);
+				if ($response && $response->error_get() === false) { // Avoid looping
 
-					render_error('system');
+					$response->set('message', $message);
+					$response->set('hidden_info', $hidden_info);
+					$response->set('contact_email', $contact_email);
+					$response->render_error('system');
+
+					exit();
 
 				} else {
 
@@ -318,8 +325,8 @@
 		$config_html .= '<div class="debug_keys">';
 
 		foreach ($config as $key => $value) {
-			if (!in_array($key, array('db.link', 'debug.time_init', 'debug.time_check', 'debug.time_query'))) {
-				if (in_array($key, array('db.pass', 'debug.notes', 'view.variables'))) {
+			if (!in_array($key, array('db.link', 'output.response', 'debug.time_init', 'debug.time_check', 'debug.time_query'))) {
+				if (in_array($key, array('db.pass', 'debug.notes'))) {
 					$value_html = '???';
 				} else {
 					$value_html = html(debug_dump($value, 1));
@@ -745,42 +752,70 @@
 				//--------------------------------------------------
 				// Send
 
-					if (config::get('debug.mode') == 'js') {
+					$js_code_ref = config::get('debug.js_code');
 
-						config::array_push('debug.notes', array(
-								'type' => 'L',
-								'colour' => '#FFF',
-								'time' => NULL,
-								'html' => nl2br(html($time_text)),
-							));
+					if ($js_code_ref) {
 
-						$js_code  = "\n";
-						$js_code .= 'var debug_time = ' . json_encode(debug_time_format($time_total - $time_check)) . ';' . "\n";
-						$js_code .= 'var debug_notes = ' . json_encode(config::get('debug.notes')) . ';';
-						$js_code .= file_get_contents(FRAMEWORK_ROOT . '/library/view/debug.js');
+						//--------------------------------------------------
+						// End time
 
-						resources::js_code_add($js_code, 'async');
+							config::array_push('debug.notes', array(
+									'type' => 'L',
+									'colour' => '#FFF',
+									'time' => NULL,
+									'html' => nl2br(html($time_text)),
+								));
+
+						//--------------------------------------------------
+						// JS Code
+
+							$js_code  = "\n";
+							$js_code .= 'var debug_time = ' . json_encode(debug_time_format($time_total - $time_check)) . ';' . "\n";
+							$js_code .= 'var debug_notes = ' . json_encode(config::get('debug.notes')) . ';';
+							$js_code .= file_get_contents(FRAMEWORK_ROOT . '/library/view/debug.js');
+
+						//--------------------------------------------------
+						// Store
+
+							$session_js = session::get('output.js_code');
+
+							if (!isset($session_js[$js_code_ref])) {
+								$session_js[$js_code_ref] = '';
+							}
+
+							$session_js[$js_code_ref] .= $js_code;
+
+							session::set('output.js_code', $session_js);
 
 					} else if (config::get('output.mime') == 'text/plain') {
 
-						$output_text  = "\n\n\n\n\n\n\n\n\n\n";
+						//--------------------------------------------------
+						// Base notes
 
-						foreach (config::get('debug.notes') as $note) {
+							$output_text  = "\n\n\n\n\n\n\n\n\n\n";
 
-							$output_text .= '--------------------------------------------------' . "\n\n";
-							$output_text .= html_decode(strip_tags($note['html'])) . "\n\n";
+							foreach (config::get('debug.notes') as $note) {
 
-							if ($note['time'] !== NULL) {
-								$output_text .= 'Time Elapsed:  ' . $note['time'] . "\n\n";
+								$output_text .= '--------------------------------------------------' . "\n\n";
+								$output_text .= html_decode(strip_tags($note['html'])) . "\n\n";
+
+								if ($note['time'] !== NULL) {
+									$output_text .= 'Time Elapsed:  ' . $note['time'] . "\n\n";
+								}
+
 							}
 
-						}
+						//--------------------------------------------------
+						// End time
 
-						$output_text .= '--------------------------------------------------' . "\n\n";
-						$output_text .= $time_text . "\n\n";
-						$output_text .= '--------------------------------------------------' . "\n\n";
+							$output_text .= '--------------------------------------------------' . "\n\n";
+							$output_text .= $time_text . "\n\n";
+							$output_text .= '--------------------------------------------------' . "\n\n";
 
-						echo $output_text;
+						//--------------------------------------------------
+						// Send
+
+							echo $output_text;
 
 					}
 

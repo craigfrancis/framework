@@ -640,10 +640,18 @@
 				$this->_post_validation();
 
 				if (count($this->errors_html) > 0) {
-					config::set('output.error', true); // Error mode
+
+					if (function_exists('response_get')) {
+						$response = response_get();
+						$response->error_set(true); // Changes the page title
+					}
+
 					return false;
+
 				} else {
+
 					return true;
+
 				}
 
 			}

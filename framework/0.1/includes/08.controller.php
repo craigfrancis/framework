@@ -1,7 +1,35 @@
 <?php
 
 //--------------------------------------------------
-// Controller
+// Base controller
+
+	class controller_base {
+
+		public $parent;
+
+		public function route() {
+		}
+
+		public function before() {
+		}
+
+		public function after() {
+		}
+
+		public function set($name, $value) {
+			$response = response_get();
+			$response->set($name, $value);
+		}
+
+	}
+
+	if (!class_exists('controller')) {
+		class controller extends controller_base {
+		}
+	}
+
+//--------------------------------------------------
+// Find controller
 
 	//--------------------------------------------------
 	// Route folders
@@ -203,7 +231,7 @@
 
 				public function action_index() {
 
-					$db = $this->db_get();
+					$db = db_get();
 
 					require_once($this->action_index_path);
 
@@ -252,6 +280,8 @@
 //--------------------------------------------------
 // Action
 
+	$response = response_get();
+
 	if ($action_method !== NULL) {
 
 		if (substr(config::get('route.path'), -1) != '/') { // reduce possibility of duplicate content issues, for a page that exists
@@ -293,7 +323,7 @@
 
 		$controllers[$action_controller_id]->after();
 
-		config::set('view.folders', $action_route_stack_used);
+		$response->view_folders_set($action_route_stack_used);
 
 	} else {
 
@@ -301,37 +331,37 @@
 			debug_note_html('<strong>Action</strong>: Missing', 'H');
 		}
 
-		config::set('view.folders', $route_folders);
-
 	}
 
 	if (config::get('debug.level') >= 3) {
 
 		$note_html = '<strong>Methods</strong>:<br />' . "\n";
 
-		foreach (config::get('request.folders') as $id => $value) {
-			$note_html .= '&#xA0; $this-><strong>request_folder_get</strong>(' . html($id) . '); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
-		}
-
-		$note_html .= '&#xA0; $this-><strong>template_set</strong>(\'default\');<br />' . "\n";
-		$note_html .= '&#xA0; $this-><strong>view_path_set</strong>(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
-		$note_html .= '&#xA0; $this-><strong>page_ref_set</strong>(\'example_ref\');<br />' . "\n";
-		$note_html .= '&#xA0; $this-><strong>title_set</strong>(\'Custom page title.\');<br />' . "\n";
-		$note_html .= '&#xA0; $this-><strong>title_full_set</strong>(\'Custom page title.\');<br />' . "\n";
+		$note_html .= '&#xA0; $response = response_get();<br />' . "\n";
+		$note_html .= '&#xA0; $response-><strong>template_set</strong>(\'default\');<br />' . "\n";
+		$note_html .= '&#xA0; $response-><strong>view_path_set</strong>(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
+		$note_html .= '&#xA0; $response-><strong>page_ref_set</strong>(\'example_ref\');<br />' . "\n";
+		$note_html .= '&#xA0; $response-><strong>title_set</strong>(\'Custom page title.\');<br />' . "\n";
+		$note_html .= '&#xA0; $response-><strong>title_full_set</strong>(\'Custom page title.\');<br />' . "\n";
 
 		foreach (config::get('output.title_folders') as $id => $value) {
-			$note_html .= '&#xA0; $this-><strong>title_folder_set</strong>(' . html($id) . ', \'new_value\'); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
+			$note_html .= '&#xA0; $response-><strong>title_folder_set</strong>(' . html($id) . ', \'new_value\'); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
 		}
 
-		$note_html .= '&#xA0; $this-><strong>message_set</strong>(\'The item has been updated.\');<br />' . "\n";
-		$note_html .= '&#xA0; resources::<strong>js_add</strong>(\'/path/to/file.js\');<br />' . "\n";
-		$note_html .= '&#xA0; resources::<strong>js_code_add</strong>(\'var x = \' . json_encode($x) . \';\');<br />' . "\n";
-		$note_html .= '&#xA0; resources::<strong>css_auto</strong>();<br />' . "\n";
-		$note_html .= '&#xA0; resources::<strong>css_add</strong>(\'/path/to/file.css\');<br />' . "\n";
-		$note_html .= '&#xA0; resources::<strong>css_alternate_add</strong>(\'/path/to/file.css\', \'print\');<br />' . "\n";
-		$note_html .= '&#xA0; resources::<strong>css_alternate_add</strong>(\'/path/to/file.css\', \'all\', \'Title\');<br />' . "\n";
-		$note_html .= '&#xA0; resources::<strong>head_add_html</strong>(\'&lt;html&gt;\');<br />' . "\n";
+		$note_html .= '&#xA0; $response-><strong>js_add</strong>(\'/path/to/file.js\');<br />' . "\n";
+		$note_html .= '&#xA0; $response-><strong>js_code_add</strong>(\'var x = \' . json_encode($x) . \';\');<br />' . "\n";
+		$note_html .= '&#xA0; $response-><strong>css_auto</strong>();<br />' . "\n";
+		$note_html .= '&#xA0; $response-><strong>css_add</strong>(\'/path/to/file.css\');<br />' . "\n";
+		$note_html .= '&#xA0; $response-><strong>css_alternate_add</strong>(\'/path/to/file.css\', \'print\');<br />' . "\n";
+		$note_html .= '&#xA0; $response-><strong>css_alternate_add</strong>(\'/path/to/file.css\', \'all\', \'Title\');<br />' . "\n";
+		$note_html .= '&#xA0; $response-><strong>head_add_html</strong>(\'&lt;html&gt;\');<br />' . "\n";
+
 		$note_html .= '&#xA0; <strong>render_error</strong>(\'page-not-found\');<br />' . "\n";
+		$note_html .= '&#xA0; <strong>message_set</strong>(\'The item has been updated.\');<br />' . "\n";
+
+		foreach (config::get('request.folders') as $id => $value) {
+			$note_html .= '&#xA0; <strong>request_folder_get</strong>(' . html($id) . '); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
+		}
 
 		debug_note_html($note_html, 'H');
 

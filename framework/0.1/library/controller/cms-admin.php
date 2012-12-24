@@ -7,7 +7,8 @@
 			//--------------------------------------------------
 			// View path
 
-				$this->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-admin/view-index.ctp');
+				$response = response_get();
+				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-admin/view-index.ctp');
 
 		}
 
@@ -33,7 +34,7 @@
 			//--------------------------------------------------
 			// Config
 
-				$db = $this->db_get();
+				$db = db_get();
 
 				$default_config = array(
 						'versions' => array(),
@@ -279,7 +280,8 @@
 			//--------------------------------------------------
 			// View path
 
-				$this->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-admin/view-edit.ctp');
+				$response = response_get();
+				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-admin/view-edit.ctp');
 
 		}
 
