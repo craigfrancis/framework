@@ -241,26 +241,6 @@
 				}
 			}
 
-			public function value_ref_get() {
-				return $this->value;
-			}
-
-			private function _ref_get($value, $mode) {
-				$key = array_search($value, ($mode == 'key' ? $this->option_keys : $this->option_values));
-				if ($key !== false && $key !== NULL) {
-					if ($this->key_select) {
-						if ($this->re_index_keys) {
-							return ($key + 1);
-						} else {
-							return $this->option_keys[$key];
-						}
-					} else {
-						return $value;
-					}
-				}
-				return NULL;
-			}
-
 			public function value_print_get() {
 				if ($this->value === NULL) {
 					if ($this->form->saved_values_available()) {
@@ -278,6 +258,25 @@
 					return $this->_ref_get(reset($this->option_values), 'value'); // Don't have a label or value, default to the first option to avoid validation error
 				}
 				return $value;
+			}
+
+		//--------------------------------------------------
+		// Value helpers
+
+			private function _ref_get($value, $mode) {
+				$key = array_search($value, ($mode == 'key' ? $this->option_keys : $this->option_values));
+				if ($key !== false && $key !== NULL) {
+					if ($this->key_select) {
+						if ($this->re_index_keys) {
+							return ($key + 1);
+						} else {
+							return $this->option_keys[$key];
+						}
+					} else {
+						return $value;
+					}
+				}
+				return NULL;
 			}
 
 		//--------------------------------------------------

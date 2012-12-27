@@ -9,13 +9,10 @@
 			protected $select_size;
 			protected $select_multiple;
 			protected $option_values;
-			protected $option_keys;
 			protected $option_groups;
 			protected $label_option;
 			protected $required_error_set;
 			protected $invalid_error_set;
-			protected $key_select;
-			protected $re_index_keys;
 
 		//--------------------------------------------------
 		// Setup
@@ -49,31 +46,11 @@
 					$this->select_size = 1;
 					$this->select_multiple = false;
 					$this->option_values = array();
-					$this->option_keys = array();
 					$this->option_groups = NULL;
 					$this->label_option = NULL;
 					$this->required_error_set = false;
 					$this->invalid_error_set = false;
-					$this->key_select = true;
-					$this->re_index_keys = true;
 					$this->type = 'select';
-
-			}
-
-			// public function key_select_set($by_key) { // Use the values of the array, rather than the keys
-			// 	if (count($this->option_values) > 0) {
-			// 		exit_with_error('Cannot call key_select_set() after db_field_set() or options_set()');
-			// 	}
-			// 	$this->key_select = ($by_key == true);
-			// }
-
-			public function re_index_keys_set($re_index) { // Doing this makes detection of the label option more error prone
-
-				if (count($this->option_values) > 0) {
-					exit_with_error('Cannot call re_index_keys_set() after db_field_set() or options_set()');
-				}
-
-				$this->re_index_keys = ($re_index == true);
 
 			}
 
@@ -87,11 +64,11 @@
 
 					$options = $this->form->db_field_options_get($field);
 
-					if (($key = array_search('', $options)) !== false) { // If you want a blank option, use label_option_set, and remove the required_error.
+					while (($key = array_search('', $options)) !== false) { // If you want a blank option, use label_option_set, and remove the required_error.
 						unset($options[$key]);
 					}
 
-					$this->options_set($options);
+					$this->option_values_set($options); // The array index might change (structure change), so use the "option_values" method, so it only uses the values
 
 				}
 
@@ -102,8 +79,24 @@
 			}
 
 			public function options_set($options) {
-				$this->option_values = array_values($options);
-				$this->option_keys = array_keys($options);
+				if (in_array('', array_keys($options), true)) { // Performs a strict check (so label "" != id "0")
+					exit_with_error('Cannot have an option with a blank key', debug_dump($options));
+				} else {
+					$this->option_values = $options;
+				}
+			}
+
+			public function option_values_set($options) {
+				foreach ($options as $value) {
+					$key = human_to_ref($value);
+					if ($key === '') {
+						exit_with_error('Cannot have an option with created a blank key "' . $value . '"', debug_dump($options));
+					} else if (isset($this->option_values[$key])) {
+						exit_with_error('Cannot have multiple options with the same key "' . $key . '" (' . $value . ')', debug_dump($options));
+					} else {
+						$this->option_values[$key] = $value;
+					}
+				}
 			}
 
 			public function option_groups_set($option_groups) {
@@ -127,24 +120,10 @@
 
 			public function required_error_set_html($error_html) {
 
-				$is_label = false;
+				if ($this->form_submitted && in_array('', array_keys($this->values_get()), true)) { // Performs a strict check (so label "" != id "0")
 
-				foreach ($this->values_get() as $key => $value) { // TODO: Check if we are working with $key or $value ... was using this->value directly
-
-					if ($this->key_select && $this->re_index_keys) {
-						$is_label = (intval($value) == 0);
-					} else {
-						$is_label = ($value == ''); // Best guess
-					}
-
-					if ($is_label) {
-						break;
-					}
-
-				}
-
-				if ($this->form_submitted && $is_label) {
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+
 				}
 
 				$this->required = ($error_html !== NULL);
@@ -158,23 +137,15 @@
 
 			public function invalid_error_set_html($error_html) {
 
-				foreach ($this->values_get() as $key => $value) { // TODO: Check if we are working with $key or $value ... was using this->value directly
+				if ($this->form_submitted) {
 
-					if ($this->key_select) {
-						if ($this->re_index_keys) {
-							$is_label = (intval($value) == 0);
-							$is_value = isset($this->option_values[(intval($value) - 1)]);
-						} else {
-							$is_label = ($value == ''); // Best guess
-							$is_value = array_search($value, $this->option_keys);
+					$option_keys = array_keys($this->option_values);
+
+					foreach ($this->values_get() as $key => $value) {
+						if ($key !== '' && !in_array($key, $option_keys, true)) { // Performs a strict check (so label "" != id "0")
+							$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+							break;
 						}
-					} else {
-						$is_label = ($value == ''); // Best guess
-						$is_value = array_search($value, $this->option_values);
-					}
-
-					if ($this->form_submitted && !$is_label && ($is_value === false || $is_value === NULL)) {
-						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 					}
 
 				}
@@ -189,7 +160,9 @@
 			public function values_set($values) {
 			}
 
-			public function values_key_set($values) {
+			public function values_key_set($keys) {
+
+
 			}
 
 			public function value_set($value) {
@@ -252,10 +225,6 @@
 					// Singular version can call, with an array_pop().
 					// Can the validation methods call $this->values_get() ... they need to know if invalid/no options are selected
 
-			}
-
-			public function values_key_get() {
-				return array_keys($this->values_get());
 			}
 
 			public function value_get() {
@@ -392,16 +361,6 @@
 				if ($this->option_groups === NULL) {
 
 					foreach ($this->option_values as $key => $option) {
-
-						if ($this->key_select) {
-							if ($this->re_index_keys) {
-								$key++; // 0 represents the label_option
-							} else {
-								$key = $this->option_keys[$key];
-							}
-						} else {
-							$key = $option;
-						}
 
 						$html .= '
 										<option value="' . html($key) . '"' . ($key == $input_value ? ' selected="selected"' : '') . '>' . ($option === '' ? '&#xA0;' : html($option)) . '</option>';
