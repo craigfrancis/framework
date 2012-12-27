@@ -5,7 +5,8 @@
 		public function action_index() {
 
 			if (SERVER == 'stage') {
-				$this->set('testing_url', url('./test/'));
+				$response = response_get();
+				$response->set('testing_url', url('./test/'));
 			}
 
 		}
@@ -39,7 +40,7 @@
 				$images[$id]['url'] = gateway_url('image-view', $config);
 			}
 
-			$this->set('images', $images);
+			$response->set('images', $images);
 
 		}
 

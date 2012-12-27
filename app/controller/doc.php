@@ -5,6 +5,11 @@
 		public function route() {
 
 			//--------------------------------------------------
+			// Resources
+
+				$response = response_get();
+
+			//--------------------------------------------------
 			// Config
 
 				$doc_root_path = FRAMEWORK_ROOT . '/doc/';
@@ -128,8 +133,8 @@
 				//--------------------------------------------------
 				// Store
 
-					$this->set('section_title', 'Documentation');
-					$this->set('section_nav', $doc_nav);
+					$response->set('section_title', 'Documentation');
+					$response->set('section_nav', $doc_nav);
 
 			//--------------------------------------------------
 			// Document HTML
@@ -185,12 +190,11 @@
 				//--------------------------------------------------
 				// Save
 
-					$this->set('doc_html', $doc_html);
+					$response->set('doc_html', $doc_html);
 
 			//--------------------------------------------------
 			// Response
 
-				$response = response_get();
 				$response->page_id_set('p_doc');
 				$response->view_path_set(VIEW_ROOT . '/doc.ctp');
 

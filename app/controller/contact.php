@@ -5,6 +5,11 @@
 		public function action_index() {
 
 			//--------------------------------------------------
+			// Resources
+
+				$response = response_get();
+
+			//--------------------------------------------------
 			// Form setup
 
 				$form = new form();
@@ -81,14 +86,13 @@
 			//--------------------------------------------------
 			// JavaScript
 
-				$response = response_get();
 				$response->js_add('/a/js/contact.js');
 				$response->js_code_add($form->validation_js());
 
 			//--------------------------------------------------
 			// Variables
 
-				$this->set('form', $form);
+				$response->set('form', $form);
 
 		}
 

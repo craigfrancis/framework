@@ -5,6 +5,11 @@
 		public function action_index() {
 
 			//--------------------------------------------------
+			// Resources
+
+				$response = response_get();
+
+			//--------------------------------------------------
 			// Table
 
 				$table = new table();
@@ -50,12 +55,12 @@
 					exit();
 				}
 
-				$this->set('download_url', url(array('download' => 'true')));
+				$response->set('download_url', url(array('download' => 'true')));
 
 			//--------------------------------------------------
 			// Variables
 
-				$this->set('table', $table);
+				$response->set('table', $table);
 
 		}
 

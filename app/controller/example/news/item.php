@@ -5,6 +5,7 @@
 		public function action_index() {
 
 			$response = response_get();
+
 			$response->head_add_html('<!-- Head comment -->');
 			$response->js_add('/a/js/scripts.js');
 

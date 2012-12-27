@@ -4,55 +4,66 @@
 
 		public function action_index() {
 
-			$form = new form();
-			$form->form_button_set('Start');
-			$form->form_action_set(url(array('uniq' => mt_rand(100000, 999999)))); // The browser won't load the same url at the same time
+			//--------------------------------------------------
+			// Resources
 
-			if ($form->submitted() && $form->valid()) {
+				$response = response_get();
 
-				$lock = new lock('example');
-				$lock->time_out_set(2);
+			//--------------------------------------------------
+			// Form
 
-				if ($lock->open()) {
+				$form = new form();
+				$form->form_button_set('Start');
+				$form->form_action_set(url(array('uniq' => mt_rand(100000, 999999)))); // The browser won't load the same url at the same time
 
-					$this->set('lock_open', true);
+				if ($form->submitted() && $form->valid()) {
 
-					$lock->data_set('name', 'Craig');
+					$lock = new lock('example');
+					$lock->time_out_set(2);
 
-					$lock->data_set(array(
-							'field_1' => 'AAA',
-							'field_2' => 'BBB',
-							'field_3' => 'CCC',
-						));
+					if ($lock->open()) {
 
-					sleep(5);
+						$response->set('lock_open', true);
 
-					if (!$lock->check()) {
+						$lock->data_set('name', 'Craig');
 
-						$this->set('lock_error', 'Lock has expired');
+						$lock->data_set(array(
+								'field_1' => 'AAA',
+								'field_2' => 'BBB',
+								'field_3' => 'CCC',
+							));
+
+						sleep(5);
+
+						if (!$lock->check()) {
+
+							$response->set('lock_error', 'Lock has expired');
+
+						} else {
+
+							$lock->time_out_set(5 * 60);
+
+							sleep(3);
+
+						}
+
+						$lock->close();
 
 					} else {
 
-						$lock->time_out_set(5 * 60);
-
-						sleep(3);
+						$response->set('lock_open', false);
 
 					}
 
-					$lock->close();
-
-				} else {
-
-					$this->set('lock_open', false);
+					$response->set('lock_name', $lock->data_get('name'));
+					$response->set('lock_data', $lock->data_get());
 
 				}
 
-				$this->set('lock_name', $lock->data_get('name'));
-				$this->set('lock_data', $lock->data_get());
+			//--------------------------------------------------
+			// Variables
 
-			}
-
-			$this->set('form', $form);
+				$response->set('form', $form);
 
 		}
 

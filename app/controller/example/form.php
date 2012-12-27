@@ -13,6 +13,11 @@
 		public function action_index() {
 
 			//--------------------------------------------------
+			// Resources
+
+				$response = response_get();
+
+			//--------------------------------------------------
 			// Edit user form
 
 				//--------------------------------------------------
@@ -300,14 +305,14 @@ exit();
 			//--------------------------------------------------
 			// Variables
 
-				$this->set('form_edit', $form_edit);
+				$response->set('form_edit', $form_edit);
 
-				$this->set('form', $form);
-				$this->set('field_name', $field_name);
-				$this->set('field_email', $field_email);
-				$this->set('field_message', $field_message);
+				$response->set('form', $form);
+				$response->set('field_name', $field_name);
+				$response->set('field_email', $field_email);
+				$response->set('field_message', $field_message);
 
-				$this->set('home_url', url('/'));
+				$response->set('home_url', url('/'));
 
 		}
 

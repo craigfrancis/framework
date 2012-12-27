@@ -4,37 +4,51 @@
 
 		public function action_index() {
 
-			$loading = new loading(array(
-					'lock_type' => 'example',
-				));
+			//--------------------------------------------------
+			// Resources
 
-			$loading->check();
+				$response = response_get();
 
-			$form = new form();
-			$form->form_button_set('Start');
+			//--------------------------------------------------
+			// Loading
 
-			if ($form->submitted() && $form->valid()) {
+				$loading = new loading(array(
+						'lock_type' => 'example',
+					));
 
-				if (!$loading->start('Starting action')) {
-					$form->error_add('The loading process has already been started');
+				$loading->check();
+
+			//--------------------------------------------------
+			// Form
+
+				$form = new form();
+				$form->form_button_set('Start');
+
+				if ($form->submitted() && $form->valid()) {
+
+					if (!$loading->start('Starting action')) {
+						$form->error_add('The loading process has already been started');
+					}
+
+					if ($form->valid()) {
+
+						sleep(3);
+
+						$loading->update('Updating');
+
+						sleep(5);
+
+						$loading->done();
+						exit();
+
+					}
+
 				}
 
-				if ($form->valid()) {
+			//--------------------------------------------------
+			// Variables
 
-					sleep(3);
-
-					$loading->update('Updating');
-
-					sleep(5);
-
-					$loading->done();
-					exit();
-
-				}
-
-			}
-
-			$this->set('form', $form);
+				$response->set('form', $form);
 
 		}
 

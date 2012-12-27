@@ -1,6 +1,8 @@
 <?php
 
-	$this->set('name', 'Desert');
+	$response = response_get();
+
+	$response->set('name', 'Desert');
 
 	// echo 'Example include file';
 
