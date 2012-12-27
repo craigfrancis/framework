@@ -218,7 +218,7 @@
 								$response->render_error('system');
 								exit();
 							} else {
-								exit('Loading error: ' . (isset($error['message']) ? $error['message'] : 'Unknown'));
+								exit('<p>Loading error: ' . html(isset($error['message']) ? $error['message'] : 'Unknown') . '</p>');
 							}
 
 						}
