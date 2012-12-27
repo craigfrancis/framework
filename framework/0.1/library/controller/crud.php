@@ -93,11 +93,13 @@
 			public function action_index() {
 
 				//--------------------------------------------------
-				// Database
+				// Resources
 
 					$db = db_get();
 
 					$db_fields = $this->_db_fields();
+
+					$response = response_get();
 
 				//--------------------------------------------------
 				// Index table fields
@@ -235,7 +237,7 @@
 						$search = '';
 					}
 
-					$this->set('search', $search_form);
+					$response->set('search', $search_form);
 
 				//--------------------------------------------------
 				// Get the table
@@ -338,21 +340,20 @@
 				// Page URLs
 
 					if ($this->feature_add) {
-						$this->set('add_url', url('./add/'));
+						$response->set('add_url', url('./add/'));
 					}
 
 				//--------------------------------------------------
 				// Variables
 
-					$this->set('item_single', $this->item_single);
+					$response->set('item_single', $this->item_single);
 
-					$this->set('table', $table);
-					$this->set('paginator', $paginator);
+					$response->set('table', $table);
+					$response->set('paginator', $paginator);
 
 				//--------------------------------------------------
 				// View path
 
-					$response = response_get();
 					$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view-index.ctp');
 
 			}
@@ -412,9 +413,11 @@
 			public function action_edit() {
 
 				//--------------------------------------------------
-				// Database
+				// Resources
 
 					$db = db_get();
+
+					$response = response_get();
 
 				//--------------------------------------------------
 				// Details
@@ -440,7 +443,7 @@
 
 							$this->item_name = $row['title'];
 
-							$this->set('item_name', $this->item_name);
+							$response->set('item_name', $this->item_name);
 
 						} else {
 
@@ -527,20 +530,19 @@
 				// Page URLs
 
 					if ($this->feature_delete) {
-						$this->set('delete_url', url('../delete/', array('id' => $id)));
+						$response->set('delete_url', url('../delete/', array('id' => $id)));
 					}
 
 				//--------------------------------------------------
 				// Variables
 
-					$this->set('item_single', $this->item_single);
-					$this->set('action_edit', $action_edit);
-					$this->set('form', $form);
+					$response->set('item_single', $this->item_single);
+					$response->set('action_edit', $action_edit);
+					$response->set('form', $form);
 
 				//--------------------------------------------------
 				// View path
 
-					$response = response_get();
 					$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view-edit.ctp');
 
 			}
@@ -573,9 +575,11 @@
 			public function action_delete() {
 
 				//--------------------------------------------------
-				// Database
+				// Resources
 
 					$db = db_get();
+
+					$response = response_get();
 
 				//--------------------------------------------------
 				// Details
@@ -594,7 +598,7 @@
 
 						$this->item_name = $row['title'];
 
-						$this->set('item_name', $this->item_name);
+						$response->set('item_name', $this->item_name);
 
 					} else {
 
@@ -647,19 +651,18 @@
 				// Page URLs
 
 					if ($this->feature_edit) {
-						$this->set('edit_url', url('../edit/', array('id' => $id)));
+						$response->set('edit_url', url('../edit/', array('id' => $id)));
 					}
 
 				//--------------------------------------------------
 				// Variables
 
-					$this->set('item_single', $this->item_single);
-					$this->set('form', $form);
+					$response->set('item_single', $this->item_single);
+					$response->set('form', $form);
 
 				//--------------------------------------------------
 				// View path
 
-					$response = response_get();
 					$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/crud/view-delete.ctp');
 
 			}

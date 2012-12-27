@@ -5,9 +5,13 @@
 		public function action_index() {
 
 			//--------------------------------------------------
-			// View path
+			// Resources
 
 				$response = response_get();
+
+			//--------------------------------------------------
+			// View path
+
 				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-admin/view-index.ctp');
 
 		}
@@ -15,7 +19,14 @@
 		public function action_edit() {
 
 			//--------------------------------------------------
-			// Return the required values for this script
+			// Resources
+
+				$db = db_get();
+
+				$response = response_get();
+
+			//--------------------------------------------------
+			// Request
 
 				$profile = request('profile');
 				$path = request('path');
@@ -33,8 +44,6 @@
 
 			//--------------------------------------------------
 			// Config
-
-				$db = db_get();
 
 				$default_config = array(
 						'versions' => array(),
@@ -275,12 +284,11 @@
 			//--------------------------------------------------
 			// Variables
 
-				$this->set('form', $form);
+				$response->set('form', $form);
 
 			//--------------------------------------------------
 			// View path
 
-				$response = response_get();
 				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-admin/view-edit.ctp');
 
 		}

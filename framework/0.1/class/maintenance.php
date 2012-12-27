@@ -61,6 +61,11 @@
 			public function run() {
 
 				//--------------------------------------------------
+				// Resources
+
+					$db = db_get();
+
+				//--------------------------------------------------
 				// Make sure we have plenty of memory
 
 					ini_set('memory_limit', '1024M');
@@ -72,8 +77,6 @@
 
 				//--------------------------------------------------
 				// Clear old locks
-
-					$db = db_get();
 
 					$db->query('SELECT
 									id,
@@ -333,17 +336,17 @@
 			public function __construct($job_name, $maintenance, $run_id = 0, $mode = 'wrapper') {
 
 				//--------------------------------------------------
+				// Resources
+
+					$db = db_get();
+
+				//--------------------------------------------------
 				// Details
 
 					$this->job_name = $job_name;
 					$this->maintenance = $maintenance;
 					$this->run_id = $run_id;
 					$this->mode = $mode;
-
-				//--------------------------------------------------
-				// Last run
-
-					$db = db_get();
 
 					if ($this->run_id > 0) {
 
@@ -446,6 +449,11 @@
 					}
 
 				//--------------------------------------------------
+				// Resources
+
+					$db = db_get();
+
+				//--------------------------------------------------
 				// Include the script
 
 					$gateway = $this;
@@ -536,8 +544,6 @@
 
 				//--------------------------------------------------
 				// Log
-
-					$db = db_get();
 
 					if ($this->run_id > 0 && $this->halt_maintenance_run === false) {
 

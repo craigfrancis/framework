@@ -233,6 +233,8 @@
 
 					$db = db_get();
 
+					$response = response_get();
+
 					require_once($this->action_index_path);
 
 				}

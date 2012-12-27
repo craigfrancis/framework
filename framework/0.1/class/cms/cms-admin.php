@@ -105,6 +105,11 @@
 			protected function _setup($config) {
 
 				//--------------------------------------------------
+				// Resources
+
+					$db = $this->db_get();
+
+				//--------------------------------------------------
 				// Profile
 
 					if (is_string($config)) {
@@ -148,8 +153,6 @@
 
 				//--------------------------------------------------
 				// Tables
-
-					$db = $this->db_get();
 
 					if (config::get('debug.level') > 0) {
 

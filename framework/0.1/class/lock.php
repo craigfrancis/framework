@@ -40,7 +40,7 @@
 
 		} else {
 
-			$this->set('name', $lock->data_get('name'));
+			$response->set('name', $lock->data_get('name'));
 
 		}
 

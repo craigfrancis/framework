@@ -64,9 +64,9 @@
 					'quantity_edit' => array('type' => 'select'),
 				));
 
-			$this->set('form', $form);
-			$this->set('table_html', $table_html);
-			$this->set('empty_basket', ($order->items_count_get() == 0));
+			$response->set('form', $form);
+			$response->set('table_html', $table_html);
+			$response->set('empty_basket', ($order->items_count_get() == 0));
 
 		//--------------------------------------------------
 		// View
@@ -138,7 +138,7 @@
 
 		}
 
-		$this->set('form', $form);
+		$response->set('form', $form);
 
 	//--------------------------------------------------
 	// Admin access
