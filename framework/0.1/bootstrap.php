@@ -72,7 +72,7 @@
 		//--------------------------------------------------
 		// Routes
 
-			require_once(FRAMEWORK_ROOT . '/includes/07.routes.php');
+			require_once(FRAMEWORK_ROOT . '/includes/06.routes.php');
 
 		//--------------------------------------------------
 		// Page setup
@@ -101,7 +101,7 @@
 					debug_progress('Before controller');
 				}
 
-				require_once(FRAMEWORK_ROOT . '/includes/08.controller.php');
+				require_once(FRAMEWORK_ROOT . '/includes/07.controller.php');
 
 			//--------------------------------------------------
 			// Response
