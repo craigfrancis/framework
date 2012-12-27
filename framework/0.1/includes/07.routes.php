@@ -110,7 +110,7 @@
 
 			header('Content-Type: application/xml; charset=' . head(config::get('output.charset')));
 
-			require_once($sitemap_path);
+			script_run($sitemap_path);
 
 			exit();
 
