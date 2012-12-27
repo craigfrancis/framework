@@ -431,7 +431,7 @@
 				// Process
 
 					ob_start();
-					require_once($template_path);
+					script_run($template_path);
 					return ob_get_clean();
 
 			}
