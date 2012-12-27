@@ -112,7 +112,7 @@
 
 			private $config = array();
 			private $lock = NULL;
-			private $started = false;
+			private $running = false;
 			private $session_prefix = NULL;
 
 		//--------------------------------------------------
@@ -207,6 +207,22 @@
 
 						}
 
+						$error = session::get($this->session_prefix . 'error');
+						if (is_array($error)) {
+
+							$this->_cleanup();
+
+							if (function_exists('response_get')) {
+								$response = response_get();
+								$response->set($error);
+								$response->render_error('system');
+								exit();
+							} else {
+								exit('Loading error: ' . (isset($error['message']) ? $error['message'] : 'Unknown'));
+							}
+
+						}
+
 						if (($time_start == 0) || (($time_start + $this->config['time_out']) < time())) {
 							$this->_cleanup();
 							return $variables;
@@ -270,12 +286,15 @@
 
 				session::set($this->session_prefix . 'started', true);
 				session::set($this->session_prefix . 'done_url', NULL);
+				session::set($this->session_prefix . 'error', false);
 
 				session::close();
 
-				$this->started = true;
+				$this->running = true;
 
 				$this->_send($time, $time, $variables);
+
+				register_shutdown_function(array($this, 'shutdown'));
 
 				return true;
 
@@ -283,7 +302,7 @@
 
 			public function update($variables) {
 
-				if ($this->started) {
+				if ($this->running) {
 					if ($this->lock) {
 
 						if ($this->lock->open()) {
@@ -315,13 +334,15 @@
 
 			public function done($done_url = NULL) {
 
-				if ($this->started) {
+				if ($this->running) {
 
 					$this->_cleanup();
 
 					if ($this->lock) {
 						$this->lock->close();
 					}
+
+					$this->running = false;
 
 					if ($done_url !== NULL) {
 						session::set($this->session_prefix . 'done_url', $done_url);
@@ -337,6 +358,30 @@
 
 			}
 
+			public function shutdown() {
+
+				//--------------------------------------------------
+				// Script ended without calling 'done'
+
+					if ($this->running) {
+
+						$error = config::get('output.error');
+						if (!is_array($error)) {
+							$error = array(
+									'message' => 'Stopped script execution without calling $loading->done().',
+								);
+						}
+
+						session::set($this->session_prefix . 'error', $error);
+
+						if ($this->lock) {
+							$this->lock->close();
+						}
+
+					}
+
+			}
+
 		//--------------------------------------------------
 		// Cleanup
 
@@ -346,6 +391,7 @@
 				session::delete($this->session_prefix . 'time_update');
 				session::delete($this->session_prefix . 'variables');
 				session::delete($this->session_prefix . 'done_url');
+				session::delete($this->session_prefix . 'error');
 			}
 
 		//--------------------------------------------------

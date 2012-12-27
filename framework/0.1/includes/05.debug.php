@@ -103,7 +103,7 @@
 		//--------------------------------------------------
 		// Tell the user
 
-			if ($contact_email != '') {
+			if ($contact_email != '' || config::get('debug.level') == 0) {
 				$hidden_info = NULL; // If there is an email address, don't show the hidden info (e.g. on live).
 			}
 
@@ -134,9 +134,15 @@
 
 				if ($response && $response->error_get() === false) { // Avoid looping
 
-					$response->set('message', $message);
-					$response->set('hidden_info', $hidden_info);
-					$response->set('contact_email', $contact_email);
+					$error = array(
+							'message' => $message,
+							'hidden_info' => $hidden_info,
+							'contact_email' => $contact_email,
+						);
+
+					config::set('output.error', $error);
+
+					$response->set($error);
 					$response->render_error('system');
 
 					exit();

@@ -62,8 +62,14 @@
 		//--------------------------------------------------
 		// Variables
 
-			public function set($name, $value) {
-				$this->variables[$name] = $value;
+			public function set($variable, $value = NULL) {
+
+				if (is_array($variable) && $value === NULL) {
+					$this->variables = array_merge($this->variables, $variable);
+				} else {
+					$this->variables[$variable] = $value;
+				}
+
 			}
 
 		//--------------------------------------------------
