@@ -16,11 +16,6 @@
 		public function after() {
 		}
 
-		public function set($name, $value) {
-			$response = response_get();
-			$response->set($name, $value);
-		}
-
 	}
 
 	if (!class_exists('controller')) {
