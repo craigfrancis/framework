@@ -28,7 +28,6 @@
 			private $tracking_enabled = NULL;
 			private $browser_advanced = true;
 			private $message = NULL;
-			private $template = NULL;
 			private $title = NULL;
 			private $page_id = NULL;
 			private $error = false;
@@ -40,6 +39,9 @@
 			private $view_path = '';
 			private $view_html = '';
 			private $view_processed = false;
+
+			private $template_name = 'default';
+			private $template_path = NULL;
 
 			private $js_files = array();
 			private $js_code_ref = NULL;
@@ -82,34 +84,30 @@
 				$this->view_folders = $folders;
 			}
 
+			public function view_folders_get() {
+				return $this->view_folders;
+			}
+
 			public function view_path_set($path) {
 				$this->view_path = $path;
 			}
 
 			public function view_path_get() {
+
 				if ($this->view_path) {
 
 					return $this->view_path;
 
+				} else if ($this->view_folders !== NULL) {
+
+					return VIEW_ROOT . '/' . implode('/', $this->view_folders) . '.ctp';
+
 				} else {
 
-					if ($this->view_folders !== NULL) {
-						$folders = $this->view_folders;
-					} else {
-						$route_path = config::get('route.path');
-						if ($route_path === NULL) {
-							return NULL; // e.g. gateway index page.
-						} else {
-							$folders = path_to_array($route_path);
-						}
-					}
-
-					if (count($folders) == 0) {
-						$folders[] = 'home';
-					}
-					return VIEW_ROOT . '/' . implode('/', $folders) . '.ctp';
+					return NULL;
 
 				}
+
 			}
 
 			private function _view_path_get() {
@@ -163,6 +161,12 @@
 
 			}
 
+			public function view_set_html($html) {
+				$this->view_html = $html;
+				$this->view_folders = NULL;
+				$this->view_path = NULL;
+			}
+
 			public function view_add_html($html) {
 				$this->view_html .= $html;
 			}
@@ -176,11 +180,19 @@
 		// Template
 
 			public function template_set($template) {
-				$this->template = $template;
+				$this->template_name = $template;
+			}
+
+			public function template_path_set($path) {
+				$this->template_path = $path;
 			}
 
 			public function template_path_get($template = NULL) {
-				return APP_ROOT . '/template/' . safe_file_name($this->template !== NULL ? $this->template : 'default') . '.ctp';
+				if ($template === NULL && $this->template_path !== NULL) {
+					return $this->template_path;
+				} else {
+					return APP_ROOT . '/template/' . safe_file_name($this->template_name) . '.ctp';
+				}
 			}
 
 			private function _template_path_get() {
@@ -192,7 +204,10 @@
 				}
 
 				if (!is_file($template_path)) {
-					$template_path = FRAMEWORK_ROOT . '/library/view/template.ctp';
+					$template_path = FRAMEWORK_ROOT . '/library/template/' . safe_file_name($this->template_name) . '.ctp';
+					if (!is_file($template_path)) {
+						$template_path = FRAMEWORK_ROOT . '/library/template/default.ctp';
+					}
 				}
 
 				return $template_path;

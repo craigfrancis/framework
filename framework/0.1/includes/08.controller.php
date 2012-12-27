@@ -317,19 +317,21 @@
 
 		}
 
+		$response->view_folders_set($action_route_stack_used);
+
 		$controllers[$action_controller_id]->before();
 
 		call_user_func_array(array($controllers[$action_controller_id], $action_method), $action_route_stack_pending);
 
 		$controllers[$action_controller_id]->after();
 
-		$response->view_folders_set($action_route_stack_used);
-
 	} else {
 
 		if (config::get('debug.level') >= 3) {
 			debug_note_html('<strong>Action</strong>: Missing', 'H');
 		}
+
+		$response->view_folders_set($route_folders);
 
 	}
 

@@ -21,17 +21,17 @@
 //--------------------------------------------------
 // Match
 
-	if ($file_name == 'template.css' || $file_name == 'debug.css' || $file_name == 'cms-admin.js') {
+	$file_path = NULL;
+	if ($file_name == 'default.css')  $file_path = FRAMEWORK_ROOT . '/library/template/default.css';
+	if ($file_name == 'debug.css')    $file_path = FRAMEWORK_ROOT . '/library/view/debug.css';
+	if ($file_name == 'cms-admin.js') $file_path = FRAMEWORK_ROOT . '/library/view/cms-admin.js';
 
-		//--------------------------------------------------
-		// Path
-
-			$file_path = FRAMEWORK_ROOT . '/library/view/' . $file_name;
+	if ($file_path) {
 
 		//--------------------------------------------------
 		// Headers
 
-			if (substr($file_name, -4) == '.css') {
+			if (substr($file_path, -4) == '.css') {
 				mime_set('text/css');
 			} else {
 				mime_set('application/javascript');

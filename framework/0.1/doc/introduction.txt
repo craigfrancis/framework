@@ -20,7 +20,7 @@ The output from this is added to a [template](/doc/setup/templates/), where the 
 	<!DOCTYPE html>
 	<html lang="<?= html(config::get('output.lang')) ?>">
 	<head>
-		<?= $this->head_get_html() ?>
+		<?= $this->head_get_html(); ?>
 	</head>
 	<body id="<?= html($this->page_id_get()) ?>">
 
@@ -34,9 +34,9 @@ The output from this is added to a [template](/doc/setup/templates/), where the 
 
 		<div id="page_content">
 
-			<?= $this->message_get_html() ?>
+			<?= $this->message_get_html(); ?>
 
-			<?= $this->view_get_html() ?>
+			<?= $this->view_get_html(); ?>
 
 		</div>
 

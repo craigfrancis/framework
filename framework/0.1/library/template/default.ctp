@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // CSS
 
-	$this->css_add(gateway_url('framework-file', 'template.css'));
+	$this->css_add(gateway_url('framework-file', 'default.css'));
 
 //--------------------------------------------------
 // Navigation
@@ -86,7 +86,7 @@
 <html lang="<?= html(config::get('output.lang')) ?>" xml:lang="<?= html(config::get('output.lang')) ?>" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
-	<?= $this->head_get_html() ?>
+	<?= $this->head_get_html(); ?>
 
 	<!--[if lt IE 9]>
 		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -123,9 +123,9 @@
 
 <!-- END OF PAGE TOP -->
 
-	<?= $this->message_get_html() ?>
+	<?= $this->message_get_html(); ?>
 
-	<?= $this->view_get_html() ?>
+	<?= $this->view_get_html(); ?>
 
 <!-- START OF PAGE BOTTOM -->
 

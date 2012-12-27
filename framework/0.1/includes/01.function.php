@@ -564,6 +564,8 @@
 
 	function redirect($url, $http_response_code = 302) {
 
+		mime_set('text/html');
+
 		if (substr($url, 0, 1) == '/') {
 			$url = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain') . $url;
 		}
@@ -575,10 +577,16 @@
 			$output = ob_get_clean() . $output;
 		}
 		if ($output != '' || headers_sent()) {
-			exit($output . $next_html);
+			if (function_exists('response_get')) {
+				$response = response_get();
+				$response->template_path_set(FRAMEWORK_ROOT . '/library/template/blank.ctp');
+				$response->view_set_html($output . $next_html);
+				$response->render();
+			} else {
+				echo $output . $next_html;
+			}
+			exit();
 		}
-
-		mime_set('text/html');
 
 		if (substr($url, 0, 7) == 'http://' && config::get('request.https') && strpos(config::get('request.browser'), 'MSIE 6') !== false) {
 			header('Refresh: 0; url=' . head($url));

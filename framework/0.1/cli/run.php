@@ -182,7 +182,7 @@
 
 							} else if ($skeleton_file == '/app/public/a/css/global/core.css') {
 
-								$content = file_get_contents(FRAMEWORK_ROOT . '/library/view/template.css');
+								$content = file_get_contents(FRAMEWORK_ROOT . '/library/template/default.css');
 
 							}
 
