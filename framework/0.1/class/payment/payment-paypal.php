@@ -169,14 +169,8 @@
 						$details['PAYMENTREQUEST_0_SHIPTOSTREET2'] = $order_values['delivery_address_2'];
 						$details['PAYMENTREQUEST_0_SHIPTOCITY'] = $order_values['delivery_town_city'];
 						$details['PAYMENTREQUEST_0_SHIPTOZIP'] = $order_values['delivery_postcode'];
-						$details['PAYMENTREQUEST_0_SHIPTOCOUNTRYCODE'] = 'GB'; // TODO
+						$details['PAYMENTREQUEST_0_SHIPTOCOUNTRYCODE'] = $order_values['delivery_country'];
 						$details['PAYMENTREQUEST_0_SHIPTOPHONENUM'] = $order_values['delivery_telephone'];
-
-
-
-
-
-
 
 				//--------------------------------------------------
 				// Post request
