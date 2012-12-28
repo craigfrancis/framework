@@ -602,11 +602,7 @@
 				// Order update
 
 					if ($id !== NULL) {
-
-						$this->order_items = NULL;
-
 						$this->order_update();
-
 					}
 
 				//--------------------------------------------------
@@ -656,11 +652,7 @@
 				// Order update
 
 					if ($changed) {
-
-						$this->order_items = NULL;
-
 						$this->order_update();
-
 					}
 
 			}
@@ -683,11 +675,7 @@
 				// Order update
 
 					if ($changed) {
-
-						$this->order_items = NULL;
-
 						$this->order_update();
-
 					}
 
 			}
@@ -1183,6 +1171,11 @@
 		// Order update
 
 			protected function order_update() {
+
+				//--------------------------------------------------
+				// Reset cache
+
+					$this->order_items = NULL;
 
 				//--------------------------------------------------
 				// Delivery
