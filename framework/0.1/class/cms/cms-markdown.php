@@ -1283,6 +1283,7 @@ class cms_markdown_base extends check {
 	#
 		if (!$this->config['allow_html_code']) {
 			$text = str_replace('&', '&amp;', $text);
+			$text = str_replace('&amp;amp;', '&amp;', $text); // Bodge by Craig, to handle "A *B & C* D" being double encoded
 		} else {
 			# Ampersand-encoding based entirely on Nat Irons's Amputator
 			# MT plugin: <http://bumppo.net/projects/amputator/>
