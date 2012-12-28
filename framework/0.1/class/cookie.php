@@ -92,7 +92,7 @@
 
 			$cookie = $_COOKIE[$variable_full];
 
-			if (!config::get('cookie.protect', false) && (!isset($cookie[40]) || $cookie[40] !== '~')) { // TODO: Remove
+			if (!config::get('cookie.protect', false) && (!isset($cookie[40]) || $cookie[40] !== '~')) {
 
 				return $cookie;
 

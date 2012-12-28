@@ -49,6 +49,7 @@
 					$default_config = array(
 							'file_root' => FILE_ROOT,
 							'file_url' => FILE_URL,
+							'file_ext' => NULL,
 							'file_folder_division' => NULL, // Set to something like "1000" so the folder structure can by divided into folders /files/008000/8192
 							'file_missing_url' => NULL,
 							'image_type' => 'jpg',
@@ -84,6 +85,10 @@
 		// Standard file support
 
 			public function file_path_get($id, $ext = NULL) {
+
+				if ($ext === NULL) {
+					$ext = $this->config['file_ext'];
+				}
 
 				if ($this->config['file_folder_division'] === NULL) {
 
@@ -151,12 +156,51 @@
 
 			}
 
-			public function file_save($file, $id, $ext = NULL) {
+			public function file_exists($id, $ext = NULL) {
+				return file_exists($this->file_path_get($id, $ext));
+			}
+
+			public function file_save($id, $file, $ext = NULL) {
 				file_put_contents($this->file_path_get($id, $ext), $file);
 			}
 
-			public function file_exists($id, $ext = NULL) {
-				return file_exists($this->file_path_get($id, $ext));
+			public function file_image_save($id, $path, $ext = NULL) { // Use image_save() to have different image versions.
+
+				//--------------------------------------------------
+				// Path
+
+					if ($ext === NULL) {
+						$ext = $this->config['file_ext'];
+					}
+
+					if ($ext === NULL) {
+						exit_with_error('Unknown file extension when doing file_image_save()');
+					}
+
+					$dest_path = $this->file_path_get($id, $ext);
+
+				//--------------------------------------------------
+				// Folder
+
+					$dest_dir = dirname($dest_path);
+					if (!is_dir($dest_dir)) {
+						if (SERVER == 'live') {
+							mkdir($dest_dir, 0777, true); // Most installs will write as the "apache" user, which is a problem if the normal user account can't edit/delete these files.
+						}
+						if (!is_dir($dest_dir)) {
+							exit_with_error('Missing image directory', $dest_dir);
+						}
+					}
+					if (!is_writable($dest_dir)) {
+						exit_with_error('Cannot write to image directory', $dest_dir);
+					}
+
+				//--------------------------------------------------
+				// Save
+
+					$image = new image($path); // The image needs to be re-saved, ensures no hacked files are uploaded and exposed though the FILE_URL folder.
+					$image->save($dest_path, $ext);
+
 			}
 
 		//--------------------------------------------------
@@ -210,7 +254,7 @@
 		//--------------------------------------------------
 		// Save
 
-			public function image_save($id, $path = NULL) { // No path set, then re-save images using the original file.
+			public function image_save($id, $path = NULL) { // No path set, then re-save images using the original file... also see $file->file_image_save() to save a single image
 
 				//--------------------------------------------------
 				// Make sure we have plenty of memory
