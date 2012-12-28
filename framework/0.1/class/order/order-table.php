@@ -263,7 +263,7 @@
 							//--------------------------------------------------
 							// Net/Tax values
 
-								if (count($this->order_totals['tax']['types']) > 0) { // Don't bother showing if no items show tax
+								if (count($this->order_totals['tax']['types']) > 0 && $this->order_totals['tax']['percent'] > 0) { // Don't bother showing if no items show tax
 
 									$html .= '
 										<tr class="total net ' . ($k++ % 2 ? 'even' : 'odd') . '">
