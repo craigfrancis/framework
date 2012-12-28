@@ -108,7 +108,7 @@
 			}
 
 		//--------------------------------------------------
-		// Value
+		// Value set
 
 			public function value_set($value) {
 				return $this->values_set(explode(',', $value));
@@ -117,26 +117,29 @@
 			public function values_set($values) {
 				$this->values = array();
 				foreach ($values as $value) {
-					$key = array_search($value, $this->option_values);
-					if ($key !== false && $key !== NULL) {
-						$this->values[] = $key;
+					$ref = array_search($value, $this->option_values);
+					if ($ref !== false && $ref !== NULL) {
+						$this->values[] = $ref;
 					}
 				}
 			}
 
-			public function value_key_set($value) {
-				return $this->values_key_set(explode(',', $value));
+			public function value_key_set($key) {
+				return $this->value_keys_set(explode(',', $key));
 			}
 
-			public function values_key_set($values) {
+			public function value_keys_set($keys) {
 				$this->values = array();
-				foreach ($values as $value) {
-					$key = array_search($value, $this->option_keys);
-					if ($key !== false && $key !== NULL) {
-						$this->values[] = $key;
+				foreach ($keys as $key) {
+					$ref = array_search($key, $this->option_keys);
+					if ($ref !== false && $ref !== NULL) {
+						$this->values[] = $ref;
 					}
 				}
 			}
+
+		//--------------------------------------------------
+		// Value get
 
 			public function value_get() {
 				return implode(',', $this->values_get());
@@ -153,10 +156,10 @@
 			}
 
 			public function value_key_get() {
-				return implode(',', $this->values_key_get());
+				return implode(',', $this->value_keys_get());
 			}
 
-			public function values_key_get() {
+			public function value_keys_get() {
 				$return = array();
 				if (is_array($this->values)) {
 					foreach ($this->values as $id) {
