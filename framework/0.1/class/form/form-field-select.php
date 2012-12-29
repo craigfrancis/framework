@@ -121,7 +121,7 @@
 						$options[$value] = $value; // Use the value for the key as well... so if the values change between loading the form, and submitting (e.g. site update).
 					}
 				}
-				$this->options_set($options); // Call function so 'radios' field can set option_keys
+				$this->options_set($options); // Call function so check box fields can also set option_keys
 			}
 
 			public function option_groups_set($option_groups) {
@@ -146,7 +146,7 @@
 				}
 
 				$this->required = ($error_html !== NULL);
-				$this->required_error_set = true;
+				$this->required_error_set = true; // So the radios field can complain if not set.
 
 			}
 
