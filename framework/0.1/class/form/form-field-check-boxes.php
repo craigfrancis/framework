@@ -169,7 +169,7 @@
 				return $return;
 			}
 
-			public function value_print_get($field_id) {
+			protected function _value_print_get($field_id) {
 
 				if ($this->values_print === NULL) {
 					if ($this->values === NULL) {
@@ -355,7 +355,7 @@
 					$attributes['value'] = $this->option_keys[$field_id];
 				}
 
-				if ($this->value_print_get($field_id)) {
+				if ($this->_value_print_get($field_id)) {
 					$attributes['checked'] = 'checked';
 				}
 

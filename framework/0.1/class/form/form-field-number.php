@@ -123,9 +123,9 @@
 		//--------------------------------------------------
 		// Value
 
-			public function value_print_get($decimal_places = 2) {
+			protected function _value_print_get($decimal_places = 2) {
 
-				$value = parent::value_print_get();
+				$value = parent::_value_print_get();
 
 				if ($value == 0 && $this->zero_to_blank) {
 					return '';

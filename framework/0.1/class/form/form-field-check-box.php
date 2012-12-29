@@ -94,7 +94,7 @@
 				}
 			}
 
-			public function value_print_get() {
+			protected function _value_print_get() {
 				if ($this->value === NULL) {
 
 					if ($this->form->saved_values_available()) {
@@ -139,7 +139,7 @@
 						'value' => 'true',
 					);
 
-				if ($this->value_print_get()) {
+				if ($this->_value_print_get()) {
 					$attributes['checked'] = 'checked';
 				}
 

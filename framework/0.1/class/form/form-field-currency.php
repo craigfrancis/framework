@@ -102,9 +102,9 @@
 				$this->value = preg_replace('/[^0-9\-\.]+/', '', $value); // Deletes commas (thousand separators) and currency symbols
 			}
 
-			public function value_print_get($decimal_places = 2) {
+			protected function _value_print_get($decimal_places = 2) {
 
-				$value = parent::value_print_get();
+				$value = parent::_value_print_get();
 
 				return format_currency($value, $this->currency_char, $decimal_places, $this->zero_to_blank);
 

@@ -521,7 +521,7 @@
 				// Not used
 
 					if ($this->db_where_sql === NULL || $field == '') {
-						return ''; // So the form_field_text->value_print_get has the more appropriate empty string.
+						return ''; // So the form_field_text->_value_print_get has the more appropriate empty string.
 					}
 
 				//--------------------------------------------------

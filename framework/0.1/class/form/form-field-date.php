@@ -201,7 +201,7 @@
 				return $timestamp;
 			}
 
-			public function value_print_get() {
+			protected function _value_print_get() {
 				if ($this->value === NULL) {
 					if ($this->form->saved_values_available()) {
 						return array(
@@ -217,7 +217,7 @@
 			}
 
 			public function value_hidden_get() {
-				return $this->_value_date_format($this->value_print_get());
+				return $this->_value_date_format($this->_value_print_get());
 			}
 
 			private function _value_date_format($value) {
@@ -323,7 +323,7 @@
 
 				if ($part == 'D' || $part == 'M' || $part == 'Y') {
 
-					$input_value = $this->value_print_get();
+					$input_value = $this->_value_print_get();
 
 					$attributes = array(
 							'name' => $this->name . '_' . $part,

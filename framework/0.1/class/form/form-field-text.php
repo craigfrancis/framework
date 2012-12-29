@@ -122,7 +122,7 @@
 				return $this->value;
 			}
 
-			public function value_print_get() {
+			protected function _value_print_get() {
 				if ($this->value === NULL) {
 					if ($this->form->saved_values_available()) {
 						return $this->form->saved_value_get($this->name);
@@ -134,7 +134,7 @@
 			}
 
 			public function value_hidden_get() {
-				return $this->value_print_get();
+				return $this->_value_print_get();
 			}
 
 		//--------------------------------------------------
@@ -189,7 +189,7 @@
 		// HTML
 
 			public function html_input() {
-				return $this->_html_input(array('value' => $this->value_print_get()));
+				return $this->_html_input(array('value' => $this->_value_print_get()));
 			}
 
 	}

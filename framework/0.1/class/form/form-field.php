@@ -526,9 +526,9 @@
 					$html = '
 							<' . html($this->wrapper_tag) . ' class="' . html($this->wrapper_class_get()) . '"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
 								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . $this->label_suffix_html . '</' . html($this->label_wrapper_tag) . '>';
-					foreach ($this->option_keys as $id => $key) {
+					foreach ($this->option_values as $key => $value) {
 						$html .= '
-								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . ' ' . html('key_' . human_to_ref($key)) . ' ' . html('value_' . human_to_ref($this->option_values[$id])) . '">
+								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . ' ' . html('key_' . human_to_ref($key)) . ' ' . html('value_' . human_to_ref($value)) . '">
 									' . $this->html_input_by_key($key) . '
 									' . $this->html_label_by_key($key) . '
 								</' . html($this->input_wrapper_tag) . '>';
