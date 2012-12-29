@@ -127,7 +127,7 @@
 	function html_tag($tag, $attributes) {
 		$html = '<' . html($tag);
 		foreach ($attributes as $name => $value) {
-			if ($value !== '' && $value !== NULL) { // Allow numerical value 0
+			if ($value !== NULL) { // Allow numerical value 0 and empty string ""
 				$html .= ' ' . html(is_int($name) ? $value : $name) . '="' . html($value) . '"';
 			}
 		}
@@ -577,15 +577,11 @@
 			$output = ob_get_clean() . $output;
 		}
 		if ($output != '' || headers_sent()) {
-			if (function_exists('response_get')) {
-				$response = response_get();
-				$response->template_path_set(FRAMEWORK_ROOT . '/library/template/blank.ctp');
-				$response->view_set_html($output . $next_html);
-				$response->render();
+			if (function_exists('debug_exit')) {
+				debug_exit($output . $next_html);
 			} else {
-				echo $output . $next_html;
+				exit($output . $next_html);
 			}
-			exit();
 		}
 
 		if (substr($url, 0, 7) == 'http://' && config::get('request.https') && strpos(config::get('request.browser'), 'MSIE 6') !== false) {
