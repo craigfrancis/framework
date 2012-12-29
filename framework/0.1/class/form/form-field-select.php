@@ -31,7 +31,7 @@
 				//--------------------------------------------------
 				// Value
 
-					$this->values = array(); // Array of selected key(s)
+					$this->values = NULL; // Array of selected key(s), or NULL when not set
 
 					if ($this->form_submitted) {
 
@@ -141,7 +141,7 @@
 
 			public function required_error_set_html($error_html) {
 
-				if ($this->form_submitted && count($this->values) == 0) {
+				if ($this->form_submitted && ($this->values == NULL || count($this->values) == 0)) {
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
@@ -156,7 +156,7 @@
 
 			public function invalid_error_set_html($error_html) {
 
-				if ($this->form_submitted) {
+				if ($this->form_submitted && $this->values !== NULL) {
 					foreach ($this->values as $key) {
 						if (!isset($this->option_values[$key])) {
 							$this->form->_field_error_set_html($this->form_field_uid, $error_html);
@@ -232,9 +232,11 @@
 
 				$return = array();
 
-				foreach ($this->values as $key) {
-					if ($key !== '' && isset($this->option_values[$key])) {
-						$return[] = $key; // Can't preserve type from option_values (using array_search), as an array with id 0 and string values (e.g. "X"), it would match the first one, as ["X" == 0]
+				if ($this->values !== NULL) {
+					foreach ($this->values as $key) {
+						if ($key !== '' && isset($this->option_values[$key])) {
+							$return[] = $key; // Can't preserve type from option_values (using array_search), as an array with id 0 and string values (e.g. "X"), it would match the first one, as ["X" == 0]
+						}
 					}
 				}
 
@@ -243,7 +245,7 @@
 			}
 
 			protected function _value_print_get() {
-				if ($this->form_submitted) { // TODO: Use on other form fields
+				if ($this->values !== NULL) { // TODO: Use on other form fields?
 
 					$values = $this->values;
 
