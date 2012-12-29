@@ -5,6 +5,7 @@
 		private $result;
 		private $connection;
 		private $link;
+		private $enum_cache;
 
 		public function __construct($connection = 'default') {
 			$this->connection = $connection;
@@ -104,12 +105,15 @@
 		}
 
 		public function enum_values($table_sql, $field) {
-			$sql = 'SHOW COLUMNS FROM ' . $table_sql . ' LIKE "' . $this->escape($field) . '"';
-			if ($row = $this->fetch($sql)) {
-				return explode("','", preg_replace("/(enum|set)\('(.*?)'\)/", '\2', $row['Type']));
-			} else {
-				$this->_error('Could not return enum values for field "' . $field . '"');
+			if (!isset($this->enum_cache[$table_sql][$field])) {
+				$sql = 'SHOW COLUMNS FROM ' . $table_sql . ' LIKE "' . $this->escape($field) . '"';
+				if ($row = $this->fetch($sql)) {
+					$this->enum_cache[$table_sql][$field] = str_getcsv(preg_replace('/(enum|set)\((.*?)\)/', '\2', $row['Type']), ',', "'");
+				} else {
+					$this->_error('Could not return enum values for field "' . $field . '"');
+				}
 			}
+			return $this->enum_cache[$table_sql][$field];
 		}
 
 		public function insert($table_sql, $values, $on_duplicate = NULL) {
