@@ -5,16 +5,14 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $value;
-			protected $select_size;
-			protected $option_values;
-			protected $option_keys;
-			protected $option_groups;
+			protected $values;
+			protected $multiple;
 			protected $label_option;
+			protected $option_values;
+			protected $option_groups;
+			protected $select_size;
 			protected $required_error_set;
 			protected $invalid_error_set;
-			protected $key_select;
-			protected $re_index_keys;
 
 		//--------------------------------------------------
 		// Setup
@@ -33,45 +31,48 @@
 				//--------------------------------------------------
 				// Value
 
-					$this->value = NULL;
+					$this->values = array(); // Array of selected key(s)
 
 					if ($this->form_submitted) {
-						$this->value = request($this->name, $this->form->form_method_get());
-						if ($this->value === NULL) {
-							$this->value = $this->form->hidden_value_get($this->name);
+
+						$this->values = request($this->name, $this->form->form_method_get());
+
+						if ($this->values === NULL) {
+							$this->values = $this->form->hidden_value_get($this->name);
+							if ($this->values !== NULL) {
+								$this->values = json_decode($this->values, true); // associative array
+							}
 						}
+
+						if ($this->values === NULL) {
+
+							$this->values = array();
+
+						} else {
+
+							if (!is_array($this->values)) {
+								$this->values = array($this->values); // Normal (non-multiple) select field
+							}
+
+							while (($key = array_search('', $this->values, true)) !== false) { // Remove the label, which is an empty string (strict type check required)
+								unset($this->values[$key]);
+							}
+
+						}
+
 					}
 
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->select_size = 1;
-					$this->option_values = array();
-					$this->option_keys = array();
-					$this->option_groups = NULL;
+					$this->multiple = false;
 					$this->label_option = NULL;
+					$this->option_values = array();
+					$this->option_groups = NULL;
+					$this->select_size = 1;
 					$this->required_error_set = false;
 					$this->invalid_error_set = false;
-					$this->key_select = true;
-					$this->re_index_keys = true;
 					$this->type = 'select';
-
-			}
-
-			// public function key_select_set($by_key) { // Use the values of the array, rather than the keys
-			// 	if (count($this->option_values) > 0) {
-			// 		exit_with_error('Cannot call key_select_set() after db_field_set() or options_set()');
-			// 	}
-			// 	$this->key_select = ($by_key == true);
-			// }
-
-			public function re_index_keys_set($re_index) { // Doing this makes detection of the label option more error prone
-
-				if (count($this->option_values) > 0) {
-					exit_with_error('Cannot call re_index_keys_set() after db_field_set() or options_set()');
-				}
-
-				$this->re_index_keys = ($re_index == true);
 
 			}
 
@@ -85,14 +86,18 @@
 
 					$options = $this->form->db_field_options_get($field);
 
-					if (($key = array_search('', $options)) !== false) { // If you want a blank option, use label_option_set, and remove the required_error.
+					while (($key = array_search('', $options)) !== false) { // If you want a blank option, use label_option_set, and remove the required_error.
 						unset($options[$key]);
 					}
 
-					$this->options_set($options);
+					$this->option_values_set($options); // The array index might change (structure change), so use the "option_values" method, so it only uses the values
 
 				}
 
+			}
+
+			public function multiple_set($multiple) {
+				$this->multiple = $multiple;
 			}
 
 			public function label_option_set($text = NULL) {
@@ -100,8 +105,23 @@
 			}
 
 			public function options_set($options) {
-				$this->option_values = array_values($options);
-				$this->option_keys = array_keys($options);
+				if (in_array('', array_keys($options), true)) { // Performs a strict check (allowing id 0)
+					exit_with_error('Cannot have an option with a blank key.', debug_dump($options));
+				} else {
+					$this->option_values = $options;
+				}
+			}
+
+			public function option_values_set($values) {
+				$options = array();
+				foreach ($values as $value) {
+					if ($value === '') {
+						exit_with_error('Cannot have an option with a blank key.', debug_dump($values));
+					} else {
+						$options[$value] = $value; // Use the value for the key as well... so if the values change between loading the form, and submitting (e.g. site update).
+					}
+				}
+				$this->options_set($options); // Call function so 'radios' field can set option_keys
 			}
 
 			public function option_groups_set($option_groups) {
@@ -121,13 +141,7 @@
 
 			public function required_error_set_html($error_html) {
 
-				if ($this->key_select && $this->re_index_keys) {
-					$is_label = (intval($this->value) == 0);
-				} else {
-					$is_label = ($this->value == ''); // Best guess
-				}
-
-				if ($this->form_submitted && $is_label) {
+				if ($this->form_submitted && count($this->values) == 0) {
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
@@ -142,21 +156,13 @@
 
 			public function invalid_error_set_html($error_html) {
 
-				if ($this->key_select) {
-					if ($this->re_index_keys) {
-						$is_label = (intval($this->value) == 0);
-						$is_value = isset($this->option_values[(intval($this->value) - 1)]);
-					} else {
-						$is_label = ($this->value == ''); // Best guess
-						$is_value = array_search($this->value, $this->option_keys);
+				if ($this->form_submitted) {
+					foreach ($this->values as $key) {
+						if (!isset($this->option_values[$key])) {
+							$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+							break;
+						}
 					}
-				} else {
-					$is_label = ($this->value == ''); // Best guess
-					$is_value = array_search($this->value, $this->option_values);
-				}
-
-				if ($this->form_submitted && !$is_label && ($is_value === false || $is_value === NULL)) {
-					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
 				$this->invalid_error_set = true;
@@ -164,119 +170,134 @@
 			}
 
 		//--------------------------------------------------
-		// Value
+		// Value set
 
 			public function value_set($value) {
-				$print_key = $this->_ref_get($value, 'value');
-				if ($print_key !== NULL) {
-					$this->value = $print_key;
-				}
+				$this->values_set(array($value));
 			}
 
-			public function value_key_set($value) {
-				if ($value === NULL) {
-					if ($this->key_select) {
-						if ($this->re_index_keys) {
-							$this->value = 0;
-						} else {
-							$this->value = '';
-						}
-					} else {
-						exit('Not supported - value_key_set');
-					}
-				} else {
-					$key = array_search($value, $this->option_keys);
+			public function values_set($values) {
+				$this->values = array();
+				foreach ($values as $value) {
+					$key = array_search($value, $this->option_values);
 					if ($key !== false && $key !== NULL) {
-						if ($this->key_select) {
-							if ($this->re_index_keys) {
-								$this->value = ($key + 1);
-							} else {
-								$this->value = $value;
-							}
-						} else {
-							exit('Not supported - value_key_set');
-						}
+						$this->values[] = $key;
 					}
 				}
 			}
 
-			public function value_get() {
-				if ($this->key_select) {
-					if ($this->re_index_keys) {
-						$key = (intval($this->value) - 1);
-						return (isset($this->option_values[$key]) ? $this->option_values[$key] : NULL);
-					} else {
-						$key = array_search($this->value, $this->option_keys);
-						if ($key !== false && $key !== NULL) {
-							return $this->option_values[$key];
-						} else {
-							return NULL;
-						}
-					}
-				} else {
-					$key = array_search($this->value, $this->option_values);
-					if ($key !== false && $key !== NULL) {
-						return $this->value;
-					} else {
-						return NULL;
-					}
-				}
+			public function value_key_set($key) {
+				$this->value_keys_set(array($key));
 			}
 
-			public function value_key_get() {
-				if ($this->key_select) {
-					if ($this->re_index_keys) {
-						$key = (intval($this->value) - 1);
-						return (isset($this->option_keys[$key]) ? $this->option_keys[$key] : NULL);
-					} else {
-						$key = array_search($this->value, $this->option_keys);
-						if ($key !== false && $key !== NULL) {
-							return $this->value;
-						} else {
-							return NULL;
-						}
-					}
-				} else {
-					exit('Not supported - value_key_get');
-				}
-			}
-
-			public function value_print_get() {
-				if ($this->value === NULL) {
-					if ($this->form->saved_values_available()) {
-						return $this->form->saved_value_get($this->name);
-					} else {
-						return $this->_ref_get($this->form->db_select_value_get($this->db_field_name), $this->db_field_key);
+			public function value_keys_set($keys) {
+				$this->values = array();
+				foreach ($keys as $key) {
+					if ($key !== '' && isset($this->option_values[$key])) {
+						$this->values[] = $key;
 					}
 				}
-				return $this->value;
-			}
-
-			public function value_hidden_get() {
-				$value = $this->value_print_get();
-				if ($value === NULL && $this->label_option === NULL && count($this->option_values) > 0) {
-					return $this->_ref_get(reset($this->option_values), 'value'); // Don't have a label or value, default to the first option to avoid validation error
-				}
-				return $value;
 			}
 
 		//--------------------------------------------------
-		// Value helpers
+		// Value get
 
-			private function _ref_get($value, $mode) {
-				$key = array_search($value, ($mode == 'key' ? $this->option_keys : $this->option_values));
-				if ($key !== false && $key !== NULL) {
-					if ($this->key_select) {
-						if ($this->re_index_keys) {
-							return ($key + 1);
-						} else {
-							return $this->option_keys[$key];
-						}
-					} else {
-						return $value;
+			public function value_get() {
+				$values = $this->values_get();
+				if ($this->multiple) {
+					return implode(',', $values); // Match value_key_get behaviour
+				} else {
+					return array_pop($values); // Returns NULL if label is selected
+				}
+			}
+
+			public function values_get() {
+				$return = array();
+				foreach ($this->value_keys_get() as $key) {
+					$return[$key] = $this->option_values[$key];
+				}
+				return $return;
+			}
+
+			public function value_key_get() {
+				$keys = $this->value_keys_get();
+				if ($this->multiple) {
+					return implode(',', $keys); // Behaviour expected for a MySQL 'set' field, where a comma is not a valid character.
+				} else {
+					return array_pop($keys); // Returns NULL if label is selected
+				}
+			}
+
+			public function value_keys_get() {
+
+				$return = array();
+
+				foreach ($this->values as $key) {
+					if ($key !== '' && isset($this->option_values[$key])) {
+						$return[] = $key; // Can't preserve type from option_values (using array_search), as an array with id 0 and string values (e.g. "X"), it would match the first one, as ["X" == 0]
 					}
 				}
-				return NULL;
+
+				return $return;
+
+			}
+
+			protected function _value_print_get() {
+				if ($this->form_submitted) { // TODO: Use on other form fields
+
+					$values = $this->values;
+
+				} else if ($this->form->saved_values_available()) {
+
+					$values = $this->form->saved_value_get($this->name);
+
+					if ($values === NULL) {
+						$values = array();
+					} else if (!is_array($values)) {
+						$values = array($values);
+					}
+
+				} else if ($this->db_field_name !== NULL) {
+
+					$db_values = $this->form->db_select_value_get($this->db_field_name);
+
+					if ($this->multiple) {
+						$db_values = explode(',', $db_values); // Commas are not valid characters in enum/set fields.
+					} else {
+						$db_values = array($db_values);
+					}
+
+					$values = array();
+
+					if ($this->db_field_key == 'key') {
+						foreach ($db_values as $key) {
+							if (isset($this->option_values[$key])) {
+								$values[] = $key;
+							}
+						}
+					} else {
+						foreach ($db_values as $value) {
+							$key = array_search($value, $this->option_values);
+							if ($key !== false && $key !== NULL) {
+								$values[] = $key;
+							}
+						}
+					}
+
+				} else {
+
+					$values = array();
+
+				}
+				return $values;
+			}
+
+			public function value_hidden_get() {
+				$values = $this->_value_print_get();
+				if ($values === NULL && $this->label_option === NULL && !$this->multiple && count($this->option_values) > 0) {
+					$values = array(key($this->option_values)); // Don't have a value or label, match browser behaviour of automatically selecting first item.
+				}
+				return json_encode($values);
 			}
 
 		//--------------------------------------------------
@@ -303,6 +324,13 @@
 					$attributes['size'] = intval($this->select_size);
 				}
 
+				if ($this->multiple) {
+					$attributes['name'] .= '[]';
+					$attributes['multiple'] = 'multiple';
+				}
+
+unset($attributes['required']); // TODO: Remove
+
 				return $attributes;
 
 			}
@@ -312,32 +340,26 @@
 
 			public function html_input() {
 
-				$input_value = $this->value_print_get();
+				$print_values = $this->_value_print_get();
+
+				if (!$this->multiple && count($print_values) > 1) { // Don't have multiple selected options, when not a multiple field
+					$print_values = array_slice($print_values, 0, 1);
+				}
 
 				$html = '
 									' . html_tag('select', array_merge($this->_input_attributes()));
 
-				if ($this->label_option !== NULL) {
+				if ($this->label_option !== NULL && $this->select_size == 1 && !$this->multiple) {
 					$html .= '
 										<option value="">' . ($this->label_option === '' ? '&#xA0;' : html($this->label_option)) . '</option>'; // Value must be blank for HTML5
 				}
 
 				if ($this->option_groups === NULL) {
 
-					foreach ($this->option_values as $key => $option) {
-
-						if ($this->key_select) {
-							if ($this->re_index_keys) {
-								$key++; // 0 represents the label_option
-							} else {
-								$key = $this->option_keys[$key];
-							}
-						} else {
-							$key = $option;
-						}
+					foreach ($this->option_values as $key => $value) {
 
 						$html .= '
-										<option value="' . html($key) . '"' . ($key == $input_value ? ' selected="selected"' : '') . '>' . ($option === '' ? '&#xA0;' : html($option)) . '</option>';
+										<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 					}
 
@@ -350,25 +372,14 @@
 
 						foreach (array_keys($this->option_groups, $opt_group) as $key) {
 
-							$value_key = array_search($key, $this->option_keys);
-							if ($value_key !== false) {
-								$value = $this->option_values[$value_key];
+							if (isset($this->option_values[$key])) {
+								$value = $this->option_values[$key];
 							} else {
 								$value = '?';
 							}
 
-							if ($this->key_select) {
-								if ($this->re_index_keys) {
-									$value_key++; // 0 represents the label_option
-								} else {
-									$value_key = $key;
-								}
-							} else {
-								$value_key = $value;
-							}
-
 							$html .= '
-											<option value="' . html($value_key) . '"' . ($value_key == $input_value ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
+											<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 						}
 

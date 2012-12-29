@@ -5,6 +5,12 @@
 		//--------------------------------------------------
 		// Variables
 
+			protected $option_keys;
+			protected $value_print_cache;
+
+		//--------------------------------------------------
+		// Setup
+
 			public function __construct($form, $label, $name = NULL) {
 
 				//--------------------------------------------------
@@ -19,30 +25,27 @@
 
 			}
 
+			public function options_set($options) {
+				parent::options_set($options);
+				$this->option_keys = array_keys($this->option_values);
+			}
+
 		//--------------------------------------------------
-		// Value
+		// Field ID
 
 			public function field_id_by_value_get($value) {
-				$id = array_search($value, $this->option_values);
-				if ($id !== false && $id !== NULL) {
-					if ($this->re_index_keys) {
-						return $this->id . '_' . ($id + 1);
-					} else {
-						return $this->id . '_' . $this->option_keys[$id];
-					}
+				$key = array_search($value, $this->option_values);
+				if ($key !== false && $key !== NULL) {
+					return $this->field_id_by_key_get($key);
 				} else {
 					return 'Unknown value "' . html($value) . '"';
 				}
 			}
 
 			public function field_id_by_key_get($key) {
-				$id = array_search($key, $this->option_keys);
+				$id = array_search($key, $this->option_keys, true);
 				if ($id !== false && $id !== NULL) {
-					if ($this->re_index_keys) {
-						return $this->id . '_' . ($id + 1);
-					} else {
-						return $this->id . '_' . $key;
-					}
+					return $this->id . '_' . ($id + 1);
 				} else {
 					return 'Unknown key "' . html($key) . '"';
 				}
@@ -62,7 +65,7 @@
 			}
 
 		//--------------------------------------------------
-		// HTML
+		// HTML label
 
 			public function html_label($label_html = NULL) {
 				if ($label_html === NULL) {
@@ -73,33 +76,33 @@
 			}
 
 			public function html_label_by_value($value, $label_html = NULL) {
-				$id = array_search($value, $this->option_values);
-				if ($id !== false && $id !== NULL) {
-					return $this->_html_label_by_id($id, $label_html);
+				$key = array_search($value, $this->option_values);
+				if ($key !== false && $key !== NULL) {
+					return $this->html_label_by_key($key, $label_html);
 				} else {
 					return 'Unknown value "' . html($value) . '"';
 				}
 			}
 
 			public function html_label_by_key($key, $label_html = NULL) {
-				$id = array_search($key, $this->option_keys);
-				if ($id !== false && $id !== NULL) {
-					return $this->_html_label_by_id($id, $label_html);
-				} else if ($key === NULL) {
-					return $this->_html_label_by_id(NULL, $label_html); // label_option
-				} else {
-					return 'Unknown key "' . html($key) . '"';
-				}
-			}
 
-			private function _html_label_by_id($field_id, $label_html) {
+				if ($key === NULL) {
+					$field_id = -1; // Label option
+				} else {
+					$field_id = array_search($key, $this->option_keys, true);
+					if ($field_id === false || $field_id === NULL) {
+						return 'Unknown key "' . html($key) . '"';
+					}
+				}
+
+				$input_id = $this->id . '_' . ($field_id + 1);
 
 				if ($label_html === NULL) {
 
-					if ($field_id === NULL) {
+					if ($field_id == -1) {
 						$label = $this->label_option;
 					} else {
-						$label = $this->option_values[$field_id];
+						$label = $this->option_values[$key];
 					}
 
 					$label_html = html($label);
@@ -111,55 +114,54 @@
 
 				}
 
-				if ($this->re_index_keys) {
-					$input_id = $this->id . '_' . ($field_id + 1);
-				} else {
-					$input_id = $this->id . '_' . $this->option_keys[$field_id];
-				}
-
 				return '<label for="' . html($input_id) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . $label_html . '</label>';
 
 			}
+
+		//--------------------------------------------------
+		// HTML input
 
 			public function html_input() {
 				return 'Please use html_input_by_value or html_input_by_key';
 			}
 
 			public function html_input_by_value($value) {
-				$id = array_search($value, $this->option_values);
-				if ($id !== false && $id !== NULL) {
-					return $this->_html_input_by_id($id);
+				$key = array_search($value, $this->option_values);
+				if ($key !== false && $key !== NULL) {
+					return $this->html_input_by_key($key);
 				} else {
 					return 'Unknown value "' . html($value) . '"';
 				}
 			}
 
 			public function html_input_by_key($key) {
-				$id = array_search($key, $this->option_keys);
-				if ($id !== false && $id !== NULL) {
-					return $this->_html_input_by_id($id);
-				} else if ($key === NULL) {
-					return $this->_html_input_by_id(-1); // label_option
-				} else {
-					return 'Unknown key "' . html($key) . '"';
-				}
-			}
 
-			private function _html_input_by_id($field_id) {
+				if ($this->value_print_cache === NULL) {
+					$this->value_print_cache = $this->_value_print_get();
+				}
+
+				if ($key === NULL) {
+					$field_id = -1; // Label option
+				} else {
+					$field_id = array_search($key, $this->option_keys, true);
+					if ($field_id === false || $field_id === NULL) {
+						return 'Unknown key "' . html($key) . '"';
+					}
+				}
 
 				$attributes = array(
 						'type' => 'radio',
+						'id' => $this->id . '_' . ($field_id + 1),
+						'value' => ($key === NULL ? '' : $key),
 					);
 
-				if ($this->re_index_keys) {
-					$attributes['id'] = $this->id . '_' . ($field_id + 1);
-					$attributes['value'] = ($field_id + 1);
-				} else {
-					$attributes['id'] = $this->id . '_' . $this->option_keys[$field_id];
-					$attributes['value'] = $this->option_keys[$field_id];
+				$checked = in_array($attributes['value'], $this->value_print_cache);
+
+				if ($key === NULL && count($this->value_print_cache) == 0) {
+					$checked = true;
 				}
 
-				if ($attributes['value'] == $this->value_print_get()) {
+				if ($checked) {
 					$attributes['checked'] = 'checked';
 				}
 
