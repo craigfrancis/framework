@@ -308,6 +308,28 @@
 	}
 
 //--------------------------------------------------
+// Debug exit
+
+	function debug_exit($output = '') {
+
+		while (ob_get_level() > 0) {
+			$output = ob_get_clean() . $output;
+		}
+
+		if (function_exists('response_get')) {
+			$response = response_get('html');
+			$response->template_path_set(FRAMEWORK_ROOT . '/library/template/blank.ctp');
+			$response->view_set_html($output);
+			$response->render();
+		} else {
+			echo $output;
+		}
+
+		exit();
+
+	}
+
+//--------------------------------------------------
 // Debug run time
 
 	function debug_time_elapsed() {
