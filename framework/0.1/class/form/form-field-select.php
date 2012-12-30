@@ -241,7 +241,7 @@
 			}
 
 			protected function _value_print_get() {
-				if ($this->values !== NULL) { // TODO: Use on other form fields?
+				if ($this->values !== NULL) {
 
 					$values = $this->values;
 
