@@ -318,16 +318,18 @@
 
 				$attributes = parent::_input_attributes();
 
-				if ($this->select_size > 1) {
-					$attributes['size'] = intval($this->select_size);
-				}
+				if ($this->type == 'select') {
 
-				if ($this->multiple) {
-					$attributes['name'] .= '[]';
-					$attributes['multiple'] = 'multiple';
-				}
+					if ($this->select_size > 1) {
+						$attributes['size'] = intval($this->select_size);
+					}
 
-unset($attributes['required']); // TODO: Remove
+					if ($this->multiple) {
+						$attributes['name'] .= '[]';
+						$attributes['multiple'] = 'multiple';
+					}
+
+				}
 
 				return $attributes;
 
@@ -345,7 +347,7 @@ unset($attributes['required']); // TODO: Remove
 				}
 
 				$html = '
-									' . html_tag('select', array_merge($this->_input_attributes()));
+									' . html_tag('select', $this->_input_attributes());
 
 				if ($this->label_option !== NULL && $this->select_size == 1 && !$this->multiple) {
 					$html .= '

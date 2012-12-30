@@ -57,7 +57,7 @@
 		// HTML
 
 			public function html_input() {
-				return html_tag('textarea', array_merge($this->_input_attributes())) . html($this->_value_print_get()) . '</textarea>';
+				return html_tag('textarea', $this->_input_attributes()) . html($this->_value_print_get()) . '</textarea>';
 			}
 
 	}

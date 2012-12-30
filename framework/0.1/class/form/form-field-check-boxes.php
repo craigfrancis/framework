@@ -133,23 +133,22 @@
 					}
 				}
 
-				return $this->_html_input($this->_html_input_attributes($key, $field_id));
+				return html_tag('input', $this->_input_by_key_attributes($key, $field_id));
 
 			}
 
-			public function _html_input_attributes($key, $field_id) {
+			public function _input_by_key_attributes($key, $field_id) {
 
 				if ($this->value_print_cache === NULL) {
 					$this->value_print_cache = $this->_value_print_get();
 				}
 
-				$attributes = array(
-						'type' => 'checkbox',
-						'id' => $this->id . '_' . ($field_id + 1),
-						'name' => $this->name . '[]',
-						'value' => ($key === NULL ? '' : $key),
-						'required' => NULL, // Can't set to required, as otherwise you have to tick all of them.
-					);
+				$attributes = parent::_input_attributes();
+				$attributes['type'] = 'checkbox';
+				$attributes['id'] = $this->id . '_' . ($field_id + 1);
+				$attributes['name'] = $this->name . '[]';
+				$attributes['value'] = ($key === NULL ? '' : $key);
+				$attributes['required'] = NULL; // Can't set to required, as otherwise you have to tick all of them.
 
 				if (in_array($attributes['value'], $this->value_print_cache)) {
 					$attributes['checked'] = 'checked';
