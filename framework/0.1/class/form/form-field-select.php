@@ -44,11 +44,7 @@
 							}
 						}
 
-						if ($this->values === NULL) {
-
-							$this->values = array();
-
-						} else {
+						if ($this->values !== NULL) {
 
 							if (!is_array($this->values)) {
 								$this->values = array($this->values); // Normal (non-multiple) select field
