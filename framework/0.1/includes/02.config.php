@@ -27,10 +27,12 @@
 
 		if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
 			$config['request.ip'] = 'XForward=[' . $_SERVER['HTTP_X_FORWARDED_FOR'] . ']';
+		} else if (isset($_SERVER['HTTP_CLIENT_IP'])) {
+			$config['request.ip'] = 'XClient=[' . $_SERVER['HTTP_CLIENT_IP'] . ']';
 		} else if (isset($_SERVER['REMOTE_ADDR'])) {
 			$config['request.ip'] = $_SERVER['REMOTE_ADDR'];
 		} else {
-			$config['request.ip'] = '127.0.0.1'; // Probably CLI
+			$config['request.ip'] = '127.0.0.1'; // Probably CLI.. don't rely on this for security checks, it can be easily spoofed.
 		}
 
 		$uri = $config['request.uri'];
