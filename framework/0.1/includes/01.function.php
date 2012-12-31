@@ -521,7 +521,7 @@
 	function response_get($type = NULL) {
 		if ($type !== NULL) {
 
-			$class = 'response_' . type;
+			$class = 'response_' . $type;
 			if (class_exists($class)) {
 				$response = new $class();
 				config::set('output.response', $response);
@@ -545,7 +545,7 @@
 // Render an error page (shortcut)
 
 	function render_error($error) {
-		$response = response_get();
+		$response = response_get('html');
 		$response->render_error($error);
 		exit();
 	}

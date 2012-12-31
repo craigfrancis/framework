@@ -213,7 +213,7 @@
 							$this->_cleanup();
 
 							if (function_exists('response_get')) {
-								$response = response_get();
+								$response = response_get('html');
 								$response->set($error);
 								$response->render_error('system');
 								exit();
