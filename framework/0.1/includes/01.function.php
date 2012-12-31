@@ -518,11 +518,25 @@
 //--------------------------------------------------
 // Get the current response object
 
-	function response_get() {
-		$response = config::get('output.response');
-		if (!$response) {
-			$response = new response_html();
-			config::set('output.response', $response);
+	function response_get($type = NULL) {
+		if ($type !== NULL) {
+
+			$class = 'response_' . type;
+			if (class_exists($class)) {
+				$response = new $class();
+				config::set('output.response', $response);
+			} else {
+				exit_with_error('Unknown response type "' . $type . '"');
+			}
+
+		} else {
+
+			$response = config::get('output.response');
+			if (!$response) {
+				$response = new response_html();
+				config::set('output.response', $response);
+			}
+
 		}
 		return $response;
 	}

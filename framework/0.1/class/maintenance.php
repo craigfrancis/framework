@@ -260,7 +260,7 @@
 						<h2>State</h2>
 						<p>TODO: State of maintenance script</p>';
 
-					$response = new response_html();
+					$response = response_get('html');
 					$response->title_set('Maintenance State');
 					$response->view_add_html($html);
 					$response->render();
@@ -306,7 +306,7 @@
 					$html .= '
 						</ul>';
 
-					$response = new response_html();
+					$response = response_get('html');
 					$response->title_set('Maintenance Jobs');
 					$response->view_add_html($html);
 					$response->render();

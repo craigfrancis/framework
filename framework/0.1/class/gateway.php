@@ -407,7 +407,7 @@
 					$html .= '
 						</ul>';
 
-					$response = new response_html();
+					$response = response_get('html');
 					$response->title_set('Gateways');
 					$response->view_add_html($html);
 					$response->render();

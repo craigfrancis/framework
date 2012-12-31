@@ -86,6 +86,21 @@
 		//--------------------------------------------------
 		// View
 
+			public function view_set_html($html) {
+				$this->view_html = $html;
+				$this->view_folders = NULL;
+				$this->view_path = NULL;
+			}
+
+			public function view_add_html($html) {
+				$this->view_html .= $html;
+			}
+
+			public function view_get_html() {
+				$this->view_processed = true;
+				return $this->view_html;
+			}
+
 			public function view_folders_set($folders) {
 				$this->view_folders = $folders;
 			}
@@ -167,21 +182,6 @@
 
 			}
 
-			public function view_set_html($html) {
-				$this->view_html = $html;
-				$this->view_folders = NULL;
-				$this->view_path = NULL;
-			}
-
-			public function view_add_html($html) {
-				$this->view_html .= $html;
-			}
-
-			public function view_get_html() {
-				$this->view_processed = true;
-				return $this->view_html;
-			}
-
 		//--------------------------------------------------
 		// Template
 
@@ -221,135 +221,47 @@
 			}
 
 		//--------------------------------------------------
-		// Head HTML
+		// Page id
 
-			public function head_add_html($html) {
-				$this->head_html .= $html;
+			public function page_id_set($page_id) {
+				$this->page_id = $page_id;
 			}
 
-			public function head_get_html($config = NULL) {
+			public function page_id_get() {
 
-				//--------------------------------------------------
-				// Canonical URL
+				$page_id = $this->page_id;
 
-					$canonical_url = config::get('output.canonical');
+				if ($page_id === NULL) {
 
-					if ($canonical_url == 'auto') {
+					$mode = config::get('output.page_id', 'route');
 
-						$canonical_url = new url();
-						$canonical_params = $canonical_url->params_get();
+					if ($mode == 'route') {
 
-						if (count($canonical_params) > 0) {
+						$page_id = human_to_ref(config::get('route.path'));
 
-							$vars_used = config::get('request.vars_used', array());
-							$vars_ignore = array('js', 'style');
+					} else if ($mode == 'view') {
 
-							foreach ($canonical_params as $name => $value) {
-								if (!isset($vars_used[$name]) || in_array($name, $vars_ignore)) {
-									$canonical_url->param_set($name, NULL);
-								}
-							}
+						$page_id = human_to_ref($this->view_path_get());
 
-						} else {
+					} else if ($mode == 'request') {
 
-							$canonical_url = NULL;
+						$page_id = human_to_ref(urldecode(config::get('request.path')));
 
-						}
+					} else {
+
+						exit_with_error('Unrecognised page id mode "' . $mode . '"');
 
 					}
 
-					if ($canonical_url !== NULL) {
-						config::array_set('output.links', 'canonical', $canonical_url);
+					if ($page_id == '') {
+						$page_id = 'home';
 					}
 
-				//--------------------------------------------------
-				// Content type
+					$this->page_id = 'p_' . $page_id;
 
-					$html = "\n\t" . '<meta charset="' . html(config::get('output.charset')) . '" />';
+				}
 
-				//--------------------------------------------------
-				// Page title
-
-					$html .= "\n\n\t" . '<title>' . html($this->title_get()) . '</title>';
-
-				//--------------------------------------------------
-				// Favicon
-
-					$favicon_url = config::get('output.favicon_url');
-
-					if ($favicon_url !== NULL) {
-						$html .= "\n\n\t" . '<link rel="shortcut icon" type="image/x-icon" href="' . html($favicon_url) . '" />';
-					}
-
-				//--------------------------------------------------
-				// Output links (e.g. canonical/next/prev)
-
-					foreach (config::get('output.links', array()) as $name => $value) {
-						$html .= "\n\t" . '<link rel="' . html($name) . '" href="' . html($value) . '" />';
-					}
-
-				//--------------------------------------------------
-				// CSS
-
-					if ($this->browser_advanced) {
-						$html .= $this->_css_get('html');
-					}
-
-				//--------------------------------------------------
-				// Extra head HTML
-
-					if ($this->browser_advanced) {
-						$html .= $this->head_html . "\n\n";
-					}
-
-				//--------------------------------------------------
-				// Return
-
-					return trim($html) . "\n";
-
-			}
-
-		//--------------------------------------------------
-		// Foot HTML
-
-			public function foot_get_html() {
-
-				//--------------------------------------------------
-				// Start
-
-					$html = '';
-
-				//--------------------------------------------------
-				// Javascript
-
-					if ($this->js_enabled && $this->browser_advanced) {
-
-						$js_prefix = config::get('output.js_path_prefix', '');
-						$js_files = array();
-
-						foreach ($this->resources_get('js') as $file) {
-
-							if (substr($file['path'], 0, 1) == '/') {
-								$file['path'] = $js_prefix . $file['path'];
-							}
-
-							$js_files[$file['path']] = array_merge(array('type' => 'text/javascript', 'src' => $file['path']), $file['attributes']); // Unique path
-
-						}
-
-						if (count($js_files) > 0) {
-							$html .= "\n";
-							foreach ($js_files as $attributes) {
-								$html .= "\n\t" . html_tag('script', $attributes) . '</script>';
-							}
-						}
-
-					}
-
-				//--------------------------------------------------
-				// Return
-
-					return trim($html) . "\n";
+				return $this->page_id;
 
 			}
 
@@ -441,47 +353,31 @@
 			}
 
 		//--------------------------------------------------
-		// Page ref
+		// Tracking
 
-			public function page_id_set($page_id) {
-				$this->page_id = $page_id;
-			}
+			public function tracking_allowed_get() {
 
-			public function page_id_get() {
+				if ($this->tracking_enabled === NULL) {
 
-				$page_id = $this->page_id;
+					$this->tracking_enabled = config::get('output.tracking', (SERVER == 'live'));
 
-				if ($page_id === NULL) {
+					if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
 
-					$mode = config::get('output.page_id', 'route');
+						$this->tracking_enabled = false;
 
-					if ($mode == 'route') {
+					} else if (function_exists('getallheaders')) {
 
-						$page_id = human_to_ref(config::get('route.path'));
-
-					} else if ($mode == 'view') {
-
-						$page_id = human_to_ref($this->view_path_get());
-
-					} else if ($mode == 'request') {
-
-						$page_id = human_to_ref(urldecode(config::get('request.path')));
-
-					} else {
-
-						exit_with_error('Unrecognised page ref mode "' . $mode . '"');
+						foreach (getallheaders() as $name => $value) {
+							if (strtolower($name) == 'dnt' && $value == 1) {
+								$this->tracking_enabled = false;
+							}
+						}
 
 					}
-
-					if ($page_id == '') {
-						$page_id = 'home';
-					}
-
-					$this->page_id = 'p_' . $page_id;
 
 				}
 
-				return $this->page_id;
+				return $this->tracking_enabled;
 
 			}
 
@@ -890,45 +786,135 @@
 			}
 
 		//--------------------------------------------------
-		// Helper functions
+		// Head HTML
 
-			public function tracking_allowed_get() {
+			public function head_add_html($html) {
+				$this->head_html .= $html;
+			}
 
-				if ($this->tracking_enabled === NULL) {
+			public function head_get_html($config = NULL) {
 
-					$this->tracking_enabled = config::get('output.tracking', (SERVER == 'live'));
+				//--------------------------------------------------
+				// Canonical URL
 
-					if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
+					$canonical_url = config::get('output.canonical');
 
-						$this->tracking_enabled = false;
+					if ($canonical_url == 'auto') {
 
-					} else if (function_exists('getallheaders')) {
+						$canonical_url = new url();
+						$canonical_params = $canonical_url->params_get();
 
-						foreach (getallheaders() as $name => $value) {
-							if (strtolower($name) == 'dnt' && $value == 1) {
-								$this->tracking_enabled = false;
+						if (count($canonical_params) > 0) {
+
+							$vars_used = config::get('request.vars_used', array());
+							$vars_ignore = array('js', 'style');
+
+							foreach ($canonical_params as $name => $value) {
+								if (!isset($vars_used[$name]) || in_array($name, $vars_ignore)) {
+									$canonical_url->param_set($name, NULL);
+								}
+							}
+
+						} else {
+
+							$canonical_url = NULL;
+
+						}
+
+					}
+
+					if ($canonical_url !== NULL) {
+						config::array_set('output.links', 'canonical', $canonical_url);
+					}
+
+				//--------------------------------------------------
+				// Content type
+
+					$html = "\n\t" . '<meta charset="' . html(config::get('output.charset')) . '" />';
+
+				//--------------------------------------------------
+				// Page title
+
+					$html .= "\n\n\t" . '<title>' . html($this->title_get()) . '</title>';
+
+				//--------------------------------------------------
+				// Favicon
+
+					$favicon_url = config::get('output.favicon_url');
+
+					if ($favicon_url !== NULL) {
+						$html .= "\n\n\t" . '<link rel="shortcut icon" type="image/x-icon" href="' . html($favicon_url) . '" />';
+					}
+
+				//--------------------------------------------------
+				// Output links (e.g. canonical/next/prev)
+
+					foreach (config::get('output.links', array()) as $name => $value) {
+						$html .= "\n\t" . '<link rel="' . html($name) . '" href="' . html($value) . '" />';
+					}
+
+				//--------------------------------------------------
+				// CSS
+
+					if ($this->browser_advanced) {
+						$html .= $this->_css_get('html');
+					}
+
+				//--------------------------------------------------
+				// Extra head HTML
+
+					if ($this->browser_advanced) {
+						$html .= $this->head_html . "\n\n";
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return trim($html) . "\n";
+
+			}
+
+		//--------------------------------------------------
+		// Foot HTML
+
+			public function foot_get_html() {
+
+				//--------------------------------------------------
+				// Start
+
+					$html = '';
+
+				//--------------------------------------------------
+				// Javascript
+
+					if ($this->js_enabled && $this->browser_advanced) {
+
+						$js_prefix = config::get('output.js_path_prefix', '');
+						$js_files = array();
+
+						foreach ($this->resources_get('js') as $file) {
+
+							if (substr($file['path'], 0, 1) == '/') {
+								$file['path'] = $js_prefix . $file['path'];
+							}
+
+							$js_files[$file['path']] = array_merge(array('type' => 'text/javascript', 'src' => $file['path']), $file['attributes']); // Unique path
+
+						}
+
+						if (count($js_files) > 0) {
+							$html .= "\n";
+							foreach ($js_files as $attributes) {
+								$html .= "\n\t" . html_tag('script', $attributes) . '</script>';
 							}
 						}
 
 					}
 
-				}
+				//--------------------------------------------------
+				// Return
 
-				return $this->tracking_enabled;
-
-			}
-
-			private function _js_code_save($code) { // Don't call directly, use js_code_add()
-
-				$session_js = session::get('output.js_code');
-
-				if (!isset($session_js[$this->js_code_ref])) {
-					$session_js[$this->js_code_ref] = '';
-				}
-
-				$session_js[$this->js_code_ref] .= $code;
-
-				session::set('output.js_code', $session_js);
+					return trim($html) . "\n";
 
 			}
 
@@ -1169,11 +1155,28 @@
 				$this->render();
 			}
 
+		//--------------------------------------------------
+		// Support functions
+
 			private function _render_file() {
 				ob_start();
 				extract($this->variables);
 				require(func_get_arg(0));
 				return ob_get_clean();
+			}
+
+			private function _js_code_save($code) { // Don't call directly, use js_code_add()
+
+				$session_js = session::get('output.js_code');
+
+				if (!isset($session_js[$this->js_code_ref])) {
+					$session_js[$this->js_code_ref] = '';
+				}
+
+				$session_js[$this->js_code_ref] .= $code;
+
+				session::set('output.js_code', $session_js);
+
 			}
 
 	}
