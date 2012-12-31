@@ -254,6 +254,7 @@
 
 					$field_delivery_country = new form_field_select($this, 'Payment country');
 					$field_delivery_country->db_field_set('delivery_country', 'key');
+					$field_delivery_country->autocomplete_set('shipping country');
 					$field_delivery_country->options_set($countries);
 					$field_delivery_country->label_option_set('');
 

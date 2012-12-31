@@ -359,6 +359,7 @@
 			public function logout() {
 				$this->session->logout();
 				$this->user_id = 0;
+				$this->complete_logout();
 				return true;
 			}
 
@@ -849,6 +850,9 @@
 
 						$this->session->session_create($this->user_id);
 
+				}
+
+				public function complete_logout() {
 				}
 
 				public function complete_register() {

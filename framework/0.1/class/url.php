@@ -93,7 +93,7 @@
 						$value = ''; // Want to be available in an isset check
 					}
 
-					$this->parameters[$key] = $value; // Blank values will be removed later
+					$this->parameters[$key] = strval($value); // Blank values will be removed later
 
 				}
 

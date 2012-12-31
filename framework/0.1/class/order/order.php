@@ -304,10 +304,20 @@
 		// Reset
 
 			public function reset() {
-
 				$this->order_id = NULL;
 				$this->order_data = NULL;
+			}
 
+		//--------------------------------------------------
+		// Session linking
+
+			public function forget() {
+				$this->reset();
+				session::delete('order_ref');
+			}
+
+			public function remember() {
+				session::set('order_ref', $this->ref_get());
 			}
 
 		//--------------------------------------------------
@@ -318,6 +328,10 @@
 			}
 
 			public function select_open() {
+
+				if ($this->order_id !== NULL && $this->order_data['payment_received'] == '0000-00-00 00:00:00') {
+					return true; // Already selected
+				}
 
 				$selected = $this->select_by_ref(session::get('order_ref'));
 
@@ -330,6 +344,10 @@
 			}
 
 			public function select_paid() {
+
+				if ($this->order_id !== NULL && $this->order_data['payment_received'] != '0000-00-00 00:00:00') {
+					return true; // Already selected
+				}
 
 				$selected = $this->select_by_ref(session::get('order_ref'));
 
@@ -1163,7 +1181,10 @@
 					$this->order_data['created'] = $date;
 					$this->order_data['payment_received'] = '0000-00-00 00:00:00';
 
-					session::set('order_ref', $this->ref_get());
+				//--------------------------------------------------
+				// Remember in session
+
+					$this->remember();
 
 			}
 
