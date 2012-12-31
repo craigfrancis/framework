@@ -4,11 +4,11 @@
 // Config
 
 	if (SERVER == 'stage') {
-		$path_config = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/system/02.config.php';
+		$path_config = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/includes/02.config.php';
 		$path_source = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/class/form';
 		$path_output = '/Volumes/WebServer/Projects/cpoets.library/a/php/form2.php';
 	} else {
-		$path_config = ROOT . '/framework/0.1/system/02.config.php';
+		$path_config = ROOT . '/framework/0.1/includes/02.config.php';
 		$path_source = ROOT . '/framework/0.1/class/form';
 		$path_output = NULL;
 	}
@@ -152,6 +152,31 @@
 		$output_php .= "\n";
 		$output_php .= '	function file_size_to_human($size) {' . "\n";
 		$output_php .= '		return fileSize2human($size);' . "\n";
+		$output_php .= '	}' . "\n";
+		$output_php .= "\n";
+		$output_php .= '	function file_size_to_bytes($size) {' . "\n";
+		$output_php .= '	' . "\n";
+		$output_php .= '		$size = trim($size);' . "\n";
+		$output_php .= '	' . "\n";
+		$output_php .= '		if (strtoupper(substr($size, -1)) == \'B\') {' . "\n";
+		$output_php .= '			$size = substr($size, 0, -1); // Drop the B, as in 10B or 10KB' . "\n";
+		$output_php .= '		}' . "\n";
+		$output_php .= '	' . "\n";
+		$output_php .= '		$units = array(' . "\n";
+		$output_php .= '				\'P\' => 1125899906842624,' . "\n";
+		$output_php .= '				\'T\' => 1099511627776,' . "\n";
+		$output_php .= '				\'G\' => 1073741824,' . "\n";
+		$output_php .= '				\'M\' => 1048576,' . "\n";
+		$output_php .= '				\'K\' => 1024,' . "\n";
+		$output_php .= '			);' . "\n";
+		$output_php .= '	' . "\n";
+		$output_php .= '		$unit = strtoupper(substr($size, -1));' . "\n";
+		$output_php .= '		if (isset($units[$unit])) {' . "\n";
+		$output_php .= '			$size = (substr($size, 0, -1) * $units[$unit]);' . "\n";
+		$output_php .= '		}' . "\n";
+		$output_php .= '	' . "\n";
+		$output_php .= '		return intval($size);' . "\n";
+		$output_php .= '	' . "\n";
 		$output_php .= '	}' . "\n";
 		$output_php .= "\n";
 		$output_php .= '	function is_email($email) {' . "\n";

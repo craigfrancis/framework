@@ -35,7 +35,7 @@
 		//--------------------------------------------------
 		// HTML input
 
-			public function _input_by_key_attributes($key, $field_id) {
+			public function _input_by_key_attributes($key) {
 
 				if ($this->value_print_cache === NULL) {
 					$this->value_print_cache = $this->_value_print_get();
@@ -43,7 +43,7 @@
 
 				$attributes = parent::_input_attributes();
 				$attributes['type'] = 'radio';
-				$attributes['id'] = $this->id . '_' . ($field_id + 1);
+				$attributes['id'] = $this->field_id_by_key_get($key);
 				$attributes['value'] = ($key === NULL ? '' : $key);
 
 				$checked = in_array($attributes['value'], $this->value_print_cache);

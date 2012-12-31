@@ -109,15 +109,14 @@
 			}
 
 			public function option_values_set($values) {
-				$options = array();
+				$this->option_values = array();
 				foreach ($values as $value) {
 					if ($value === '') {
 						exit_with_error('Cannot have an option with a blank key.', debug_dump($values));
 					} else {
-						$options[$value] = $value; // Use the value for the key as well... so if the values change between loading the form, and submitting (e.g. site update).
+						$this->option_values[$value] = $value; // Use the value for the key as well... so if the values change between loading the form, and submitting (e.g. site update).
 					}
 				}
-				$this->options_set($options); // Call function so check box fields can also set option_keys
 			}
 
 			public function option_groups_set($option_groups) {

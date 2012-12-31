@@ -5,7 +5,6 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $option_keys;
 			protected $value_print_cache;
 
 		//--------------------------------------------------
@@ -26,11 +25,6 @@
 
 			}
 
-			public function options_set($options) {
-				parent::options_set($options);
-				$this->option_keys = array_keys($this->option_values);
-			}
-
 		//--------------------------------------------------
 		// Field ID
 
@@ -44,11 +38,10 @@
 			}
 
 			public function field_id_by_key_get($key) {
-				$field_id = array_search($key, $this->option_keys, true);
-				if ($field_id !== false && $field_id !== NULL) {
-					return $this->id . '_' . ($field_id + 1);
+				if ($key === NULL) {
+					return $this->id; // Label
 				} else {
-					return 'Unknown key "' . html($key) . '"';
+					return $this->id . '_' . human_to_ref($key);
 				}
 			}
 
@@ -74,20 +67,15 @@
 
 			public function html_label_by_key($key, $label_html = NULL) {
 
-				if ($key === NULL) {
-					$field_id = -1; // Label option
-				} else {
-					$field_id = array_search($key, $this->option_keys, true);
-					if ($field_id === false || $field_id === NULL) {
-						return 'Unknown key "' . html($key) . '"';
-					}
+				if ($key !== NULL && !isset($this->option_values[$key])) {
+					return 'Unknown key "' . html($key) . '"';
 				}
 
-				$input_id = $this->id . '_' . ($field_id + 1);
+				$input_id = $this->field_id_by_key_get($key);
 
 				if ($label_html === NULL) {
 
-					if ($field_id == -1) {
+					if ($key === NULL) {
 						$label = $this->label_option;
 					} else {
 						$label = $this->option_values[$key];
@@ -124,20 +112,15 @@
 
 			public function html_input_by_key($key) {
 
-				if ($key === NULL) {
-					$field_id = -1; // Label option
-				} else {
-					$field_id = array_search($key, $this->option_keys, true);
-					if ($field_id === false || $field_id === NULL) {
-						return 'Unknown key "' . html($key) . '"';
-					}
+				if ($key !== NULL && !isset($this->option_values[$key])) {
+					return 'Unknown key "' . html($key) . '"';
 				}
 
-				return html_tag('input', $this->_input_by_key_attributes($key, $field_id));
+				return html_tag('input', $this->_input_by_key_attributes($key));
 
 			}
 
-			public function _input_by_key_attributes($key, $field_id) {
+			public function _input_by_key_attributes($key) {
 
 				if ($this->value_print_cache === NULL) {
 					$this->value_print_cache = $this->_value_print_get();
@@ -145,7 +128,7 @@
 
 				$attributes = parent::_input_attributes();
 				$attributes['type'] = 'checkbox';
-				$attributes['id'] = $this->id . '_' . ($field_id + 1);
+				$attributes['id'] = $this->field_id_by_key_get($key);
 				$attributes['name'] = $this->name . '[]';
 				$attributes['value'] = ($key === NULL ? '' : $key);
 				$attributes['required'] = NULL; // Can't set to required, as otherwise you have to tick all of them.
