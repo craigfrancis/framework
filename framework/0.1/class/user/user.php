@@ -58,6 +58,7 @@
 			protected $identification_type = 'email';
 			protected $cookie_login_last = 'user_login_last_id';
 			protected $remember_login = true;
+			protected $password_reset_url = NULL;
 
 			protected $db_link;
 
@@ -156,10 +157,11 @@
 							'password_repeat_max_len' => 'Your password confirmation cannot be longer than XXX characters.',
 							'new_pass_invalid_identification' => 'Your email address has not been recognised.',
 							'new_pass_recently_changed' => 'Your account has already had its password changed recently.',
+							'new_pass_recently_requested' => 'You have recently requested a password reset.',
 							'new_pass_invalid_token' => 'The link to reset your password is incorrect or has expired.',
 							'login_invalid_identification' => 'Invalid log-in details.',
 							'login_invalid_password' => 'Invalid log-in details.',
-							'login_frequent_failure' => 'Too many failed logins.',
+							'login_failure_repetition' => 'Too many failed logins.',
 							'save_details_invalid_password' => 'Your current password is incorrect.',
 							'save_details_invalid_new_password_repeat' => 'Your new passwords do not match.',
 							'save_details_invalid_new_identification' => 'The email address supplied is already in use.',
@@ -488,7 +490,7 @@
 		// New password - request goes to email address
 		// and they can set the new password later
 
-			public function password_reset_url($request_url = NULL) {
+			public function password_reset_request($request_url = NULL) {
 
 				//--------------------------------------------------
 				// Check table exists
@@ -517,21 +519,47 @@
 				//--------------------------------------------------
 				// Process
 
+					$this->password_reset_url = NULL;
+
 					if ($form->valid()) {
 
 						$user_id = $this->auth->identification_id_get($identification);
 
-						if ($user_id !== false) {
-							return $this->auth->password_reset_url($user_id, $request_url);
+						if ($user_id === false) {
+
+							return true; // Don't say that we don't find a user account.
+
+						} else {
+
+							$result = $this->auth->password_reset_url($user_id, $request_url);
+
+							if ($result === false) {
+
+								$form->error_add($this->text['new_pass_recently_requested']);
+
+								return false;
+
+							} else {
+
+								$this->password_reset_url = $result;
+
+								return true;
+
+							}
+
 						}
 
 					}
 
 				//--------------------------------------------------
-				// Fail
+				// Error
 
 					return false;
 
+			}
+
+			public function password_reset_url() {
+				return $this->password_reset_url;
 			}
 
 			public function password_reset_valid() {
@@ -706,9 +734,9 @@
 
 						$form->error_add($this->text['login_invalid_password']);
 
-					} else if ($result === 'frequent_failure') {
+					} else if ($result === 'failure_repetition') {
 
-						$form->error_add($this->text['login_frequent_failure']);
+						$form->error_add($this->text['login_failure_repetition']);
 
 					} else {
 

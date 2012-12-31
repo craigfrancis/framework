@@ -58,7 +58,7 @@
 								' . $db->escape_field($this->user_obj->db_table_main) . '
 							WHERE
 								' . $this->db_where_sql . ' AND
-								' . $db->escape_field($this->db_table_fields['identification']) . ' = "' . $db->escape($identification) . '" AND
+								' . $db->escape_field($this->db_table_fields['identification']) . ' = "' . $db->escape(strval($identification)) . '" AND
 								' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"
 							LIMIT
 								1');
@@ -195,18 +195,30 @@
 
 				$db->query('SELECT
 								id,
-								pass
+								pass,
+								sent
 							FROM
 								' . $this->user_obj->db_table_reset . '
 							WHERE
 								user_id = "' . $db->escape($user_id) . '" AND
-								created > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-60 minutes'))) . '" AND
 								used = "0000-00-00 00:00:00"');
 
 				if ($row = $db->fetch_row()) {
 
+					if (strtotime($row['sent']) > strtotime('-5 minutes')) {
+						return false;
+					}
+
 					$request_id = $row['id'];
 					$request_pass = $row['pass'];
+
+					$db->query('UPDATE
+									' . $this->user_obj->db_table_reset . '
+								SET
+									sent = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+								WHERE
+									id = "' . $db->escape($request_id) . '" AND
+									used = "0000-00-00 00:00:00"');
 
 				} else {
 
@@ -217,6 +229,7 @@
 							'user_id' => $user_id,
 							'pass' => $request_pass,
 							'created' => date('Y-m-d H:i:s'),
+							'sent' => date('Y-m-d H:i:s'),
 							'used' => '0000-00-00 00:00:00',
 						));
 
@@ -349,7 +362,7 @@
 								deleted = "0000-00-00 00:00:00"');
 
 				if ($db->num_rows() >= 60) { // Once every 30 seconds, for the 30 minutes
-					$error = 'frequent_failure';
+					$error = 'failure_repetition';
 				} else {
 					$error = '';
 				}
