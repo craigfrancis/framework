@@ -189,9 +189,63 @@
 		public function password_reset_url($user_id, $request_url) {
 
 			//--------------------------------------------------
-			// Create request record
+			// Cleanup
 
 				$db = $this->user_obj->db_get();
+
+				$db->query('DELETE FROM
+								' . $this->user_obj->db_table_reset . '
+							WHERE
+								user_id = 0 AND
+								created = "' . $db->escape(date('Y-m-d H:i:s', strtotime('-1 day'))) . '"');
+
+			//--------------------------------------------------
+			// Too many attempts?
+
+				$db->query('SELECT
+								created
+							FROM
+								' . $db->escape_field($this->user_obj->db_table_reset) . '
+							WHERE
+								(
+									(
+										user_id = "' . $db->escape($user_id) . '" AND
+										used = "0000-00-00 00:00:00"
+									) OR (
+										user_id = 0 AND
+										ip = "' . $db->escape(config::get('request.ip')) . '"
+									)
+								) AND
+								sent > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-3 minutes'))) . '"
+							LIMIT
+								1');
+
+				if ($db->num_rows() > 0) {
+					return 'recently_requested';
+				}
+
+			//--------------------------------------------------
+			// Invalid user id
+
+				if ($user_id === false) {
+
+					$db->insert($this->user_obj->db_table_reset, array(
+							'id' => '',
+							'pass' => '',
+							'user_id' => 0,
+							'ip' => config::get('request.ip'),
+							'browser' => config::get('request.browser'),
+							'created' => date('Y-m-d H:i:s'),
+							'sent' => date('Y-m-d H:i:s'),
+							'used' => '0000-00-00 00:00:00',
+						));
+
+					return 'invalid_user';
+
+				}
+
+			//--------------------------------------------------
+			// Create request record
 
 				$db->query('SELECT
 								id,
@@ -204,10 +258,6 @@
 								used = "0000-00-00 00:00:00"');
 
 				if ($row = $db->fetch_row()) {
-
-					if (strtotime($row['sent']) > strtotime('-5 minutes')) {
-						return false;
-					}
 
 					$request_id = $row['id'];
 					$request_pass = $row['pass'];
@@ -226,8 +276,10 @@
 
 					$db->insert($this->user_obj->db_table_reset, array(
 							'id' => '',
-							'user_id' => $user_id,
 							'pass' => $request_pass,
+							'user_id' => $user_id,
+							'ip' => config::get('request.ip'),
+							'browser' => config::get('request.browser'),
 							'created' => date('Y-m-d H:i:s'),
 							'sent' => date('Y-m-d H:i:s'),
 							'used' => '0000-00-00 00:00:00',
@@ -422,15 +474,15 @@
 			//--------------------------------------------------
 			// Record failure
 
-				$failure_ip = config::get('request.ip');
+				$request_ip = config::get('request.ip');
 
-				if (!in_array($failure_ip, config::get('user.ip_whitelist', array()))) {
+				if (!in_array($request_ip, config::get('user.ip_whitelist', array()))) {
 
 					$db->insert($this->user_obj->db_table_session, array(
 							'id' => '',
 							'pass' => '', // Will remain blank to record failure
 							'user_id' => $db_id,
-							'ip' => $failure_ip,
+							'ip' => $request_ip,
 							'browser' => config::get('request.browser'),
 							'created' => date('Y-m-d H:i:s'),
 							'last_used' => date('Y-m-d H:i:s'),

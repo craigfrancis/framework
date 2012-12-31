@@ -500,9 +500,12 @@
 						debug_require_db_table($this->db_table_reset, '
 								CREATE TABLE [TABLE] (
 									id int(11) NOT NULL AUTO_INCREMENT,
-									user_id int(11) NOT NULL,
 									pass tinytext NOT NULL,
+									user_id int(11) NOT NULL,
+									ip tinytext NOT NULL,
+									browser tinytext NOT NULL,
 									created datetime NOT NULL,
+									sent datetime NOT NULL,
 									used datetime NOT NULL,
 									PRIMARY KEY (id)
 								);');
@@ -525,27 +528,23 @@
 
 						$user_id = $this->auth->identification_id_get($identification);
 
-						if ($user_id === false) {
+						$result = $this->auth->password_reset_url($user_id, $request_url);
 
-							return true; // Don't say that we don't find a user account.
+						if ($result == 'invalid_user') {
+
+							return true; // Don't say on the website that we don't find a user account, password_reset_url() will return NULL, so the email can tell them.
+
+						} else if ($result == 'recently_requested') {
+
+							$form->error_add($this->text['new_pass_recently_requested']);
+
+							return false;
 
 						} else {
 
-							$result = $this->auth->password_reset_url($user_id, $request_url);
+							$this->password_reset_url = $result;
 
-							if ($result === false) {
-
-								$form->error_add($this->text['new_pass_recently_requested']);
-
-								return false;
-
-							} else {
-
-								$this->password_reset_url = $result;
-
-								return true;
-
-							}
+							return true;
 
 						}
 
