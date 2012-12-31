@@ -423,6 +423,13 @@
 					}
 
 				//--------------------------------------------------
+				// Variables
+
+					foreach ($config['variables'] as $name => $value) {
+						$content_html = str_replace('[' . strtoupper($name) . ']', html($value), $content_html);
+					}
+
+				//--------------------------------------------------
 				// Empty defaults
 
 					if ($content_html == '') {
