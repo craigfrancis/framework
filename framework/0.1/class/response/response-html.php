@@ -84,6 +84,13 @@
 			}
 
 		//--------------------------------------------------
+		// Setup output
+
+			public function setup_output_set($output) {
+				$this->view_html .= $output; // Output from the controller
+			}
+
+		//--------------------------------------------------
 		// View
 
 			public function view_set_html($html) {

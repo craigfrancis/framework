@@ -83,6 +83,11 @@
 				ob_start();
 
 			//--------------------------------------------------
+			// Response setup
+
+				$response = response_get();
+
+			//--------------------------------------------------
 			// Include setup
 
 				if (config::get('debug.level') >= 4) {
@@ -104,17 +109,17 @@
 				require_once(FRAMEWORK_ROOT . '/includes/07.controller.php');
 
 			//--------------------------------------------------
-			// Response
+			// Response render
 
-				$response->view_add_html(ob_get_clean());
+				$response->setup_output_set(ob_get_clean());
 				$response->render();
 
-				unset($view);
+				unset($response);
 
 		//--------------------------------------------------
 		// Debug
 
-			if (config::get('debug.level') > 0) {
+			if (config::get('debug.level') >= 4) {
 
 				//--------------------------------------------------
 				// Local variables
@@ -142,9 +147,7 @@
 				//--------------------------------------------------
 				// Log end
 
-					if (config::get('debug.level') >= 4) {
-						debug_progress('End');
-					}
+					debug_progress('End');
 
 			}
 

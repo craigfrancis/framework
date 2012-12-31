@@ -271,8 +271,6 @@
 //--------------------------------------------------
 // Action
 
-	$response = response_get();
-
 	if ($action_method !== NULL) {
 
 		if (substr(config::get('route.path'), -1) != '/') { // reduce possibility of duplicate content issues, for a page that exists
