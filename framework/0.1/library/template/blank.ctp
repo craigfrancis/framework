@@ -7,8 +7,6 @@
 </head>
 <body id="<?= html($this->page_id_get()) ?>">
 
-	<?= $this->message_get_html(); ?>
-
 	<?= $this->view_get_html(); ?>
 
 	<?= $this->foot_get_html(); ?>
