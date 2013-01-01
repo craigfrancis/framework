@@ -410,7 +410,7 @@
 					$response = response_get('html');
 					$response->title_set('Gateways');
 					$response->view_add_html($html);
-					$response->render();
+					$response->send();
 
 			}
 

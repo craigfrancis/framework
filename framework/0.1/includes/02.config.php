@@ -225,7 +225,7 @@
 		config::set_default('output.protocols', array('http')); // Don't auto guess https as only protocol, as STS header would be sent
 		config::set_default('output.domain', config::get('request.domain')); // Can be set for CLI support in app config file
 		config::set_default('output.lang', 'en-GB');
-		config::set_default('output.mime', (SERVER == 'stage' ? 'application/xhtml+xml' : 'text/html'));
+		config::set_default('output.mime', (SERVER == 'stage' ? 'application/xml' : 'text/html'));
 		config::set_default('output.charset', 'UTF-8');
 		config::set_default('output.canonical', 'auto');
 		config::set_default('output.no_cache', false);

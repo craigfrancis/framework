@@ -83,7 +83,7 @@
 
 ?>
 <!DOCTYPE html>
-<html lang="<?= html(config::get('output.lang')) ?>" xml:lang="<?= html(config::get('output.lang')) ?>" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="<?= html($this->lang_get()) ?>" xml:lang="<?= html($this->lang_get()) ?>" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
 	<?= $this->head_get_html(); ?>

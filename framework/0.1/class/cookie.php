@@ -126,7 +126,7 @@
 
 		public static function require_support() {
 			if (!self::supported()) {
-				render_error('cookies');
+				error_send('cookies');
 			}
 		}
 

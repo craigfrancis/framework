@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // Download response
 
-	class response_download_base extends response {
+	class response_text_base extends response {
 
 		//--------------------------------------------------
 		// Variables
@@ -13,7 +13,6 @@
 			private $error_output = false;
 
 			private $name = NULL;
-			private $path = NULL;
 			private $content = '';
 
 		//--------------------------------------------------
@@ -43,9 +42,7 @@
 		// Setup output
 
 			public function setup_output_set($output) {
-				if ($output != '') {
-					$this->error_set('setup-output', $output);
-				}
+				$this->content = $content . $this->content;
 			}
 
 		//--------------------------------------------------
@@ -63,13 +60,7 @@
 		// Content type
 
 			public function mime_get() {
-				if ($this->mime === NULL && $this->path !== NULL) {
-					return mime_content_type($this->path); // Please don't rely on this function
-				}
-				if ($this->mime === NULL) {
-					return 'application/octet-stream';
-				}
-				return $this->mime;
+				return 'text/plain';
 			}
 
 		//--------------------------------------------------
@@ -80,14 +71,7 @@
 			}
 
 			public function name_get() {
-				if ($this->name === NULL && $this->path !== NULL) {
-					return basename($this->path);
-				}
 				return $this->name;
-			}
-
-			public function path_set($path) {
-				$this->path = $path;
 			}
 
 			public function content_set($content) {
@@ -103,41 +87,17 @@
 
 			public function send() {
 
-				if ($this->error_ref) {
+				$length = strlen($this->content);
 
-					// TODO: Does not really work that well... ref setup_output_set... perhaps call exit_with_error instead?
+				header('Content-Type: ' . head($this->mime_get()) . '; charset=' . head($this->charset_get()));
+				header('Content-Length: ' . head($length));
 
-					$response = response_get('html');
-					$response->template_path_set(FRAMEWORK_ROOT . '/library/template/blank.ctp');
-					$response->set('message', $this->error_ref);
-					$response->set('hidden_info', $this->error_output);
-					$response->error_send('system');
-
-				} else {
-
-					$mode = ($this->inline_get() ? 'inline' : 'attachment');
-
-					if ($this->path !== NULL) {
-						$length = filesize($this->path);
-					} else {
-						$length = strlen($this->content);
-					}
-
-					header('Content-Type: ' . head($this->mime_get()) . '; charset=' . head($this->charset_get()));
-					header('Content-Disposition: ' . head($mode) . '; filename="' . head($this->name_get()) . '"');
-					header('Content-Length: ' . head($length));
-
-					header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS
-					header('Expires: ' . head(date('D, d M Y 00:00:00')) . ' GMT');
-					header('Pragma:');
-
-					if ($this->path !== NULL) {
-						readfile($this->path);
-					} else {
-						echo $this->content;
-					}
-
+				$file_name = $this->name_get();
+				if ($file_name !== NULL) {
+					header('Content-Disposition: ' . head($this->inline_get() ? 'inline' : 'attachment') . '; filename="' . head($file_name) . '"');
 				}
+
+				echo $this->content;
 
 			}
 

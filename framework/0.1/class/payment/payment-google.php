@@ -47,8 +47,8 @@
 						$header[] = 'POST ' . head($url_parts['path']) . ' HTTP/1.0';
 						$header[] = 'Host: ' . head($url_parts['host']);
 						$header[] = 'Authorization: Basic ' . head(base64_encode($GLOBALS['googleMerchantId'] . ':' . $GLOBALS['googleMerchantKey']));
-						$header[] = 'Content-Type: application/xml;charset=' . head($GLOBALS['pageCharset']);
-						$header[] = 'Accept: application/xml;charset=' . head($GLOBALS['pageCharset']);
+						$header[] = 'Content-Type: application/xml;charset=' . head(config::get('output.charset'));
+						$header[] = 'Accept: application/xml;charset=' . head(config::get('output.charset'));
 						$header[] = 'Content-Length: ' . strlen($order_xml);
 
 						$data = implode("\r\n", $header) . "\r\n\r\n" . $order_xml;
@@ -112,7 +112,7 @@
 				$currency = $config['order']->currency_get();
 				$items = $config['order']->items_get();
 
-				$xml = '<?xml version="1.0" encoding="' . xml($GLOBALS['pageCharset']) . '"?>
+				$xml = '<?xml version="1.0" encoding="' . xml(config::get('output.charset')) . '"?>
 					<checkout-shopping-cart xmlns="http://checkout.google.com/schema/2">
 						<shopping-cart>
 							<items>';
@@ -138,8 +138,8 @@
 						</shopping-cart>
 						<checkout-flow-support>
 							<merchant-checkout-flow-support>
-								<edit-cart-url>' . xml($GLOBALS['webDomainSSL'] . $GLOBALS['webAddress']) . '/order/</edit-cart-url>
-								<continue-shopping-url>' . xml($GLOBALS['webDomainSSL'] . $GLOBALS['webAddress']) . '/order/thankYou/</continue-shopping-url>
+								<edit-cart-url>' . xml(https_url('/order/')) . '</edit-cart-url>
+								<continue-shopping-url>' . xml(https_url('/order/thankYou/')) . '</continue-shopping-url>
 								<request-buyer-phone-number>false</request-buyer-phone-number>
 								<shipping-methods>
 									<flat-rate-shipping name="UK Delivery">
@@ -281,7 +281,7 @@
 
 					mime_set('application/xml');
 
-					$return_xml  = '<?xml version="1.0" encoding="' . xml($GLOBALS['pageCharset']) . '"?>';
+					$return_xml  = '<?xml version="1.0" encoding="' . xml(config::get('output.charset')) . '"?>';
 					$return_xml .= '<notification-acknowledgment xmlns="http://checkout.google.com/schema/2" serial-number="' . xml($serial_number) . '"/>';
 
 					exit($return_xml);

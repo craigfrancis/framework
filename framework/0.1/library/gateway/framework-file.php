@@ -49,7 +49,7 @@
 		//--------------------------------------------------
 		// Error
 
-			render_error('page-not-found');
+			error_send('page-not-found');
 
 	}
 

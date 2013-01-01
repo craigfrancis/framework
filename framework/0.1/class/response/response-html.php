@@ -14,13 +14,13 @@
 // 	$response->css_alternate_add('/path/to/file.css', 'all', 'Title');
 // 	$response->head_add_html('<html>');
 
-// 	$response->render();
-// 	$response->render_error('page-not-found');
+// 	$response->send();
+// 	$response->error_send('page-not-found');
 
 //--------------------------------------------------
 // HTML Response
 
-	class response_html_base extends check {
+	class response_html_base extends response {
 
 		//--------------------------------------------------
 		// Variables
@@ -83,11 +83,33 @@
 				return $this->error;
 			}
 
+			public function error_send($error) {
+				$this->error_set($error);
+				$this->page_id_set('p_error_' . link_to_ref($error));
+				$this->send();
+			}
+
+		//--------------------------------------------------
+		// Content type
+
+			public function mime_get() {
+
+				$mime_type = parent::mime_get();
+
+				$mime_xml = 'application/xhtml+xml';
+				if ($mime_type == $mime_xml && stripos(config::get('request.accept'), $mime_xml) === false) {
+					$mime_type = 'text/html';
+				}
+
+				return $mime_type;
+
+			}
+
 		//--------------------------------------------------
 		// Setup output
 
 			public function setup_output_set($output) {
-				$this->view_html .= $output; // Output from the controller
+				$this->view_html = $output . $this->view_html; // Output from the controller
 			}
 
 		//--------------------------------------------------
@@ -926,9 +948,9 @@
 			}
 
 		//--------------------------------------------------
-		// Render
+		// Send
 
-			public function render() {
+			public function send() {
 
 				//--------------------------------------------------
 				// View HTML
@@ -940,7 +962,7 @@
 					$view_path = $this->_view_path_get();
 
 					if ($view_path !== NULL) {
-						$this->view_add_html($this->_render_file($view_path));
+						$this->view_add_html($this->_process_file($view_path));
 					}
 
 				//--------------------------------------------------
@@ -1030,15 +1052,11 @@
 						}
 
 					//--------------------------------------------------
-					// Mime
+					// Content type
 
-						$mime_xml = 'application/xhtml+xml';
+						$mime_type = $this->mime_get();
 
-						if (config::get('output.mime') == $mime_xml && stripos(config::get('request.accept'), $mime_xml) === false) {
-							mime_set('text/html');
-						} else {
-							mime_set();
-						}
+						header('Content-Type: ' . head($mime_type) . '; charset=' . head($this->charset_get()));
 
 					//--------------------------------------------------
 					// Framing options
@@ -1124,7 +1142,7 @@
 				//--------------------------------------------------
 				// Debug
 
-					if (config::get('debug.level') > 0 && config::get('debug.show') && in_array(config::get('output.mime'), array('text/html', 'application/xhtml+xml'))) {
+					if (config::get('debug.level') > 0 && config::get('debug.show') && in_array($mime_type, array('text/html', 'application/xhtml+xml'))) {
 
 						$this->js_code_add("\n", 'async'); // Add something so the file is included, and session is started. The rest will be added in debug_shutdown()
 
@@ -1137,15 +1155,15 @@
 				//--------------------------------------------------
 				// XML Prolog
 
-					if (config::get('output.mime') == 'application/xml') {
+					if ($mime_type == 'application/xml') {
 						echo '<?xml version="1.0" encoding="' . html(config::get('output.charset')) . '" ?>';
 						echo $this->_css_get('xml') . "\n";
 					}
 
 				//--------------------------------------------------
-				// Render template
+				// Send template
 
-					echo $this->_render_file($this->_template_path_get());
+					echo $this->_process_file($this->_template_path_get());
 
 				//--------------------------------------------------
 				// If view_get_html() was not called
@@ -1156,16 +1174,10 @@
 
 			}
 
-			public function render_error($error) {
-				$this->error_set($error);
-				$this->page_id_set('p_error_' . link_to_ref($error));
-				$this->render();
-			}
-
 		//--------------------------------------------------
 		// Support functions
 
-			private function _render_file() {
+			private function _process_file() {
 				ob_start();
 				extract($this->variables);
 				require(func_get_arg(0));

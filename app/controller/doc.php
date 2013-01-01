@@ -143,7 +143,7 @@
 				// Get text
 
 					if (!is_file($doc_file_path)) {
-						render_error('page-not-found');
+						error_send('page-not-found');
 						exit();
 					}
 

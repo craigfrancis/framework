@@ -18,7 +18,7 @@ If you're adding a HTML page, then you just need to create a [view file](/doc/se
 The output from this is added to a [template](/doc/setup/templates/), where the common HTML for the website is added (such as the site navigation).
 
 	<!DOCTYPE html>
-	<html lang="<?= html(config::get('output.lang')) ?>">
+	<html lang="<?= html($this->lang_get()) ?>">
 	<head>
 		<?= $this->head_get_html(); ?>
 	</head>

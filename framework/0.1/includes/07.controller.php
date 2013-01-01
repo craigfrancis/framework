@@ -347,7 +347,7 @@
 		$note_html .= '&#xA0; $response-><strong>css_alternate_add</strong>(\'/path/to/file.css\', \'all\', \'Title\');<br />' . "\n";
 		$note_html .= '&#xA0; $response-><strong>head_add_html</strong>(\'&lt;html&gt;\');<br />' . "\n";
 
-		$note_html .= '&#xA0; <strong>render_error</strong>(\'page-not-found\');<br />' . "\n";
+		$note_html .= '&#xA0; <strong>error_send</strong>(\'page-not-found\');<br />' . "\n";
 		$note_html .= '&#xA0; <strong>message_set</strong>(\'The item has been updated.\');<br />' . "\n";
 
 		foreach (config::get('request.folders') as $id => $value) {

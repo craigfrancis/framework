@@ -65,7 +65,7 @@
 	}
 
 //--------------------------------------------------
-// Render
+// Process request
 
 	if (!defined('FRAMEWORK_INIT_ONLY') || FRAMEWORK_INIT_ONLY !== true) {
 
@@ -109,10 +109,10 @@
 				require_once(FRAMEWORK_ROOT . '/includes/07.controller.php');
 
 			//--------------------------------------------------
-			// Response render
+			// Response
 
 				$response->setup_output_set(ob_get_clean());
-				$response->render();
+				$response->send();
 
 				unset($response);
 

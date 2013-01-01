@@ -542,11 +542,11 @@
 	}
 
 //--------------------------------------------------
-// Render an error page (shortcut)
+// Send an error page (shortcut)
 
-	function render_error($error) {
+	function error_send($error) {
 		$response = response_get('html');
-		$response->render_error($error);
+		$response->error_send($error);
 		exit();
 	}
 

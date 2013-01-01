@@ -143,7 +143,7 @@
 					config::set('output.error', $error);
 
 					$response->set($error);
-					$response->render_error('system');
+					$response->error_send('system');
 
 					exit();
 
@@ -320,7 +320,7 @@
 			$response = response_get('html');
 			$response->template_path_set(FRAMEWORK_ROOT . '/library/template/blank.ctp');
 			$response->view_set_html($output);
-			$response->render();
+			$response->send();
 		} else {
 			echo $output;
 		}

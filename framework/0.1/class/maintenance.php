@@ -263,7 +263,7 @@
 					$response = response_get('html');
 					$response->title_set('Maintenance State');
 					$response->view_add_html($html);
-					$response->render();
+					$response->send();
 
 					// An admin interface which can show the jobs being run, can cancel them, or stack them up.
 
@@ -309,7 +309,7 @@
 					$response = response_get('html');
 					$response->title_set('Maintenance Jobs');
 					$response->view_add_html($html);
-					$response->render();
+					$response->send();
 
 			}
 

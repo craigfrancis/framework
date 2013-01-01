@@ -2,5 +2,5 @@
 	debug
 	escaping (html/csv)
 	string (format_currency)
-	mime_set/render_error
+	mime_set/error_send
 	redirect

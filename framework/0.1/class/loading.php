@@ -215,7 +215,7 @@
 							if (function_exists('response_get')) {
 								$response = response_get('html');
 								$response->set($error);
-								$response->render_error('system');
+								$response->error_send('system');
 								exit();
 							} else {
 								exit('<p>Loading error: ' . html(isset($error['message']) ? $error['message'] : 'Unknown') . '</p>');

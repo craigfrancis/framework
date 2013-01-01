@@ -132,7 +132,7 @@
 				$success = $gateway->run($matches[1], $matches[2]);
 
 				if ($success === false) {
-					render_error('page-not-found');
+					error_send('page-not-found');
 				}
 
 				exit();
