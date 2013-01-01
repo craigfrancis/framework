@@ -1,5 +1,21 @@
 <?php
 
+/***************************************************
+
+	Download standalone server from:
+
+		http://code.google.com/p/selenium/downloads/list
+
+	Run server with:
+
+		java -jar selenium-server-standalone-*.jar
+
+	You may view the admin panel at:
+
+		http://localhost:4444/wd/hub/static/resource/hub.html
+
+***************************************************/
+
 	class testing_controller extends controller {
 
 		public function action_index() {
@@ -9,10 +25,10 @@
 
 				$response = response_get();
 
-			//--------------------------------------------------
-			// Web driver
-
 				$web_driver = new webdriver();
+
+			//--------------------------------------------------
+			// Start session
 
 				$session = $web_driver->session('htmlunit');
 				//$session = $web_driver->session('firefox');
@@ -67,8 +83,6 @@
 			// Response
 
 				$response->template_set('blank');
-
-				$response->set('form', 'XXX');
 
 		}
 
