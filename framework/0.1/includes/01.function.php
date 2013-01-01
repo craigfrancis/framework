@@ -545,7 +545,7 @@
 // Send an error page (shortcut)
 
 	function error_send($error) {
-		$response = response_get('html');
+		$response = response_get(); // Keep current response
 		$response->error_send($error);
 		exit();
 	}
