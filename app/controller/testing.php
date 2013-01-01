@@ -9,33 +9,59 @@
 
 				$response = response_get();
 
-$web_driver = new webdriver();
+			//--------------------------------------------------
+			// Web driver
 
-//$session = $web_driver->session('htmlunit');
-$session = $web_driver->session('firefox');
-$session->open('http://craig.framework.emma.devcf.com/form/example/?type=text');
+				$web_driver = new webdriver();
 
-//debug($session->element('id','signin')->text());
+				$session = $web_driver->session('htmlunit');
+				//$session = $web_driver->session('firefox');
 
-$session->element('id', 'fld_name')->value(split_keys('Craig'));
+			//--------------------------------------------------
+			// Loading
 
+				$url = strval(http_url('/form/example/?type=text'));
 
+				$session->open($url);
 
+				$session->element('id', 'fld_name')->value(split_keys('Craig'));
 
-// $window = $session->window();
-// debug($window->size());
-// for ($k = 3; $k < 400; $k += 10) {
-// 	$window->postPosition(array('x' => $k, 'y' => 300));
-// 	usleep(50000);
-// }
+				debug($session->element('id', 'fld_name')->attribute('value'));
 
-sleep(2);
+				$session->element('id', 'fld_name')->clear();
 
-$session->close();
+				$session->element('css selector', 'form')->submit();
 
+				$error = $session->element('css selector', 'ul.error_list');
+				if ($error) {
+					debug($error->text());
+				}
 
+				$session->element('id', 'fld_name')->value(split_keys('Craig'));
 
+				$session->element('css selector', 'form')->submit();
 
+				debug($session->element('css selector', 'body')->text());
+
+			//--------------------------------------------------
+			// XPath example
+
+				// $session->element('xpath', '//form'); // Does not work due to namespace issue (http://code.google.com/p/firepath/issues/detail?id=21)
+
+			//--------------------------------------------------
+			// Window handling example
+
+				// $window = $session->window();
+				// debug($window->size());
+				// for ($k = 3; $k < 400; $k += 10) {
+				// 	$window->postPosition(array('x' => $k, 'y' => 300));
+				// 	usleep(50000);
+				// }
+
+			//--------------------------------------------------
+			// Close
+
+				$session->close();
 
 			//--------------------------------------------------
 			// Response
