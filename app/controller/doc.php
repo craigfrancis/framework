@@ -70,9 +70,8 @@
 					$setup_nav->link_add('/doc/setup/constants/', 'Constants');
 					$setup_nav->link_add('/doc/setup/debug/', 'Debug');
 					$setup_nav->link_add('/doc/setup/controllers/', 'Controllers');
-					$setup_nav->link_add('/doc/setup/response/', 'Responses');
-					$setup_nav->link_add('/doc/setup/response/views/', 'Views');
-					$setup_nav->link_add('/doc/setup/response/templates/', 'Templates');
+					$setup_nav->link_add('/doc/setup/views/', 'Views');
+					$setup_nav->link_add('/doc/setup/templates/', 'Templates');
 					$setup_nav->link_add('/doc/setup/gateways/', 'Gateways');
 					$setup_nav->link_add('/doc/setup/jobs/', 'Jobs');
 					$setup_nav->link_add('/doc/setup/favicon/', 'Favicon');
@@ -117,7 +116,7 @@
 					$helpers_nav->link_add('/doc/helpers/config/', 'Config');
 					$helpers_nav->link_add('/doc/helpers/session/', 'Session');
 					$helpers_nav->link_add('/doc/helpers/cookie/', 'Cookie');
-					$helpers_nav->link_add('/doc/helpers/resources/', 'Resources');
+					$helpers_nav->link_add('/doc/helpers/response/', 'Response');
 					$helpers_nav->link_add('/doc/helpers/functions/', 'Functions');
 					$helpers_nav->link_add('/doc/helpers/database/', 'Database');
 					$helpers_nav->link_add('/doc/helpers/url/', 'URL');

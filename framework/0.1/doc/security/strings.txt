@@ -25,8 +25,8 @@ And it's this handling of **strings** which EVERY programmer needs to understand
 - [HTML injection](/doc/security/strings/html-injection/)
 - [URL manipulation](/doc/security/strings/url-manipulation/)
 - [Header injection](/doc/security/strings/header-injection/)
-- [CLI Injection](/doc/security/strings/cli-injection/)
-- [RegExp Injection](/doc/security/strings/regexp-injection/)
+- [CLI injection](/doc/security/strings/cli-injection/)
+- [RegExp injection](/doc/security/strings/regexp-injection/)
 - [Path manipulation](/doc/security/strings/path-manipulation/)
 
 ---

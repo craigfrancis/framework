@@ -61,7 +61,7 @@ It should be noted that the database determines the maximum length of the fields
 
 	<?php [SEE EXAMPLE] ?>
 
-To quickly create the HTML in the [view](/doc/setup/views/), we could add:
+To quickly create the HTML in the [view](/doc/setup/views/), we can use:
 
 	<?= $form->html(); ?>
 
