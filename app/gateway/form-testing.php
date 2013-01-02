@@ -16,19 +16,14 @@
 
 ***************************************************/
 
-	class testing_controller extends controller {
+	class form_testing_api extends api {
 
-		public function action_index() {
-
-			//--------------------------------------------------
-			// Resources
-
-				$response = response_get();
-
-				$web_driver = new webdriver();
+		public function run() {
 
 			//--------------------------------------------------
 			// Start session
+
+				$web_driver = new webdriver();
 
 				$session = $web_driver->session('htmlunit');
 				//$session = $web_driver->session('firefox');
@@ -78,11 +73,6 @@
 			// Close
 
 				$session->close();
-
-			//--------------------------------------------------
-			// Response
-
-				$response->template_set('blank');
 
 		}
 
