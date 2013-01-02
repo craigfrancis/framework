@@ -61,6 +61,7 @@
 			protected $from_email;
 			protected $from_name;
 			protected $cc_emails;
+			protected $bcc_emails;
 			protected $reply_to_email;
 			protected $reply_to_name;
 			protected $return_path;
@@ -90,6 +91,7 @@
 					$this->from_email = config::get('email.from_email');
 					$this->from_name = config::get('email.from_name');
 					$this->cc_emails = array();
+					$this->bcc_emails = array();
 					$this->reply_to_email = NULL;
 					$this->reply_to_name = NULL;
 					$this->return_path = NULL;
@@ -198,6 +200,13 @@
 
 			public function cc_add($email, $name = NULL) {
 				$this->cc_emails[] = array(
+						'email' => $email,
+						'name' => $name,
+					);
+			}
+
+			public function bcc_add($email, $name = NULL) {
+				$this->bcc_emails[] = array(
 						'email' => $email,
 						'name' => $name,
 					);
@@ -339,6 +348,10 @@
 
 						foreach ($this->cc_emails as $cc_id => $cc_info) {
 							$this->cc_emails[$cc_id]['email'] = $email_testing;
+						}
+
+						foreach ($this->bcc_emails as $bcc_id => $bcc_info) {
+							$this->bcc_emails[$bcc_id]['email'] = $email_testing;
 						}
 
 					}
@@ -574,6 +587,23 @@
 
 					if (count($cc_addresses) > 0) {
 						$headers['CC'] = implode(', ', $cc_addresses);
+					}
+
+				//--------------------------------------------------
+				// BCC
+
+					$bcc_addresses = array();
+
+					foreach ($this->bcc_emails as $bcc_email) {
+						if ($bcc_email['name'] !== NULL) {
+							$bcc_addresses[] = '"' . addslashes($bcc_email['name']) . '" <' . addslashes($bcc_email['email']) .'>';
+						} else {
+							$bcc_addresses[] = addslashes($bcc_email['email']);
+						}
+					}
+
+					if (count($bcc_addresses) > 0) {
+						$headers['BCC'] = implode(', ', $bcc_addresses);
 					}
 
 				//--------------------------------------------------

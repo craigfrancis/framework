@@ -72,6 +72,7 @@
 					$setup_nav->link_add('/doc/setup/controllers/', 'Controllers');
 					$setup_nav->link_add('/doc/setup/views/', 'Views');
 					$setup_nav->link_add('/doc/setup/templates/', 'Templates');
+					$setup_nav->link_add('/doc/setup/resources/', 'Resources');
 					$setup_nav->link_add('/doc/setup/gateways/', 'Gateways');
 					$setup_nav->link_add('/doc/setup/jobs/', 'Jobs');
 					$setup_nav->link_add('/doc/setup/favicon/', 'Favicon');
@@ -127,6 +128,7 @@
 					$helpers_nav->link_add('/doc/helpers/table/', 'Table');
 					$helpers_nav->link_add('/doc/helpers/paginator/', 'Paginator');
 					$helpers_nav->link_add('/doc/helpers/user/', 'User');
+					$helpers_nav->link_add('/doc/helpers/gpg/', 'GPG');
 
 					$doc_nav->link_add('/doc/helpers/', 'Helpers', array('child' => $helpers_nav));
 
