@@ -22,3 +22,5 @@ When enabled all HTML pages should get a little bit of debug information at the 
 ---
 
 A copy of the site config is shown in the [C] notes.
+
+$config['debug.db_required_fields']
