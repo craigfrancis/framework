@@ -99,12 +99,16 @@
 		// Value
 
 			public function value_set($value) {
-				$this->value = preg_replace('/[^0-9\-\.]+/', '', $value); // Deletes commas (thousand separators) and currency symbols
+				$this->value = $this->value_clean($value);
+			}
+
+			public function value_clean($value) {
+				return preg_replace('/[^0-9\-\.]+/', '', $value); // Deletes commas (thousand separators) and currency symbols
 			}
 
 			protected function _value_print_get($decimal_places = 2) {
 
-				$value = parent::_value_print_get();
+				$value = $this->value_clean(parent::_value_print_get());
 
 				return format_currency($value, $this->currency_char, $decimal_places, $this->zero_to_blank);
 
