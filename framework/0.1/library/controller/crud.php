@@ -704,7 +704,7 @@
 
 						} else if ($info['type'] == 'text') {
 
-							$field_ref = new form_field_text_area($form, ucfirst($name));
+							$field_ref = new form_field_textarea($form, ucfirst($name));
 							$field_ref->db_field_set($field);
 							$field_ref->max_length_set('The "' . $name . '" cannot be longer than XXX characters.');
 							$field_ref->cols_set(40);

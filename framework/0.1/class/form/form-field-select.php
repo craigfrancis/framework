@@ -96,6 +96,10 @@
 				$this->multiple = $multiple;
 			}
 
+			public function multiple_get() {
+				return $this->multiple;
+			}
+
 			public function label_option_set($text = NULL) {
 				$this->label_option = $text;
 			}

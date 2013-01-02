@@ -1,6 +1,6 @@
 <?php
 
-	class form_field_radios_base extends form_field_check_boxes {
+	class form_field_radios_base extends form_field_checkboxes {
 
 		//--------------------------------------------------
 		// Setup

@@ -1,6 +1,6 @@
 <?php
 
-	class form_field_check_boxes_base extends form_field_select {
+	class form_field_checkboxes_base extends form_field_select {
 
 		//--------------------------------------------------
 		// Variables

@@ -162,7 +162,7 @@
 		// Delivery fields
 
 			public function field_delivery_different_get() {
-				$field_delivery_different = new form_field_check_box($this, 'Delivery different');
+				$field_delivery_different = new form_field_checkbox($this, 'Delivery different');
 				$field_delivery_different->db_field_set('delivery_different');
 				$field_delivery_different->wrapper_class_add('delivery required');
 				$field_delivery_different->text_values_set('true', 'false');

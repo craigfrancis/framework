@@ -158,7 +158,7 @@ exit('Updated?');
 					$field_email->min_length_set('Your email is required.');
 					$field_email->max_length_set('Your email cannot be longer than XXX characters.');
 
-					$field_message = new form_field_text_area($form, 'Message');
+					$field_message = new form_field_textarea($form, 'Message');
 					$field_message->db_field_set('message');
 					$field_message->min_length_set('Your message is required.');
 					$field_message->max_length_set('Your message cannot be longer than XXX characters.');
@@ -200,12 +200,12 @@ exit('Updated?');
 					// $field_hear->label_option_set('');
 					$field_hear->required_error_set('Where you heard about us is required.');
 
-					$field_accept_terms = new form_field_check_box($form, 'Accept terms');
+					$field_accept_terms = new form_field_checkbox($form, 'Accept terms');
 					$field_accept_terms->db_field_set('accept_terms');
 					$field_accept_terms->text_values_set('true', 'false');
 					$field_accept_terms->required_error_set('You need to accept the terms and conditions.');
 
-					$field_items = new form_field_check_boxes($form, 'Items');
+					$field_items = new form_field_checkboxes($form, 'Items');
 					$field_items->db_field_set('items');
 					//$field_items->db_field_set('items', 'key');
 					//$field_items->options_set($opt_itemss);
@@ -226,7 +226,7 @@ exit('Updated?');
 					$field_number->db_field_set('number');
 					$field_number->min_value_set('Your number must be more than or equal to XXX.', 0);
 					$field_number->max_value_set('Your number must be less than or equal to XXX.', 9999);
-					$field_number->step_value_set('Your number must be an even number', 2);
+					$field_number->step_value_set('Your number must be an even number.', 2);
 					$field_number->format_error_set('Your number does not appear to be a number.');
 					$field_number->required_error_set('Your number is required.');
 
