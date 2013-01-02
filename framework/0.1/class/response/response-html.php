@@ -927,7 +927,7 @@
 								$file['path'] = $js_prefix . $file['path'];
 							}
 
-							$js_files[$file['path']] = array_merge(array('type' => 'text/javascript', 'src' => $file['path']), $file['attributes']); // Unique path
+							$js_files[$file['path']] = array_merge(array('src' => $file['path']), $file['attributes']); // Unique path
 
 						}
 
