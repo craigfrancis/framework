@@ -65,4 +65,4 @@ If your using the [email helper](/doc/helpers/email/), it might be worth setting
 
 	$config['email.testing'] = 'admin@example.com';
 
-And when you are on **stage**, you will notice that [development mode](/doc/setup/debug/) is enabled by default.
+And when you are on **stage**, [development mode](/doc/setup/debug/) is enabled by default.
