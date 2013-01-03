@@ -1031,7 +1031,7 @@
 							$this->js_code_add($js_code, 'async');
 
 							$this->csp_add_source('script-src', array('https://ssl.google-analytics.com'));
-							$this->csp_add_source('img-src', array('https://ssl.google-analytics.com'));
+							$this->csp_add_source('img-src', array('https://ssl.google-analytics.com', 'http://www.google-analytics.com'));
 
 						}
 
