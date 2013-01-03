@@ -1,4 +1,4 @@
-# Overview
+# Strings overview
 
 The great thing about **strings** is that they are very simple, as they are just a set of characters. This makes them a fantastic way to transfer data from one system to another.
 

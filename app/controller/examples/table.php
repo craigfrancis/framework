@@ -1,6 +1,6 @@
 <?php
 
-	class table_controller extends controller {
+	class examples_table_controller extends controller {
 
 		public function action_index() {
 

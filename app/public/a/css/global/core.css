@@ -33,6 +33,10 @@
 	a {
 		color: #00F;
 	}
+	
+	a[href^="http"] {
+		color: #F00;
+	}
 
 	a img {
 		border: 0;

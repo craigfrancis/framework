@@ -9,6 +9,9 @@
 
 ?>
 
+	<h1>Conversion functions</h1>
+	<p>Below is the matrix for the different <a href="/doc/helpers/functions/">conversion functions</a>.</p>
+
 	<table cellspacing="0" cellpadding="1" border="1" class="basic_table">
 		<thead>
 			<tr>

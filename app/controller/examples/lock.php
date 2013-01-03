@@ -1,6 +1,6 @@
 <?php
 
-	class lock_controller extends controller {
+	class examples_lock_controller extends controller {
 
 		public function action_index() {
 

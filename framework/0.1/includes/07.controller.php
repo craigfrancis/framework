@@ -350,8 +350,12 @@
 		$note_html .= '&#xA0; <strong>error_send</strong>(\'page-not-found\');<br />' . "\n";
 		$note_html .= '&#xA0; <strong>message_set</strong>(\'The item has been updated.\');<br />' . "\n";
 
-		foreach (config::get('request.folders') as $id => $value) {
+		$request_folders = config::get('request.folders');
+		foreach ($request_folders as $id => $value) {
 			$note_html .= '&#xA0; <strong>request_folder_get</strong>(' . html($id) . '); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
+		}
+		if (count($request_folders) == 0) {
+			$note_html .= '&#xA0; <strong>request_folder_get</strong>(0); <span class="comment">// NULL</span><br />' . "\n";
 		}
 
 		debug_note_html($note_html, 'H');

@@ -9,3 +9,7 @@ First, you need to set the connection [config](/doc/setup/config/):
 	$config['db.name'] = 's-craig-framework';
 
 	$config['db.prefix'] = 'tpl_';
+
+You can get access to the database object though the helper function:
+
+	$db = db_get();

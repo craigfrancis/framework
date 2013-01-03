@@ -1,6 +1,6 @@
 <?php
 
-	class image_controller extends controller {
+	class examples_image_controller extends controller {
 
 		public function action_index() {
 

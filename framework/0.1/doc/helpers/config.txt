@@ -10,7 +10,7 @@ But for a quick overview, you can access the config values though this helper.
 	config::get('name');
 	config::get('name', 'Default');
 
-In the Object Orientated world, the config helper works as a singleton. While this is known to have issues in many cases, it makes it very easy to get/set information that should be globally available.
+In the Object Orientated world, the config helper works as a singleton. While this is known to have issues in many cases, here makes it very easy to get/set information that should be globally available.
 
 ---
 

@@ -21,7 +21,7 @@
 
 		<p>
 			<input type="submit" value="Go" />
-			or <a href="/form/">back to examples</a>
+			or <a href="/examples/form/">back to examples</a>
 		</p>
 
 	<?= $form->html_end(); ?>

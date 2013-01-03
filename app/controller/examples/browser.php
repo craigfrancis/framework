@@ -1,6 +1,6 @@
 <?php
 
-	class browser_controller extends controller {
+	class examples_browser_controller extends controller {
 
 		public function action_index() {
 

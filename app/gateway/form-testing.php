@@ -31,7 +31,7 @@
 			//--------------------------------------------------
 			// Loading
 
-				$url = strval(http_url('/form/example/?type=text'));
+				$url = strval(http_url('/examples/form/example/?type=text'));
 
 				$session->open($url);
 

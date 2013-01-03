@@ -888,7 +888,7 @@
 
 						$db->insert($this->db_table_name_sql, $values);
 
-					} else {
+					} else if (count($values) > 0) {
 
 						$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
 

@@ -7,6 +7,10 @@ However there are some useful functions which are always present:
 
 	debug($var);
 
+	echo debug_dump($var);
+
+	debug_exit();
+
 ---
 
 # Development mode

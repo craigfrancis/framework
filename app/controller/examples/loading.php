@@ -1,6 +1,6 @@
 <?php
 
-	class loading_controller extends controller {
+	class examples_loading_controller extends controller {
 
 		public function action_index() {
 

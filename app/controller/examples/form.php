@@ -1,6 +1,6 @@
 <?php
 
-	class form_controller extends controller {
+	class examples_form_controller extends controller {
 
 		public function action_index() {
 
@@ -14,9 +14,9 @@
 
 				$examples = array();
 
-				$url_base = url('/form/example/');
+				$url_base = url('/examples/form/example/');
 
-				foreach (glob(APP_ROOT . '/library/form-example/*.php') as $example) {
+				foreach (glob(APP_ROOT . '/library/examples/form/*.php') as $example) {
 
 					$example = substr($example, (strrpos($example, '/') + 1), -4);
 
@@ -38,7 +38,7 @@
 			// Example type path
 
 				$type_name = request('type');
-				$type_path = APP_ROOT . '/library/form-example/' . safe_file_name($type_name) . '.php';
+				$type_path = APP_ROOT . '/library/examples/form/' . safe_file_name($type_name) . '.php';
 
 				if (!is_file($type_path)) {
 					error_send('page-not-found');

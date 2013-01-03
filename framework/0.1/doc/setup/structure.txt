@@ -75,7 +75,7 @@ For example you may have a website that has a common profile page, which is acce
 
 Where the web root is set, so any files in here are exposed to the internet.
 
-Typically this contains the [bootstrap file](/doc/setup/bootstrap/), and any other files (such as images, CSS, JavaScript) which the web server can expose without PHP Prime getting involved.
+Typically this contains an `index.php` file (which in turn runs the [bootstrap](/doc/setup/bootstrap/)), and any other files (such as images, CSS, JavaScript) which the web server can expose without PHP Prime getting involved.
 
 Obviously don't save anything in here you don't want to appear on the internet.
 
@@ -105,7 +105,7 @@ If you need to store files which should not be exposed to the internet (maybe a 
 
 ## Framework
 
-Where the framework files go.
+Where the framework files typically go.
 
 ---
 
