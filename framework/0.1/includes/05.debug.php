@@ -191,28 +191,28 @@
 
 		$hidden_info = '';
 
-		foreach (debug_backtrace() as $called_from) {
-			if (isset($called_from['file']) && !prefix_match(FRAMEWORK_ROOT, $called_from['file'])) {
-
-				$hidden_info .= "\n " . $err_file . ':' . $err_line;
-
-				$err_line = $called_from['line'];
-				$err_file = $called_from['file'];
-
-				if (isset($called_from['function']) && $called_from['function'] == 'html') {
-
-					// Show value for multibyte error in the html() function.
-					//   ini_set('display_errors', false);
-					//   html('Testing: ' . chr(254));
-
-					$err_str .= ' (' . $called_from['args'][0] . ')';
-
-				}
-
-				break;
-
-			}
-		}
+		// foreach (debug_backtrace() as $called_from) {
+		// 	if (isset($called_from['file']) && !prefix_match(FRAMEWORK_ROOT, $called_from['file'])) {
+		//
+		// 		$hidden_info .= "\n " . $err_file . ':' . $err_line;
+		//
+		// 		$err_line = $called_from['line'];
+		// 		$err_file = $called_from['file'];
+		//
+		// 		if (isset($called_from['function']) && $called_from['function'] == 'html') {
+		//
+		// 			// Show value for multibyte error in the html() function.
+		// 			//   ini_set('display_errors', false);
+		// 			//   html('Testing: ' . chr(254));
+		//
+		// 			$err_str .= ' (' . $called_from['args'][0] . ')';
+		//
+		// 		}
+		//
+		// 		break;
+		//
+		// 	}
+		// }
 
 		switch ($err_no) { // From "Johan 'Josso' Jensen" on http://www.php.net/set_error_handler
 			case E_NOTICE:
