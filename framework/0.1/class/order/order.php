@@ -217,7 +217,7 @@
 									delivery_postcode tinytext NOT NULL,
 									delivery_country tinytext NOT NULL,
 									delivery_telephone tinytext NOT NULL,
-									dispatched datetime NOT NULL,
+									processed datetime NOT NULL,
 									deleted datetime NOT NULL,
 									PRIMARY KEY (id)
 								);');
@@ -1081,13 +1081,13 @@
 
 			}
 
-			public function dispatched($values = NULL) {
+			public function processed($values = NULL) { // aka "dispatched"
 
 				//--------------------------------------------------
 				// Details
 
 					if ($this->order_id === NULL) {
-						exit_with_error('An order needs to be selected', 'dispatched');
+						exit_with_error('An order needs to be selected', 'processed');
 					}
 
 				//--------------------------------------------------
@@ -1098,13 +1098,13 @@
 					}
 
 					$this->values_set(array_merge($values, array(
-							'dispatched' => date('Y-m-d H:i:s'),
+							'processed' => date('Y-m-d H:i:s'),
 						)));
 
 				//--------------------------------------------------
 				// Customer email
 
-					$this->_email_customer('order-dispatched');
+					$this->_email_customer('order-processed');
 
 			}
 
