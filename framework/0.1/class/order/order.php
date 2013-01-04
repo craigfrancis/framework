@@ -1130,7 +1130,11 @@
 		//--------------------------------------------------
 		// Create
 
-			protected function create($defaults = NULL) {
+			protected function create_defaults() {
+				return array();
+			}
+
+			protected function create() {
 
 				//--------------------------------------------------
 				// Details
@@ -1147,6 +1151,7 @@
 						$order_pass .= chr(mt_rand(97,122));
 					}
 
+					$defaults = $this->create_defaults();
 					if (!is_array($defaults)) {
 						$defaults = array();
 					}
