@@ -711,6 +711,11 @@
 
 				}
 
+				$subject = $this->subject_text;
+				if ($subject == '') {
+					$subject = $this->subject_default;
+				}
+
 				if (strpos($content_html, 'DOCTYPE') === false) {
 
 					$template_html = '<!DOCTYPE html>
@@ -718,7 +723,7 @@
 							<head>
 								<meta charset="' . html(config::get('output.charset')) . '" />';
 
-					if ($this->subject_text != '') {
+					if ($subject != '') {
 						$template_html .= '
 								<title>[SUBJECT]</title>';
 					}
@@ -734,7 +739,7 @@
 
 				}
 
-				$content_html = str_replace('[SUBJECT]', html($this->subject_text), $content_html);
+				$content_html = str_replace('[SUBJECT]', html($subject), $content_html);
 				$content_html = str_replace('[BODY]', $this->body_html, $content_html);
 				$content_html = str_replace('[URL]', html($this->template_url), $content_html);
 
