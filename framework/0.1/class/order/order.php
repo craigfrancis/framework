@@ -1064,6 +1064,11 @@
 					}
 
 				//--------------------------------------------------
+				// Customer email
+
+					$this->_email_customer('order-payment-settled');
+
+				//--------------------------------------------------
 				// Store
 
 					if (!is_array($values)) {
@@ -1073,11 +1078,6 @@
 					$this->values_set(array_merge($values, array(
 							'payment_settled' => date('Y-m-d H:i:s'),
 						)));
-
-				//--------------------------------------------------
-				// Customer email
-
-					$this->_email_customer('order-payment-settled');
 
 			}
 
@@ -1091,6 +1091,11 @@
 					}
 
 				//--------------------------------------------------
+				// Customer email
+
+					$this->_email_customer('order-processed');
+
+				//--------------------------------------------------
 				// Store
 
 					if (!is_array($values)) {
@@ -1100,11 +1105,6 @@
 					$this->values_set(array_merge($values, array(
 							'processed' => date('Y-m-d H:i:s'),
 						)));
-
-				//--------------------------------------------------
-				// Customer email
-
-					$this->_email_customer('order-processed');
 
 			}
 
@@ -1295,6 +1295,22 @@
 
 					$email->template_value_set_text('TABLE', $table->table_get_text($config));
 					$email->template_value_set_html('TABLE', $table->table_get_html($config));
+
+				//--------------------------------------------------
+				// Testing
+
+					if (false) {
+						if (true) { // HTML
+
+							exit($email->html());
+
+						} else {
+
+							mime_set('text/plain');
+							exit($email->text());
+
+						}
+					}
 
 				//--------------------------------------------------
 				// Send to customer
