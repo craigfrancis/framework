@@ -69,7 +69,11 @@
 			}
 
 			public function format_label_set($format_label) {
-				$this->format_label = array_merge($this->format_label, $format_label);
+				if (is_array($format_label)) {
+					$this->format_label = array_merge($this->format_label, $format_label);
+				} else {
+					$this->format_label = $format_label;
+				}
 			}
 
 			public function input_value_options_set($field, $options) {
@@ -88,12 +92,20 @@
 
 			public function format_default_get_html() {
 
-				$html = array();
-				foreach ($this->format_input as $field) {
-					$html[] = '<label for="' . html($this->id) . '_' . html($field) . '">' . html($this->format_label[$field]) . '</label>';
-				}
+				if (!is_array($this->format_label)) {
 
-				return implode(html($this->format_label['separator']), $html);
+					return $this->format_label;
+
+				} else {
+
+					$html = array();
+					foreach ($this->format_input as $field) {
+						$html[] = '<label for="' . html($this->id) . '_' . html($field) . '">' . html($this->format_label[$field]) . '</label>';
+					}
+
+					return implode(html($this->format_label['separator']), $html);
+
+				}
 
 			}
 

@@ -32,6 +32,27 @@
 
 		}
 
+		public static function get_all($prefix = '') {
+
+			session::start();
+
+			$prefix .= '.';
+			$prefix_length = strlen($prefix);
+
+			if ($prefix_length <= 1) {
+				return $_SESSION;
+			} else {
+				$data = array();
+				foreach ($_SESSION as $k => $v) {
+					if (substr($k, 0, $prefix_length) == $prefix) {
+						$data[substr($k, $prefix_length)] = $v;
+					}
+				}
+				return $data;
+			}
+
+		}
+
 		public static function delete($variable) {
 
 			session::start();

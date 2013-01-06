@@ -545,7 +545,7 @@
 // Send an error page (shortcut)
 
 	function error_send($error) {
-		$response = response_get(); // Keep current response
+		$response = response_get(); // Keep current response (ref framework documentation, where the nav was setup in controller)
 		$response->error_send($error);
 		exit();
 	}
@@ -621,7 +621,7 @@
 		header('Content-Disposition: ' . head($mode) . '; filename="' . head($name) . '"');
 		header('Content-Length: ' . head(filesize($path)));
 
-		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS
+		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (http://support.microsoft.com/kb/316431)
 		header('Expires: ' . head(date('D, d M Y 00:00:00')) . ' GMT');
 		header('Pragma:');
 
@@ -629,14 +629,14 @@
 
 	}
 
-	function http_download_string($content, $mime, $name, $mode = 'attachment') {
+	function http_download_content($content, $mime, $name, $mode = 'attachment') {
 
 		mime_set($mime);
 
 		header('Content-Disposition: ' . head($mode) . '; filename="' . head($name) . '"');
 		header('Content-Length: ' . head(strlen($content)));
 
-		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS
+		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (http://support.microsoft.com/kb/316431)
 		header('Expires: ' . head(date('D, d M Y 00:00:00')) . ' GMT');
 		header('Pragma:');
 

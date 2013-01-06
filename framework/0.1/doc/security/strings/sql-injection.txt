@@ -1,5 +1,5 @@
 
-### Introduction
+# Introduction
 
 Before continuing with this page, you need to understand SQL to the point that the following makes sense:
 
@@ -17,7 +17,7 @@ So taking that the username and password is replaced with values that the user i
 
 ---
 
-### Usage in PHP
+## Usage in PHP
 
 One way to get this to work in PHP to to use the following (again, please don't do this):
 
@@ -38,7 +38,7 @@ It begins with a string starting with SELECT, which is joined with the 'name' st
 
 ---
 
-### The problem
+## The problem
 
 But what happens if the someone tried to login in with the username:
 
@@ -73,7 +73,7 @@ Now they have just logged in with the admin account.
 
 ---
 
-### The basic solution
+## The basic solution
 
 To get around this problem for MySQL you basically add a backslash to escape the character e.g.
 
@@ -91,7 +91,7 @@ Below we can discuss a few different options.
 
 ---
 
-### PHP PDO
+## PHP PDO
 
 [PDO](http://www.php.net/pdo) allows you to write raw SQL, but the variables are substituted by either replacing placeholders:
 
@@ -123,7 +123,7 @@ Please note I'm not a fan of double quotes, as the variables can be easily hidde
 
 ---
 
-### Database abstractions
+## Database abstractions
 
 There are several database abstractions available, where they will try to abstract everything, so you don't have to see the SQL being generated.
 
@@ -156,7 +156,7 @@ And before you think your queries run efficiently enough when its on your local 
 
 ---
 
-### Alternatives to SQL
+## Alternatives to SQL
 
 There are alternatives to SQL, often under the category of "NoSQL".
 
@@ -166,7 +166,7 @@ They are basically a different approach to data storage, each with their own mer
 
 ---
 
-### Raw SQL
+## Raw SQL
 
 This is still my preferred method, and yes, that does mean every variable has to be escaped properly... like how you have to escape variables for [html](/doc/security/strings/html-injection/), [urls](/doc/security/strings/url-manipulation/), [command line arguments](/doc/security/strings/cli-injection/), [regular expressions](/doc/security/strings/regexp-injection/), etc.
 

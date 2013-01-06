@@ -5,8 +5,18 @@
 		function run() {
 
 			if (config::get('gateway.maintenance') !== true) {
-				mime_set('text/plain');
-				exit('Disabled');
+
+				$html  = '<h1>Disabled</h1>';
+				$html .= '<p>Maintenance URL has been disabled.</p>';
+				$html .= '<p>$config[\'gateway.maintenance\'] = true;</p>';
+
+				$response = response_get('html');
+				$response->title_set('Maintenance Disabled');
+				$response->view_add_html($html);
+				$response->send();
+
+				exit();
+
 			}
 
 			config::set('output.mode', 'maintenance');

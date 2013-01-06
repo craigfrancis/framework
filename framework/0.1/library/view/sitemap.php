@@ -7,30 +7,13 @@
 	echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
 
 //--------------------------------------------------
-// Links
+// URLs
 
-	$root_path = VIEW_ROOT . '/';
-	$root_folders = array();
-	if ($handle = opendir($root_path)) {
-		while (false !== ($file = readdir($handle))) {
-			if (substr($file, 0, 1) != '.') {
+	$paths = array();
+	$paths[] = '/';
 
-				if (is_file($root_path . $file) && substr($file, -4) == '.ctp') {
-
-					$root_folders[] = substr($file, 0, -4);
-
-				}
-
-			}
-		}
-		closedir($handle);
-	}
-	sort($root_folders);
-
-	foreach ($root_folders as $folder) {
-
-		echo '<url><loc>' . xml(url('/' . $folder . '/')) . '</loc></url>' . "\n";
-
+	foreach ($paths as $path) {
+		echo '<url><loc>' . xml($path) . '</loc></url>' . "\n";
 	}
 
 //--------------------------------------------------

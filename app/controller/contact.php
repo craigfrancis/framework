@@ -28,7 +28,7 @@
 				$field_email->min_length_set('Your email is required.');
 				$field_email->max_length_set('Your email cannot be longer than XXX characters.');
 
-				$field_message = new form_field_text_area($form, 'Message');
+				$field_message = new form_field_textarea($form, 'Message');
 				$field_message->db_field_set('message');
 				$field_message->min_length_set('Your message is required.');
 				$field_message->max_length_set('Your message cannot be longer than XXX characters.');

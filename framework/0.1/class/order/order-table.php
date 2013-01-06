@@ -49,10 +49,10 @@
 
 				if ($item_url) {
 					$html = '
-							<h3><a href="' . html($item_url) . '">' . $item['item_name'] . '</a></h3>';
+							<h3><a href="' . html($item_url) . '">' . html($item['item_name']) . '</a></h3>';
 				} else {
 					$html = '
-							<h3>' . $item['item_name'] . '</h3>';
+							<h3>' . html($item['item_name']) . '</h3>';
 				}
 
 				if (isset($item['item_code']) && $item['item_code'] != '') {
@@ -61,6 +61,17 @@
 				}
 
 				return $html;
+
+			}
+
+			public function item_info_text($config, $item, $item_url) {
+
+				$text  = $item['item_name'] . "\n\n";
+				$text .= 'Quantity: ' . $item['quantity'] . "\n";
+				$text .= 'Price: ' . format_currency(($item['price_net']), $config['currency_char']) . "\n";
+				$text .= 'Total: ' . format_currency(($item['quantity'] * $item['price_net']), $config['currency_char']);
+
+				return $text;
 
 			}
 
@@ -131,32 +142,35 @@
 		//--------------------------------------------------
 		// Output
 
+			private function _config_get($config) {
+
+				$show_image_info = method_exists($this, 'item_image_info');
+				$show_image_html = method_exists($this, 'item_image_html');
+
+				$defaults = array(
+						'url_prefix' => '',
+						'email_mode' => false,
+						'currency_char' => $this->order_obj->currency_char_get(),
+						'show_image_info' => $show_image_info,
+						'show_image_html' => $show_image_html,
+						'show_image' => ($show_image_info || $show_image_html),
+						'show_item_url' => method_exists($this, 'item_url'),
+					);
+
+				if (!is_array($config)) {
+					$config = array();
+				}
+
+				return array_merge($defaults, $config);
+
+			}
+
 			public function table_get_html($config = NULL) {
 
 				//--------------------------------------------------
 				// Config
 
-					$defaults = array(
-							'url_prefix' => '',
-							'email_mode' => false,
-						);
-
-					if (!is_array($config)) {
-						$config = array();
-					}
-
-					$config = array_merge($defaults, $config);
-
-				//--------------------------------------------------
-				// Details
-
-					$currency_char = $this->order_obj->currency_char_get();
-
-					$show_image_info = method_exists($this, 'item_image_info');
-					$show_image_html = method_exists($this, 'item_image_html');
-					$show_image = ($show_image_info || $show_image_html);
-
-					$show_item_url = method_exists($this, 'item_url');
+					$config = $this->_config_get($config);
 
 				//--------------------------------------------------
 				// Start
@@ -165,7 +179,7 @@
 						<table class="order_table"' . ($config['email_mode'] ? ' cellspacing="0" cellpadding="1" border="1"' : '') . '>
 							<thead>
 								<tr>
-									<th scope="col" class="item"' . ($show_image ? ' colspan="2"' : '') . '>Item</th>
+									<th scope="col" class="item"' . ($config['show_image'] ? ' colspan="2"' : '') . '>Item</th>
 									<th scope="col" class="quantity">Quantity</th>
 									<th scope="col" class="price">Price</th>
 									<th scope="col" class="total">Total</th>
@@ -183,7 +197,7 @@
 
 								$html .= '
 									<tr class="empty">
-										<td colspan="' . html($show_image ? 5 : 4) . '">Your basket is empty</td>
+										<td colspan="' . html($config['show_image'] ? 5 : 4) . '">Your basket is empty</td>
 									</tr>';
 
 					} else {
@@ -195,7 +209,7 @@
 
 							foreach ($this->order_items as $item) {
 
-								if ($show_item_url) {
+								if ($config['show_item_url']) {
 									$item_url = $this->item_url($config, $item);
 								} else {
 									$item_url = NULL;
@@ -204,9 +218,9 @@
 								$html .= '
 										<tr class="item ' . ($k++ % 2 ? 'even' : 'odd') . '">';
 
-								if ($show_image) {
+								if ($config['show_image']) {
 
-									if ($show_image_info) {
+									if ($config['show_image_info']) {
 
 										$image_info = $this->item_image_info($config, $item);
 
@@ -235,8 +249,8 @@
 								$html .= '
 											<td class="item">' . $this->item_info_html($config, $item, $item_url) . '</td>
 											<td class="quantity">' . $this->item_quantity_html($config, $item, $item['quantity']) . '</td>
-											<td class="price">' . html(format_currency(($item['price_net']), $currency_char)) . '</td>
-											<td class="total">' . html(format_currency(($item['quantity'] * $item['price_net']), $currency_char)) . '</td>
+											<td class="price">' . html(format_currency(($item['price_net']), $config['currency_char'])) . '</td>
+											<td class="total">' . html(format_currency(($item['quantity'] * $item['price_net']), $config['currency_char'])) . '</td>
 										</tr>';
 
 							}
@@ -253,8 +267,8 @@
 
 										$html .= '
 											<tr class="total ' . html($type) . ' ' . ($k++ % 2 ? 'even' : 'odd') . '">
-												<td class="item" colspan="' . html($show_image ? 4 : 3) . '">' . ucfirst($type) . ':</td>
-												<td class="total">' . html(format_currency($amount, $currency_char)) . '</td>
+												<td class="item" colspan="' . html($config['show_image'] ? 4 : 3) . '">' . ucfirst($type) . ':</td>
+												<td class="total">' . html(format_currency($amount, $config['currency_char'])) . '</td>
 											</tr>';
 
 									}
@@ -267,14 +281,14 @@
 
 									$html .= '
 										<tr class="total net ' . ($k++ % 2 ? 'even' : 'odd') . '">
-											<td class="item" colspan="' . html($show_image ? 4 : 3) . '">Net:</td>
-											<td class="total">' . html(format_currency($this->order_totals['amount']['net'], $currency_char)) . '</td>
+											<td class="item" colspan="' . html($config['show_image'] ? 4 : 3) . '">Net:</td>
+											<td class="total">' . html(format_currency($this->order_totals['amount']['net'], $config['currency_char'])) . '</td>
 										</tr>';
 
 									$html .= '
 										<tr class="total tax ' . ($k++ % 2 ? 'even' : 'odd') . '">
-											<td class="item" colspan="' . html($show_image ? 4 : 3) . '">VAT:</td>
-											<td class="total">' . html(format_currency($this->order_totals['amount']['tax'], $currency_char)) . '</td>
+											<td class="item" colspan="' . html($config['show_image'] ? 4 : 3) . '">VAT:</td>
+											<td class="total">' . html(format_currency($this->order_totals['amount']['tax'], $config['currency_char'])) . '</td>
 										</tr>';
 
 								}
@@ -287,8 +301,8 @@
 
 										$html .= '
 											<tr class="total ' . html($type) . ' ' . ($k++ % 2 ? 'even' : 'odd') . '">
-												<td class="item" colspan="' . html($show_image ? 4 : 3) . '">' . ucfirst($type) . ':</td>
-												<td class="total">' . html(format_currency($amount['gross'], $currency_char)) . '</td>
+												<td class="item" colspan="' . html($config['show_image'] ? 4 : 3) . '">' . ucfirst($type) . ':</td>
+												<td class="total">' . html(format_currency($amount['gross'], $config['currency_char'])) . '</td>
 											</tr>';
 
 									}
@@ -299,8 +313,8 @@
 
 								$html .= '
 									<tr class="total gross ' . ($k++ % 2 ? 'even' : 'odd') . '">
-										<td class="item" colspan="' . html($show_image ? 4 : 3) . '">Total:</td>
-										<td class="total"><strong>' . html(format_currency($this->order_totals['amount']['gross'], $currency_char)) . '</strong></td>
+										<td class="item" colspan="' . html($config['show_image'] ? 4 : 3) . '">Total:</td>
+										<td class="total"><strong>' . html(format_currency($this->order_totals['amount']['gross'], $config['currency_char'])) . '</strong></td>
 									</tr>';
 
 					}
@@ -316,7 +330,99 @@
 
 			}
 
-			public function table_get_text() {
+			public function table_get_text($config = NULL) {
+
+				//--------------------------------------------------
+				// Config
+
+					$config = $this->_config_get($config);
+
+				//--------------------------------------------------
+				// No items
+
+					if (count($this->order_items) == 0) {
+						return 'Your basket is empty';
+					}
+
+				//--------------------------------------------------
+				// Items
+
+					$k = 0;
+
+					$text = '##################################################' . "\n";
+
+					foreach ($this->order_items as $item) {
+
+						if ($k++ == 1) {
+							$text .= '--------------------------------------------------' . "\n";
+						}
+
+						if ($config['show_item_url']) {
+							$item_url = $this->item_url($config, $item);
+						} else {
+							$item_url = NULL;
+						}
+
+						$text .= "\n" . $this->item_info_text($config, $item, $item_url) . "\n\n";
+
+					}
+
+				//--------------------------------------------------
+				// Totals
+
+					//--------------------------------------------------
+					// Start
+
+						$text .= '##################################################' . "\n\n";
+
+					//--------------------------------------------------
+					// Pre tax items
+
+						foreach ($this->order_totals['tax']['types'] as $type) {
+							$amount = $this->order_totals['items'][$type]['net'];
+							if ($type != 'item' && $amount > 0) {
+
+								$text .= ucfirst($type) . ': ' . format_currency($amount, $config['currency_char']) . "\n";
+
+							}
+						}
+
+					//--------------------------------------------------
+					// Net/Tax values
+
+						if (count($this->order_totals['tax']['types']) > 0 && $this->order_totals['tax']['percent'] > 0) { // Don't bother showing if no items show tax
+
+							$text .= 'Net: ' . format_currency($this->order_totals['amount']['net'], $config['currency_char']) . "\n";
+							$text .= 'VAT: ' . format_currency($this->order_totals['amount']['tax'], $config['currency_char']) . "\n";
+
+						}
+
+					//--------------------------------------------------
+					// Tax exempt items
+
+						foreach ($this->order_totals['items'] as $type => $amount) {
+							if ($type != 'item' && $amount['gross'] > 0 && !in_array($type, $this->order_totals['tax']['types'])) {
+
+								$text .= ucfirst($type) . ': ' . format_currency($amount['gross'], $config['currency_char']) . "\n";
+
+							}
+						}
+
+					//--------------------------------------------------
+					// Total
+
+						$text .= 'Total: ' . format_currency($this->order_totals['amount']['gross'], $config['currency_char']) . "\n";
+
+					//--------------------------------------------------
+					// End
+
+						$text .= "\n" . '##################################################' . "\n";
+
+				//--------------------------------------------------
+				// End
+
+					return $text;
+
 			}
 
 	}

@@ -287,7 +287,12 @@
 							$output = '<p>No output.</p>';
 						}
 
-						exit($output);
+						$response = response_get('html');
+						$response->template_path_set(FRAMEWORK_ROOT . '/library/template/blank.ctp');
+						$response->view_set_html($output);
+						$response->send();
+
+						exit();
 
 					}
 
@@ -449,11 +454,6 @@
 					}
 
 				//--------------------------------------------------
-				// Resources
-
-					$db = db_get();
-
-				//--------------------------------------------------
 				// Include the script
 
 					$gateway = $this;
@@ -462,21 +462,17 @@
 
 					$job_path = $this->maintenance->job_path_get($this->job_name);
 
-					if (is_file($job_path)) {
-
-						ob_start();
-
-						if (!class_exists($job_object)) {
-							require_once($job_path);
-						}
-
-						$job_output_html = ob_get_clean();
-
-					} else {
-
+					if (!is_file($job_path)) {
 						return $this->error_fatal('Could not load job "' . $this->job_name . '"');
-
 					}
+
+					ob_start();
+
+					if (!class_exists($job_object)) {
+						script_run($job_path);
+					}
+
+					$job_output_html = ob_get_clean();
 
 				//--------------------------------------------------
 				// Email title
@@ -503,26 +499,25 @@
 							}
 
 						//--------------------------------------------------
-						// Prep
+						// Prep and run
+
+							ob_start();
 
 							$prep_result = $job->prep();
 
-						//--------------------------------------------------
-						// Run
-
 							if (is_string($prep_result) && strlen($prep_result) > 0) {
 
-								$job_output_html = $prep_result;
-
-							} else if ($prep_result !== false && $job->halt_maintenance_run() === false) {
-
-								$job_output_html = trim($job->run());
-
-							} else {
-
-								$job_output_html = '';
+								$job_output_html .= $prep_result;
 
 							}
+
+							if ($prep_result !== false && $job->halt_maintenance_run() === false) {
+
+								$job_output_html .= trim($job->run());
+
+							}
+
+							$job_output_html = ob_get_clean() . $job_output_html;
 
 						//--------------------------------------------------
 						// Email
@@ -546,6 +541,8 @@
 				// Log
 
 					if ($this->run_id > 0 && $this->halt_maintenance_run === false) {
+
+						$db = db_get();
 
 						$db->insert(DB_PREFIX . 'maintenance_job', array(
 								'job'     => $this->job_name,

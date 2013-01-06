@@ -69,7 +69,11 @@
 			}
 
 			public function format_label_set($format_label) {
-				$this->format_label = array_merge($this->format_label, $format_label);
+				if (is_array($format_label)) {
+					$this->format_label = array_merge($this->format_label, $format_label);
+				} else {
+					$this->format_label = $format_label;
+				}
 			}
 
 			public function input_value_options_set($field, $options) {
@@ -88,12 +92,20 @@
 
 			public function format_default_get_html() {
 
-				$html = array();
-				foreach ($this->format_input as $field) {
-					$html[] = '<label for="' . html($this->id) . '_' . html($field) . '">' . html($this->format_label[$field]) . '</label>';
-				}
+				if (!is_array($this->format_label)) {
 
-				return implode(html($this->format_label['separator']), $html);
+					return $this->format_label;
+
+				} else {
+
+					$html = array();
+					foreach ($this->format_input as $field) {
+						$html[] = '<label for="' . html($this->id) . '_' . html($field) . '">' . html($this->format_label[$field]) . '</label>';
+					}
+
+					return implode(html($this->format_label['separator']), $html);
+
+				}
 
 			}
 
@@ -349,7 +361,6 @@
 						foreach ($this->input_options[$part]['options'] as $option_value => $option_text) {
 							if ($type == 'value') {
 								$option_value = $option_text;
-								$option_text = str_pad(intval($option_text), 2, '0', STR_PAD_LEFT);
 							}
 							$html .= '
 										<option value="' . html($option_value) . '"' . ($input_value[$part] !== NULL && intval($input_value[$part]) == intval($option_value) ? ' selected="selected"' : '') . '>' . html($option_text) . '</option>';

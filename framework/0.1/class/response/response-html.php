@@ -927,7 +927,7 @@
 								$file['path'] = $js_prefix . $file['path'];
 							}
 
-							$js_files[$file['path']] = array_merge(array('type' => 'text/javascript', 'src' => $file['path']), $file['attributes']); // Unique path
+							$js_files[$file['path']] = array_merge(array('src' => $file['path']), $file['attributes']); // Unique path
 
 						}
 
@@ -1031,7 +1031,7 @@
 							$this->js_code_add($js_code, 'async');
 
 							$this->csp_add_source('script-src', array('https://ssl.google-analytics.com'));
-							$this->csp_add_source('img-src', array('https://ssl.google-analytics.com'));
+							$this->csp_add_source('img-src', array('https://ssl.google-analytics.com', 'http://www.google-analytics.com'));
 
 						}
 

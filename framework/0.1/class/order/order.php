@@ -217,7 +217,7 @@
 									delivery_postcode tinytext NOT NULL,
 									delivery_country tinytext NOT NULL,
 									delivery_telephone tinytext NOT NULL,
-									dispatched datetime NOT NULL,
+									processed datetime NOT NULL,
 									deleted datetime NOT NULL,
 									PRIMARY KEY (id)
 								);');
@@ -1064,6 +1064,11 @@
 					}
 
 				//--------------------------------------------------
+				// Customer email
+
+					$this->_email_customer('order-payment-settled');
+
+				//--------------------------------------------------
 				// Store
 
 					if (!is_array($values)) {
@@ -1074,21 +1079,21 @@
 							'payment_settled' => date('Y-m-d H:i:s'),
 						)));
 
-				//--------------------------------------------------
-				// Customer email
-
-					$this->_email_customer('order-payment-settled');
-
 			}
 
-			public function dispatched($values = NULL) {
+			public function processed($values = NULL) { // aka "dispatched"
 
 				//--------------------------------------------------
 				// Details
 
 					if ($this->order_id === NULL) {
-						exit_with_error('An order needs to be selected', 'dispatched');
+						exit_with_error('An order needs to be selected', 'processed');
 					}
+
+				//--------------------------------------------------
+				// Customer email
+
+					$this->_email_customer('order-processed');
 
 				//--------------------------------------------------
 				// Store
@@ -1098,13 +1103,8 @@
 					}
 
 					$this->values_set(array_merge($values, array(
-							'dispatched' => date('Y-m-d H:i:s'),
+							'processed' => date('Y-m-d H:i:s'),
 						)));
-
-				//--------------------------------------------------
-				// Customer email
-
-					$this->_email_customer('order-dispatched');
 
 			}
 
@@ -1130,7 +1130,11 @@
 		//--------------------------------------------------
 		// Create
 
-			protected function create($defaults = NULL) {
+			protected function create_defaults() {
+				return array();
+			}
+
+			protected function create() {
 
 				//--------------------------------------------------
 				// Details
@@ -1147,6 +1151,7 @@
 						$order_pass .= chr(mt_rand(97,122));
 					}
 
+					$defaults = $this->create_defaults();
 					if (!is_array($defaults)) {
 						$defaults = array();
 					}
@@ -1295,6 +1300,22 @@
 
 					$email->template_value_set_text('TABLE', $table->table_get_text($config));
 					$email->template_value_set_html('TABLE', $table->table_get_html($config));
+
+				//--------------------------------------------------
+				// Testing
+
+					if (false) {
+						if (true) { // HTML
+
+							exit($email->html());
+
+						} else {
+
+							mime_set('text/plain');
+							exit($email->text());
+
+						}
+					}
 
 				//--------------------------------------------------
 				// Send to customer

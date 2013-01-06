@@ -51,7 +51,7 @@ NB: I use the [echo shortcut](http://www.php.net/echo) (<?=), instead of (<?php 
 
 You could extend the above by creating a [controller](/doc/setup/controllers/).
 
-If you are running the website in [development mode](/doc/setup/config/), PHP Prime will add some [notes](/doc/setup/debug/) to explain how it searches for the controller.
+If you are running the website in [development mode](/doc/setup/debug/), PHP Prime will add some notes to explain how it searches for the controller.
 
 In this example we use the [form](/doc/helpers/form/) and [email](/doc/helpers/email/) helpers to create a 'contact us' form, which sends an email, and keeps a copy in the database.
 
@@ -61,7 +61,7 @@ It should be noted that the database determines the maximum length of the fields
 
 	<?php [SEE EXAMPLE] ?>
 
-To quickly create the HTML in the [view](/doc/setup/views/), we could add:
+To quickly create the HTML in the [view](/doc/setup/views/), we can use:
 
 	<?= $form->html(); ?>
 
@@ -71,6 +71,6 @@ To quickly create the HTML in the [view](/doc/setup/views/), we could add:
 
 From here I urge you to at least scan over the notes on [security](/doc/security/), which applies to all websites/frameworks.
 
-You will also notice that when you are in [development mode](/doc/setup/config/), not only do you get the helper notes, the page loads with the XML header to ensure your HTML remains strict, and the [CSP header](/doc/security/csp/) is enabled and enforced.
+You will also notice that when you are in [development mode](/doc/setup/debug/), not only do you get the helper notes, the page loads with the XML header to ensure your HTML remains strict, and the [CSP header](/doc/security/csp/) is enabled and enforced.
 
 Now you're free to [start using the framework](/doc/setup/).

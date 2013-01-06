@@ -1,5 +1,10 @@
 <?php
 
+	//--------------------------------------------------
+	// INCOMPLETE... basic copy from an old project.
+	// Possibly use the socket class?
+	//--------------------------------------------------
+
 //--------------------------------------------------
 // Main authentication handlers
 
@@ -40,8 +45,6 @@
 
 					//--------------------------------------------------
 					// Data
-
-						// TODO: Possibly use the socket class?
 
 						$header = array();
 						$header[] = 'POST ' . head($url_parts['path']) . ' HTTP/1.0';

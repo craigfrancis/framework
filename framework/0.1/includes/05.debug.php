@@ -185,66 +185,77 @@
 
 	function error_handler($err_no, $err_str, $err_file, $err_line, $err_context) {
 
-		if (error_reporting() == 0) {
-			return; // If disabled, as much granularity as I want to check for
-		}
+		//--------------------------------------------------
+		// If disabled
 
-		$hidden_info = '';
+			if (error_reporting() == 0) { // (as much granularity as I want to check for)
+				return;
+			}
 
-		foreach (debug_backtrace() as $called_from) {
-			if (isset($called_from['file']) && !prefix_match(FRAMEWORK_ROOT, $called_from['file'])) {
+		//--------------------------------------------------
+		// Using the html() function with multibyte issue
 
-				$hidden_info .= "\n " . $err_file . ':' . $err_line;
+			foreach (debug_backtrace() as $called_from) {
+				if (isset($called_from['file']) && !prefix_match(FRAMEWORK_ROOT, $called_from['file'])) {
 
-				$err_line = $called_from['line'];
-				$err_file = $called_from['file'];
+					if (isset($called_from['function']) && $called_from['function'] == 'html') {
 
-				if (isset($called_from['function']) && $called_from['function'] == 'html') {
+						// Show value for multibyte error in the html() function.
+						//   ini_set('display_errors', false); - see http://insomanic.me.uk/post/191397106
+						//   html('Testing: ' . chr(254));
 
-					// Show value for multibyte error in the html() function.
-					//   ini_set('display_errors', false);
-					//   html('Testing: ' . chr(254));
+						$err_line = $called_from['line'];
+						$err_file = $called_from['file'];
 
-					$err_str .= ' (' . $called_from['args'][0] . ')';
+						$err_str .= ' (' . $called_from['args'][0] . ')';
+
+					}
+
+					break;
 
 				}
+			}
 
+		//--------------------------------------------------
+		// Error type
+
+			switch ($err_no) { // From "Johan 'Josso' Jensen" on http://www.php.net/set_error_handler
+				case E_NOTICE:
+				case E_USER_NOTICE:
+					$error_type = 'Notice';
 				break;
-
+				case E_WARNING:
+				case E_USER_WARNING:
+					$error_type = 'Warning';
+				break;
+				case E_ERROR:
+				case E_USER_ERROR:
+					$error_type = 'Fatal Error';
+				break;
+				default:
+					$error_type = 'Unknown';
+				break;
 			}
-		}
 
-		switch ($err_no) { // From "Johan 'Josso' Jensen" on http://www.php.net/set_error_handler
-			case E_NOTICE:
-			case E_USER_NOTICE:
-				$error_type = 'Notice';
-			break;
-			case E_WARNING:
-			case E_USER_WARNING:
-				$error_type = 'Warning';
-			break;
-			case E_ERROR:
-			case E_USER_ERROR:
-				$error_type = 'Fatal Error';
-			break;
-			default:
-				$error_type = 'Unknown';
-			break;
-		}
+		//--------------------------------------------------
+		// Output
 
-		if (ini_get('display_errors')) {
-			echo "\n<br />\n<b>" . error_handler_html($error_type) . '</b>: ' . error_handler_html($err_str) . ' in <b>' . error_handler_html($err_file) . '</b> on line <b>' . error_handler_html($err_line) . '</b>';
-			if ($hidden_info != '') {
-				echo "\n<!--" . error_handler_html($hidden_info) . "\n-->\n";
+			if (ini_get('display_errors')) {
+				echo "\n<br />\n<b>" . error_handler_html($error_type) . '</b>: ' . error_handler_html($err_str) . ' in <b>' . error_handler_html($err_file) . '</b> on line <b>' . error_handler_html($err_line) . '</b>';
+				echo "<br /><br />\n";
 			}
-			echo "<br /><br />\n";
-		}
 
-		if (ini_get('log_errors')) {
-			error_log(sprintf('PHP %s: %s in %s on line %d', $error_type, $err_str, $err_file, $err_line));
-		}
+		//--------------------------------------------------
+		// Log
 
-		return true;
+			if (ini_get('log_errors')) {
+				error_log(sprintf('PHP %s: %s in %s on line %d', $error_type, $err_str, $err_file, $err_line));
+			}
+
+		//--------------------------------------------------
+		// Handled
+
+			return true;
 
 	}
 

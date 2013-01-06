@@ -185,9 +185,9 @@
 		if (!defined('ENCRYPTION_KEY')) {
 
 			if (defined('CLI_MODE') && !is_file(APP_ROOT . '/setup/config.php')) {
-				define('ENCRYPTION_KEY', base64_encode(random_bytes(10))); // Temporary one of value (during install)
+				define('ENCRYPTION_KEY', base64_encode(random_bytes(10))); // Temporary one off value (during install)
 			} else {
-				exit('Missing the ENCRYPTION_KEY in your config.' . "\n");
+				exit('Missing the ENCRYPTION_KEY constant in your config.' . "\n");
 			}
 
 		}
