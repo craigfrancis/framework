@@ -161,7 +161,17 @@
 					$config = array();
 				}
 
-				return array_merge($defaults, $config);
+				$config = array_merge($defaults, $config);
+
+				if ($config['email_mode'] && $config['url_prefix'] == '') {
+					$url_prefix = https_url('/');
+					if (substr($url_prefix, -1) == '/') {
+						$url_prefix = substr($url_prefix, 0, -1);
+					}
+					$config['url_prefix'] = $url_prefix; // So images and links get full url
+				}
+
+				return $config;
 
 			}
 

@@ -1037,6 +1037,11 @@
 					}
 
 				//--------------------------------------------------
+				// Customer email
+
+					$this->_email_customer('order-payment-received');
+
+				//--------------------------------------------------
 				// Store
 
 					if (!is_array($values)) {
@@ -1046,11 +1051,6 @@
 					$this->values_set(array_merge($values, array(
 							'payment_received' => date('Y-m-d H:i:s'),
 						)));
-
-				//--------------------------------------------------
-				// Customer email
-
-					$this->_email_customer('order-payment-received');
 
 			}
 
@@ -1286,14 +1286,8 @@
 				//--------------------------------------------------
 				// Order table
 
-					$url_prefix = https_url('/');
-					if (substr($url_prefix, -1) == '/') {
-						$url_prefix = substr($url_prefix, 0, -1);
-					}
-
 					$config = array(
 							'email_mode' => true,
-							'url_prefix' => $url_prefix, // Images and links get full url
 						);
 
 					$table = $this->table_get();
