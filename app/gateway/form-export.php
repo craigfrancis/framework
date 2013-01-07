@@ -5,11 +5,11 @@
 
 	if (SERVER == 'stage') {
 		$path_config = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/includes/02.config.php';
-		$path_source = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/class/form';
+		$path_source = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/library/class/form';
 		$path_output = '/Volumes/WebServer/Projects/cpoets.library/a/php/form2.php';
 	} else {
 		$path_config = ROOT . '/framework/0.1/includes/02.config.php';
-		$path_source = ROOT . '/framework/0.1/class/form';
+		$path_source = ROOT . '/framework/0.1/library/class/form';
 		$path_output = NULL;
 	}
 
@@ -33,14 +33,15 @@
 		'form-field-password',
 		'form-field-postcode',
 		'form-field-currency',
-		'form-field-date',
-		'form-field-time',
 		'form-field-checkbox',
 		'form-field-checkboxes',
 		'form-field-radios',
 		'form-field-select',
 		'form-field-file',
 		'form-field-image',
+		'form-field-fields',
+		'form-field-date',
+		'form-field-time',
 		'form-field-html',
 		'form-field-info',
 	);
