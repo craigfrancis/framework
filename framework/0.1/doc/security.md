@@ -1,6 +1,6 @@
 The main security problem with all websites is how [strings of characters](/doc/security/strings/) are handled.
 
-Once you have a good understanding of [strings](/doc/security/strings/), then you can cover some of the finer points of web security:
+Once you have a good understanding of [strings](../doc/security/strings/), then you can cover some of the finer points of web security:
 
 * [Strings](/doc/security/strings/) - yes, its really important.
 * [Cross site request forgery](/doc/security/csrf/) - aka CSRF.
