@@ -18,7 +18,7 @@ The framework will require you to set the `ENCRYPTION_KEY` and `SERVER` constant
 	define('ENCRYPTION_KEY', 'type-your-own-random-characters');
 	define('SERVER', 'live');
 
-See the [config setup](/doc/setup/config/) for more details.
+See the [config setup](../../doc/setup/config.md) for more details.
 
 ---
 
@@ -33,7 +33,7 @@ To see if the current script is running in via the command line:
 
 ## Initialise framework only
 
-If you want to include the [bootstrap file](/doc/setup/bootstrap/) to get the framework functionality, but without it actually processing a request, try setting:
+If you want to include the [bootstrap file](../../doc/setup/bootstrap.md) to get the framework functionality, but without it actually processing a request, try setting:
 
 	define('FRAMEWORK_INIT_ONLY', true);
 

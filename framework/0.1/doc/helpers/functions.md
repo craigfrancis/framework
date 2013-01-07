@@ -2,7 +2,7 @@
 
 Just to add a few generic functions that either PHP should provide, or are just handy shortcuts.
 
-Some of the helpers also provide their own functions as shortcuts, which you can view on their respective pages (e.g. the [url](/doc/helpers/url/) helper).
+Some of the helpers also provide their own functions as shortcuts, which you can view on their respective pages (e.g. the [url](../../doc/helpers/url.md) helper).
 
 ---
 
@@ -31,7 +31,7 @@ Perhaps the most important functions on the website:
 	safe_file_name($name);
 		// $path = '/file/path/' . safe_file_name($name);
 
-See the security section about [strings](/doc/security/strings/) to understand why these are useful.
+See the security section about [strings](../../doc/security/strings.md) to understand why these are useful.
 
 ---
 
@@ -49,7 +49,7 @@ When you want to get a value from GET/POST/REQUEST, then simply use:
 
 This function will return NULL if the variable does not exist.
 
-For other variables, you should probably use the [cookie](/doc/helpers/cookie/) and [session](/doc/helpers/session/) helpers.
+For other variables, you should probably use the [cookie](../../doc/helpers/cookie.md) and [session](../../doc/helpers/session.md) helpers.
 
 ---
 
@@ -129,7 +129,7 @@ To delete a folder and its contents:
 
 	rrmdir($path);
 
-To work with versioned files (see [resource versioning](/doc/setup/resources/)).
+To work with versioned files (see [resource versioning](../../doc/setup/resources.md)).
 
 	version_path($path);
 
@@ -183,7 +183,7 @@ And the other conversion functions:
 
 # Debug
 
-While not really covered on this page, there are a range of useful [debug functions](/doc/setup/debug/), for example:
+While not really covered on this page, there are a range of useful [debug functions](../../doc/setup/debug.md), for example:
 
 	debug($var);
 

@@ -11,13 +11,13 @@ For example:
 	$email->body_html_add('...');
 	$email->send('noreply@example.com');
 
-And while we are on the subject, there is always the [is_email](/doc/helpers/functions/)() function.
+And while we are on the subject, there is always the [is_email](../../doc/helpers/functions.md)() function.
 
 ---
 
 ## Config
 
-The main [config](/doc/setup/config/) for the email helper includes...
+The main [config](../../doc/setup/config.md) for the email helper includes...
 
 To set the from address, where the name defaults to 'output.site_name':
 
@@ -32,7 +32,7 @@ If you want all emails to be re-directed to a different address (good for testin
 
 	$config['email.testing'] = 'admin@example.com';
 
-And while not strictly related, when you call the [is_email](/doc/helpers/functions/)() function, the domain is checked by default. This can be changed with:
+And while not strictly related, when you call the [is_email](../../doc/helpers/functions.md)() function, the domain is checked by default. This can be changed with:
 
 	$config['email.check_domain'] = false;
 
@@ -64,7 +64,7 @@ And to actually send:
 	$email->send('noreply@example.com');
 	$email->send(array('noreply@example.com', 'admin@example.com'));
 
-Or if your using the [GPG helper](/doc/helpers/gpg/), based on the senders from address, then you can:
+Or if your using the [GPG helper](../../doc/helpers/gpg.md), based on the senders from address, then you can:
 
 	$email->send_encrypted('noreply@example.com');
 
@@ -84,7 +84,7 @@ TODO
 	$email->attachment_add($path, $mime);
 	$email->attachment_add($path, $mime, $name);
 
-And if your using the [form helper](/doc/helpers/form/), you can pass an uploaded file via:
+And if your using the [form helper](../../doc/helpers/form.md), you can pass an uploaded file via:
 
 	$email->attachment_file_add($field);
 

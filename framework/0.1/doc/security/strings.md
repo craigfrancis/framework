@@ -21,13 +21,13 @@ As you can see, the SQL has a problem and needs to be fixed. Which can be done b
 
 And it's this handling of **strings** which EVERY programmer needs to understand, otherwise you have a range of security issues:
 
-- [SQL injection](/doc/security/strings/sql-injection/)
-- [HTML injection](/doc/security/strings/html-injection/)
-- [URL manipulation](/doc/security/strings/url-manipulation/)
-- [Header injection](/doc/security/strings/header-injection/)
-- [CLI injection](/doc/security/strings/cli-injection/)
-- [RegExp injection](/doc/security/strings/regexp-injection/)
-- [Path manipulation](/doc/security/strings/path-manipulation/)
+- [SQL injection](../../doc/security/strings/sql-injection.md)
+- [HTML injection](../../doc/security/strings/html-injection.md)
+- [URL manipulation](../../doc/security/strings/url-manipulation.md)
+- [Header injection](../../doc/security/strings/header-injection.md)
+- [CLI injection](../../doc/security/strings/cli-injection.md)
+- [RegExp injection](../../doc/security/strings/regexp-injection.md)
+- [Path manipulation](../../doc/security/strings/path-manipulation.md)
 
 ---
 
@@ -45,7 +45,7 @@ For example, how about a search term that needs to be passed to the download pag
 
 	echo $download_html;
 
-Now this is an example that doesn't use any [helpers](/doc/helpers/), to show how it can work in any PHP code.
+Now this is an example that doesn't use any [helpers](../../doc/helpers.md), to show how it can work in any PHP code.
 
 So to help track how the values are being escaped, we can use these suffixes for variables and function names:
 

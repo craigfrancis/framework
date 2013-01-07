@@ -28,15 +28,15 @@ The /app/ folder basically contains everything for your website to function. Thi
 
 ### Controller
 
-As the name suggests, this is where your [controllers](/doc/setup/controllers/) go.
+As the name suggests, this is where your [controllers](../../doc/setup/controllers.md) go.
 
 ### Gateway
 
-Any [gateway scripts](/doc/setup/gateways/) go here.
+Any [gateway scripts](../../doc/setup/gateways.md) go here.
 
 ### Job
 
-Any [job scripts](/doc/setup/jobs/) go here, otherwise known as maintenance or cron scripts.
+Any [job scripts](../../doc/setup/jobs.md) go here, otherwise known as maintenance or cron scripts.
 
 ### Library
 
@@ -75,21 +75,21 @@ For example you may have a website that has a common profile page, which is acce
 
 Where the web root is set, so any files in here are exposed to the internet.
 
-Typically this contains an `index.php` file (which in turn runs the [bootstrap](/doc/setup/bootstrap/)), and any other files (such as images, CSS, JavaScript) which the web server can expose without PHP Prime getting involved.
+Typically this contains an `index.php` file (which in turn runs the [bootstrap](../../doc/setup/bootstrap.md)), and any other files (such as images, CSS, JavaScript) which the web server can expose without PHP Prime getting involved.
 
 Obviously don't save anything in here you don't want to appear on the internet.
 
 ### Setup
 
-Contains the main [config file](/doc/setup/config/), and other files related to the setup of the website.
+Contains the main [config file](../../doc/setup/config.md), and other files related to the setup of the website.
 
 ### Template
 
-Any [template files](/doc/setup/templates/) go here.
+Any [template files](../../doc/setup/templates.md) go here.
 
 ### View
 
-Any [view files](/doc/setup/views/) go here.
+Any [view files](../../doc/setup/views.md) go here.
 
 ---
 

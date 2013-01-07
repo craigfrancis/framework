@@ -1,7 +1,7 @@
 
 # Database
 
-First, you need to set the connection [config](/doc/setup/config/):
+First, you need to set the connection [config](../../doc/setup/config.md):
 
 	$config['db.host'] = 'localhost';
 	$config['db.user'] = 'stage';

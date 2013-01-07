@@ -15,7 +15,7 @@ However there are some useful functions which are always present:
 
 # Development mode
 
-You can enable this by either setting the `SERVER` constant to 'stage', or the via the [config](/doc/setup/config/):
+You can enable this by either setting the `SERVER` constant to 'stage', or the via the [config](../../doc/setup/config.md):
 
 	define('SERVER', 'stage');
 

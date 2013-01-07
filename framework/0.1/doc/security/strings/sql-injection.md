@@ -11,7 +11,7 @@ Before continuing with this page, you need to understand SQL to the point that t
 		`name` = "john" AND
 		`pass` = "123"
 
-Where this could be used on a login page... please don't though, not only is it stuck in finding the account for "john" (which probably isn't going to be that useful), it doesn't cover any of the security issues related to [logins and passwords](/doc/security/logins/).
+Where this could be used on a login page... please don't though, not only is it stuck in finding the account for "john" (which probably isn't going to be that useful), it doesn't cover any of the security issues related to [logins and passwords](../../../doc/security/logins.md).
 
 So taking that the username and password is replaced with values that the user is currently trying to login with, the end result is still a single string, which is passed to the database, where it interprets it, and hopefully returns the users id.
 
@@ -168,7 +168,7 @@ They are basically a different approach to data storage, each with their own mer
 
 ## Raw SQL
 
-This is still my preferred method, and yes, that does mean every variable has to be escaped properly... like how you have to escape variables for [html](/doc/security/strings/html-injection/), [urls](/doc/security/strings/url-manipulation/), [command line arguments](/doc/security/strings/cli-injection/), [regular expressions](/doc/security/strings/regexp-injection/), etc.
+This is still my preferred method, and yes, that does mean every variable has to be escaped properly... like how you have to escape variables for [html](../../../doc/security/strings/html-injection.md), [urls](../../../doc/security/strings/url-manipulation.md), [command line arguments](../../../doc/security/strings/cli-injection.md), [regular expressions](../../../doc/security/strings/regexp-injection.md), etc.
 
 I believe all developers should be educated about the issues, and taught how to overcome them.
 
@@ -185,7 +185,7 @@ So for reference I use code like the following:
 	if ($row = $db->fetch($sql)) {
 	}
 
-And if the query needs to be built up, then a [simple naming convention](/doc/security/strings/) of using "_sql" suffix to any SQL variables.
+And if the query needs to be built up, then a [simple naming convention](../../../doc/security/strings.md) of using "_sql" suffix to any SQL variables.
 
 	$where_sql = array(
 			'`id` = "' . $db->escape($id) . '"',
@@ -209,6 +209,6 @@ And if the query needs to be built up, then a [simple naming convention](/doc/se
 
 	$db->query($sql);
 
-As a side note, regarding the $db object, see the [database helper](/doc/helpers/database/).
+As a side note, regarding the $db object, see the [database helper](../../../doc/helpers/database.md).
 
 And for now I will look forward to a day that either SQL is replaced, or there is a better way of handling variables in strings (or at least generating SQL).

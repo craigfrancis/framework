@@ -26,7 +26,7 @@
 				if (substr($request_path, 0, 5)  == '/doc/') $request_path = substr($request_path, 5);
 				if (substr($request_path, -1)    == '/')     $request_path = substr($request_path, 0, -1);
 
-				$doc_file_path = realpath($doc_root_path . $request_path . '.txt');
+				$doc_file_path = realpath($doc_root_path . $request_path . '.md');
 
 			//--------------------------------------------------
 			// Document HTML
@@ -53,6 +53,8 @@
 						$doc_text = str_replace('<?php [SEE EXAMPLE] ?>', $controller_example, $doc_text);
 
 					}
+
+					$doc_text = preg_replace('/\(((..\/)+doc\/.*?).md\)/', '(../$1/)', $doc_text);
 
 				//--------------------------------------------------
 				// Conversion

@@ -1,6 +1,6 @@
 # Resources
 
-A typical [HTML response](/doc/helpers/response/) will add JavaScript and CSS files with:
+A typical [HTML response](../../doc/helpers/response.md) will add JavaScript and CSS files with:
 
 	$response->js_add('/path/to/file.js');
 	$response->js_code_add('var x = ' . json_encode($x) . ';');
@@ -10,13 +10,13 @@ A typical [HTML response](/doc/helpers/response/) will add JavaScript and CSS fi
 	$response->css_alternate_add('/path/to/file.css', 'print');
 	$response->css_alternate_add('/path/to/file.css', 'all', 'Title');
 
-In the [template](/doc/setup/templates/) file itself, the CSS is then added to the page <[head](http://developer.yahoo.com/performance/rules.html#css_top)> via `head_get_html()`, and the JavaScript at the [bottom](http://developer.yahoo.com/performance/rules.html#js_bottom) of the page with `foot_get_html()`.
+In the [template](../../doc/setup/templates.md) file itself, the CSS is then added to the page <[head](http://developer.yahoo.com/performance/rules.html#css_top)> via `head_get_html()`, and the JavaScript at the [bottom](http://developer.yahoo.com/performance/rules.html#js_bottom) of the page with `foot_get_html()`.
 
 And just for reference, please see these other pages which also relate to resources:
 
-* [Favicon](/doc/setup/favicon/)
-* [Robots.txt](/doc/setup/robots/)
-* [Sitemap.xml](/doc/setup/sitemap/)
+* [Favicon](../../doc/setup/favicon.md)
+* [Robots.txt](../../doc/setup/robots.md)
+* [Sitemap.xml](../../doc/setup/sitemap.md)
 
 ---
 
@@ -37,7 +37,7 @@ This can be disabled with the config options:
 
 ## JavaScript code
 
-Sometimes you may need to set a JavaScript variable, for example the current tax rate, however you don't really want to do this inline as its a potential [security issue](/doc/security/strings/html-injection/), and can break the default [CSP directives](/doc/security/csp/).
+Sometimes you may need to set a JavaScript variable, for example the current tax rate, however you don't really want to do this inline as its a potential [security issue](../../doc/security/strings/html-injection.md), and can break the default [CSP directives](../../doc/security/csp.md).
 
 So instead just add:
 
@@ -85,7 +85,7 @@ The result is cached, and shouldn't make many changes to your CSS, its more to r
 
 Some sites can simply get away with a single CSS file, but if they become too large, you may find that you want a different (or additional) file per section (based on the URL).
 
-So if you update your [template](/doc/setup/templates/) file, so that it simply executes:
+So if you update your [template](../../doc/setup/templates.md) file, so that it simply executes:
 
 	$this->css_auto();
 

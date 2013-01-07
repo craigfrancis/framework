@@ -7,7 +7,7 @@ Where the typical page is built using the URL, for example:
 
 	http://www.example.com/contact/
 
-If you're adding a HTML page, then you just need to create a [view file](/doc/setup/views/) such as:
+If you're adding a HTML page, then you just need to create a [view file](../doc/setup/views.md) such as:
 
 	/app/view/contact.ctp
 
@@ -15,7 +15,7 @@ If you're adding a HTML page, then you just need to create a [view file](/doc/se
 		<p>Tel: 1234 567 8900</p>
 		<p>Email: <a href="mailto:admin@example.com">admin@example.com</a></p>
 
-The output from this is added to a [template](/doc/setup/templates/), where the common HTML for the website is added (such as the site navigation).
+The output from this is added to a [template](../doc/setup/templates.md), where the common HTML for the website is added (such as the site navigation).
 
 	<!DOCTYPE html>
 	<html lang="<?= html($this->lang_get()) ?>">
@@ -49,11 +49,11 @@ NB: I use the [echo shortcut](http://www.php.net/echo) (<?=), instead of (<?php 
 
 # Optional controller
 
-You could extend the above by creating a [controller](/doc/setup/controllers/).
+You could extend the above by creating a [controller](../doc/setup/controllers.md).
 
-If you are running the website in [development mode](/doc/setup/debug/), PHP Prime will add some notes to explain how it searches for the controller.
+If you are running the website in [development mode](../doc/setup/debug.md), PHP Prime will add some notes to explain how it searches for the controller.
 
-In this example we use the [form](/doc/helpers/form/) and [email](/doc/helpers/email/) helpers to create a 'contact us' form, which sends an email, and keeps a copy in the database.
+In this example we use the [form](../doc/helpers/form.md) and [email](../doc/helpers/email.md) helpers to create a 'contact us' form, which sends an email, and keeps a copy in the database.
 
 It should be noted that the database determines the maximum length of the fields.
 
@@ -61,7 +61,7 @@ It should be noted that the database determines the maximum length of the fields
 
 	<?php [SEE EXAMPLE] ?>
 
-To quickly create the HTML in the [view](/doc/setup/views/), we can use:
+To quickly create the HTML in the [view](../doc/setup/views.md), we can use:
 
 	<?= $form->html(); ?>
 
@@ -69,8 +69,8 @@ To quickly create the HTML in the [view](/doc/setup/views/), we can use:
 
 # Next steps
 
-From here I urge you to at least scan over the notes on [security](/doc/security/), which applies to all websites/frameworks.
+From here I urge you to at least scan over the notes on [security](../doc/security.md), which applies to all websites/frameworks.
 
-You will also notice that when you are in [development mode](/doc/setup/debug/), not only do you get the helper notes, the page loads with the XML header to ensure your HTML remains strict, and the [CSP header](/doc/security/csp/) is enabled and enforced.
+You will also notice that when you are in [development mode](../doc/setup/debug.md), not only do you get the helper notes, the page loads with the XML header to ensure your HTML remains strict, and the [CSP header](../doc/security/csp.md) is enabled and enforced.
 
-Now you're free to [start using the framework](/doc/setup/).
+Now you're free to [start using the framework](../doc/setup.md).
