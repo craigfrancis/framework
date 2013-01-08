@@ -255,7 +255,7 @@
 	//--------------------------------------------------
 	// Session
 
-// 		$session_path = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/class/session.php';
+// 		$session_path = '/Volumes/WebServer/Projects/craig.framework/framework/0.1/library/class/session.php';
 //
 // 		$session_php = file_get_contents($session_path);
 //
