@@ -129,11 +129,6 @@
 			}
 
 		//--------------------------------------------------
-		// Value
-
-
-
-		//--------------------------------------------------
 		// HTML
 
 			public function html_label($field = NULL, $label_html = NULL) {
@@ -224,8 +219,13 @@
 					} else {
 
 						$value = $input_value[$field];
-						if ($value !== NULL && $input_config['pad_length'] > 0) {
-							$value = str_pad($value, $input_config['pad_length'], $input_config['pad_char'], STR_PAD_LEFT);
+
+						if ($input_config['pad_length'] > 0) {
+							if ($value !== NULL && $value !== '') {
+								$value = str_pad($value, $input_config['pad_length'], $input_config['pad_char'], STR_PAD_LEFT);
+							}
+						} else if ($value == 0) {
+							$value = '';
 						}
 
 						$attributes['value'] = $value;

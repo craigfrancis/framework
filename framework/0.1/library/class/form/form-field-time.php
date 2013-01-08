@@ -36,16 +36,24 @@
 							$form_method = $form->form_method_get();
 
 							$this->value = array(
-									'H' => intval(request($this->name . '_H', $form_method)),
-									'I' => intval(request($this->name . '_I', $form_method)),
-									'S' => intval(request($this->name . '_S', $form_method)),
+									'H' => request($this->name . '_H', $form_method),
+									'I' => request($this->name . '_I', $form_method),
+									'S' => request($this->name . '_S', $form_method),
 								);
 
 						}
 
 					}
 
-					$this->value_provided = ($this->value['H'] != 0 || $this->value['I'] != 0 || $this->value['S'] != 0);
+					$this->value_provided = false;
+					if (is_array($this->value)) {
+						foreach ($this->value as $value) {
+							if ($value !== NULL && $value !== '') {
+								$this->value_provided = true; // Only look for one non-blank value (allowing '0'), as the 'seconds' field probably does not exist.
+								break;
+							}
+						}
+					}
 
 				//--------------------------------------------------
 				// Default configuration
@@ -131,9 +139,9 @@
 				if ($this->value === NULL) {
 					if ($this->form->saved_values_available()) {
 						return array(
-								'H' => intval($this->form->saved_value_get($this->name . '_H')),
-								'I' => intval($this->form->saved_value_get($this->name . '_I')),
-								'S' => intval($this->form->saved_value_get($this->name . '_S')),
+								'H' => $this->form->saved_value_get($this->name . '_H'),
+								'I' => $this->form->saved_value_get($this->name . '_I'),
+								'S' => $this->form->saved_value_get($this->name . '_S'),
 							);
 					} else {
 						return $this->_value_parse($this->form->db_select_value_get($this->db_field_name));
