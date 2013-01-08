@@ -1,15 +1,10 @@
 <?php
 
-	class form_field_date_base extends form_field {
+	class form_field_date_base extends form_field_fields {
 
 		//--------------------------------------------------
 		// Variables
 
-			protected $value;
-			protected $value_provided;
-			protected $format_input;
-			protected $format_label;
-			protected $input_options;
 			protected $invalid_error_set;
 			protected $invalid_error_found;
 
@@ -19,9 +14,9 @@
 			public function __construct($form, $label, $name = NULL) {
 
 				//--------------------------------------------------
-				// General setup
+				// Fields setup
 
-					$this->_setup($form, $label, $name);
+					$this->_setup_fields($form, $label, $name);
 
 				//--------------------------------------------------
 				// Value
@@ -56,75 +51,39 @@
 				// Default configuration
 
 					$this->type = 'date';
-					$this->format_input = array('D', 'M', 'Y');
-					$this->format_label = array('separator' => '/', 'D' => 'DD', 'M' => 'MM', 'Y' => 'YYYY');
-					$this->input_options = array();
+					$this->fields = array('D', 'M', 'Y');
+					$this->format_html = array_merge(array('separator' => '/', 'D' => 'DD', 'M' => 'MM', 'Y' => 'YYYY'), config::get('form.date_format_html', array()));
 					$this->invalid_error_set = false;
 					$this->invalid_error_found = false;
-
-			}
-
-			public function format_input_set($format_input) {
-				$this->format_input = $format_input;
-			}
-
-			public function format_label_set($format_label) {
-				if (is_array($format_label)) {
-					$this->format_label = array_merge($this->format_label, $format_label);
-				} else {
-					$this->format_label = $format_label;
-				}
-			}
-
-			public function input_value_options_set($field, $options) {
-				$this->input_options[$field] = array(
-						'type' => 'value',
-						'options' => $options,
-					);
-			}
-
-			public function input_text_options_set($field, $options) {
-				$this->input_options[$field] = array(
-						'type' => 'text',
-						'options' => $options,
-					);
-			}
-
-			public function format_default_get_html() {
-
-				if (!is_array($this->format_label)) {
-
-					return $this->format_label;
-
-				} else {
-
-					$html = array();
-					foreach ($this->format_input as $field) {
-						$html[] = '<label for="' . html($this->id) . '_' . html($field) . '">' . html($this->format_label[$field]) . '</label>';
-					}
-
-					return implode(html($this->format_label['separator']), $html);
-
-				}
+					$this->input_order = config::get('form.date_input_order', array('D', 'M', 'Y'));
+					$this->input_separator = "\n\t\t\t\t\t\t\t\t\t";
+					$this->input_config = array(
+							'D' => array(
+									'size' => 2,
+									'pad_length' => 0,
+									'pad_char' => '0',
+									'label' => '',
+									'options' => NULL,
+								),
+							'M' => array(
+									'size' => 2,
+									'pad_length' => 0,
+									'pad_char' => '0',
+									'label' => '',
+									'options' => NULL,
+								),
+							'Y' => array(
+									'size' => 4,
+									'pad_length' => 0,
+									'pad_char' => '0',
+									'label' => '',
+									'options' => NULL,
+								));
 
 			}
 
 		//--------------------------------------------------
 		// Errors
-
-			public function required_error_set($error) {
-				$this->required_error_set_html(html($error));
-			}
-
-			public function required_error_set_html($error_html) {
-
-				if ($this->form_submitted && !$this->value_provided) {
-					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
-				}
-
-				$this->required = ($error_html !== NULL);
-
-			}
 
 			public function invalid_error_set($error) {
 				$this->invalid_error_set_html(html($error));
@@ -189,11 +148,11 @@
 				$this->value = $this->_value_parse($value, $month, $year);
 			}
 
-			public function value_get($part = NULL) {
-				if ($part == 'D' || $part == 'M' || $part == 'Y') {
-					return $this->value[$part];
+			public function value_get($field = NULL) {
+				if (in_array($html, $this->fields)) {
+					return $this->value[$field];
 				} else {
-					return 'The date part must be set to "D", "M" or "Y"... or you could use value_date_get() or value_time_stamp_get()';
+					return 'The date field is invalid (' . implode(' / ', $this->fields) . ')... or you could use value_date_get() or value_time_stamp_get()';
 				}
 			}
 
@@ -284,116 +243,6 @@
 					exit('<p>You need to call "invalid_error_set", on the field "' . $this->label_html . '"</p>');
 				}
 
-			}
-
-		//--------------------------------------------------
-		// HTML
-
-			public function html_label($part = 'D', $label_html = NULL) {
-
-				//--------------------------------------------------
-				// Check the part
-
-					if ($part != 'D' && $part != 'M' && $part != 'Y') {
-						return 'The date part must be set to "D", "M" or "Y"';
-					}
-
-				//--------------------------------------------------
-				// Required mark position
-
-					$required_mark_position = $this->required_mark_position;
-					if ($required_mark_position === NULL) {
-						$required_mark_position = $this->form->required_mark_position_get();
-					}
-
-				//--------------------------------------------------
-				// If this field is required, try to get a required
-				// mark of some form
-
-					if ($this->required) {
-
-						$required_mark_html = $this->required_mark_html;
-
-						if ($required_mark_html === NULL) {
-							$required_mark_html = $this->form->required_mark_get_html($required_mark_position);
-						}
-
-					} else {
-
-						$required_mark_html = NULL;
-
-					}
-
-				//--------------------------------------------------
-				// Return the HTML for the label
-
-					return '<label for="' . html($this->id) . '_' . html($part) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . ($required_mark_position == 'left' && $required_mark_html !== NULL ? $required_mark_html : '') . ($label_html !== NULL ? $label_html : $this->label_html) . ($required_mark_position == 'right' && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>';
-
-			}
-
-			public function html_input_part($part) {
-
-				if ($part == 'D' || $part == 'M' || $part == 'Y') {
-
-					$input_value = $this->_value_print_get();
-
-					$attributes = array(
-							'name' => $this->name . '_' . $part,
-							'id' => $this->id . '_' . $part,
-						);
-
-					if ($part != 'D') {
-						$attributes['autofocus'] = NULL;
-					}
-
-					if ($this->autocomplete === 'bday') {
-						$part_name = array('D' => 'day', 'M' => 'month', 'Y' => 'year');
-						$attributes['autocomplete'] = 'bday-' . $part_name[$part];
-					}
-
-					if (isset($this->input_options[$part])) {
-
-						$html = '
-									' . html_tag('select', array_merge($this->_input_attributes(), $attributes)) . '
-										<option value=""></option>';
-
-						$type = $this->input_options[$part]['type'];
-						foreach ($this->input_options[$part]['options'] as $option_value => $option_text) {
-							if ($type == 'value') {
-								$option_value = $option_text;
-							}
-							$html .= '
-										<option value="' . html($option_value) . '"' . ($input_value[$part] !== NULL && intval($input_value[$part]) == intval($option_value) ? ' selected="selected"' : '') . '>' . html($option_text) . '</option>';
-						}
-
-						return $html . '
-									</select>';
-
-					} else {
-
-						$attributes['value'] = ($input_value[$part] == 0 ? '' : $input_value[$part]);
-						$attributes['maxlength'] = ($part == 'Y' ? 4 : 2);
-						$attributes['size'] = ($part == 'Y' ? 4 : 2);
-
-						return $this->_html_input($attributes);
-
-					}
-
-				} else {
-
-					return 'The date part must be set to "D", "M" or "Y"';
-
-				}
-
-			}
-
-			public function html_input() {
-				$html = '';
-				foreach ($this->format_input as $field) {
-					$html .= '
-									' . $this->html_input_part($field);
-				}
-				return $html;
 			}
 
 	}

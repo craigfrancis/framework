@@ -72,7 +72,19 @@
 //--------------------------------------------------
 // Tracking
 
-	// $config['tracking.ga_code'] = 'GA-';
+	// $config['tracking.ga_code'] = 'UA-309730-8';
+	$config['tracking.js_path'] = '/a/js/analytics.js';
+
+//--------------------------------------------------
+// Content security policy
+
+	$config['output.csp_enforced'] = true;
+
+	$config['output.csp_directives'] = array(
+			'default-src' => array('"self"'),
+			'script-src'  => array('"self"', 'https://ssl.google-analytics.com'),
+			'img-src'     => array('"self"', 'https://ssl.google-analytics.com', 'http://www.google-analytics.com', 'data:'),
+		);
 
 //--------------------------------------------------
 // Pagination
