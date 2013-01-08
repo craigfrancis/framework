@@ -6,14 +6,12 @@
 //   http://hueniverse.com/2012/07/oauth-2-0-and-the-road-to-hell/
 
 //--------------------------------------------------
-// Is enabled
+// http://www.phpprime.com/doc/setup/gateways/
+//--------------------------------------------------
 
 	if (config::get('gateway.active') !== true) {
 		exit_with_error('Gateway disabled.');
 	}
-
-//--------------------------------------------------
-// Gateway class
 
 	class gateway_base extends check {
 
@@ -173,7 +171,7 @@
 
 					if ($gateway_log) {
 
-						$db = new db();
+						$db = db_get();
 
 						$db->query('DELETE FROM
 										' . DB_PREFIX . 'gateway_log
@@ -610,7 +608,7 @@
 				//--------------------------------------------------
 				// Kill old passwords
 
-					$db = new db();
+					$db = db_get();
 
 					$db->query('DELETE FROM
 									' . DB_PREFIX . 'gateway_pass

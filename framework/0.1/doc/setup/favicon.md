@@ -12,7 +12,7 @@ This path can be changed with:
 	$config['output.favicon_url']
 	$config['output.favicon_path']
 
-The following link tag will be automatically added to the [html response](../../doc/helpers/response.md):
+The following link tag will be automatically added to the [html response](../../doc/system/response.md):
 
 	<link rel="shortcut icon" type="image/x-icon" href="/a/img/global/favicon.ico" />
 

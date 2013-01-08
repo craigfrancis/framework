@@ -49,7 +49,7 @@ When you want to get a value from GET/POST/REQUEST, then simply use:
 
 This function will return NULL if the variable does not exist.
 
-For other variables, you should probably use the [cookie](../../doc/helpers/cookie.md) and [session](../../doc/helpers/session.md) helpers.
+For other variables, you should probably use the [cookie](../../doc/system/cookie.md) and [session](../../doc/system/session.md) helpers.
 
 ---
 

@@ -80,6 +80,22 @@
 				$section_nav->link_add('/doc/setup/', 'Setup', array('child' => $setup_nav));
 
 			//--------------------------------------------------
+			// System
+
+				$system_nav = new nav();
+				$system_nav->link_add('/doc/system/config/', 'Config');
+				$system_nav->link_add('/doc/system/session/', 'Session');
+				$system_nav->link_add('/doc/system/cookie/', 'Cookie');
+				$system_nav->link_add('/doc/system/response/', 'Response');
+				$system_nav->link_add('/doc/system/functions/', 'Functions');
+				$system_nav->link_add('/doc/system/database/', 'Database');
+				$system_nav->link_add('/doc/system/user/', 'User');
+				$system_nav->link_add('/doc/system/order/', 'Order');
+				$system_nav->link_add('/doc/system/payment/', 'Payment');
+
+				$section_nav->link_add('/doc/system/', 'System', array('child' => $system_nav));
+
+			//--------------------------------------------------
 			// Helpers
 
 				$form_setup_nav = new nav();
@@ -111,12 +127,6 @@
 				$form_nav->link_add('/doc/helpers/form/fields/', 'Fields', array('child' => $form_fields_nav));
 
 				$helpers_nav = new nav();
-				$helpers_nav->link_add('/doc/helpers/config/', 'Config');
-				$helpers_nav->link_add('/doc/helpers/session/', 'Session');
-				$helpers_nav->link_add('/doc/helpers/cookie/', 'Cookie');
-				$helpers_nav->link_add('/doc/helpers/response/', 'Response');
-				$helpers_nav->link_add('/doc/helpers/functions/', 'Functions');
-				$helpers_nav->link_add('/doc/helpers/database/', 'Database');
 				$helpers_nav->link_add('/doc/helpers/url/', 'URL');
 				$helpers_nav->link_add('/doc/helpers/form/', 'Form'); // , array('child' => $form_nav)
 				$helpers_nav->link_add('/doc/helpers/email/', 'Email');
@@ -125,9 +135,11 @@
 				$helpers_nav->link_add('/doc/helpers/nav/', 'Navigation');
 				$helpers_nav->link_add('/doc/helpers/table/', 'Table');
 				$helpers_nav->link_add('/doc/helpers/paginator/', 'Paginator');
-				$helpers_nav->link_add('/doc/helpers/user/', 'User');
 				$helpers_nav->link_add('/doc/helpers/cms-admin/', 'CMS Admin');
+				$helpers_nav->link_add('/doc/helpers/nearest/', 'Nearest');
+				$helpers_nav->link_add('/doc/helpers/lock/', 'Lock');
 				$helpers_nav->link_add('/doc/helpers/loading/', 'Loading');
+				$helpers_nav->link_add('/doc/helpers/socket/', 'Socket');
 				$helpers_nav->link_add('/doc/helpers/gpg/', 'GPG');
 
 				$section_nav->link_add('/doc/helpers/', 'Helpers', array('child' => $helpers_nav));

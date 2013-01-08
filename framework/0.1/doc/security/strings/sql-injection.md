@@ -209,6 +209,6 @@ And if the query needs to be built up, then a [simple naming convention](../../.
 
 	$db->query($sql);
 
-As a side note, regarding the $db object, see the [database helper](../../../doc/helpers/database.md).
+As a side note, regarding the $db object, see the [database helper](../../../doc/system/database.md).
 
 And for now I will look forward to a day that either SQL is replaced, or there is a better way of handling variables in strings (or at least generating SQL).

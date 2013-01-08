@@ -4,7 +4,7 @@ The response helpers are just a way of collecting all the content that will be s
 
 This is nearly always going to be the **HTML response**, which builds its content using a [view](../../doc/setup/views.md) and [template](../../doc/setup/templates.md).
 
-If you are not responding with some HTML (e.g. an image), then you will probably prefer to handle the response yourself, where the following [helper functions](../../doc/helpers/functions.md) may be useful:
+If you are not responding with some HTML (e.g. an image), then you will probably prefer to handle the response yourself, where the following [helper functions](../../doc/system/functions.md) may be useful:
 
 	mime_set();
 	http_download_file();
@@ -58,7 +58,12 @@ Or just to add your own HTML to the page head ([avoid JavaScript though](../../d
 
 	$response->head_add_html('<html>');
 
-Typically you just leave the HTML response for the framework to send it for you.
+Typically you just then leave the HTML response for the framework to send it for you.
+
+But if you have an error, you can use the global [error_send](../../doc/system/functions.md)() function, which is a shortcut for:
+
+	$response->error_send($ref);
+	exit();
 
 ---
 

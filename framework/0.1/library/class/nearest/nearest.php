@@ -1,23 +1,8 @@
 <?php
 
-/***************************************************
-
-	//--------------------------------------------------
-	// Example setup
-
-		$nearest = new nearest('profile');
-
-		$nearest = new nearest(array(
-				'table_sql' => 'stores',
-				'max_results' => 10,
-			));
-
-	//--------------------------------------------------
-	// Example usage
-
-
-
-***************************************************/
+//--------------------------------------------------
+// http://www.phpprime.com/doc/helpers/nearest/
+//--------------------------------------------------
 
 	class nearest_base extends check {
 
@@ -38,7 +23,7 @@
 
 				//--------------------------------------------------
 				// Profile
-				
+
 					if (is_string($config)) {
 						$profile = $config;
 					} else if (isset($config['profile'])) {
@@ -101,7 +86,7 @@
 
 			private function db_get() {
 				if ($this->db_link === NULL) {
-					$this->db_link = new db();
+					$this->db_link = db_get();
 				}
 				return $this->db_link;
 			}

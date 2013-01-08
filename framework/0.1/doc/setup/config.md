@@ -11,7 +11,7 @@ Which is done via the `$config` array, for example:
 
 This allows you to include this file via other systems, without providing the `config` object.
 
-After this file has been processed, you should use the [config helper](../../doc/helpers/config.md) to set/get values.
+After this file has been processed, you should use the [config helper](../../doc/system/config.md) to set/get values.
 
 ---
 
@@ -49,7 +49,7 @@ There are many ways to detect which server your running on, but my preferred met
 
 You will notice the first one uses a simple regexp... as on OSX most developers end up running it in the /Library/ folder, or on a second (case-sensitive) volume.
 
-The second one uses the [prefix_match](../../doc/helpers/functions.md)() function for **demo**.
+The second one uses the [prefix_match](../../doc/system/functions.md)() function for **demo**.
 
 And the default is to assume we are running on **live**.
 
@@ -59,7 +59,7 @@ And the default is to assume we are running on **live**.
 
 With the configuration setup like this, you can do different things in the different environments.
 
-For example, its a good place to setup the [database connection](../../doc/helpers/database.md) details.
+For example, its a good place to setup the [database connection](../../doc/system/database.md) details.
 
 If your using the [email helper](../../doc/helpers/email.md), it might be worth setting the following on **stage**:
 

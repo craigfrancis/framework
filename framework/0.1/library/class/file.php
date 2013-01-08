@@ -1,20 +1,8 @@
 <?php
 
-/***************************************************
-
-	//--------------------------------------------------
-	// Example setup
-
-			// Save images to folders:
-			//  files/item_name/original/123.jpg
-			//  files/item_name/100x100/123.jpg
-			//  files/item_name/500x500/123.jpg
-			//  files/item_name/120xX/123.jpg
-
-		$file = new file('item_name');
-		$file->image_save(123, '/path/to/file.jpg');
-
-***************************************************/
+//--------------------------------------------------
+// http://www.phpprime.com/doc/helpers/file/
+//--------------------------------------------------
 
 	class file_base extends check {
 

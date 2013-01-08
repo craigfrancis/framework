@@ -1,54 +1,8 @@
 <?php
 
-/***************************************************
-
-	//--------------------------------------------------
-	// Site config
-
-		email.from_email
-		email.from_name (defaults to 'output.site_name')
-		email.subject_prefix (defaults to blank on live, or SERVER elsewhere)
-
-	//--------------------------------------------------
-	// Example setup - basic
-
-		$email = new email();
-		$email->subject_set('My subject');
-		$email->body_text_add('...');
-		$email->body_html_add('...');
-		$email->send('noreply@example.com');
-
-	//--------------------------------------------------
-	// Example setup - template + multiple recipients
-
-		$email = new email();
-		$email->template_set('my_template'); // File in /app/public/a/email/x/index.(html|txt) which could contain [BODY] tag for body_(html|text)_add();
-
-		$recipients = array(
-				array('name' => 'AAA', 'email' => 'noreply@example.com'),
-				array('name' => 'BBB', 'email' => 'noreply@example.com'),
-				array('name' => 'CCC', 'email' => 'noreply@example.com'),
-			);
-
-		foreach ($recipients as $recipient) {
-			$email->template_value_set('NAME', $recipient['name']); // Looks for the tag [NAME] in the template HTML
-			$email->send($recipient['email']);
-		}
-
-	//--------------------------------------------------
-	// Example setup - table of values + attachment
-
-		// $values = $form->data_array_get();
-		// $values = array('Name' => 'Craig', 'Telephone' => '0779 0100 438');
-
-		$email = new email();
-		$email->request_table_add($values); // or values_table_add() to remove automatically added values
-		$email->attachment_add($path, $mime);
-		$email->send('noreply@example.com');
-
 //--------------------------------------------------
-// End of example setup
-***************************************************/
+// http://www.phpprime.com/doc/helpers/email/
+//--------------------------------------------------
 
 	class email_base extends check {
 

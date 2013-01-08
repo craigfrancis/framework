@@ -1,8 +1,5 @@
 <?php
 
-//--------------------------------------------------
-// Download response
-
 	class response_text_base extends response {
 
 		//--------------------------------------------------

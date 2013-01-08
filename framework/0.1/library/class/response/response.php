@@ -1,7 +1,8 @@
 <?php
 
 //--------------------------------------------------
-// Download response
+// http://www.phpprime.com/doc/system/response/
+//--------------------------------------------------
 
 	class response_base extends check {
 

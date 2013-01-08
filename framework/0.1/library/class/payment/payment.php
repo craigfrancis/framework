@@ -1,6 +1,8 @@
 <?php
 
-// Add the handler support seen in chrysalis.crm
+//--------------------------------------------------
+// http://www.phpprime.com/doc/system/payment/
+//--------------------------------------------------
 
 	class payment_base extends check {
 
@@ -53,7 +55,7 @@
 
 			protected function db_get() {
 				if ($this->db_link === NULL) {
-					$this->db_link = new db();
+					$this->db_link = db_get();
 				}
 				return $this->db_link;
 			}

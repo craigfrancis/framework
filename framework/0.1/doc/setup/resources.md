@@ -1,6 +1,6 @@
 # Resources
 
-A typical [HTML response](../../doc/helpers/response.md) will add JavaScript and CSS files with:
+A typical [HTML response](../../doc/system/response.md) will add JavaScript and CSS files with:
 
 	$response->js_add('/path/to/file.js');
 	$response->js_code_add('var x = ' . json_encode($x) . ';');

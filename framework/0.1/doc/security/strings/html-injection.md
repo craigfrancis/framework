@@ -1,6 +1,6 @@
 # HTML Injection
 
-[html](../../../doc/helpers/functions.md)() function.
+[html](../../../doc/system/functions.md)() function.
 
 ---
 

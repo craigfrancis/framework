@@ -1,88 +1,8 @@
 <?php
 
-/***************************************************
-
-	//--------------------------------------------------
-	// Example setup
-
-		<?= cms_admin_html('content'); ?>
-
-	//--------------------------------------------------
-	// Example where the heading is separate... this
-	// might be useful to re-use the heading in the
-	// site navigation, or on the page <title>
-
-		<?= cms_admin_html(array('section' => 'heading', 'wrapper_tag' => 'h1')); ?>
-		<?= cms_admin_html(array('section' => 'content')); ?>
-
-	//--------------------------------------------------
-	// To make editable
-
-		config::set('cms.default.editable', ADMIN_LOGGED_IN);
-
-	//--------------------------------------------------
-	// Full object version
-
-		$cms_admin = new cms_admin('profile');
-
-		$cms_admin = new cms_admin(array(
-				'profile'     => 'example',
-				'revision'    => 0,
-				'processor'   => 'markdown',
-				'editable'    => false, // See above
-				'log_missing' => true,
-				'versions'    => array(), // See below
-				'priority'    => array(), // See below
-			));
-
-		echo $cms_admin->html('section');
-
-		echo $cms_admin->html(array(
-				'path'        => '/',
-				'section'     => 'content',
-				'default'     => 'Lorem ipsum dolor sit amet...',
-				'variables'   => array('count' => 5), // e.g. "You have [COUNT] messages" - note the issue with 1 message (singular) in English
-				'wrapper_tag' => 'div',
-				'editable'    => false, // Default from init
-				'log_missing' => true, // Default from init
-				'global'      => false, // Make globally available to all pages (e.g. the page title)
-				'marker'      => 'marker',
-			));
-
-	//--------------------------------------------------
-	// Version support
-
-		Set via config:
-
-			$config['cms.default.versions'] = array();
-			$config['cms.default.priority'] = array();
-
-		Or via init:
-
-			$cms_admin = new cms_admin(array(
-					'priority' => array(),
-				));
-
-		Version example - should be fixed for the profile:
-
-			versions = array(
-					'English'         => array('lang' => 'en', 'country' => ''),
-					'French'          => array('lang' => 'fr', 'country' => ''),
-					'Spanish'         => array('lang' => 'es', 'country' => ''),
-					'Canadian French' => array('lang' => 'fr', 'country' => 'ca'),
-				);
-
-		Priority examples:
-
-			priority = array('English'); // Try English, then move onto the default.
-
-			priority = array(
-					'Canadian French',
-					'French',
-					'English',
-				); // Try Canadian French first, French, English, then the default.
-
-***************************************************/
+//--------------------------------------------------
+// http://www.phpprime.com/doc/helpers/cms-admin/
+//--------------------------------------------------
 
 	class cms_admin_base extends check {
 
@@ -309,7 +229,7 @@
 
 			public function db_get() {
 				if ($this->db_link === NULL) {
-					$this->db_link = new db();
+					$this->db_link = db_get();
 				}
 				return $this->db_link;
 			}

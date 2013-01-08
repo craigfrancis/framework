@@ -1,5 +1,9 @@
 <?php
 
+//--------------------------------------------------
+// http://www.phpprime.com/doc/helpers/socket/
+//--------------------------------------------------
+
 	class socket_base extends check {
 
 		private $values;

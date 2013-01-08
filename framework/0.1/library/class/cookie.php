@@ -1,7 +1,7 @@
 <?php
 
 //--------------------------------------------------
-// Based on code from Kohana cookie helper
+// http://www.phpprime.com/doc/system/cookie/
 //--------------------------------------------------
 
 	class cookie_base extends check {
