@@ -10,11 +10,11 @@ But for a quick overview, you can access the config values though this helper.
 	config::get('name');
 	config::get('name', 'Default');
 
-In the Object Orientated world, the config helper works as a singleton. While this is known to have issues in many cases, here makes it very easy to get/set information that should be globally available.
+In the Object Orientated world, the config helper works as a singleton. While this is known to have issues in many cases, in this case it makes it very easy to get/set information that should be globally available.
 
 ---
 
-# Set values
+## Set values
 
 Once the [config.php](../../doc/setup/config.md) file has been processed, variables can be `set` with:
 
@@ -26,9 +26,9 @@ And if you want to set a default, when a value has not already been set:
 
 ---
 
-# Get values
+## Get values
 
-Simply call:
+To get a value, simply call:
 
 	config::get('name');
 
@@ -36,7 +36,7 @@ Which will either return the value if set, or NULL.
 
 A default can also by provided:
 
-	config::get('name', 'Default');
+	config::get('name', 'default');
 
 You will notice that most [config variables](../../doc/setup/config.md) will include a dot in the name. This is to help with grouping related things together.
 
@@ -50,7 +50,7 @@ So for example, to return all the config variables for `name`:
 
 ---
 
-# Arrays
+## Arrays
 
 While rarely used, as a config variable may be an array, there are a few functions to help:
 
@@ -61,4 +61,4 @@ While rarely used, as a config variable may be an array, there are a few functio
 	debug(config::array_get('name', 'key', 'default'));
 	debug(config::get('name'));
 
-But its probably best to use a local variable, and do a single `set` at the end.
+But its probably best to use a local variable, and do a single `set()` at the end.
