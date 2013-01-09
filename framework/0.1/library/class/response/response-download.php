@@ -125,7 +125,6 @@
 					header('Content-Length: ' . head($length));
 
 					header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (http://support.microsoft.com/kb/316431)
-					header('Expires: ' . head(date('D, d M Y 00:00:00')) . ' GMT');
 					header('Pragma:');
 
 					if ($this->path !== NULL) {

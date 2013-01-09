@@ -12,6 +12,8 @@ If you are not responding with some HTML (e.g. an image), then you will probably
 
 However, for completeness, there are **download** and **text** response helpers (see below).
 
+This is kind of like the [Symfony Response](http://symfony.com/doc/current/components/http_foundation/introduction.html#response).
+
 ---
 
 ## HTML Response

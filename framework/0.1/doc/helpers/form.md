@@ -2,6 +2,8 @@
 
 To see some of the form fields, look at the [examples](/examples/form/).
 
+Kind of like [Symfony Forms](http://symfony.com/doc/2.0/book/forms.html), however [validation](http://symfony.com/doc/2.0/book/validation.html) is an integral part of this helper.
+
 Inc notes on `save_request_restore/save_request_redirect()` functions.
 
 	//--------------------------------------------------
