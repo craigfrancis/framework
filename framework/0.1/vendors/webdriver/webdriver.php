@@ -23,6 +23,6 @@ require_once('webdriver_exceptions.php');
 require_once('webdriver_simple_item.php');
 
 function split_keys($toSend){
-	$payload = array('value' => str_split($toSend));
+	$payload = array("value" => preg_split("//u", $toSend, -1, PREG_SPLIT_NO_EMPTY)); // str_split not UTF-8 friendly
 	return $payload;
 }
