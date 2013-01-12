@@ -12,19 +12,19 @@
 			protected $id;
 			protected $name;
 			protected $type;
+			protected $wrapper_tag;
 			protected $wrapper_id;
 			protected $wrapper_class;
-			protected $wrapper_tag;
 			protected $label_html;
 			protected $label_suffix_html;
 			protected $label_class;
-			protected $label_wrapper_class;
 			protected $label_wrapper_tag;
+			protected $label_wrapper_class;
 			protected $input_first;
 			protected $input_class;
 			protected $input_data;
-			protected $input_wrapper_class;
 			protected $input_wrapper_tag;
+			protected $input_wrapper_class;
 			protected $format_class;
 			protected $format_tag;
 			protected $info_html;
@@ -96,19 +96,19 @@
 					$this->id = 'fld_' . human_to_ref($name);
 					$this->name = $name;
 					$this->type = 'unknown';
+					$this->wrapper_tag = 'div';
 					$this->wrapper_id = NULL;
 					$this->wrapper_class = '';
-					$this->wrapper_tag = 'div';
 					$this->label_html = $label_html;
 					$this->label_suffix_html = $form->label_suffix_get_html();
 					$this->label_class = NULL;
-					$this->label_wrapper_class = 'label';
 					$this->label_wrapper_tag = 'span';
+					$this->label_wrapper_class = 'label';
 					$this->input_first = false;
 					$this->input_class = NULL;
 					$this->input_data = array();
-					$this->input_wrapper_class = 'input';
 					$this->input_wrapper_tag = 'span';
+					$this->input_wrapper_class = 'input';
 					$this->format_class = 'format';
 					$this->format_tag = 'span';
 					$this->info_html = NULL;
@@ -155,6 +155,10 @@
 				return $this->type;
 			}
 
+			public function wrapper_tag_set($class) {
+				$this->wrapper_tag = $class;
+			}
+
 			public function wrapper_id_set($id) {
 				$this->wrapper_id = $id;
 			}
@@ -182,10 +186,6 @@
 
 			}
 
-			public function wrapper_tag_set($class) {
-				$this->wrapper_tag = $class;
-			}
-
 			public function label_set_html($label_html) { // No need for 'label_set' as this is called on init
 				$this->label_html = $label_html;
 			}
@@ -210,12 +210,12 @@
 				$this->label_class = $class;
 			}
 
-			public function label_wrapper_class_set($class) {
-				$this->label_wrapper_class = $class;
-			}
-
 			public function label_wrapper_tag_set($tag) {
 				$this->label_wrapper_tag = $tag;
+			}
+
+			public function label_wrapper_class_set($class) {
+				$this->label_wrapper_class = $class;
 			}
 
 			public function input_class_set($class) {
@@ -226,12 +226,12 @@
 				$this->input_data[$field] = $value;
 			}
 
-			public function input_wrapper_class_set($class) {
-				$this->input_wrapper_class = $class;
-			}
-
 			public function input_wrapper_tag_set($class) {
 				$this->input_wrapper_tag = $class;
+			}
+
+			public function input_wrapper_class_set($class) {
+				$this->input_wrapper_class = $class;
 			}
 
 			public function format_default_get_html() {
@@ -351,12 +351,12 @@
 				return $this->print_hidden;
 			}
 
-			public function print_group_get() {
-				return $this->print_group;
-			}
-
 			public function print_group_set($group) {
 				$this->print_group = $group;
+			}
+
+			public function print_group_get() {
+				return $this->print_group;
 			}
 
 			protected function _db_field_set($field_name, $field_key = 'value') {

@@ -14,6 +14,7 @@
 
 				$examples = array(
 						'text',
+						'text-advanced',
 						'email',
 						'number',
 						'currency',
@@ -141,6 +142,7 @@
 
 					$field_config = preg_replace('/^\s+$/m', '', $field_config);
 					$field_config = preg_replace('/\n+/', "\n", $field_config);
+					$field_config = str_replace('//---', '', $field_config);
 
 			//--------------------------------------------------
 			// Form processing
