@@ -13,7 +13,7 @@ Perhaps the most important functions on the website:
 	html($text);
 		// echo '<p>Hi ' . html($name) . '</p>';
 
-	html_decode($text);
+	html_decode($html);
 		// $text = html_decode('&lt;');
 
 	html_tag($tag, $attributes);

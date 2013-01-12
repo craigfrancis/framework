@@ -120,8 +120,8 @@
 		return htmlspecialchars($text, ENT_QUOTES, config::get('output.charset')); // htmlentities does not work for HTML5+XML
 	}
 
-	function html_decode($text) {
-		return html_entity_decode($text, ENT_QUOTES, config::get('output.charset'));
+	function html_decode($html) {
+		return html_entity_decode($html, ENT_QUOTES, config::get('output.charset'));
 	}
 
 	function html_tag($tag, $attributes) {
