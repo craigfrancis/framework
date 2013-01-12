@@ -14,6 +14,108 @@
 	}
 
 //--------------------------------------------------
+// Function code
+
+	function function_code_get($functions, $indent = 1) {
+
+		if (!is_array($functions)) {
+			$functions = array($functions);
+		}
+
+		$output = '';
+
+		$source = file_get_contents(ROOT . '/framework/0.1/includes/01.function.php');
+
+		foreach ($functions as $function) {
+
+			//--------------------------------------------------
+			// Starting point
+
+				$start_pos = strpos($source, 'function ' . $function);
+
+				if ($start_pos === false) {
+					exit_with_error('Cannot find function "' . $function . '"');
+				}
+
+			//--------------------------------------------------
+			// End brace
+
+				$k = 0;
+				$stack = 0;
+				$end_pos = $start_pos;
+
+				do {
+
+					$k++;
+
+					$end_next_open  = strpos($source, '{', $end_pos);
+					$end_next_close = strpos($source, '}', $end_pos);
+
+					if ($end_next_close === false) {
+
+						exit_with_error('Cannot find the end to function "' . $function . '"');
+
+					} else if ($end_next_open !== false && $end_next_open < $end_next_close) {
+
+						$stack++;
+						$end_pos = ($end_next_open + 1);
+
+					} else {
+
+						$stack--;
+						$end_pos = ($end_next_close + 1);
+
+					}
+
+				} while ($stack > 0 && $k < 20);
+
+			//--------------------------------------------------
+			// Function code
+
+				$function_code = substr($source, $start_pos, ($end_pos - $start_pos));
+				$function_code = explode("\n", $function_code);
+
+			//--------------------------------------------------
+			// Remove common prefix (tabs), which has already been
+			// removed on the first line.
+
+				$output .= array_shift($function_code) . "\n";
+
+				$length = 0;
+				while ($length == 0) {
+					$prefix = reset($function_code);
+					$length = strlen($prefix);
+					if ($length == 0) {
+						$output .= "\n";
+						array_shift($function_code);
+					}
+				}
+
+				foreach ($function_code as $line) {
+					if ($line != '') {
+						while ($length && substr($line, 0, $length) !== $prefix) {
+							$length--;
+							$prefix = substr($prefix, 0, -1);
+						}
+						if (!$length) break;
+					}
+				}
+
+				$prefix_length = strlen($prefix);
+
+				foreach ($function_code as $line) {
+					$output .= substr($line, $prefix_length) . "\n";
+				}
+
+				$output .= "\n";
+
+		}
+
+		return preg_replace('/^/m', str_repeat("\t", $indent), $output);
+
+	}
+
+//--------------------------------------------------
 // Files
 
 	$files_found = array();
@@ -72,13 +174,6 @@
 	// Request function
 
 		$output_php .= "\n\n";
-
-		if (SERVER == 'stage') {
-			$output_php .= '// Generated: http://craig.framework.emma.devcf.com/a/api/form-export/' . "\n";
-			$output_php .= '// Tested:    http://cpoets.library.emma.devcf.com/form2/' . "\n";
-			$output_php .= "\n";
-		}
-
 		$output_php .= '//--------------------------------------------------' . "\n";
 		$output_php .= '// Support functions' . "\n";
 		$output_php .= "\n";
@@ -128,84 +223,22 @@
 		$output_php .= '		exitWithError($message, $hidden_info);' . "\n";
 		$output_php .= '	}' . "\n";
 		$output_php .= "\n";
-		$output_php .= '	function html_decode($html) {' . "\n";
-		$output_php .= '		return htmlDecode($html);' . "\n";
-		$output_php .= '	}' . "\n";
+		$output_php .= '	// function html($text) {' . "\n";
+		$output_php .= '	// 	return htmlspecialchars($text, ENT_QUOTES, config::get(\'output.charset\')); // htmlentities does not work for HTML5+XML' . "\n";
+		$output_php .= '	// }' . "\n";
 		$output_php .= "\n";
-		$output_php .= '	function html_tag($tag, $attributes) {' . "\n";
-		$output_php .= '		$html = \'<\' . html($tag);' . "\n";
-		$output_php .= '		foreach ($attributes as $name => $value) {' . "\n";
-		$output_php .= '			if ($value !== \'\' && $value !== NULL) { // Allow numerical value 0' . "\n";
-		$output_php .= '				$html .= \' \' . html(is_int($name) ? $value : $name) . \'="\' . html($value) . \'"\';' . "\n";
-		$output_php .= '			}' . "\n";
-		$output_php .= '		}' . "\n";
-		$output_php .= '		return $html . ($tag == \'input\' ? \' />\' : \'>\');' . "\n";
-		$output_php .= '	}' . "\n";
-		$output_php .= "\n";
-		$output_php .= '	function human_to_ref($text) {' . "\n";
-		$output_php .= '		$text = strtolower($text);' . "\n";
-		$output_php .= '		$text = preg_replace(\'/[^a-z0-9_]/i\', \'_\', $text);' . "\n";
-		$output_php .= '		$text = preg_replace(\'/__+/\', \'_\', $text);' . "\n";
-		$output_php .= '		$text = preg_replace(\'/_+$/\', \'\', $text);' . "\n";
-		$output_php .= '		$text = preg_replace(\'/^_+/\', \'\', $text);' . "\n";
-		$output_php .= '		return $text;' . "\n";
-		$output_php .= '	}' . "\n";
-		$output_php .= "\n";
-		$output_php .= '	function file_size_to_human($size) {' . "\n";
-		$output_php .= '		return fileSize2human($size);' . "\n";
-		$output_php .= '	}' . "\n";
-		$output_php .= "\n";
-		$output_php .= '	function file_size_to_bytes($size) {' . "\n";
-		$output_php .= '	' . "\n";
-		$output_php .= '		$size = trim($size);' . "\n";
-		$output_php .= '	' . "\n";
-		$output_php .= '		if (strtoupper(substr($size, -1)) == \'B\') {' . "\n";
-		$output_php .= '			$size = substr($size, 0, -1); // Drop the B, as in 10B or 10KB' . "\n";
-		$output_php .= '		}' . "\n";
-		$output_php .= '	' . "\n";
-		$output_php .= '		$units = array(' . "\n";
-		$output_php .= '				\'P\' => 1125899906842624,' . "\n";
-		$output_php .= '				\'T\' => 1099511627776,' . "\n";
-		$output_php .= '				\'G\' => 1073741824,' . "\n";
-		$output_php .= '				\'M\' => 1048576,' . "\n";
-		$output_php .= '				\'K\' => 1024,' . "\n";
-		$output_php .= '			);' . "\n";
-		$output_php .= '	' . "\n";
-		$output_php .= '		$unit = strtoupper(substr($size, -1));' . "\n";
-		$output_php .= '		if (isset($units[$unit])) {' . "\n";
-		$output_php .= '			$size = (substr($size, 0, -1) * $units[$unit]);' . "\n";
-		$output_php .= '		}' . "\n";
-		$output_php .= '	' . "\n";
-		$output_php .= '		return intval($size);' . "\n";
-		$output_php .= '	' . "\n";
-		$output_php .= '	}' . "\n";
-		$output_php .= "\n";
-		$output_php .= '	function is_email($email) {' . "\n";
-		$output_php .= '		return isemail($email);' . "\n";
-		$output_php .= '	}' . "\n";
-		$output_php .= "\n";
-		$output_php .= '	function is_assoc($array) {' . "\n";
-		$output_php .= '		return (count(array_filter(array_keys($array), \'is_string\')) > 0); // http://stackoverflow.com/questions/173400' . "\n";
-		$output_php .= '	}' . "\n";
-		$output_php .= "\n";
-		$output_php .= '	function format_british_postcode($postcode) {' . "\n";
-		$output_php .= '		return formatBritishPostcode($postcode);' . "\n";
-		$output_php .= '	}' . "\n";
-		$output_php .= "\n";
-		$output_php .= '	function format_currency($value, $currency_char = NULL, $decimal_places = 2, $zero_to_blank = false) {' . "\n";
-		$output_php .= '' . "\n";
-		$output_php .= '		$value = (round($value, $decimal_places) == 0 ? 0 : $value); // Stop negative -£0' . "\n";
-		$output_php .= '' . "\n";
-		$output_php .= '		if ($value == 0 && $zero_to_blank) {' . "\n";
-		$output_php .= '			return \'\';' . "\n";
-		$output_php .= '		} else if ($value < 0) {' . "\n";
-		$output_php .= '			return \'-\' . $currency_char . number_format(floatval(0 - $value), $decimal_places);' . "\n";
-		$output_php .= '		} else {' . "\n";
-		$output_php .= '			return $currency_char . number_format(floatval($value), $decimal_places);' . "\n";
-		$output_php .= '		}' . "\n";
-		$output_php .= '' . "\n";
-		$output_php .= '	}' . "\n";
-		$output_php .= "\n";
+
+		$output_php .= function_code_get(array(
+				'html_decode',
+				'html_tag',
+				'human_to_ref',
+				'file_size_to_human',
+				'file_size_to_bytes',
+				'is_email',
+				'is_assoc',
+				'format_british_postcode',
+				'format_currency',
+			));
 
 	//--------------------------------------------------
 	// Config
