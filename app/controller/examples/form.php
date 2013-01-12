@@ -12,23 +12,43 @@
 			//--------------------------------------------------
 			// Examples
 
-				$examples = array();
+				$examples = array(
+						'text',
+						'email',
+						'number',
+						'currency',
+						'password',
+						'url',
+						'postcode',
+						'textarea',
+						'date',
+						'date-select',
+						'date-order',
+						'time',
+						'time-select',
+						'select',
+						'select-multiple',
+						'radios',
+						'checkbox',
+						'checkboxes',
+						'info',
+					);
 
 				$url_base = url('/examples/form/example/');
 
-				foreach (glob(APP_ROOT . '/library/examples/form/*.php') as $example) {
+				$example_info = array();
 
-					$example = substr($example, (strrpos($example, '/') + 1), -4);
+				foreach ($examples as $example) {
 
-					$examples[] = array(
-						'name' => substr($example, 3),
-						'url_basic' => $url_base->get(array('type' => $example)),
-						'url_database' => $url_base->get(array('type' => $example, 'database' => 'true')),
-					);
+					$example_info[] = array(
+							'name' => $example,
+							'url_basic' => $url_base->get(array('type' => $example)),
+							'url_database' => $url_base->get(array('type' => $example, 'database' => 'true')),
+						);
 
 				}
 
-				$response->set('examples', $examples);
+				$response->set('examples', $example_info);
 
 		}
 
