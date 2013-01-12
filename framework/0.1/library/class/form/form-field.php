@@ -135,20 +135,8 @@
 				return $this->form;
 			}
 
-			public function id_set($id) {
-				$this->id = $id;
-			}
-
-			public function id_get() {
-				return $this->id;
-			}
-
 			public function uid_get() {
 				return $this->form_field_uid;
-			}
-
-			public function name_get() {
-				return $this->name;
 			}
 
 			public function type_get() {
@@ -216,6 +204,18 @@
 
 			public function label_wrapper_class_set($class) {
 				$this->label_wrapper_class = $class;
+			}
+
+			public function input_id_set($id) {
+				$this->id = $id;
+			}
+
+			public function input_id_get() {
+				return $this->id;
+			}
+
+			public function input_name_get() { // name set on init
+				return $this->name;
 			}
 
 			public function input_class_set($class) {

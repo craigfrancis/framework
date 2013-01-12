@@ -6,7 +6,6 @@
 	if ($database) $field->max_length_set('Your name cannot be longer than XXX characters.');
 	if (!$database) $field->max_length_set('Your name cannot be longer than XXX characters.', 200);
 	//---
-	$field->id_set('custom-id');
 	$field->wrapper_tag_set('div');
 	$field->wrapper_id_set('custom-wrapper-id');
 	$field->wrapper_class_set('custom-wrapper-class');
@@ -17,6 +16,7 @@
 	$field->label_wrapper_tag_set('span');
 	$field->label_wrapper_class_set('custom-label-wrapper-class');
 	//---
+	$field->input_id_set('custom-id');
 	$field->input_class_set('custom-input-class');
 	$field->input_data_set('my-custom', 'value');
 	$field->input_wrapper_tag_set('span');

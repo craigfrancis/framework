@@ -654,7 +654,7 @@
 				}
 				$js = "\n" . 'var ' . $object . ' = {';
 				foreach ($this->fields as $field) {
-					$id = $field->id_get();
+					$id = $field->input_id_get();
 					$js .= "\n\t" . json_encode($id) . ': function() {';
 					$js .= "\n\t\t" . 'var f = {"ref": document.getElementById(' . json_encode($id) . '), "val": null, "errors": []};';
 					$js .= $field->_validation_js();
@@ -1060,7 +1060,7 @@
 
 					foreach ($this->fields as $field) {
 
-						$field_name = $field->name_get();
+						$field_name = $field->input_name_get();
 						$field_names[] = $field_name;
 
 						if ($field->print_hidden_get()) {
