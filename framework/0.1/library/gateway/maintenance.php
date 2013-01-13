@@ -1,6 +1,6 @@
 <?php
 
-	class maintenance_api extends api_base {
+	class maintenance_api extends api {
 
 		function run() {
 

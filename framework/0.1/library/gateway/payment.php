@@ -1,6 +1,6 @@
 <?php
 
-	class payment_api extends api_base {
+	class payment_api extends api {
 
 		function run() {
 
