@@ -167,7 +167,7 @@
 				// Check the field
 
 					if ($field === NULL) {
-						$field = reset($this->fields);
+						$field = reset($this->input_order);
 					}
 
 					if (!in_array($field, $this->fields)) {

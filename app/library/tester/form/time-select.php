@@ -39,11 +39,13 @@
 	$this->url_load(http_url('/examples/form/example/?type=time-select'));
 
 //--------------------------------------------------
-// Invalid
+// Invalid option
 
 	$this->session->execute(array('script' => 'document.getElementById("fld_time_I").outerHTML = "<input type=\"text\" id=\"fld_time_I\" name=\"time_I\" />";', 'args' => array()));
 
+	$this->element_send_keys('id', 'fld_time_H', '22');
 	$this->element_send_keys('id', 'fld_time_I', '5'); // Not 0, 15, 30, or 45
+	$this->element_send_keys('id', 'fld_time_S', '59', array('clear' => true));
 
 	$this->element_get('css', 'form')->submit();
 

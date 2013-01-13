@@ -10,13 +10,20 @@
 				$this->session_open();
 
 			//--------------------------------------------------
-			// Loading
+			// Run tests
 
 // 				$this->test_run('text');
 // 				$this->test_run('text-full');
+
 // 				$this->test_run('email');
-				$this->test_run('date');
+
+				$this->test_run('checkbox');
+
+// 				$this->test_run('date');
 // 				$this->test_run('date-db');
+// 				$this->test_run('date-select');
+// 				$this->test_run('date-order');
+
 // 				$this->test_run('time');
 // 				$this->test_run('time-db');
 // 				$this->test_run('time-select');
