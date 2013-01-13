@@ -14,7 +14,7 @@
 
 				$examples = array(
 						'text',
-						'text-advanced',
+						'text-full',
 						'email',
 						'number',
 						'currency',

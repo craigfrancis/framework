@@ -305,6 +305,7 @@
 		config::set_default('gateway.server', SERVER);
 		config::set_default('gateway.error_url', NULL);
 		config::set_default('gateway.maintenance', false);
+		config::set_default('gateway.tester', false);
 
 //--------------------------------------------------
 // Character set

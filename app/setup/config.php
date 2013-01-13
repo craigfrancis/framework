@@ -31,6 +31,11 @@
 			$config['email.from_email'] = 'noreply@phpprime.com';
 			$config['email.contact_us'] = array('craig@craigfrancis.co.uk');
 
+		//--------------------------------------------------
+		// Gateway
+
+			$config['gateway.tester'] = true;
+
 	} else if (prefix_match('/www/demo/', ROOT)) {
 
 		//--------------------------------------------------
