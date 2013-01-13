@@ -105,6 +105,9 @@
 			}
 
 			public function options_set($options) {
+				if ($this->invalid_error_set) {
+					exit_with_error('Cannot call options_set() after invalid_error_set()');
+				}
 				if (in_array('', array_keys($options), true)) { // Performs a strict check (allowing id 0)
 					exit_with_error('Cannot have an option with a blank key.', debug_dump($options));
 				} else {
@@ -113,6 +116,9 @@
 			}
 
 			public function option_values_set($values) {
+				if ($this->invalid_error_set) {
+					exit_with_error('Cannot call option_values_set() after invalid_error_set()');
+				}
 				$this->option_values = array();
 				foreach ($values as $value) {
 					if ($value === '') {

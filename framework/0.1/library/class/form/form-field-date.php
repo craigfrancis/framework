@@ -3,12 +3,6 @@
 	class form_field_date_base extends form_field_fields {
 
 		//--------------------------------------------------
-		// Variables
-
-			protected $invalid_error_set;
-			protected $invalid_error_found;
-
-		//--------------------------------------------------
 		// Setup
 
 			public function __construct($form, $label, $name = NULL) {
@@ -53,8 +47,6 @@
 					$this->type = 'date';
 					$this->fields = array('D', 'M', 'Y');
 					$this->format_html = array_merge(array('separator' => '/', 'D' => 'DD', 'M' => 'MM', 'Y' => 'YYYY'), config::get('form.date_format_html', array()));
-					$this->invalid_error_set = false;
-					$this->invalid_error_found = false;
 					$this->input_order = config::get('form.date_input_order', array('D', 'M', 'Y'));
 					$this->input_separator = "\n\t\t\t\t\t\t\t\t\t";
 					$this->input_config = array(
@@ -85,19 +77,31 @@
 		//--------------------------------------------------
 		// Errors
 
-			public function invalid_error_set($error) {
-				$this->invalid_error_set_html(html($error));
-			}
-
 			public function invalid_error_set_html($error_html) {
 
-				$value = $this->value_time_stamp_get(); // Check upper bound to time-stamp, 2037 on 32bit systems
+				if ($this->form_submitted && $this->value_provided) {
 
-				if ($this->form_submitted && $this->value_provided && (!checkdate($this->value['M'], $this->value['D'], $this->value['Y']) || $value === false)) {
+					$valid = true;
 
-					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+					$value = $this->value_time_stamp_get(); // Check upper bound to time-stamp, 2037 on 32bit systems
 
-					$this->invalid_error_found = true;
+					if (!checkdate($this->value['M'], $this->value['D'], $this->value['Y']) || $value === false) {
+						$valid = false;
+					}
+
+					foreach ($this->fields as $field) {
+						if (is_array($this->input_config[$field]['options']) && !isset($this->input_config[$field]['options'][$this->value[$field]])) {
+							$valid = false;
+						}
+					}
+
+					if (!$valid) {
+
+						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+
+						$this->invalid_error_found = true;
+
+					}
 
 				}
 
@@ -105,17 +109,25 @@
 
 			}
 
-			public function min_date_set($error, $timestamp) {
-				$this->min_date_set_html(html($error), $timestamp);
+			public function min_date_set($error, $date) {
+				$this->min_date_set_html(html($error), $date);
 			}
 
-			public function min_date_set_html($error_html, $timestamp) {
+			public function min_date_set_html($error_html, $date) {
+
+				if (!$this->invalid_error_set) {
+					exit_with_error('Call invalid_error_set() before min_date_set()');
+				}
 
 				if ($this->form_submitted && $this->value_provided && $this->invalid_error_found == false) {
 
 					$value = $this->value_time_stamp_get();
 
-					if ($value !== false && $value < intval($timestamp)) {
+					if (!is_int($date)) {
+						$date = strtotime($date);
+					}
+
+					if ($value !== false && $value < $date) {
 						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 					}
 
@@ -123,17 +135,25 @@
 
 			}
 
-			public function max_date_set($error, $timestamp) {
-				$this->max_date_set_html(html($error), $timestamp);
+			public function max_date_set($error, $date) {
+				$this->max_date_set_html(html($error), $date);
 			}
 
-			public function max_date_set_html($error_html, $timestamp) {
+			public function max_date_set_html($error_html, $date) {
+
+				if (!$this->invalid_error_set) {
+					exit_with_error('Call invalid_error_set() before max_date_set()');
+				}
 
 				if ($this->form_submitted && $this->value_provided && $this->invalid_error_found == false) {
 
 					$value = $this->value_time_stamp_get();
 
-					if ($value !== false && $value > intval($timestamp)) {
+					if (!is_int($date)) {
+						$date = strtotime($date);
+					}
+
+					if ($value !== false && $value > $date) {
 						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 					}
 
@@ -229,19 +249,6 @@
 				}
 
 				return NULL;
-
-			}
-
-		//--------------------------------------------------
-		// Validation
-
-			public function _post_validation() {
-
-				parent::_post_validation();
-
-				if ($this->invalid_error_set == false) {
-					exit('<p>You need to call "invalid_error_set", on the field "' . $this->label_html . '"</p>');
-				}
 
 			}
 

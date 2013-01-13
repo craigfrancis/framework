@@ -10,6 +10,8 @@
 
 			protected $fields;
 			protected $format_html;
+			protected $invalid_error_set;
+			protected $invalid_error_found;
 			protected $input_order;
 			protected $input_separator;
 			protected $input_config;
@@ -36,6 +38,8 @@
 					$this->type = 'fields';
 					$this->fields = array();
 					$this->format_html = array();
+					$this->invalid_error_set = false;
+					$this->invalid_error_found = false;
 					$this->input_order = array();
 					$this->input_separator = ' ';
 					$this->input_config = array();
@@ -80,6 +84,9 @@
 			}
 
 			public function input_options_value_set($field, $options, $label = '') { // Only use the values (ignores the keys)
+				if ($this->invalid_error_set) {
+					exit_with_error('Cannot call input_options_value_set() after invalid_error_set()');
+				}
 				$text_options = array();
 				foreach ($options as $option) {
 					$text_options[$option] = $option;
@@ -88,6 +95,9 @@
 			}
 
 			public function input_options_text_set($field, $options, $label = '') { // Uses the array keys for the value, and array values for display text
+				if ($this->invalid_error_set) {
+					exit_with_error('Cannot call input_options_text_set() after invalid_error_set()');
+				}
 				$this->input_config_set($field, array('options' => $options, 'label' => $label, 'pad_length' => 0));
 			}
 
@@ -125,6 +135,26 @@
 				}
 
 				$this->required = ($error_html !== NULL);
+
+			}
+
+			public function invalid_error_set($error) {
+				$this->invalid_error_set_html(html($error));
+			}
+
+			public function invalid_error_set_html($error_html) {
+			}
+
+		//--------------------------------------------------
+		// Validation
+
+			public function _post_validation() {
+
+				parent::_post_validation();
+
+				if ($this->invalid_error_set == false) {
+					exit('<p>You need to call "invalid_error_set", on the field "' . $this->label_html . '"</p>');
+				}
 
 			}
 

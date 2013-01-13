@@ -3,12 +3,6 @@
 	class form_field_time_base extends form_field_fields {
 
 		//--------------------------------------------------
-		// Variables
-
-			protected $invalid_error_set;
-			protected $invalid_error_found;
-
-		//--------------------------------------------------
 		// Setup
 
 			public function __construct($form, $label, $name = NULL) {
@@ -61,8 +55,6 @@
 					$this->type = 'time';
 					$this->fields = array('H', 'I', 'S');
 					$this->format_html = array_merge(array('separator' => ':', 'H' => 'HH', 'I' => 'MM', 'S' => 'SS'), config::get('form.time_format_html', array()));
-					$this->invalid_error_set = false;
-					$this->invalid_error_found = false;
 					$this->input_order = config::get('form.time_input_order', array('H', 'I')); // Could also be array('H', 'I', 'S')
 					$this->input_separator = "\n\t\t\t\t\t\t\t\t\t";
 					$this->input_config = array(
@@ -93,18 +85,25 @@
 		//--------------------------------------------------
 		// Errors
 
-			public function invalid_error_set($error) {
-				$this->invalid_error_set_html(html($error));
-			}
-
 			public function invalid_error_set_html($error_html) {
 
 				if ($this->form_submitted && $this->value_provided) {
 
 					$valid = true;
+
 					if ($this->value['H'] < 0 || $this->value['H'] > 23) $valid = false;
 					if ($this->value['I'] < 0 || $this->value['I'] > 59) $valid = false;
 					if ($this->value['S'] < 0 || $this->value['S'] > 59) $valid = false;
+
+					foreach ($this->fields as $field) {
+						$value = $this->value[$field];
+						if ($value == '') {
+							$value = 0; // Treat label as 0, same as when its not required.
+						}
+						if (is_array($this->input_config[$field]['options']) && !isset($this->input_config[$field]['options'][$value])) {
+							$valid = false;
+						}
+					}
 
 					if (!$valid) {
 
@@ -120,6 +119,58 @@
 
 			}
 
+			public function min_time_set($error, $time) {
+				$this->min_time_set_html(html($error), $time);
+			}
+
+			public function min_time_set_html($error_html, $time) {
+
+				if (!$this->invalid_error_set) {
+					exit_with_error('Call invalid_error_set() before min_time_set()');
+				}
+
+				if ($this->form_submitted && $this->value_provided && $this->invalid_error_found == false) {
+
+					$value = strtotime($this->value_get());
+
+					if (!is_int($time)) {
+						$time = strtotime($time);
+					}
+
+					if ($value !== false && $value < $time) {
+						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+					}
+
+				}
+
+			}
+
+			public function max_time_set($error, $time) {
+				$this->max_time_set_html(html($error), $time);
+			}
+
+			public function max_time_set_html($error_html, $time) {
+
+				if (!$this->invalid_error_set) {
+					exit_with_error('Call invalid_error_set() before max_time_set()');
+				}
+
+				if ($this->form_submitted && $this->value_provided && $this->invalid_error_found == false) {
+
+					$value = strtotime($this->value_get());
+
+					if (!is_int($time)) {
+						$time = strtotime($time);
+					}
+
+					if ($value !== false && $value > $time) {
+						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+					}
+
+				}
+
+			}
+
 		//--------------------------------------------------
 		// Value
 
@@ -131,7 +182,7 @@
 				if (in_array($field, $this->fields)) {
 					return $this->value[$field];
 				} else {
-					return $this->_value_date_format($this->value);
+					return $this->_value_time_format($this->value); // Still return 00:00:00 when !$this->value_provided to match date 0000-00-00
 				}
 			}
 
@@ -151,10 +202,10 @@
 			}
 
 			public function value_hidden_get() {
-				return $this->_value_date_format($this->_value_print_get());
+				return $this->_value_time_format($this->_value_print_get());
 			}
 
-			private function _value_date_format($value) {
+			private function _value_time_format($value) {
 				return str_pad(intval($value['H']), 2, '0', STR_PAD_LEFT) . ':' . str_pad(intval($value['I']), 2, '0', STR_PAD_LEFT) . ':' . str_pad(intval($value['S']), 2, '0', STR_PAD_LEFT);
 			}
 
@@ -181,19 +232,6 @@
 				}
 
 				return NULL;
-
-			}
-
-		//--------------------------------------------------
-		// Validation
-
-			public function _post_validation() {
-
-				parent::_post_validation();
-
-				if ($this->invalid_error_set == false) {
-					exit('<p>You need to call "invalid_error_set", on the field "' . $this->label_html . '"</p>');
-				}
 
 			}
 
