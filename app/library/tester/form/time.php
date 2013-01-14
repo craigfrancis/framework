@@ -67,8 +67,8 @@
 
 	$this->element_text_check('css', 'ul.error_list li', 'Your time has to be after 3am.');
 
-	$this->element_attribute_check('id', 'fld_time_H', 'value', '02'); // Gains 0 prefix, prompting user for 24 hour clock format
-	$this->element_attribute_check('id', 'fld_time_I', 'value', '00');
+	$this->element_value_check('id', 'fld_time_H', '02'); // Gains 0 prefix, prompting user for 24 hour clock format
+	$this->element_value_check('id', 'fld_time_I', '00');
 
 //--------------------------------------------------
 // Too late (in the future)

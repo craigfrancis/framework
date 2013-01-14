@@ -18,8 +18,8 @@
 
 	$this->url_load(http_url('/examples/form/example/?type=time&database=true'));
 
-	$this->element_attribute_check('id', 'fld_time_H', 'value', '04'); // Gains 0 prefix, prompting user for 24 hour clock format
-	$this->element_attribute_check('id', 'fld_time_I', 'value', '07');
+	$this->element_value_check('id', 'fld_time_H', '04'); // Gains 0 prefix, prompting user for 24 hour clock format
+	$this->element_value_check('id', 'fld_time_I', '07');
 
 //--------------------------------------------------
 // New value
@@ -38,7 +38,7 @@
 
 	$this->url_load(http_url('/examples/form/example/?type=time&database=true'));
 
-	$this->element_attribute_check('id', 'fld_time_H', 'value', substr($time, 0, 2));
-	$this->element_attribute_check('id', 'fld_time_I', 'value', substr($time, 3, 2));
+	$this->element_value_check('id', 'fld_time_H', substr($time, 0, 2));
+	$this->element_value_check('id', 'fld_time_I', substr($time, 3, 2));
 
 ?>

@@ -64,9 +64,9 @@
 
 		}
 
-		protected function field_password_new_get($required = NULL) {
+		protected function field_password_new_get($required = NULL, $name = NULL) {
 
-			$field_password = new form_field_password($this, $this->user_obj->text_get('password_new_label'));
+			$field_password = new form_field_password($this, $this->user_obj->text_get('password_new_label'), ($name === NULL ? 'password_new' : $name));
 
 			if ($required === true) { // Default not required (profile page)
 				$field_password->min_length_set($this->user_obj->text_get('password_new_min_len'), 1);
@@ -79,9 +79,9 @@
 
 		}
 
-		protected function field_password_repeat_get($required = NULL) {
+		protected function field_password_repeat_get($required = NULL, $name = NULL) {
 
-			$field_password_repeat = new form_field_password($this, $this->user_obj->text_get('password_repeat_label'));
+			$field_password_repeat = new form_field_password($this, $this->user_obj->text_get('password_repeat_label'), ($name === NULL ? 'password_repeat' : $name));
 
 			if ($required === NULL) {
 				if ($this->field_exists('password_new')) {

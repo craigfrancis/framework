@@ -178,14 +178,14 @@
 			protected function element_text_check($using, $selector, $required_value) {
 				$current_value = $this->element_get($using, $selector)->text();
 				if ($current_value !== $required_value) {
-					$this->test_output_add('Incorrect text value for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url(), 1);
+					$this->test_output_add('Incorrect text for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url(), 1);
 				}
 			}
 
 			protected function element_name_check($using, $selector, $required_value) {
 				$current_value = $this->element_get($using, $selector)->name();
 				if ($current_value !== $required_value) {
-					$this->test_output_add('Incorrect name value for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url(), 1);
+					$this->test_output_add('Incorrect name for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url(), 1);
 				}
 			}
 
@@ -196,8 +196,12 @@
 			protected function element_attribute_check($using, $selector, $attribute, $required_value) {
 				$current_value = $this->element_attribute_get($using, $selector, $attribute);
 				if ($current_value !== $required_value) {
-					$this->test_output_add('Incorrect "' . $attribute . '" value for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url(), 1);
+					$this->test_output_add('Incorrect ' . $attribute . ' for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url(), 1);
 				}
+			}
+
+			protected function element_value_check($using, $selector, $required_value) { // Shortcut which matches element_send_keys signature
+				$this->element_attribute_check($using, $selector, 'value', $required_value);
 			}
 
 			protected function element_send_keys($using, $selector, $keys, $config = NULL) {

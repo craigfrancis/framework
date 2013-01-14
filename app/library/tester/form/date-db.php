@@ -19,9 +19,9 @@
 
 	$this->url_load(http_url('/examples/form/example/?type=date&database=true'));
 
-	$this->element_attribute_check('id', 'fld_date_D', 'value', '1'); // Drops 0 prefix
-	$this->element_attribute_check('id', 'fld_date_M', 'value', '2');
-	$this->element_attribute_check('id', 'fld_date_Y', 'value', '2003');
+	$this->element_value_check('id', 'fld_date_D', '1'); // Drops 0 prefix
+	$this->element_value_check('id', 'fld_date_M', '2');
+	$this->element_value_check('id', 'fld_date_Y', '2003');
 
 //--------------------------------------------------
 // New value
@@ -41,8 +41,8 @@
 
 	$this->url_load(http_url('/examples/form/example/?type=date&database=true'));
 
-	$this->element_attribute_check('id', 'fld_date_D', 'value', strval(intval(substr($date, 8, 2)))); // Drops 0 prefix
-	$this->element_attribute_check('id', 'fld_date_M', 'value', strval(intval(substr($date, 5, 2))));
-	$this->element_attribute_check('id', 'fld_date_Y', 'value', strval(intval(substr($date, 0, 4))));
+	$this->element_value_check('id', 'fld_date_D', strval(intval(substr($date, 8, 2)))); // Drops 0 prefix
+	$this->element_value_check('id', 'fld_date_M', strval(intval(substr($date, 5, 2))));
+	$this->element_value_check('id', 'fld_date_Y', strval(intval(substr($date, 0, 4))));
 
 ?>
