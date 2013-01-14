@@ -1,0 +1,65 @@
+/*--------------------------------------------------*/
+/* General Setup                                    */
+
+	html, body, div, span, applet, object, iframe,
+	h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+	a, abbr, acronym, address, big, cite, code,
+	del, dfn, em, font, img, ins, kbd, q, s, samp,
+	small, strike, strong, sub, sup, tt, var,
+	dl, dt, dd, ol, ul, li,
+	fieldset, form, label, legend,
+	table, caption, tbody, tfoot, thead, tr, th, td {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		font-size: 100%;
+		vertical-align: baseline;
+		background: transparent;
+	}
+
+	body {
+		font-family: verdana, arial, helvetica, sans-serif;
+		font-size: 0.8em;
+		line-height: 1.2em;
+		color: #000;
+		background: #FFF;
+		padding: 10px;
+	}
+
+/*--------------------------------------------------*/
+/* Styles                                           */
+
+	h1 {
+		font-size: 2em;
+		margin: 0 0 20px 0;
+	}
+
+	h2 {
+		font-size: 1.5em;
+		padding: 5px;
+		margin: 0 0 10px 0;
+	}
+
+	h2 em {
+		font-size: 0.45em;
+		font-style: normal;
+	}
+
+	div.fail h2 {  background: #ff7070; }
+	div.fail div { background: #ffcbcb; }
+
+	div.success h2 {  background: #70ff70; }
+	div.success div { background: #cbffcb; }
+
+	div div {
+		margin: 0 0 10px 2em;
+	}
+
+	div div p {
+		padding: 5px;
+	}
+
+	div div p.line {
+		padding-top: 0;
+		font-size: 0.8em;
+	}

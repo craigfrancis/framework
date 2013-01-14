@@ -24,6 +24,7 @@
 	$file_path = NULL;
 	if ($file_name == 'default.css')  $file_path = FRAMEWORK_ROOT . '/library/template/default.css';
 	if ($file_name == 'debug.css')    $file_path = FRAMEWORK_ROOT . '/library/view/debug.css';
+	if ($file_name == 'tester.css')   $file_path = FRAMEWORK_ROOT . '/library/view/tester.css';
 	if ($file_name == 'cms-admin.js') $file_path = FRAMEWORK_ROOT . '/library/view/cms-admin.js';
 
 	if ($file_path) {

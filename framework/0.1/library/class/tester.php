@@ -25,7 +25,7 @@
 	// Window handling example
 
 		// $window = $this->session->window();
-		// debug($window->size());
+		// $this->test_output_add($window->size());
 		// for ($k = 3; $k < 400; $k += 10) {
 		// 	$window->postPosition(array('x' => $k, 'y' => 300));
 		// 	usleep(50000);
@@ -39,7 +39,12 @@
 		// Variables
 
 			protected $session;
-			protected $test_path;
+
+			private $tester_path;
+			private $tester_output = array();
+			private $test_path;
+			private $test_start;
+			private $test_output = array();
 
 		//--------------------------------------------------
 		// Setup
@@ -51,7 +56,7 @@
 			}
 
 			public function path_set($path) {
-				$this->test_path = $path;
+				$this->tester_path = $path;
 			}
 
 		//--------------------------------------------------
@@ -59,15 +64,74 @@
 
 			public function test_run($test, $info = NULL) {
 
+				$this->test_path = $this->tester_path . '/' . safe_file_name($test) . '.php';
+				$this->test_start = microtime(true);
+				$this->test_output = array();
+
+				ob_start();
+
 				$return = NULL;
 
-				require($this->test_path . '/' . safe_file_name($test) . '.php');
+				require($this->test_path);
+
+				$output = ob_get_clean();
+				if ($output != '') {
+					$this->test_output_add($output, -1);
+				}
+
+				$this->tester_output[] = array(
+						'test' => $test,
+						'time' => (microtime(true) - $this->test_start),
+						'output' => $this->test_output,
+					);
 
 				return $return;
 
 			}
 
-			public function session_open() {
+			public function test_output_add($output, $stack = 0) {
+
+				if ($stack == -1) {
+					$called_from_path = str_replace(ROOT, '', $this->test_path);
+					$called_from_line = 0;
+				} else {
+					$called_from = debug_backtrace();
+					$called_from_path = str_replace(ROOT, '', $called_from[$stack]['file']);
+					$called_from_line = $called_from[$stack]['line'];
+				}
+
+				$this->test_output[] = array(
+						'text' => $output,
+						'path' => $called_from_path,
+						'line' => $called_from_line,
+					);
+
+			}
+
+			public function output_get($test = NULL) {
+				if ($test === NULL) {
+
+					return $this->tester_output;
+
+				} else {
+
+					$return = '';
+
+					foreach ($this->tester_output as $output) {
+						if ($output['test'] == $test && $output['output'] != '') {
+							$return .= $output['output'] . "\n";
+						}
+					}
+
+					return $return;
+
+				}
+			}
+
+		//--------------------------------------------------
+		// Shortcuts
+
+			protected function session_open() {
 
 				$web_driver = new webdriver();
 
@@ -76,12 +140,9 @@
 
 			}
 
-			public function session_close() {
+			protected function session_close() {
 				$this->session->close();
 			}
-
-		//--------------------------------------------------
-		// Shortcuts
 
 			protected function url_load($url) {
 				$this->session->open(strval($url));
@@ -117,14 +178,14 @@
 			protected function element_text_check($using, $selector, $required_value) {
 				$current_value = $this->element_get($using, $selector)->text();
 				if ($current_value !== $required_value) {
-					debug('Incorrect text value for element "' . $selector . '" ("' . $current_value . '" != "' . $required_value . '")' . "\n" . $this->session->url());
+					$this->test_output_add('Incorrect text value for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url(), 1);
 				}
 			}
 
 			protected function element_name_check($using, $selector, $required_value) {
 				$current_value = $this->element_get($using, $selector)->name();
 				if ($current_value !== $required_value) {
-					debug('Incorrect name value for element "' . $selector . '" ("' . $current_value . '" != "' . $required_value . '")' . "\n" . $this->session->url());
+					$this->test_output_add('Incorrect name value for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url(), 1);
 				}
 			}
 
@@ -135,7 +196,7 @@
 			protected function element_attribute_check($using, $selector, $attribute, $required_value) {
 				$current_value = $this->element_attribute_get($using, $selector, $attribute);
 				if ($current_value !== $required_value) {
-					debug('Incorrect "' . $attribute . '" value for element "' . $selector . '" ("' . $current_value . '" != "' . $required_value . '")' . "\n" . $this->session->url());
+					$this->test_output_add('Incorrect "' . $attribute . '" value for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url(), 1);
 				}
 			}
 
