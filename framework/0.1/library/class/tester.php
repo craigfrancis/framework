@@ -72,7 +72,11 @@
 
 				$return = NULL;
 
-				require($this->test_path);
+				if (is_file($this->test_path)) {
+					require($this->test_path);
+				} else {
+					$this->test_output_add('Missing test file.', -1);
+				}
 
 				$output = ob_get_clean();
 				if ($output != '') {

@@ -22,9 +22,9 @@
 			config::set('output.mode', 'tester');
 
 			$tests = array();
-			$root = APP_ROOT . '/library/tester/';
-			foreach (glob($root . '*.php') as $test) {
-				$tests[] = str_replace($root, '', substr($test, 0, -4));
+			$root = APP_ROOT . '/library/tester';
+			foreach (glob($root . '/*.php') as $test) {
+				$tests[] = str_replace($root . '/', '', substr($test, 0, -4));
 			}
 
 			if ($this->sub_path_get() === NULL) {
@@ -61,7 +61,7 @@
 						require_once($root . '/' . safe_file_name($test) . '.php');
 
 						$tester = new $class();
-						$tester->path_set($root . '/' . safe_file_name($test) . '/');
+						$tester->path_set($root . '/' . safe_file_name($test));
 						$tester->run();
 
 					//--------------------------------------------------
