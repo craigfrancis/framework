@@ -1,13 +1,10 @@
 <?php
 
-// TODO: Update to oAuth
-//   https://code.google.com/oauthplayground/
-//   https://developers.google.com/accounts/docs/OAuth2#CS
-//   http://hueniverse.com/2012/07/oauth-2-0-and-the-road-to-hell/
-
 //--------------------------------------------------
 // http://www.phpprime.com/doc/setup/gateways/
 //--------------------------------------------------
+
+	// TODO: Update to oAuth (see documentation for notes)
 
 	if (config::get('gateway.active') !== true) {
 		exit_with_error('Gateway disabled.');
