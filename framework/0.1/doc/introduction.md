@@ -43,7 +43,7 @@ The output from this is added to a [template](../doc/setup/templates.md), where 
 	</body>
 	</html>
 
-NB: I use the [echo shortcut](http://www.php.net/echo) (<?=), instead of (<?php echo) as it's shorter, easier to read, and no longer considered a short tag as of PHP 5.4.
+NB: I use the [echo shortcut](http://www.php.net/echo) (<?=), instead of (<?php echo) as it is shorter, easier to read, and no longer considered a short tag as of PHP 5.4.
 
 ---
 
