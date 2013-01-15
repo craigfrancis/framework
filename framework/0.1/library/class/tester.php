@@ -179,8 +179,12 @@
 				}
 			}
 
+			protected function element_text_get($using, $selector) {
+				return $this->element_get($using, $selector)->text();
+			}
+
 			protected function element_text_check($using, $selector, $required_value) {
-				$current_value = $this->element_get($using, $selector)->text();
+				$current_value = $this->element_text_get($using, $selector);
 				if ($current_value !== $required_value) {
 					$this->test_output_add('Incorrect text for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url(), 1);
 				}

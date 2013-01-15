@@ -294,7 +294,7 @@
 									if ($link_html) {
 										$class = ''; // Don't allow HTML version in class name
 									} else {
-										$class = human_to_camel($link_name);
+										$class = human_to_ref($link_name);
 									}
 
 									if ($k % 2) $class .= ' odd';
