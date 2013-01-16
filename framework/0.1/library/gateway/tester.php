@@ -53,6 +53,11 @@
 				if (preg_match('/^\/*([^\/]+)\/$/', $path, $matches) && in_array($matches[1], $tests)) {
 
 					//--------------------------------------------------
+					// Catch any extra output
+
+						ob_start();
+
+					//--------------------------------------------------
 					// Run
 
 						$test = $matches[1];
@@ -62,7 +67,25 @@
 
 						$tester = new $class();
 						$tester->path_set($root . '/' . safe_file_name($test));
-						$tester->run();
+
+						try {
+
+							$tester->run();
+
+						} catch (NoSuchElementWebDriverError $e) {
+
+							$trace = $e->getTrace();
+							if (isset($trace[2]['file'])) {
+								echo "\n" . '<strong>' . html($trace[2]['file']) . '</strong> (line <strong>' . html($trace[2]['line']) . '</strong>)' . "\n";
+							}
+							echo '<pre>' . html($e->getMessage()) . '</pre>';
+
+						}
+
+					//--------------------------------------------------
+					// Running output
+
+						$running_html = ob_get_clean();
 
 					//--------------------------------------------------
 					// Process output
@@ -70,6 +93,16 @@
 						$tester_output = $tester->output_get();
 
 						$html = '<h1>' . html(ucfirst($test)) . '</h1>';
+
+						if ($running_html) {
+							$html .= '
+								<div class="fail">
+									<h2>Running output</h2>
+									<div>
+										<p class="text">' . $running_html . '</p>
+									</div>
+								</div>';
+						}
 
 						foreach ($tester_output as $output) {
 
@@ -81,14 +114,21 @@
 									<h2>' . html($output['test']) . ' <em>(' . html($time) . 's)</em></h2>';
 
 							foreach ($output['output'] as $line) {
-								$line_html = html($line['text']);
-								$line_html = nl2br($line_html);
-								$line_html = str_replace('  ', '&#xA0; ', $line_html); // 2 spaces
+
+								if ($line['html']) {
+									$line_html = $line['text'];
+								} else {
+									$line_html = html($line['text']);
+									$line_html = nl2br($line_html);
+									$line_html = str_replace('  ', '&#xA0; ', $line_html); // 2 spaces
+								}
+
 								$html .= '
 									<div>
 										<p class="text">' . $line_html . '</p>
-										<p class="line"><em>' . html($line['path']) . ' (' . html($line['line']) . ')</em></p>
+										<p class="line"><em>' . html($line['path']) . ($line['line'] > 0 ? ' (' . html($line['line']) . ')' : '') . '</em></p>
 									</div>';
+
 							}
 
 							$html .= '

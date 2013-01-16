@@ -23,14 +23,8 @@ abstract class WebDriverContainer extends WebDriverBase {
           'using' => $using,
           'value' => $value));
     } catch (NoSuchElementWebDriverError $e) {
-      throw new NoSuchElementWebDriverError(
-        sprintf(
-          'Element not found with %s, %s',
-          $using,
-          $value) . "\n\n" . $e->getMessage(),
-        $e->getResults());
+      throw new NoSuchElementWebDriverError($e->getMessage(), $e->getResults(), $using, $value);
     }
-
     return $this->webDriverElement($results['value']);
   }
 

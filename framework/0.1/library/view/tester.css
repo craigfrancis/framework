@@ -45,11 +45,11 @@
 		font-style: normal;
 	}
 
-	div.fail h2 {  background: #ff7070; }
-	div.fail div { background: #ffcbcb; }
+	div.fail h2 {  background: #FF7070; }
+	div.fail div { background: #FFCBCB; }
 
-	div.success h2 {  background: #70ff70; }
-	div.success div { background: #cbffcb; }
+	div.success h2 {  background: #70FF70; }
+	div.success div { background: #CBFFCB; }
 
 	div div {
 		margin: 0 0 10px 2em;

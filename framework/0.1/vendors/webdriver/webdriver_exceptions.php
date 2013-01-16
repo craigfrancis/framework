@@ -16,6 +16,7 @@
 final class WebDriverCurlException extends Exception {} // When curls fail
 
 abstract class WebDriverException extends Exception {
+
   private $results;
 
   public function __construct($message, $results = null) {
@@ -26,6 +27,7 @@ abstract class WebDriverException extends Exception {
   public function getResults() {
     return $this->results;
   }
+
 }
 
 class IndexOutOfBoundsWebDriverError extends WebDriverException {} // 1
@@ -34,7 +36,26 @@ class NoStringWebDriverError extends WebDriverException {} // 3
 class NoStringLengthWebDriverError extends WebDriverException {} // 4
 class NoStringWrapperWebDriverError extends WebDriverException {} // 5
 class NoSuchDriverWebDriverError extends WebDriverException {} // 6
-class NoSuchElementWebDriverError extends WebDriverException {} // 7
+class NoSuchElementWebDriverError extends WebDriverException {
+
+  private $using;
+  private $value;
+
+  public function __construct($message, $results = null, $using = null, $value = null) {
+    parent::__construct($message, $results);
+    $this->using = $using;
+    $this->value = $value;
+  }
+
+  public function getUsing() {
+    return $this->using;
+  }
+
+  public function getValue() {
+    return $this->value;
+  }
+
+} // 7
 class NoSuchFrameWebDriverError extends WebDriverException {} // 8
 class UnknownCommandWebDriverError extends WebDriverException {} // 9
 class ObsoleteElementWebDriverError extends WebDriverException {} // 10

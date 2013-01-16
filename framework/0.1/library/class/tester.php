@@ -42,6 +42,7 @@
 
 			private $tester_path;
 			private $tester_output = array();
+			private $test_name;
 			private $test_path;
 			private $test_start;
 			private $test_output = array();
@@ -64,7 +65,8 @@
 
 			public function test_run($test, $info = NULL) {
 
-				$this->test_path = $this->tester_path . '/' . safe_file_name($test) . '.php';
+				$this->test_name = $test;
+				$this->test_path = $this->tester_path . '/' . safe_file_name($this->test_name) . '.php';
 				$this->test_start = microtime(true);
 				$this->test_output = array();
 
@@ -80,11 +82,11 @@
 
 				$output = ob_get_clean();
 				if ($output != '') {
-					$this->test_output_add($output, -1);
+					$this->test_output_add($output, -1, true); // html mode
 				}
 
 				$this->tester_output[] = array(
-						'test' => $test,
+						'test' => $this->test_name,
 						'time' => (microtime(true) - $this->test_start),
 						'output' => $this->test_output,
 					);
@@ -93,11 +95,11 @@
 
 			}
 
-			public function test_output_add($output, $stack = 0) {
+			public function test_output_add($output, $stack = 0, $html = false) {
 
 				if ($stack == -1) {
 					$called_from_path = str_replace(ROOT, '', $this->test_path);
-					$called_from_line = 0;
+					$called_from_line = -1;
 				} else {
 					$called_from = debug_backtrace();
 					$called_from_path = str_replace(ROOT, '', $called_from[$stack]['file']);
@@ -105,6 +107,7 @@
 				}
 
 				$this->test_output[] = array(
+						'html' => $html,
 						'text' => $output,
 						'path' => $called_from_path,
 						'line' => $called_from_line,
@@ -113,6 +116,17 @@
 			}
 
 			public function output_get($test = NULL) {
+
+				if (count($this->test_output) > 0) { // Did not get to complete successfully
+
+					$this->tester_output[] = array(
+							'test' => $this->test_name,
+							'time' => -1,
+							'output' => $this->test_output,
+						);
+
+				}
+
 				if ($test === NULL) {
 
 					return $this->tester_output;
@@ -190,8 +204,12 @@
 				}
 			}
 
+			protected function element_name_get($using, $selector) {
+				return $this->element_get($using, $selector)->name();
+			}
+
 			protected function element_name_check($using, $selector, $required_value) {
-				$current_value = $this->element_get($using, $selector)->name();
+				$current_value = $this->element_name_get($using, $selector);
 				if ($current_value !== $required_value) {
 					$this->test_output_add('Incorrect name for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url(), 1);
 				}
@@ -212,11 +230,33 @@
 				$this->element_attribute_check($using, $selector, 'value', $required_value);
 			}
 
+			protected function element_select_value($using, $selector, $value) {
+				if ($using == 'id') {
+					$selector = '#' . $selector;
+				}
+				$this->session->element('css selector', $selector . ' option[value="' . html($value) . '"]')->click();
+			}
+
 			protected function element_send_keys($using, $selector, $keys, $config = NULL) {
+
 				if (isset($config['clear']) && $config['clear']) {
 					$this->element_get($using, $selector)->clear();
 				}
 				$this->element_get($using, $selector)->value(split_keys($keys));
+
+				if ($this->element_name_get($using, $selector) == 'select') { // TODO: Remove
+
+					$value = $this->element_attribute_get($using, $selector, 'value');
+
+					$called_from = debug_backtrace();
+					$called_from_path = str_replace(ROOT, '', $called_from[0]['file']);
+					$called_from_line = $called_from[0]['line'];
+
+					echo '<strong>' . html($called_from_path) . ' (' . html($called_from_line) . ')</strong>' . "<br />\n";
+					echo '&#xA0; $this->element_select_value(\'' . html($using) . '\', \'' . html($selector) . '\', \'' . html($value) . '\');' . "<br />\n<br />\n";
+
+				}
+
 			}
 
 			protected function element_send_lorem($using, $selector, $config = NULL) {
