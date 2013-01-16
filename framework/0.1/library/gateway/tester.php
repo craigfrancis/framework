@@ -74,11 +74,7 @@
 
 						} catch (NoSuchElementWebDriverError $e) {
 
-							$trace = $e->getTrace();
-							if (isset($trace[2]['file'])) {
-								echo "\n" . '<strong>' . html($trace[2]['file']) . '</strong> (line <strong>' . html($trace[2]['line']) . '</strong>)' . "\n";
-							}
-							echo '<pre>' . html($e->getMessage()) . '</pre>';
+							$tester->test_output_add($e->getMessage(), $e->getTrace());
 
 						}
 
@@ -126,7 +122,7 @@
 								$html .= '
 									<div>
 										<p class="text">' . $line_html . '</p>
-										<p class="line"><em>' . html($line['path']) . ($line['line'] > 0 ? ' (' . html($line['line']) . ')' : '') . '</em></p>
+										<p class="line"><em>' . html($line['file']) . ($line['line'] > 0 ? ' (' . html($line['line']) . ')' : '') . '</em></p>
 									</div>';
 
 							}

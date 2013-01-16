@@ -91,25 +91,41 @@
 						'output' => $this->test_output,
 					);
 
+				$this->test_output = array();
+
 				return $return;
 
 			}
 
-			public function test_output_add($output, $stack = 0, $html = false) {
+			public function test_output_add($output, $stack = NULL, $html = false) {
 
-				if ($stack == -1) {
-					$called_from_path = str_replace(ROOT, '', $this->test_path);
-					$called_from_line = -1;
+				$called_from_file = $this->test_path;
+				$called_from_line = -1;
+
+				if (is_int($stack)) {
+
+					$called_from_line = $stack;
+
 				} else {
-					$called_from = debug_backtrace();
-					$called_from_path = str_replace(ROOT, '', $called_from[$stack]['file']);
-					$called_from_line = $called_from[$stack]['line'];
+
+					if (!is_array($stack)) {
+						$stack = debug_backtrace();
+					}
+
+					foreach ($stack as $called_from) {
+						if (isset($called_from['file']) && !prefix_match(FRAMEWORK_ROOT, $called_from['file'])) {
+							$called_from_file = $called_from['file'];
+							$called_from_line = $called_from['line'];
+							break;
+						}
+					}
+
 				}
 
 				$this->test_output[] = array(
 						'html' => $html,
 						'text' => $output,
-						'path' => $called_from_path,
+						'file' => str_replace(ROOT, '', $called_from_file),
 						'line' => $called_from_line,
 					);
 
@@ -200,7 +216,7 @@
 			protected function element_text_check($using, $selector, $required_value) {
 				$current_value = $this->element_text_get($using, $selector);
 				if ($current_value !== $required_value) {
-					$this->test_output_add('Incorrect text for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url(), 1);
+					$this->test_output_add('Incorrect text for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url());
 				}
 			}
 
@@ -211,7 +227,7 @@
 			protected function element_name_check($using, $selector, $required_value) {
 				$current_value = $this->element_name_get($using, $selector);
 				if ($current_value !== $required_value) {
-					$this->test_output_add('Incorrect name for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url(), 1);
+					$this->test_output_add('Incorrect name for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url());
 				}
 			}
 
@@ -222,7 +238,7 @@
 			protected function element_attribute_check($using, $selector, $attribute, $required_value) {
 				$current_value = $this->element_attribute_get($using, $selector, $attribute);
 				if ($current_value !== $required_value) {
-					$this->test_output_add('Incorrect ' . $attribute . ' for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url(), 1);
+					$this->test_output_add('Incorrect ' . $attribute . ' for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url());
 				}
 			}
 
@@ -249,10 +265,10 @@
 					$value = $this->element_attribute_get($using, $selector, 'value');
 
 					$called_from = debug_backtrace();
-					$called_from_path = str_replace(ROOT, '', $called_from[0]['file']);
+					$called_from_file = str_replace(ROOT, '', $called_from[0]['file']);
 					$called_from_line = $called_from[0]['line'];
 
-					echo '<strong>' . html($called_from_path) . ' (' . html($called_from_line) . ')</strong>' . "<br />\n";
+					echo '<strong>' . html($called_from_file) . ' (' . html($called_from_line) . ')</strong>' . "<br />\n";
 					echo '&#xA0; $this->element_select_value(\'' . html($using) . '\', \'' . html($selector) . '\', \'' . html($value) . '\');' . "<br />\n<br />\n";
 
 				}

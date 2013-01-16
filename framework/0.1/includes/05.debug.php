@@ -271,17 +271,17 @@
 	function debug($variable = NULL) {
 
 		$called_from = debug_backtrace();
-		$called_from_path = substr(str_replace(ROOT, '', $called_from[0]['file']), 1);
+		$called_from_file = substr(str_replace(ROOT, '', $called_from[0]['file']), 1);
 		$called_from_line = $called_from[0]['line'];
 
 		//$output = print_r($variable, true);
 		$output = debug_dump($variable); // Shows false (not an empty string), quotes strings (var_export does - but has problems with recursion), and shows a simple string representation for the url object.
 
 		if (php_sapi_name() == 'cli' || config::get('output.mime') == 'text/plain') {
-			echo "\n" . $called_from_path . ' (line ' . html($called_from_line) . ')' . "\n";
+			echo "\n" . $called_from_file . ' (line ' . html($called_from_line) . ')' . "\n";
 			echo $output . "\n";
 		} else {
-			echo "\n" . '<strong>' . html($called_from_path) . '</strong> (line <strong>' . html($called_from_line) . '</strong>)' . "\n";
+			echo "\n" . '<strong>' . html($called_from_file) . '</strong> (line <strong>' . html($called_from_line) . '</strong>)' . "\n";
 			echo '<pre>' . html($output) . '</pre>';
 		}
 
