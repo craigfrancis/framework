@@ -179,7 +179,7 @@
 			}
 
 			protected function url_load($url) {
-				$this->session->open(strval($url));
+				$this->session->open(strval($url)); // Can't pass a url object directly to "open" method.
 			}
 
 			protected function url_param_get($param) {
@@ -231,6 +231,14 @@
 				}
 			}
 
+			protected function element_value_get($using, $selector) {
+				$this->element_attribute_get($using, $selector, 'value');
+			}
+
+			protected function element_value_check($using, $selector, $required_value) { // Shortcut which matches element_send_keys signature
+				$this->element_attribute_check($using, $selector, 'value', $required_value);
+			}
+
 			protected function element_attribute_get($using, $selector, $attribute) {
 				return $this->element_get($using, $selector)->attribute($attribute);
 			}
@@ -240,17 +248,6 @@
 				if ($current_value !== $required_value) {
 					$this->test_output_add('Incorrect ' . $attribute . ' for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url());
 				}
-			}
-
-			protected function element_value_check($using, $selector, $required_value) { // Shortcut which matches element_send_keys signature
-				$this->element_attribute_check($using, $selector, 'value', $required_value);
-			}
-
-			protected function element_select_value($using, $selector, $value) {
-				if ($using == 'id') {
-					$selector = '#' . $selector;
-				}
-				$this->session->element('css selector', $selector . ' option[value="' . html($value) . '"]')->click();
 			}
 
 			protected function element_send_keys($using, $selector, $keys, $config = NULL) {
@@ -269,7 +266,7 @@
 					$called_from_line = $called_from[0]['line'];
 
 					echo '<strong>' . html($called_from_file) . ' (' . html($called_from_line) . ')</strong>' . "<br />\n";
-					echo '&#xA0; $this->element_select_value(\'' . html($using) . '\', \'' . html($selector) . '\', \'' . html($value) . '\');' . "<br />\n<br />\n";
+					echo '&#xA0; $this->select_value_set(\'' . html($using) . '\', \'' . html($selector) . '\', \'' . html($value) . '\');' . "<br />\n<br />\n";
 
 				}
 
@@ -282,6 +279,13 @@
 				}
 				$this->element_get($using, $selector)->value(split_keys($keys));
 				return $keys;
+			}
+
+			protected function select_value_set($using, $selector, $value) {
+				if ($using == 'id') {
+					$selector = '#' . $selector;
+				}
+				$this->session->element('css selector', $selector . ' option[value="' . html($value) . '"]')->click();
 			}
 
 			protected function form_button_submit($button) {

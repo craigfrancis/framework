@@ -57,6 +57,8 @@
 
 						ob_start();
 
+						$ob_level = ob_get_level();
+
 					//--------------------------------------------------
 					// Run
 
@@ -73,6 +75,13 @@
 							$tester->run();
 
 						} catch (NoSuchElementWebDriverError $e) {
+
+							if ($ob_level != ob_get_level()) { // Individual test output buffer started, but didn't get a chance to end.
+								$output = ob_get_clean();
+								if ($output != '') {
+									$tester->test_output_add($output, -1, true); // html mode
+								}
+							}
 
 							$tester->test_output_add($e->getMessage(), $e->getTrace());
 
