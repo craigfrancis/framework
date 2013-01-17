@@ -89,6 +89,7 @@
 				$system_nav->link_add('/doc/system/response/', 'Response');
 				$system_nav->link_add('/doc/system/functions/', 'Functions');
 				$system_nav->link_add('/doc/system/database/', 'Database');
+				$system_nav->link_add('/doc/system/tester/', 'Tester');
 				$system_nav->link_add('/doc/system/user/', 'User');
 				$system_nav->link_add('/doc/system/order/', 'Order');
 				$system_nav->link_add('/doc/system/payment/', 'Payment');
