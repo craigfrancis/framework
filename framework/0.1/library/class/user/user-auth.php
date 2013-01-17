@@ -197,13 +197,13 @@
 								' . $this->user_obj->db_table_reset . '
 							WHERE
 								user_id = 0 AND
-								created = "' . $db->escape(date('Y-m-d H:i:s', strtotime('-1 day'))) . '"');
+								created <= "' . $db->escape(date('Y-m-d H:i:s', strtotime('-1 day'))) . '"');
 
 			//--------------------------------------------------
 			// Too many attempts?
 
 				$db->query('SELECT
-								created
+								1
 							FROM
 								' . $db->escape_field($this->user_obj->db_table_reset) . '
 							WHERE
@@ -330,7 +330,7 @@
 								id = "' . $db->escape($request_id) . '" AND
 								user_id = user_id AND
 								pass = "' . $db->escape($request_pass) . '" AND
-								created > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-90 minutes'))) . '" AND
+								sent > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-90 minutes'))) . '" AND
 								used = "0000-00-00 00:00:00"');
 
 				if ($row = $db->fetch_row()) {
@@ -401,7 +401,7 @@
 			// Too many failed logins?
 
 				$db->query('SELECT
-								created
+								1
 							FROM
 								' . $db->escape_field($this->user_obj->db_table_session) . '
 							WHERE
