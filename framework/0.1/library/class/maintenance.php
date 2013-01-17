@@ -110,27 +110,18 @@
 				//--------------------------------------------------
 				// Cleanup
 
-					$sql = 'SELECT
-								id
-							FROM
-								' . DB_PREFIX . 'maintenance
-							WHERE
-								run_end != "0000-00-00 00:00:00" AND
-								run_end < "' . $db->escape(date('Y-m-d H:i:s', strtotime('-1 month'))) . '"';
+					$archive_date = date('Y-m-d H:i:s', strtotime('-1 month'));
 
-					foreach ($db->fetch_all($sql) as $row) {
+					$db->query('DELETE FROM
+									' . DB_PREFIX . 'maintenance
+								WHERE
+									run_end != "0000-00-00 00:00:00" AND
+									run_end < "' . $db->escape($archive_date) . '"');
 
-						$db->query('DELETE FROM
-										' . DB_PREFIX . 'maintenance_job
-									WHERE
-										run_id = "' . $db->escape($row['id']) . '"');
-
-						$db->query('DELETE FROM
-										' . DB_PREFIX . 'maintenance
-									WHERE
-										id = "' . $db->escape($row['id']) . '"');
-
-					}
+					$db->query('DELETE FROM
+									' . DB_PREFIX . 'maintenance_job
+								WHERE
+									created < "' . $db->escape($archive_date) . '"');
 
 				//--------------------------------------------------
 				// Jobs
