@@ -3,7 +3,7 @@
 
 You can view the helper source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/tester.php).
 
-Download standalone server from:
+The helper uses [Selenium](http://seleniumhq.org/), where you can download the standalone server from:
 
 	http://code.google.com/p/selenium/downloads/list
 

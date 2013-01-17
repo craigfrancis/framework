@@ -75,7 +75,6 @@
 				$setup_nav->link_add('/doc/setup/robots/', 'Robots (txt)');
 				$setup_nav->link_add('/doc/setup/sitemap/', 'Sitemap (xml)');
 				$setup_nav->link_add('/doc/setup/cli/', 'CLI');
-				$setup_nav->link_add('/doc/setup/testing/', 'Testing');
 
 				$section_nav->link_add('/doc/setup/', 'Setup', array('child' => $setup_nav));
 

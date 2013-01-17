@@ -7,6 +7,10 @@ Helper function:
 
 ---
 
+Also need to add notes about the [tester helper](../../doc/system/tester.md), and maintenance gateway.
+
+---
+
 ## Notes on oAuth:
 
 Might be issues:
