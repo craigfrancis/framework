@@ -1,37 +1,8 @@
 <?php
 
-/***************************************************
-
-	Download standalone server from:
-
-		http://code.google.com/p/selenium/downloads/list
-
-	Run server with:
-
-		java -jar selenium-server-standalone-*.jar
-
-		java -jar /opt/selenium/server-standalone-2.28.0.jar
-
-	You may view the admin panel at:
-
-		http://localhost:4444/wd/hub/static/resource/hub.html
-
-	//--------------------------------------------------
-	// XPath example
-
-		// $this->session->element('xpath', '//form'); // Does not work due to namespace issue (http://code.google.com/p/firepath/issues/detail?id=21)
-
-	//--------------------------------------------------
-	// Window handling example
-
-		// $window = $this->session->window();
-		// $this->test_output_add($window->size());
-		// for ($k = 3; $k < 400; $k += 10) {
-		// 	$window->postPosition(array('x' => $k, 'y' => 300));
-		// 	usleep(50000);
-		// }
-
-***************************************************/
+//--------------------------------------------------
+// http://www.phpprime.com/doc/system/tester/
+//--------------------------------------------------
 
 	class tester_base extends check {
 
