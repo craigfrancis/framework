@@ -97,13 +97,13 @@
 
 	<div id="page_wrapper">
 
-		<header id="page_title">
+		<header id="page_title" role="banner">
 			<h1><?= html($this->title_get()) ?></h1>
 		</header>
 
 		<div id="page_container">
 
-			<nav id="page_navigation">
+			<nav id="page_navigation" role="navigation">
 
 				<h2>Site Navigation</h2>
 
@@ -141,7 +141,7 @@
 
 		</div>
 
-		<footer id="page_footer">
+		<footer id="page_footer" role="contentinfo">
 			<h2>Footer</h2>
 			<ul>
 
