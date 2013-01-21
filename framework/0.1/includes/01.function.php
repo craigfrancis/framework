@@ -350,15 +350,15 @@
 			if ($trim_to_char !== NULL) { // Could be a comma, if you have a list of items and don't want half an item
 				$pos = strrpos($text, $trim_to_char);
 				if ($pos !== false) {
-					$text = substr($text, 0, $pos) . $trim_suffix;
+					$text = substr($text, 0, $pos);
 				}
 			}
+			$text .= $trim_suffix;
 		}
 		return $text;
 	}
 
 	function cut_to_words($text, $words, $trim = true) {
-		$text = strip_tags($text);
 		$text = preg_split('/\s+/', $text, $words + 1);
 		if (count($text) > $words) {
 			array_pop($text);
