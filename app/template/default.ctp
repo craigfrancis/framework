@@ -185,6 +185,8 @@
 		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 
+	<link rel="author" href="http://www.craigfrancis.co.uk/contact/" />
+
 </head>
 <body id="<?= html($this->page_id_get()) ?>">
 
