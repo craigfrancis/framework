@@ -2,6 +2,8 @@
 
 A typical [HTML response](../../doc/system/response.md) will add JavaScript and CSS files with:
 
+	$response = response_get();
+
 	$response->js_add('/path/to/file.js');
 	$response->js_code_add('var x = ' . json_encode($x) . ';');
 
@@ -12,7 +14,7 @@ A typical [HTML response](../../doc/system/response.md) will add JavaScript and 
 
 In the [template](../../doc/setup/templates.md) file itself, the CSS is then added to the page <[head](http://developer.yahoo.com/performance/rules.html#css_top)> via `head_get_html()`, and the JavaScript at the [bottom](http://developer.yahoo.com/performance/rules.html#js_bottom) of the page with `foot_get_html()`.
 
-And just for reference, please see these other pages which also relate to resources:
+For reference, please see these other pages which also relate to resources:
 
 * [Favicon](../../doc/setup/favicon.md)
 * [Robots.txt](../../doc/setup/robots.md)
@@ -22,7 +24,7 @@ And just for reference, please see these other pages which also relate to resour
 
 ## Versioning
 
-For both the JavaScript and CSS, the paths are automatically updated to something like:
+For both the JavaScript and CSS, the paths are automatically changed to something like:
 
 	/a/js/file.js
 	/a/js/946684800-file.js
@@ -37,7 +39,7 @@ This can be disabled with the config options:
 
 ## JavaScript code
 
-Sometimes you may need to set a JavaScript variable, for example the current tax rate, however you don't really want to do this inline as its a potential [security issue](../../doc/security/strings/html-injection.md), and can break the default [CSP directives](../../doc/security/csp.md).
+Sometimes you may need to set a JavaScript variable "inline", for example the current tax rate, however you don't really want to do this inline as its a potential [security issue](../../doc/security/strings/html-injection.md), and can break the default [CSP directives](../../doc/security/csp.md).
 
 So instead just add:
 

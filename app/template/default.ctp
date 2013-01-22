@@ -144,6 +144,15 @@
 
 				$section_nav->link_add('/doc/helpers/', 'Helpers', array('child' => $helpers_nav));
 
+			//--------------------------------------------------
+			// Notes
+
+				$notes_nav = new nav();
+				$notes_nav->link_add('/doc/notes/history/', 'History');
+				$notes_nav->link_add('/doc/notes/frameworks/', 'Frameworks');
+
+				$section_nav->link_add('/doc/notes/', 'Notes', array('child' => $notes_nav));
+
 		} else if (request_folder_get(0) == 'examples') {
 
 			//--------------------------------------------------

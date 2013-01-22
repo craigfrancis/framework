@@ -6,23 +6,26 @@ There are 3 shortcut functions which you can use:
 	url();
 
 		echo url('/about/');
-		echo '/about/';
+			/about/
 
 		echo url('/about/', array('name' => 'Craig'));
-		echo '/about/?name=craig';
+			/about/?name=Craig
 
 		echo url('/about/:page/', array('page' => 'contact', 'name' => 'Craig'));
-		echo '/about/contact/?name=craig';
+			/about/contact/?name=Craig
+
+		echo url('./history/');
+			/about/history/
 
 	http_url();
 	https_url();
 
 		echo http_url('/about/');
-		echo 'http://www.example.com/about/';
+			http://www.example.com/about/
 
 		echo https_url('/about/');
-		echo 'http://www.example.com/about/'; // output.protocols = array('http');
-		echo 'https://www.example.com/about/'; // output.protocols = array('http', 'https');
+			http://www.example.com/about/ - output.protocols = array('http');
+			https://www.example.com/about/ - output.protocols = array('http', 'https');
 
 You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/url.php).
 
@@ -30,18 +33,17 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 
 ## Site config
 
-	url.default_format - absolute (default) / full (includes domain) / relative (not implemented)
-	url.prefix - e.g. '/website' will be prefixed onto any absolute urls, so url('/contact/') == '/website/contact/'
+	url.default_format
 
----
+		absolute = default
+		full = includes domain
+		relative = not implemented
 
-## Example setup
+	url.prefix
 
-	url('/contact/');
+		Prefixed onto any absolute urls, for example:
 
-	https_url();
-	http_url('./thank-you/');
+			config::set('url.prefix, '/website');
+			echo url('/contact/');
 
-	url('/item/view/', array('id' => 5));
-
-	url('/news/', 'article', array('article' => 'my-name'));
+				/website/contact/

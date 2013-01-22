@@ -22,8 +22,6 @@ So for example, in your profile controller you might have something like:
 
 ---
 
+## Common controllers
 
-
-Also mention the /app/library/controller/ folder.
-
-
+Ref the /app/library/controller/ folder.
