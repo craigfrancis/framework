@@ -30,6 +30,6 @@ Session fixation.
 
 Sessions created on another website on the same host.
 
-Session::regenerate()
+	session::regenerate()
 
 Session ID obtained by a third party / attacker (e.g. a hacker)... this can be via session fixation, packet sniffing, session being passed in query string (referrer header / image src), malware, etc.

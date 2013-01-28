@@ -182,7 +182,7 @@
 				// incase it has been exposed to a 3rd party it
 				// reduces the window in which they can use it
 
-					if (config::get('output.mode') === NULL) { // Not a gateway/maintenance/asset script
+					if (config::get('output.mode') === NULL && !headers_sent()) { // Not a gateway/maintenance/asset script
 
 						$session_age = session::get('session.age');
 
