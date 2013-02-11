@@ -735,7 +735,7 @@
 					}
 
 					if (is_file($api_path)) {
-						script_run_once($api_path);
+						require($api_path); // Don't use script_run() jail, as we need access to $this
 					} else {
 						return false;
 					}

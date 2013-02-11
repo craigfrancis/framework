@@ -294,7 +294,6 @@
 		// Run install script
 
 			$install_root = APP_ROOT . '/setup/install.php';
-
 			if (is_file($install_root)) {
 				script_run($install_root);
 			}

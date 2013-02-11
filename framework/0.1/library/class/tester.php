@@ -46,7 +46,7 @@
 				$return = NULL;
 
 				if (is_file($this->test_path)) {
-					require($this->test_path);
+					require($this->test_path); // Don't use script_run() jail, as we need to have $info as local variable
 				} else {
 					$this->test_output_add('Missing test file.', -1);
 				}
@@ -168,16 +168,46 @@
 			}
 
 			protected function element_get($using, $selector, $config = NULL) {
-				if ($using == 'css') $using = 'css selector';
-				try {
-					return $this->session->element($using, $selector);
-				} catch (NoSuchElementWebDriverError $e) {
-					if (isset($config['test']) && $config['test']) {
-						return false;
-					} else {
-						throw $e;
+
+				//--------------------------------------------------
+				// Config
+
+					if ($using == 'css') {
+						$using = 'css selector';
 					}
-				}
+
+					$defaults = array(
+							'test' => false,
+							'wait' => false,
+						);
+
+					if (!is_array($config)) {
+						$config = array();
+					}
+
+					$config = array_merge($defaults, $config);
+
+				//--------------------------------------------------
+				// Find
+
+					$k = 0;
+
+					while (true) {
+
+						try {
+							return $this->session->element($using, $selector);
+						} catch (NoSuchElementWebDriverError $e) {
+							if ($config['test']) {
+								return false;
+							} else if ($config['wait'] == false || $k++ > ($config['wait'] * 2)) {
+								throw $e;
+							}
+						}
+
+						usleep(500000); // Half a second
+
+					}
+
 			}
 
 			protected function element_text_get($using, $selector) {

@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // Base controller
 
-	class controller_base {
+	class controller_base extends check {
 
 		public $parent;
 
@@ -83,7 +83,7 @@
 					continue;
 				}
 
-				require_once($controller_path);
+				script_run_once($controller_path);
 
 				if (!class_exists($controller_name)) {
 					exit_with_error('Missing object "' . $controller_name . '" in "' . $controller_path . '"');

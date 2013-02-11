@@ -65,7 +65,7 @@
 						$test = $matches[1];
 						$class = $test . '_tester';
 
-						require_once($root . '/' . safe_file_name($test) . '.php');
+						script_run_once($root . '/' . safe_file_name($test) . '.php');
 
 						$tester = new $class();
 						$tester->path_set($root . '/' . safe_file_name($test));
