@@ -916,22 +916,13 @@
 //--------------------------------------------------
 // Check object - ensures all properties are set
 
-	if (SERVER == 'stage') {
+	class check {
 
-		class check {
-
-			function __set($name, $value) {
-				if (!isset($this->$name)) {
-					exit('Property "' . html($name) . '" not set on ' . get_class($this) . ' object.');
-				}
-				$this->$name = $value;
+		function __set($name, $value) {
+			if (SERVER == 'stage' && !isset($this->$name)) {
+				exit('Property "' . html($name) . '" not set on ' . get_class($this) . ' object.');
 			}
-
-		}
-
-	} else {
-
-		class check {
+			$this->$name = $value;
 		}
 
 	}
