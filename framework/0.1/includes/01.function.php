@@ -503,6 +503,10 @@
 		require(func_get_arg(0)); // No local variables
 	}
 
+	function script_run_once() {
+		require_once(func_get_arg(0)); // No local variables
+	}
+
 //--------------------------------------------------
 // Get the database object
 
