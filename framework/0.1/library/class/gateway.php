@@ -352,7 +352,10 @@
 				//--------------------------------------------------
 				// Run setup
 
-					$this->_run_setup();
+					$include_path = APP_ROOT . '/setup/setup.php';
+					if (is_file($include_path)) {
+						script_run_once($include_path);
+					}
 
 				//--------------------------------------------------
 				// Run API
@@ -411,13 +414,6 @@
 
 		//--------------------------------------------------
 		// Config
-
-			private function _run_setup() {
-				$include_path = APP_ROOT . '/setup/setup.php';
-				if (is_file($include_path)) {
-					require_once($include_path);
-				}
-			}
 
 			private function _config_get($type, $key, $default = NULL) {
 				if (isset($this->config[$type][$key])) {
@@ -739,7 +735,7 @@
 					}
 
 					if (is_file($api_path)) {
-						require_once($api_path);
+						script_run_once($api_path);
 					} else {
 						return false;
 					}
