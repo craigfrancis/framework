@@ -60,7 +60,10 @@
 				//--------------------------------------------------
 				// Run setup
 
-					$this->_run_setup();
+					$include_path = APP_ROOT . '/setup/setup.php';
+					if (is_file($include_path)) {
+						script_run_once($include_path);
+					}
 
 				//--------------------------------------------------
 				// Clear old locks
@@ -170,38 +173,18 @@
 
 			}
 
-			private function _run_setup() {
-				$include_path = APP_ROOT . '/setup/setup.php';
-				if (is_file($include_path)) {
-					require_once($include_path);
-				}
-			}
-
 			public function require_job_run($job_name) {
-
 				if (!in_array($job_name, $this->jobs_run)) {
-
-					$job = new job($job_name, $this, $this->run_id);
-
-					$success = $job->run_wrapper(true);
-
-					if ($success) {
-						$this->jobs_run[] = $job_name;
-					}
-
-					return $success;
-
+					$this->execute($job_name);
 				}
-
 				return true;
-
 			}
 
 			public function execute($job_name) {
 
-				$job = $this->job_get($job_name);
+				$job = new job($job_name, $this, $this->run_id);
 
-				$success = $job->run_wrapper(true);
+				$success = $job->run_wrapper(true); // Force the running of the job, bypassing should_run() check
 
 				if ($success) {
 					$this->jobs_run[] = $job_name;
@@ -209,13 +192,6 @@
 
 				return $success;
 
-			}
-
-		//--------------------------------------------------
-		// Return job
-
-			public function job_get($job_name) {
-				return new job($job_name, $this);
 			}
 
 			public function job_path_get($job_name) {
@@ -316,7 +292,7 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($job_name, $maintenance, $run_id = 0, $mode = 'wrapper') {
+			public function __construct($job_name, $maintenance, $run_id = NULL, $mode = 'wrapper') {
 
 				//--------------------------------------------------
 				// Resources
@@ -331,7 +307,7 @@
 					$this->run_id = $run_id;
 					$this->mode = $mode;
 
-					if ($this->run_id > 0) {
+					if ($this->run_id !== NULL) {
 
 						$db->query('SELECT
 										created
@@ -518,7 +494,7 @@
 				//--------------------------------------------------
 				// Log
 
-					if ($this->run_id > 0 && $this->halt_maintenance_run === false) {
+					if ($this->run_id !== NULL && $this->halt_maintenance_run === false) {
 
 						$db = db_get();
 
@@ -534,7 +510,7 @@
 				//--------------------------------------------------
 				// Send
 
-					if ($this->run_id > 0 && $this->halt_maintenance_run === false && $job_output_html != '') {
+					if ($this->run_id !== NULL && $this->halt_maintenance_run === false && $job_output_html != '') {
 
 						if (isset($email_addresses[SERVER])) {
 							$email_addresses = $email_addresses[SERVER];
