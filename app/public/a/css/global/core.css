@@ -17,17 +17,12 @@
 		background: transparent;
 	}
 
-	html {
-		/* overflow-y: scroll; /* Force Scrollbar - Firefox2 and Safari */
-	}
-
 	body {
 		font-family: verdana, arial, helvetica, sans-serif;
 		font-size: 0.8em;
 		line-height: 1.2em;
 		color: #000;
 		background-color: #FFF;
-		text-align: center; /* IE5 Win: Thinks block level elements are aligned as text */
 	}
 
 	a {
@@ -84,32 +79,6 @@
 	.off_screen {
 		position: absolute;
 		left: -5000px;
-	}
-
-/*--------------------------------------------------*/
-/* Skip Links                                       */
-
-	#skip_sinks,
-	#style_sheet_switcher {
-		padding: 0;
-		position: absolute;
-	 	right: 0px;
-	 	top: -500em; /* This needs a width, height and overflow hidden to stop IE5 MAC from doing horizontal scroll */
-	}
-
-	#skip_links a:active,
-	#skip_links a:focus,
-	#style_sheet_switcher a:active,
-	#style_sheet_switcher a:focus {
-		position: absolute;
-		top: 500.25em;
-		right: 0.25em;
-		z-index: 5;
-		white-space: nowrap;
-		color: #000;
-		background: #FFF;
-		border: 2px solid red;
-		padding: 3px;
 	}
 
 /*--------------------------------------------------*/

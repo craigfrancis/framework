@@ -44,7 +44,7 @@
 					$this->label_suffix_html = '';
 				} else {
 					$this->required_mark_position_set('left');
-					$this->label_suffix_html = $form->label_suffix_get_html();
+					$this->label_suffix_html = $this->form->label_suffix_get_html();
 				}
 			}
 

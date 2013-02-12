@@ -27,7 +27,7 @@
 
 						} else {
 
-							$form_method = $form->form_method_get();
+							$form_method = $this->form->form_method_get();
 
 							$this->value = array(
 									'H' => request($this->name . '_H', $form_method),
