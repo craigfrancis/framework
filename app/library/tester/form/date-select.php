@@ -28,7 +28,7 @@
 //--------------------------------------------------
 // Half specified
 
-	$this->element_send_keys('id', 'fld_date_D', '3');
+	$this->select_value_set('id', 'fld_date_D', '3');
 
 	$this->element_get('css', 'form')->submit();
 
@@ -49,7 +49,7 @@
 //--------------------------------------------------
 // Simple value, with hide/preserve tests
 
-	$this->element_send_keys('id', 'fld_date_M', 'April');
+	$this->select_value_set('id', 'fld_date_M', '4');
 
 	$this->run_hide_preserve_tests();
 

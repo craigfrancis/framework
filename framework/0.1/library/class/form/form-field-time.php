@@ -13,43 +13,6 @@
 					$this->_setup_fields($form, $label, $name);
 
 				//--------------------------------------------------
-				// Value
-
-					$this->value = NULL;
-
-					if ($this->form_submitted) {
-
-						$hidden_value = $this->form->hidden_value_get($this->name);
-
-						if ($hidden_value !== NULL) {
-
-							$this->value_set($hidden_value);
-
-						} else {
-
-							$form_method = $this->form->form_method_get();
-
-							$this->value = array(
-									'H' => request($this->name . '_H', $form_method),
-									'I' => request($this->name . '_I', $form_method),
-									'S' => request($this->name . '_S', $form_method),
-								);
-
-						}
-
-					}
-
-					$this->value_provided = false;
-					if (is_array($this->value)) {
-						foreach ($this->value as $value) {
-							if ($value !== NULL && $value !== '') {
-								$this->value_provided = true; // Only look for one non-blank value (allowing '0'), as the 'seconds' field probably does not exist.
-								break;
-							}
-						}
-					}
-
-				//--------------------------------------------------
 				// Default configuration
 
 					$this->type = 'time';
@@ -79,6 +42,40 @@
 									'label' => '',
 									'options' => NULL,
 								));
+
+				//--------------------------------------------------
+				// Value
+
+					$this->value = NULL;
+
+					if ($this->form_submitted) {
+
+						$hidden_value = $this->form->hidden_value_get($this->name);
+
+						if ($hidden_value !== NULL) {
+
+							$this->value_set($hidden_value);
+
+						} else {
+
+							$request_value = request($this->name, $this->form->form_method_get());
+							if ($request_value !== NULL) {
+								$this->value_set($request_value);
+							}
+
+						}
+
+					}
+
+					$this->value_provided = false;
+					if (is_array($this->value)) {
+						foreach ($this->value as $value) {
+							if ($value !== NULL && $value !== '') {
+								$this->value_provided = true; // Only look for one non-blank value (allowing '0'), as the 'seconds' field probably does not exist.
+								break;
+							}
+						}
+					}
 
 			}
 
@@ -189,11 +186,7 @@
 			protected function _value_print_get() {
 				if ($this->value === NULL) {
 					if ($this->form->saved_values_available()) {
-						return array(
-								'H' => $this->form->saved_value_get($this->name . '_H'),
-								'I' => $this->form->saved_value_get($this->name . '_I'),
-								'S' => $this->form->saved_value_get($this->name . '_S'),
-							);
+						return $this->_value_parse($this->form->saved_value_get($this->name));
 					} else {
 						return $this->_value_parse($this->form->db_select_value_get($this->db_field_name));
 					}
@@ -212,6 +205,14 @@
 			private function _value_parse($value, $minute = NULL, $second = NULL) {
 
 				if ($minute === NULL && $second === NULL) {
+
+					if (is_array($value)) {
+						$return = array();
+						foreach (array('H', 'I', 'S') as $field) {
+							$return[$field] = (isset($value[$field]) ? $value[$field] : '');
+						}
+						return $return;
+					}
 
 					if (preg_match('/^([0-9]{1,2}):([0-9]{1,2})(:([0-9]{1,2}))?$/', $value, $matches)) {
 						return array(

@@ -13,35 +13,6 @@
 					$this->_setup_fields($form, $label, $name);
 
 				//--------------------------------------------------
-				// Value
-
-					$this->value = NULL;
-
-					if ($this->form_submitted) {
-
-						$hidden_value = $this->form->hidden_value_get($this->name);
-
-						if ($hidden_value !== NULL) {
-
-							$this->value_set($hidden_value);
-
-						} else {
-
-							$form_method = $form->form_method_get();
-
-							$this->value = array(
-									'D' => intval(request($this->name . '_D', $form_method)),
-									'M' => intval(request($this->name . '_M', $form_method)),
-									'Y' => intval(request($this->name . '_Y', $form_method)),
-								);
-
-						}
-
-					}
-
-					$this->value_provided = ($this->value['D'] != 0 || $this->value['M'] != 0 || $this->value['Y'] != 0);
-
-				//--------------------------------------------------
 				// Default configuration
 
 					$this->type = 'date';
@@ -71,6 +42,32 @@
 									'label' => '',
 									'options' => NULL,
 								));
+
+				//--------------------------------------------------
+				// Value
+
+					$this->value = NULL;
+
+					if ($this->form_submitted) {
+
+						$hidden_value = $this->form->hidden_value_get($this->name);
+
+						if ($hidden_value !== NULL) {
+
+							$this->value_set($hidden_value);
+
+						} else {
+
+							$request_value = request($this->name, $this->form->form_method_get());
+							if ($request_value !== NULL) {
+								$this->value_set($request_value);
+							}
+
+						}
+
+					}
+
+					$this->value_provided = (is_array($this->value) && ($this->value['D'] != 0 || $this->value['M'] != 0 || $this->value['Y'] != 0));
 
 			}
 
@@ -195,11 +192,7 @@
 			protected function _value_print_get() {
 				if ($this->value === NULL) {
 					if ($this->form->saved_values_available()) {
-						return array(
-								'D' => intval($this->form->saved_value_get($this->name . '_D')),
-								'M' => intval($this->form->saved_value_get($this->name . '_M')),
-								'Y' => intval($this->form->saved_value_get($this->name . '_Y')),
-							);
+						return $this->_value_parse($this->form->saved_value_get($this->name));
 					} else {
 						return $this->_value_parse($this->form->db_select_value_get($this->db_field_name));
 					}
@@ -218,6 +211,14 @@
 			private function _value_parse($value, $month = NULL, $year = NULL) {
 
 				if ($month === NULL && $year === NULL) {
+
+					if (is_array($value)) {
+						$return = array();
+						foreach (array('D', 'M', 'Y') as $field) {
+							$return[$field] = (isset($value[$field]) ? intval($value[$field]) : 0);
+						}
+						return $return;
+					}
 
 					if (!is_numeric($value)) {
 						if ($value == '0000-00-00' || $value == '0000-00-00 00:00:00') {
