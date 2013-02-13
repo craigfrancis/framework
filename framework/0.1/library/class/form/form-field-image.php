@@ -254,7 +254,7 @@
 
 							if ($file['image_type'] == NULL) {
 
-								$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', 'invalid-image', $error_html), 'ERROR: Failed getimagesize');
+								$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', 'invalid image', $error_html), 'ERROR: Failed getimagesize');
 
 							} else {
 

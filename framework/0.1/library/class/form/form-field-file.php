@@ -563,15 +563,15 @@
 				}
 
 				if ($this->empty_file_error_set == false) { // Provide default
-					$this->empty_file_error_set('The uploaded file for "' . strtolower($this->label_html) . '" is empty');
+					$this->empty_file_error_set('The uploaded file for "' . strtolower($this->label_html) . '" is empty.');
 				}
 
 				if ($this->partial_file_error_set == false) { // Provide default
-					$this->partial_file_error_set('The uploaded file for "' . strtolower($this->label_html) . '" was only partially uploaded');
+					$this->partial_file_error_set('The uploaded file for "' . strtolower($this->label_html) . '" was only partially uploaded.');
 				}
 
 				if ($this->blank_name_error_set == false) { // Provide default
-					$this->blank_name_error_set('The uploaded file for "' . strtolower($this->label_html) . '" does not have a filename');
+					$this->blank_name_error_set('The uploaded file for "' . strtolower($this->label_html) . '" does not have a filename.');
 				}
 
 			}

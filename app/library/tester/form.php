@@ -28,6 +28,11 @@
 				$this->test_run('time-db');
 				$this->test_run('time-select');
 
+				$this->test_run('file');
+				$this->test_run('file-multiple');
+
+				$this->test_run('image');
+
 			//--------------------------------------------------
 			// Close
 
