@@ -21,6 +21,9 @@
 						'password',
 						'url',
 						'postcode',
+						'file',
+						'file-multiple',
+						'image',
 						'textarea',
 						'date',
 						'date-select',
@@ -142,7 +145,7 @@
 
 					$field_config = preg_replace('/^\s+$/m', '', $field_config);
 					$field_config = preg_replace('/\n+/', "\n", $field_config);
-					$field_config = str_replace('//---', '', $field_config);
+					$field_config = str_replace('//' . '---', '', $field_config);
 
 			//--------------------------------------------------
 			// Form processing
@@ -185,6 +188,22 @@
 								} else if (($field_type == 'select' || $field_type == 'checkboxes') && $field->multiple_get()) {
 
 									$value = $field->values_get();
+
+								} else if ($field_type == 'file' || $field_type == 'image') {
+
+									if ($field->multiple_get()) {
+
+										$value = $field->files_get();
+
+									} else {
+
+										if ($field->uploaded()) {
+											$value = $field->file_name_get();
+										} else {
+											$value = 'N/A';
+										}
+
+									}
 
 								} else {
 

@@ -300,11 +300,15 @@
 			}
 
 			public function value_hidden_get() {
-				$values = $this->_value_print_get();
-				if ($values === NULL && $this->label_option === NULL && !$this->multiple && count($this->option_values) > 0) {
-					$values = array(key($this->option_values)); // Don't have a value or label, match browser behaviour of automatically selecting first item.
+				if ($this->print_hidden) {
+					$values = $this->_value_print_get();
+					if ($values === NULL && $this->label_option === NULL && !$this->multiple && count($this->option_values) > 0) {
+						$values = array(key($this->option_values)); // Don't have a value or label, match browser behaviour of automatically selecting first item.
+					}
+					return json_encode($values);
+				} else {
+					return NULL;
 				}
-				return json_encode($values);
 			}
 
 		//--------------------------------------------------

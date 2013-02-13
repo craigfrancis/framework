@@ -817,11 +817,22 @@
 	}
 
 //--------------------------------------------------
+// Form file upload helpers
+
+	function form_file_store($file_name, $file_offset = NULL) {
+		return form_field_file::file_store($file_name, $file_offset);
+	}
+
+	function form_file_info($file_hash) {
+		return form_field_file::file_info($file_hash);
+	}
+
+//--------------------------------------------------
 // Temporary files
 
 	function tmp_folder($folder) {
 
-		$path = PRIVATE_ROOT . '/tmp/' . safe_file_name($folder) . '/';
+		$path = PRIVATE_ROOT . '/tmp/' . safe_file_name($folder);
 
 		if (!is_dir($path)) {
 			@mkdir($path, 0777);

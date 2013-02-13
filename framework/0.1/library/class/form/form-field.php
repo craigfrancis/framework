@@ -409,7 +409,11 @@
 		// Value
 
 			public function value_hidden_get() {
-				return '';
+				if ($this->print_hidden) {
+					return '';
+				} else {
+					return NULL;
+				}
 			}
 
 		//--------------------------------------------------

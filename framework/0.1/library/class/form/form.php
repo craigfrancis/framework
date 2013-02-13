@@ -1063,8 +1063,9 @@
 						$field_name = $field->input_name_get();
 						$field_names[] = $field_name;
 
-						if ($field->print_hidden_get()) {
-							$this->hidden_values[$field_name] = $field->value_hidden_get();
+						$field_value = $field->value_hidden_get(); // File field may always return a value, irrespective of $field->print_hidden
+						if ($field_value !== NULL) {
+							$this->hidden_values[$field_name] = $field_value;
 						}
 
 					}

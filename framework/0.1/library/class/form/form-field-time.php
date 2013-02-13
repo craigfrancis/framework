@@ -195,7 +195,11 @@
 			}
 
 			public function value_hidden_get() {
-				return $this->_value_time_format($this->_value_print_get());
+				if ($this->print_hidden) {
+					return $this->_value_time_format($this->_value_print_get());
+				} else {
+					return NULL;
+				}
 			}
 
 			private function _value_time_format($value) {

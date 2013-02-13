@@ -116,7 +116,11 @@
 			}
 
 			public function value_hidden_get() {
-				return ($this->value ? 'true' : 'false');
+				if ($this->print_hidden) {
+					return ($this->value ? 'true' : 'false');
+				} else {
+					return NULL;
+				}
 			}
 
 		//--------------------------------------------------
