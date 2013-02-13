@@ -443,7 +443,7 @@
 		// Status
 
 			public function uploaded() {
-				if ($this->file_current === NULL) {
+				if ($this->file_current === NULL || $this->multiple === false) {
 					$this->file_current = 0;
 				} else {
 					$this->file_current++;

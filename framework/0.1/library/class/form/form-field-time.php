@@ -177,7 +177,11 @@
 
 			public function value_get($field = NULL) {
 				if (in_array($field, $this->fields)) {
-					return $this->value[$field];
+					if ($this->value_provided) {
+						return intval($this->value[$field]); // Time field (unlike date) does not intval() submitted data, so empty value can be different to 0.
+					} else {
+						return NULL;
+					}
 				} else {
 					return $this->_value_time_format($this->value); // Still return 00:00:00 when !$this->value_provided to match date 0000-00-00
 				}
@@ -212,7 +216,7 @@
 
 					if (is_array($value)) {
 						$return = array();
-						foreach (array('H', 'I', 'S') as $field) {
+						foreach ($this->fields as $field) {
 							$return[$field] = (isset($value[$field]) ? $value[$field] : '');
 						}
 						return $return;

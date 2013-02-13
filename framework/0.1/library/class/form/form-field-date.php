@@ -166,8 +166,12 @@
 			}
 
 			public function value_get($field = NULL) {
-				if (in_array($html, $this->fields)) {
-					return $this->value[$field];
+				if (in_array($field, $this->fields)) {
+					if ($this->value_provided) {
+						return $this->value[$field];
+					} else {
+						return NULL;
+					}
 				} else {
 					return 'The date field is invalid (' . implode(' / ', $this->fields) . ')... or you could use value_date_get() or value_time_stamp_get()';
 				}
@@ -218,7 +222,7 @@
 
 					if (is_array($value)) {
 						$return = array();
-						foreach (array('D', 'M', 'Y') as $field) {
+						foreach ($this->fields as $field) {
 							$return[$field] = (isset($value[$field]) ? intval($value[$field]) : 0);
 						}
 						return $return;
