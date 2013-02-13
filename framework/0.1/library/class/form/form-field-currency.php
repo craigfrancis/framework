@@ -5,7 +5,6 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $format_error_set;
 			protected $currency_char;
 
 		//--------------------------------------------------
@@ -16,21 +15,13 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->_setup_text($form, $label, $name);
-
-				//--------------------------------------------------
-				// Strip currency symbol from input value
-
-					if ($this->form_submitted) {
-						$this->value_set($this->value);
-					}
+					$this->_setup_number($form, $label, $name);
 
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->format_error_set = false;
-					$this->zero_to_blank = false;
 					$this->currency_char = '£';
+					$this->step_value = NULL;
 					$this->type = 'currency';
 					$this->input_type = 'text'; // Not type="number", from number field
 
@@ -43,13 +34,9 @@
 		//--------------------------------------------------
 		// Errors
 
-			public function min_value_set($error, $value) {
-				$this->min_value_set_html(html($error), $value);
-			}
-
 			public function min_value_set_html($error_html, $value) {
 
-				if ($this->form_submitted && floatval($this->value) < $value) {
+				if ($this->form_submitted && !$this->format_error_found && $this->value_clean !== NULL && $this->value_clean < $value) {
 
 					if ($value < 0) {
 						$value_text = '-' . $this->currency_char . number_format(floatval(0 - $value), 2);
@@ -65,13 +52,9 @@
 
 			}
 
-			public function max_value_set($error, $value) {
-				$this->max_value_set_html(html($error), $value);
-			}
-
 			public function max_value_set_html($error_html, $value) {
 
-				if ($this->form_submitted && floatval($this->value) > $value) {
+				if ($this->form_submitted && !$this->format_error_found && $this->value_clean !== NULL && $this->value_clean > $value) {
 
 					if ($value < 0) {
 						$value_text = '-' . $this->currency_char . number_format(floatval(0 - $value), 2);
@@ -98,19 +81,15 @@
 		//--------------------------------------------------
 		// Value
 
-			public function value_set($value) {
-				$this->value = $this->value_clean($value);
-			}
-
-			public function value_clean($value) {
-				return preg_replace('/[^0-9\-\.]+/', '', $value); // Deletes commas (thousand separators) and currency symbols
-			}
-
 			protected function _value_print_get($decimal_places = 2) {
 
-				$value = $this->value_clean(parent::_value_print_get());
+				$value = parent::_value_print_get();
 
-				return format_currency($value, $this->currency_char, $decimal_places, $this->zero_to_blank);
+				if (is_int($value) || is_float($value)) {
+					return format_currency($value, $this->currency_char, $decimal_places, $this->zero_to_blank);
+				} else {
+					return $value;
+				}
 
 			}
 

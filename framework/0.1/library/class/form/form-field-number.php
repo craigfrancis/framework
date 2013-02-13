@@ -5,6 +5,7 @@
 		//--------------------------------------------------
 		// Variables
 
+			protected $value_clean;
 			protected $format_error_set;
 			protected $format_error_found;
 			protected $zero_to_blank;
@@ -16,11 +17,22 @@
 		// Setup
 
 			public function __construct($form, $label, $name = NULL) {
+				$this->_setup_number($form, $label, $name);
+			}
+
+			protected function _setup_number($form, $label, $name = NULL) {
 
 				//--------------------------------------------------
 				// Perform the standard field setup
 
 					$this->_setup_text($form, $label, $name);
+
+				//--------------------------------------------------
+				// Clean input value
+
+					if ($this->form_submitted) {
+						$this->value_set($this->value);
+					}
 
 				//--------------------------------------------------
 				// Additional field configuration
@@ -49,7 +61,7 @@
 
 			public function format_error_set_html($error_html) {
 
-				if ($this->form_submitted && $this->value != '' && !is_numeric($this->value)) {
+				if ($this->form_submitted && $this->value != '' && $this->value_clean === NULL) {
 
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 
@@ -75,7 +87,7 @@
 
 			public function min_value_set_html($error_html, $value) {
 
-				if ($this->form_submitted && !$this->format_error_found && $this->value != '' && floatval($this->value) < $value) {
+				if ($this->form_submitted && !$this->format_error_found && $this->value_clean !== NULL && $this->value_clean < $value) {
 					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $value, $error_html));
 				}
 
@@ -89,7 +101,7 @@
 
 			public function max_value_set_html($error_html, $value) {
 
-				if ($this->form_submitted && !$this->format_error_found && $this->value != '' && floatval($this->value) > $value) {
+				if ($this->form_submitted && !$this->format_error_found && $this->value_clean !== NULL && $this->value_clean > $value) {
 					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $value, $error_html));
 				}
 
@@ -108,9 +120,9 @@
 
 			public function step_value_set_html($error_html, $step = 1) {
 
-				if ($this->form_submitted && $this->value != '') {
+				if ($this->form_submitted && !$this->format_error_found && $this->value_clean !== NULL) {
 
-					$value = ($this->value);
+					$value = $this->value_clean;
 
 					if ($this->min_value !== NULL) {
 						$value += $this->min_value; // HTML step starts at the min value
@@ -129,15 +141,29 @@
 		//--------------------------------------------------
 		// Value
 
+			public function value_set($value) {
+				$this->value_clean = parse_number($value);
+				$this->value = $value;
+			}
+
+			public function value_get() {
+				return $this->value_clean;
+			}
+
 			protected function _value_print_get($decimal_places = 2) {
 
-				$value = parent::_value_print_get();
+				$value = parent::_value_print_get(); // Value from $this->value, saved_value, or database
+				$value_clean = parse_number($value);
 
-				if ($value == 0 && $this->zero_to_blank && $this->type != 'currency') {
-					return '';
-				} else {
-					return $value;
+				if ($value_clean !== NULL) {
+					if ($value_clean == 0 && $this->zero_to_blank && $this->type != 'currency') {
+						return '';
+					} else {
+						return $value_clean;
+					}
 				}
+
+				return $value;
 
 			}
 
