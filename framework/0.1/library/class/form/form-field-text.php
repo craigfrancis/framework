@@ -130,7 +130,7 @@
 						return $this->form->db_select_value_get($this->db_field_name);
 					}
 				}
-				return $this->value;
+				return $this->value; // Don't use $this->value_get(), as fields such as currency/postcode use that function to return the clean version.
 			}
 
 			public function value_hidden_get() {

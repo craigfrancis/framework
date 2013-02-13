@@ -224,24 +224,24 @@ exit('Updated?');
 
 					$field_number = new form_field_number($form, 'Even number');
 					$field_number->db_field_set('number');
+					$field_number->format_error_set('Your number does not appear to be a number.');
 					$field_number->min_value_set('Your number must be more than or equal to XXX.', 0);
 					$field_number->max_value_set('Your number must be less than or equal to XXX.', 9999);
 					$field_number->step_value_set('Your number must be an even number.', 2);
-					$field_number->format_error_set('Your number does not appear to be a number.');
 					$field_number->required_error_set('Your number is required.');
 
 					$field_amount = new form_field_currency($form, 'Amount');
 					$field_amount->db_field_set('amount');
 					$field_amount->currency_char_set('£');
+					$field_amount->format_error_set('Your amount does not appear to be a number.');
 					$field_amount->min_value_set('Your amount must be more than or equal to XXX.', 0);
 					$field_amount->max_value_set('Your amount must be less than or equal to XXX.', 9999);
-					$field_amount->format_error_set('Your amount does not appear to be a number.');
 					$field_amount->required_error_set('Your amount is required.');
 
 					$field_postcode = new form_field_postcode($form, 'Postcode');
 					$field_postcode->db_field_set('postcode');
-					$field_postcode->required_error_set('Your postcode is required.');
 					$field_postcode->format_error_set('Your postcode does not appear to be correct.');
+					$field_postcode->required_error_set('Your postcode is required.');
 
 				//--------------------------------------------------
 				// Form processing
