@@ -6,6 +6,7 @@
 		// Variables
 
 			protected $format_error_set;
+			protected $format_error_found;
 			protected $zero_to_blank;
 			protected $min_value;
 			protected $max_value;
@@ -25,6 +26,7 @@
 				// Additional field configuration
 
 					$this->format_error_set = false;
+					$this->format_error_found = false;
 					$this->zero_to_blank = false;
 					$this->min_value = NULL;
 					$this->max_value = NULL;
@@ -48,7 +50,11 @@
 			public function format_error_set_html($error_html) {
 
 				if ($this->form_submitted && $this->value != '' && !is_numeric($this->value)) {
+
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+
+					$this->format_error_found = true;
+
 				}
 
 				$this->format_error_set = true;
@@ -69,7 +75,7 @@
 
 			public function min_value_set_html($error_html, $value) {
 
-				if ($this->form_submitted && $this->value != '' && floatval($this->value) < $value) {
+				if ($this->form_submitted && !$this->format_error_found && $this->value != '' && floatval($this->value) < $value) {
 					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $value, $error_html));
 				}
 
@@ -83,7 +89,7 @@
 
 			public function max_value_set_html($error_html, $value) {
 
-				if ($this->form_submitted && $this->value != '' && floatval($this->value) > $value) {
+				if ($this->form_submitted && !$this->format_error_found && $this->value != '' && floatval($this->value) > $value) {
 					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $value, $error_html));
 				}
 
