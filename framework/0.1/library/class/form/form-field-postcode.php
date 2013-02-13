@@ -6,6 +6,7 @@
 		// Variables
 
 			protected $format_error_set;
+			protected $format_error_found;
 
 		//--------------------------------------------------
 		// Setup
@@ -22,6 +23,7 @@
 
 					$this->max_length = 8; // Bypass required "max_length_set" call, and to set the <input maxlength="" />
 					$this->format_error_set = false;
+					$this->format_error_found = false;
 					$this->type = 'postcode';
 
 			}
@@ -38,7 +40,11 @@
 				if ($this->form_submitted && $this->value != '') {
 					$postcode_clean = format_british_postcode($this->value);
 					if ($postcode_clean === NULL) {
+
 						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+
+						$this->format_error_found = true;
+
 					}
 				}
 
