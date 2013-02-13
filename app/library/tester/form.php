@@ -19,6 +19,10 @@
 
 				$this->test_run('checkbox');
 
+				$this->test_run('number');
+
+				$this->test_run('currency');
+
 				$this->test_run('date');
 				$this->test_run('date-db');
 				$this->test_run('date-select');
