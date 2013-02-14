@@ -338,7 +338,21 @@
 
 						$db->query('SELECT 1 FROM ' . DB_PREFIX . 'nearest_outcode LIMIT 1');
 						if ($db->num_rows() == 0) {
-							// TODO: Load from sql file
+
+							$fields = array('outcode', 'x', 'y', 'latitude', 'longitude', 'district');
+							$field_count = count($fields);
+
+							if (($handle = fopen(FRAMEWORK_ROOT . '/library/class/nearest/outcode.csv', 'r')) !== false) {
+								while (($data = fgetcsv($handle, 1000, ',')) !== false) {
+									if (count($data) == $field_count) {
+										$db->insert(DB_PREFIX . 'nearest_outcode', array_combine($fields, $data));
+									} else {
+										exit_with_error('Invalid number of fields in "outcode.csv"', debug_dump($data));
+									}
+								}
+								fclose($handle);
+							}
+
 						}
 
 						$db->query('SELECT

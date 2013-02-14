@@ -126,25 +126,35 @@
 		//--------------------------------------------------
 		// Base folders
 
-			if (SERVER == 'stage') {
+			$create_folders = array(
+					'/app/controller/',
+					'/app/library/',
+					'/app/library/class/',
+					'/app/library/controller/',
+					'/app/library/setup/',
+					'/app/public/',
+					'/app/template/',
+					'/app/view/',
+				);
 
-				$base_folders = array(
-						'/app/controller/',
+			$create_folder_count = 0;
+			foreach ($create_folders as $folder) {
+				if (!is_dir(ROOT . $folder)) {
+					$create_folder_count++;
+				}
+			}
+
+			if ($create_folder_count == count($create_folders)) { // Needs to create all required folders, so blank directory?
+
+				$create_folders = array_merge($create_folders, array(
 						'/app/gateway/',
 						'/app/job/',
-						'/app/library/',
-						'/app/library/class/',
-						'/app/library/controller/',
-						'/app/library/setup/',
-						'/app/public/',
 						'/app/public/a/',
 						'/app/public/a/css/',
 						'/app/public/a/css/global/',
 						'/app/public/a/email/',
 						'/app/public/a/img/',
 						'/app/public/a/js/',
-						'/app/template/',
-						'/app/view/',
 						'/backup/',
 						'/files/',
 						'/framework/',
@@ -152,76 +162,72 @@
 						'/logs/',
 						'/private/',
 						'/resources/',
+					));
+
+			}
+
+			$created_folders = 0;
+			foreach ($create_folders as $folder) {
+				$path = ROOT . $folder;
+				if (!is_dir($path)) {
+					mkdir($path, 0755, true); // Writable for user only
+					$created_folders++;
+				}
+			}
+
+			if ($created_folders == count($create_folders)) {
+
+				$skeleton_files = array(
+						'/app/controller/home.php',
+						'/app/library/setup/config.php',
+						'/app/library/setup/install.php',
+						'/app/library/setup/setup.php',
+						'/app/public/.htaccess',
+						'/app/public/index.php',
+						'/app/public/a/css/global/core.css',
+						'/app/template/default.ctp',
+						'/app/view/home.ctp',
+						'/app/view/contact.ctp',
+						'/httpd/config.live',
 					);
 
-				$created_folders = 0;
+				foreach ($skeleton_files as $skeleton_file) {
 
-				foreach ($base_folders as $base_folder) {
-					$path = ROOT . $base_folder;
-					if (!is_dir($path)) {
-						mkdir($path, 0755, true); // Writable for user only
-						$created_folders++;
-					}
-				}
+					$src_path = FRAMEWORK_ROOT . '/skeleton' . $skeleton_file;
+					$dst_path = ROOT . $skeleton_file;
 
-				if ($created_folders > 0) {
+					if (is_dir(dirname($dst_path)) && !is_file($dst_path)) {
 
-					$skeleton_files = array(
-							'/app/library/setup/config.php',
-							'/app/library/setup/install.php',
-							'/app/library/setup/setup.php',
-							'/app/public/.htaccess',
-							'/app/public/index.php',
-							'/app/public/a/css/global/core.css',
-							'/app/template/default.ctp',
-							'/app/view/home.ctp',
-							'/app/view/contact.ctp',
-							'/httpd/config.live',
-						);
+						$content = file_get_contents($src_path);
 
-					foreach ($skeleton_files as $skeleton_file) {
+						if ($skeleton_file == '/app/library/setup/config.php') {
 
-						$src_path = FRAMEWORK_ROOT . '/skeleton' . $skeleton_file;
-						$dst_path = ROOT . $skeleton_file;
+							$content = str_replace('// define(\'ENCRYPTION_KEY\', \'\');', 'define(\'ENCRYPTION_KEY\', \'' . base64_encode(random_bytes(10)) . '\');', $content);
 
-						if (is_dir(dirname($dst_path)) && !is_file($dst_path)) {
+						} else if ($skeleton_file == '/app/public/index.php') {
 
-							$content = file_get_contents($src_path);
-
-							if ($skeleton_file == '/app/library/setup/config.php') {
-
-								$content = str_replace('// define(\'ENCRYPTION_KEY\', \'\');', 'define(\'ENCRYPTION_KEY\', \'' . base64_encode(random_bytes(10)) . '\');', $content);
-
-							} else if ($skeleton_file == '/app/public/index.php') {
-
-								$parent_dir = dirname(ROOT);
-								if (prefix_match($parent_dir, FRAMEWORK_ROOT)) {
-									$bootstrap_path = 'dirname(ROOT) . \'' . str_replace($parent_dir, '', FRAMEWORK_ROOT) . '/bootstrap.php\'';
-								} else {
-									$bootstrap_path = '\'' . FRAMEWORK_ROOT . '/bootstrap.php\'';
-								}
-
-								$content = str_replace('\'/path/to/bootstrap.php\'', $bootstrap_path, $content);
-
-							} else if ($skeleton_file == '/app/public/a/css/global/core.css') {
-
-								$content = file_get_contents(FRAMEWORK_ROOT . '/library/template/default.css');
-
+							$parent_dir = dirname(ROOT);
+							if (prefix_match($parent_dir, FRAMEWORK_ROOT)) {
+								$bootstrap_path = 'dirname(ROOT) . \'' . str_replace($parent_dir, '', FRAMEWORK_ROOT) . '/bootstrap.php\'';
+							} else {
+								$bootstrap_path = '\'' . FRAMEWORK_ROOT . '/bootstrap.php\'';
 							}
 
-							file_put_contents($dst_path, $content);
+							$content = str_replace('\'/path/to/bootstrap.php\'', $bootstrap_path, $content);
+
+						} else if ($skeleton_file == '/app/public/a/css/global/core.css') {
+
+							$content = file_get_contents(FRAMEWORK_ROOT . '/library/template/default.css');
 
 						}
 
-					}
+						file_put_contents($dst_path, $content);
 
-					if (count(glob(ROOT . '/app/controller/*')) == 0) {
-						copy(FRAMEWORK_ROOT . '/skeleton/app/controller/home.php', ROOT. '/app/controller/home.php');
 					}
-
-					permission_reset(false);
 
 				}
+
+				permission_reset(false);
 
 			}
 
