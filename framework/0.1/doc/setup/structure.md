@@ -9,8 +9,8 @@ For a quick overview, the folder structure is basically:
 		/library/
 			/class/
 			/controller/
+			/setup/
 		/public/
-		/setup/
 		/template/
 		/view/
 	/files/

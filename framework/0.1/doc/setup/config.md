@@ -3,7 +3,7 @@
 
 Your initial config values should be setup in:
 
-	/app/setup/config.php
+	/app/library/setup/config.php
 
 Which is done via the `$config` array, for example:
 

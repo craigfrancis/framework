@@ -102,7 +102,7 @@
 
 			config::set('output.mode', 'sitemap');
 
-			$sitemap_path = APP_ROOT . '/setup/sitemap.php';
+			$sitemap_path = APP_ROOT . '/library/setup/sitemap.php';
 
 			if (!is_file($sitemap_path)) {
 				$sitemap_path = FRAMEWORK_ROOT . '/library/view/sitemap.php';
@@ -323,7 +323,7 @@
 
 	$routes = array();
 
-	$include_path = APP_ROOT . '/setup/routes.php';
+	$include_path = APP_ROOT . '/library/setup/routes.php';
 	if (is_file($include_path)) {
 		require_once($include_path);
 	}

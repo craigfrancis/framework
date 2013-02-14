@@ -54,7 +54,7 @@
 	//--------------------------------------------------
 	// App config
 
-		$include_path = APP_ROOT . '/setup/config.php';
+		$include_path = APP_ROOT . '/library/setup/config.php';
 
 		if (is_file($include_path)) {
 			require_once($include_path);
@@ -184,7 +184,7 @@
 
 		if (!defined('ENCRYPTION_KEY')) {
 
-			if (defined('CLI_MODE') && !is_file(APP_ROOT . '/setup/config.php')) {
+			if (defined('CLI_MODE') && !is_file(APP_ROOT . '/library/setup/config.php')) {
 				define('ENCRYPTION_KEY', base64_encode(random_bytes(10))); // Temporary one off value (during install)
 			} else {
 				exit('Missing the ENCRYPTION_KEY constant in your config.' . "\n");

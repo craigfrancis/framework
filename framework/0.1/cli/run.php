@@ -135,6 +135,7 @@
 						'/app/library/',
 						'/app/library/class/',
 						'/app/library/controller/',
+						'/app/library/setup/',
 						'/app/public/',
 						'/app/public/a/',
 						'/app/public/a/css/',
@@ -142,7 +143,6 @@
 						'/app/public/a/email/',
 						'/app/public/a/img/',
 						'/app/public/a/js/',
-						'/app/setup/',
 						'/app/template/',
 						'/app/view/',
 						'/backup/',
@@ -167,12 +167,12 @@
 				if ($created_folders > 0) {
 
 					$skeleton_files = array(
+							'/app/library/setup/config.php',
+							'/app/library/setup/install.php',
+							'/app/library/setup/setup.php',
 							'/app/public/.htaccess',
 							'/app/public/index.php',
 							'/app/public/a/css/global/core.css',
-							'/app/setup/config.php',
-							'/app/setup/install.php',
-							'/app/setup/setup.php',
 							'/app/template/default.ctp',
 							'/app/view/home.ctp',
 							'/app/view/contact.ctp',
@@ -188,7 +188,7 @@
 
 							$content = file_get_contents($src_path);
 
-							if ($skeleton_file == '/app/setup/config.php') {
+							if ($skeleton_file == '/app/library/setup/config.php') {
 
 								$content = str_replace('// define(\'ENCRYPTION_KEY\', \'\');', 'define(\'ENCRYPTION_KEY\', \'' . base64_encode(random_bytes(10)) . '\');', $content);
 
@@ -228,7 +228,7 @@
 		//--------------------------------------------------
 		// File folders
 
-			$setup_folder = APP_ROOT . '/setup';
+			$setup_folder = APP_ROOT . '/library/setup';
 
 			$folders = array(
 				'files' => FILE_ROOT,
@@ -293,7 +293,7 @@
 		//--------------------------------------------------
 		// Run install script
 
-			$install_root = APP_ROOT . '/setup/install.php';
+			$install_root = APP_ROOT . '/library/setup/install.php';
 			if (is_file($install_root)) {
 				script_run($install_root);
 			}
@@ -335,7 +335,7 @@
 						}
 					}
 
-					$setup_file = APP_ROOT . '/setup/dir.' . safe_file_name($folder_name) . '.txt';
+					$setup_file = APP_ROOT . '/library/setup/dir.' . safe_file_name($folder_name) . '.txt';
 
 					file_put_contents($setup_file, implode("\n", $folder_children));
 
@@ -348,7 +348,7 @@
 
 		function dump_db() {
 
-			file_put_contents(APP_ROOT . '/setup/database.txt', '');
+			file_put_contents(APP_ROOT . '/library/setup/database.txt', '');
 
 			// TODO
 			// see http://davidwalsh.name/backup-database-xml-php
@@ -453,7 +453,7 @@
 
 				case 'dump':
 
-					$setup_folder = APP_ROOT . '/setup';
+					$setup_folder = APP_ROOT . '/library/setup';
 					if (!is_dir($setup_folder)) {
 						mkdir($setup_folder);
 					}

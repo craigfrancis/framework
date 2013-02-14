@@ -94,7 +94,7 @@
 					debug_progress('Before setup');
 				}
 
-				$include_path = APP_ROOT . '/setup/setup.php';
+				$include_path = APP_ROOT . '/library/setup/setup.php';
 				if (is_file($include_path)) {
 					script_run_once($include_path);
 				}

@@ -11,7 +11,7 @@ The reason this is usually an issue is because most website owners forget to kee
 
 But if you really need it, create the file:
 
-	/app/setup/sitemap.php
+	/app/library/setup/sitemap.php
 
 And just echo the XML in whatever way you like. For example:
 
