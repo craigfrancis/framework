@@ -215,7 +215,7 @@
 					$input_value = $this->_value_print_get();
 
 					$attributes = array(
-							'name' => $this->name . '_' . $field,
+							'name' => $this->name . '[' . $field . ']',
 							'id' => $this->id . '_' . $field,
 						);
 

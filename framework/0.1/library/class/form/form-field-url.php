@@ -6,6 +6,7 @@
 		// Variables
 
 			protected $format_error_set;
+			protected $format_error_found;
 
 		//--------------------------------------------------
 		// Setup
@@ -21,6 +22,7 @@
 				// Additional field configuration
 
 					$this->format_error_set = false;
+					$this->format_error_found = false;
 					$this->type = 'url';
 					$this->input_type = 'url';
 
@@ -38,7 +40,11 @@
 				if ($this->form_submitted && $this->value != '') {
 					$url_parts = @parse_url($this->value);
 					if ($url_parts === false || !isset($url_parts['scheme']) || !isset($url_parts['host'])) {
+
 						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+
+						$this->format_error_found = true;
+
 					}
 				}
 

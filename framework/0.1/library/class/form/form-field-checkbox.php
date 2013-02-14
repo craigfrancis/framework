@@ -44,7 +44,7 @@
 					$this->label_suffix_html = '';
 				} else {
 					$this->required_mark_position_set('left');
-					$this->label_suffix_html = $form->label_suffix_get_html();
+					$this->label_suffix_html = $this->form->label_suffix_get_html();
 				}
 			}
 
@@ -116,7 +116,11 @@
 			}
 
 			public function value_hidden_get() {
-				return ($this->value ? 'true' : 'false');
+				if ($this->print_hidden) {
+					return ($this->value ? 'true' : 'false');
+				} else {
+					return NULL;
+				}
 			}
 
 		//--------------------------------------------------

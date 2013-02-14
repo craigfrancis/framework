@@ -30,7 +30,7 @@
 //--------------------------------------------------
 // Half specified
 
-	$this->element_send_keys('id', 'fld_time_H', '03');
+	$this->select_value_set('id', 'fld_time_H', '3');
 
 	$this->element_get('css', 'form')->submit();
 
@@ -41,21 +41,25 @@
 //--------------------------------------------------
 // Invalid option
 
-	$this->session->execute(array('script' => 'document.getElementById("fld_time_I").outerHTML = "<input type=\"text\" id=\"fld_time_I\" name=\"time_I\" />";', 'args' => array()));
+	$this->session->execute(array('script' => 'document.getElementById("fld_time_I").outerHTML = "<input type=\"text\" id=\"fld_time_I\" name=\"time[I]\" />";', 'args' => array()));
 
-	$this->element_send_keys('id', 'fld_time_H', '22');
+	$this->select_value_set('id', 'fld_time_H', '22');
 	$this->element_send_keys('id', 'fld_time_I', '5'); // Not 0, 15, 30, or 45
 	$this->element_send_keys('id', 'fld_time_S', '59', array('clear' => true));
 
 	$this->element_get('css', 'form')->submit();
+
+	$this->element_value_check('id', 'fld_time_H', '22');
+	$this->element_value_check('id', 'fld_time_I', ''); // Was an invalid selection
+	$this->element_value_check('id', 'fld_time_S', '59');
 
 	$this->element_text_check('css', 'ul.error_list li', 'Your time does not appear to be correct.');
 
 //--------------------------------------------------
 // Simple value, with hide/preserve tests
 
-	$this->element_send_keys('id', 'fld_time_H', '06');
-	$this->element_send_keys('id', 'fld_time_I', '15');
+	$this->select_value_set('id', 'fld_time_H', '6');
+	$this->select_value_set('id', 'fld_time_I', '15');
 	$this->element_send_keys('id', 'fld_time_S', '23', array('clear' => true));
 
 	$this->run_hide_preserve_tests();

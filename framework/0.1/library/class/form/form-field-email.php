@@ -6,6 +6,7 @@
 		// Variables
 
 			protected $format_error_set;
+			protected $format_error_found;
 
 		//--------------------------------------------------
 		// Setup
@@ -21,6 +22,7 @@
 				// Additional field configuration
 
 					$this->format_error_set = false;
+					$this->format_error_found = false;
 					$this->type = 'email';
 					$this->input_type = 'email';
 
@@ -36,7 +38,11 @@
 			public function format_error_set_html($error_html) {
 
 				if ($this->form_submitted && $this->value != '' && !is_email($this->value)) {
+
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+
+					$this->format_error_found = true;
+
 				}
 
 				$this->format_error_set = true;

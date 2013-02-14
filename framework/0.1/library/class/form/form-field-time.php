@@ -13,43 +13,6 @@
 					$this->_setup_fields($form, $label, $name);
 
 				//--------------------------------------------------
-				// Value
-
-					$this->value = NULL;
-
-					if ($this->form_submitted) {
-
-						$hidden_value = $this->form->hidden_value_get($this->name);
-
-						if ($hidden_value !== NULL) {
-
-							$this->value_set($hidden_value);
-
-						} else {
-
-							$form_method = $form->form_method_get();
-
-							$this->value = array(
-									'H' => request($this->name . '_H', $form_method),
-									'I' => request($this->name . '_I', $form_method),
-									'S' => request($this->name . '_S', $form_method),
-								);
-
-						}
-
-					}
-
-					$this->value_provided = false;
-					if (is_array($this->value)) {
-						foreach ($this->value as $value) {
-							if ($value !== NULL && $value !== '') {
-								$this->value_provided = true; // Only look for one non-blank value (allowing '0'), as the 'seconds' field probably does not exist.
-								break;
-							}
-						}
-					}
-
-				//--------------------------------------------------
 				// Default configuration
 
 					$this->type = 'time';
@@ -79,6 +42,40 @@
 									'label' => '',
 									'options' => NULL,
 								));
+
+				//--------------------------------------------------
+				// Value
+
+					$this->value = NULL;
+
+					if ($this->form_submitted) {
+
+						$hidden_value = $this->form->hidden_value_get($this->name);
+
+						if ($hidden_value !== NULL) {
+
+							$this->value_set($hidden_value);
+
+						} else {
+
+							$request_value = request($this->name, $this->form->form_method_get());
+							if ($request_value !== NULL) {
+								$this->value_set($request_value);
+							}
+
+						}
+
+					}
+
+					$this->value_provided = false;
+					if (is_array($this->value)) {
+						foreach ($this->value as $value) {
+							if ($value !== NULL && $value !== '') {
+								$this->value_provided = true; // Only look for one non-blank value (allowing '0'), as the 'seconds' field probably does not exist.
+								break;
+							}
+						}
+					}
 
 			}
 
@@ -180,7 +177,11 @@
 
 			public function value_get($field = NULL) {
 				if (in_array($field, $this->fields)) {
-					return $this->value[$field];
+					if ($this->value_provided) {
+						return intval($this->value[$field]); // Time field (unlike date) does not intval() submitted data, so empty value can be different to 0.
+					} else {
+						return NULL;
+					}
 				} else {
 					return $this->_value_time_format($this->value); // Still return 00:00:00 when !$this->value_provided to match date 0000-00-00
 				}
@@ -189,11 +190,7 @@
 			protected function _value_print_get() {
 				if ($this->value === NULL) {
 					if ($this->form->saved_values_available()) {
-						return array(
-								'H' => $this->form->saved_value_get($this->name . '_H'),
-								'I' => $this->form->saved_value_get($this->name . '_I'),
-								'S' => $this->form->saved_value_get($this->name . '_S'),
-							);
+						return $this->_value_parse($this->form->saved_value_get($this->name));
 					} else {
 						return $this->_value_parse($this->form->db_select_value_get($this->db_field_name));
 					}
@@ -202,7 +199,11 @@
 			}
 
 			public function value_hidden_get() {
-				return $this->_value_time_format($this->_value_print_get());
+				if ($this->print_hidden) {
+					return $this->_value_time_format($this->_value_print_get());
+				} else {
+					return NULL;
+				}
 			}
 
 			private function _value_time_format($value) {
@@ -212,6 +213,14 @@
 			private function _value_parse($value, $minute = NULL, $second = NULL) {
 
 				if ($minute === NULL && $second === NULL) {
+
+					if (is_array($value)) {
+						$return = array();
+						foreach ($this->fields as $field) {
+							$return[$field] = (isset($value[$field]) ? $value[$field] : '');
+						}
+						return $return;
+					}
 
 					if (preg_match('/^([0-9]{1,2}):([0-9]{1,2})(:([0-9]{1,2}))?$/', $value, $matches)) {
 						return array(

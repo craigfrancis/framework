@@ -36,7 +36,7 @@
 				//--------------------------------------------------
 				// Lock path
 
-					$this->lock_path = tmp_folder('lock') . safe_file_name($this->lock_type);
+					$this->lock_path = tmp_folder('lock') . '/' . safe_file_name($this->lock_type);
 
 					if ($this->lock_ref) {
 						$this->lock_path .= '.' . safe_file_name($this->lock_ref);

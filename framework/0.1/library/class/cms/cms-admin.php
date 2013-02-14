@@ -119,7 +119,7 @@
 					//--------------------------------------------------
 					// Cache exists and up to date
 
-						$cache_path = tmp_folder('cms-admin') . intval($this->config['revision']) . '-' . base64_encode($this->config['path']);
+						$cache_path = tmp_folder('cms-admin') . '/' . intval($this->config['revision']) . '-' . base64_encode($this->config['path']);
 
 						if (is_file($cache_path)) {
 
