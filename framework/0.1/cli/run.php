@@ -329,7 +329,7 @@
 					foreach (explode("\n", $folder_listing) as $path) {
 						if (substr($path, 0, $folder_path_length) == $folder_path) {
 							$path = substr($path, ($folder_path_length + 1));
-							if (substr($path, 0, 4) != 'tmp') { // Will be created anyway
+							if ($path != 'tmp' && substr($path, 0, 4) != 'tmp/') { // Will be created anyway
 								$folder_children[] = $path;
 							}
 						}
