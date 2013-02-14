@@ -258,7 +258,7 @@
 				}
 				$this->element_get($using, $selector)->value(split_keys($keys));
 
-				if ($this->element_name_get($using, $selector) == 'select') { // TODO: Remove
+				if ($this->element_name_get($using, $selector) == 'select') {
 
 					$value = $this->element_attribute_get($using, $selector, 'value');
 
