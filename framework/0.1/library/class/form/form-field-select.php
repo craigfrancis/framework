@@ -379,25 +379,40 @@
 				} else {
 
 					foreach (array_unique($this->option_groups) as $opt_group) {
+						if ($opt_group !== NULL) {
 
-						$html .= '
+							$html .= '
 										<optgroup label="' . html($opt_group) . '">';
 
-						foreach (array_keys($this->option_groups, $opt_group) as $key) {
+							foreach (array_keys($this->option_groups, $opt_group) as $key) {
 
-							if (isset($this->option_values[$key])) {
-								$value = $this->option_values[$key];
-							} else {
-								$value = '?';
+								if (isset($this->option_values[$key])) {
+									$value = $this->option_values[$key];
+								} else {
+									$value = '?';
+								}
+
+								$html .= '
+											<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
+
 							}
 
 							$html .= '
-											<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
+										</optgroup>';
 
+						}
+					}
+
+					foreach (array_keys($this->option_groups, NULL) as $key) {
+
+						if (isset($this->option_values[$key])) {
+							$value = $this->option_values[$key];
+						} else {
+							$value = '?';
 						}
 
 						$html .= '
-										</optgroup>';
+										<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 					}
 
