@@ -488,7 +488,19 @@
 			}
 
 			public function files_get() {
-				return $this->files;
+				$return = array();
+				foreach ($this->files as $file) {
+					if ($file['error'] == 0) {
+						$return[] = array(
+								'path' => $file['path'],
+								'ext' => $file['ext'],
+								'name' => $file['name'],
+								'size' => $file['size'],
+								'mime' => $file['mime'],
+							); // Don't expose preserve/error/hash keys
+					}
+				}
+				return $return;
 			}
 
 			public function file_path_get() {

@@ -148,8 +148,19 @@
 				return file_exists($this->file_path_get($id, $ext));
 			}
 
-			public function file_save($id, $file, $ext = NULL) {
-				file_put_contents($this->file_path_get($id, $ext), $file);
+			public function file_save_from($path, $id, $ext = NULL) {
+				copy($path, $this->file_path_get($id, $ext));
+			}
+
+			public function file_save_upload($field_file, $id, $ext = NULL) {
+				$path = $field_file->file_path_get();
+				if ($path) {
+					copy($path, $this->file_path_get($id, $ext));
+				}
+			}
+
+			public function file_save_contents($contents, $id, $ext = NULL) {
+				file_put_contents($this->file_path_get($id, $ext), $contents);
 			}
 
 			public function file_image_save($id, $path, $ext = NULL) { // Use image_save() to have different image versions.
