@@ -214,6 +214,12 @@
 						<h2>State</h2>
 						<p>TODO: State of maintenance script</p>';
 
+					if (SERVER == 'stage') {
+						$html .= '
+							<p><a href="' . html(gateway_url('maintenance', 'run')) . '">Run</a></p>
+							<p><a href="' . html(gateway_url('maintenance', 'test')) . '">Test</a></p>';
+					}
+
 					$response = response_get('html');
 					$response->title_set('Maintenance State');
 					$response->view_add_html($html);
