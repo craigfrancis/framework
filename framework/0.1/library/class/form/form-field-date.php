@@ -10,11 +10,6 @@
 				//--------------------------------------------------
 				// Fields setup
 
-					$this->_setup_fields($form, $label, $name);
-
-				//--------------------------------------------------
-				// Default configuration
-
 					$this->type = 'date';
 					$this->fields = array('D', 'M', 'Y');
 					$this->format_html = array_merge(array('separator' => '/', 'D' => 'DD', 'M' => 'MM', 'Y' => 'YYYY'), config::get('form.date_format_html', array()));
@@ -43,31 +38,17 @@
 									'options' => NULL,
 								));
 
+					$this->_setup_fields($form, $label, $name);
+
 				//--------------------------------------------------
-				// Value
-
-					$this->value = NULL;
-
-					if ($this->form_submitted) {
-
-						$hidden_value = $this->form->hidden_value_get($this->name);
-
-						if ($hidden_value !== NULL) {
-
-							$this->value_set($hidden_value);
-
-						} else {
-
-							$request_value = request($this->name, $this->form->form_method_get());
-							if ($request_value !== NULL) {
-								$this->value_set($request_value);
-							}
-
-						}
-
-					}
+				// Value provided
 
 					$this->value_provided = (is_array($this->value) && ($this->value['D'] != 0 || $this->value['M'] != 0 || $this->value['Y'] != 0));
+
+				//--------------------------------------------------
+				// Default configuration
+
+					$this->type = 'date';
 
 			}
 
@@ -178,7 +159,7 @@
 			}
 
 			public function value_date_get() {
-				return $this->_value_date_format($this->value);
+				return $this->_value_string($this->value);
 			}
 
 			public function value_time_stamp_get() {
@@ -193,30 +174,11 @@
 				return $timestamp;
 			}
 
-			protected function _value_print_get() {
-				if ($this->value === NULL) {
-					if ($this->form->saved_values_available()) {
-						return $this->_value_parse($this->form->saved_value_get($this->name));
-					} else {
-						return $this->_value_parse($this->form->db_select_value_get($this->db_field_name));
-					}
-				}
-				return $this->value;
-			}
-
-			public function value_hidden_get() {
-				if ($this->print_hidden) {
-					return $this->_value_date_format($this->_value_print_get());
-				} else {
-					return NULL;
-				}
-			}
-
-			private function _value_date_format($value) {
+			protected function _value_string($value) {
 				return str_pad(intval($value['Y']), 4, '0', STR_PAD_LEFT) . '-' . str_pad(intval($value['M']), 2, '0', STR_PAD_LEFT) . '-' . str_pad(intval($value['D']), 2, '0', STR_PAD_LEFT);
 			}
 
-			private function _value_parse($value, $month = NULL, $year = NULL) {
+			protected function _value_parse($value, $month = NULL, $year = NULL) {
 
 				if ($month === NULL && $year === NULL) {
 

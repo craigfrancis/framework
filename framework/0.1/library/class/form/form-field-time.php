@@ -10,12 +10,6 @@
 				//--------------------------------------------------
 				// Fields setup
 
-					$this->_setup_fields($form, $label, $name);
-
-				//--------------------------------------------------
-				// Default configuration
-
-					$this->type = 'time';
 					$this->fields = array('H', 'I', 'S');
 					$this->format_html = array_merge(array('separator' => ':', 'H' => 'HH', 'I' => 'MM', 'S' => 'SS'), config::get('form.time_format_html', array()));
 					$this->input_order = config::get('form.time_input_order', array('H', 'I')); // Could also be array('H', 'I', 'S')
@@ -43,31 +37,13 @@
 									'options' => NULL,
 								));
 
+					$this->_setup_fields($form, $label, $name);
+
 				//--------------------------------------------------
-				// Value
-
-					$this->value = NULL;
-
-					if ($this->form_submitted) {
-
-						$hidden_value = $this->form->hidden_value_get($this->name);
-
-						if ($hidden_value !== NULL) {
-
-							$this->value_set($hidden_value);
-
-						} else {
-
-							$request_value = request($this->name, $this->form->form_method_get());
-							if ($request_value !== NULL) {
-								$this->value_set($request_value);
-							}
-
-						}
-
-					}
+				// Value provided
 
 					$this->value_provided = false;
+
 					if (is_array($this->value)) {
 						foreach ($this->value as $value) {
 							if ($value !== NULL && $value !== '') {
@@ -76,6 +52,11 @@
 							}
 						}
 					}
+
+				//--------------------------------------------------
+				// Default configuration
+
+					$this->type = 'time';
 
 			}
 
@@ -183,34 +164,15 @@
 						return NULL;
 					}
 				} else {
-					return $this->_value_time_format($this->value); // Still return 00:00:00 when !$this->value_provided to match date 0000-00-00
+					return $this->_value_string($this->value); // Still return 00:00:00 when !$this->value_provided to match date 0000-00-00
 				}
 			}
 
-			protected function _value_print_get() {
-				if ($this->value === NULL) {
-					if ($this->form->saved_values_available()) {
-						return $this->_value_parse($this->form->saved_value_get($this->name));
-					} else {
-						return $this->_value_parse($this->form->db_select_value_get($this->db_field_name));
-					}
-				}
-				return $this->value;
-			}
-
-			public function value_hidden_get() {
-				if ($this->print_hidden) {
-					return $this->_value_time_format($this->_value_print_get());
-				} else {
-					return NULL;
-				}
-			}
-
-			private function _value_time_format($value) {
+			protected function _value_string($value) {
 				return str_pad(intval($value['H']), 2, '0', STR_PAD_LEFT) . ':' . str_pad(intval($value['I']), 2, '0', STR_PAD_LEFT) . ':' . str_pad(intval($value['S']), 2, '0', STR_PAD_LEFT);
 			}
 
-			private function _value_parse($value, $minute = NULL, $second = NULL) {
+			protected function _value_parse($value, $minute = NULL, $second = NULL) {
 
 				if ($minute === NULL && $second === NULL) {
 

@@ -8,16 +8,20 @@
 			protected $value;
 			protected $value_provided;
 
-			protected $fields;
-			protected $format_html;
-			protected $invalid_error_set;
-			protected $invalid_error_found;
-			protected $input_order;
-			protected $input_separator;
-			protected $input_config;
+			protected $fields = array();
+			protected $format_html = array('separator' => ' ');
+			protected $invalid_error_set = false;
+			protected $invalid_error_found = false;
+			protected $input_order = array();
+			protected $input_separator = ' ';
+			protected $input_config = array();
 
 		//--------------------------------------------------
 		// Setup
+
+			public function __construct($form, $label, $name = NULL) {
+				$this->_setup_fields($form, $label, $name);
+			}
 
 			protected function _setup_fields($form, $label, $name) {
 
@@ -30,21 +34,37 @@
 				// Value
 
 					$this->value = NULL;
-					$this->value_provided = false;
+
+					if ($this->form_submitted) {
+
+						$hidden_value = $this->form->hidden_value_get($this->name);
+
+						if ($hidden_value !== NULL) {
+
+							$this->value_set($hidden_value);
+
+						} else {
+
+							$request_value = request($this->name, $this->form->form_method_get());
+							if ($request_value !== NULL) {
+								$this->value_set($request_value);
+							}
+
+						}
+
+					}
+
+					$this->value_provided = NULL; // Either known for date/time fields, or after input_add.
 
 				//--------------------------------------------------
 				// Default configuration
 
 					$this->type = 'fields';
-					$this->fields = array();
-					$this->format_html = array();
-					$this->invalid_error_set = false;
-					$this->invalid_error_found = false;
-					$this->input_order = array();
-					$this->input_separator = ' ';
-					$this->input_config = array();
 
 			}
+
+		//--------------------------------------------------
+		// Format
 
 			public function format_set($format) {
 				$this->format_set_html(is_array($format) ? array_map('html', $format) : html($format));
@@ -56,6 +76,72 @@
 				} else {
 					$this->format_html = $format_html;
 				}
+			}
+
+			public function format_default_get_html() {
+
+				if (!is_array($this->format_html)) {
+
+					return $this->format_html;
+
+				} else {
+
+					$format_html = array();
+
+					foreach ($this->input_order as $field) {
+						if (isset($this->format_html[$field])) {
+							$format_html[] = '<label for="' . html($this->id) . '_' . html($field) . '">' . $this->format_html[$field] . '</label>';
+						}
+					}
+
+					return implode($this->format_html['separator'], $format_html);
+
+				}
+
+			}
+
+		//--------------------------------------------------
+		// Inputs
+
+			public function input_add($field, $config) {
+
+				//--------------------------------------------------
+				// Base array of fields
+
+					if (in_array($field, $this->fields)) {
+						exit_with_error('There is already a field "' . $field . '"');
+					}
+
+					$this->fields[] = $field;
+
+				//--------------------------------------------------
+				// Add format
+
+					if (isset($config['format'])) {
+						$config['format_html'] = html($config['format']);
+					}
+					if (isset($config['format_html'])) {
+						$this->format_html[$field] = $config['format_html'];
+					}
+
+				//--------------------------------------------------
+				// Add to order
+
+					if (!in_array($field, $this->input_order)) {
+						$this->input_order[] = $field;
+					}
+
+				//--------------------------------------------------
+				// Add config
+
+					$this->input_config[$field] = array_merge(array(
+							'size' => NULL,
+							'pad_length' => 0,
+							'pad_char' => '0',
+							'label' => '',
+							'options' => NULL,
+						), $config);
+
 			}
 
 			public function input_order_set($order) {
@@ -101,24 +187,58 @@
 				$this->input_config_set($field, array('options' => $options, 'label' => $label, 'pad_length' => 0));
 			}
 
-			public function format_default_get_html() {
+		//--------------------------------------------------
+		// Value
 
-				if (!is_array($this->format_html)) {
+			public function value_set($value) {
+				$this->value = $this->_value_parse($value);
+			}
 
-					return $this->format_html;
-
-				} else {
-
-					$format_html = array();
-
-					foreach ($this->input_order as $field) {
-						$format_html[] = '<label for="' . html($this->id) . '_' . html($field) . '">' . $this->format_html[$field] . '</label>';
+			public function value_get($field = NULL) {
+				if (in_array($field, $this->fields)) {
+					if (isset($this->value[$field])) {
+						return $this->value[$field];
+					} else {
+						return NULL;
 					}
-
-					return implode($this->format_html['separator'], $format_html);
-
+				} else {
+					$return = array();
+					foreach ($this->fields as $field) {
+						$return[$field] = (isset($this->value[$field]) ? $this->value[$field] : NULL);
+					}
+					return $return;
 				}
+			}
 
+			protected function _value_print_get() {
+				if ($this->value === NULL) {
+					if ($this->form->saved_values_available()) {
+						return $this->_value_parse($this->form->saved_value_get($this->name));
+					} else {
+						return $this->_value_parse($this->form->db_select_value_get($this->db_field_name));
+					}
+				}
+				return $this->value;
+			}
+
+			public function value_hidden_get() {
+				if ($this->print_hidden) {
+					return $this->_value_string($this->_value_print_get());
+				} else {
+					return NULL;
+				}
+			}
+
+			protected function _value_string($value) {
+				return json_encode($value);
+			}
+
+			protected function _value_parse($value) {
+				if (is_array($value)) {
+					return $value;
+				} else {
+					return json_decode($value, true);
+				}
 			}
 
 		//--------------------------------------------------
@@ -130,8 +250,22 @@
 
 			public function required_error_set_html($error_html) {
 
-				if ($this->form_submitted && !$this->value_provided) {
-					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+				if ($this->form_submitted) {
+
+					if ($this->value_provided === NULL) {
+						$this->value_provided = true;
+						foreach ($this->fields as $field) {
+							$value = (isset($this->value[$field]) ? $this->value[$field] : NULL);
+							if ($value === NULL || (is_array($this->input_config[$field]['options']) && $value == '')) {
+								$this->value_provided = false;
+							}
+						}
+					}
+
+					if (!$this->value_provided) {
+						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+					}
+
 				}
 
 				$this->required = ($error_html !== NULL);
@@ -143,6 +277,30 @@
 			}
 
 			public function invalid_error_set_html($error_html) {
+
+				if ($this->form_submitted && $this->value_provided) {
+
+					$valid = true;
+
+					foreach ($this->fields as $field) {
+						$value = (isset($this->value[$field]) ? $this->value[$field] : NULL);
+						if (is_array($this->input_config[$field]['options']) && $value != '' && !isset($this->input_config[$field]['options'][$value])) {
+							$valid = false;
+						}
+					}
+
+					if (!$valid) {
+
+						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+
+						$this->invalid_error_found = true;
+
+					}
+
+				}
+
+				$this->invalid_error_set = true;
+
 			}
 
 		//--------------------------------------------------
@@ -236,11 +394,16 @@
 										<option value="">' . html($input_config['label']) . '</option>';
 
 						foreach ($input_config['options'] as $option_value => $option_text) {
+
+							$selected = ($input_value[$field] !== NULL && strval($input_value[$field]) === strval($option_value)); // Can't use intval as some fields use text keys, also difference between '' and '0'.
+
 							if ($input_config['pad_length'] > 0) {
 								$option_text = str_pad($option_text, $input_config['pad_length'], $input_config['pad_char'], STR_PAD_LEFT);
 							}
+
 							$html .= '
-										<option value="' . html($option_value) . '"' . ($input_value[$field] !== NULL && intval($input_value[$field]) == intval($option_value) ? ' selected="selected"' : '') . '>' . html($option_text) . '</option>';
+										<option value="' . html($option_value) . '"' . ($selected ? ' selected="selected"' : '') . '>' . html($option_text) . '</option>';
+
 						}
 
 						return $html . '
@@ -259,8 +422,11 @@
 						}
 
 						$attributes['value'] = $value;
-						$attributes['maxlength'] = $input_config['size'];
-						$attributes['size'] = $input_config['size'];
+
+						if ($input_config['size']) {
+							$attributes['maxlength'] = $input_config['size'];
+							$attributes['size'] = $input_config['size'];
+						}
 
 						return $this->_html_input($attributes);
 
