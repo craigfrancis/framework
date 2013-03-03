@@ -30,6 +30,7 @@
 						'date-order',
 						'time',
 						'time-select',
+						'fields',
 						'select',
 						'select-multiple',
 						'radios',
