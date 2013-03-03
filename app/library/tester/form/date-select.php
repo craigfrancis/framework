@@ -37,7 +37,7 @@
 //--------------------------------------------------
 // Invalid option
 
-	$this->session->execute(array('script' => 'document.getElementById("fld_date_M").outerHTML = "<input type=\"text\" id=\"fld_date_M\" name=\"date_I\" />";', 'args' => array()));
+	$this->session->execute(array('script' => 'document.getElementById("fld_date_M").outerHTML = "<input type=\"text\" id=\"fld_date_M\" name=\"date[M]\" />";', 'args' => array()));
 
 	$this->element_send_keys('id', 'fld_date_M', '13');
 	$this->element_send_keys('id', 'fld_date_Y', '2002', array('clear' => true));
