@@ -249,7 +249,7 @@
 		config::set_default('output.favicon_path', ASSET_ROOT . '/img/global/favicon.ico');
 		config::set_default('output.js_combine', true);
 		config::set_default('output.js_min', false);
-		config::set_default('output.css_tidy', false);
+		config::set_default('output.css_min', false);
 		config::set_default('output.css_name', '');
 		config::set_default('output.css_types', array(
 				'core' => array(

@@ -73,13 +73,13 @@ The result of this is cached, so shouldn't cause any performance issues (but may
 
 ---
 
-## CSS tidy
+## CSS minified
 
-To "tidy" your CSS before being sent to the browser with [csstidy](http://csstidy.sourceforge.net/), set:
+To minify the CSS by simply removing comments and most whitespace (keeping line numbers), set:
 
-	$config['output.css_tidy'] = true;
+	$config['output.css_min'] = true;
 
-The result is cached, and shouldn't make many changes to your CSS, its more to remove the whitespace, which reduces the file size a bit further.
+The result is cached, and shouldn't really make many changes to your CSS, but should reduce the file size a bit further.
 
 ---
 

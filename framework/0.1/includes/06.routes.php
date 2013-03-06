@@ -244,9 +244,9 @@
 
 						$cache_folder = tmp_folder('js-min');
 
-					} else if ($route_ext == 'css' && config::get('output.css_tidy')) {
+					} else if ($route_ext == 'css' && config::get('output.css_min')) {
 
-						$cache_folder = tmp_folder('css-tidy');
+						$cache_folder = tmp_folder('css-min');
 
 					} else {
 
@@ -272,15 +272,20 @@
 
 							if ($route_ext == 'js') {
 
-								file_put_contents($cache_file_time, jsmin::minify($files_contents));
+								$files_contents = jsmin::minify($files_contents);
 
 							} else {
 
-								$css = new csstidy();
-								$css->parse($files_contents);
-								file_put_contents($cache_file_time, $css->print->plain());
+								// http://stackoverflow.com/a/1379487/6632
+
+								$files_contents = preg_replace('#/\*.*?\*/#s', '', $files_contents); // Remove comments
+								$files_contents = preg_replace('/[ \t]*([{}|:;,])[ \t]+/', '$1', $files_contents); // Remove whitespace (keeping newlines)
+								$files_contents = preg_replace('/[ \t]+(.*)/', '$1', $files_contents); // Remove whitespace at the start
+								$files_contents = str_replace(';}', '}', $files_contents); // Remove unnecesairy ;'s
 
 							}
+
+							file_put_contents($cache_file_time, $files_contents);
 
 						}
 
