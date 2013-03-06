@@ -280,7 +280,7 @@
 
 								$files_contents = preg_replace('#/\*.*?\*/#s', '', $files_contents); // Remove comments
 								$files_contents = preg_replace('/[ \t]*([{}|:;,])[ \t]+/', '$1', $files_contents); // Remove whitespace (keeping newlines)
-								$files_contents = preg_replace('/[ \t]+(.*)/', '$1', $files_contents); // Remove whitespace at the start
+								$files_contents = preg_replace('/^[ \t]+(.*)/m', '$1', $files_contents); // Remove whitespace at the start
 								$files_contents = str_replace(';}', '}', $files_contents); // Remove unnecesairy ;'s
 
 							}
