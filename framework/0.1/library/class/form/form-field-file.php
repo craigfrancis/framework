@@ -84,7 +84,7 @@
 							$file_info = $this->file_store($this->name, $key);
 							if ($file_info) {
 
-								$file_info['preserve'] = true;
+								$file_info['preserve'] = ($file_info['hash'] !== NULL);
 
 								$this->files[] = $file_info;
 
@@ -184,24 +184,30 @@
 				//--------------------------------------------------
 				// Store
 
-					if (!is_uploaded_file($file_info['tmp_name'])) {
-						exit_with_error('Only "uploaded" files can be processed with form_field_file', 'Path: ' . $file_info['tmp_name']);
+					if ($file_info['error'] == 0) {
+
+						if (!is_uploaded_file($file_info['tmp_name'])) {
+							exit_with_error('Only "uploaded" files can be processed with form_field_file', 'Path: ' . $file_info['tmp_name']);
+						}
+
+						$file_hash = sha1_file($file_info['tmp_name']);
+						$file_path = form_field_file::_file_tmp_folder() . '/' . $file_hash;
+
+						move_uploaded_file($file_info['tmp_name'], $file_path);
+
+						unset($file_info['tmp_name']);
+
+						$file_info['hash'] = $file_hash;
+						$file_info['path'] = $file_path;
+
+						file_put_contents($file_path . '.json', json_encode($file_info));
+
+					} else {
+
+						$file_info['hash'] = NULL;
+						$file_info['path'] = NULL;
+
 					}
-
-					$file_hash = sha1_file($file_info['tmp_name']);
-					$file_path = form_field_file::_file_tmp_folder() . '/' . $file_hash;
-
-					move_uploaded_file($file_info['tmp_name'], $file_path);
-
-					unset($file_info['tmp_name']);
-
-					$file_info['hash'] = $file_hash;
-					$file_info['path'] = $file_path;
-
-				//--------------------------------------------------
-				// Save details
-
-					file_put_contents($file_path . '.json', json_encode($file_info));
 
 				//--------------------------------------------------
 				// Return
