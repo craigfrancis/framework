@@ -205,7 +205,7 @@
 		//--------------------------------------------------
 		// State support
 
-			public function state() {
+			public function state($modes = array()) {
 
 				//--------------------------------------------------
 				// Create simple index of jobs
@@ -214,9 +214,13 @@
 						<h2>State</h2>
 						<p>TODO: State of maintenance script</p>';
 
-					if (SERVER == 'stage') {
+					if (in_array('run', $modes)) {
 						$html .= '
-							<p><a href="' . html(gateway_url('maintenance', 'run')) . '">Run</a></p>
+							<p><a href="' . html(gateway_url('maintenance', 'run')) . '">Run</a></p>';
+					}
+
+					if (in_array('test', $modes)) {
+						$html .= '
 							<p><a href="' . html(gateway_url('maintenance', 'test')) . '">Test</a></p>';
 					}
 

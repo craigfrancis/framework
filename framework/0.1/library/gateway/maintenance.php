@@ -39,7 +39,7 @@
 
 			if ($this->sub_path_get() === NULL && in_array('state', $modes)) {
 
-				$maintenance->state();
+				$maintenance->state($modes);
 
 			} else if ($this->sub_path_get() == '/run/' && in_array('run', $modes)) {
 
