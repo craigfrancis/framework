@@ -94,13 +94,15 @@
 				$field_section->value_set($section);
 
 				$fields = array();
+				
+				$row_count = (count($versions) == 1 ? 20 : 10);
 
 				foreach ($versions as $version_name => $version_values) {
 
 					$fields[$version_name] = new form_field_textarea($form, $version_name);
 					$fields[$version_name]->max_length_set('Your message cannot be longer than XXX characters.', 65000);
 					$fields[$version_name]->cols_set(80);
-					$fields[$version_name]->rows_set(10);
+					$fields[$version_name]->rows_set($row_count);
 
 				}
 

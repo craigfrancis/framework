@@ -413,22 +413,24 @@
 				//--------------------------------------------------
 				// Return the output code
 
+					$cms_class = ' section_' . $config['section'] . ($config['editable'] ? ' cms_admin_editable' : '');
+
 					if ($config['wrapper_tag'] == 'blank' && !$config['editable']) {
 
 						return $content_html;
 
 					} else if ($config['wrapper_tag'] == 'submit') {
 
-						return '<span class="cms_admin' . ($config['editable'] ? ' cms_admin_editable' : '') . '"><input type="submit" name="' . html($section) . '" value="' . $content_html . '" />' . ($config['editable'] ? '<a href="' . html($admin_url) . '" class="cms_admin_link">[E]</a>' : '') . '</span>';
+						return '<span class="cms_admin' . html($cms_class) . '"><input type="submit" name="' . html($section) . '" value="' . $content_html . '" />' . ($config['editable'] ? '<a href="' . html($admin_url) . '" class="cms_admin_link">[E]</a>' : '') . '</span>';
 
 					} else if ($config['wrapper_tag'] == 'blank' || $config['wrapper_tag'] == 'span') {
 
-						return '<span class="cms_admin' . ($config['editable'] ? ' cms_admin_editable' : '') . '">' . $content_html . ($config['editable'] ? '<a href="' . html($admin_url) . '" class="cms_admin_link">[E]</a>' : '') . '</span>';
+						return '<span class="cms_admin' . html($cms_class) . '">' . $content_html . ($config['editable'] ? '<a href="' . html($admin_url) . '" class="cms_admin_link">[E]</a>' : '') . '</span>';
 
 					} else {
 
 						return '
-							<div class="cms_admin_link' . ($config['editable'] ? ' cms_admin_editable' : '') . '">
+							<div class="cms_admin_link' . html($cms_class) . '">
 								' . $content_html . '
 								' . ($config['editable'] ? '<p class="cms_admin_link_wrapper"><a href="' . html($admin_url) . '" class="cms_admin_link">[E]</a></p>' : '') . '
 							</div>';
