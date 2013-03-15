@@ -5,6 +5,8 @@
 
 	$this->css_auto();
 
+	$this->js_add('/a/js/responsive.js');
+
 //--------------------------------------------------
 // Navigation
 
@@ -29,20 +31,20 @@
 	<div id="page_wrapper">
 
 		<header id="page_title" role="banner">
-			<h1><?= html($this->title_get()) ?></h1>
+			<h1><a href="/"><?= html($this->title_get()) ?></a></h1>
 		</header>
 
 		<div id="page_container">
 
 			<nav id="page_navigation" role="navigation">
 
-				<h2>Site Navigation</h2>
+				<h2>Navigation</h2>
 
 				<?= $nav->html(); ?>
 
 			</nav>
 
-			<div id="page_content" role="main">
+			<main id="page_content" role="main">
 
 
 
@@ -68,17 +70,13 @@
 
 
 
-			</div>
+			</main>
 
 		</div>
 
 		<footer id="page_footer" role="contentinfo">
 			<h2>Footer</h2>
-			<ul>
-
-				<li class="copyright">© <?= html(config::get('output.site_name', 'Company Name')) ?> <?= html(date('Y')) ?></li>
-
-			</ul>
+			<p class="copyright">© <?= html(config::get('output.site_name', 'Company Name')) ?> <?= html(date('Y')) ?></p>
 		</footer>
 
 	</div>

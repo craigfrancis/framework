@@ -17,8 +17,9 @@
 		background: transparent;
 	}
 
-	html {
-		/* overflow-y: scroll; /* Force Scrollbar - Firefox2 and Safari */
+	article, aside, figcaption, figure, footer,
+	header, hgroup, main, nav, section {
+		display: block;
 	}
 
 	body {
@@ -27,11 +28,10 @@
 		line-height: 1.2em;
 		color: #000;
 		background-color: #FFF;
-		text-align: center; /* IE5 Win: Thinks block level elements are aligned as text */
 	}
 
 	a {
-		color: #00F;
+		color: #00E;
 	}
 
 	a img {
@@ -50,18 +50,19 @@
 		margin: 0 0 1em 2em;
 	}
 
+	hr {
+		margin: 2em 0 1em 0;
+		border: 0;
+		border-bottom: 1px solid #000;
+	}
+
 	table {
-		font-size: 1em; /* IE5 WIN: does not inherit the font size correctly */
 		border-collapse: collapse;
 		border-spacing: 0;
 	}
 
-	table thead {
-		display: table-header-group; /* IE6: Wont repeat table headers over multiple printed pages */
-	}
-
-	input {
-		font-size: 1em; /* FF: keep font size consistent, by default it is increased by 0.1em */
+	table td {
+		vertical-align: middle;
 	}
 
 /*--------------------------------------------------*/
@@ -73,196 +74,185 @@
 	}
 
 /*--------------------------------------------------*/
-/* Skip Links                                       */
-
-	#skip_sinks,
-	#style_sheet_switcher {
-		padding: 0;
-		position: absolute;
-	 	right: 0px;
-	 	top: -500em; /* This needs a width, height and overflow hidden to stop IE5 MAC from doing horizontal scroll */
-	}
-
-	#skip_links a:active,
-	#skip_links a:focus,
-	#style_sheet_switcher a:active,
-	#style_sheet_switcher a:focus {
-		position: absolute;
-		top: 500.25em;
-		right: 0.25em;
-		z-index: 5;
-		white-space: nowrap;
-		color: #000;
-		background: #FFF;
-		border: 2px solid red;
-		padding: 3px;
-	}
-
-/*--------------------------------------------------*/
 /* Page Frame                                       */
 
 	/*--------------------------------------------------*/
-	/* Wrapper                                          */
-
-		#page_wrapper {
-			width: 760px;
-			margin: 0 auto;
-			text-align: left; /* IE5 Win: Correct the text-align fix */
-		}
-
-	/*--------------------------------------------------*/
-	/* Title                                            */
-
-		#page_title {
-			color: inherit;
-			background: #AAA;
-			padding: 10px;
-		}
+	/* Page title                                       */
 
 		#page_title h1 {
+			font-size: 1em;
 			margin: 0;
-			font-size: 1.5em;
 		}
 
 		#page_title h1 a {
+			display: block;
+			color: #000;
+			text-decoration: none;
+			padding: 1em 5px;
+		}
+
+		@media only screen and (min-width: 480px) {
+			#page_title h1 a {
+				padding: 1em 5px;
+			}
+		}
+
+	/*--------------------------------------------------*/
+	/* Page container                                   */
+
+		#page_container {
+			overflow: auto;
+			width: 100%; /* IE5+6 Win: Trigger bug to contain floated elements */
+		}
+
+	/*--------------------------------------------------*/
+	/* Page navigation                                  */
+
+		#page_navigation {
+			display: none;
+		}
+
+		body.nav_show #page_navigation {
+			display: block;
+		}
+
+		@media only screen and (min-width: 480px) {
+			#page_navigation {
+				display: block;
+				float: left;
+				width: 20%;
+			}
+		}
+
+		#page_navigation h2 {
+			background: #000;
+			color: #FFF;
+			font-weight: normal;
+			padding: 5px;
+			margin: 0;
+		}
+
+		#page_navigation ul {
+			margin: 1em 0;
+			list-style: none;
+		}
+
+		#page_navigation ul li {
+			padding: 0 5px;
+		}
+
+		#page_navigation ul li a {
 			color: #000;
 			text-decoration: none;
 		}
 
 	/*--------------------------------------------------*/
-	/* Container                                        */
-
-		#page_container {
-			position: relative;
-		}
-
-	/*--------------------------------------------------*/
-	/* Navigation                                       */
-
-		#page_navigation {
-			float: left;
-			width: 160px;
-			padding: 10px 0 0 0;
-			background: #E0E0E0;
-		}
-
-		#page_navigation h2 {
-			position: absolute;
-			left: -5000px;
-		}
-
-		#page_navigation h3 {
-			font-size: 1em;
-			margin: 0 0 0 10px;
-		}
-
-		#page_navigation ul {
-			list-style: none;
-			margin: 0 10px;
-		}
-
-		#page_navigation ul ul {
-			margin: 10px 0 0 20px;
-		}
-
-		#page_navigation li {
-			padding-bottom: 10px;
-			margin: 0;
-		}
-
-		#page_navigation ul a {
-			color: #000;
-			background: inherit;
-		}
-
-	/*--------------------------------------------------*/
-	/* Content                                          */
+	/* Page content                                     */
 
 		#page_content {
-			float: left;
-			width: 590px; /* (760 - 160 - 10) */
-			margin: 0 0 0 10px;
-			padding: 10px 0 0 0;
+			padding: 0 5px;
 		}
 
-		#page_content h2 {
-			font-size: 1.2em;
+		body.nav_show #page_content {
+			display: none;
 		}
 
-		#page_content h3 {
-			font-size: 1em;
+		#page_content h1 {
+			background: #000;
+			color: #FFF;
+			font-weight: normal;
+			margin: 0;
+			padding: 5px;
+			margin: 0 -5px 1em -5px;
+		}
+
+		#page_content p,
+		#page_content table {
+			max-width: 600px;
+		}
+
+		@media only screen and (min-width: 480px) {
+
+			#page_content {
+				padding: 0;
+				float: left;
+				width: 80%;
+			}
+
+			body.nav_show #page_content {
+				display: block;
+			}
+
+			#page_content h1 {
+				padding: 5px 0;
+				margin: 0 0 1em 0;
+			}
+
 		}
 
 	/*--------------------------------------------------*/
 	/* Footer                                           */
 
 		#page_footer {
-			clear: both;
-			padding: 10px 0 0 0;
+			background: #000;
+			color: #FFF;
+			font-weight: normal;
+			margin: 0;
+			padding: 5px;
 		}
 
 		#page_footer h2 {
-			position: absolute;
-			left: -5000px;
+			display: none;
 		}
 
-		#page_footer ul {
+		#page_footer p {
 			margin: 0;
 		}
 
-		#page_footer ul li {
-			list-style: none;
-			float: right;
-			padding: 0 5px 0 0;
-			margin: 0 5px 0 0;
-			font-size: 0.8em;
-			border-right: 1px solid #000;
-		}
-
-		#page_footer ul li.copyright {
-			border-right: 0;
-			padding-right: 0;
-			margin-right: 0;
-		}
-
 /*--------------------------------------------------*/
-/* Page message                                     */
+/* Thank you message                                */
 
 	#page_message {
-		background: #E0E0E0;
+		border: 1px solid #191D58;
+		margin: 1em 0 1em 0;
 		padding: 1em;
-		margin: 0 0 1em 0;
-		border: 1px solid #AAA;
+		text-align: center;
+		color: #FFF;
+		background: #20287A;
+		font-weight: bold;
 	}
 
 	#page_message p {
 		margin: 0;
 	}
 
+	#page_message p a {
+		color: #FFF;
+	}
+
 /*--------------------------------------------------*/
 /* Basic Form                                       */
 
 	.basic_form fieldset {
-		padding: 1em 0 0 0;
 		margin: 0 0 1em 0;
 	}
 
-	.basic_form fieldset legend {
-		color: #000; /* IE6: defaults to using blue text */
-		font-weight: bold;
-		margin: 0 0 1em 0;
-		padding: 0;
-	}
-
-	.basic_form fieldset fieldset legend {
-		padding: 1em 0 0 0;
+	.basic_form fieldset h2 {
+		font-size: 1em;
 		margin: 0;
+		padding: 1em 0 0 1em;
 	}
 
-	.basic_form div + h2 {
-		clear: both;
-		margin-top: 1em;
-		padding-top: 3px;
+	.basic_form fieldset h2:first-child {
+		padding-top: 0;
+	}
+
+	.basic_form fieldset p {
+		padding: 0 1em;
+	}
+
+	.basic_form fieldset p:last-child {
+		margin-bottom: 0;
 	}
 
 	.basic_form .error_list,
@@ -273,27 +263,47 @@
 	}
 
 	.basic_form .row {
-		padding: 7px 0 0 11.5em;
+		padding: 5px 0 0 0;
 		clear: both;
 	}
 
-	.basic_form .row .label,
-	.basic_form .row.input_first .input {
-		float: left;
-		width: 11em;
-		margin: 0 0 0 -11.5em;
-		padding: 3px 0 0 0;
-		text-align: right;
+		@media only screen and (min-width: 610px) {
+			.basic_form .row {
+				padding-left: 11.5em;
+			}
+		}
+
+	.basic_form .row .label {
+		display: block;
+		font-weight: normal;
 	}
 
 	.basic_form .row .label abbr.required {
 		border: 0;
 	}
 
-	.basic_form .row.input_first .label {
-		width: auto;
-		margin: 0;
+	.basic_form .info .input {
+		display: block;
+		margin: 4px 0 1em 1.5em;
 	}
+
+		@media only screen and (min-width: 610px) {
+			.basic_form .row .label,
+			.basic_form .row.input_first .input {
+				float: left;
+				width: 11em;
+				margin: 4px 0 0 -11.5em;
+				text-align: right;
+			}
+			.basic_form .info .input {
+				margin-bottom: 0;
+				margin-left: 0;
+			}
+			.basic_form .row.input_first .label {
+				width: auto;
+				margin: 0;
+			}
+		}
 
 	.basic_form .row.info .input,
 	.basic_form .row.radio .input,
@@ -304,6 +314,10 @@
 
 	.basic_form .row.date input {
 		text-align: center;
+	}
+
+	.basic_form .row.textarea .input textarea {
+		width: 98.5%;
 	}
 
 	.basic_form .submit {
