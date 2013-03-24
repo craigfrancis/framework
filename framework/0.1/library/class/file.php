@@ -41,6 +41,7 @@
 							'file_folder_division' => NULL, // Set to something like "1000" so the folder structure can by divided into folders /files/008000/8192
 							'file_missing_url' => NULL,
 							'image_type' => 'jpg',
+							'image_quality' => NULL,
 							'image_url_prefix' => '',
 							'image_placeholder_url' => NULL, // If you want to show placeholder images, e.g. /a/img/place-holder/100x100.jpg
 							'image_missing_url' => NULL,
@@ -163,20 +164,12 @@
 				file_put_contents($this->file_path_get($id, $ext), $contents);
 			}
 
-			public function file_image_save($id, $path, $ext = NULL) { // Use image_save() to have different image versions.
+			public function file_image_save($id, $path) { // Use image_save() to have different image versions.
 
 				//--------------------------------------------------
 				// Path
 
-					if ($ext === NULL) {
-						$ext = $this->config['file_ext'];
-					}
-
-					if ($ext === NULL) {
-						exit_with_error('Unknown file extension when doing file_image_save()');
-					}
-
-					$dest_path = $this->file_path_get($id, $ext);
+					$dest_path = $this->file_path_get($id, $this->config['file_ext']);
 
 				//--------------------------------------------------
 				// Folder
@@ -198,7 +191,7 @@
 				// Save
 
 					$image = new image($path); // The image needs to be re-saved, ensures no hacked files are uploaded and exposed though the FILE_URL folder.
-					$image->save($dest_path, $ext);
+					$image->save($dest_path, $this->config['file_ext'], $this->config['image_quality']);
 
 			}
 
@@ -287,7 +280,7 @@
 						}
 
 						$source_image = new image($path); // The image needs to be re-saved, ensures no hacked files are uploaded and exposed though the FILE_URL folder.
-						$source_image->save($original_path, $this->config['image_type']);
+						$source_image->save($original_path, $this->config['image_type'], $this->config['image_quality']);
 
 					}
 
@@ -368,7 +361,7 @@
 
 									$image = new image($original_path); // Need a new copy of the image, so it does not get scaled down, then back up again
 									$image->resize($config);
-									$image->save($this->image_path_get($id, $size), $this->config['image_type']);
+									$image->save($this->image_path_get($id, $size), $this->config['image_type'], $this->config['image_quality']);
 									$image->destroy();
 
 							}
