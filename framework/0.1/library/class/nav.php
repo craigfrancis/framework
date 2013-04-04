@@ -88,7 +88,11 @@
 			}
 		}
 
-		public function link_add($url, $name, $config = NULL) {
+		public function link_name_get($url) {
+			return $url;
+		}
+
+		public function link_add($url, $name = NULL, $config = NULL) {
 
 			//--------------------------------------------------
 			// Next!
@@ -99,6 +103,11 @@
 			// Config
 
 				$url = strval($url); // Handle url object
+
+				if (is_array($name)) { // Second argument passed in config array
+					$config = $name;
+					$name = NULL;
+				}
 
 				if (!is_array($config)) {
 					if (is_bool($config)) { // Backwards config
@@ -112,6 +121,10 @@
 
 				if (!isset($config['selected'])) {
 					$config['selected'] = NULL;
+				}
+
+				if ($name === NULL) {
+					$name = $this->link_name_get($url, $config);
 				}
 
 			//--------------------------------------------------

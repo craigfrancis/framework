@@ -1155,6 +1155,7 @@
 					if (false) {
 						if (true) { // HTML
 
+							mime_set('text/html');
 							exit($email->html());
 
 						} else {
