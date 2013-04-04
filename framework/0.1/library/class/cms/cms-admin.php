@@ -369,7 +369,7 @@
 				//--------------------------------------------------
 				// Add the wrapper tag
 
-					if ($config['wrapper_tag'] != '' && $config['wrapper_tag'] != 'blank' && $config['wrapper_tag'] != 'submit') {
+					if ($config['wrapper_tag'] != '' && $config['wrapper_tag'] != 'none' && $config['wrapper_tag'] != 'submit') {
 						$content_html = '<' . html($config['wrapper_tag']) . '>' . $content_html . '</' . html($config['wrapper_tag']) . '>';
 					}
 
@@ -415,7 +415,7 @@
 
 					$cms_class = ' section_' . $config['section'] . ($config['editable'] ? ' cms_admin_editable' : '');
 
-					if ($config['wrapper_tag'] == 'blank' && !$config['editable']) {
+					if ($config['wrapper_tag'] == 'none' && !$config['editable']) {
 
 						return $content_html;
 
@@ -423,7 +423,7 @@
 
 						return '<span class="cms_admin' . html($cms_class) . '"><input type="submit" name="' . html($section) . '" value="' . $content_html . '" />' . ($config['editable'] ? '<a href="' . html($admin_url) . '" class="cms_admin_link">[E]</a>' : '') . '</span>';
 
-					} else if ($config['wrapper_tag'] == 'blank' || $config['wrapper_tag'] == 'span') {
+					} else if ($config['wrapper_tag'] == 'none' || $config['wrapper_tag'] == 'span') {
 
 						return '<span class="cms_admin' . html($cms_class) . '">' . $content_html . ($config['editable'] ? '<a href="' . html($admin_url) . '" class="cms_admin_link">[E]</a>' : '') . '</span>';
 

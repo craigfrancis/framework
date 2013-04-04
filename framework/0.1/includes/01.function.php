@@ -834,10 +834,31 @@
 	}
 
 //--------------------------------------------------
-// Take a path and add versioning info
+// Path processing
 
 	function version_path($path) {
 		return dirname($path) . '/' . filemtime(PUBLIC_ROOT . $path) . '-' . basename($path);
+	}
+
+	function template_path($template) {
+		return APP_ROOT . '/template/' . safe_file_name($template) . '.ctp';
+	}
+
+	function view_path($path) {
+		if (!is_array($path)) {
+			$path = array($path);
+		}
+		$output = '';
+		foreach ($path as $folder) {
+			if ($folder != '') {
+				$output .= '/' . safe_file_name($folder);
+			}
+		}
+		if ($output != '') {
+			return VIEW_ROOT . $output . '.ctp';
+		} else {
+			return NULL;
+		}
 	}
 
 //--------------------------------------------------

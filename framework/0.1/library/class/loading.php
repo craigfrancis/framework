@@ -307,7 +307,7 @@
 
 					} else if ($this->config['template_name'] !== NULL) {
 
-						$template_path = APP_ROOT . '/template/' . safe_file_name($this->config['template_name']) . '.ctp';
+						$template_path = template_path($this->config['template_name'];
 
 					} else {
 

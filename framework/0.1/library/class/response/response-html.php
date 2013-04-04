@@ -130,7 +130,7 @@
 
 				} else if ($this->view_folders !== NULL) {
 
-					return VIEW_ROOT . '/' . implode('/', $this->view_folders) . '.ctp';
+					return view_path($this->view_folders);
 
 				} else {
 
@@ -174,7 +174,8 @@
 							error_log('File does not exist: ' . config::get('request.uri'), 4);
 						}
 
-						$view_path = VIEW_ROOT . '/error/' . safe_file_name($error) . '.ctp';
+						$view_path = view_path(array('error', $error));
+
 						if (!is_file($view_path)) {
 							$view_path = FRAMEWORK_ROOT . '/library/view/error-' . safe_file_name($error) . '.ctp';
 						}
@@ -206,7 +207,7 @@
 				if ($template === NULL && $this->template_path !== NULL) {
 					return $this->template_path;
 				} else {
-					return APP_ROOT . '/template/' . safe_file_name($this->template_name) . '.ctp';
+					return template_path($this->template_name);
 				}
 			}
 
