@@ -7,6 +7,10 @@
 		CustomLog /www/live/craig.framework/logs/access_log combined
 		ErrorLog /www/live/craig.framework/logs/error_log
 
+		<IfModule php5_module>
+			php_value newrelic.appname "Craig: Framework"
+		</IfModule>
+
 	</VirtualHost>
 
 	<VirtualHost *:80>
