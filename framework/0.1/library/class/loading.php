@@ -307,7 +307,7 @@
 
 					} else if ($this->config['template_name'] !== NULL) {
 
-						$template_path = template_path($this->config['template_name'];
+						$template_path = template_path($this->config['template_name']);
 
 					} else {
 
