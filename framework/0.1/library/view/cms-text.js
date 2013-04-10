@@ -1,5 +1,5 @@
 
-	var cms_admin = new function () {
+	var cms_text = new function () {
 
 		//--------------------------------------------------
 		// Do not allow older browsers to run this script
@@ -16,15 +16,15 @@
 				//--------------------------------------------------
 				// Debug
 
-					//console.log('cms-admin.js: Initialisation');
+					//console.log('cms-text.js: Initialisation');
 
 				//--------------------------------------------------
 				// Setup the edit links
 
-					var matches = document.querySelectorAll('span.cms_admin_editable, div.cms_admin_editable');
+					var matches = document.querySelectorAll('span.cms_text_editable, div.cms_text_editable');
 
 					for (var k = (matches.length - 1); k >= 0; k--) {
-						cms_admin.setupEditLink(matches[k]);
+						cms_text.setupEditLink(matches[k]);
 					}
 
 			}
@@ -37,17 +37,17 @@
 				//--------------------------------------------------
 				// Get the edit link
 
-					var link = area.querySelector('a.cms_admin_link');
+					var link = area.querySelector('a.cms_text_link');
 
 					if (link === null) {
-						//console.log('cms-admin.js: Link not found');
+						//console.log('cms-text.js: Link not found');
 						return;
 					}
 
 				//--------------------------------------------------
 				// Link configuration
 
-					area.cms_admin_link = link;
+					area.cms_text_link = link;
 
 					try {
 						area.style.cursor = 'pointer';
@@ -70,7 +70,7 @@
 							//--------------------------------------------------
 							// Load URL
 
-								window.location.href = this.cms_admin_link.href;
+								window.location.href = this.cms_text_link.href;
 
 						};
 
@@ -102,7 +102,7 @@
 		//--------------------------------------------------
 		// Class to show the JS is active
 
-			document.getElementsByTagName('html')[0].className += ' cms_admin_js';
+			document.getElementsByTagName('html')[0].className += ' cms_text_js';
 
 		//--------------------------------------------------
 		// When the page has loaded, run the init function

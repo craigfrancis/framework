@@ -385,13 +385,13 @@
 		}
 	}
 
-	function cms_admin_html($config) {
-		$cms_admin = config::get('cms_admin');
-		if (!$cms_admin) {
-			$cms_admin = new cms_admin();
-			config::set('cms_admin', $cms_admin);
+	function cms_text_html($config) {
+		$cms_text = config::get('cms_text');
+		if (!$cms_text) {
+			$cms_text = new cms_text();
+			config::set('cms_text', $cms_text);
 		}
-		return $cms_admin->html($config);
+		return $cms_text->html($config);
 	}
 
 //--------------------------------------------------

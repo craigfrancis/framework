@@ -1,11 +1,11 @@
 
-# CMS Admin
+# CMS Text
 
 Helper function:
 
-	cms_admin_html()
+	cms_text_html()
 
-You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/cms/cms-admin.php).
+You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/cms/cms-text.php).
 
 Also explain about `cms_tags/cms_markdown`.
 
@@ -16,15 +16,15 @@ http://www.localeapp.com/
 	//--------------------------------------------------
 	// Example setup
 
-		<?= cms_admin_html('content'); ?>
+		<?= cms_text_html('content'); ?>
 
 	//--------------------------------------------------
 	// Example where the heading is separate... this
 	// might be useful to re-use the heading in the
 	// site navigation, or on the page <title>
 
-		<?= cms_admin_html(array('section' => 'heading', 'wrapper_tag' => 'h1')); ?>
-		<?= cms_admin_html(array('section' => 'content')); ?>
+		<?= cms_text_html(array('section' => 'heading', 'wrapper_tag' => 'h1')); ?>
+		<?= cms_text_html(array('section' => 'content')); ?>
 
 	//--------------------------------------------------
 	// To make editable
@@ -34,9 +34,9 @@ http://www.localeapp.com/
 	//--------------------------------------------------
 	// Full object version
 
-		$cms_admin = new cms_admin('profile');
+		$cms_text = new cms_text('profile');
 
-		$cms_admin = new cms_admin(array(
+		$cms_text = new cms_text(array(
 				'profile'     => 'example',
 				'revision'    => 0,
 				'processor'   => 'markdown',
@@ -46,9 +46,9 @@ http://www.localeapp.com/
 				'priority'    => array(), // See below
 			));
 
-		echo $cms_admin->html('section');
+		echo $cms_text->html('section');
 
-		echo $cms_admin->html(array(
+		echo $cms_text->html(array(
 				'path'        => '/',
 				'section'     => 'content',
 				'default'     => 'Lorem ipsum dolor sit amet...',
@@ -70,7 +70,7 @@ http://www.localeapp.com/
 
 		Or via init:
 
-			$cms_admin = new cms_admin(array(
+			$cms_text = new cms_text(array(
 					'priority' => array(),
 				));
 

@@ -135,7 +135,7 @@
 				$helpers_nav->link_add('/doc/helpers/nav/', 'Navigation');
 				$helpers_nav->link_add('/doc/helpers/table/', 'Table');
 				$helpers_nav->link_add('/doc/helpers/paginator/', 'Paginator');
-				$helpers_nav->link_add('/doc/helpers/cms-admin/', 'CMS Admin');
+				$helpers_nav->link_add('/doc/helpers/cms-text/', 'CMS Text');
 				$helpers_nav->link_add('/doc/helpers/nearest/', 'Nearest');
 				$helpers_nav->link_add('/doc/helpers/lock/', 'Lock');
 				$helpers_nav->link_add('/doc/helpers/loading/', 'Loading');
@@ -150,6 +150,7 @@
 				$notes_nav = new nav();
 				$notes_nav->link_add('/doc/notes/history/', 'History');
 				$notes_nav->link_add('/doc/notes/frameworks/', 'Frameworks');
+				$notes_nav->link_add('/doc/notes/white-site/', 'White site');
 
 				$section_nav->link_add('/doc/notes/', 'Notes', array('child' => $notes_nav));
 

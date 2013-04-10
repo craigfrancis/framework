@@ -1,6 +1,6 @@
 <?php
 
-	class controller_cms_admin extends controller {
+	class controller_cms_text extends controller {
 
 		public function action_index() {
 
@@ -12,7 +12,7 @@
 			//--------------------------------------------------
 			// View path
 
-				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-admin/view-index.ctp');
+				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-text/view-index.ctp');
 
 		}
 
@@ -291,7 +291,7 @@
 			//--------------------------------------------------
 			// View path
 
-				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-admin/view-edit.ctp');
+				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-text/view-edit.ctp');
 
 		}
 

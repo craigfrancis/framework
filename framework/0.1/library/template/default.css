@@ -50,8 +50,14 @@
 		margin: 0 0 1em 2em;
 	}
 
+	p,
+	ul,
+	ol {
+		max-width: 600px;
+	}
+
 	hr {
-		margin: 2em 0 1em 0;
+		margin: 1em 0 1em 0;
 		border: 0;
 		border-bottom: 1px solid #000;
 	}
@@ -61,8 +67,9 @@
 		border-spacing: 0;
 	}
 
+	table th,
 	table td {
-		vertical-align: middle;
+		vertical-align: top;
 	}
 
 /*--------------------------------------------------*/
@@ -89,12 +96,6 @@
 			color: #000;
 			text-decoration: none;
 			padding: 1em 5px;
-		}
-
-		@media only screen and (min-width: 480px) {
-			#page_title h1 a {
-				padding: 1em 5px;
-			}
 		}
 
 	/*--------------------------------------------------*/
@@ -132,9 +133,17 @@
 			margin: 0;
 		}
 
+		#page_navigation h3 {
+			margin: 0 0 -1em 5px;
+		}
+
 		#page_navigation ul {
 			margin: 1em 0;
 			list-style: none;
+		}
+
+		#page_navigation ul ul {
+			margin-top: 0.2em;
 		}
 
 		#page_navigation ul li {
@@ -144,6 +153,11 @@
 		#page_navigation ul li a {
 			color: #000;
 			text-decoration: none;
+		}
+
+		#page_navigation ul li strong a {
+			font-weight: normal;
+			color: #CCC;
 		}
 
 	/*--------------------------------------------------*/
@@ -166,9 +180,9 @@
 			margin: 0 -5px 1em -5px;
 		}
 
-		#page_content p,
-		#page_content table {
-			max-width: 600px;
+		#page_content h1 a {
+			background: #000;
+			color: #FFF;
 		}
 
 		@media only screen and (min-width: 480px) {
@@ -209,6 +223,11 @@
 			margin: 0;
 		}
 
+		#page_footer p a {
+			background: #000;
+			color: #FFF;
+		}
+
 /*--------------------------------------------------*/
 /* Thank you message                                */
 
@@ -234,7 +253,7 @@
 /* Basic Form                                       */
 
 	.basic_form fieldset {
-		margin: 0 0 1em 0;
+		margin: 0 10px 1em 0;
 	}
 
 	.basic_form fieldset h2 {
@@ -317,7 +336,7 @@
 	}
 
 	.basic_form .row.textarea .input textarea {
-		width: 98.5%;
+		width: 90%;
 	}
 
 	.basic_form .submit {
@@ -353,16 +372,19 @@
 /* Basic Table                                      */
 
 	.basic_table {
+		padding-right: 10px;
+	}
+
+	.basic_table table {
 		margin: 0 0 1em 0;
 		color: inherit;
-		background: #F5F5F5;
 		border-top: 1px solid #000;
 		border-right: 0;
 		border-bottom: 0;
 		border-left: 1px solid #000;
 	}
 
-	.basic_table.full_width {
+	.basic_table.full_width table {
 		width: 100%;
 	}
 
@@ -456,4 +478,50 @@
 
 	.small_nav li {
 		display: inline;
+	}
+
+/*--------------------------------------------------*/
+/* Content markers                                  */
+
+	.section_content,
+	.section_functionality {
+		background: #CDD5FF;
+		padding: 10px 10px 0 10px;
+		margin: 0 10px 1em 0;
+	}
+
+	.section_functionality {
+		background: #FFCDCD;
+	}
+
+	.section_content p,
+	.section_functionality p,
+	.section_content ul,
+	.section_functionality ul {
+		margin-bottom: 0;
+		padding-bottom: 1em;
+	}
+
+/*--------------------------------------------------*/
+/* CMS Text                                         */
+
+	html.cms_text_js span.cms_text_editable a.cms_text_link,
+	html.cms_text_js div.cms_text_editable  p.cms_text_link_wrapper {
+		position: absolute;
+		left: -5000px;
+	}
+
+	.cms_text_editable,
+	.cms_text_editable a {
+		/* background: #FFDFDF; */
+		/* color: #373737; */
+	}
+
+	.cms_text_editable a {
+		text-decoration: underline;
+	}
+
+	span.cms_text_editable input,
+	span.cms_text_editable a {
+		margin-right: 10px; /* For when an inline element only contains a single link */
 	}

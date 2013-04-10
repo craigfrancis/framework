@@ -9,9 +9,9 @@ So for example, in your profile controller you might have something like:
 
 	/app/controller/profile.php
 		<?php
-			class controller_profile extends controller {
-				function action_index() {
-                	$response = response_get();
+			class profile_controller extends controller {
+				public function action_index() {
+					$response = response_get();
 					$response->set('name', 'Craig');
 				}
 			}
@@ -19,6 +19,28 @@ So for example, in your profile controller you might have something like:
 
 	/app/view/profile.php
 		<p>Hi <?= html($name); ?></p>
+
+---
+
+## Route method
+
+	class admin_controller extends controller {
+		public function route() {
+		}
+	}
+
+Anything under /admin/ will get passed though the route() method, which can check the user permissions.
+
+---
+
+## Before and after methods
+
+	class example_controller extends controller {
+		public function before() {
+		}
+		public function after() {
+		}
+	}
 
 ---
 

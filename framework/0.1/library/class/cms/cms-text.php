@@ -1,10 +1,10 @@
 <?php
 
 //--------------------------------------------------
-// http://www.phpprime.com/doc/helpers/cms-admin/
+// http://www.phpprime.com/doc/helpers/cms-text/
 //--------------------------------------------------
 
-	class cms_admin_base extends check {
+	class cms_text_base extends check {
 
 		//--------------------------------------------------
 		// Variables
@@ -119,7 +119,7 @@
 					//--------------------------------------------------
 					// Cache exists and up to date
 
-						$cache_path = tmp_folder('cms-admin') . '/' . intval($this->config['revision']) . '-' . base64_encode($this->config['path']);
+						$cache_path = tmp_folder('cms-text') . '/' . intval($this->config['revision']) . '-' . base64_encode($this->config['path']);
 
 						if (is_file($cache_path)) {
 
@@ -219,7 +219,7 @@
 
 					if ($this->config['editable']) {
 						$response = response_get();
-						$response->js_add(gateway_url('framework-file', 'cms-admin.js'));
+						$response->js_add(gateway_url('framework-file', 'cms-text.js'));
 					}
 
 			}
@@ -413,7 +413,7 @@
 				//--------------------------------------------------
 				// Return the output code
 
-					$cms_class = ' section_' . $config['section'] . ($config['editable'] ? ' cms_admin_editable' : '');
+					$cms_class = ' section_' . $config['section'] . ($config['editable'] ? ' cms_text_editable' : '');
 
 					if ($config['wrapper_tag'] == 'none' && !$config['editable']) {
 
@@ -421,18 +421,18 @@
 
 					} else if ($config['wrapper_tag'] == 'submit') {
 
-						return '<span class="cms_admin' . html($cms_class) . '"><input type="submit" name="' . html($section) . '" value="' . $content_html . '" />' . ($config['editable'] ? '<a href="' . html($admin_url) . '" class="cms_admin_link">[E]</a>' : '') . '</span>';
+						return '<span class="cms_text' . html($cms_class) . '"><input type="submit" name="' . html($section) . '" value="' . $content_html . '" />' . ($config['editable'] ? '<a href="' . html($admin_url) . '" class="cms_text_link">[E]</a>' : '') . '</span>';
 
 					} else if ($config['wrapper_tag'] == 'none' || $config['wrapper_tag'] == 'span') {
 
-						return '<span class="cms_admin' . html($cms_class) . '">' . $content_html . ($config['editable'] ? '<a href="' . html($admin_url) . '" class="cms_admin_link">[E]</a>' : '') . '</span>';
+						return '<span class="cms_text' . html($cms_class) . '">' . $content_html . ($config['editable'] ? '<a href="' . html($admin_url) . '" class="cms_text_link">[E]</a>' : '') . '</span>';
 
 					} else {
 
 						return '
-							<div class="cms_admin_link' . html($cms_class) . '">
+							<div class="cms_text_link' . html($cms_class) . '">
 								' . $content_html . '
-								' . ($config['editable'] ? '<p class="cms_admin_link_wrapper"><a href="' . html($admin_url) . '" class="cms_admin_link">[E]</a></p>' : '') . '
+								' . ($config['editable'] ? '<p class="cms_text_link_wrapper"><a href="' . html($admin_url) . '" class="cms_text_link">[E]</a></p>' : '') . '
 							</div>';
 
 					}
