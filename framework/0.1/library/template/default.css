@@ -301,9 +301,11 @@
 		border: 0;
 	}
 
-	.basic_form .info .input {
+	.basic_form .row.info .input,
+	.basic_form .row.radio .input,
+	.basic_form .row.check .input {
 		display: block;
-		margin: 4px 0 1em 1.5em;
+		padding: 4px 0 1em 1.5em;
 	}
 
 		@media only screen and (min-width: 610px) {
@@ -322,14 +324,13 @@
 				width: auto;
 				margin: 0;
 			}
+			.basic_form .row.info .input,
+			.basic_form .row.radio .input,
+			.basic_form .row.check .input {
+				display: block;
+				padding: 4px 0 0 0;
+			}
 		}
-
-	.basic_form .row.info .input,
-	.basic_form .row.radio .input,
-	.basic_form .row.check .input {
-		display: block;
-		padding: 3px 0 0 0;
-	}
 
 	.basic_form .row.date input {
 		text-align: center;
