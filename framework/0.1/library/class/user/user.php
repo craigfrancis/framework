@@ -18,6 +18,7 @@
 			protected $text = array();
 			protected $user_id = 0;
 			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
+			protected $form_name = 'user_form';
 			protected $identification_type = 'email';
 			protected $cookie_login_last = 'user_login_last_id';
 			protected $remember_login = true;
@@ -161,7 +162,7 @@
 
 					$db = $this->db_get();
 
-					$this->form = new user_form();
+					$this->form = new $this->form_name();
 					$this->form->user_ref_set($this);
 					$this->form->db_set($this->db_get());
 					$this->form->db_save_disable();
@@ -648,7 +649,9 @@
 
 						$form = $this->form_get();
 
-						$form->field_get('identification')->value_set($this->last_login_get());
+						if ($form->field_exists('identification')) {
+							$form->field_get('identification')->value_set($this->last_login_get());
+						}
 
 				}
 
