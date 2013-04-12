@@ -142,7 +142,11 @@
 		// Value
 
 			public function value_set($value) {
-				$this->value_clean = parse_number($value);
+				if ($value === '') {
+					$this->value_clean = 0;
+				} else {
+					$this->value_clean = parse_number($value);
+				}
 				$this->value = $value;
 			}
 
