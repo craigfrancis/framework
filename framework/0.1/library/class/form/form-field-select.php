@@ -129,6 +129,10 @@
 				}
 			}
 
+			public function options_get() {
+				return $this->option_values;
+			}
+
 			public function option_groups_set($option_groups) {
 				$this->option_groups = $option_groups;
 			}
