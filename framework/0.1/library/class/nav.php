@@ -146,9 +146,15 @@
 						$this->selected_id = $this->current_index;
 						$this->selected_len = -1;
 
-					} else if ($config['selected'] !== false && $url_len > $this->selected_len) {
+					} else if ($config['selected'] !== false && $this->automatically_select_link && $url_len > $this->selected_len) {
 
-						if ($this->automatically_select_link && substr($this->path, 0, $url_len) == $url) {
+						if ($url == '/') {
+							$match = ($this->path == '/');
+						} else {
+							$match = (substr($this->path, 0, $url_len) == $url);
+						}
+
+						if ($match) {
 
 							$this->selected_id = $this->current_index;
 							$this->selected_len = $url_len;
