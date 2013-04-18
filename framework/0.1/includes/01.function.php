@@ -626,7 +626,7 @@
 			header('Refresh: 0; url=' . head($url));
 			exit('<p><a href="' . html($url) . '">Loading...</a></p>');
 		} else {
-			// header('Location: ' . head($url), true, $http_response_code);
+			header('Location: ' . head($url), true, $http_response_code);
 			exit($next_html);
 		}
 
