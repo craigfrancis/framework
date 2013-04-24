@@ -1048,8 +1048,12 @@
 					// NewRelic
 
 						if (extension_loaded('newrelic')) {
+
 							$this->js_code_add(newrelic_get_browser_timing_header(false), 'inline', 'head');
 							$this->js_code_add(newrelic_get_browser_timing_footer(false), 'async', 'foot');
+
+							$this->csp_add_source('script-src', array('https://d1ros97qkrwjf5.cloudfront.net'));
+
 						}
 
 				//--------------------------------------------------
