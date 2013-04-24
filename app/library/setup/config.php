@@ -77,8 +77,8 @@
 //--------------------------------------------------
 // Tracking
 
-	// $config['tracking.ga_code'] = 'UA-309730-8';
-	$config['tracking.js_path'] = '/a/js/analytics.js';
+	$config['tracking.ga_code'] = 'UA-309730-8';
+	// $config['tracking.js_path'] = '/a/js/analytics.js';
 
 //--------------------------------------------------
 // Content security policy
