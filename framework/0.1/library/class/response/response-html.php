@@ -1051,8 +1051,8 @@
 
 							newrelic_disable_autorum();
 
-							$this->js_add(gateway_url('framework-file', 'head.js'), 'inline', 'head');
-							$this->js_add(gateway_url('framework-file', 'foot.js'), 'async', 'foot');
+							$this->js_add(gateway_url('js-newrelic', 'head.js'), 'inline', 'head');
+							$this->js_add(gateway_url('js-newrelic', 'foot.js'), 'async', 'foot');
 
 							$this->csp_add_source('script-src', array('d1ros97qkrwjf5.cloudfront.net', 'beacon-1.newrelic.com'));
 
