@@ -1052,7 +1052,7 @@
 							$this->js_code_add(newrelic_get_browser_timing_header(false), 'inline', 'head');
 							$this->js_code_add(newrelic_get_browser_timing_footer(false), 'async', 'foot');
 
-							$this->csp_add_source('script-src', array((config::get('request.https') ? 'https://' : 'http://') . 'd1ros97qkrwjf5.cloudfront.net'));
+							$this->csp_add_source('script-src', array('d1ros97qkrwjf5.cloudfront.net', 'beacon-1.newrelic.com'));
 
 						}
 
