@@ -73,6 +73,8 @@
 // Output
 
 	$config['output.site_name'] = 'PHP Prime';
+	$config['output.js_min'] = (SERVER != 'stage');
+	$config['output.css_min'] = (SERVER != 'stage');
 
 //--------------------------------------------------
 // Tracking
