@@ -25,7 +25,6 @@
 
 	if (extension_loaded('newrelic')) {
 		if ($file_name == 'head.js') $file_content = newrelic_get_browser_timing_header(false);
-		if ($file_name == 'foot.js') $file_content = newrelic_get_browser_timing_footer(false);
 	}
 
 	if ($file_content !== NULL) {
