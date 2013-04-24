@@ -818,11 +818,11 @@
 
 							$session_js = session::get('output.js_code');
 
-							if (!isset($session_js[$js_code_ref])) {
-								$session_js[$js_code_ref] = '';
+							if (!isset($session_js[$js_code_ref]['foot'])) {
+								$session_js[$js_code_ref]['foot'] = '';
 							}
 
-							$session_js[$js_code_ref] .= $js_code;
+							$session_js[$js_code_ref]['foot'] .= $js_code;
 
 							session::set('output.js_code', $session_js);
 

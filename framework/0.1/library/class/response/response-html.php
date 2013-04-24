@@ -23,12 +23,13 @@
 			private $template_name = 'default';
 			private $template_path = NULL;
 
-			private $js_files = array();
-			private $js_code_ref = NULL;
-			private $js_code_data = '';
-			private $js_code_mode = NULL;
-			private $js_code_saved = false;
 			private $js_enabled = true;
+			private $js_files = array('head' => array(), 'foot' => array());
+			private $js_code_ref = NULL;
+			private $js_code = array(
+					'head' => array('data' => '', 'mode' => NULL, 'saved' => false),
+					'foot' => array('data' => '', 'mode' => NULL, 'saved' => false),
+				);
 
 			private $css_files_main = array();
 			private $css_files_alternate = array();
@@ -394,17 +395,17 @@
 		//--------------------------------------------------
 		// JavaScript
 
-			public function js_add($path, $attributes = array()) { // Could be $this->js_add('/path.js', 'defer');
+			public function js_add($path, $attributes = array(), $position = 'foot') { // Could be $this->js_add('/path.js', 'defer');
 				if (is_string($attributes)) {
 					$attributes = array($attributes);
 				}
-				$this->js_files[] = array(
+				$this->js_files[$position][] = array(
 						'path' => $path,
 						'attributes' => $attributes,
 					);
 			}
 
-			public function js_code_add($code, $mode = 'inline') {
+			public function js_code_add($code, $mode = 'inline', $position = 'foot') {
 
 				if ($this->js_code_ref === NULL) {
 
@@ -414,33 +415,62 @@
 
 				}
 
-				if ($this->js_code_saved) {
-					$this->_js_code_save($code);
-				} else {
-					$this->js_code_data .= $code;
-				}
+				if ($this->js_code[$position]['saved']) {
 
-				if ($mode == 'inline') {
-
-					$this->js_code_mode = $mode;
-
-				} else if ($mode == 'defer') {
-
-					if ($this->js_code_mode === NULL || $this->js_code_mode == 'async') {
-						$this->js_code_mode = $mode;
-					}
-
-				} else if ($mode == 'async') {
-
-					if ($this->js_code_mode === NULL) {
-						$this->js_code_mode = $mode;
-					}
+					$this->_js_code_save($code, $position);
 
 				} else {
 
-					exit_with_error('Unrecognised js code mode (inline/defer/async)');
+					$this->js_code[$position]['data'] .= $code;
+
+					if ($mode == 'inline') {
+
+						$this->js_code[$position]['mode'] = $mode;
+
+					} else if ($mode == 'defer') {
+
+						if ($this->js_code[$position]['mode'] === NULL || $this->js_code[$position]['mode'] == 'async') {
+							$this->js_code[$position]['mode'] = $mode;
+						}
+
+					} else if ($mode == 'async') {
+
+						if ($this->js_code[$position]['mode'] === NULL) {
+							$this->js_code[$position]['mode'] = $mode;
+						}
+
+					} else {
+
+						exit_with_error('Unrecognised js code mode (inline/defer/async)');
+
+					}
 
 				}
+
+			}
+
+			private function _js_get_html($position) {
+
+				$html = '';
+
+				if ($this->js_enabled && $this->browser_advanced) {
+
+					$js_files = array();
+
+					foreach ($this->resources_get($position == 'head' ? 'js_head' : 'js_foot') as $file) {
+						$js_files[$file['path']] = array_merge(array('src' => $file['path']), $file['attributes']); // Unique path
+					}
+
+					if (count($js_files) > 0) {
+						$html .= "\n";
+						foreach ($js_files as $attributes) {
+							$html .= "\n\t" . html_tag('script', $attributes) . '</script>';
+						}
+					}
+
+				}
+
+				return $html;
 
 			}
 
@@ -663,8 +693,10 @@
 
 			public function resources_get($type) {
 
-				if ($type == 'js') {
-					$files = $this->js_files;
+				if ($type == 'js_head') {
+					$files = $this->js_files['head'];
+				} else if ($type == 'js_foot') {
+					$files = $this->js_files['foot'];
 				} else if ($type == 'css') {
 					$files = $this->css_files_main;
 				} else if ($type == 'css_alternate') {
@@ -675,56 +707,76 @@
 
 				$version = config::get('output.version', true);
 
-				if ($type == 'js' && config::get('output.js_combine')) {
+				if ($type == 'js_head' || $type == 'js_foot') {
 
-					$grouped_files = array(); // Local files that can be grouped
+					if (config::get('output.js_combine')) {
 
-					foreach ($files as $id => $file) {
-						if (substr($file['path'], 0, 1) == '/' && substr($file['path'], -3) == '.js' && count($file['attributes']) == 0 && is_file(PUBLIC_ROOT . $file['path'])) {
-							$grouped_files[$id] = $file['path'];
+						$grouped_files = array(); // Local files that can be grouped
+
+						foreach ($files as $id => $file) {
+							if (substr($file['path'], 0, 1) == '/' && substr($file['path'], -3) == '.js' && count($file['attributes']) == 0 && is_file(PUBLIC_ROOT . $file['path'])) {
+								$grouped_files[$id] = $file['path'];
+							}
 						}
+
+						if (count($grouped_files) > 0) {
+
+							$prefix = reset($grouped_files);
+							$length = strlen($prefix);
+
+							foreach ($grouped_files as $path) { // @Gumbo - http://stackoverflow.com/questions/1336207/finding-common-prefix-of-array-of-strings
+								while ($length && substr($path, 0, $length) !== $prefix) {
+									$length--;
+									$prefix = substr($prefix, 0, -1);
+								}
+								if (!$length) break;
+							}
+
+							if ($length > 0 && substr($prefix, -1) == '/') {
+
+								if ($version) {
+									$version = false; // Don't run second check
+									$last_modified = 0;
+									foreach ($grouped_files as $path) {
+										$file_modified = filemtime(PUBLIC_ROOT . $path);
+										if ($last_modified < $file_modified) {
+											$last_modified = $file_modified;
+										}
+									}
+									$last_modified .= '-';
+								} else {
+									$last_modified = '';
+								}
+
+								$paths = array();
+								foreach ($grouped_files as $id => $path) {
+									unset($files[$id]);
+									$paths[] = substr($path, $length, -3);
+								}
+
+								$files[] = array(
+										'path' => $prefix . $last_modified . '{' . implode(',', array_unique($paths)) . '}.js',
+										'attributes' => array(),
+									);
+
+							}
+
+						}
+
 					}
 
-					if (count($grouped_files) > 0) {
+					$position = ($type == 'js_head' ? 'head' : 'foot');
 
-						$prefix = reset($grouped_files);
-						$length = strlen($prefix);
+					if ($this->js_code[$position]['data'] != '') {
 
-						foreach ($grouped_files as $path) { // @Gumbo - http://stackoverflow.com/questions/1336207/finding-common-prefix-of-array-of-strings
-							while ($length && substr($path, 0, $length) !== $prefix) {
-								$length--;
-								$prefix = substr($prefix, 0, -1);
-							}
-							if (!$length) break;
-						}
+						$this->js_code[$position]['saved'] = true;
 
-						if ($length > 0 && substr($prefix, -1) == '/') {
+						$this->_js_code_save($this->js_code[$position]['data'], $position);
 
-							if ($version) {
-								$last_modified = 0;
-								foreach ($grouped_files as $path) {
-									$file_modified = filemtime(PUBLIC_ROOT . $path);
-									if ($last_modified < $file_modified) {
-										$last_modified = $file_modified;
-									}
-								}
-								$last_modified .= '-';
-							} else {
-								$last_modified = '';
-							}
-
-							$paths = array();
-							foreach ($grouped_files as $id => $path) {
-								unset($files[$id]);
-								$paths[] = substr($path, $length, -3);
-							}
-
-							$files[] = array(
-									'path' => $prefix . $last_modified . '{' . implode(',', array_unique($paths)) . '}.js',
-									'attributes' => array(),
-								);
-
-						}
+						$files[] = array(
+								'path' => strval(gateway_url('js-code', $this->js_code_ref . '-' . $position . '.js')),
+								'attributes' => ($this->js_code[$position]['mode'] == 'inline' ? array() : array($this->js_code[$position]['mode'])),
+							);
 
 					}
 
@@ -736,19 +788,6 @@
 							$files[$id]['path'] = version_path($file['path']);
 						}
 					}
-				}
-
-				if ($type == 'js' && $this->js_code_data != '') {
-
-					$this->js_code_saved = true;
-
-					$this->_js_code_save($this->js_code_data);
-
-					$files[] = array(
-							'path' => gateway_url('js-code', $this->js_code_ref . '.js'),
-							'attributes' => ($this->js_code_mode == 'inline' ? array() : array($this->js_code_mode)),
-						);
-
 				}
 
 				return $files;
@@ -871,6 +910,11 @@
 					}
 
 				//--------------------------------------------------
+				// Javascript
+
+					$html .= $this->_js_get_html('head');
+
+				//--------------------------------------------------
 				// Extra head HTML
 
 					if ($this->browser_advanced) {
@@ -897,29 +941,7 @@
 				//--------------------------------------------------
 				// Javascript
 
-					if ($this->js_enabled && $this->browser_advanced) {
-
-						$js_prefix = config::get('output.js_path_prefix', '');
-						$js_files = array();
-
-						foreach ($this->resources_get('js') as $file) {
-
-							if (substr($file['path'], 0, 1) == '/') {
-								$file['path'] = $js_prefix . $file['path'];
-							}
-
-							$js_files[$file['path']] = array_merge(array('src' => $file['path']), $file['attributes']); // Unique path
-
-						}
-
-						if (count($js_files) > 0) {
-							$html .= "\n";
-							foreach ($js_files as $attributes) {
-								$html .= "\n\t" . html_tag('script', $attributes) . '</script>';
-							}
-						}
-
-					}
+					$html .= $this->_js_get_html('foot');
 
 				//--------------------------------------------------
 				// Return
@@ -1020,6 +1042,14 @@
 
 							$this->js_add($tracking_js_path);
 
+						}
+
+					//--------------------------------------------------
+					// NewRelic
+
+						if (extension_loaded('newrelic')) {
+							$this->js_code_add(newrelic_get_browser_timing_header(false), 'inline', 'head');
+							$this->js_code_add(newrelic_get_browser_timing_footer(false), 'async', 'foot');
 						}
 
 				//--------------------------------------------------
@@ -1165,15 +1195,15 @@
 				return ob_get_clean();
 			}
 
-			private function _js_code_save($code) { // Don't call directly, use js_code_add()
+			private function _js_code_save($code, $position = 'foot') { // Don't call directly, use js_code_add()
 
 				$session_js = session::get('output.js_code');
 
-				if (!isset($session_js[$this->js_code_ref])) {
-					$session_js[$this->js_code_ref] = '';
+				if (!isset($session_js[$this->js_code_ref][$position])) {
+					$session_js[$this->js_code_ref][$position] = '';
 				}
 
-				$session_js[$this->js_code_ref] .= $code;
+				$session_js[$this->js_code_ref][$position] .= $code;
 
 				session::set('output.js_code', $session_js);
 
