@@ -400,7 +400,7 @@
 					$attributes = array($attributes);
 				}
 				$this->js_files[$position][] = array(
-						'path' => $path,
+						'path' => strval($path), // If passing in a url object
 						'attributes' => $attributes,
 					);
 			}
