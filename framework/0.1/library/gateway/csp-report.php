@@ -78,7 +78,7 @@
 		$values_insert = $values_update;
 		$values_insert['created'] = date('Y-m-d H:i:s');
 
-		$db->insert(DB_PREFIX . 'report_csp', $values_insert, $values_update);
+		$db->insert(DB_PREFIX . 'system_report_csp', $values_insert, $values_update);
 
 	}
 

@@ -45,7 +45,7 @@
 
 				$db = new db();
 
-				$db->insert(DB_PREFIX . 'report', array(
+				$db->insert(DB_PREFIX . 'system_report', array(
 						'type'     => $type,
 						'created'  => date('Y-m-d H:i:s'),
 						'message'  => $message,
@@ -867,7 +867,7 @@
 
 			if (config::get('db.host') !== NULL) {
 
-				debug_require_db_table(DB_PREFIX . 'report', '
+				debug_require_db_table(DB_PREFIX . 'system_report', '
 						CREATE TABLE [TABLE] (
 							id int(11) NOT NULL auto_increment,
 							type tinytext NOT NULL,

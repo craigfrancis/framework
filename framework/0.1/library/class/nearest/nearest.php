@@ -36,7 +36,7 @@
 				// Default config
 
 					$default_config = array(
-							'table_sql' => DB_PREFIX . 'location',
+							'table_sql' => DB_PREFIX . 'table',
 							'where_sql' => 'true',
 							'field_id_sql' => 'id',
 							'field_latitude_sql' => 'latitude',
@@ -286,7 +286,7 @@
 										longitude,
 										accuracy
 									FROM
-										' . DB_PREFIX . 'nearest_search_cache
+										' . DB_PREFIX . 'system_nearest_cache
 									WHERE
 										search = "' . $db->escape($search_query) . '" AND
 										country = "' . $db->escape($country) . '" AND
@@ -336,7 +336,7 @@
 
 					if ($latitude === NULL) {
 
-						$db->query('SELECT 1 FROM ' . DB_PREFIX . 'nearest_outcode LIMIT 1');
+						$db->query('SELECT 1 FROM ' . DB_PREFIX . 'system_nearest_outcode LIMIT 1');
 						if ($db->num_rows() == 0) {
 
 							$fields = array('outcode', 'x', 'y', 'latitude', 'longitude', 'district');
@@ -345,7 +345,7 @@
 							if (($handle = fopen(FRAMEWORK_ROOT . '/library/class/nearest/outcode.csv', 'r')) !== false) {
 								while (($data = fgetcsv($handle, 1000, ',')) !== false) {
 									if (count($data) == $field_count) {
-										$db->insert(DB_PREFIX . 'nearest_outcode', array_combine($fields, $data));
+										$db->insert(DB_PREFIX . 'system_nearest_outcode', array_combine($fields, $data));
 									} else {
 										exit_with_error('Invalid number of fields in "outcode.csv"', debug_dump($data));
 									}
@@ -359,7 +359,7 @@
 										latitude,
 										longitude
 									FROM
-										' . DB_PREFIX . 'nearest_outcode
+										' . DB_PREFIX . 'system_nearest_outcode
 									WHERE
 										outcode = "' . $db->escape($postcode === NULL ? $search : substr($postcode, 0, -4)) . '"
 									LIMIT
@@ -390,7 +390,7 @@
 						$values_insert = $values_update;
 						$values_insert['created'] = date('Y-m-d H:i:s');
 
-						$db->insert(DB_PREFIX . 'nearest_search_cache', $values_insert, $values_update);
+						$db->insert(DB_PREFIX . 'system_nearest_cache', $values_insert, $values_update);
 
 					}
 
@@ -517,7 +517,7 @@
 
 	if (config::get('debug.level') > 0) {
 
-		debug_require_db_table(DB_PREFIX . 'nearest_search_cache', '
+		debug_require_db_table(DB_PREFIX . 'system_nearest_cache', '
 				CREATE TABLE [TABLE] (
 					search varchar(200) NOT NULL,
 					country varchar(10) NOT NULL,
@@ -529,7 +529,7 @@
 					PRIMARY KEY (search,country)
 				);');
 
-		debug_require_db_table(DB_PREFIX . 'nearest_outcode', '
+		debug_require_db_table(DB_PREFIX . 'system_nearest_outcode', '
 				CREATE TABLE [TABLE] (
 					outcode varchar(5) NOT NULL default \'\',
 					x int(11) NOT NULL default \'0\',

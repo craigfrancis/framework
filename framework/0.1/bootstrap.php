@@ -36,17 +36,6 @@
 	}
 
 //--------------------------------------------------
-// Disable output buffers, and error if non-empty
-
-	$output = '';
-	while (ob_get_level() > 0) {
-		$output = ob_get_clean() . $output;
-	}
-	if ($output != '') {
-		exit('Pre framework output "' . $output . '"');
-	}
-
-//--------------------------------------------------
 // Includes
 
 	require_once(FRAMEWORK_ROOT . '/includes/01.function.php');
@@ -68,6 +57,19 @@
 // Process request
 
 	if (!defined('FRAMEWORK_INIT_ONLY') || FRAMEWORK_INIT_ONLY !== true) {
+
+		//--------------------------------------------------
+		// Disable output buffers - which NewRelic uses
+
+			if (SERVER != 'live') {
+				$output = '';
+				while (ob_get_level() > 0) {
+					$output = ob_get_clean() . $output;
+				}
+				if ($output != '') {
+					exit('Pre framework output "' . $output . '"');
+				}
+			}
 
 		//--------------------------------------------------
 		// Routes

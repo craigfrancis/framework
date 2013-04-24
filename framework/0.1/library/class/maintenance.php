@@ -72,7 +72,7 @@
 									id,
 									run_start
 								FROM
-									' . DB_PREFIX . 'maintenance
+									' . DB_PREFIX . 'system_maintenance
 								WHERE
 									run_end = "0000-00-00 00:00:00" AND
 									run_start < "' . $db->escape(date('Y-m-d H:i:s', strtotime('-2 hours'))) . '"');
@@ -80,7 +80,7 @@
 					if ($row = $db->fetch_row()) {
 
 						$db->query('DELETE FROM
-										' . DB_PREFIX . 'maintenance
+										' . DB_PREFIX . 'system_maintenance
 									WHERE
 										id = "' . $db->escape($row['id']) . '" AND
 										run_end = "0000-00-00 00:00:00"');
@@ -92,12 +92,12 @@
 				//--------------------------------------------------
 				// Create maintenance record (lock).
 
-					$db->query('SELECT 1 FROM ' . DB_PREFIX . 'maintenance WHERE run_end = "0000-00-00 00:00:00"');
+					$db->query('SELECT 1 FROM ' . DB_PREFIX . 'system_maintenance WHERE run_end = "0000-00-00 00:00:00"');
 					if ($db->num_rows() > 0) {
 						exit_with_error('Maintenance script is already running (A).');
 					}
 
-					$db->insert(DB_PREFIX . 'maintenance', array(
+					$db->insert(DB_PREFIX . 'system_maintenance', array(
 							'id'        => '',
 							'run_start' => date('Y-m-d H:i:s'),
 							'run_end'   => '0000-00-00 00:00:00',
@@ -105,7 +105,7 @@
 
 					$this->run_id = $db->insert_id();
 
-					$db->query('SELECT 1 FROM ' . DB_PREFIX . 'maintenance WHERE run_end = "0000-00-00 00:00:00"');
+					$db->query('SELECT 1 FROM ' . DB_PREFIX . 'system_maintenance WHERE run_end = "0000-00-00 00:00:00"');
 					if ($db->num_rows() != 1) {
 						exit_with_error('Maintenance script is already running (B).');
 					}
@@ -116,13 +116,13 @@
 					$archive_date = date('Y-m-d H:i:s', strtotime('-2 months')); // Some jobs only run once a month, so needs some overlap
 
 					$db->query('DELETE FROM
-									' . DB_PREFIX . 'maintenance
+									' . DB_PREFIX . 'system_maintenance
 								WHERE
 									run_end != "0000-00-00 00:00:00" AND
 									run_end < "' . $db->escape($archive_date) . '"');
 
 					$db->query('DELETE FROM
-									' . DB_PREFIX . 'maintenance_job
+									' . DB_PREFIX . 'system_maintenance_job
 								WHERE
 									created < "' . $db->escape($archive_date) . '"');
 
@@ -158,7 +158,7 @@
 				// Mark as done
 
 					$db->query('UPDATE
-									' . DB_PREFIX . 'maintenance
+									' . DB_PREFIX . 'system_maintenance
 								SET
 									run_end = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 								WHERE
@@ -322,7 +322,7 @@
 						$db->query('SELECT
 										created
 									FROM
-										' . DB_PREFIX . 'maintenance_job
+										' . DB_PREFIX . 'system_maintenance_job
 									WHERE
 										job = "' . $db->escape($this->job_name) . '"
 									ORDER BY
@@ -508,7 +508,7 @@
 
 						$db = db_get();
 
-						$db->insert(DB_PREFIX . 'maintenance_job', array(
+						$db->insert(DB_PREFIX . 'system_maintenance_job', array(
 								'job'     => $this->job_name,
 								'run_id'  => $this->run_id,
 								'output'  => $job_output_html,
@@ -547,7 +547,7 @@
 
 	if (config::get('debug.level') > 0) {
 
-		debug_require_db_table(DB_PREFIX . 'maintenance', '
+		debug_require_db_table(DB_PREFIX . 'system_maintenance', '
 				CREATE TABLE [TABLE] (
 					id int(11) NOT NULL AUTO_INCREMENT,
 					run_start datetime NOT NULL,
@@ -556,7 +556,7 @@
 					UNIQUE KEY run_end (run_end)
 				);');
 
-		debug_require_db_table(DB_PREFIX . 'maintenance_job', '
+		debug_require_db_table(DB_PREFIX . 'system_maintenance_job', '
 				CREATE TABLE [TABLE] (
 					id int(11) NOT NULL AUTO_INCREMENT,
 					job varchar(20) NOT NULL,
