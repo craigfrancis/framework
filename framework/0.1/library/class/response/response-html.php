@@ -1049,13 +1049,17 @@
 
 						if (extension_loaded('newrelic')) {
 
-							newrelic_get_browser_timing_header(false);
+							$head_js = newrelic_get_browser_timing_header(false);
 
-							$this->js_add(gateway_url('js-newrelic', 'head.js'), 'inline', 'head'); // Can be cached
+							if ($head_js != '') { // Is working
 
-							$this->js_code_add(newrelic_get_browser_timing_footer(false), 'async', 'foot');
+								$this->js_add(gateway_url('js-newrelic', 'head.js'), 'inline', 'head'); // Can be cached
 
-							$this->csp_add_source('script-src', array('d1ros97qkrwjf5.cloudfront.net', 'beacon-1.newrelic.com'));
+								$this->js_code_add(newrelic_get_browser_timing_footer(false), 'async', 'foot');
+
+								$this->csp_add_source('script-src', array('d1ros97qkrwjf5.cloudfront.net', 'beacon-1.newrelic.com'));
+
+							}
 
 						}
 
