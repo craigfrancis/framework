@@ -1049,8 +1049,8 @@
 
 						if (extension_loaded('newrelic')) {
 
-							$this->js_code_add(newrelic_get_browser_timing_header(false), 'inline', 'head');
-							$this->js_code_add(newrelic_get_browser_timing_footer(false), 'async', 'foot');
+							$this->js_add(gateway_url('framework-file', 'head.js'), 'inline', 'head');
+							$this->js_add(gateway_url('framework-file', 'foot.js'), 'async', 'foot');
 
 							$this->csp_add_source('script-src', array('d1ros97qkrwjf5.cloudfront.net', 'beacon-1.newrelic.com'));
 
