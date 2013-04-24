@@ -34,7 +34,7 @@
 
 			mime_set('application/javascript');
 
-			http_cache_headers(60*60*24, time());
+			http_cache_headers(60*60*24*7, time());
 
 		//--------------------------------------------------
 		// Content
