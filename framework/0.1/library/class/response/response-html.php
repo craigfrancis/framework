@@ -1049,6 +1049,8 @@
 
 						if (extension_loaded('newrelic')) {
 
+							newrelic_disable_autorum();
+
 							$this->js_add(gateway_url('framework-file', 'head.js'), 'inline', 'head');
 							$this->js_add(gateway_url('framework-file', 'foot.js'), 'async', 'foot');
 
