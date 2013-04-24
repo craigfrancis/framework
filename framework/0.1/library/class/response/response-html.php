@@ -398,6 +398,8 @@
 			public function js_add($path, $attributes = array(), $position = 'foot') { // Could be $this->js_add('/path.js', 'defer');
 				if (is_string($attributes)) {
 					$attributes = array($attributes);
+				} else if (!is_array($attributes)) { // NULL
+					$attributes = array();
 				}
 				$this->js_files[$position][] = array(
 						'path' => strval($path), // If passing in a url object
@@ -1053,7 +1055,7 @@
 
 							if ($head_js != '') { // Is working
 
-								$this->js_add(gateway_url('js-newrelic', 'head.js'), 'inline', 'head'); // Can be cached
+								$this->js_add(gateway_url('js-newrelic', 'head.js'), NULL, 'head'); // Can be cached
 
 								$this->js_code_add(newrelic_get_browser_timing_footer(false), 'async', 'foot');
 
