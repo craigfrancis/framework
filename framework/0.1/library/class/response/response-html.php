@@ -1049,7 +1049,7 @@
 
 						if (extension_loaded('newrelic')) {
 
-							newrelic_disable_autorum();
+							newrelic_get_browser_timing_header(false);
 
 							$this->js_add(gateway_url('js-newrelic', 'head.js'), 'inline', 'head'); // Can be cached
 
