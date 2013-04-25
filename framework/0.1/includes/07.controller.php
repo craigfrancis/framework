@@ -327,7 +327,7 @@
 		}
 
 		if (extension_loaded('newrelic')) {
-			newrelic_name_transaction(str_replace(ROOT, '', view_path($route_folders)));
+			newrelic_name_transaction(str_replace(VIEW_ROOT, '', view_path($route_folders)));
 		}
 
 		$response->view_folders_set($route_folders);
