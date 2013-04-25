@@ -6,36 +6,22 @@
 
 	class socket_base extends check {
 
-		private $values;
-		private $headers;
-		private $cookies;
-		private $login_username;
-		private $login_password;
-		private $request_full;
-		private $request_host;
-		private $request_path;
-		private $response_full;
-		private $response_headers;
-		private $response_data;
-		private $exit_on_error;
-		private $error_string;
-		private $connection;
+		private $values = array();
+		private $headers = array();
+		private $cookies = array();
+		private $login_username = '';
+		private $login_password = '';
+		private $request_full = '';
+		private $request_host = '';
+		private $request_path = '';
+		private $response_full = '';
+		private $response_headers = '';
+		private $response_data = '';
+		private $exit_on_error = true;
+		private $error_string = NULL;
+		private $connection = NULL;
 
 		public function __construct() {
-			$this->values = array();
-			$this->headers = array();
-			$this->cookies = array();
-			$this->login_username = '';
-			$this->login_password = '';
-			$this->request_full = '';
-			$this->request_host = '';
-			$this->request_path = '';
-			$this->response_full = '';
-			$this->response_headers = '';
-			$this->response_data = '';
-			$this->exit_on_error = true;
-			$this->error_string = NULL;
-			$this->connection = NULL;
 		}
 
 		public function value_add($name, $value) {

@@ -86,11 +86,19 @@ For other variables, you should probably use the [cookie](../../doc/system/cooki
 		// http://www.example.com/admin/products/
 		// 'admin'
 
+	message_set('Thank you for...');
+		// Message to be shown on next page, when the template uses $this->message_get_html();
+
 	error_send('page-not-found');
 		// Will also exit() for you, with the 'page-not-found' error.
 
-	message_set('Thank you for...');
-		// Message to be shown on next page, when the template uses $this->message_get_html();
+	report_add('My message');
+	report_add('My message', $type);
+		// Record in database, and if type is 'notice' (default) or 'error' an email is sent.
+
+	exit_with_error('Something has gone wrong');
+	exit_with_error('Something has gone wrong', 'Hidden information');
+		// Processing stops, an error page displayed, and the error logged (database + email).
 
 	mime_set('text/plain');
 		// Changes the mime type sent to the browser.

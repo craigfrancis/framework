@@ -5,6 +5,51 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 
 Kind of like [Symfony BrowserKit](https://github.com/symfony/BrowserKit).
 
+Simple example:
+
+	$socket = new socket();
+	// $socket->value_add('key', $value);
+	// $socket->header_add('name', 'value');
+	// $socket->cookie_add('name', 'value');
+
+	$socket->get('http://www.example.com');
+	// $socket->post('http://www.example.com');
+	// $socket->put('http://www.example.com');
+	// $socket->delete('http://www.example.com');
+
+	debug($socket->response_code_get());
+	debug($socket->response_mime_get());
+	debug($socket->response_headers_get());
+	debug($socket->response_data_get());
+	debug($socket->response_full_get());
+
+If there is a connection problem, by default it will call [`exit_with_error()`](../../doc/system/functions.md) automatically.
+
+---
+
+## Error handling
+
+To handle errors yourself, do something like:
+
+	$socket = new socket();
+	$socket->exit_on_error_set(false);
+
+	if ($socket->get('http://www.example.com') && $socket->response_code_get() == 200) {
+		$response = $socket->response_data_get();
+	} else {
+		exit($socket->error_string_get());
+	}
+
+Or perhaps:
+
+	$result = $socket->get('http://www.example.com');
+
+	if ($result) {
+		// Success
+	} else {
+		exit($socket->error_string_get());
+	}
+
 ---
 
 ## Socket browser
