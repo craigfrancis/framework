@@ -307,7 +307,7 @@
 		}
 
 		if (extension_loaded('newrelic')) {
-			newrelic_name_transaction(str_replace(CONTROLLER_ROOT, '/controller', $action_controller_path) . '->' . $action_method . '()');
+			newrelic_name_transaction(str_replace(CONTROLLER_ROOT, '', $action_controller_path) . '->' . $action_method . '()');
 		}
 
 		$response->view_folders_set($action_route_stack_used);
@@ -325,7 +325,7 @@
 		}
 
 		if (extension_loaded('newrelic')) {
-			newrelic_name_transaction(str_replace(VIEW_ROOT, '/view', view_path($route_folders)));
+			newrelic_name_transaction(str_replace(VIEW_ROOT, '', view_path($route_folders)));
 		}
 
 		$response->view_folders_set($route_folders);
