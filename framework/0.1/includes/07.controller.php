@@ -307,8 +307,7 @@
 		}
 
 		if (extension_loaded('newrelic')) {
-			$transaction_name = str_replace(CONTROLLER_ROOT, '/controller', $action_controller_path) . '->' . $action_method . '()';
-			newrelic_name_transaction($transaction_name);
+			newrelic_name_transaction(str_replace(CONTROLLER_ROOT, '/controller', $action_controller_path) . '->' . $action_method . '()');
 		}
 
 		$response->view_folders_set($action_route_stack_used);
