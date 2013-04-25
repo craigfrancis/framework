@@ -597,7 +597,7 @@
 									<tr>';
 								foreach ($row as $key => $value) {
 									$explain_html .= '
-										<td>' . ($key == 'type' ? '<a href="http://dev.mysql.com/doc/refman/5.0/en/explain.html#id2772158">' : '') . ($value == '' ? '&#xA0;' : html($value)) . ($key == 'type' ? '</a>' : '') . '</td>';
+										<td>' . ($key == 'type' ? '<a href="http://dev.mysql.com/doc/refman/5.0/en/explain-output.html#jointype_' . html($value) . '">' : '') . ($value == '' ? '&#xA0;' : html($value)) . ($key == 'type' ? '</a>' : '') . '</td>';
 								}
 								$explain_html .= '
 									</tr>';
