@@ -289,8 +289,7 @@
 								FROM
 								 	' . DB_PREFIX . 'cms_text AS ct
 								WHERE
-									' . $config['version_where_sql'][$version_name] . ' AND
-									ct.revision > "0"
+									' . $config['version_where_sql'][$version_name] . '
 								ORDER BY
 									ct.revision';
 
