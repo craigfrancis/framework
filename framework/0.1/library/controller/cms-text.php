@@ -10,15 +10,76 @@
 				$response = response_get();
 
 			//--------------------------------------------------
-			// History of recent changes
-
-
-
-
-			//--------------------------------------------------
 			// View path
 
 				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-text/view-index.ctp');
+
+		}
+
+		protected function config_get() {
+
+			//--------------------------------------------------
+			// Defaults
+
+				$default_config = array(
+						'versions' => array(),
+						'revision_limit' => 10,
+					);
+
+				$config = array_merge($default_config, config::get_all('cms.default'));
+
+				$profile = request('profile');
+				if ($profile != NULL) {
+					$config = array_merge($config, config::get_all('cms.' . $profile));
+				}
+
+				$config = array_merge($config, array(
+						'profile' => $profile,
+						'path' => request('path'),
+						'section' => request('section'),
+						'wrapper_tag' => request('wrapper_tag'),
+						'global' => request('global'),
+						'marker' => request('marker'),
+						'default' => request('default'),
+					));
+
+			//--------------------------------------------------
+			// Quick validation
+
+				if ($config['path'] == '') exit_with_error('The path is required');
+				if ($config['section'] == '') exit_with_error('The section is required');
+
+			//--------------------------------------------------
+			// Versions config
+
+				$db = db_get();
+
+				if (!is_array($config['versions']) || count($config['versions']) == 0) {
+					$config['versions'] = array('Text' => array());
+				}
+
+				$version_where_sql = array();
+
+				foreach ($config['versions'] as $version_name => $version_values) {
+
+					$where_sql = array();
+					$where_sql[] = 'path = "' . $db->escape($config['path']) . '"';
+					$where_sql[] = 'section = "' . $db->escape($config['section']) . '"';
+
+					foreach ($version_values as $field => $value) {
+						$where_sql[] = $db->escape_field($field) . ' = "' . $db->escape($value) . '"';
+					}
+
+					$version_where_sql[$version_name] = '(' . implode(' AND ', $where_sql) . ')';
+
+				}
+
+				$config['version_where_sql'] = $version_where_sql;
+
+			//--------------------------------------------------
+			// Return
+
+				return $config;
 
 		}
 
@@ -32,59 +93,9 @@
 				$response = response_get();
 
 			//--------------------------------------------------
-			// Request
-
-				$profile = request('profile');
-				$path = request('path');
-				$section = request('section');
-				$wrapper_tag = request('wrapper_tag');
-				$global = request('global');
-				$marker = request('marker');
-				$default = request('default');
-
-			//--------------------------------------------------
-			// Quick validation
-
-				if ($path == '') exit_with_error('The path is required');
-				if ($section == '') exit_with_error('The section is required');
-
-			//--------------------------------------------------
 			// Config
 
-				$default_config = array(
-						'versions' => array(),
-						'revision_limit' => 10,
-					);
-
-				$config = array_merge($default_config, config::get_all('cms.default'));
-
-				if ($profile != NULL) {
-					$config = array_merge($config, config::get_all('cms.' . $profile));
-				}
-
-			//--------------------------------------------------
-			// Versions config
-
-				$versions = $config['versions'];
-				if (!is_array($versions) || count($versions) == 0) {
-					$versions = array('Text' => array());
-				}
-
-				$version_where_sql = array();
-
-				foreach ($versions as $version_name => $version_values) {
-
-					$where_sql = array();
-					$where_sql[] = 'path = "' . $db->escape($path) . '"';
-					$where_sql[] = 'section = "' . $db->escape($section) . '"';
-
-					foreach ($version_values as $field => $value) {
-						$where_sql[] = $db->escape_field($field) . ' = "' . $db->escape($value) . '"';
-					}
-
-					$version_where_sql[$version_name] = '(' . implode(' AND ', $where_sql) . ')';
-
-				}
+				$config = $this->config_get();
 
 			//--------------------------------------------------
 			// Form setup
@@ -94,19 +105,19 @@
 				$form->form_button_set('Save');
 
 				$field_name = new form_field_info($form, 'Page');
-				$field_name->link_set($path, $path);
+				$field_name->link_set($config['path'], $config['path']);
 
 				$field_section = new form_field_info($form, 'Section');
-				$field_section->value_set($section);
+				$field_section->value_set($config['section']);
 
 				$fields = array();
 
-				$row_count = (count($versions) == 1 ? 20 : 10);
+				$row_count = (count($config['versions']) == 1 ? 20 : 10);
 
-				foreach ($versions as $version_name => $version_values) {
+				foreach ($config['versions'] as $version_name => $version_values) {
 
 					$fields[$version_name] = new form_field_textarea($form, $version_name);
-					$fields[$version_name]->max_length_set('Your message cannot be longer than XXX characters.', 65000);
+					$fields[$version_name]->max_length_set('The content cannot be longer than XXX characters.', 65000);
 					$fields[$version_name]->cols_set(80);
 					$fields[$version_name]->rows_set($row_count);
 
@@ -132,12 +143,12 @@
 
 								$clear_cache = false;
 
-								foreach ($versions as $version_name => $version_values) {
+								foreach ($config['versions'] as $version_name => $version_values) {
 
 									//--------------------------------------------------
 									// SQL
 
-										$where_sql = $version_where_sql[$version_name];
+										$where_sql = $config['version_where_sql'][$version_name];
 
 										$value = $fields[$version_name]->value_get();
 
@@ -145,18 +156,18 @@
 									// Live exists
 
 										$sql = 'SELECT
-													content,
-													global,
-													marker
+													ct.content,
+													ct.global,
+													ct.marker
 												FROM
-													' . DB_PREFIX . 'cms_text
+													' . DB_PREFIX . 'cms_text AS ct
 												WHERE
 													' . $where_sql . ' AND
-													revision = 0';
+													ct.revision = 0';
 
 										if ($row = $db->fetch($sql)) {
 
-											if ($row['content'] == $value && $row['global'] == $global && $row['marker'] == $marker) {
+											if ($row['content'] == $value && $row['global'] == $config['global'] && $row['marker'] == $config['marker']) {
 												continue; // No change
 											} else {
 												$live_exists = true;
@@ -182,13 +193,13 @@
 									//--------------------------------------------------
 									// Add new revision
 
-										if ($value != '' && ($live_exists || $value != $default)) {
+										if ($value != '' && ($live_exists || $value != $config['default'])) {
 
 											$db->insert(DB_PREFIX . 'cms_text', array_merge($version_values, array(
-													'path' => $path,
-													'section' => $section,
-													'global' => strval($global),
-													'marker' => strval($marker),
+													'path' => $config['path'],
+													'section' => $config['section'],
+													'global' => strval($config['global']),
+													'marker' => strval($config['marker']),
 													'created' => date('Y-m-d H:i:s'),
 													'revision' => ($live_exists ? '-1' : '0'),
 													'content' => $value,
@@ -224,7 +235,7 @@
 							// Clear cache
 
 								if ($clear_cache) {
-									foreach (cms_text::cache_files($global == 'true' ? NULL : $path) as $cache_path) {
+									foreach (cms_text::cache_files($config['global'] == 'true' ? NULL : $config['path']) as $cache_path) {
 										unlink($cache_path);
 									}
 								}
@@ -232,7 +243,7 @@
 							//--------------------------------------------------
 							// Next page
 
-								$form->dest_redirect(url($path));
+								$form->dest_redirect(url($config['path']));
 
 						}
 
@@ -241,20 +252,20 @@
 					//--------------------------------------------------
 					// Defaults
 
-						foreach ($versions as $version_name => $version_values) {
+						foreach ($config['versions'] as $version_name => $version_values) {
 
 							$sql = 'SELECT
 										ct.content
 									FROM
 										' . DB_PREFIX . 'cms_text AS ct
 									WHERE
-										' . $version_where_sql[$version_name] . ' AND
+										' . $config['version_where_sql'][$version_name] . ' AND
 										revision = "0"';
 
 							if ($row = $db->fetch($sql)) {
 								$fields[$version_name]->value_set($row['content']);
 							} else {
-								$fields[$version_name]->value_set($default);
+								$fields[$version_name]->value_set($config['default']);
 							}
 
 						}
@@ -264,41 +275,46 @@
 			//--------------------------------------------------
 			// History
 
-				// When required, remember the versions (e.g. Spanish)... might
-				// put the history beneath each text field?
+				if (count($config['versions']) == 1) { // Hide if more than one version, should probably appear under each textarea
+					foreach ($config['versions'] as $version_name => $version_values) {
 
-				// $history = array();
+						$history = array();
 
-				// $sql = 'SELECT
-				// 			revision,
-				// 			created
-				// 		FROM
-				// 		 	' . DB_PREFIX . 'cms_text
-				// 		WHERE
-				// 			path = "' . $db->escape($path) . '" AND
-				// 			section = "' . $db->escape($section) . '" AND
-				// 			revision > "0"
-				// 		ORDER BY
-				// 			revision';
+						$sql = 'SELECT
+									ct.revision,
+									ct.created
+								FROM
+								 	' . DB_PREFIX . 'cms_text AS ct
+								WHERE
+									' . $config['version_where_sql'][$version_name] . ' AND
+									ct.revision > "0"
+								ORDER BY
+									ct.revision';
 
-				// foreach ($db->fetch_all($sql) as $row) {
+						foreach ($db->fetch_all($sql) as $row) {
 
-				// 	$admin_url = url('/admin/cms-text/history/', array(
-				// 			'profile' => $profile,
-				// 			'path' => $path,
-				// 			'section' => $section,
-				// 			'wrapper_tag' => $wrapper_tag,
-				// 			'global' => $global,
-				// 			'marker' => $marker,
-				// 			'revision' => $row['revision'],
-				// 		));
+							$admin_url = url('../history/', array(
+									'profile' => $config['profile'],
+									'path' => $config['path'],
+									'section' => $config['section'],
+									'wrapper_tag' => $config['wrapper_tag'],
+									'global' => $config['global'],
+									'marker' => $config['marker'],
+									'version' => $version_name,
+									'revision' => $row['revision'],
+								));
 
-				// 	$history[$row['revision']] = array(
-				// 			'url' => $admin_url,
-				// 			'edited' => date('D jS M Y, g:ia', strtotime($row['created'])),
-				// 		);
+							$history[$version_name][$row['revision']] = array(
+									'url' => $admin_url,
+									'edited' => $row['created'],
+								);
 
-				// }
+						}
+
+						$response->set('history', $history);
+
+					}
+				}
 
 			//--------------------------------------------------
 			// Variables
@@ -309,6 +325,86 @@
 			// View path
 
 				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-text/view-edit.ctp');
+
+		}
+
+		public function action_history() {
+
+			//--------------------------------------------------
+			// Resources
+
+				$db = db_get();
+
+				$response = response_get();
+
+			//--------------------------------------------------
+			// Config
+
+				$config = $this->config_get();
+
+				$back_url = url('../edit/', array(
+						'profile' => $config['profile'],
+						'path' => $config['path'],
+						'section' => $config['section'],
+						'wrapper_tag' => $config['wrapper_tag'],
+						'global' => $config['global'],
+						'marker' => $config['marker'],
+					));
+
+			//--------------------------------------------------
+			// History
+
+				$revision = request('revision');
+				$version_name = request('version');
+
+				if (!isset($config['version_where_sql'][$version_name])) {
+					exit_with_error('Cannot find details for version "' . $version_name . '"');
+				}
+
+				$sql = 'SELECT
+							ct.created,
+							ct.content
+						FROM
+						 	' . DB_PREFIX . 'cms_text AS ct
+						WHERE
+							' . $config['version_where_sql'][$version_name] . ' AND
+							ct.revision = "' . $db->escape($revision) . '"';
+
+				if ($row = $db->fetch($sql)) {
+					$text_created = $row['created'];
+					$text_content = $row['content'];
+				} else {
+					exit_with_error('Cannot find history content for version "' . $version_name . '", revision "' . $revision . '"');
+				}
+
+			//--------------------------------------------------
+			// Form
+
+				$form = new form();
+				$form->form_class_set('basic_form');
+				$form->form_button_set(NULL);
+
+				$field_name = new form_field_info($form, 'Page');
+				$field_name->link_set($config['path'], $config['path']);
+
+				$field_section = new form_field_info($form, 'Section');
+				$field_section->value_set($config['section']);
+
+				$field_created = new form_field_info($form, 'Created');
+				$field_created->value_set(date('D jS M Y, g:ia', strtotime($text_created)));
+
+				$field_content = new form_field_info($form, 'Content');
+				$field_content->value_set($text_content);
+
+				$field_name = new form_field_info($form);
+				$field_name->link_set($back_url, 'Back');
+
+				$response->set('form', $form);
+
+			//--------------------------------------------------
+			// View path
+
+				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-text/view-history.ctp');
 
 		}
 

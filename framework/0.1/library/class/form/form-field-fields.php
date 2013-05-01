@@ -361,7 +361,15 @@
 				//--------------------------------------------------
 				// Return the HTML for the label
 
-					return '<label for="' . html($this->id) . '_' . html($field) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . ($required_mark_position == 'left' && $required_mark_html !== NULL ? $required_mark_html : '') . ($label_html !== NULL ? $label_html : $this->label_html) . ($required_mark_position == 'right' && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>';
+					if ($label_html === NULL) {
+						$label_html = $this->label_html;
+					}
+
+					if ($label_html != '') {
+						return '<label for="' . html($this->id) . '_' . html($field) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . ($required_mark_position == 'left' && $required_mark_html !== NULL ? $required_mark_html : '') . $label_html . ($required_mark_position == 'right' && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>' . $this->label_suffix_html;
+					} else {
+						return '';
+					}
 
 			}
 

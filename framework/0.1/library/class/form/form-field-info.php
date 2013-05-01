@@ -11,7 +11,7 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($form, $label, $name = NULL) {
+			public function __construct($form, $label = '', $name = NULL) {
 				$this->_setup_info($form, $label, $name);
 			}
 
