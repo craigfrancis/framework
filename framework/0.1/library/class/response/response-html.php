@@ -53,6 +53,14 @@
 
 			}
 
+			public function get($variable, $default = NULL) {
+				if (isset($this->variables[$variable])) {
+					return $this->variables[$variable];
+				} else {
+					return $default;
+				}
+			}
+
 		//--------------------------------------------------
 		// Error
 

@@ -284,6 +284,7 @@
 
 						$sql = 'SELECT
 									ct.revision,
+									ct.author_id,
 									ct.created
 								FROM
 								 	' . DB_PREFIX . 'cms_text AS ct
@@ -309,6 +310,7 @@
 							$history[$version_name][$row['revision']] = array(
 									'url' => $admin_url,
 									'edited' => $row['created'],
+									'author_id' => $row['author_id'],
 								);
 
 						}

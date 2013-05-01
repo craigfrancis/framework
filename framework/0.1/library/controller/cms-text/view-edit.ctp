@@ -7,7 +7,17 @@
 			<h2>History</h2>
 			<ul>
 				<?php foreach ($version_history as $entry) { ?>
-					<li><a href="<?= html($entry['url']) ?>"><?= html(date('D jS M Y, g:ia', strtotime($entry['edited']))) ?></a></li>
+					<li>
+
+						<a href="<?= html($entry['url']) ?>"><?= html(date('D jS M Y, g:ia', strtotime($entry['edited']))) ?></a>
+
+						<?php if (isset($entry['notes'])) { ?>
+
+							- <?= html($entry['notes']) ?>
+
+						<?php } ?>
+
+					</li>
 				<?php } ?>
 			</ul>
 
