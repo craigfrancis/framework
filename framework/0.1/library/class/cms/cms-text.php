@@ -84,6 +84,7 @@
 									global enum(\'false\',\'true\') NOT NULL,
 									marker tinytext NOT NULL,
 									created datetime NOT NULL,
+									author_id int(11) NOT NULL,
 									revision int(11) NOT NULL,
 									content text NOT NULL,
 									PRIMARY KEY (path, section, revision)

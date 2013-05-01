@@ -24,6 +24,7 @@
 				$default_config = array(
 						'versions' => array(),
 						'revision_limit' => 10,
+						'author_id' => 0,
 					);
 
 				$config = array_merge($default_config, config::get_all('cms.default'));
@@ -201,6 +202,7 @@
 													'global' => strval($config['global']),
 													'marker' => strval($config['marker']),
 													'created' => date('Y-m-d H:i:s'),
+													'author_id' => $config['author_id'],
 													'revision' => ($live_exists ? '-1' : '0'),
 													'content' => $value,
 												)));
