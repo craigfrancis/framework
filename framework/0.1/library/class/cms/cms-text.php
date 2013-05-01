@@ -51,6 +51,7 @@
 							'path' => config::get('request.path'),
 							'versions' => array(),
 							'priority' => array(),
+							'edit_url' => '/admin/cms-text/edit/',
 						);
 
 					$default_config = array_merge($default_config, config::get_all('cms.default'));
@@ -284,6 +285,7 @@
 							'log_missing' => $this->config['log_missing'],
 							'global'      => false,
 							'marker'      => NULL,
+							'edit_url'    => $this->config['edit_url'],
 						);
 
 					if (is_string($config)) {
@@ -380,7 +382,7 @@
 
 					if ($config['editable']) {
 
-						$admin_url = url('/admin/cms-text/edit/', array(
+						$admin_url = url($config['edit_url'], array(
 								'profile' => $this->config['profile'],
 								'path' => $config['path'],
 								'section' => $config['section'],

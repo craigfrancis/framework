@@ -438,6 +438,10 @@
 			$currency_char = config::get('output.currency');
 		}
 
+		if ($value === NULL) {
+			return NULL;
+		}
+
 		$value = (round($value, $decimal_places) == 0 ? 0 : $value); // Stop negative -£0
 
 		if ($value == 0 && $zero_to_blank) {
