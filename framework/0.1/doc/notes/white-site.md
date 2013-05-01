@@ -71,7 +71,7 @@ And add the following code:
 		$route_path = config::get('route.path');
 		$view_path = view_path(path_to_array($route_path));
 
-		if (!is_file($view_path)) {
+		if ($route_path !== NULL && !is_file($view_path)) {
 
 			$page_title = cms_text_html(array(
 						'path' => $route_path,

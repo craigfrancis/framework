@@ -107,113 +107,90 @@
 				//--------------------------------------------------
 				// Content
 
-					//--------------------------------------------------
-					// Base conditions
+					$cache_path = tmp_folder('cms-text') . '/' . intval($this->config['revision']) . '-' . base64_encode($this->config['path']);
 
-						$where_sql = '
-							(
-								path = "' . $db->escape($this->config['path']) . '" OR
-								global = "true"
-							) AND
-							revision = "' . $db->escape($this->config['revision']) . '"';
+					if (is_file($cache_path)) {
+						$this->content = unserialize(file_get_contents($cache_path));
+					} else {
+						$this->content = NULL;
+					}
 
-					//--------------------------------------------------
-					// Cache exists and up to date
+					if (!is_array($this->content)) {
 
-						$cache_path = tmp_folder('cms-text') . '/' . intval($this->config['revision']) . '-' . base64_encode($this->config['path']);
+						//--------------------------------------------------
+						// Processor
 
-						if (is_file($cache_path)) {
+							$processor = $this->processor_get();
+
+						//--------------------------------------------------
+						// Fields
+
+							$fields_sql = array(
+									'path',
+									'section',
+									'content',
+								);
+
+							foreach ($this->config['versions'] as $version_name => $version_fields) {
+								$fields_sql = array_merge($fields_sql, array_keys($version_fields));
+							}
+
+							$fields_sql = array_unique($fields_sql);
+
+						//--------------------------------------------------
+						// Return
+
+							$this->content = array();
+
+							$versions = $this->config['versions'];
+							if (count($versions) == 0) {
+								$versions = array('default' => array());
+							}
 
 							$sql = 'SELECT
-										MAX(created) AS c
+										' . implode(', ', $fields_sql) . '
 									FROM
 										' . DB_PREFIX . 'cms_text AS ct
 									WHERE
-										' . $where_sql;
+										(
+											path = "' . $db->escape($this->config['path']) . '" OR
+											global = "true"
+										) AND
+										revision = "' . $db->escape($this->config['revision']) . '"';
 
-							if ($row = $db->fetch($sql)) {
-								if (filemtime($cache_path) > strtotime($row['c'])) {
-									$this->content = unserialize(file_get_contents($cache_path));
-								}
-							}
+							foreach ($db->fetch_all($sql) as $row) {
 
-						}
+								//--------------------------------------------------
+								// HTML
 
-					//--------------------------------------------------
-					// From database
+									$html_block = $processor->process_block_html($row['content']);
+									$html_inline = $processor->process_inline_html($row['content']);
 
-						if ($this->content === NULL) {
+								//--------------------------------------------------
+								// Version match
 
-							//--------------------------------------------------
-							// Processor
-
-								$processor = $this->processor_get();
-
-							//--------------------------------------------------
-							// Fields
-
-								$fields_sql = array(
-										'path',
-										'section',
-										'content',
-									);
-
-								foreach ($this->config['versions'] as $version_name => $version_fields) {
-									$fields_sql = array_merge($fields_sql, array_keys($version_fields));
-								}
-
-								$fields_sql = array_unique($fields_sql);
-
-							//--------------------------------------------------
-							// Return
-
-								$this->content = array();
-
-								$versions = $this->config['versions'];
-								if (count($versions) == 0) {
-									$versions = array('default' => array());
-								}
-
-								$sql = 'SELECT
-											' . implode(', ', $fields_sql) . '
-										FROM
-											' . DB_PREFIX . 'cms_text AS ct
-										WHERE
-											' . $where_sql;
-
-								foreach ($db->fetch_all($sql) as $row) {
-
-									//--------------------------------------------------
-									// HTML
-
-										$html_block = $processor->process_block_html($row['content']);
-										$html_inline = $processor->process_inline_html($row['content']);
-
-									//--------------------------------------------------
-									// Version match
-
-										foreach ($versions as $version_name => $version_fields) {
-											$match = true;
-											foreach ($version_fields as $field_name => $field_value) {
-												if ($row[$field_name] != $field_value) {
-													$match = false;
-												}
-											}
-											if ($match) {
-												$this->content[$row['path']][$row['section']][$version_name]['html_block'] = $html_block;
-												$this->content[$row['path']][$row['section']][$version_name]['html_inline'] = $html_inline;
-												$this->content[$row['path']][$row['section']][$version_name]['source'] = $row['content'];
+									foreach ($versions as $version_name => $version_fields) {
+										$match = true;
+										foreach ($version_fields as $field_name => $field_value) {
+											if ($row[$field_name] != $field_value) {
+												$match = false;
 											}
 										}
+										if ($match) {
+											$this->content[$row['path']][$row['section']][$version_name]['html_block'] = $html_block;
+											$this->content[$row['path']][$row['section']][$version_name]['html_inline'] = $html_inline;
+											$this->content[$row['path']][$row['section']][$version_name]['source'] = $row['content'];
+										}
+									}
 
-								}
+							}
 
-							//--------------------------------------------------
-							// Store
+						//--------------------------------------------------
+						// Store
 
-								file_put_contents($cache_path, serialize($this->content));
+							file_put_contents($cache_path, serialize($this->content));
 
-						}
+					}
 
 				//--------------------------------------------------
 				// JavaScript
@@ -264,6 +241,27 @@
 				}
 
 				return $this->processor;
+
+			}
+
+			static function cache_files($path = NULL) {
+
+				$files = array();
+				$path_encoded = base64_encode($path);
+
+				$dir = tmp_folder('cms-text');
+				if (is_dir($dir)) {
+					if ($dh = opendir($dir)) {
+						while (($file = readdir($dh)) !== false) {
+							if (($path === NULL && substr($file, 0, 1) != '.') || ($path !== NULL && substr($file, 2) == $path_encoded)) {
+								$files[] = $dir . '/' . $file;
+							}
+						}
+						closedir($dh);
+					}
+				}
+
+				return $files;
 
 			}
 

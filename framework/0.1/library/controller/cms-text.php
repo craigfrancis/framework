@@ -10,6 +10,12 @@
 				$response = response_get();
 
 			//--------------------------------------------------
+			// History of recent changes
+
+
+
+
+			//--------------------------------------------------
 			// View path
 
 				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-text/view-index.ctp');
@@ -94,7 +100,7 @@
 				$field_section->value_set($section);
 
 				$fields = array();
-				
+
 				$row_count = (count($versions) == 1 ? 20 : 10);
 
 				foreach ($versions as $version_name => $version_values) {
@@ -123,6 +129,8 @@
 
 							//--------------------------------------------------
 							// Versions
+
+								$clear_cache = false;
 
 								foreach ($versions as $version_name => $version_values) {
 
@@ -160,7 +168,7 @@
 
 										}
 
-										$live_exists = ($db->num_rows() > 0);
+										$clear_cache = true;
 
 									//--------------------------------------------------
 									// Delete preview
@@ -210,6 +218,15 @@
 
 										}
 
+								}
+
+							//--------------------------------------------------
+							// Clear cache
+
+								if ($clear_cache) {
+									foreach (cms_text::cache_files($global == 'true' ? NULL : $path) as $cache_path) {
+										unlink($cache_path);
+									}
 								}
 
 							//--------------------------------------------------
