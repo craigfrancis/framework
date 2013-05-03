@@ -77,14 +77,7 @@
 						$name = substr(human_to_ref($label), 0, 30);
 					}
 
-					$name_original = $name;
-
-					$k = 1;
-					while (config::array_search('form.fields', $name) !== false) {
-						$name = $name_original . '_' . ++$k;
-					}
-
-					config::array_push('form.fields', $name);
+					$this->input_name_set($name);
 
 				//--------------------------------------------------
 				// Field configuration
@@ -93,8 +86,7 @@
 					$this->form_field_uid = $form_field_uid;
 					$this->form_submitted = $form->submitted();
 
-					$this->id = 'fld_' . human_to_ref($name);
-					$this->name = $name;
+					$this->id = 'fld_' . human_to_ref($this->name);
 					$this->type = 'unknown';
 					$this->wrapper_tag = 'div';
 					$this->wrapper_id = NULL;
@@ -214,7 +206,33 @@
 				return $this->id;
 			}
 
-			public function input_name_get() { // name set on init
+			public function input_name_set($name) { // name usually set on init, use this function ONLY if you really need to change it afterwards.
+
+				if ($this->name !== NULL) {
+					$fields = config::get('form.fields');
+					if (is_array($fields)) {
+						$key = array_search($this->name, $fields);
+						if ($key !== false) {
+							unset($fields[$key]);
+							config::set('form.fields', $fields);
+						}
+					}
+				}
+
+				$name_original = $name;
+
+				$k = 1;
+				while (config::array_search('form.fields', $name) !== false) {
+					$name = $name_original . '_' . ++$k;
+				}
+
+				config::array_push('form.fields', $name);
+
+				$this->name = $name;
+
+			}
+
+			public function input_name_get() {
 				return $this->name;
 			}
 
