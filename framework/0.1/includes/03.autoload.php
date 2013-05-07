@@ -25,7 +25,7 @@
 
 			} else {
 
-				$base_mode = substr($class_name, -5) == '_base';
+				$base_mode = (substr($class_name, -5) == '_base');
 
 				if ($base_mode) {
 					$class_file_name = str_replace('_', '-', substr($class_name, 0, -5)); // Drop base suffix - no file name should use it
@@ -39,13 +39,15 @@
 					$folder = $class_file_name;
 				}
 
-				if ($base_mode) {
-					$paths = array();
-				} else {
-					$paths = array(
-							APP_ROOT . '/library/class/' . $class_file_name . '.php',
-							APP_ROOT . '/library/class/' . $folder . '/' . $class_file_name . '.php',
-						);
+				$paths = array();
+
+				if (substr($class_name, -5) == '_form') {
+					$paths[] = APP_ROOT . '/library/form/' . str_replace('_', '-', substr($class_name, 0, -5)) . '.php';
+				}
+
+				if (!$base_mode) {
+					$paths[] = APP_ROOT . '/library/class/' . $class_file_name . '.php';
+					$paths[] = APP_ROOT . '/library/class/' . $folder . '/' . $class_file_name . '.php';
 				}
 
 				$paths[] = FRAMEWORK_ROOT . '/library/class/' . $class_file_name . '.php';
