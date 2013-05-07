@@ -53,6 +53,18 @@
 
 			}
 
+			public function set_object($variable, $object_name = NULL) {
+
+				if (!$object_name) {
+					$object_name = $variable;
+				}
+
+				$reflection = new ReflectionClass($object_name);
+
+				$this->variables[$variable] = $reflection->newInstanceArgs(array_slice(func_get_args(), 2));
+
+			}
+
 			public function get($variable, $default = NULL) {
 				if (isset($this->variables[$variable])) {
 					return $this->variables[$variable];
