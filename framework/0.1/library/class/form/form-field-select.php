@@ -18,15 +18,15 @@
 		// Setup
 
 			public function __construct($form, $label, $name = NULL) {
-				$this->_setup_select($form, $label, $name);
+				$this->setup_select($form, $label, $name);
 			}
 
-			protected function _setup_select($form, $label, $name) {
+			protected function setup_select($form, $label, $name) {
 
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->_setup($form, $label, $name);
+					$this->setup($form, $label, $name);
 
 				//--------------------------------------------------
 				// Value

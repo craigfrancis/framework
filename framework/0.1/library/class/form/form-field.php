@@ -49,10 +49,10 @@
 		// Setup
 
 			public function __construct($form, $label, $name = NULL) {
-				$this->_setup($form, $label, $name);
+				$this->setup($form, $label, $name);
 			}
 
-			protected function _setup($form, $label, $name) {
+			protected function setup($form, $label, $name) {
 
 				//--------------------------------------------------
 				// Add this field to the form, and return a "UID"

@@ -17,7 +17,7 @@ Example setup
 			// 	$this->db_table_session = DB_PREFIX . 'user_session';
 			// 	$this->db_table_reset = DB_PREFIX . 'user_new_password';
 			//
-			// 	$this->_setup();
+			// 	$this->setup();
 			//
 			// 	$this->session->length_set(60*30);
 			// 	$this->session->history_length_set(60*60*24*30);

@@ -38,7 +38,7 @@
 									'options' => NULL,
 								));
 
-					$this->_setup_fields($form, $label, $name);
+					$this->setup_fields($form, $label, $name);
 
 				//--------------------------------------------------
 				// Value provided

@@ -18,10 +18,10 @@
 		// Setup
 
 			public function __construct() {
-				$this->_setup();
+				$this->setup();
 			}
 
-			protected function _setup() {
+			protected function setup() {
 
 				//--------------------------------------------------
 				// Provider

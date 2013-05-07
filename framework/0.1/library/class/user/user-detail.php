@@ -11,10 +11,10 @@
 		protected $db_table_fields;
 
 		public function __construct($user) {
-			$this->_setup($user);
+			$this->setup($user);
 		}
 
-		protected function _setup($user) {
+		protected function setup($user) {
 
 			//--------------------------------------------------
 			// User object

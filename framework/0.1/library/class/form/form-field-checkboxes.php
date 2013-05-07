@@ -15,7 +15,7 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->_setup_select($form, $label, $name);
+					$this->setup_select($form, $label, $name);
 
 				//--------------------------------------------------
 				// Additional field configuration
