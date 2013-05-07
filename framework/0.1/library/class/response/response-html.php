@@ -719,6 +719,8 @@
 					$files = $this->js_files['head'];
 				} else if ($type == 'js_foot') {
 					$files = $this->js_files['foot'];
+				} else if ($type == 'js') {
+					$files = array_merge($this->js_files['head'], $this->js_files['foot']);
 				} else if ($type == 'css') {
 					$files = $this->css_files_main;
 				} else if ($type == 'css_alternate') {
@@ -729,7 +731,7 @@
 
 				$version = config::get('output.version', true);
 
-				if ($type == 'js_head' || $type == 'js_foot') {
+				if ($type == 'js_head' || $type == 'js_foot' || $type == 'js') {
 
 					//--------------------------------------------------
 					// Custom JS
