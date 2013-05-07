@@ -53,8 +53,7 @@
 		// Setup
 
 			public function __construct() {
-				$this->setup();
-				//call_user_func_array(array($this, 'setup'), func_get_args());
+				call_user_func_array(array($this, 'setup'), func_get_args());
 			}
 
 			protected function setup() {
