@@ -149,22 +149,19 @@
 				return file_exists($this->file_path_get($id, $ext));
 			}
 
-			public function file_save_from($path, $id, $ext = NULL) {
-				copy($path, $this->file_path_get($id, $ext));
+			public function file_save($id, $path, $ext = NULL) {
+				$dest = $this->file_path_get($id, $ext);
+				$this->_writable_check(dirname($dest));
+				copy($path, $dest);
 			}
 
-			public function file_save_upload($field_file, $id, $ext = NULL) {
-				$path = $field_file->file_path_get();
-				if ($path) {
-					copy($path, $this->file_path_get($id, $ext));
-				}
+			public function file_save_contents($id, $contents, $ext = NULL) {
+				$dest = $this->file_path_get($id, $ext);
+				$this->_writable_check(dirname($dest));
+				file_put_contents($dest, $contents);
 			}
 
-			public function file_save_contents($contents, $id, $ext = NULL) {
-				file_put_contents($this->file_path_get($id, $ext), $contents);
-			}
-
-			public function file_image_save($id, $path) { // Use image_save() to have different image versions.
+			public function file_save_image($id, $path) { // Use image_save() to have different image versions.
 
 				//--------------------------------------------------
 				// Path
@@ -246,7 +243,7 @@
 		//--------------------------------------------------
 		// Save
 
-			public function image_save($id, $path = NULL) { // No path set, then re-save images using the original file... also see $file->file_image_save() to save a single image
+			public function image_save($id, $path = NULL) { // No path set, then re-save images using the original file... also see $file->file_save_image() to save a single image
 
 				//--------------------------------------------------
 				// Make sure we have plenty of memory
@@ -266,18 +263,7 @@
 
 					} else {
 
-						$original_dir = dirname($original_path);
-						if (!is_dir($original_dir)) {
-							if (SERVER == 'live') {
-								mkdir($original_dir, 0777, true); // Most installs will write as the "apache" user, which is a problem if the normal user account can't edit/delete these files.
-							}
-							if (!is_dir($original_dir)) {
-								exit_with_error('Missing image directory', $original_dir);
-							}
-						}
-						if (!is_writable($original_dir)) {
-							exit_with_error('Cannot write to image directory', $original_dir);
-						}
+						$this->_writable_check(dirname($original_path));
 
 						$source_image = new image($path); // The image needs to be re-saved, ensures no hacked files are uploaded and exposed though the FILE_URL folder.
 						$source_image->save($original_path, $this->config['image_type'], $this->config['image_quality']);
@@ -402,6 +388,25 @@
 						}
 						closedir($handle);
 					}
+
+			}
+
+		//--------------------------------------------------
+		// Support
+
+			private function _writable_check($dir) {
+
+				if (!is_dir($dir)) {
+					if (SERVER == 'live') {
+						mkdir($dir, 0777, true); // Most installs will write as the "apache" user, which is a problem if the normal user account can't edit/delete these files.
+					}
+					if (!is_dir($dir)) {
+						exit_with_error('Missing directory', $dir);
+					}
+				}
+				if (!is_writable($dir)) {
+					exit_with_error('Cannot write to directory', $dir);
+				}
 
 			}
 
