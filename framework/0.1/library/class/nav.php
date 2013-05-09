@@ -6,46 +6,25 @@
 
 	class nav_base extends check {
 
-		private $current_group;
-		private $current_index;
+		private $current_group = 0;
+		private $current_index = 0;
 
-		private $navigation;
+		private $navigation = array();
 
-		private $indent;
-		private $main_class;
+		private $indent = '';
+		private $main_class = '';
 
-		private $expand_all_children;
-		private $automatically_expand_children;
-		private $automatically_select_link;
-		private $include_white_space;
+		private $expand_all_children = false;
+		private $automatically_expand_children = true;
+		private $automatically_select_link = true;
+		private $include_white_space = true;
 
-		private $selected_id;
-		private $selected_len;
-		private $selected_link_found;
+		private $selected_id = NULL;
+		private $selected_link_found = false; // Includes child navigation bars
 
 		private $path;
 
 		public function __construct() {
-
-			//--------------------------------------------------
-			// Holder
-
-				$this->current_group = 0;
-				$this->current_index = 0;
-
-				$this->navigation = array();
-
-				$this->indent = '';
-				$this->main_class = '';
-
-				$this->expand_all_children = false;
-				$this->automatically_expand_children = true;
-				$this->automatically_select_link = true;
-				$this->include_white_space = true;
-
-				$this->selected_id = NULL;
-				$this->selected_len = 0;
-				$this->selected_link_found = false; // Includes child navigation bars
 
 			//--------------------------------------------------
 			// Default indent
@@ -63,6 +42,14 @@
 			if ($this->include_white_space) {
 				$this->indent = "\n" . str_repeat("\t", intval($indent));
 			}
+		}
+
+		public function path_set($path) {
+			$this->path = $path;
+		}
+
+		public function path_get() {
+			return $this->path;
 		}
 
 		public function main_class_set($class) {
@@ -137,32 +124,8 @@
 			//--------------------------------------------------
 			// See if we have a match
 
-				if ($this->selected_len >= 0) { // -1 disables
-
-					$url_len = strlen($url);
-
-					if ($config['selected'] === true) {
-
-						$this->selected_id = $this->current_index;
-						$this->selected_len = -1;
-
-					} else if ($config['selected'] !== false && $this->automatically_select_link && $url_len > $this->selected_len) {
-
-						if ($url == '/') {
-							$match = ($this->path == '/');
-						} else {
-							$match = (substr($this->path, 0, $url_len) == $url);
-						}
-
-						if ($match) {
-
-							$this->selected_id = $this->current_index;
-							$this->selected_len = $url_len;
-
-						}
-
-					}
-
+				if ($this->selected_id === NULL && $config['selected'] === true) {
+					$this->selected_id = $this->current_index;
 				}
 
 		}
@@ -185,6 +148,40 @@
 		public function html($level = 1) {
 
 			//--------------------------------------------------
+			// Selected link
+
+				$selected_id = $this->selected_id;
+
+				if ($selected_id === NULL && $this->automatically_select_link) {
+
+					$selected_len = 0;
+
+					foreach ($this->navigation as $group_id => $group_info) {
+						foreach ($group_info['links'] as $link_id => $link_info) {
+
+							$url_len = strlen($link_info['url']);
+
+							if ($link_info['config']['selected'] !== false && $url_len > $selected_len) {
+
+								if ($link_info['url'] == '/') {
+									$match = ($this->path == '/');
+								} else {
+									$match = (substr($this->path, 0, $url_len) == $link_info['url']);
+								}
+
+								if ($match) {
+									$selected_id = $link_id;
+									$selected_len = $url_len;
+								}
+
+							}
+
+						}
+					}
+
+				}
+
+			//--------------------------------------------------
 			// Start
 
 				$html = ($this->include_white_space ? "\n" : '');
@@ -193,80 +190,84 @@
 			// Pre-process the child navigation bars - need
 			// to know if one of them have a selected child link
 
-				foreach (array_keys($this->navigation) as $group_id) {
-					if (count($this->navigation[$group_id]['links']) > 0) {
-						foreach (array_keys($this->navigation[$group_id]['links']) as $link_id) {
+				foreach ($this->navigation as $group_id => $group_info) {
+					foreach ($group_info['links'] as $link_id => $link_info) {
 
-							//--------------------------------------------------
-							// Configuration
+						//--------------------------------------------------
+						// Configuration
 
-								$link = $this->navigation[$group_id]['links'][$link_id];
+							$selected = ($link_id == $selected_id);
 
-								$selected = ($link_id == $this->selected_id);
+							$child_nav = (isset($link_info['config']['child']) ? $link_info['config']['child'] : NULL);
+							$child_open = (isset($link_info['config']['open']) ? $link_info['config']['open'] : NULL);
 
-								$child_nav = (isset($link['config']['child']) ? $link['config']['child'] : NULL);
-								$child_open = (isset($link['config']['open']) ? $link['config']['open'] : NULL);
+							if ($child_nav === NULL) {
+								$child_open = false;
+							}
 
-								if ($child_nav === NULL) {
-									$child_open = false;
-								}
+							if ($child_open === NULL) {
+								$child_open = (($this->expand_all_children) || ($selected == true && $this->automatically_expand_children));
+							}
 
-								if ($child_open === NULL) {
-									$child_open = (($this->expand_all_children) || ($selected == true && $this->automatically_expand_children));
-								}
+						//--------------------------------------------------
+						// Create HTML
 
-							//--------------------------------------------------
-							// Create HTML
+							$child_html = '';
 
-								$child_html = '';
+							if ($child_open) {
 
-								if ($child_open) {
+								//--------------------------------------------------
+								// Send path to child
 
-									//--------------------------------------------------
-									// Get HTML
+									$child_nav->path_set($this->path);
 
-										if ($this->include_white_space == false) {
-											$child_nav->include_white_space($this->include_white_space); // Only inherit when parent disables it (one case could be parent enabled, child disabled).
-										}
+								//--------------------------------------------------
+								// Get HTML
 
-										$child_nav->indent_set(strlen($this->indent) + 1);
+									if ($this->include_white_space == false) {
+										$child_nav->include_white_space($this->include_white_space); // Only inherit when parent disables it (one case could be parent enabled, child disabled).
+									}
 
-										$child_html = $child_nav->html($level + 1);
+									$child_nav->indent_set(strlen($this->indent) + 1);
 
-										if ($child_nav->include_white_space == true) {
-											$child_html .= $this->indent . ($this->include_white_space ? "\t" : '');
-										}
+									$child_html = $child_nav->html($level + 1);
 
-									//--------------------------------------------------
-									// If a child has a selected link
+									if ($child_nav->include_white_space == true) {
+										$child_html .= $this->indent . ($this->include_white_space ? "\t" : '');
+									}
 
-										if ($child_nav->selected_link_found == true) {
-											$this->selected_link_found = true; // Supports 2+ levels deep selection
-										}
+								//--------------------------------------------------
+								// If a child has a selected link
 
-								}
+									if ($child_nav->selected_link_found == true) {
+										$this->selected_link_found = true; // Supports 2+ levels deep selection
+									}
 
-							//--------------------------------------------------
-							// Save the HTML
+							}
 
-								$this->navigation[$group_id]['links'][$link_id]['child_html'] = $child_html;
+						//--------------------------------------------------
+						// Save the HTML
 
-						}
+							$this->navigation[$group_id]['links'][$link_id]['child_html'] = $child_html;
+
 					}
 				}
 
 			//--------------------------------------------------
 			// Groups
 
-				foreach (array_keys($this->navigation) as $group_id) {
-					if (count($this->navigation[$group_id]['links']) > 0) {
+				foreach ($this->navigation as $group_id => $group_info) {
+
+					$links_count = count($group_info['links']);
+
+					if ($links_count > 0) {
 
 						//--------------------------------------------------
 						// Group heading
 
-							if (isset($this->navigation[$group_id]['name_html']) && $this->navigation[$group_id]['name_html'] != '') {
+							if (isset($group_info['name_html']) && $group_info['name_html'] != '') {
 
-								$html .= $this->indent . '<h3>' . $this->navigation[$group_id]['name_html'] . '</h3>';
+								$html .= $this->indent . '<h3>' . $group_info['name_html'] . '</h3>';
 
 							}
 
@@ -276,26 +277,25 @@
 							$html .= $this->indent . '<ul' . ($this->main_class == '' ? '' : ' class="' . html($this->main_class) . '"') . '>';
 
 							$k = 0;
-							$links_count = count($this->navigation[$group_id]['links']);
 
-							foreach (array_keys($this->navigation[$group_id]['links']) as $link_id) {
+							foreach ($group_info['links'] as $link_id => $link_info) {
 
 								//--------------------------------------------------
 								// Quick variables
 
 									$k++;
 
-									$link_url    = $this->navigation[$group_id]['links'][$link_id]['url'];
-									$link_name   = $this->navigation[$group_id]['links'][$link_id]['name'];
-									$link_config = $this->navigation[$group_id]['links'][$link_id]['config'];
-									$child_html  = $this->navigation[$group_id]['links'][$link_id]['child_html'];
+									$link_url    = $link_info['url'];
+									$link_name   = $link_info['name'];
+									$link_config = $link_info['config'];
+									$child_html  = $link_info['child_html'];
 
 									$link_html = (isset($link_config['html']) && $link_config['html'] === true);
 
 								//--------------------------------------------------
 								// Configuration
 
-									$selected = ($link_id == $this->selected_id);
+									$selected = ($link_id == $selected_id);
 
 									if ($this->selected_link_found == true) {
 										$selected = false; // A child nav item?
@@ -349,6 +349,7 @@
 							$html .= $this->indent . '</ul>' . ($this->include_white_space ? "\n" : '');
 
 					}
+
 				}
 
 			//--------------------------------------------------
