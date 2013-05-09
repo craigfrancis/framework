@@ -35,8 +35,9 @@
 				// Default config
 
 					$default_config = array(
-							'file_root' => FILE_ROOT,
-							'file_url' => FILE_URL,
+							'file_private' => false,
+							'file_root' => NULL,
+							'file_url' => NULL,
 							'file_ext' => NULL,
 							'file_folder_division' => NULL, // Set to something like "1000" so the folder structure can by divided into folders /files/008000/8192
 							'file_missing_url' => NULL,
@@ -62,7 +63,12 @@
 						$config['profile'] = $profile;
 					}
 
-					$this->config = array_merge($default_config, $config);
+					$config = array_merge($default_config, $config);
+
+					if ($config['file_root'] === NULL) $config['file_root'] = ($config['file_private'] ? PRIVATE_ROOT . '/files' : FILE_ROOT);
+					if ($config['file_url']  === NULL) $config['file_url']  = ($config['file_private'] ? NULL : FILE_URL);
+
+					$this->config = $config;
 
 			}
 
@@ -133,9 +139,13 @@
 
 				$path = $this->file_path_get($id, $ext);
 
-				if (is_file($path)) {
+				if ($this->config['file_url'] === NULL) {
 
-					return str_replace('_', '-', $this->config['file_url'] . substr($path, strlen($this->config['file_root'])));
+					exit_with_error('There is no public url for private files.', $this->config['profile'] . ' - ' . $id);
+
+				} else if (is_file($path)) {
+
+					return $this->config['file_url'] . substr($path, strlen($this->config['file_root']));
 
 				} else {
 
@@ -161,34 +171,18 @@
 				file_put_contents($dest, $contents);
 			}
 
-			public function file_save_image($id, $path) { // Use image_save() to have different image versions.
+			public function file_save_image($id, $path, $ext = NULL) { // Use image_save() to have different image versions.
 
-				//--------------------------------------------------
-				// Path
+				if ($ext === NULL) {
+					$ext = $this->config['file_ext'];
+				}
 
-					$dest_path = $this->file_path_get($id, $this->config['file_ext']);
+				$dest_path = $this->file_path_get($id, $ext);
 
-				//--------------------------------------------------
-				// Folder
+				$this->_writable_check(dirname($dest_path));
 
-					$dest_dir = dirname($dest_path);
-					if (!is_dir($dest_dir)) {
-						if (SERVER == 'live') {
-							mkdir($dest_dir, 0777, true); // Most installs will write as the "apache" user, which is a problem if the normal user account can't edit/delete these files.
-						}
-						if (!is_dir($dest_dir)) {
-							exit_with_error('Missing image directory', $dest_dir);
-						}
-					}
-					if (!is_writable($dest_dir)) {
-						exit_with_error('Cannot write to image directory', $dest_dir);
-					}
-
-				//--------------------------------------------------
-				// Save
-
-					$image = new image($path); // The image needs to be re-saved, ensures no hacked files are uploaded and exposed though the FILE_URL folder.
-					$image->save($dest_path, $this->config['file_ext'], $this->config['image_quality']);
+				$image = new image($path); // The image needs to be re-saved, ensures no hacked files are uploaded and exposed on the website
+				$image->save($dest_path, $ext, $this->config['image_quality']);
 
 			}
 
@@ -207,9 +201,13 @@
 
 				$path = $this->image_path_get($id, $size);
 
-				if (is_file($path)) {
+				if ($this->config['file_url'] === NULL) {
 
-					$url = str_replace('_', '-', $this->config['file_url'] . substr($path, strlen($this->config['file_root'])));
+					exit_with_error('There is no public url for private files.', $this->config['profile'] . ' - ' . $id);
+
+				} else if (is_file($path)) {
+
+					$url = $this->config['file_url'] . substr($path, strlen($this->config['file_root']));
 
 				} else if ($this->config['image_placeholder_url'] !== NULL) {
 
@@ -265,7 +263,7 @@
 
 						$this->_writable_check(dirname($original_path));
 
-						$source_image = new image($path); // The image needs to be re-saved, ensures no hacked files are uploaded and exposed though the FILE_URL folder.
+						$source_image = new image($path); // The image needs to be re-saved, ensures no hacked files are uploaded and exposed on the website
 						$source_image->save($original_path, $this->config['image_type'], $this->config['image_quality']);
 
 					}

@@ -69,12 +69,12 @@
 					'permission' => '666',
 				),
 			'Private file folders' => array(
-					'path' => ROOT . '/private/files',
+					'path' => PRIVATE_ROOT . '/files',
 					'type' => 'd',
 					'permission' => '777',
 				),
 			'Private file files' => array(
-					'path' => ROOT . '/private/files',
+					'path' => PRIVATE_ROOT . '/files',
 					'type' => 'f',
 					'permission' => '666',
 				),

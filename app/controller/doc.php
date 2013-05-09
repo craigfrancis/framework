@@ -106,6 +106,14 @@
 							'$sub_nav' => '<strong>$sub_nav</strong>',
 						);
 
+					} else if ($request_path == 'helpers/file') {
+
+						$replace = array(
+							'$file' => '<strong>$file</strong>',
+							'item_name' => '<strong>item_name</strong>',
+							'123' => '<strong>123</strong>',
+						);
+
 					}
 
 					if ($replace) {
