@@ -100,6 +100,12 @@
 							'cms.profile.name' => 'cms.<strong>profile</strong>.name',
 						);
 
+					} else if ($request_path == 'helpers/nav') {
+
+						$replace = array(
+							'$sub_nav' => '<strong>$sub_nav</strong>',
+						);
+
 					}
 
 					if ($replace) {
