@@ -94,6 +94,12 @@
 							'output.protocols' => '<a href="/doc/setup/config/">output.protocols</a>',
 						);
 
+					} else if ($request_path == 'helpers/cms-text') {
+
+						$replace = array(
+							'cms.profile.name' => 'cms.<strong>profile</strong>.name',
+						);
+
 					}
 
 					if ($replace) {
