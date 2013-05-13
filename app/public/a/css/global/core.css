@@ -76,9 +76,15 @@
 /*--------------------------------------------------*/
 /* Generic Classes                                  */
 
-	.off_screen {
+	.visually_hidden {
 		position: absolute;
-		left: -5000px;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		border: 0;
+		margin: -1px;
+		padding: 0;
 	}
 
 /*--------------------------------------------------*/

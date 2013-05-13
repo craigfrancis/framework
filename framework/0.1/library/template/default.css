@@ -75,9 +75,15 @@
 /*--------------------------------------------------*/
 /* Generic Classes                                  */
 
-	.off_screen {
+	.visually_hidden {
 		position: absolute;
-		left: -5000px;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		border: 0;
+		margin: -1px;
+		padding: 0;
 	}
 
 /*--------------------------------------------------*/
@@ -117,7 +123,7 @@
 			display: block;
 		}
 
-		@media only screen and (min-width: 480px) {
+		@media only screen and (min-width: 35em) {
 			#page_navigation {
 				display: block;
 				float: left;
@@ -185,7 +191,7 @@
 			color: #FFF;
 		}
 
-		@media only screen and (min-width: 480px) {
+		@media only screen and (min-width: 35em) {
 
 			#page_content {
 				padding: 0;
@@ -286,7 +292,7 @@
 		clear: both;
 	}
 
-		@media only screen and (min-width: 610px) {
+		@media only screen and (min-width: 40em) {
 			.basic_form .row {
 				padding-left: 11.5em;
 			}
@@ -308,7 +314,7 @@
 		padding: 4px 0 1em 1.5em;
 	}
 
-		@media only screen and (min-width: 610px) {
+		@media only screen and (min-width: 40em) {
 			.basic_form .row .label,
 			.basic_form .row.input_first .input {
 				float: left;
