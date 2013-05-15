@@ -316,4 +316,6 @@
 		mb_detect_order(array('UTF-8', 'ASCII'));
 	}
 
+	setlocale(LC_ALL, str_replace('-', '_', config::get('output.lang')) . '.' . config::get('output.charset'));
+
 ?>
