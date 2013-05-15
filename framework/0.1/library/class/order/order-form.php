@@ -6,6 +6,7 @@
 		// Variables
 
 			protected $order_obj;
+			protected $postcode_format = 'uk';
 			protected $country_table = NULL;
 			protected $country_options = NULL;
 
@@ -120,12 +121,18 @@
 			}
 
 			public function field_payment_postcode_get() {
-				$field_payment_postcode = new form_field_postcode($this, 'Postcode');
-				$field_payment_postcode->db_field_set('payment_postcode');
+				if ($this->postcode_format !== NULL) {
+					$field_payment_postcode = new form_field_postcode($this, 'Postcode');
+					$field_payment_postcode->db_field_set('payment_postcode');
+					$field_payment_postcode->format_error_set('Your payment postcode does not appear to be correct.');
+				} else {
+					$field_payment_postcode = new form_field_text($this, 'Postcode');
+					$field_payment_postcode->db_field_set('payment_postcode');
+					$field_payment_postcode->max_length_set('Your payment postcode cannot be longer than XXX characters.');
+				}
 				$field_payment_postcode->wrapper_class_add('payment required');
 				$field_payment_postcode->autocomplete_set('billing postal-code');
 				$field_payment_postcode->required_error_set('Your payment postcode is required.');
-				$field_payment_postcode->format_error_set('Your payment postcode does not appear to be correct.');
 				return $field_payment_postcode;
 			}
 
@@ -235,17 +242,25 @@
 
 			public function field_delivery_postcode_get() {
 
-				$field_delivery_postcode = new form_field_postcode($this, 'Postcode');
-				$field_delivery_postcode->db_field_set('delivery_postcode');
+				if ($this->postcode_format !== NULL) {
+					$field_delivery_postcode = new form_field_postcode($this, 'Postcode');
+					$field_delivery_postcode->db_field_set('delivery_postcode');
+					$field_delivery_postcode->format_error_set('Your delivery postcode does not appear to be correct.');
+				} else {
+					$field_delivery_postcode = new form_field_text($this, 'Postcode');
+					$field_delivery_postcode->db_field_set('delivery_postcode');
+					$field_delivery_postcode->max_length_set('Your delivery postcode cannot be longer than XXX characters.');
+				}
+
 				$field_delivery_postcode->wrapper_class_add('delivery required');
 				$field_delivery_postcode->autocomplete_set('shipping postal-code');
-				$field_delivery_postcode->format_error_set('Your delivery postcode does not appear to be correct.');
 
 				if (!$this->field_exists('delivery_different')) {
 					$field_delivery_postcode->min_length_set('Your delivery postcode is required.');
 				}
 
 				return $field_delivery_postcode;
+
 			}
 
 			public function field_delivery_country_get() {
