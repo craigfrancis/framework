@@ -14,6 +14,7 @@
 			private $variables = array();
 
 			private $head_html = '';
+			private $head_flushed = false;
 
 			private $view_folders = NULL;
 			private $view_path = '';
@@ -868,6 +869,15 @@
 			public function head_get_html($config = NULL) {
 
 				//--------------------------------------------------
+				// If already flushed
+
+					if ($this->head_flushed) {
+						ob_end_clean();
+						ob_start();
+						return '';
+					}
+
+				//--------------------------------------------------
 				// Canonical URL
 
 					$canonical_url = config::get('output.canonical');
@@ -952,6 +962,51 @@
 
 			}
 
+			public function head_flush() {
+
+				//--------------------------------------------------
+				// Send init
+
+					$this->_send_init();
+
+				//--------------------------------------------------
+				// Clear buffers
+
+					$buffer_output = '';
+					while (ob_get_level() > 0) {
+						$buffer_output = ob_get_clean() . $buffer_output;
+					}
+
+				//--------------------------------------------------
+				// Output
+
+					$output  = '<!DOCTYPE html>' . "\n";
+					$output .= '<html lang="' . html($this->lang_get()) . '" xml:lang="' . html($this->lang_get()) . '" xmlns="http://www.w3.org/1999/xhtml">' . "\n";
+					$output .= '<head>' . "\n\n\t";
+					$output .= $this->head_get_html();
+
+					$output = str_pad($output, 1024);
+
+					apache_setenv('no-gzip', 1);
+
+					echo $output;
+
+					flush();
+
+				//--------------------------------------------------
+				// Re-start output buffer
+
+					ob_start();
+
+					echo $buffer_output;
+
+				//--------------------------------------------------
+				// Mark as flahsed
+
+					$this->head_flushed = true;
+
+			}
+
 		//--------------------------------------------------
 		// Foot HTML
 
@@ -993,10 +1048,33 @@
 					}
 
 				//--------------------------------------------------
+				// Send init
+
+					if (!$this->head_flushed) {
+						$this->_send_init();
+					}
+
+				//--------------------------------------------------
+				// Send template
+
+					echo $this->_process_file($this->_template_path_get());
+
+				//--------------------------------------------------
+				// If view_get_html() was not called
+
+					if (!$this->view_processed) {
+						echo $this->view_get_html();
+					}
+
+			}
+
+			private function _send_init() {
+
+				//--------------------------------------------------
 				// Debug
 
 					if (config::get('debug.level') >= 4) {
-						debug_progress('Before template');
+						debug_progress('Template start send');
 					}
 
 				//--------------------------------------------------
@@ -1204,18 +1282,6 @@
 					if ($mime_type == 'application/xml') {
 						echo '<?xml version="1.0" encoding="' . html(config::get('output.charset')) . '" ?>';
 						echo $this->_css_get('xml') . "\n";
-					}
-
-				//--------------------------------------------------
-				// Send template
-
-					echo $this->_process_file($this->_template_path_get());
-
-				//--------------------------------------------------
-				// If view_get_html() was not called
-
-					if (!$this->view_processed) {
-						echo $this->view_get_html();
 					}
 
 			}
