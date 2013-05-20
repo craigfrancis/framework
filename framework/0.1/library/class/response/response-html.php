@@ -35,12 +35,6 @@
 			private $css_files_alternate = array();
 
 		//--------------------------------------------------
-		// Setup
-
-			public function __construct() {
-			}
-
-		//--------------------------------------------------
 		// Variables
 
 			public function set($variable, $value = NULL) {
