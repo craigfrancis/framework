@@ -67,6 +67,20 @@ But if you have an error, you can use the global [error_send](../../doc/system/f
 	$response->error_send($ref);
 	exit();
 
+And if your pushing the performance side of page loading, it is possible add the following to your controller:
+
+	$response->head_flush();
+
+This will start sending your `<head>` to the browser so it can start downloading external resources (i.e. css). Be careful if your using `css_auto()`, as that should not go into the template file. Instead create your own response_html:
+
+	class response_html extends response_html_base {
+
+		public function setup() {
+			$this->css_auto();
+		}
+
+	}
+
 ---
 
 ## Download Response
