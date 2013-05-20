@@ -14,12 +14,6 @@
 			private $content = '';
 
 		//--------------------------------------------------
-		// Setup
-
-			public function __construct() {
-			}
-
-		//--------------------------------------------------
 		// Error
 
 			public function error_set($error, $output = '') {
