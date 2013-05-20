@@ -512,6 +512,13 @@
 			public function css_auto() {
 
 				//--------------------------------------------------
+				// Cannot run after head flush
+
+					if ($this->head_flushed) {
+						return;
+					}
+
+				//--------------------------------------------------
 				// Get config
 
 					$css_name = config::get('output.css_name');
