@@ -410,7 +410,7 @@
 		//--------------------------------------------------
 		// JavaScript
 
-			public function js_add($path, $attributes = array(), $position = 'foot') { // Could be $this->js_add('/path.js', 'defer');
+			public function js_add($path, $attributes = array(), $position = 'foot') { // Could be $this->js_add('/path.js', 'async');
 				if (is_string($attributes)) {
 					$attributes = array($attributes);
 				} else if (!is_array($attributes)) { // NULL
@@ -444,21 +444,21 @@
 
 						$this->js_code[$position]['mode'] = $mode;
 
-					} else if ($mode == 'defer') {
-
-						if ($this->js_code[$position]['mode'] === NULL || $this->js_code[$position]['mode'] == 'async') {
-							$this->js_code[$position]['mode'] = $mode;
-						}
-
 					} else if ($mode == 'async') {
 
 						if ($this->js_code[$position]['mode'] === NULL) {
 							$this->js_code[$position]['mode'] = $mode;
 						}
 
+					} else if ($mode == 'defer') {
+
+						if ($this->js_code[$position]['mode'] === NULL || $this->js_code[$position]['mode'] == 'async') {
+							$this->js_code[$position]['mode'] = $mode;
+						}
+
 					} else {
 
-						exit_with_error('Unrecognised js code mode (inline/defer/async)');
+						exit_with_error('Unrecognised js code mode (inline/async/defer)');
 
 					}
 
