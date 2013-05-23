@@ -111,7 +111,7 @@
 
 			</nav>
 
-			<div id="page_content" role="main">
+			<main id="page_content" role="main">
 
 
 
@@ -137,7 +137,7 @@
 
 
 
-			</div>
+			</main>
 
 		</div>
 
