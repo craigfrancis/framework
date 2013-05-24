@@ -377,16 +377,16 @@
 			//--------------------------------------------------
 			// Current sort - inc support for defaults
 
-				if ($this->sort_enabled && $this->sort_name === NULL) {
-					$this->sort_name_set();
-				}
+				if ($this->sort_enabled) {
 
-				if ($this->sort_preserved_key && $this->sort_request_field && $this->sort_request_order) {
-					session::set($this->sort_preserved_key, array($this->sort_request_field, $this->sort_request_order));
-				}
+					$sort_field = $this->sort_field_get();
+					$sort_asc = ($this->sort_order_get() == 'asc');
 
-				$current_sort = $this->sort_field_get();
-				$sort_asc = ($this->sort_order_get() == 'asc');
+					if ($this->sort_preserved_key && $this->sort_request_field && $this->sort_request_order) {
+						session::set($this->sort_preserved_key, array($this->sort_request_field, $this->sort_request_order));
+					}
+
+				}
 
 			//--------------------------------------------------
 			// Headings
@@ -414,7 +414,7 @@
 
 								$heading_html = $heading_info['html'];
 
-							} else if ($current_sort == $heading_info['sort_name']) {
+							} else if ($sort_field == $heading_info['sort_name']) {
 
 								$url = $this->sort_url_get($heading_info['sort_name'], ($sort_asc ? 'desc' : 'asc'));
 
