@@ -9,45 +9,48 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $form_id;
-			private $form_action;
-			private $form_method;
-			private $form_class;
-			private $form_button;
-			private $form_button_name;
-			private $form_attributes;
-			private $form_passive;
-			private $form_submitted;
-			private $autocomplete;
-			private $disabled;
-			private $readonly;
-			private $print_group;
-			private $hidden_values;
-			private $fields;
-			private $field_refs;
-			private $field_count;
-			private $field_autofocus;
-			private $required_mark_html;
-			private $required_mark_position;
-			private $label_suffix_html;
-			private $label_override_function;
-			private $errors_html;
-			private $error_override_function;
-			private $post_validation_done;
-			private $db_link;
-			private $db_table_name_sql;
-			private $db_table_alias_sql;
-			private $db_where_sql;
-			private $db_select_values;
-			private $db_select_done;
-			private $db_fields;
-			private $db_values;
-			private $db_save_disabled;
-			private $csrf_session;
-			private $csrf_token;
-			private $csrf_error_html;
-			private $saved_values_data;
-			private $saved_values_used;
+			private $form_id = NULL;
+			private $form_action = './';
+			private $form_method = 'POST';
+			private $form_class = '';
+			private $form_button = 'Save';
+			private $form_button_name = 'button';
+			private $form_attributes = array();
+			private $form_passive = false;
+			private $form_submitted = false;
+			private $autocomplete = NULL;
+			private $disabled = false;
+			private $readonly = false;
+			private $print_group = NULL;
+			private $hidden_values = array();
+			private $fields = array();
+			private $field_refs = array();
+			private $field_count = 0;
+			private $field_autofocus = false;
+			private $required_mark_html = NULL;
+			private $required_mark_position = 'left';
+			private $label_suffix_html = ':';
+			private $label_override_function = NULL;
+			private $errors_html = array();
+			private $error_override_function = NULL;
+			private $post_validation_done = false;
+			private $db_link = NULL;
+			private $db_table_name_sql = NULL;
+			private $db_table_alias_sql = NULL;
+			private $db_where_sql = NULL;
+			private $db_select_values = array();
+			private $db_select_done = false;
+			private $db_fields = array();
+			private $db_values = array();
+			private $db_save_disabled = false;
+			private $csrf_session = false;
+			private $csrf_token = NULL;
+			private $csrf_error_html = 'The request did not appear to come from a trusted source, please try again.';
+			private $saved_values_data = NULL;
+			private $saved_values_used = NULL;
+			private $view_path = NULL;
+			private $view_used = false;
+			private $view_variables = array();
 
 		//--------------------------------------------------
 		// Setup
@@ -67,39 +70,14 @@
 				// Defaults
 
 					$this->form_action = config::get('request.url');
-					$this->form_method = 'POST';
-					$this->form_class = '';
-					$this->form_button = 'Save';
-					$this->form_button_name = 'button';
-					$this->form_attributes = array();
-					$this->form_passive = false;
-					$this->form_submitted = false;
-					$this->autocomplete = NULL;
-					$this->disabled = (isset($site_config['disabled']) ? $site_config['disabled'] : false);
-					$this->readonly = (isset($site_config['readonly']) ? $site_config['readonly'] : false);
-					$this->print_group = NULL;
-					$this->hidden_values = array();
-					$this->fields = array();
-					$this->field_refs = array();
-					$this->field_count = 0;
-					$this->required_mark_html = NULL;
-					$this->required_mark_position = 'left';
-					$this->label_suffix_html = ':';
-					$this->label_override_function = (isset($site_config['label_override_function']) ? $site_config['label_override_function'] : NULL);
-					$this->errors_html = array();
-					$this->error_override_function = (isset($site_config['error_override_function']) ? $site_config['error_override_function'] : NULL);
-					$this->post_validation_done = false;
-					$this->db_link = NULL;
-					$this->db_table_name_sql = NULL;
-					$this->db_table_alias_sql = NULL;
-					$this->db_where_sql = NULL;
-					$this->db_select_values = array();
-					$this->db_select_done = false;
-					$this->db_fields = array();
-					$this->db_values = array();
-					$this->db_save_disabled = false;
-					$this->saved_values_data = NULL;
-					$this->saved_values_used = NULL;
+
+					if (isset($site_config['disabled'])) $this->disabled = isset($site_config['disabled']);
+					if (isset($site_config['readonly'])) $this->readonly = isset($site_config['readonly']);
+
+					if (isset($site_config['label_override_function'])) $this->label_override_function = isset($site_config['label_override_function']);
+					if (isset($site_config['error_override_function'])) $this->error_override_function = isset($site_config['error_override_function']);
+
+					$this->view_path = APP_ROOT . '/library/form/' . str_replace('_', '-', substr(get_class($this), 0, -5)) . '.ctp';
 
 				//--------------------------------------------------
 				// Internal form ID
@@ -113,7 +91,6 @@
 				//--------------------------------------------------
 				// CSRF setup
 
-					$this->csrf_error_html = 'The request did not appear to come from a trusted source, please try again.';
 					$this->csrf_session = (class_exists('session', false) && session::open());
 					$this->csrf_token = ($this->csrf_session ? session::get('csrf') : cookie::get('csrf'));
 
@@ -1296,6 +1273,14 @@
 			}
 
 			public function html() {
+				if ($this->view_used == false && is_file($this->view_path)) {
+					$this->view_used = true; // Loop check
+					ob_start();
+					extract($this->view_variables);
+					$form = $this;
+					require($this->view_path);
+					return ob_get_clean();
+				}
 				return '
 					' . rtrim($this->html_start()) . '
 						<fieldset>
@@ -1304,6 +1289,21 @@
 							' . $this->html_submit() . '
 						</fieldset>
 					' . $this->html_end() . "\n";
+			}
+
+		//--------------------------------------------------
+		// Variables
+
+			public function set($variable, $value = NULL) {
+				$this->view_variables[$variable] = $value;
+			}
+
+			public function get($variable, $default = NULL) {
+				if (isset($this->view_variables[$variable])) {
+					return $this->view_variables[$variable];
+				} else {
+					return $default;
+				}
 			}
 
 	}
