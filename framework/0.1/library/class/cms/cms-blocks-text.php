@@ -58,7 +58,7 @@
 					if ($values) {
 						$cms_markdown = new cms_markdown();
 						return '
-							<p>' . $cms_markdown->process_block_html($values['text']) . '</p>';
+							' . $cms_markdown->process_block_html($values['text']);
 					}
 
 			}
