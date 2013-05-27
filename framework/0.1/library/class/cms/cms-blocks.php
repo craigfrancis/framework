@@ -5,13 +5,13 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $parent_type;
-			protected $parent_id;
-			protected $form;
+			protected $parent_type = NULL;
+			protected $parent_id = 0;
+			protected $form = NULL;
 			protected $block_types = array('heading', 'text');
-			protected $fields;
-			protected $field_objects;
-			protected $field_add;
+			protected $fields = array();
+			protected $field_objects = array();
+			protected $field_add = NULL;
 
 		//--------------------------------------------------
 		// Setup
