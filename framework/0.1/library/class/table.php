@@ -6,508 +6,589 @@
 
 	class table_base extends check {
 
-		protected $table_id;
-		protected $headings;
-		protected $heading_id;
-		protected $footers;
-		protected $footer_id;
-		protected $rows;
+		//--------------------------------------------------
+		// Variables
 
-		protected $id_name;
-		protected $class_name;
-		protected $current_url;
-		protected $no_records_html;
-		protected $data_inherit_heading_class;
-		protected $footer_inherit_heading_class;
-		protected $charset_input;
-		protected $charset_output;
+			protected $table_id = NULL;
+			protected $headings = array();
+			protected $heading_id = 0;
+			protected $footers = array();
+			protected $footer_id = 0;
+			protected $rows = array();
 
-		protected $sort_enabled;
-		protected $sort_name;
-		protected $sort_request_field;
-		protected $sort_request_order;
-		protected $sort_preserved_key;
-		protected $sort_preserved_field;
-		protected $sort_preserved_order;
-		protected $sort_default_field;
-		protected $sort_default_order;
-		protected $sort_fields;
-		protected $sort_active_asc_prefix_html;
-		protected $sort_active_asc_suffix_html;
-		protected $sort_active_desc_prefix_html;
-		protected $sort_active_desc_suffix_html;
-		protected $sort_inactive_prefix_html;
-		protected $sort_inactive_suffix_html;
+			protected $id_name = '';
+			protected $class_name = 'basic_table';
+			protected $current_url = NULL;
+			protected $no_records_html = 'No records found';
+			protected $data_inherit_heading_class = true;
+			protected $footer_inherit_heading_class = false;
+			protected $charset_input = NULL;
+			protected $charset_output = NULL;
 
-		public function __construct() {
+			protected $sort_enabled = false;
+			protected $sort_name = NULL;
+			protected $sort_request_field = NULL;
+			protected $sort_request_order = NULL;
+			protected $sort_preserved_key = NULL;
+			protected $sort_preserved_field = NULL;
+			protected $sort_preserved_order = NULL;
+			protected $sort_default_field = NULL;
+			protected $sort_default_order = NULL;
+			protected $sort_fields = array();
+			protected $sort_active_asc_prefix_html = '';
+			protected $sort_active_asc_suffix_html = '';
+			protected $sort_active_desc_prefix_html = '';
+			protected $sort_active_desc_suffix_html = '';
+			protected $sort_inactive_prefix_html = '';
+			protected $sort_inactive_suffix_html = '';
 
-			//--------------------------------------------------
-			// Defaults
+			private $view_path = NULL;
+			private $view_used = false;
+			private $view_variables = array();
 
-				$this->headings = array();
-				$this->heading_id = 0;
-				$this->footers = array();
-				$this->footer_id = 0;
-				$this->rows = array();
+		//--------------------------------------------------
+		// Setup
 
-				$this->id_name = '';
-				$this->class_name = 'basic_table';
-				$this->current_url = NULL;
-				$this->no_records_html = 'No records found';
-				$this->data_inherit_heading_class = true;
-				$this->footer_inherit_heading_class = false;
-				$this->charset_input = config::get('output.charset');
-				$this->charset_output = NULL;
-
-				$this->sort_enabled = false;
-				$this->sort_name = NULL;
-				$this->sort_request_field = NULL;
-				$this->sort_request_order = NULL;
-				$this->sort_preserved_key = NULL;
-				$this->sort_preserved_field = NULL;
-				$this->sort_preserved_order = NULL;
-				$this->sort_default_field = NULL;
-				$this->sort_default_order = NULL;
-				$this->sort_fields = array();
-				$this->sort_active_asc_prefix_html = '';
-				$this->sort_active_asc_suffix_html = '';
-				$this->sort_active_desc_prefix_html = '';
-				$this->sort_active_desc_suffix_html = '';
-				$this->sort_inactive_prefix_html = '';
-				$this->sort_inactive_suffix_html = '';
-
-			//--------------------------------------------------
-			// Table ID
-
-				$this->table_id = config::get('table.count', 1);
-
-				config::set('table.count', ($this->table_id + 1));
-
-			//--------------------------------------------------
-			// Site config
-
-				$site_config = config::get_all('table');
-
-				foreach ($site_config as $name => $value) {
-					if ($name == 'active_asc_suffix_html') $this->active_asc_suffix_set_html($value);
-					else if ($name == 'active_desc_suffix_html') $this->active_desc_suffix_set_html($value);
-					else if ($name == 'inactive_suffix_html') $this->inactive_suffix_set_html($value);
-					else if ($name != 'count') exit_with_error('Unrecognised table configuration "' . $name . '"');
-				}
-
-		}
-
-		public function current_url_set($url) {
-			$this->current_url = $url;
-		}
-
-		public function id_set($id) {
-			$this->id_name = $id;
-		}
-
-		public function anchor_set($id) {
-			$this->id_set($id);
-			$this->current_url_set('#' . $id);
-		}
-
-		public function class_set($class_name) {
-			$this->class_name = $class_name;
-		}
-
-		public function charset_output_set($charset) {
-			$this->charset_output = $charset;
-		}
-
-		public function sort_name_set($name = NULL) {
-
-			$this->sort_enabled = true;
-
-			if ($name == NULL) {
-				$name = 'table' . $this->table_id;
+			public function __construct() {
+				call_user_func_array(array($this, 'setup'), func_get_args());
 			}
 
-			$this->sort_name = $name;
+			protected function setup() {
 
-			$sort = request($this->sort_name . '_sort');
-			if (($pos = strpos($sort, '-')) !== false) {
-				$order = substr($sort, 0, $pos);
-				if ($order == 'asc' || $order == 'desc') {
-					$this->sort_request_field = substr($sort, ($pos + 1));
-					$this->sort_request_order = $order;
-				}
-			}
+				//--------------------------------------------------
+				// Defaults
 
-		}
+					$this->charset_input = config::get('output.charset');
 
-		public function sort_default_set($field, $order = 'asc') {
-			$this->sort_enabled = true;
-			$this->sort_default_field = $field;
-			$this->sort_default_order = $order;
-		}
+					$this->view_path = APP_ROOT . '/library/table/' . str_replace('_', '-', substr(get_class($this), 0, -6)) . '.ctp';
 
-		public function sort_preserve_set($preserve) {
-			if ($preserve) {
+				//--------------------------------------------------
+				// Table ID
 
-				$this->sort_preserved_key = 'table.sort_preserved.' . base64_encode(config::get('request.path')) . '.' . $this->table_id;
+					$this->table_id = config::get('table.count', 1);
 
-				$session = session::get($this->sort_preserved_key);
-				if ($session) {
-					list($this->sort_preserved_field, $this->sort_preserved_order) = $session;
-				}
+					config::set('table.count', ($this->table_id + 1));
 
-			} else {
+				//--------------------------------------------------
+				// Site config
 
-				$this->sort_preserved_key = NULL;
-				$this->sort_preserved_field = NULL;
-				$this->sort_preserved_order = NULL;
+					$site_config = config::get_all('table');
+
+					foreach ($site_config as $name => $value) {
+						if ($name == 'active_asc_suffix_html') $this->active_asc_suffix_set_html($value);
+						else if ($name == 'active_desc_suffix_html') $this->active_desc_suffix_set_html($value);
+						else if ($name == 'inactive_suffix_html') $this->inactive_suffix_set_html($value);
+						else if ($name != 'count') exit_with_error('Unrecognised table configuration "' . $name . '"');
+					}
 
 			}
-		}
 
-		public function sort_field_get() {
-
-			$this->sort_enabled = true;
-
-			if ($this->sort_name === NULL) {
-				$this->sort_name_set();
+			public function current_url_set($url) {
+				$this->current_url = $url;
 			}
 
-			if (in_array($this->sort_request_field, $this->sort_fields)) { // Recognised value supplied by GPC
-				return $this->sort_request_field;
+			public function id_set($id) {
+				$this->id_name = $id;
 			}
 
-			if (in_array($this->sort_preserved_field, $this->sort_fields)) { // Has been set (not NULL), which came from GPC
-				return $this->sort_preserved_field;
+			public function anchor_set($id) {
+				$this->id_set($id);
+				$this->current_url_set('#' . $id);
 			}
 
-			if ($this->sort_default_field !== NULL) { // Has been set (not NULL), but may not be in sort_fields
-				return $this->sort_default_field;
+			public function class_set($class_name) {
+				$this->class_name = $class_name;
 			}
 
-			$default = reset($this->sort_fields);
-			if ($default === false) {
-				$default = NULL;
-			}
-			return $default;
-
-		}
-
-		public function sort_order_get() {
-
-			$this->sort_enabled = true;
-
-			if ($this->sort_name === NULL) {
-				$this->sort_name_set();
+			public function charset_output_set($charset) {
+				$this->charset_output = $charset;
 			}
 
-			if ($this->sort_request_order == 'desc' || $this->sort_request_order == 'asc') { // Recognised value supplied by GPC
-				return $this->sort_request_order;
-			}
+			public function sort_name_set($name = NULL) {
 
-			if ($this->sort_preserved_order == 'desc' || $this->sort_preserved_order == 'asc') { // Has been set (not NULL), which came from GPC
-				return $this->sort_preserved_order;
-			}
-
-			if ($this->sort_default_order == 'desc' || $this->sort_default_order == 'asc') { // Has been set (not NULL)
-				return $this->sort_default_order;
-			}
-
-			return 'asc';
-
-		}
-
-		public function sort_url_get($field, $order) {
-
-			$this->sort_enabled = true;
-
-			if ($this->sort_name === NULL) {
-				$this->sort_name_set();
-			}
-
-			$params = array($this->sort_name . '_sort' => $order . '-' . $field);
-
-			if ($this->current_url === NULL) {
-				return url($params);
-			} else {
-				return url($this->current_url, $params);
-			}
-
-		}
-
-		public function sort_get_sql() {
-
-			$this->sort_enabled = true;
-
-			$order_by_sql = $this->sort_field_get();
-
-			if (preg_match('/^([^,]+)(,.*)$/', $order_by_sql, $matches)) {
-				return $matches[1] . ' ' . $this->sort_order_get() . $matches[2];
-			} else {
-				return $order_by_sql . ' ' . $this->sort_order_get();
-			}
-
-		}
-
-		public function active_asc_prefix_set($content) {
-			$this->sort_active_asc_prefix_html = html($content);
-		}
-
-		public function active_asc_prefix_set_html($content_html) {
-			$this->sort_active_asc_prefix_html = $content_html;
-		}
-
-		public function active_asc_suffix_set($content) {
-			$this->sort_active_asc_suffix_html = html($content);
-		}
-
-		public function active_asc_suffix_set_html($content_html) {
-			$this->sort_active_asc_suffix_html = $content_html;
-		}
-
-		public function active_desc_prefix_set($content) {
-			$this->sort_active_desc_prefix_html = html($content);
-		}
-
-		public function active_desc_prefix_set_html($content_html) {
-			$this->sort_active_desc_prefix_html = $content_html;
-		}
-
-		public function active_desc_suffix_set($content) {
-			$this->sort_active_desc_suffix_html = html($content);
-		}
-
-		public function active_desc_suffix_set_html($content_html) {
-			$this->sort_active_desc_suffix_html = $content_html;
-		}
-
-		public function inactive_prefix_set($content) {
-			$this->sort_inactive_prefix_html = html($content);
-		}
-
-		public function inactive_prefix_set_html($content_html) {
-			$this->sort_inactive_prefix_html = $content_html;
-		}
-
-		public function inactive_suffix_set($content) {
-			$this->sort_inactive_suffix_html = html($content);
-		}
-
-		public function inactive_suffix_set_html($content_html) {
-			$this->sort_inactive_suffix_html = $content_html;
-		}
-
-		public function heading_add($heading, $sort_name = NULL, $class_name = '', $colspan = 1) {
-			$this->heading_add_html(html($heading), $sort_name, $class_name, $colspan);
-		}
-
-		public function heading_add_html($heading_html, $sort_name = NULL, $class_name = '', $colspan = 1) {
-
-			if (!isset($this->headings[$this->heading_id])) {
-				$this->headings[$this->heading_id] = array();
-			}
-
-			$this->headings[$this->heading_id][] = array(
-					'html' => $heading_html,
-					'sort_name' => $sort_name,
-					'class_name' => $class_name,
-					'colspan' => $colspan,
-				);
-
-			if ($sort_name !== NULL && $sort_name !== '') {
 				$this->sort_enabled = true;
-				$this->sort_fields[] = $sort_name;
-			}
 
-		}
-
-		public function heading_row_end() {
-			$this->heading_id++;
-		}
-
-		public function footer_add($footer, $class_name = '', $colspan = 1) {
-			$this->footer_add_html(html($footer), $class_name, $colspan);
-		}
-
-		public function footer_add_html($footer_html, $class_name = '', $colspan = 1) {
-
-			if (!isset($this->footers[$this->footer_id])) {
-				$this->footers[$this->footer_id] = array();
-			}
-
-			$this->footers[$this->footer_id][] = array(
-					'html' => $footer_html,
-					'class_name' => $class_name,
-					'colspan' => $colspan,
-				);
-
-		}
-
-		public function footer_row_end() {
-
-			if (!isset($this->footers[$this->footer_id])) {
-				$this->footers[$this->footer_id] = array();
-			}
-
-			$this->footer_id++;
-
-		}
-
-		public function _row_add($row, $class_name = '', $id_name = '') { // Public for table_row to call
-			$this->rows[] = array(
-					'row' => $row,
-					'class_name' => $class_name,
-					'id_name' => $id_name,
-				);
-		}
-
-		public function row_count() {
-			return count($this->rows);
-		}
-
-		public function no_records_set($no_records) {
-			$this->no_records_html = html($no_records);
-		}
-
-		public function no_records_set_html($no_records_html) {
-			$this->no_records_html = $no_records_html;
-		}
-
-		public function html() {
-
-			//--------------------------------------------------
-			// Current sort - inc support for defaults
-
-				if ($this->sort_enabled) {
-
-					$sort_field = $this->sort_field_get();
-					$sort_asc = ($this->sort_order_get() == 'asc');
-
-					if ($this->sort_preserved_key && $this->sort_request_field && $this->sort_request_order) {
-						session::set($this->sort_preserved_key, array($this->sort_request_field, $this->sort_request_order));
-					}
-
+				if ($name == NULL) {
+					$name = 'table' . $this->table_id;
 				}
 
-			//--------------------------------------------------
-			// Headings
+				$this->sort_name = $name;
 
-				$col_class = array();
-				$col_count = 0;
-
-				$output_html = '
-					<table' . ($this->id_name != '' ? ' id="' . html($this->id_name) . '"' : '') . ' class="' . html($this->class_name) . '">
-						<thead>';
-
-				foreach ($this->headings as $row_id => $heading_row) {
-
-					$col_id = 0;
-
-					$output_html .= '
-							<tr>';
-
-					foreach ($heading_row as $heading_info) {
-
-						//--------------------------------------------------
-						// HTML content, url, and class
-
-							if ($this->sort_name === NULL || $heading_info['sort_name'] === NULL) {
-
-								$heading_html = $heading_info['html'];
-
-							} else if ($sort_field == $heading_info['sort_name']) {
-
-								$url = $this->sort_url_get($heading_info['sort_name'], ($sort_asc ? 'desc' : 'asc'));
-
-								$heading_html = '<a href="' . html($url) . '">' . ($sort_asc ? $this->sort_active_asc_prefix_html : $this->sort_active_desc_prefix_html) . $heading_info['html'] . ($sort_asc ? $this->sort_active_asc_suffix_html : $this->sort_active_desc_suffix_html) . '</a>';
-
-								$heading_info['class_name'] .= ' sorted ' . ($sort_asc ? 'sorted_asc' : 'sorted_desc');
-
-							} else {
-
-								$url = $this->sort_url_get($heading_info['sort_name'], 'asc');
-
-								$heading_html = '<a href="' . html($url) . '">' . $this->sort_inactive_prefix_html . $heading_info['html'] . $this->sort_inactive_suffix_html . '</a>';
-
-							}
-
-						//--------------------------------------------------
-						// Attributes - scope
-
-							$attributes_html = ' scope="col"';
-
-						//--------------------------------------------------
-						// Attributes - col span
-
-							if ($heading_info['colspan'] > 1) {
-								$attributes_html .= ' colspan="' . html($heading_info['colspan']) . '"';
-							}
-
-						//--------------------------------------------------
-						// Attributes - class
-
-							if (!isset($col_class[$col_id])) {
-								$col_class[$col_id] = '';
-							}
-
-							if ($this->data_inherit_heading_class && $heading_info['class_name'] != '') {
-								$col_class[$col_id] .= ' ' . $heading_info['class_name'];
-							}
-
-							if ($heading_info['class_name'] != '') {
-								$attributes_html .= ' class="' . html($heading_info['class_name']) . '"';
-							}
-
-						//--------------------------------------------------
-						// HTML
-
-							if ($heading_info['html'] === '' || $heading_info['html'] === NULL) {
-								$heading_info['html'] = '&#xA0;';
-							}
-
-							$output_html .= '
-									<th' . $attributes_html . '>' . $heading_html . '</th>';
-
-						//--------------------------------------------------
-						// Column ID
-
-							$col_id += $heading_info['colspan'];
-
+				$sort = request($this->sort_name . '_sort');
+				if (($pos = strpos($sort, '-')) !== false) {
+					$order = substr($sort, 0, $pos);
+					if ($order == 'asc' || $order == 'desc') {
+						$this->sort_request_field = substr($sort, ($pos + 1));
+						$this->sort_request_order = $order;
 					}
-
-					if ($col_id > $col_count) {
-						$col_count = $col_id;
-					}
-
-					$output_html .= '
-							</tr>';
-
 				}
 
-				$output_html .= '
-						</thead>';
+			}
 
-			//--------------------------------------------------
-			// Footer
+			public function sort_default_set($field, $order = 'asc') {
+				$this->sort_enabled = true;
+				$this->sort_default_field = $field;
+				$this->sort_default_order = $order;
+			}
 
-				if (count($this->footers)) {
+			public function sort_preserve_set($preserve) {
+				if ($preserve) {
 
-					$output_html .= '
-						<tfoot>';
+					$this->sort_preserved_key = 'table.sort_preserved.' . base64_encode(config::get('request.path')) . '.' . $this->table_id;
 
-					foreach ($this->footers as $footer_row) {
+					$session = session::get($this->sort_preserved_key);
+					if ($session) {
+						list($this->sort_preserved_field, $this->sort_preserved_order) = $session;
+					}
+
+				} else {
+
+					$this->sort_preserved_key = NULL;
+					$this->sort_preserved_field = NULL;
+					$this->sort_preserved_order = NULL;
+
+				}
+			}
+
+			public function sort_field_get() {
+
+				$this->sort_enabled = true;
+
+				if ($this->sort_name === NULL) {
+					$this->sort_name_set();
+				}
+
+				if (in_array($this->sort_request_field, $this->sort_fields)) { // Recognised value supplied by GPC
+					return $this->sort_request_field;
+				}
+
+				if (in_array($this->sort_preserved_field, $this->sort_fields)) { // Has been set (not NULL), which came from GPC
+					return $this->sort_preserved_field;
+				}
+
+				if ($this->sort_default_field !== NULL) { // Has been set (not NULL), but may not be in sort_fields
+					return $this->sort_default_field;
+				}
+
+				$default = reset($this->sort_fields);
+				if ($default === false) {
+					$default = NULL;
+				}
+				return $default;
+
+			}
+
+			public function sort_order_get() {
+
+				$this->sort_enabled = true;
+
+				if ($this->sort_name === NULL) {
+					$this->sort_name_set();
+				}
+
+				if ($this->sort_request_order == 'desc' || $this->sort_request_order == 'asc') { // Recognised value supplied by GPC
+					return $this->sort_request_order;
+				}
+
+				if ($this->sort_preserved_order == 'desc' || $this->sort_preserved_order == 'asc') { // Has been set (not NULL), which came from GPC
+					return $this->sort_preserved_order;
+				}
+
+				if ($this->sort_default_order == 'desc' || $this->sort_default_order == 'asc') { // Has been set (not NULL)
+					return $this->sort_default_order;
+				}
+
+				return 'asc';
+
+			}
+
+			public function sort_url_get($field, $order) {
+
+				$this->sort_enabled = true;
+
+				if ($this->sort_name === NULL) {
+					$this->sort_name_set();
+				}
+
+				$params = array($this->sort_name . '_sort' => $order . '-' . $field);
+
+				if ($this->current_url === NULL) {
+					return url($params);
+				} else {
+					return url($this->current_url, $params);
+				}
+
+			}
+
+			public function sort_get_sql() {
+
+				$this->sort_enabled = true;
+
+				$order_by_sql = $this->sort_field_get();
+
+				if (preg_match('/^([^,]+)(,.*)$/', $order_by_sql, $matches)) {
+					return $matches[1] . ' ' . $this->sort_order_get() . $matches[2];
+				} else {
+					return $order_by_sql . ' ' . $this->sort_order_get();
+				}
+
+			}
+
+			public function active_asc_prefix_set($content) {
+				$this->sort_active_asc_prefix_html = html($content);
+			}
+
+			public function active_asc_prefix_set_html($content_html) {
+				$this->sort_active_asc_prefix_html = $content_html;
+			}
+
+			public function active_asc_suffix_set($content) {
+				$this->sort_active_asc_suffix_html = html($content);
+			}
+
+			public function active_asc_suffix_set_html($content_html) {
+				$this->sort_active_asc_suffix_html = $content_html;
+			}
+
+			public function active_desc_prefix_set($content) {
+				$this->sort_active_desc_prefix_html = html($content);
+			}
+
+			public function active_desc_prefix_set_html($content_html) {
+				$this->sort_active_desc_prefix_html = $content_html;
+			}
+
+			public function active_desc_suffix_set($content) {
+				$this->sort_active_desc_suffix_html = html($content);
+			}
+
+			public function active_desc_suffix_set_html($content_html) {
+				$this->sort_active_desc_suffix_html = $content_html;
+			}
+
+			public function inactive_prefix_set($content) {
+				$this->sort_inactive_prefix_html = html($content);
+			}
+
+			public function inactive_prefix_set_html($content_html) {
+				$this->sort_inactive_prefix_html = $content_html;
+			}
+
+			public function inactive_suffix_set($content) {
+				$this->sort_inactive_suffix_html = html($content);
+			}
+
+			public function inactive_suffix_set_html($content_html) {
+				$this->sort_inactive_suffix_html = $content_html;
+			}
+
+			public function heading_add($heading, $sort_name = NULL, $class_name = '', $colspan = 1) {
+				$this->heading_add_html(html($heading), $sort_name, $class_name, $colspan);
+			}
+
+			public function heading_add_html($heading_html, $sort_name = NULL, $class_name = '', $colspan = 1) {
+
+				if (!isset($this->headings[$this->heading_id])) {
+					$this->headings[$this->heading_id] = array();
+				}
+
+				$this->headings[$this->heading_id][] = array(
+						'html' => $heading_html,
+						'sort_name' => $sort_name,
+						'class_name' => $class_name,
+						'colspan' => $colspan,
+					);
+
+				if ($sort_name !== NULL && $sort_name !== '') {
+					$this->sort_enabled = true;
+					$this->sort_fields[] = $sort_name;
+				}
+
+			}
+
+			public function heading_row_end() {
+				$this->heading_id++;
+			}
+
+			public function footer_add($footer, $class_name = '', $colspan = 1) {
+				$this->footer_add_html(html($footer), $class_name, $colspan);
+			}
+
+			public function footer_add_html($footer_html, $class_name = '', $colspan = 1) {
+
+				if (!isset($this->footers[$this->footer_id])) {
+					$this->footers[$this->footer_id] = array();
+				}
+
+				$this->footers[$this->footer_id][] = array(
+						'html' => $footer_html,
+						'class_name' => $class_name,
+						'colspan' => $colspan,
+					);
+
+			}
+
+			public function footer_row_end() {
+
+				if (!isset($this->footers[$this->footer_id])) {
+					$this->footers[$this->footer_id] = array();
+				}
+
+				$this->footer_id++;
+
+			}
+
+			public function _row_add($row, $class_name = '', $id_name = '') { // Public for table_row to call
+				$this->rows[] = array(
+						'row' => $row,
+						'class_name' => $class_name,
+						'id_name' => $id_name,
+					);
+			}
+
+			public function row_count() {
+				return count($this->rows);
+			}
+
+			public function no_records_set($no_records) {
+				$this->no_records_html = html($no_records);
+			}
+
+			public function no_records_set_html($no_records_html) {
+				$this->no_records_html = $no_records_html;
+			}
+
+		//--------------------------------------------------
+		// Output
+
+			public function html() {
+
+				//--------------------------------------------------
+				// View support
+
+					if ($this->view_used == false && is_file($this->view_path)) {
+						$this->view_used = true; // Loop check
+						ob_start();
+						extract($this->view_variables);
+						$form = $this;
+						require($this->view_path);
+						return ob_get_clean();
+					}
+
+				//--------------------------------------------------
+				// Current sort - inc support for defaults
+
+					if ($this->sort_enabled) {
+
+						$sort_field = $this->sort_field_get();
+						$sort_asc = ($this->sort_order_get() == 'asc');
+
+						if ($this->sort_preserved_key && $this->sort_request_field && $this->sort_request_order) {
+							session::set($this->sort_preserved_key, array($this->sort_request_field, $this->sort_request_order));
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Headings
+
+					$col_class = array();
+					$col_count = 0;
+
+					$output_html = '
+						<table' . ($this->id_name != '' ? ' id="' . html($this->id_name) . '"' : '') . ' class="' . html($this->class_name) . '">
+							<thead>';
+
+					foreach ($this->headings as $row_id => $heading_row) {
 
 						$col_id = 0;
 
 						$output_html .= '
-							<tr>';
+								<tr>';
 
-						foreach ($footer_row as $footer_info) {
+						foreach ($heading_row as $heading_info) {
+
+							//--------------------------------------------------
+							// HTML content, url, and class
+
+								if ($this->sort_name === NULL || $heading_info['sort_name'] === NULL) {
+
+									$heading_html = $heading_info['html'];
+
+								} else if ($sort_field == $heading_info['sort_name']) {
+
+									$url = $this->sort_url_get($heading_info['sort_name'], ($sort_asc ? 'desc' : 'asc'));
+
+									$heading_html = '<a href="' . html($url) . '">' . ($sort_asc ? $this->sort_active_asc_prefix_html : $this->sort_active_desc_prefix_html) . $heading_info['html'] . ($sort_asc ? $this->sort_active_asc_suffix_html : $this->sort_active_desc_suffix_html) . '</a>';
+
+									$heading_info['class_name'] .= ' sorted ' . ($sort_asc ? 'sorted_asc' : 'sorted_desc');
+
+								} else {
+
+									$url = $this->sort_url_get($heading_info['sort_name'], 'asc');
+
+									$heading_html = '<a href="' . html($url) . '">' . $this->sort_inactive_prefix_html . $heading_info['html'] . $this->sort_inactive_suffix_html . '</a>';
+
+								}
+
+							//--------------------------------------------------
+							// Attributes - scope
+
+								$attributes_html = ' scope="col"';
 
 							//--------------------------------------------------
 							// Attributes - col span
 
-								if ($footer_info['colspan'] > 1) {
-									$attributes_html = ' colspan="' . html($footer_info['colspan']) . '"';
+								if ($heading_info['colspan'] > 1) {
+									$attributes_html .= ' colspan="' . html($heading_info['colspan']) . '"';
+								}
+
+							//--------------------------------------------------
+							// Attributes - class
+
+								if (!isset($col_class[$col_id])) {
+									$col_class[$col_id] = '';
+								}
+
+								if ($this->data_inherit_heading_class && $heading_info['class_name'] != '') {
+									$col_class[$col_id] .= ' ' . $heading_info['class_name'];
+								}
+
+								if ($heading_info['class_name'] != '') {
+									$attributes_html .= ' class="' . html($heading_info['class_name']) . '"';
+								}
+
+							//--------------------------------------------------
+							// HTML
+
+								if ($heading_info['html'] === '' || $heading_info['html'] === NULL) {
+									$heading_info['html'] = '&#xA0;';
+								}
+
+								$output_html .= '
+										<th' . $attributes_html . '>' . $heading_html . '</th>';
+
+							//--------------------------------------------------
+							// Column ID
+
+								$col_id += $heading_info['colspan'];
+
+						}
+
+						if ($col_id > $col_count) {
+							$col_count = $col_id;
+						}
+
+						$output_html .= '
+								</tr>';
+
+					}
+
+					$output_html .= '
+							</thead>';
+
+				//--------------------------------------------------
+				// Footer
+
+					if (count($this->footers)) {
+
+						$output_html .= '
+							<tfoot>';
+
+						foreach ($this->footers as $footer_row) {
+
+							$col_id = 0;
+
+							$output_html .= '
+								<tr>';
+
+							foreach ($footer_row as $footer_info) {
+
+								//--------------------------------------------------
+								// Attributes - col span
+
+									if ($footer_info['colspan'] > 1) {
+										$attributes_html = ' colspan="' . html($footer_info['colspan']) . '"';
+									} else {
+										$attributes_html = '';
+									}
+
+								//--------------------------------------------------
+								// Attributes - class
+
+									$class = $footer_info['class_name'];
+
+									if ($this->footer_inherit_heading_class && isset($col_class[$col_id]) && $col_class[$col_id] != '') {
+										$class .= ' ' . $col_class[$col_id];
+									}
+
+									$class = trim($class);
+									if ($class != '') {
+										$attributes_html .= ' class="' . html(trim($class)) . '"';
+									}
+
+								//--------------------------------------------------
+								// HTML
+
+									if ($footer_info['html'] === '' || $footer_info['html'] === NULL) {
+										$footer_info['html'] = '&#xA0;';
+									}
+
+									$output_html .= '
+										<td' . $attributes_html . '>' . $footer_info['html'] . '</td>';
+
+								//--------------------------------------------------
+								// Column ID
+
+									$col_id += $footer_info['colspan'];
+
+							}
+
+							$output_html .= '
+								</tr>';
+
+						}
+
+						$output_html .= '
+							</tfoot>';
+
+					}
+
+				//--------------------------------------------------
+				// Data
+
+					$output_html .= '
+							<tbody>';
+
+					$row_count = 0;
+
+					foreach (array_keys($this->rows) as $row_key) {
+
+						$row_class = trim($this->rows[$row_key]['class_name'] . ($row_count++ % 2 ? ' even' : ' odd'));
+						$row_id = $this->rows[$row_key]['id_name'];
+
+						$output_html .= '
+								<tr';
+
+						if ($row_id != '') {
+							$output_html .= ' id="' . html($row_id) . '"';
+						}
+
+						if ($row_class != '') {
+							$output_html .= ' class="' . html($row_class) . '"';
+						}
+
+						$output_html .= '>';
+
+						$col_id = 0;
+
+						foreach ($this->rows[$row_key]['row']->data as $cell_info) {
+
+							//--------------------------------------------------
+							// Attributes - col span
+
+								if ($cell_info['colspan'] > 1) {
+									$attributes_html = ' colspan="' . html($cell_info['colspan']) . '"';
 								} else {
 									$attributes_html = '';
 								}
@@ -515,300 +596,292 @@
 							//--------------------------------------------------
 							// Attributes - class
 
-								$class = $footer_info['class_name'];
+								$class = $cell_info['class_name'];
 
-								if ($this->footer_inherit_heading_class && isset($col_class[$col_id]) && $col_class[$col_id] != '') {
+								if (isset($col_class[$col_id]) && $col_class[$col_id] != '') {
 									$class .= ' ' . $col_class[$col_id];
 								}
 
 								$class = trim($class);
 								if ($class != '') {
-									$attributes_html .= ' class="' . html(trim($class)) . '"';
+									$attributes_html .= ' class="' . html($class) . '"';
 								}
 
 							//--------------------------------------------------
 							// HTML
 
-								if ($footer_info['html'] === '' || $footer_info['html'] === NULL) {
-									$footer_info['html'] = '&#xA0;';
+								if ($cell_info['html'] === '' || $cell_info['html'] === NULL) {
+									$cell_info['html'] = '&#xA0;';
 								}
 
 								$output_html .= '
-									<td' . $attributes_html . '>' . $footer_info['html'] . '</td>';
+									<td' . $attributes_html . '>' . $cell_info['html'] . '</td>';
 
 							//--------------------------------------------------
 							// Column ID
 
-								$col_id += $footer_info['colspan'];
+								$col_id += $cell_info['colspan'];
+
+						}
+
+						while ($col_id < $col_count) {
+
+							//--------------------------------------------------
+							// Attributes - class
+
+								if (isset($col_class[$col_id]) && $col_class[$col_id] != '') {
+									$class = $col_class[$col_id];
+								} else {
+									$class = '';
+								}
+
+								$class = trim($class);
+								if ($class != '') {
+									$attributes_html = ' class="' . html($class) . '"';
+								} else {
+									$attributes_html = '';
+								}
+
+							//--------------------------------------------------
+							// HTML
+
+								$output_html .= '
+									<td' . $attributes_html . '>&#xA0;</td>';
+
+							//--------------------------------------------------
+							// Column ID
+
+								$col_id++;
 
 						}
 
 						$output_html .= '
-							</tr>';
+								</tr>';
 
 					}
+
+				//--------------------------------------------------
+				// Error message
+
+					if (count($this->rows) == 0) {
+
+						$output_html .= '
+								<tr>
+									<td colspan="' . html($col_count) . '" class="no_results">' . $this->no_records_html . '</td>
+								</tr>';
+
+					}
+
+				//--------------------------------------------------
+				// End
 
 					$output_html .= '
-						</tfoot>';
+							</tbody>
+						</table>';
 
-				}
+				//--------------------------------------------------
+				// Return
 
-			//--------------------------------------------------
-			// Data
+					return $output_html;
 
-				$output_html .= '
-						<tbody>';
+			}
 
-				$row_count = 0;
+			public function text() {
 
-				foreach (array_keys($this->rows) as $row_key) {
+				//--------------------------------------------------
+				// Col widths
 
-					$row_class = trim($this->rows[$row_key]['class_name'] . ($row_count++ % 2 ? ' even' : ' odd'));
-					$row_id = $this->rows[$row_key]['id_name'];
+					$col_widths = array();
+					$row_lines = array();
+					$max_width = 70;
 
-					$output_html .= '
-							<tr';
+					foreach ($this->headings as $row_id => $heading_row) {
 
-					if ($row_id != '') {
-						$output_html .= ' id="' . html($row_id) . '"';
-					}
+						$col_id = 0;
 
-					if ($row_class != '') {
-						$output_html .= ' class="' . html($row_class) . '"';
-					}
+						foreach ($heading_row as $heading_id => $heading_info) {
 
-					$output_html .= '>';
+							$text = $this->_html_to_text($heading_info['html']);
 
-					$col_id = 0;
-
-					foreach ($this->rows[$row_key]['row']->data as $cell_info) {
-
-						//--------------------------------------------------
-						// Attributes - col span
-
-							if ($cell_info['colspan'] > 1) {
-								$attributes_html = ' colspan="' . html($cell_info['colspan']) . '"';
-							} else {
-								$attributes_html = '';
-							}
-
-						//--------------------------------------------------
-						// Attributes - class
-
-							$class = $cell_info['class_name'];
-
-							if (isset($col_class[$col_id]) && $col_class[$col_id] != '') {
-								$class .= ' ' . $col_class[$col_id];
-							}
-
-							$class = trim($class);
-							if ($class != '') {
-								$attributes_html .= ' class="' . html($class) . '"';
-							}
-
-						//--------------------------------------------------
-						// HTML
-
-							if ($cell_info['html'] === '' || $cell_info['html'] === NULL) {
-								$cell_info['html'] = '&#xA0;';
-							}
-
-							$output_html .= '
-								<td' . $attributes_html . '>' . $cell_info['html'] . '</td>';
-
-						//--------------------------------------------------
-						// Column ID
-
-							$col_id += $cell_info['colspan'];
-
-					}
-
-					while ($col_id < $col_count) {
-
-						//--------------------------------------------------
-						// Attributes - class
-
-							if (isset($col_class[$col_id]) && $col_class[$col_id] != '') {
-								$class = $col_class[$col_id];
-							} else {
-								$class = '';
-							}
-
-							$class = trim($class);
-							if ($class != '') {
-								$attributes_html = ' class="' . html($class) . '"';
-							} else {
-								$attributes_html = '';
-							}
-
-						//--------------------------------------------------
-						// HTML
-
-							$output_html .= '
-								<td' . $attributes_html . '>&#xA0;</td>';
-
-						//--------------------------------------------------
-						// Column ID
-
-							$col_id++;
-
-					}
-
-					$output_html .= '
-							</tr>';
-
-				}
-
-			//--------------------------------------------------
-			// Error message
-
-				if (count($this->rows) == 0) {
-
-					$output_html .= '
-							<tr>
-								<td colspan="' . html($col_count) . '" class="no_results">' . $this->no_records_html . '</td>
-							</tr>';
-
-				}
-
-			//--------------------------------------------------
-			// End
-
-				$output_html .= '
-						</tbody>
-					</table>';
-
-			//--------------------------------------------------
-			// Return
-
-				return $output_html;
-
-		}
-
-		public function text() {
-
-			//--------------------------------------------------
-			// Col widths
-
-				$col_widths = array();
-				$row_lines = array();
-				$max_width = 70;
-
-				foreach ($this->headings as $row_id => $heading_row) {
-
-					$col_id = 0;
-
-					foreach ($heading_row as $heading_id => $heading_info) {
-
-						$text = $this->_html_to_text($heading_info['html']);
-
-						$length = mb_strlen($text);
-						if (!isset($col_widths[$col_id]) || $col_widths[$col_id] < $length) {
-							$col_widths[$col_id] = $length;
-						}
-
-						$this->headings[$row_id][$heading_id]['text'] = $text;
-
-						$col_id += $heading_info['colspan'];
-
-					}
-
-				}
-
-				foreach (array_keys($this->rows) as $row_key) {
-
-					$col_id = 0;
-
-					foreach ($this->rows[$row_key]['row']->data as $cell_id => $cell_info) {
-
-						$text = $this->_html_to_text($cell_info['html'], $max_width);
-
-						$lines = count($text);
-
-						if (!isset($row_lines[$row_key]) || $row_lines[$row_key] < $lines) {
-							$row_lines[$row_key] = $lines;
-						}
-
-						foreach ($text as $line) {
-							$length = mb_strlen($line);
+							$length = mb_strlen($text);
 							if (!isset($col_widths[$col_id]) || $col_widths[$col_id] < $length) {
 								$col_widths[$col_id] = $length;
 							}
+
+							$this->headings[$row_id][$heading_id]['text'] = $text;
+
+							$col_id += $heading_info['colspan'];
+
 						}
 
-						$this->rows[$row_key]['row']->data[$cell_id]['text'] = $text;
+					}
 
-						$col_id += $cell_info['colspan'];
+					foreach (array_keys($this->rows) as $row_key) {
+
+						$col_id = 0;
+
+						foreach ($this->rows[$row_key]['row']->data as $cell_id => $cell_info) {
+
+							$text = $this->_html_to_text($cell_info['html'], $max_width);
+
+							$lines = count($text);
+
+							if (!isset($row_lines[$row_key]) || $row_lines[$row_key] < $lines) {
+								$row_lines[$row_key] = $lines;
+							}
+
+							foreach ($text as $line) {
+								$length = mb_strlen($line);
+								if (!isset($col_widths[$col_id]) || $col_widths[$col_id] < $length) {
+									$col_widths[$col_id] = $length;
+								}
+							}
+
+							$this->rows[$row_key]['row']->data[$cell_id]['text'] = $text;
+
+							$col_id += $cell_info['colspan'];
+
+						}
+
+						if ($col_id == 0) {
+							$row_lines[$row_key] = 1;
+						}
 
 					}
 
-					if ($col_id == 0) {
-						$row_lines[$row_key] = 1;
+					$row_divide = '';
+					foreach ($col_widths as $col_id => $col_width) {
+						$row_divide .= ($col_id > 0 ? '-' : '') . '+-' . str_repeat('-', ($col_width > $max_width ? $max_width : $col_width));
 					}
 
-				}
+					$row_divide .= "-+\n";
 
-				$row_divide = '';
-				foreach ($col_widths as $col_id => $col_width) {
-					$row_divide .= ($col_id > 0 ? '-' : '') . '+-' . str_repeat('-', ($col_width > $max_width ? $max_width : $col_width));
-				}
+				//--------------------------------------------------
+				// Headings
 
-				$row_divide .= "-+\n";
+					$col_count = 0;
 
-			//--------------------------------------------------
-			// Headings
+					$output = '';
 
-				$col_count = 0;
+					foreach ($this->headings as $row_id => $heading_row) {
 
-				$output = '';
+						$col_id = 0;
 
-				foreach ($this->headings as $row_id => $heading_row) {
+						$output .= str_replace('-', '=', $row_divide);
 
-					$col_id = 0;
+						foreach ($heading_row as $col_id => $heading_info) {
+
+							$output .= ($col_id > 0 ? ' ' : '') . '| ' . mb_str_pad($heading_info['text'], $col_widths[$col_id]);
+
+							for ($k = 1; $k < $heading_info['colspan']; $k++) {
+								$output .= '   ' . mb_str_pad('', $col_widths[$col_id + $k]);
+							}
+
+							$col_id += $heading_info['colspan'];
+
+						}
+
+						if ($col_id > $col_count) {
+							$col_count = $col_id;
+						}
+
+						$output .= " |\n";
+
+					}
 
 					$output .= str_replace('-', '=', $row_divide);
 
-					foreach ($heading_row as $col_id => $heading_info) {
+				//--------------------------------------------------
+				// Data
 
-						$output .= ($col_id > 0 ? ' ' : '') . '| ' . mb_str_pad($heading_info['text'], $col_widths[$col_id]);
+					foreach (array_keys($this->rows) as $row_key) {
 
-						for ($k = 1; $k < $heading_info['colspan']; $k++) {
-							$output .= '   ' . mb_str_pad('', $col_widths[$col_id + $k]);
+						$lines = (isset($row_lines[$row_key]) ? $row_lines[$row_key] : 0);
+
+						for ($line = 0; $line < $lines; $line++) {
+
+							$col_id = 0;
+
+							foreach ($this->rows[$row_key]['row']->data as $cell_info) {
+
+								$text = (isset($cell_info['text'][$line]) ? $cell_info['text'][$line] : '');
+
+								$output .= ($col_id > 0 ? ' ' : '') . '| ' . mb_str_pad($text, $col_widths[$col_id]);
+
+								for ($k = 1; $k < $cell_info['colspan']; $k++) {
+									$output .= '   ' . mb_str_pad('', $col_widths[$col_id + $k]);
+								}
+
+								$col_id += $cell_info['colspan'];
+
+							}
+
+							while ($col_id < $col_count) {
+								$output .= ($col_id > 0 ? ' ' : '') . '| ' . mb_str_pad('', $col_widths[$col_id]);
+								$col_id++;
+							}
+
+							$output .= " |\n";
+
 						}
 
-						$col_id += $heading_info['colspan'];
+						$output .= $row_divide;
 
 					}
 
-					if ($col_id > $col_count) {
-						$col_count = $col_id;
+				//--------------------------------------------------
+				// Return
+
+					return $output;
+
+			}
+
+			public function csv() {
+
+				//--------------------------------------------------
+				// Headings
+
+					$col_count = 0;
+
+					$csv_output = '';
+
+					foreach ($this->headings as $row_id => $heading_row) {
+
+						$col_id = 0;
+
+						foreach ($heading_row as $col_id => $heading_info) {
+
+							$csv_output .= '"' . $this->_html_to_csv($heading_info['html']) . '",';
+
+							for ($k = 1; $k < $heading_info['colspan']; $k++) {
+								$csv_output .= '"",';
+							}
+
+							$col_id += $heading_info['colspan'];
+
+						}
+
+						if ($col_id > $col_count) {
+							$col_count = $col_id;
+						}
+
+						$csv_output .= "\n";
+
 					}
 
-					$output .= " |\n";
+				//--------------------------------------------------
+				// Data
 
-				}
-
-				$output .= str_replace('-', '=', $row_divide);
-
-			//--------------------------------------------------
-			// Data
-
-				foreach (array_keys($this->rows) as $row_key) {
-
-					$lines = (isset($row_lines[$row_key]) ? $row_lines[$row_key] : 0);
-
-					for ($line = 0; $line < $lines; $line++) {
+					foreach (array_keys($this->rows) as $row_key) {
 
 						$col_id = 0;
 
 						foreach ($this->rows[$row_key]['row']->data as $cell_info) {
 
-							$text = (isset($cell_info['text'][$line]) ? $cell_info['text'][$line] : '');
-
-							$output .= ($col_id > 0 ? ' ' : '') . '| ' . mb_str_pad($text, $col_widths[$col_id]);
+							$csv_output .= '"' . $this->_html_to_csv($cell_info['html']) . '",';
 
 							for ($k = 1; $k < $cell_info['colspan']; $k++) {
-								$output .= '   ' . mb_str_pad('', $col_widths[$col_id + $k]);
+								$csv_output .= '"",';
 							}
 
 							$col_id += $cell_info['colspan'];
@@ -816,182 +889,128 @@
 						}
 
 						while ($col_id < $col_count) {
-							$output .= ($col_id > 0 ? ' ' : '') . '| ' . mb_str_pad('', $col_widths[$col_id]);
+							$csv_output .= '"",';
 							$col_id++;
-						}
-
-						$output .= " |\n";
-
-					}
-
-					$output .= $row_divide;
-
-				}
-
-			//--------------------------------------------------
-			// Return
-
-				return $output;
-
-		}
-
-		public function csv() {
-
-			//--------------------------------------------------
-			// Headings
-
-				$col_count = 0;
-
-				$csv_output = '';
-
-				foreach ($this->headings as $row_id => $heading_row) {
-
-					$col_id = 0;
-
-					foreach ($heading_row as $col_id => $heading_info) {
-
-						$csv_output .= '"' . $this->_html_to_csv($heading_info['html']) . '",';
-
-						for ($k = 1; $k < $heading_info['colspan']; $k++) {
-							$csv_output .= '"",';
-						}
-
-						$col_id += $heading_info['colspan'];
-
-					}
-
-					if ($col_id > $col_count) {
-						$col_count = $col_id;
-					}
-
-					$csv_output .= "\n";
-
-				}
-
-			//--------------------------------------------------
-			// Data
-
-				foreach (array_keys($this->rows) as $row_key) {
-
-					$col_id = 0;
-
-					foreach ($this->rows[$row_key]['row']->data as $cell_info) {
-
-						$csv_output .= '"' . $this->_html_to_csv($cell_info['html']) . '",';
-
-						for ($k = 1; $k < $cell_info['colspan']; $k++) {
-							$csv_output .= '"",';
-						}
-
-						$col_id += $cell_info['colspan'];
-
-					}
-
-					while ($col_id < $col_count) {
-						$csv_output .= '"",';
-						$col_id++;
-					}
-
-					$csv_output .= "\n";
-
-				}
-
-			//--------------------------------------------------
-			// Error message
-
-				if (count($this->rows) == 0) {
-
-					$csv_output .= '"' . $this->_html_to_csv($this->no_records_html) . '",';
-
-					for ($k = 0; $k < ($col_count - 1); $k++) {
-						$csv_output .= '"",';
-					}
-
-					$csv_output .= "\n";
-
-				}
-
-			//--------------------------------------------------
-			// Footer
-
-				if (count($this->footers)) {
-
-					foreach ($this->footers as $footer_row) {
-
-						foreach ($footer_row as $footer_info) {
-
-							$csv_output .= '"' . $this->_html_to_csv($footer_info['html']) . '",';
-
-							for ($k = 1; $k < $footer_info['colspan']; $k++) {
-								$csv_output .= '"",';
-							}
-
 						}
 
 						$csv_output .= "\n";
 
 					}
 
+				//--------------------------------------------------
+				// Error message
+
+					if (count($this->rows) == 0) {
+
+						$csv_output .= '"' . $this->_html_to_csv($this->no_records_html) . '",';
+
+						for ($k = 0; $k < ($col_count - 1); $k++) {
+							$csv_output .= '"",';
+						}
+
+						$csv_output .= "\n";
+
+					}
+
+				//--------------------------------------------------
+				// Footer
+
+					if (count($this->footers)) {
+
+						foreach ($this->footers as $footer_row) {
+
+							foreach ($footer_row as $footer_info) {
+
+								$csv_output .= '"' . $this->_html_to_csv($footer_info['html']) . '",';
+
+								for ($k = 1; $k < $footer_info['colspan']; $k++) {
+									$csv_output .= '"",';
+								}
+
+							}
+
+							$csv_output .= "\n";
+
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Clean end of lines
+
+					$csv_output = preg_replace('/,$/m', '', $csv_output);
+
+				//--------------------------------------------------
+				// Return
+
+					return $csv_output;
+
+			}
+
+			public function csv_download($file_name, $mode = NULL) {
+
+				//--------------------------------------------------
+				// Set output charset
+
+					if ($this->charset_output !== NULL) {
+						config::set('output.charset', $this->charset_output);
+					}
+
+				//--------------------------------------------------
+				// Mime type
+
+					if ($mode === 'inline' || ($mode === NULL && SERVER == 'stage')) {
+
+						$mode = 'inline';
+						$mime = 'text/plain';
+
+					} else {
+
+						$mode = 'attachment';
+						$mime = 'application/csv';
+
+					}
+
+				//--------------------------------------------------
+				// Download
+
+					http_download_content($this->csv(), $mime, $file_name, $mode);
+
+			}
+
+		//--------------------------------------------------
+		// Support functions
+
+			function _html_to_text($html, $max_width = NULL) {
+				$text = html_decode(strip_tags($html));
+				if ($max_width !== NULL) {
+					$text = explode("\n", wordwrap($text, $max_width, "\n", true));
 				}
+				return $text;
+			}
 
-			//--------------------------------------------------
-			// Clean end of lines
-
-				$csv_output = preg_replace('/,$/m', '', $csv_output);
-
-			//--------------------------------------------------
-			// Return
-
-				return $csv_output;
-
-		}
-
-		public function csv_download($file_name, $mode = NULL) {
-
-			//--------------------------------------------------
-			// Set output charset
-
-				if ($this->charset_output !== NULL) {
-					config::set('output.charset', $this->charset_output);
+			function _html_to_csv($html) {
+				$text = html_decode(strip_tags($html));
+				if ($this->charset_output !== NULL && $this->charset_output != $this->charset_input) {
+					$text = iconv($this->charset_input, $this->charset_output . '//TRANSLIT', $text);
 				}
+				return csv($text);
+			}
 
-			//--------------------------------------------------
-			// Mime type
+		//--------------------------------------------------
+		// Variables
 
-				if ($mode === 'inline' || ($mode === NULL && SERVER == 'stage')) {
+			public function set($variable, $value = NULL) {
+				$this->view_variables[$variable] = $value;
+			}
 
-					$mode = 'inline';
-					$mime = 'text/plain';
-
+			public function get($variable, $default = NULL) {
+				if (isset($this->view_variables[$variable])) {
+					return $this->view_variables[$variable];
 				} else {
-
-					$mode = 'attachment';
-					$mime = 'application/csv';
-
+					return $default;
 				}
-
-			//--------------------------------------------------
-			// Download
-
-				http_download_content($this->csv(), $mime, $file_name, $mode);
-
-		}
-
-		function _html_to_text($html, $max_width = NULL) {
-			$text = html_decode(strip_tags($html));
-			if ($max_width !== NULL) {
-				$text = explode("\n", wordwrap($text, $max_width, "\n", true));
 			}
-			return $text;
-		}
-
-		function _html_to_csv($html) {
-			$text = html_decode(strip_tags($html));
-			if ($this->charset_output !== NULL && $this->charset_output != $this->charset_input) {
-				$text = iconv($this->charset_input, $this->charset_output . '//TRANSLIT', $text);
-			}
-			return csv($text);
-		}
 
 	}
 

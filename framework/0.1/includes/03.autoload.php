@@ -45,6 +45,10 @@
 					$paths[] = APP_ROOT . '/library/form/' . str_replace('_', '-', substr($class_name, 0, -5)) . '.php';
 				}
 
+				if (substr($class_name, -6) == '_table') {
+					$paths[] = APP_ROOT . '/library/table/' . str_replace('_', '-', substr($class_name, 0, -6)) . '.php';
+				}
+
 				if (!$base_mode) {
 					$paths[] = APP_ROOT . '/library/class/' . $class_file_name . '.php';
 					$paths[] = APP_ROOT . '/library/class/' . $folder . '/' . $class_file_name . '.php';
