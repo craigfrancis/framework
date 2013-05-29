@@ -155,6 +155,7 @@
 						'/app/public/a/css/global/',
 						'/app/public/a/email/',
 						'/app/public/a/img/',
+						'/app/public/a/img/global/',
 						'/app/public/a/js/',
 						'/backup/',
 						'/files/',
@@ -186,6 +187,7 @@
 						'/app/public/.htaccess',
 						'/app/public/index.php',
 						'/app/public/a/css/global/core.css',
+						'/app/public/a/img/global/favicon.ico',
 						'/app/template/default.ctp',
 						'/app/view/home.ctp',
 						'/app/view/contact.ctp',
@@ -199,26 +201,34 @@
 
 					if (is_dir(dirname($dst_path)) && !is_file($dst_path)) {
 
-						$content = file_get_contents($src_path);
-
-						if ($skeleton_file == '/app/library/setup/config.php') {
-
-							$content = str_replace('// define(\'ENCRYPTION_KEY\', \'\');', 'define(\'ENCRYPTION_KEY\', \'' . base64_encode(random_bytes(10)) . '\');', $content);
-
-						} else if ($skeleton_file == '/app/public/index.php') {
-
-							$parent_dir = dirname(ROOT);
-							if (prefix_match($parent_dir, FRAMEWORK_ROOT)) {
-								$bootstrap_path = 'dirname(ROOT) . \'' . str_replace($parent_dir, '', FRAMEWORK_ROOT) . '/bootstrap.php\'';
-							} else {
-								$bootstrap_path = '\'' . FRAMEWORK_ROOT . '/bootstrap.php\'';
-							}
-
-							$content = str_replace('\'/path/to/bootstrap.php\'', $bootstrap_path, $content);
-
-						} else if ($skeleton_file == '/app/public/a/css/global/core.css') {
+						if ($skeleton_file == '/app/public/a/css/global/core.css') {
 
 							$content = file_get_contents(FRAMEWORK_ROOT . '/library/template/default.css');
+
+						} else if ($skeleton_file == '/app/public/a/img/global/favicon.ico') {
+
+							$content = file_get_contents(FRAMEWORK_ROOT . '/library/view/favicon.ico');
+
+						} else {
+
+							$content = file_get_contents($src_path);
+
+							if ($skeleton_file == '/app/library/setup/config.php') {
+
+								$content = str_replace('// define(\'ENCRYPTION_KEY\', \'\');', 'define(\'ENCRYPTION_KEY\', \'' . base64_encode(random_bytes(10)) . '\');', $content);
+
+							} else if ($skeleton_file == '/app/public/index.php') {
+
+								$parent_dir = dirname(ROOT);
+								if (prefix_match($parent_dir, FRAMEWORK_ROOT)) {
+									$bootstrap_path = 'dirname(ROOT) . \'' . str_replace($parent_dir, '', FRAMEWORK_ROOT) . '/bootstrap.php\'';
+								} else {
+									$bootstrap_path = '\'' . FRAMEWORK_ROOT . '/bootstrap.php\'';
+								}
+
+								$content = str_replace('\'/path/to/bootstrap.php\'', $bootstrap_path, $content);
+
+							}
 
 						}
 

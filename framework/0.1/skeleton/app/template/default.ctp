@@ -5,7 +5,7 @@
 
 	$this->css_auto();
 
-	$this->js_add('/a/js/responsive.js');
+	// $this->js_add('/a/js/script.js');
 
 //--------------------------------------------------
 // Navigation
