@@ -553,6 +553,7 @@
 
 	function unit_get($unit_name, $config = array()) {
 
+		$unit_class_name = $unit_name . '_unit';
 		$unit_file_name = safe_file_name(str_replace('_', '-', $unit_name));
 
 		if (($pos = strpos($unit_file_name, '-')) !== false) {
@@ -571,7 +572,7 @@
 
 				require_once($object_path);
 
-				$unit_object = new $unit_name($config);
+				$unit_object = new $unit_class_name($config);
 
 				$view_path = substr($object_path, 0, -4) . '.ctp';
 
