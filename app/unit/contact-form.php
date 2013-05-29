@@ -1,6 +1,6 @@
 <?php
 
-	class contact_form extends form {
+	class contact_form_unit extends form {
 
 		protected function setup() {
 

@@ -30,15 +30,15 @@ You can create sub-folders to help group files, for example:
 	/app/unit/news/news-admin-edit.php
 	/app/unit/news/news-admin-edit.ctp
 
-The 'php' file should then contain a class using same name (using underscores).
+The 'php' file contains a class of the same name (with underscores and 'unit' suffix), and the 'ctp' file contains the HTML.
 
-During initialisation of the object, the 'setup' function is used:
+During initialisation of the object, the 'setup' function is used, for example:
 
 	/app/unit/news/news-admin-index.php
 
 	<?php
 
-		class news_admin_index extends table {
+		class news_admin_index_unit extends table {
 
 			protected function setup($config = array()) { // The $config array is optional
 
