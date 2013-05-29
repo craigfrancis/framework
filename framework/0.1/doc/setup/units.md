@@ -40,7 +40,7 @@ During initialisation of the object, the 'setup' function is used:
 
 		class news_admin_index extends table {
 
-			protected function setup($config) { // The $config array is optional
+			protected function setup($config = array()) { // The $config array is optional
 
 				parent::setup(); // So the table helper can do its setup
 
