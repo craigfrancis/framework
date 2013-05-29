@@ -32,8 +32,8 @@
 			$config['email.testing'] = 'admin@example.com';
 			$config['email.check_domain'] = false;
 
-			$config['email.error'] = array('admin@example.com');
-			$config['email.contact_us'] = array('admin@example.com');
+			// $config['email.error'] = array('admin@example.com');
+			// $config['email.contact_us'] = array('admin@example.com');
 
 	} else if (prefix_match('/www/demo/', ROOT)) {
 

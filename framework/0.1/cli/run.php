@@ -134,6 +134,7 @@
 					'/app/library/setup/',
 					'/app/public/',
 					'/app/template/',
+					'/app/unit/',
 					'/app/view/',
 				);
 

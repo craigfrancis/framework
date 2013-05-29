@@ -21,19 +21,9 @@ And while a good example for beginners, delete the file:
 
 ---
 
-## Automatic views
+## Place holder text
 
-As we don't want to waste time creating lots of view files, we can get the framework to use a standard view that simply gives us two content managed text areas.
-
-Todo this, first create the generic view file:
-
-	/app/library/view/place-holder.ctp
-
-	<?php
-		echo_place_holder();
-	?>
-
-And add the following code:
+To show the content, use a generic function such as:
 
 	/app/library/setup/setup.php
 
@@ -68,25 +58,65 @@ And add the following code:
 
 		}
 
-		$route_path = config::get('route.path');
-		$view_path = view_path(path_to_array($route_path));
+	?>
 
-		if ($route_path !== NULL && !is_file($view_path)) {
+---
 
-			$page_title = cms_text_html(array(
-						'path' => $route_path,
-						'section' => 'title',
-						'wrapper_tag' => 'none',
-						'editable' => false,
-						'default' => '',
-					));
+## Automatic views
 
-			if ($page_title != '' || SERVER == 'stage') {
+As we don't want to waste time creating lots of view files, we can get the framework to use a standard view automatically.
 
-				config::set('output.new_page', ($page_title == ''));
+Todo this, first create the generic view file:
 
-				$response = response_get();
-				$response->view_path_set(ROOT . '/app/library/view/place-holder.ctp');
+	/app/library/view/place-holder.ctp
+
+	<?php
+		echo_place_holder();
+	?>
+
+And get the [html response](../../doc/system/response.md) helper to use this when the view does not exist:
+
+	/app/library/class/response-html.php
+
+	<?php
+
+		class response_html extends response_html_base {
+
+			public function view_path_get() {
+
+				$view_path = parent::view_path_get();
+
+				if (!is_file($view_path) && count($this->units_get()) == 0) {
+					$new_path = $this->place_holder_setup();
+					if ($new_path) {
+						$view_path = $new_path;
+						$this->view_path_set($view_path); // Cache result
+					}
+				}
+
+				return $view_path;
+
+			}
+
+			private function place_holder_setup() {
+
+				$route_path = config::get('route.path');
+
+				$page_title = cms_text_html(array(
+							'path' => $route_path,
+							'section' => 'title',
+							'wrapper_tag' => 'none',
+							'editable' => false,
+							'default' => '',
+						));
+
+				if ($page_title != '' || SERVER == 'stage') {
+
+					config::set('output.new_page', ($page_title == ''));
+
+					return ROOT . '/app/library/view/place-holder.ctp';
+
+				}
 
 			}
 
@@ -111,7 +141,7 @@ Set the [database config](../../doc/system/database.md):
 
 Then load the website.
 
-It should complain about missing tables, and give you the SQL so they can be created, as I prefer frameworks not to do this automatically.
+It should complain about missing tables, and give you the SQL to create the tables (I prefer frameworks not to do this automatically).
 
 ---
 
