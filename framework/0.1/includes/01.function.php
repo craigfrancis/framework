@@ -544,6 +544,51 @@
 	}
 
 //--------------------------------------------------
+// Get a unit object
+
+	function unit_add($unit_name, $config = array()) {
+		$response = response_get();
+		return $response->unit_add($unit_name, $config);
+	}
+
+	function unit_get($unit_name, $config = array()) {
+
+		$unit_file_name = safe_file_name(str_replace('_', '-', $unit_name));
+
+		if (($pos = strpos($unit_file_name, '-')) !== false) {
+			$folder = substr($unit_file_name, 0, $pos);
+		} else {
+			$folder = $unit_file_name;
+		}
+
+		$object_paths = array(
+				APP_ROOT . '/unit/' . $unit_file_name . '.php',
+				APP_ROOT . '/unit/' . $folder . '/' . $unit_file_name . '.php',
+			);
+
+		foreach ($object_paths as $object_path) {
+			if (is_file($object_path)) {
+
+				require_once($object_path);
+
+				$unit_object = new $unit_name($config);
+
+				$view_path = substr($object_path, 0, -4) . '.ctp';
+
+				if (is_file($view_path)) {
+					$unit_object->view_path_set($view_path);
+				}
+
+				return $unit_object;
+
+			}
+		}
+
+		return NULL;
+
+	}
+
+//--------------------------------------------------
 // Get the current response object
 
 	function response_get($type = NULL) {

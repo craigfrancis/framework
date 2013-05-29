@@ -4,7 +4,7 @@
 // http://www.phpprime.com/doc/helpers/form/
 //--------------------------------------------------
 
-	class form_base extends check {
+	class form_base extends unit {
 
 		//--------------------------------------------------
 		// Variables
@@ -48,16 +48,9 @@
 			private $csrf_error_html = 'The request did not appear to come from a trusted source, please try again.';
 			private $saved_values_data = NULL;
 			private $saved_values_used = NULL;
-			private $view_path = NULL;
-			private $view_used = false;
-			private $view_variables = array();
 
 		//--------------------------------------------------
 		// Setup
-
-			public function __construct() {
-				call_user_func_array(array($this, 'setup'), func_get_args());
-			}
 
 			protected function setup() {
 
@@ -76,8 +69,6 @@
 
 					if (isset($site_config['label_override_function'])) $this->label_override_function = isset($site_config['label_override_function']);
 					if (isset($site_config['error_override_function'])) $this->error_override_function = isset($site_config['error_override_function']);
-
-					$this->view_path = APP_ROOT . '/library/form/' . str_replace('_', '-', substr(get_class($this), 0, -5)) . '.ctp';
 
 				//--------------------------------------------------
 				// Internal form ID
@@ -1273,36 +1264,18 @@
 			}
 
 			public function html() {
-				if ($this->view_used == false && is_file($this->view_path)) {
-					$this->view_used = true; // Loop check
-					ob_start();
-					extract($this->view_variables);
-					$form = $this;
-					require($this->view_path);
-					return ob_get_clean();
-				}
-				return '
-					' . rtrim($this->html_start()) . '
-						<fieldset>
-							' . $this->html_error_list() . '
-							' . $this->html_fields() . '
-							' . $this->html_submit() . '
-						</fieldset>
-					' . $this->html_end() . "\n";
-			}
-
-		//--------------------------------------------------
-		// Variables
-
-			public function set($variable, $value = NULL) {
-				$this->view_variables[$variable] = $value;
-			}
-
-			public function get($variable, $default = NULL) {
-				if (isset($this->view_variables[$variable])) {
-					return $this->view_variables[$variable];
+				$view_html = $this->view_html();
+				if ($view_html !== false) {
+					return $view_html;
 				} else {
-					return $default;
+					return '
+						' . rtrim($this->html_start()) . '
+							<fieldset>
+								' . $this->html_error_list() . '
+								' . $this->html_fields() . '
+								' . $this->html_submit() . '
+							</fieldset>
+						' . $this->html_end() . "\n";
 				}
 			}
 

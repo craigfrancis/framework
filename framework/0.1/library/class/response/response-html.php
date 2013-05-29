@@ -12,6 +12,7 @@
 			private $page_id = NULL;
 			private $error = false;
 			private $variables = array();
+			private $units = array();
 
 			private $head_html = '';
 			private $head_flushed = false;
@@ -48,22 +49,41 @@
 
 			}
 
-			public function set_object($variable, $config = array()) {
-
-				$config = array_merge(array(
-						'class' => $variable,
-					), $config);
-
-				$this->variables[$variable] = new $config['class']($config);
-
-			}
-
 			public function get($variable, $default = NULL) {
 				if (isset($this->variables[$variable])) {
 					return $this->variables[$variable];
 				} else {
 					return $default;
 				}
+			}
+
+		//--------------------------------------------------
+		// Units
+
+			public function unit_add($unit_name, $config = array()) {
+
+				$unit_id = (count($this->units) + 1);
+
+				$config = array_merge(array(
+						'variable' => $unit_name,
+					), $config);
+
+				$this->units[$unit_id] = unit_get($unit_name, $config);
+
+				if ($this->units[$unit_id] === NULL) {
+					exit_with_error('Cannot load unit "' . $unit_name . '"');
+				}
+
+				if ($config['variable'] !== NULL) {
+					$this->set($config['variable'], $this->units[$unit_id]);
+				}
+
+				return $this->units[$unit_id];
+
+			}
+
+			public function units_get() {
+				return $this->units;
 			}
 
 		//--------------------------------------------------
@@ -160,9 +180,14 @@
 				// Get
 
 					$view_path = $this->view_path_get();
+					$view_exists = ($view_path !== NULL && is_file($view_path));
 
 					if (config::get('debug.level') >= 3 && $view_path !== NULL) {
 						debug_note_html('<strong>View</strong>: ' . html(str_replace(ROOT, '', $view_path)), 'H');
+					}
+
+					if (!$view_exists && count($this->units) > 0) {
+						return NULL;
 					}
 
 				//--------------------------------------------------
@@ -170,7 +195,7 @@
 
 					$error = $this->error;
 
-					if (is_string($error) || ($view_path !== NULL && !is_file($view_path))) {
+					if (is_string($error) || ($view_path !== NULL && !$view_exists)) {
 
 						if ($error === false || $error === NULL) {
 							$error = 'page-not-found';
@@ -1049,7 +1074,17 @@
 					$view_path = $this->_view_path_get();
 
 					if ($view_path !== NULL) {
+
 						$this->view_add_html($this->_process_file($view_path));
+
+					} else if (count($this->units) > 0) {
+
+						$view_html = '';
+						foreach ($this->units as $unit) {
+							$view_html .= "\n" . $unit->html();
+						}
+						$this->view_add_html($view_html);
+
 					}
 
 				//--------------------------------------------------

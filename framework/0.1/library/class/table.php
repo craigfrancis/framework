@@ -4,7 +4,7 @@
 // http://www.phpprime.com/doc/helpers/table/
 //--------------------------------------------------
 
-	class table_base extends check {
+	class table_base extends unit {
 
 		//--------------------------------------------------
 		// Variables
@@ -42,16 +42,8 @@
 			protected $sort_inactive_prefix_html = '';
 			protected $sort_inactive_suffix_html = '';
 
-			private $view_path = NULL;
-			private $view_used = false;
-			private $view_variables = array();
-
 		//--------------------------------------------------
 		// Setup
-
-			public function __construct() {
-				call_user_func_array(array($this, 'setup'), func_get_args());
-			}
 
 			protected function setup() {
 
@@ -59,8 +51,6 @@
 				// Defaults
 
 					$this->charset_input = config::get('output.charset');
-
-					$this->view_path = APP_ROOT . '/library/table/' . str_replace('_', '-', substr(get_class($this), 0, -6)) . '.ctp';
 
 				//--------------------------------------------------
 				// Table ID
@@ -364,15 +354,11 @@
 			public function html() {
 
 				//--------------------------------------------------
-				// View support
+				// View HTML (unit mode)
 
-					if ($this->view_used == false && is_file($this->view_path)) {
-						$this->view_used = true; // Loop check
-						ob_start();
-						extract($this->view_variables);
-						$form = $this;
-						require($this->view_path);
-						return ob_get_clean();
+					$view_html = $this->view_html();
+					if ($view_html !== false) {
+						return $view_html;
 					}
 
 				//--------------------------------------------------
@@ -995,21 +981,6 @@
 					$text = iconv($this->charset_input, $this->charset_output . '//TRANSLIT', $text);
 				}
 				return csv($text);
-			}
-
-		//--------------------------------------------------
-		// Variables
-
-			public function set($variable, $value = NULL) {
-				$this->view_variables[$variable] = $value;
-			}
-
-			public function get($variable, $default = NULL) {
-				if (isset($this->view_variables[$variable])) {
-					return $this->view_variables[$variable];
-				} else {
-					return $default;
-				}
 			}
 
 	}
