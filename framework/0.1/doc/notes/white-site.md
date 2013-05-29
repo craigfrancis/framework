@@ -160,13 +160,40 @@ Then to allow you to edit the content, create the controller:
 
 This will probably be part our admin control panel in the future, but for now its not password protected.
 
-Also, you may find that you want to create a [before](../../doc/setup/controllers.md) method, and set a variable for the [template](../../doc/setup/templates.md) which holds a simple <h1> for the page.
+---
+
+## Editing content heading
+
+As an optional step... when you load this page, its going to be missing a heading.
+
+You can set one with something like:
+
+	/app/controller/admin/cms-text.php
+
+	<?php
+
+		class admin_cms_text_controller extends controller_cms_text {
+			public function before() {
+				$response = response_get();
+				$response->set('page_title', 'Page Content');
+			}
+		}
+
+	?>
+
+Then add it to the template with:
+
+	/app/template/default.ctp
+
+		<?php if (isset($page_title)) { ?>
+			<h1><?= html($page_title) ?></h1>
+		<?php } ?>
 
 ---
 
 ## Navigation
 
-To make the navigation bar use the pages title for the link text, create the file:
+So the navigation bar uses the page title for the link text, create the file:
 
 	/app/library/class/nav.php
 
@@ -174,14 +201,14 @@ To make the navigation bar use the pages title for the link text, create the fil
 
 		class nav extends nav_base {
 
-			public function link_name_get($url) {
-				return html_decode(cms_text_html(array(
+			public function link_name_get_html($url) {
+				return cms_text_html(array(
 						'path' => $url,
 						'section' => 'title',
 						'wrapper_tag' => 'none',
 						'editable' => false,
 						'default' => $url,
-					)));
+					));
 			}
 
 		}
@@ -198,7 +225,7 @@ So when your creating your navigation, do it like this:
 		$nav->link_add('/contact/');
 		$nav->link_add('/news/');
 
-Then to create pages, simply add more "link_add()" calls, refresh the site in your browser, follow the links in the nav, and set the pages title by clicking on it.
+Then to create pages, simply add more `link_add()` calls, refresh the site in your browser, follow the links in the nav, and set the pages title by clicking on it.
 
 If the page does not have a title set, the url will be shown in the navigation, and on Demo/Live the page will return a 404.
 
@@ -212,7 +239,7 @@ To continue seeing the content from the place-holder page, simply call:
 
 	<?php echo_place_holder(); ?>
 
-Or if you want to start calling the cms_text_html() helper function directly:
+Or if you want to start calling the `cms_text_html()` helper function directly:
 
 	<?php
 

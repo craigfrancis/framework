@@ -87,6 +87,8 @@ If the navigation text needs to be set elsewhere (e.g. for localisation), then t
 	class nav extends nav_base {
 		public function link_name_get($url)
 		public function link_name_get($url, $config)
+		public function link_name_get_html($url)
+		public function link_name_get_html($url, $config)
 	}
 
 An example of this is can be found for the [white-site](../../doc/notes/white-site.md).

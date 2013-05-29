@@ -79,6 +79,10 @@
 			return $url;
 		}
 
+		public function link_name_get_html($url) {
+			return html(call_user_func_array(array($this, 'link_name_get'), func_get_args()));
+		}
+
 		public function link_add($url, $name = NULL, $config = NULL) {
 
 			//--------------------------------------------------
@@ -111,7 +115,8 @@
 				}
 
 				if ($name === NULL) {
-					$name = $this->link_name_get($url, $config);
+					$name = $this->link_name_get_html($url, $config);
+					$config['html'] = true;
 				}
 
 			//--------------------------------------------------
