@@ -61,6 +61,7 @@
 				$setup_nav->link_add('/doc/setup/constants/', 'Constants');
 				$setup_nav->link_add('/doc/setup/debug/', 'Debug');
 				$setup_nav->link_add('/doc/setup/controllers/', 'Controllers');
+				$setup_nav->link_add('/doc/setup/units/', 'Units');
 				$setup_nav->link_add('/doc/setup/views/', 'Views');
 				$setup_nav->link_add('/doc/setup/templates/', 'Templates');
 				$setup_nav->link_add('/doc/setup/resources/', 'Resources');

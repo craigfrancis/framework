@@ -44,9 +44,9 @@
 				//--------------------------------------------------
 				// Special cases
 
-					if ($request_path == 'introduction') {
+					if ($request_path == 'introduction' || $request_path == 'setup/units') {
 
-						$controller_example = file_get_contents(ROOT . '/app/controller/contact.php');
+						$controller_example = file_get_contents(ROOT . '/app/unit/contact-form.php');
 						$controller_example = preg_replace('/^/m', "\t", $controller_example);
 						$controller_example = trim($controller_example);
 
@@ -78,7 +78,7 @@
 							'new form(' => 'new <strong>form</strong>(',
 							'new email(' => 'new <strong>email</strong>(',
 						);
-
+					
 					} else if ($request_path == 'helpers/functions') {
 
 						$replace = array(

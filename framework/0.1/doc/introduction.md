@@ -53,17 +53,43 @@ You could extend the above by creating a [controller](../doc/setup/controllers.m
 
 If you are running the website in [development mode](../doc/setup/debug.md), PHP Prime will add some notes to explain how it searches for the controller.
 
-In this example we use the [form](../doc/helpers/form.md) and [email](../doc/helpers/email.md) helpers to create a 'contact us' form, which sends an email, and keeps a copy in the database.
-
-It should be noted that the database determines the maximum length of the fields.
+In this example the controller just adds a [unit](../doc/setup/units.md):
 
 	/app/controller/contact.php
 
+	<?php
+
+		class contact_controller extends controller {
+
+			public function action_index() {
+				unit_add('contact_form');
+			}
+
+		}
+
+	?>
+
+Where the unit's code is something like:
+
+	/app/unit/contact-form.php
+
 	<?php [SEE EXAMPLE] ?>
 
-To quickly create the HTML in the [view](../doc/setup/views.md), we can use:
+For reference, it uses the [form](../doc/helpers/form.md) and [email](../doc/helpers/email.md) helpers to send an email and keep a copy in the database. It should be noted that the database determines the fields maximum length.
 
-	<?= $form->html(); ?>
+The HTML for the unit can then be:
+
+	/app/unit/contact-form.ctp
+
+		<p>Use the form below to contact us:</p>
+
+		<?= $this->html(); ?>
+
+Note that when creating the HTML for the form, this is just a shortcut. The fields could be printed out in several different ways.
+
+Then to get the unit's HTML onto the [view](../doc/setup/views.md) you can either just remove the view file (it will loop though all created units), or simply call:
+
+	<?= $contact_form->html(); ?>
 
 ---
 

@@ -74,7 +74,7 @@ Todo this, first create the generic view file:
 		echo_place_holder();
 	?>
 
-And get the [html response](../../doc/system/response.md) helper to use this when the view does not exist:
+And get the [HTML response](../../doc/system/response.md) helper to use this when the view does not exist:
 
 	/app/library/class/response-html.php
 

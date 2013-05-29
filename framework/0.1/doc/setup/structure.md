@@ -12,6 +12,7 @@ For a quick overview, the folder structure is basically:
 			/setup/
 		/public/
 		/template/
+		/unit/
 		/view/
 	/files/
 	/framework/
@@ -86,6 +87,10 @@ Contains the main [config file](../../doc/setup/config.md), and other files rela
 ### Template
 
 Any [template files](../../doc/setup/templates.md) go here.
+
+### Unit
+
+Any [unit files](../../doc/setup/units.md) go here.
 
 ### View
 
