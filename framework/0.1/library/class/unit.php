@@ -54,6 +54,10 @@
 				}
 			}
 
+			public function html() {
+				return $this->view_html();
+			}
+
 	}
 
 ?>

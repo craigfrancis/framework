@@ -318,6 +318,90 @@
 	}
 
 //--------------------------------------------------
+// Create item
+
+	function new_item($type) {
+
+		if ($type == 'unit') {
+
+			//--------------------------------------------------
+			// Name
+
+				echo "\n" . ucfirst($type) . ' name: ';
+				$name = trim(fgets(STDIN));
+				$name_class = human_to_ref($name);
+				$name_file = human_to_link($name);
+
+			//--------------------------------------------------
+			// Paths
+
+				if (($pos = strpos($name_file, '-')) !== false) {
+					$name_folder = substr($name_file, 0, $pos);
+				} else {
+					$name_folder = $name_file;
+				}
+				$name_folder = safe_file_name($name_folder);
+
+				$folder = APP_ROOT . '/unit/';
+				if (is_dir($folder . $name_folder)) {
+					$folder .= $name_folder . '/';
+				}
+
+				$path_php = $folder . safe_file_name($name_file) . '.php';
+				$path_ctp = $folder . safe_file_name($name_file) . '.ctp';
+
+				if (is_file($path_php) || is_file($path_ctp)) {
+					echo "\n" . 'The "' . $name_file . '" ' . $type . ' already exists.' . "\n\n";
+					return;
+				}
+
+			//--------------------------------------------------
+			// Contents
+
+				$contents_php  = '<?php' . "\n";
+				$contents_php .= '' . "\n";
+				$contents_php .= '	class ' . $name_class . '_unit extends unit {' . "\n";
+				$contents_php .= '' . "\n";
+				$contents_php .= '		public function setup($config = array()) {' . "\n";
+				$contents_php .= '' . "\n";
+				$contents_php .= '			$config = array_merge(array(' . "\n";
+				$contents_php .= '					\'name\' => \'Test\',' . "\n";
+				$contents_php .= '				), $config);' . "\n";
+				$contents_php .= '' . "\n";
+				$contents_php .= '			$this->set(\'name\', $config[\'name\']);' . "\n";
+				$contents_php .= '' . "\n";
+				$contents_php .= '		}' . "\n";
+				$contents_php .= '' . "\n";
+				$contents_php .= '	}' . "\n";
+				$contents_php .= '' . "\n";
+				$contents_php .= '?>';
+
+				file_put_contents($path_php, $contents_php);
+				file_put_contents($path_ctp, 'Hello <?= html($name) ?>.');
+
+			//--------------------------------------------------
+			// Example controller action
+
+				echo "\n";
+				echo 'Add to controller with:' . "\n\n";
+				echo "\t" . '<?php' . "\n";
+				echo "\t\t" . 'public function action_index() {' . "\n";
+				echo "\t\t\t" . 'unit_add(\'' . $name_class . '\');' . "\n";
+				echo "\t\t" . '}' . "\n";
+				echo "\t" . '?>' . "\n\n";
+
+				echo 'Possibly add to view with:' . "\n\n";
+				echo "\t" . '<?= $' . $name_class . '->html(); ?>' . "\n\n";
+
+		} else {
+
+			echo 'Unknown item type "' . $type . '"' . "\n";
+
+		}
+
+	}
+
+//--------------------------------------------------
 // Dump functions
 
 	//--------------------------------------------------
@@ -381,6 +465,7 @@
 			'c::' => 'config::', // Optional value
 			'g:' => 'gateway:', // Requires value
 			'm' => 'maintenance',
+			'n:' => 'new:', // Requires value
 			'i' => 'install',
 			'p' => 'permissions',
 		);
@@ -497,6 +582,12 @@
 						exit('Invalid gateway "' . $option_value . '"' . "\n");
 					}
 
+					break;
+
+				case 'n':
+				case 'new':
+
+					new_item($option_value);
 					break;
 
 				case 'm':
