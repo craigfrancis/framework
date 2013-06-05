@@ -1253,48 +1253,29 @@
 
 						if (config::get('output.csp_enabled') === true) {
 
-							$header = NULL;
-
-							if (stripos(config::get('request.browser'), 'webkit') !== false) {
-
-								$header = 'X-WebKit-CSP';
-
-								if (!config::get('output.csp_enforced', false)) {
-									$header .= '-Report-Only';
-								}
-
-								if (preg_match('/AppleWebKit\/([0-9]+)/', config::get('request.browser'), $matches) && intval($matches[1]) < 536) {
-									$header = NULL; // Safari/534.56.5 (5.1.6) is very buggy (requires the port number to be set, which also breaks 'self')
-								}
-
+							if (!config::get('output.csp_enforced', false)) {
+								$header = 'Content-Security-Policy-Report-Only';
 							} else {
-
-								// $header = 'Content-Security-Policy';
-								$header = 'X-Content-Security-Policy-Report-Only'; // Firefox does not support 'unsafe-inline' - https://bugzilla.mozilla.org/show_bug.cgi?id=763879#c5
-
+								$header = 'Content-Security-Policy';
 							}
 
-							if ($header !== NULL) {
+							$csp = config::get('output.csp_directives');
 
-								$csp = config::get('output.csp_directives');
+							if (!array_key_exists('report-uri', $csp)) { // isset returns false for NULL
+								$csp['report-uri'] = gateway_url('csp-report');
+							}
 
-								if (!array_key_exists('report-uri', $csp)) { // isset returns false for NULL
-									$csp['report-uri'] = gateway_url('csp-report');
-								}
-
-								$output = array();
-								foreach ($csp as $directive => $value) {
-									if ($value !== NULL) {
-										if (is_array($value)) {
-											$value = implode(' ', $value);
-										}
-										$output[] = $directive . ' ' . str_replace('"', "'", $value);
+							$output = array();
+							foreach ($csp as $directive => $value) {
+								if ($value !== NULL) {
+									if (is_array($value)) {
+										$value = implode(' ', $value);
 									}
+									$output[] = $directive . ' ' . str_replace('"', "'", $value);
 								}
-
-								header($header . ': ' . head(implode('; ', $output)));
-
 							}
+
+							header($header . ': ' . head(implode('; ', $output)));
 
 							if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
 
