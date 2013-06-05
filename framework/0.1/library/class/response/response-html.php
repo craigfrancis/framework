@@ -60,19 +60,31 @@
 		//--------------------------------------------------
 		// Units
 
-			public function unit_add($unit_name, $config = array()) {
+			public function unit_add($unit, $config = array()) {
 
 				$unit_id = (count($this->units) + 1);
+
+				if (is_string($unit)) {
+
+					$unit_name = $unit;
+
+					$this->units[$unit_id] = unit_get($unit_name, $config);
+
+					if ($this->units[$unit_id] === NULL) {
+						exit_with_error('Cannot load unit "' . $unit_name . '"');
+					}
+
+				} else {
+
+					$unit_name = get_class($unit);
+
+					$this->units[$unit_id] = $unit;
+
+				}
 
 				$config = array_merge(array(
 						'variable' => $unit_name,
 					), $config);
-
-				$this->units[$unit_id] = unit_get($unit_name, $config);
-
-				if ($this->units[$unit_id] === NULL) {
-					exit_with_error('Cannot load unit "' . $unit_name . '"');
-				}
 
 				if ($config['variable'] !== NULL) {
 					$this->set($config['variable'], $this->units[$unit_id]);
