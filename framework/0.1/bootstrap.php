@@ -85,11 +85,6 @@
 				ob_start();
 
 			//--------------------------------------------------
-			// Response setup
-
-				$response = response_get();
-
-			//--------------------------------------------------
 			// Include setup
 
 				if (config::get('debug.level') >= 4) {
@@ -113,6 +108,7 @@
 			//--------------------------------------------------
 			// Response
 
+				$response = response_get();
 				$response->setup_output_set(ob_get_clean());
 				$response->send();
 

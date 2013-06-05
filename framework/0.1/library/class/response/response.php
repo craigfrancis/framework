@@ -9,9 +9,9 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $mime = NULL;
-			private $charset = NULL;
-			private $lang = NULL;
+			protected $mime = NULL;
+			protected $charset = NULL;
+			protected $lang = NULL;
 
 		//--------------------------------------------------
 		// Setup

@@ -310,7 +310,7 @@
 			newrelic_name_transaction(str_replace(CONTROLLER_ROOT, '', $action_controller_path) . '->' . $action_method . '()');
 		}
 
-		$response->view_folders_set($action_route_stack_used);
+		config::set('output.folders', $action_route_stack_used);
 
 		$controllers[$action_controller_id]->before();
 
@@ -328,7 +328,7 @@
 			newrelic_name_transaction(str_replace(VIEW_ROOT, '', view_path($route_folders)));
 		}
 
-		$response->view_folders_set($route_folders);
+		config::set('output.folders', $route_folders);
 
 	}
 

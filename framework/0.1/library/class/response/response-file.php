@@ -1,6 +1,6 @@
 <?php
 
-	class response_download_base extends response {
+	class response_file_base extends response {
 
 		//--------------------------------------------------
 		// Variables

@@ -10,7 +10,7 @@ If you are not responding with some HTML (e.g. an image), then you will probably
 	http_download_file();
 	http_download_content();
 
-However, for completeness, there are **download** and **text** response helpers (see below).
+However, for completeness, there are **file** and **text** response helpers (see below).
 
 This is kind of like the [Symfony Response](http://symfony.com/doc/current/components/http_foundation/introduction.html#response).
 
@@ -82,11 +82,11 @@ This will start sending your `<head>` to the browser so it can start downloading
 
 ---
 
-## Download Response
+## File Response
 
 You will need to request a new response:
 
-	$response = response_get('download');
+	$response = response_get('file');
 
 Then provide it with the required information:
 

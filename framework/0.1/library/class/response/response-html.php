@@ -159,17 +159,19 @@
 			public function view_path_get() {
 
 				if ($this->view_path) {
-
 					return $this->view_path;
+				}
 
-				} else if ($this->view_folders !== NULL) {
-
-					return view_path($this->view_folders);
-
+				if ($this->view_folders !== NULL) {
+					$view_folders = $this->view_folders;
 				} else {
+					$view_folders = config::get('output.folders');
+				}
 
+				if ($view_folders !== NULL) {
+					return view_path($view_folders);
+				} else {
 					return NULL;
-
 				}
 
 			}
