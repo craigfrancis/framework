@@ -18,9 +18,17 @@
 	ob_start();
 
 	if ($unit_name != '') {
+
 		$unit_object = unit_get($unit_name, $_GET);
+
+		if (!$unit_object) {
+			error_send('page-not-found');
+		}
+
 	} else {
+
 		$unit_object = NULL;
+
 	}
 
 //--------------------------------------------------
