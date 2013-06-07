@@ -328,9 +328,12 @@
 			// Name
 
 				echo "\n" . ucfirst($type) . ' name: ';
+
 				$name = trim(fgets(STDIN));
 				$name_class = human_to_ref($name);
 				$name_file = human_to_link($name);
+
+				echo "\n";
 
 			//--------------------------------------------------
 			// Paths
@@ -351,7 +354,7 @@
 				$path_ctp = $folder . safe_file_name($name_file) . '.ctp';
 
 				if (is_file($path_php) || is_file($path_ctp)) {
-					echo "\n" . 'The "' . $name_file . '" ' . $type . ' already exists.' . "\n\n";
+					echo 'The "' . $name_file . '" ' . $type . ' already exists.' . "\n\n";
 					return;
 				}
 
@@ -382,7 +385,6 @@
 			//--------------------------------------------------
 			// Example controller action
 
-				echo "\n";
 				echo 'Add to controller with:' . "\n\n";
 				echo "\t" . '<?php' . "\n";
 				echo "\t\t" . 'public function action_index() {' . "\n";
@@ -392,6 +394,23 @@
 
 				echo 'Possibly add to view with:' . "\n\n";
 				echo "\t" . '<?= $' . $name_class . '->html(); ?>' . "\n\n";
+
+			//--------------------------------------------------
+			// Testing url
+
+				$unit_test_url = gateway_url('unit-test', $name_file);
+
+				if (config::get('output.domain') == '') { // Set in config with request.domain
+
+					echo 'Test via: ' . $unit_test_url . "\n\n";
+
+				} else {
+
+					$unit_test_url->format_set('full');
+
+					execute_command('open ' . escapeshellarg($unit_test_url));
+
+				}
 
 		} else {
 
