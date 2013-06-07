@@ -13,34 +13,29 @@
 	$unit_name = human_to_ref($this->sub_path_get());
 
 //--------------------------------------------------
-// Initialise object
-
-	ob_start();
-
-	if ($unit_name != '') {
-
-		$unit_object = unit_get($unit_name, $_GET);
-
-		if (!$unit_object) {
-			error_send('page-not-found');
-		}
-
-	} else {
-
-		$unit_object = NULL;
-
-	}
-
-//--------------------------------------------------
 // Response
 
 	$response = response_get('html');
-	$response->setup_output_set(ob_get_clean());
 
-	if ($unit_object) {
+	if ($unit_name != '') {
 
 		//--------------------------------------------------
-		// Have a unit to show
+		// Initialise object
+
+			ob_start();
+
+			$unit_object = unit_get($unit_name, $_GET);
+
+			if (!$unit_object) {
+				error_send('page-not-found');
+			}
+
+			$response->setup_output_set(ob_get_clean());
+
+		//--------------------------------------------------
+		// Add to response
+
+			// $response->template_set('blank');
 
 			$response->title_set('Unit: ' . $unit_name);
 			$response->unit_add($unit_object);
