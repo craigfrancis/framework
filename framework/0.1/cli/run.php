@@ -396,13 +396,6 @@
 				echo "\t" . '<?= $' . $name_class . '->html(); ?>' . "\n\n";
 
 			//--------------------------------------------------
-			// Open in TextMate
-
-				if (execute_command('which mate')) {
-					execute_command('mate ' . escapeshellarg($path_php));
-				}
-
-			//--------------------------------------------------
 			// Testing url
 
 				$unit_test_url = gateway_url('unit-test', $name_file);
@@ -417,6 +410,13 @@
 
 					execute_command('open ' . escapeshellarg($unit_test_url));
 
+				}
+
+			//--------------------------------------------------
+			// Open in TextMate
+
+				if (execute_command('which mate')) {
+					execute_command('mate ' . escapeshellarg($path_php));
 				}
 
 		} else {
