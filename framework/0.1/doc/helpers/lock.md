@@ -14,7 +14,7 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 	// Example usage
 
 		if ($lock->check()) {
-			// Checks to see if the lock we have the lock, but doesn't try to open if not
+			// Checks to see if we have the lock, but doesn't try to open if not
 		}
 
 		if ($lock->open()) {

@@ -600,18 +600,25 @@
 					$ran_jobs = $maintenance->run();
 
 					if ($debug_show) {
+						if ($ran_jobs === false) {
 
-						echo "\n";
-						echo 'Done @ ' . date('Y-m-d H:i:s') . "\n\n";
-
-						foreach ($ran_jobs as $job) {
-							echo '- ' . $job . "\n";
-						}
-
-						if (count($ran_jobs) > 0) {
 							echo "\n";
-						}
+							echo 'Maintenance already running' . "\n\n";
 
+						} else {
+
+							echo "\n";
+							echo 'Done @ ' . date('Y-m-d H:i:s') . "\n\n";
+
+							foreach ($ran_jobs as $job) {
+								echo '- ' . $job . "\n";
+							}
+
+							if (count($ran_jobs) > 0) {
+								echo "\n";
+							}
+
+						}
 					}
 
 					break;

@@ -15,6 +15,7 @@
 			private $job_paths;
 			private $jobs_run;
 			private $run_id = NULL;
+			private $result_url = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -42,6 +43,10 @@
 
 			}
 
+			public function result_url_set($url) {
+				$this->result_url = $url;
+			}
+
 		//--------------------------------------------------
 		// Run
 
@@ -66,7 +71,34 @@
 					}
 
 				//--------------------------------------------------
-				// Clear old locks
+				// Create lock (possibly via loading helper)
+
+					$lock_type = 'maintenance';
+
+					if ($this->result_url) {
+
+						$loading = new loading(array(
+								'lock_type' => $lock_type,
+							));
+
+						$loading->check();
+
+						if (!$loading->start('Starting')) {
+							return false;
+						}
+
+					} else {
+
+						$lock = new lock($lock_type);
+
+						if (!$lock->open()) {
+							return false;
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Clear old run records
 
 					$db->query('SELECT
 									id,
@@ -85,12 +117,28 @@
 										id = "' . $db->escape($row['id']) . '" AND
 										run_end = "0000-00-00 00:00:00"');
 
-						report_add('Deleted old maintenance lock (' . $row['id'] . ' / ' . $row['run_start'] . ')');
+						report_add('Deleted old maintenance run record (' . $row['id'] . ' / ' . $row['run_start'] . ')');
 
 					}
 
 				//--------------------------------------------------
-				// Create maintenance record (lock).
+				// Cleanup
+
+					$archive_date = date('Y-m-d H:i:s', strtotime('-2 months')); // Some jobs only run once a month, so needs some overlap
+
+					$db->query('DELETE FROM
+									' . DB_PREFIX . 'system_maintenance
+								WHERE
+									run_end != "0000-00-00 00:00:00" AND
+									run_end < "' . $db->escape($archive_date) . '"');
+
+					$db->query('DELETE FROM
+									' . DB_PREFIX . 'system_maintenance_job
+								WHERE
+									created < "' . $db->escape($archive_date) . '"');
+
+				//--------------------------------------------------
+				// Create maintenance run record
 
 					$db->query('SELECT 1 FROM ' . DB_PREFIX . 'system_maintenance WHERE run_end = "0000-00-00 00:00:00"');
 					if ($db->num_rows() > 0) {
@@ -111,26 +159,23 @@
 					}
 
 				//--------------------------------------------------
-				// Cleanup
-
-					$archive_date = date('Y-m-d H:i:s', strtotime('-2 months')); // Some jobs only run once a month, so needs some overlap
-
-					$db->query('DELETE FROM
-									' . DB_PREFIX . 'system_maintenance
-								WHERE
-									run_end != "0000-00-00 00:00:00" AND
-									run_end < "' . $db->escape($archive_date) . '"');
-
-					$db->query('DELETE FROM
-									' . DB_PREFIX . 'system_maintenance_job
-								WHERE
-									created < "' . $db->escape($archive_date) . '"');
-
-				//--------------------------------------------------
 				// Jobs
 
 					foreach ($this->job_paths as $job_name => $job_path) {
 						if (!in_array($job_name, $this->jobs_run)) {
+
+							//--------------------------------------------------
+							// Update status
+
+								if ($this->result_url) {
+									$result = $loading->update('Running: ' . $job_name);
+								} else {
+									$result = $lock->open();
+								}
+
+								if (!$result) {
+									exit_with_error('Lost lock when attempting to run job "' . $job_name . '"');
+								}
 
 							//--------------------------------------------------
 							// Action object
@@ -167,6 +212,23 @@
 									1');
 
 				//--------------------------------------------------
+				// Close lock
+
+					if ($this->result_url) {
+
+						$this->result_url->param_set('state', 'complete');
+						$this->result_url->param_set('time', time());
+						$this->result_url->param_set('jobs', implode('|', $this->jobs_run));
+
+						$loading->done($this->result_url);
+
+					} else {
+
+						$lock->close();
+
+					}
+
+				//--------------------------------------------------
 				// Return list of ran jobs
 
 					return $this->jobs_run;
@@ -194,92 +256,16 @@
 
 			}
 
+			public function job_paths_get() {
+				return $this->job_paths;
+			}
+
 			public function job_path_get($job_name) {
 				if (isset($this->job_paths[$job_name])) {
 					return $this->job_paths[$job_name];
 				} else {
 					return false;
 				}
-			}
-
-		//--------------------------------------------------
-		// State support
-
-			public function state($modes = array()) {
-
-				//--------------------------------------------------
-				// Create simple index of jobs
-
-					$html = '
-						<h2>State</h2>
-						<p>TODO: State of maintenance script</p>';
-
-					if (in_array('run', $modes)) {
-						$html .= '
-							<p><a href="' . html(gateway_url('maintenance', 'run')) . '">Run</a></p>';
-					}
-
-					if (in_array('test', $modes)) {
-						$html .= '
-							<p><a href="' . html(gateway_url('maintenance', 'test')) . '">Test</a></p>';
-					}
-
-					$response = response_get('html');
-					$response->title_set('Maintenance State');
-					$response->view_add_html($html);
-					$response->send();
-
-					// An admin interface which can show the jobs being run, can cancel them, or stack them up.
-
-			}
-
-		//--------------------------------------------------
-		// Test support
-
-			public function test() {
-
-				//--------------------------------------------------
-				// Execute job
-
-					$job_name = request('execute');
-
-					if (isset($this->job_paths[$job_name])) {
-
-						$output = $this->execute($job_name);
-
-						if ($output !== false && $output === '') {
-							$output = '<p>No output.</p>';
-						}
-
-						$response = response_get('html');
-						$response->template_path_set(FRAMEWORK_ROOT . '/library/template/blank.ctp');
-						$response->view_set_html($output);
-						$response->send();
-
-						exit();
-
-					}
-
-				//--------------------------------------------------
-				// Create simple index of jobs
-
-					$html = '
-						<h2>Jobs</h2>
-						<ul>';
-
-					foreach ($this->job_paths as $job_name => $job_path) {
-						$html .= '
-								<li><a href="' . html(url('./', array('execute' => $job_name))) . '">' . html(ref_to_human($job_name)) . '</a></li>';
-					}
-
-					$html .= '
-						</ul>';
-
-					$response = response_get('html');
-					$response->title_set('Maintenance Jobs');
-					$response->view_add_html($html);
-					$response->send();
-
 			}
 
 	}
