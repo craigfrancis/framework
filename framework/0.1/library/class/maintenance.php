@@ -16,6 +16,7 @@
 			private $jobs_run;
 			private $run_id = NULL;
 			private $result_url = NULL;
+			private $time_out = 1200; // 20 minutes
 
 		//--------------------------------------------------
 		// Setup
@@ -47,6 +48,10 @@
 				$this->result_url = $url;
 			}
 
+			public function time_out_set($time) {
+				$this->time_out = $time;
+			}
+
 		//--------------------------------------------------
 		// Run
 
@@ -71,34 +76,23 @@
 					}
 
 				//--------------------------------------------------
-				// Create lock (possibly via loading helper)
+				// Cleanup
 
-					$lock_type = 'maintenance';
+					$archive_date = date('Y-m-d H:i:s', strtotime('-2 months')); // Some jobs only run once a month, so needs some overlap
 
-					if ($this->result_url) {
+					$db->query('DELETE FROM
+									' . DB_PREFIX . 'system_maintenance
+								WHERE
+									run_end != "0000-00-00 00:00:00" AND
+									run_end < "' . $db->escape($archive_date) . '"');
 
-						$loading = new loading(array(
-								'lock_type' => $lock_type,
-							));
-
-						$loading->check();
-
-						if (!$loading->start('Starting')) {
-							return false;
-						}
-
-					} else {
-
-						$lock = new lock($lock_type);
-
-						if (!$lock->open()) {
-							return false;
-						}
-
-					}
+					$db->query('DELETE FROM
+									' . DB_PREFIX . 'system_maintenance_job
+								WHERE
+									created < "' . $db->escape($archive_date) . '"');
 
 				//--------------------------------------------------
-				// Clear old run records
+				// Clear old (but still open) run records
 
 					$db->query('SELECT
 									id,
@@ -122,28 +116,61 @@
 					}
 
 				//--------------------------------------------------
-				// Cleanup
+				// Create proper lock
 
-					$archive_date = date('Y-m-d H:i:s', strtotime('-2 months')); // Some jobs only run once a month, so needs some overlap
+					$lock_type = 'maintenance';
 
-					$db->query('DELETE FROM
-									' . DB_PREFIX . 'system_maintenance
-								WHERE
-									run_end != "0000-00-00 00:00:00" AND
-									run_end < "' . $db->escape($archive_date) . '"');
+					if ($this->result_url) {
 
-					$db->query('DELETE FROM
-									' . DB_PREFIX . 'system_maintenance_job
-								WHERE
-									created < "' . $db->escape($archive_date) . '"');
+						$loading = new loading(array(
+								'time_out' => $this->time_out,
+								'lock_type' => $lock_type,
+							));
+
+						$loading->check();
+
+						if (!$loading->start('Starting')) {
+
+							$this->result_url->param_set('state', 'locked');
+							$this->result_url->param_set('time', time());
+
+							redirect($this->result_url);
+
+						}
+
+					} else {
+
+						$lock = new lock($lock_type);
+						$lock->time_out_set($this->time_out);
+
+						if (!$lock->open()) {
+							return false;
+						}
+
+					}
 
 				//--------------------------------------------------
-				// Create maintenance run record
+				// Quick db check, incase lock file has been deleted
 
 					$db->query('SELECT 1 FROM ' . DB_PREFIX . 'system_maintenance WHERE run_end = "0000-00-00 00:00:00"');
 					if ($db->num_rows() > 0) {
-						exit_with_error('Maintenance script is already running (A).');
+						if ($this->result_url) {
+
+							$this->result_url->param_set('state', 'locked');
+							$this->result_url->param_set('time', time());
+
+							$loading->done($this->result_url);
+
+						} else {
+
+							$lock->close();
+
+						}
+						return false;
 					}
+
+				//--------------------------------------------------
+				// Create maintenance run record
 
 					$db->insert(DB_PREFIX . 'system_maintenance', array(
 							'id'        => '',
@@ -155,7 +182,7 @@
 
 					$db->query('SELECT 1 FROM ' . DB_PREFIX . 'system_maintenance WHERE run_end = "0000-00-00 00:00:00"');
 					if ($db->num_rows() != 1) {
-						exit_with_error('Maintenance script is already running (B).');
+						exit_with_error('Maintenance script is already running, after lock file opening.');
 					}
 
 				//--------------------------------------------------
@@ -165,7 +192,7 @@
 						if (!in_array($job_name, $this->jobs_run)) {
 
 							//--------------------------------------------------
-							// Update status
+							// Check and update lock status
 
 								if ($this->result_url) {
 									$result = $loading->update('Running: ' . $job_name);
@@ -174,7 +201,8 @@
 								}
 
 								if (!$result) {
-									exit_with_error('Lost lock when attempting to run job "' . $job_name . '"');
+									report_add('Lost lock when attempting to run job "' . $job_name . '"', 'error');
+									break;
 								}
 
 							//--------------------------------------------------
@@ -418,8 +446,8 @@
 
 					ob_start();
 
-					if (!class_exists($job_object)) {
-						script_run($job_path);
+					if (!class_exists($job_object, false)) { // Don't use autoloader
+						script_run_once($job_path);
 					}
 
 					$job_output_html = ob_get_clean();

@@ -748,7 +748,7 @@
 
 					$single_line = (strpos($query_html, "\n") === false);
 
-					$html  = '<strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')<br />' . "\n";
+					$html  = '<strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')<br />' . ($single_line ? "\n\n" : "\n");
 					$html .= '<pre class="debug_sql">' . ($single_line ? '' : "\n") . $query_html . ($single_line ? '' : "\n\n") . '</pre>';
 
 					config::array_push('debug.notes', array(
@@ -836,7 +836,7 @@
 							foreach (config::get('debug.notes') as $note) {
 
 								$output_text .= '--------------------------------------------------' . "\n\n";
-								$output_text .= html_decode(strip_tags($note['html'])) . "\n\n";
+								$output_text .= trim(html_decode(strip_tags($note['html']))) . "\n\n";
 
 								if ($note['time'] !== NULL) {
 									$output_text .= 'Time Elapsed:  ' . $note['time'] . "\n\n";

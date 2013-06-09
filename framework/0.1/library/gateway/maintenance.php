@@ -88,18 +88,8 @@
 
 				} else if ($this->sub_path_get() == '/run/' && in_array('run', $modes)) {
 
-					$result_url = gateway_url('maintenance', 'result');
-
-					$maintenance->result_url_set($result_url);
-
-					if (!$maintenance->run()) {
-
-						$result_url->param_set('state', 'locked');
-						$result_url->param_set('time', time());
-
-						redirect($result_url);
-
-					}
+					$maintenance->result_url_set(gateway_url('maintenance', 'result'));
+					$maintenance->run();
 
 				} else if ($this->sub_path_get() == '/result/' && in_array('run', $modes)) {
 

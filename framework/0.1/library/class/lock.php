@@ -9,13 +9,13 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $lock_type;
-			private $lock_ref;
-			private $lock_data;
-			private $lock_path;
-			private $lock_fp;
+			private $lock_type = NULL;
+			private $lock_ref = NULL;
+			private $lock_data = NULL;
+			private $lock_path = NULL;
+			private $lock_fp = NULL;
 
-			private $time_out;
+			private $time_out = 30;
 
 		//--------------------------------------------------
 		// Setup
@@ -27,11 +27,6 @@
 
 					$this->lock_type = $type;
 					$this->lock_ref = $ref;
-					$this->lock_data = NULL;
-					$this->lock_path = NULL;
-					$this->lock_fp = NULL;
-
-					$this->time_out = 30;
 
 				//--------------------------------------------------
 				// Lock path

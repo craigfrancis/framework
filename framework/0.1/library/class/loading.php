@@ -204,7 +204,7 @@
 				if ($this->running) {
 					if ($this->lock) {
 
-						if ($this->lock->open()) {
+						if ($this->lock->check()) { // Don't use open, if we have lost the lock we need to stop
 
 							$this->lock->data_set(array(
 									'time_update' => time(),
