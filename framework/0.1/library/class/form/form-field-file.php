@@ -109,19 +109,6 @@
 				$this->placeholder = $placeholder;
 			}
 
-			public function info_get_html($indent = 0) {
-
-				if ($this->info_html == '') {
-					$file_names = $this->value_file_names_get();
-					if (count($file_names) > 0) {
-						$this->info_html = implode(', ', $file_names);
-					}
-				}
-
-				return parent::info_get_html($indent);
-
-			}
-
 		//--------------------------------------------------
 		// Storing files support
 
@@ -621,6 +608,19 @@
 
 			public function html_input() {
 				return $this->_html_input();
+			}
+
+			public function html_info($indent = 0) {
+
+				if ($this->info_html == '') {
+					$file_names = $this->value_file_names_get();
+					if (count($file_names) > 0) {
+						$this->info_html = implode(', ', $file_names);
+					}
+				}
+
+				return parent::html_info($indent);
+
 			}
 
 	}

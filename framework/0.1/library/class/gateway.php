@@ -372,14 +372,16 @@
 
 					$gateway_urls = array();
 					$gateway_dirs = array(
-							FRAMEWORK_ROOT . '/library/gateway/',
-							APP_ROOT . '/gateway/',
+							'framework' => FRAMEWORK_ROOT . '/library/gateway/',
+							'app' => APP_ROOT . '/gateway/',
 						);
 
-					foreach ($gateway_dirs as $gateway_dir) {
+					$gateway_hide = array('framework-file', 'js-code', 'js-newrelic', 'payment');
+
+					foreach ($gateway_dirs as $gateway_source => $gateway_dir) {
 						if ($handle = opendir($gateway_dir)) {
 							while (false !== ($file = readdir($handle))) {
-								if (is_file($gateway_dir . $file) && preg_match('/^([a-zA-Z0-9_\-]+)\.php$/', $file, $matches)) {
+								if (is_file($gateway_dir . $file) && preg_match('/^([a-zA-Z0-9_\-]+)\.php$/', $file, $matches) && ($gateway_source == 'app' || !in_array($matches[1], $gateway_hide))) {
 
 									$gateway_urls[$matches[1]] = gateway_url($matches[1]);
 
