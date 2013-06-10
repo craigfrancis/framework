@@ -68,6 +68,10 @@
 						$this->page_count = 1;
 					}
 
+					if ($this->page_count < 1) {
+						$this->page_count = 1; // Always 1 page to show
+					}
+
 					if ($this->page_number === NULL || isset($config['variable'])) { // No known page number yet, or the variable has been changed
 
 						$page_number = intval(request($this->config['variable']));
@@ -233,7 +237,7 @@
 					if ($this->config['extra_html'] != '') {
 						$extra_html = $this->config['indent_html'] . "\t" . $this->config['extra_html'];
 						$extra_html = str_replace('[PAGE]', $this->page_number, $extra_html);
-						$extra_html = str_replace('[COUNT]', ($this->page_count == 0 ? 1 : $this->page_count), $extra_html);
+						$extra_html = str_replace('[COUNT]', $this->page_count, $extra_html);
 					} else {
 						$extra_html = '';
 					}
