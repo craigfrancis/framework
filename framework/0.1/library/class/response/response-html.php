@@ -200,7 +200,7 @@
 						debug_note_html('<strong>View</strong>: ' . html(str_replace(ROOT, '', $view_path)), 'H');
 					}
 
-					if (!$view_exists && count($this->units) > 0) {
+					if (!$view_exists && !is_string($this->error) && count($this->units) > 0) {
 						return NULL;
 					}
 
