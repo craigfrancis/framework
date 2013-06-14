@@ -4,12 +4,15 @@
 		'A' => 'Item A',
 		'B' => 'Item B',
 		'C' => 'Item C',
+		'D' => 'Item D',
+		'E' => 'Item E',
 	);
 
 	$groups = array(
-		'A' => 'Group 1',
 		'B' => 'Group 1',
-		'C' => 'Group 2',
+		'C' => 'Group 1',
+		'D' => 'Group 2',
+		'E' => NULL,
 	);
 
 	$field = new form_field_select($form, 'Items');

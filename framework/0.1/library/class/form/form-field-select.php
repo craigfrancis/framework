@@ -357,38 +357,32 @@
 
 			public function html_input() {
 
-				$print_values = $this->_value_print_get();
+				//--------------------------------------------------
+				// Values
 
-				if (!$this->multiple && count($print_values) > 1) { // Don't have multiple selected options, when not a multiple field
-					$print_values = array_slice($print_values, 0, 1);
-				}
+					$print_values = $this->_value_print_get();
 
-				$html = '
-									' . html_tag('select', $this->_input_attributes());
-
-				if ($this->label_option !== NULL && $this->select_size == 1 && !$this->multiple) {
-					$html .= '
-										<option value="">' . ($this->label_option === '' ? '&#xA0;' : html($this->label_option)) . '</option>'; // Value must be blank for HTML5
-				}
-
-				if ($this->option_groups === NULL) {
-
-					foreach ($this->option_values as $key => $value) {
-
-						$html .= '
-										<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
-
+					if (!$this->multiple && count($print_values) > 1) { // Don't have multiple selected options, when not a multiple field
+						$print_values = array_slice($print_values, 0, 1);
 					}
 
-				} else {
+				//--------------------------------------------------
+				// Group HTML
 
-					foreach (array_unique($this->option_groups) as $opt_group) {
-						if ($opt_group !== NULL) {
+					$used_keys = array();
+					$group_html = '';
 
-							$html .= '
+					if ($this->option_groups !== NULL) {
+						foreach (array_unique($this->option_groups) as $opt_group) {
+
+							if ($opt_group !== NULL) {
+								$group_html .= '
 										<optgroup label="' . html($opt_group) . '">';
+							}
 
 							foreach (array_keys($this->option_groups, $opt_group) as $key) {
+
+								$used_keys[] = $key;
 
 								if (isset($this->option_values[$key])) {
 									$value = $this->option_values[$key];
@@ -396,36 +390,46 @@
 									$value = '?';
 								}
 
-								$html .= '
+								$group_html .= '
 											<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 							}
 
-							$html .= '
+							if ($opt_group !== NULL) {
+								$group_html .= '
 										</optgroup>';
+							}
 
 						}
 					}
 
-					foreach (array_keys($this->option_groups, NULL) as $key) {
+				//--------------------------------------------------
+				// Main HTML
 
-						if (isset($this->option_values[$key])) {
-							$value = $this->option_values[$key];
-						} else {
-							$value = '?';
-						}
+					$html = '
+									' . html_tag('select', $this->_input_attributes());
 
+					if ($this->label_option !== NULL && $this->select_size == 1 && !$this->multiple) {
 						$html .= '
+										<option value="">' . ($this->label_option === '' ? '&#xA0;' : html($this->label_option)) . '</option>'; // Value must be blank for HTML5
+					}
+
+					foreach ($this->option_values as $key => $value) {
+						if (!in_array($key, $used_keys)) {
+
+							$html .= '
 										<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
+						}
 					}
 
-				}
-
-				$html .= '
+					$html .= $group_html . '
 									</select>' . "\n\t\t\t\t\t\t\t\t";
 
-				return $html;
+				//--------------------------------------------------
+				// Return
+
+					return $html;
 
 			}
 
