@@ -250,7 +250,7 @@
 
 		$config_php = substr($config_php, $config_start, ($config_end - $config_start));
 		$config_php = '//--------------------------------------------------' . "\n" . $config_php;
-		$config_php = str_replace(' extends unit', '', $config_php);
+		$config_php = str_replace(' extends check', '', $config_php);
 
 		$output_php .= $config_php;
 
@@ -313,6 +313,7 @@
 			$file_source = preg_replace('/^<\?php\n/', '', $file_source);
 			$file_source = preg_replace('/\?>$/', '', $file_source);
 			$file_source = str_replace('_base extends', ' extends', $file_source);
+			$file_source = str_replace(' extends unit', '', $file_source);
 			$file_source = str_replace(' extends check', '', $file_source);
 			$file_source = preg_replace('/public function saved_values_available\(\) {/', "$0\n\n\t\t\t\treturn false;", $file_source);
 			$file_source = rtrim($file_source);
