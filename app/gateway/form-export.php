@@ -250,7 +250,7 @@
 
 		$config_php = substr($config_php, $config_start, ($config_end - $config_start));
 		$config_php = '//--------------------------------------------------' . "\n" . $config_php;
-		$config_php = str_replace(' extends check', '', $config_php);
+		$config_php = str_replace(' extends unit', '', $config_php);
 
 		$output_php .= $config_php;
 
