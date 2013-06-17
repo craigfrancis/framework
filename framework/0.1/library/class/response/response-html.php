@@ -1036,8 +1036,16 @@
 
 						$view_path = $this->view_path_get();
 
-						if (config::get('debug.level') >= 3 && $view_path !== NULL) {
-							debug_note_html('<strong>View</strong>: ' . html(str_replace(ROOT, '', $view_path)), 'H');
+						if ($view_path !== NULL) {
+
+							if (config::get('debug.level') >= 3) {
+								debug_note_html('<strong>View</strong>: ' . html(str_replace(ROOT, '', $view_path)), 'H');
+							}
+
+							if (!is_file($view_path)) {
+								$view_path = NULL;
+							}
+
 						}
 
 					//--------------------------------------------------
@@ -1045,7 +1053,7 @@
 
 						$error = $this->error;
 
-						if (is_string($error) || ($view_path !== NULL && !is_file($view_path) && $this->view_html == '' && count($this->units) == 0)) {
+						if (is_string($error) || ($view_path === NULL && $this->view_html == '' && count($this->units) == 0)) {
 
 							if ($error === false || $error === NULL) {
 								$error = 'page-not-found';
@@ -1077,7 +1085,7 @@
 					//--------------------------------------------------
 					// Add HTML
 
-						if ($view_path !== NULL && is_file($view_path)) {
+						if ($view_path !== NULL) {
 
 							$this->view_add_html($this->_process_file($view_path));
 
