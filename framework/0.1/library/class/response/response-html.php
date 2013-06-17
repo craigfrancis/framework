@@ -188,63 +188,6 @@
 
 			}
 
-			private function _view_path_get() {
-
-				//--------------------------------------------------
-				// Get
-
-					$view_path = $this->view_path_get();
-					$view_exists = ($view_path !== NULL && is_file($view_path));
-
-					if (config::get('debug.level') >= 3 && $view_path !== NULL) {
-						debug_note_html('<strong>View</strong>: ' . html(str_replace(ROOT, '', $view_path)), 'H');
-					}
-
-					if (!$view_exists && count($this->units) > 0) {
-						$view_path = NULL;
-					}
-
-				//--------------------------------------------------
-				// Page not found
-
-					$error = $this->error;
-
-					if (is_string($error) || ($view_path !== NULL && !$view_exists)) {
-
-						if ($error === false || $error === NULL) {
-							$error = 'page-not-found';
-						}
-
-						if (!headers_sent()) {
-							if ($error == 'page-not-found') {
-								http_response_code(404);
-							} else if ($error == 'system') {
-								http_response_code(500);
-							}
-						}
-
-						if ($error == 'page-not-found') {
-							error_log('File does not exist: ' . config::get('request.uri'), 4);
-						}
-
-						$view_path = view_path(array('error', $error));
-
-						if (!is_file($view_path)) {
-							$view_path = FRAMEWORK_ROOT . '/library/view/error-' . safe_file_name($error) . '.ctp';
-						}
-						if (!is_file($view_path)) {
-							$view_path = FRAMEWORK_ROOT . '/library/view/error-page-not-found.ctp';
-						}
-
-					}
-
-				//--------------------------------------------------
-				// Return
-
-					return $view_path;
-
-			}
-
 		//--------------------------------------------------
 		// Template
 
@@ -1079,27 +1022,74 @@
 			public function send() {
 
 				//--------------------------------------------------
-				// View HTML
+				// Debug
 
 					if (config::get('debug.level') >= 4) {
 						debug_progress('Before view');
 					}
 
-					$view_path = $this->_view_path_get();
+				//--------------------------------------------------
+				// View HTML
 
-					if ($view_path !== NULL) {
+					//--------------------------------------------------
+					// Get path
 
-						$this->view_add_html($this->_process_file($view_path));
+						$view_path = $this->view_path_get();
 
-					} else if (count($this->units) > 0) {
-
-						$view_html = '';
-						foreach ($this->units as $unit) {
-							$view_html .= "\n" . $unit->html();
+						if (config::get('debug.level') >= 3 && $view_path !== NULL) {
+							debug_note_html('<strong>View</strong>: ' . html(str_replace(ROOT, '', $view_path)), 'H');
 						}
-						$this->view_add_html($view_html);
 
-					}
+					//--------------------------------------------------
+					// Error
+
+						$error = $this->error;
+
+						if (is_string($error) || ($view_path !== NULL && !is_file($view_path) && $this->view_html == '' && count($this->units) == 0)) {
+
+							if ($error === false || $error === NULL) {
+								$error = 'page-not-found';
+							}
+
+							if (!headers_sent()) {
+								if ($error == 'page-not-found') {
+									http_response_code(404);
+								} else if ($error == 'system') {
+									http_response_code(500);
+								}
+							}
+
+							if ($error == 'page-not-found') {
+								error_log('File does not exist: ' . config::get('request.uri'), 4);
+							}
+
+							$view_path = view_path(array('error', $error));
+
+							if (!is_file($view_path)) {
+								$view_path = FRAMEWORK_ROOT . '/library/view/error-' . safe_file_name($error) . '.ctp';
+							}
+							if (!is_file($view_path)) {
+								$view_path = FRAMEWORK_ROOT . '/library/view/error-page-not-found.ctp';
+							}
+
+						}
+
+					//--------------------------------------------------
+					// Add HTML
+
+						if ($view_path !== NULL && is_file($view_path)) {
+
+							$this->view_add_html($this->_process_file($view_path));
+
+						} else if (count($this->units) > 0) {
+
+							$view_html = '';
+							foreach ($this->units as $unit) {
+								$view_html .= "\n" . $unit->html();
+							}
+							$this->view_add_html($view_html);
+
+						}
 
 				//--------------------------------------------------
 				// Send init
