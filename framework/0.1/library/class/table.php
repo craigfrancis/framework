@@ -4,7 +4,7 @@
 // http://www.phpprime.com/doc/helpers/table/
 //--------------------------------------------------
 
-	class table_base extends unit {
+	class table_base extends check {
 
 		//--------------------------------------------------
 		// Variables
@@ -44,6 +44,10 @@
 
 		//--------------------------------------------------
 		// Setup
+
+			public function __construct() {
+				call_user_func_array(array($this, 'setup'), func_get_args());
+			}
 
 			protected function setup() {
 
@@ -352,14 +356,6 @@
 		// Output
 
 			public function html() {
-
-				//--------------------------------------------------
-				// View HTML (unit mode)
-
-					$view_html = $this->view_html();
-					if ($view_html !== false) {
-						return $view_html;
-					}
 
 				//--------------------------------------------------
 				// Current sort - inc support for defaults

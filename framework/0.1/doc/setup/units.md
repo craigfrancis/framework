@@ -5,13 +5,13 @@ A unit allows you to package up something like a [form](../doc/helpers/form.md) 
 
 It usually comprises of the PHP code (as an object), and the HTML that needs to be added to the [response](../../doc/system/response.md).
 
-This setup then allows you to do your unit testing - perhaps using the [tester helper](../../doc/system/tester.md).
+This setup allows you to do your unit testing - perhaps using the [tester helper](../../doc/system/tester.md).
 
-It is possible for a unit to also use units itself. For example you might want a generic search form (e.g. a single text field and submit button), to be used in other units to list news articles, customers, etc.
+It is possible for a unit to also use units itself. For example you might want a generic search form (e.g. a single text field and submit button), which can be used in other units that list news articles, customers, etc.
 
 ---
 
-## Setup
+## Files
 
 To create a unit, simply add a 'php' and a 'ctp' file to the folder:
 
@@ -20,7 +20,11 @@ To create a unit, simply add a 'php' and a 'ctp' file to the folder:
 	/app/unit/search-form.php
 	/app/unit/search-form.ctp
 
-You can create sub-folders to help group files, for example:
+The 'php' file contains a class of the same name (with underscores and 'unit' suffix), and the 'ctp' file contains the HTML.
+
+If you are just going to use an object for the HTML output, and it provides a html() method (e.g. the form helper), then the 'ctp' file is optional.
+
+You can also create sub-folders to help group files, for example:
 
 	/app/unit/news/
 
@@ -30,7 +34,9 @@ You can create sub-folders to help group files, for example:
 	/app/unit/news/news-admin-edit.php
 	/app/unit/news/news-admin-edit.ctp
 
-The 'php' file contains a class of the same name (with underscores and 'unit' suffix), and the 'ctp' file contains the HTML.
+---
+
+## Setup
 
 During initialisation of the object, the 'setup' function is used, for example:
 
@@ -38,19 +44,23 @@ During initialisation of the object, the 'setup' function is used, for example:
 
 	<?php
 
-		class news_admin_index_unit extends table {
+		class news_admin_index_unit extends unit {
 
-			protected function setup($config = array()) { // The $config array is optional
+			protected function setup($config) {
 
-				parent::setup(); // So the table helper can do its setup
+				$config = array_merge(array(
+						'add_url' => NULL,
+					), $config);
 
-				$this->no_records_set('No articles found');
+				$table = new table();
+				$table->no_records_set('No articles found');
 
-				// Add setup search form, query database, add rows to table, etc
+				// Add search form, query database, add rows to table, etc
+
+				$this->set('table', $table);
+				$this->set('add_url', $config['add_url']);
 
 			}
-
-			// The table helper provides the html() method.
 
 		}
 
@@ -70,7 +80,7 @@ Which can be accessed as local variables in the HTML:
 
 These variables are not available to the main view (a unit should be self contained).
 
-If you need to pass things to the response/view (e.g. javascript), you can still call:
+But if you need to pass things to the response (e.g. javascript), you can still call:
 
 	$response = response_get();
 
@@ -106,7 +116,7 @@ This will just return the object, and allow you to call methods on it:
 
 	$search_form->value_get();
 
-Or pass it to the current unit HTML:
+Or pass it to the current units HTML:
 
 	$this->set('search_form', $search_form);
 
@@ -118,7 +128,7 @@ And then print its HTML:
 
 ## Example
 
-For example to create a "contact us" form, first create the object:
+To create a self contained "contact us" form, first create the object:
 
 	/app/unit/contact-form.php
 
@@ -136,6 +146,6 @@ Then any time you need it, call the following in the controller:
 
 	unit_add('contact_form');
 
-And print it in the view with:
+And if your using a view, print it with:
 
 	<?= $contact_form->html(); ?>

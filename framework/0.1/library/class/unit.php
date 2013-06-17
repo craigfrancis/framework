@@ -6,17 +6,16 @@
 		// Variables
 
 			private $view_path = NULL;
-			private $view_mode = false;
 			private $view_variables = array();
 
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct() {
-				call_user_func_array(array($this, 'setup'), func_get_args());
+			public function __construct($config) {
+				$this->setup($config);
 			}
 
-			protected function setup() {
+			protected function setup($config) {
 			}
 
 			public function view_path_set($path) {
@@ -41,21 +40,35 @@
 		//--------------------------------------------------
 		// HTML
 
-			public function view_html() {
-				if ($this->view_mode == false && $this->view_path !== NULL) {
-					$this->view_mode = true;
+			public function html() {
+
+				if ($this->view_path !== NULL) {
+
 					ob_start();
 					extract($this->view_variables);
 					require($this->view_path);
-					$this->view_mode = false;
-					return ob_get_clean();
-				} else {
-					return false;
-				}
-			}
+					$view_html = ob_get_clean();
 
-			public function html() {
-				return $this->view_html();
+				} else {
+
+					$view_html = '';
+
+					foreach ($this->view_variables as $variable => $value) {
+						if (is_object($value)) {
+							if (method_exists($value, 'html')) {
+								$view_html .= $value->html();
+							} else {
+								exit_with_error('The object "' . $variable . '" does not provide a html() method.');
+							}
+						} else {
+							$view_html .= html($value);
+						}
+					}
+
+				}
+
+				return $view_html;
+
 			}
 
 	}

@@ -365,7 +365,7 @@
 				$contents_php .= '' . "\n";
 				$contents_php .= '	class ' . $name_class . '_unit extends unit {' . "\n";
 				$contents_php .= '' . "\n";
-				$contents_php .= '		public function setup($config = array()) {' . "\n";
+				$contents_php .= '		public function setup($config) {' . "\n";
 				$contents_php .= '' . "\n";
 				$contents_php .= '			$config = array_merge(array(' . "\n";
 				$contents_php .= '					\'name\' => \'Test\',' . "\n";

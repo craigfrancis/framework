@@ -4,7 +4,7 @@
 // http://www.phpprime.com/doc/helpers/form/
 //--------------------------------------------------
 
-	class form_base extends unit {
+	class form_base extends check {
 
 		//--------------------------------------------------
 		// Variables
@@ -51,6 +51,10 @@
 
 		//--------------------------------------------------
 		// Setup
+
+			public function __construct() {
+				call_user_func_array(array($this, 'setup'), func_get_args());
+			}
 
 			protected function setup() {
 
@@ -1264,19 +1268,14 @@
 			}
 
 			public function html() {
-				$view_html = $this->view_html();
-				if ($view_html !== false) {
-					return $view_html;
-				} else {
-					return '
-						' . rtrim($this->html_start()) . '
-							<fieldset>
-								' . $this->html_error_list() . '
-								' . $this->html_fields() . '
-								' . $this->html_submit() . '
-							</fieldset>
-						' . $this->html_end() . "\n";
-				}
+				return '
+					' . rtrim($this->html_start()) . '
+						<fieldset>
+							' . $this->html_error_list() . '
+							' . $this->html_fields() . '
+							' . $this->html_submit() . '
+						</fieldset>
+					' . $this->html_end() . "\n";
 			}
 
 	}
