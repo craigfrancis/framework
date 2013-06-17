@@ -166,7 +166,11 @@
 
 			}
 
-			public function label_set_html($label_html) { // No need for 'label_set' as this is called on init
+			public function label_set($label) {
+				$this->label_set_html(html($label));
+			}
+
+			public function label_set_html($label_html) {
 				$this->label_html = $label_html;
 			}
 
