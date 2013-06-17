@@ -9,57 +9,43 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $subject_text;
-			protected $subject_default;
-			protected $subject_prefix;
-			protected $from_email;
-			protected $from_name;
-			protected $cc_emails;
-			protected $bcc_emails;
-			protected $reply_to_email;
-			protected $reply_to_name;
-			protected $return_path;
-			protected $headers;
-			protected $attachments;
-			protected $template_path;
-			protected $template_url;
-			protected $template_values_text;
-			protected $template_values_html;
-			protected $body_text;
-			protected $body_html;
-			protected $content_text;
-			protected $content_html;
-			protected $boundaries;
+			protected $subject_text = '';
+			protected $subject_default = NULL;
+			protected $subject_prefix = '';
+			protected $from_email = NULL;
+			protected $from_name = NULL;
+			protected $cc_emails = array();
+			protected $bcc_emails = array();
+			protected $reply_to_email = NULL;
+			protected $reply_to_name = NULL;
+			protected $return_path = NULL;
+			protected $headers = array();
+			protected $attachments = array();
+			protected $template_path = NULL;
+			protected $template_url = NULL;
+			protected $template_values_text = array();
+			protected $template_values_html = array();
+			protected $body_text = '';
+			protected $body_html = '';
+			protected $content_text = NULL;
+			protected $content_html = NULL;
+			protected $boundaries = array();
 
 		//--------------------------------------------------
 		// Setup
 
 			public function __construct() {
+				$this->setup();
+			}
+
+			protected function setup() {
 
 				//--------------------------------------------------
 				// Defaults
 
-					$this->subject_text = '';
-					$this->subject_default = NULL;
 					$this->subject_prefix = config::get('email.subject_prefix');
 					$this->from_email = config::get('email.from_email');
 					$this->from_name = config::get('email.from_name');
-					$this->cc_emails = array();
-					$this->bcc_emails = array();
-					$this->reply_to_email = NULL;
-					$this->reply_to_name = NULL;
-					$this->return_path = NULL;
-					$this->headers = array();
-					$this->attachments = array();
-					$this->template_path = NULL;
-					$this->template_url = NULL;
-					$this->template_values_text = array();
-					$this->template_values_html = array();
-					$this->body_text = '';
-					$this->body_html = '';
-					$this->content_text = NULL;
-					$this->content_html = NULL;
-					$this->boundaries = array();
 
 				//--------------------------------------------------
 				// Default headers for debug

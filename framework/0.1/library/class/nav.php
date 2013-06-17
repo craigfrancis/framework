@@ -6,363 +6,379 @@
 
 	class nav_base extends check {
 
-		private $current_group = 0;
-		private $current_index = 0;
+		//--------------------------------------------------
+		// Variables
 
-		private $navigation = array();
+			protected $current_group = 0;
+			protected $current_index = 0;
 
-		private $indent = '';
-		private $main_class = '';
+			protected $navigation = array();
 
-		private $expand_all_children = false;
-		private $automatically_expand_children = true;
-		private $automatically_select_link = true;
-		private $include_white_space = true;
+			protected $indent = '';
+			protected $main_class = '';
 
-		private $selected_id = NULL;
-		private $selected_link_found = false; // Includes child navigation bars
+			protected $expand_all_children = false;
+			protected $automatically_expand_children = true;
+			protected $automatically_select_link = true;
+			protected $include_white_space = true;
 
-		private $path;
+			protected $selected_id = NULL;
+			protected $selected_link_found = false; // Includes child navigation bars
 
-		public function __construct() {
+			protected $path;
 
-			//--------------------------------------------------
-			// Default indent
+		//--------------------------------------------------
+		// Setup
 
-				$this->indent_set(3);
-
-			//--------------------------------------------------
-			// Current path
-
-				$this->path = config::get('request.path');
-
-		}
-
-		public function indent_set($indent) {
-			if ($this->include_white_space) {
-				$this->indent = "\n" . str_repeat("\t", intval($indent));
+			public function __construct() {
+				$this->setup();
 			}
-		}
 
-		public function path_set($path) {
-			$this->path = $path;
-		}
+			protected function setup() {
 
-		public function path_get() {
-			return $this->path;
-		}
+				//--------------------------------------------------
+				// Default indent
 
-		public function main_class_set($class) {
-			$this->main_class = $class;
-		}
+					$this->indent_set(3);
 
-		public function expand_all_children($do) {
-			$this->expand_all_children = $do;
-		}
+				//--------------------------------------------------
+				// Current path
 
-		public function automatically_expand_children($do) {
-			$this->automatically_expand_children = $do;
-		}
+					$this->path = config::get('request.path');
 
-		public function automatically_select_link($do) {
-			$this->automatically_select_link = $do;
-		}
-
-		public function include_white_space($do) {
-			$this->include_white_space = $do;
-			if ($do == false) {
-				$this->indent = '';
 			}
-		}
 
-		public function link_name_get($url) {
-			return $url;
-		}
-
-		public function link_name_get_html($url) {
-			return html(call_user_func_array(array($this, 'link_name_get'), func_get_args()));
-		}
-
-		public function link_add($url, $name = NULL, $config = NULL) {
-
-			//--------------------------------------------------
-			// Next!
-
-				$this->current_index++;
-
-			//--------------------------------------------------
-			// Config
-
-				$url = strval($url); // Handle url object
-
-				if (is_array($name)) { // Second argument passed in config array
-					$config = $name;
-					$name = NULL;
+			public function indent_set($indent) {
+				if ($this->include_white_space) {
+					$this->indent = "\n" . str_repeat("\t", intval($indent));
 				}
+			}
 
-				if (!is_array($config)) {
-					if (is_bool($config)) { // Backwards config
-						$config = array(
-								'selected' => $config
-							);
-					} else {
-						$config = array();
+			public function path_set($path) {
+				$this->path = $path;
+			}
+
+			public function path_get() {
+				return $this->path;
+			}
+
+			public function main_class_set($class) {
+				$this->main_class = $class;
+			}
+
+			public function expand_all_children($do) {
+				$this->expand_all_children = $do;
+			}
+
+			public function automatically_expand_children($do) {
+				$this->automatically_expand_children = $do;
+			}
+
+			public function automatically_select_link($do) {
+				$this->automatically_select_link = $do;
+			}
+
+			public function include_white_space($do) {
+				$this->include_white_space = $do;
+				if ($do == false) {
+					$this->indent = '';
+				}
+			}
+
+			public function link_name_get($url) {
+				return $url;
+			}
+
+			public function link_name_get_html($url) {
+				return html(call_user_func_array(array($this, 'link_name_get'), func_get_args()));
+			}
+
+		//--------------------------------------------------
+		// Add links
+
+			public function link_add($url, $name = NULL, $config = NULL) {
+
+				//--------------------------------------------------
+				// Next!
+
+					$this->current_index++;
+
+				//--------------------------------------------------
+				// Config
+
+					$url = strval($url); // Handle url object
+
+					if (is_array($name)) { // Second argument passed in config array
+						$config = $name;
+						$name = NULL;
 					}
-				}
 
-				if (!isset($config['selected'])) {
-					$config['selected'] = NULL;
-				}
+					if (!is_array($config)) {
+						if (is_bool($config)) { // Backwards config
+							$config = array(
+									'selected' => $config
+								);
+						} else {
+							$config = array();
+						}
+					}
 
-				if ($name === NULL) {
-					$name = $this->link_name_get_html($url, $config);
-					$config['html'] = true;
-				}
+					if (!isset($config['selected'])) {
+						$config['selected'] = NULL;
+					}
 
-			//--------------------------------------------------
-			// Add
+					if ($name === NULL) {
+						$name = $this->link_name_get_html($url, $config);
+						$config['html'] = true;
+					}
 
-				$this->navigation[$this->current_group]['links'][$this->current_index]['url'] = $url;
-				$this->navigation[$this->current_group]['links'][$this->current_index]['name'] = $name;
-				$this->navigation[$this->current_group]['links'][$this->current_index]['config'] = $config;
+				//--------------------------------------------------
+				// Add
 
-			//--------------------------------------------------
-			// See if we have a match
+					$this->navigation[$this->current_group]['links'][$this->current_index]['url'] = $url;
+					$this->navigation[$this->current_group]['links'][$this->current_index]['name'] = $name;
+					$this->navigation[$this->current_group]['links'][$this->current_index]['config'] = $config;
 
-				if ($this->selected_id === NULL && $config['selected'] === true) {
-					$this->selected_id = $this->current_index;
-				}
+				//--------------------------------------------------
+				// See if we have a match
 
-		}
+					if ($this->selected_id === NULL && $config['selected'] === true) {
+						$this->selected_id = $this->current_index;
+					}
 
-		public function group_add($name = '', $config = NULL) {
-
-			if (count($this->navigation) > 0) {
-				$this->current_group++;
 			}
 
-			$this->navigation[$this->current_group]['name_html'] = (isset($config['html']) && $config['html'] === true ? $name : html($name));
-			$this->navigation[$this->current_group]['links'] = array();
+			public function group_add($name = '', $config = NULL) {
 
-		}
+				if (count($this->navigation) > 0) {
+					$this->current_group++;
+				}
 
-		public function link_count() {
-			return $this->current_index;
-		}
+				$this->navigation[$this->current_group]['name_html'] = (isset($config['html']) && $config['html'] === true ? $name : html($name));
+				$this->navigation[$this->current_group]['links'] = array();
 
-		public function html($level = 1) {
+			}
 
-			//--------------------------------------------------
-			// Selected link
+			public function link_count() {
+				return $this->current_index;
+			}
 
-				$selected_id = $this->selected_id;
+		//--------------------------------------------------
+		// HTML
 
-				if ($selected_id === NULL && $this->automatically_select_link) {
+			public function html($level = 1) {
 
-					$selected_len = 0;
+				//--------------------------------------------------
+				// Selected link
+
+					$selected_id = $this->selected_id;
+
+					if ($selected_id === NULL && $this->automatically_select_link) {
+
+						$selected_len = 0;
+
+						foreach ($this->navigation as $group_id => $group_info) {
+							foreach ($group_info['links'] as $link_id => $link_info) {
+
+								$url_len = strlen($link_info['url']);
+
+								if ($link_info['config']['selected'] !== false && $url_len > $selected_len) {
+
+									if ($link_info['url'] == '/') {
+										$match = ($this->path == '/');
+									} else {
+										$match = (substr($this->path, 0, $url_len) == $link_info['url']);
+									}
+
+									if ($match) {
+										$selected_id = $link_id;
+										$selected_len = $url_len;
+									}
+
+								}
+
+							}
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Start
+
+					$html = ($this->include_white_space ? "\n" : '');
+
+				//--------------------------------------------------
+				// Pre-process the child navigation bars - need
+				// to know if one of them have a selected child link
 
 					foreach ($this->navigation as $group_id => $group_info) {
 						foreach ($group_info['links'] as $link_id => $link_info) {
 
-							$url_len = strlen($link_info['url']);
+							//--------------------------------------------------
+							// Configuration
 
-							if ($link_info['config']['selected'] !== false && $url_len > $selected_len) {
+								$selected = ($link_id == $selected_id);
 
-								if ($link_info['url'] == '/') {
-									$match = ($this->path == '/');
-								} else {
-									$match = (substr($this->path, 0, $url_len) == $link_info['url']);
+								$child_nav = (isset($link_info['config']['child']) ? $link_info['config']['child'] : NULL);
+								$child_open = (isset($link_info['config']['open']) ? $link_info['config']['open'] : NULL);
+
+								if ($child_nav === NULL) {
+									$child_open = false;
 								}
 
-								if ($match) {
-									$selected_id = $link_id;
-									$selected_len = $url_len;
+								if ($child_open === NULL) {
+									$child_open = (($this->expand_all_children) || ($selected == true && $this->automatically_expand_children));
 								}
 
-							}
+							//--------------------------------------------------
+							// Create HTML
+
+								$child_html = '';
+
+								if ($child_open) {
+
+									//--------------------------------------------------
+									// Send path to child
+
+										$child_nav->path_set($this->path);
+
+									//--------------------------------------------------
+									// Get HTML
+
+										if ($this->include_white_space == false) {
+											$child_nav->include_white_space($this->include_white_space); // Only inherit when parent disables it (one case could be parent enabled, child disabled).
+										}
+
+										$child_nav->indent_set(strlen($this->indent) + 1);
+
+										$child_html = $child_nav->html($level + 1);
+
+										if ($child_nav->include_white_space == true) {
+											$child_html .= $this->indent . ($this->include_white_space ? "\t" : '');
+										}
+
+									//--------------------------------------------------
+									// If a child has a selected link
+
+										if ($child_nav->selected_link_found == true) {
+											$this->selected_link_found = true; // Supports 2+ levels deep selection
+										}
+
+								}
+
+							//--------------------------------------------------
+							// Save the HTML
+
+								$this->navigation[$group_id]['links'][$link_id]['child_html'] = $child_html;
 
 						}
 					}
 
-				}
+				//--------------------------------------------------
+				// Groups
 
-			//--------------------------------------------------
-			// Start
+					foreach ($this->navigation as $group_id => $group_info) {
 
-				$html = ($this->include_white_space ? "\n" : '');
+						$links_count = count($group_info['links']);
 
-			//--------------------------------------------------
-			// Pre-process the child navigation bars - need
-			// to know if one of them have a selected child link
+						if ($links_count > 0) {
 
-				foreach ($this->navigation as $group_id => $group_info) {
-					foreach ($group_info['links'] as $link_id => $link_info) {
+							//--------------------------------------------------
+							// Group heading
 
-						//--------------------------------------------------
-						// Configuration
+								if (isset($group_info['name_html']) && $group_info['name_html'] != '') {
 
-							$selected = ($link_id == $selected_id);
+									$html .= $this->indent . '<h3>' . $group_info['name_html'] . '</h3>';
 
-							$child_nav = (isset($link_info['config']['child']) ? $link_info['config']['child'] : NULL);
-							$child_open = (isset($link_info['config']['open']) ? $link_info['config']['open'] : NULL);
+								}
 
-							if ($child_nav === NULL) {
-								$child_open = false;
-							}
+							//--------------------------------------------------
+							// Group links
 
-							if ($child_open === NULL) {
-								$child_open = (($this->expand_all_children) || ($selected == true && $this->automatically_expand_children));
-							}
+								$html .= $this->indent . '<ul' . ($this->main_class == '' ? '' : ' class="' . html($this->main_class) . '"') . '>';
 
-						//--------------------------------------------------
-						// Create HTML
+								$k = 0;
 
-							$child_html = '';
+								foreach ($group_info['links'] as $link_id => $link_info) {
 
-							if ($child_open) {
+									//--------------------------------------------------
+									// Quick variables
 
-								//--------------------------------------------------
-								// Send path to child
+										$k++;
 
-									$child_nav->path_set($this->path);
+										$link_url    = $link_info['url'];
+										$link_name   = $link_info['name'];
+										$link_config = $link_info['config'];
+										$child_html  = $link_info['child_html'];
 
-								//--------------------------------------------------
-								// Get HTML
+										$link_html = (isset($link_config['html']) && $link_config['html'] === true);
 
-									if ($this->include_white_space == false) {
-										$child_nav->include_white_space($this->include_white_space); // Only inherit when parent disables it (one case could be parent enabled, child disabled).
-									}
+									//--------------------------------------------------
+									// Configuration
 
-									$child_nav->indent_set(strlen($this->indent) + 1);
+										$selected = ($link_id == $selected_id);
 
-									$child_html = $child_nav->html($level + 1);
+										if ($this->selected_link_found == true) {
+											$selected = false; // A child nav item?
+										}
 
-									if ($child_nav->include_white_space == true) {
-										$child_html .= $this->indent . ($this->include_white_space ? "\t" : '');
-									}
+										if ($selected) {
+											$this->selected_link_found = true; // For any parents
+										}
 
-								//--------------------------------------------------
-								// If a child has a selected link
+										$wrapper_html = ($selected ? 'strong' : 'span');
 
-									if ($child_nav->selected_link_found == true) {
-										$this->selected_link_found = true; // Supports 2+ levels deep selection
-									}
+									//--------------------------------------------------
+									// Class
 
-							}
+										if ($link_html) {
+											$class = ''; // Don't allow HTML version in class name
+										} else {
+											$class = human_to_ref($link_name);
+										}
 
-						//--------------------------------------------------
-						// Save the HTML
+										if ($k % 2) $class .= ' odd';
+										if ($k == 1) $class .= ' first_child';
+										if ($k == $links_count) $class .= ' last_child';
+										if ($selected) $class .= ' selected';
+										if ($child_html != '') $class .= ' open';
 
-							$this->navigation[$group_id]['links'][$link_id]['child_html'] = $child_html;
+										if (isset($link_config['item_class']) && $link_config['item_class'] != '') {
+											$class .= ' ' . html($link_config['item_class']);
+										}
 
-					}
-				}
+									//--------------------------------------------------
+									// Link attributes
 
-			//--------------------------------------------------
-			// Groups
+										$link_attributes_html = '';
 
-				foreach ($this->navigation as $group_id => $group_info) {
+										if (isset($link_config['link_class']) && $link_config['link_class'] != '') {
+											$link_attributes_html .= ' class="' . html($link_config['link_class']) . '"';
+										}
 
-					$links_count = count($group_info['links']);
+										if (isset($link_config['link_title']) && $link_config['link_title'] != '') {
+											$link_attributes_html .= ' title="' . html($link_config['link_title']) . '"';
+										}
 
-					if ($links_count > 0) {
+									//--------------------------------------------------
+									// Build
 
-						//--------------------------------------------------
-						// Group heading
+										$html .= $this->indent . ($this->include_white_space ? "\t" : '') . '<li' . ($class != '' ? ' class="' . trim($class) . '"' : '') . '><' . $wrapper_html . ' class="link_level' . html($level) . '"><a href="' . html($link_url) . '"' . $link_attributes_html . '>' . ($link_html ? $link_name : html($link_name)) . '</a></' . $wrapper_html . '>' . $child_html . '</li>';
 
-							if (isset($group_info['name_html']) && $group_info['name_html'] != '') {
+								}
 
-								$html .= $this->indent . '<h3>' . $group_info['name_html'] . '</h3>';
+								$html .= $this->indent . '</ul>' . ($this->include_white_space ? "\n" : '');
 
-							}
-
-						//--------------------------------------------------
-						// Group links
-
-							$html .= $this->indent . '<ul' . ($this->main_class == '' ? '' : ' class="' . html($this->main_class) . '"') . '>';
-
-							$k = 0;
-
-							foreach ($group_info['links'] as $link_id => $link_info) {
-
-								//--------------------------------------------------
-								// Quick variables
-
-									$k++;
-
-									$link_url    = $link_info['url'];
-									$link_name   = $link_info['name'];
-									$link_config = $link_info['config'];
-									$child_html  = $link_info['child_html'];
-
-									$link_html = (isset($link_config['html']) && $link_config['html'] === true);
-
-								//--------------------------------------------------
-								// Configuration
-
-									$selected = ($link_id == $selected_id);
-
-									if ($this->selected_link_found == true) {
-										$selected = false; // A child nav item?
-									}
-
-									if ($selected) {
-										$this->selected_link_found = true; // For any parents
-									}
-
-									$wrapper_html = ($selected ? 'strong' : 'span');
-
-								//--------------------------------------------------
-								// Class
-
-									if ($link_html) {
-										$class = ''; // Don't allow HTML version in class name
-									} else {
-										$class = human_to_ref($link_name);
-									}
-
-									if ($k % 2) $class .= ' odd';
-									if ($k == 1) $class .= ' first_child';
-									if ($k == $links_count) $class .= ' last_child';
-									if ($selected) $class .= ' selected';
-									if ($child_html != '') $class .= ' open';
-
-									if (isset($link_config['item_class']) && $link_config['item_class'] != '') {
-										$class .= ' ' . html($link_config['item_class']);
-									}
-
-								//--------------------------------------------------
-								// Link attributes
-
-									$link_attributes_html = '';
-
-									if (isset($link_config['link_class']) && $link_config['link_class'] != '') {
-										$link_attributes_html .= ' class="' . html($link_config['link_class']) . '"';
-									}
-
-									if (isset($link_config['link_title']) && $link_config['link_title'] != '') {
-										$link_attributes_html .= ' title="' . html($link_config['link_title']) . '"';
-									}
-
-								//--------------------------------------------------
-								// Build
-
-									$html .= $this->indent . ($this->include_white_space ? "\t" : '') . '<li' . ($class != '' ? ' class="' . trim($class) . '"' : '') . '><' . $wrapper_html . ' class="link_level' . html($level) . '"><a href="' . html($link_url) . '"' . $link_attributes_html . '>' . ($link_html ? $link_name : html($link_name)) . '</a></' . $wrapper_html . '>' . $child_html . '</li>';
-
-							}
-
-							$html .= $this->indent . '</ul>' . ($this->include_white_space ? "\n" : '');
+						}
 
 					}
 
-				}
+				//--------------------------------------------------
+				// Return
 
-			//--------------------------------------------------
-			// Return
+					return $html;
 
-				return $html;
-
-		}
+			}
 
 	}
 

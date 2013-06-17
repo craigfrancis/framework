@@ -15,12 +15,12 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $config;
-			private $exit_on_error;
-			private $response_data;
-			private $response_mime;
-			private $response_code;
-			private $response_error;
+			private $config = array();
+			private $exit_on_error = true;
+			private $response_data = NULL;
+			private $response_mime = NULL;
+			private $response_code = NULL;
+			private $response_error = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -29,8 +29,6 @@
 
 				//--------------------------------------------------
 				// Parse the config
-
-					$this->config = array();
 
 					$include_path = APP_ROOT . '/library/gateway/default.ini';
 					if (is_file($include_path)) {
@@ -50,11 +48,6 @@
 						}
 
 					}
-
-				//--------------------------------------------------
-				// Client variables
-
-					$this->exit_on_error = true;
 
 			}
 

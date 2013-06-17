@@ -9,13 +9,13 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $socket;
-			private $user_agent;
-			private $current_data;
-			private $current_code;
-			private $current_url;
-			private $cookies;
-			private $form;
+			protected $socket = NULL;
+			protected $user_agent = NULL;
+			protected $current_data = NULL;
+			protected $current_code = NULL;
+			protected $current_url = NULL;
+			protected $cookies = array();
+			protected $form = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -25,17 +25,8 @@
 			}
 
 			protected function setup() {
-
 				$this->socket = new socket();
 				$this->socket->exit_on_error_set(false);
-
-				$this->user_agent = NULL;
-				$this->current_data = NULL;
-				$this->current_code = NULL;
-				$this->current_url = NULL;
-				$this->cookies = array();
-				$this->form = NULL;
-
 			}
 
 			public function user_agent_get() {

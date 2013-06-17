@@ -7,7 +7,7 @@
 	class url_base extends check {
 
 		//--------------------------------------------------
-		// Setup
+		// Variables
 
 			private $path_data = NULL;
 			private $path_cache = NULL;
@@ -16,6 +16,9 @@
 			private $fragment = NULL;
 			private $format = NULL;
 			private $scheme = NULL;
+
+		//--------------------------------------------------
+		// Setup
 
 			public function __construct() {
 
