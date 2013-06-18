@@ -106,7 +106,9 @@
 				//--------------------------------------------------
 				// Config
 
-					$url = strval($url); // Handle url object
+					if ($url !== NULL) {
+						$url = strval($url); // Handle url object
+					}
 
 					if (is_array($name)) { // Second argument passed in config array
 						$config = $name;
@@ -154,7 +156,17 @@
 					$this->current_group++;
 				}
 
-				$this->navigation[$this->current_group]['name_html'] = (isset($config['html']) && $config['html'] === true ? $name : html($name));
+				if (isset($config['html']) && $config['html'] === true) {
+					$name_html = $name;
+				} else {
+					$name_html = html($name);
+				}
+
+				if (isset($config['url'])) {
+					$name_html = '<a href="' . html($config['url']) . '">' . html($name_html) . '</a>';
+				}
+
+				$this->navigation[$this->current_group]['name_html'] = $name_html;
 				$this->navigation[$this->current_group]['links'] = array();
 
 			}
@@ -179,24 +191,26 @@
 
 						foreach ($this->navigation as $group_id => $group_info) {
 							foreach ($group_info['links'] as $link_id => $link_info) {
+								if ($link_info['url'] !== NULL) {
 
-								$url_len = strlen($link_info['url']);
+									$url_len = strlen($link_info['url']);
 
-								if ($link_info['config']['selected'] !== false && $url_len > $selected_len) {
+									if ($link_info['config']['selected'] !== false && $url_len > $selected_len) {
 
-									if ($link_info['url'] == '/') {
-										$match = ($this->path == '/');
-									} else {
-										$match = (substr($this->path, 0, $url_len) == $link_info['url']);
-									}
+										if ($link_info['url'] == '/') {
+											$match = ($this->path == '/');
+										} else {
+											$match = (substr($this->path, 0, $url_len) == $link_info['url']);
+										}
 
-									if ($match) {
-										$selected_id = $link_id;
-										$selected_len = $url_len;
+										if ($match) {
+											$selected_id = $link_id;
+											$selected_len = $url_len;
+										}
+
 									}
 
 								}
-
 							}
 						}
 
@@ -311,7 +325,7 @@
 										$link_config = $link_info['config'];
 										$child_html  = $link_info['child_html'];
 
-										$link_html = (isset($link_config['html']) && $link_config['html'] === true);
+										$link_encoded = (isset($link_config['html']) && $link_config['html'] === true);
 
 									//--------------------------------------------------
 									// Configuration
@@ -331,7 +345,7 @@
 									//--------------------------------------------------
 									// Class
 
-										if ($link_html) {
+										if ($link_encoded) {
 											$class = ''; // Don't allow HTML version in class name
 										} else {
 											$class = human_to_ref($link_name);
@@ -342,6 +356,7 @@
 										if ($k == $links_count) $class .= ' last_child';
 										if ($selected) $class .= ' selected';
 										if ($child_html != '') $class .= ' open';
+										if ($link_url === NULL) $class .= ' text';
 
 										if (isset($link_config['item_class']) && $link_config['item_class'] != '') {
 											$class .= ' ' . html($link_config['item_class']);
@@ -363,7 +378,13 @@
 									//--------------------------------------------------
 									// Build
 
-										$html .= $this->indent . ($this->include_white_space ? "\t" : '') . '<li' . ($class != '' ? ' class="' . trim($class) . '"' : '') . '><' . $wrapper_html . ' class="link_level' . html($level) . '"><a href="' . html($link_url) . '"' . $link_attributes_html . '>' . ($link_html ? $link_name : html($link_name)) . '</a></' . $wrapper_html . '>' . $child_html . '</li>';
+										$link_html = ($link_encoded ? $link_name : html($link_name));
+
+										if ($link_url !== NULL) {
+											$link_html = '<a href="' . html($link_url) . '"' . $link_attributes_html . '>' . $link_html . '</a>';
+										}
+
+										$html .= $this->indent . ($this->include_white_space ? "\t" : '') . '<li' . ($class != '' ? ' class="' . trim($class) . '"' : '') . '><' . $wrapper_html . ' class="link_level' . html($level) . '">' . $link_html . '</' . $wrapper_html . '>' . $child_html . '</li>';
 
 								}
 
