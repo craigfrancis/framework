@@ -116,6 +116,26 @@
 					}
 
 				//--------------------------------------------------
+				// Quick db check, incase lock file has been deleted
+
+					$db->query('SELECT 1 FROM ' . DB_PREFIX . 'system_maintenance WHERE run_end = "0000-00-00 00:00:00" OR run_end = "' . $db->escape(date('Y-m-d H:i:s')) . '"');
+					if ($db->num_rows() > 0) {
+						if ($this->result_url) {
+
+							$this->result_url->param_set('state', 'locked');
+							$this->result_url->param_set('test', 'db');
+							$this->result_url->param_set('time', time());
+
+							redirect($this->result_url);
+
+						} else {
+
+							return false;
+
+						}
+					}
+
+				//--------------------------------------------------
 				// Create proper lock
 
 					$lock_type = 'maintenance';
@@ -132,6 +152,7 @@
 						if (!$loading->start('Starting')) {
 
 							$this->result_url->param_set('state', 'locked');
+							$this->result_url->param_set('test', 'file');
 							$this->result_url->param_set('time', time());
 
 							redirect($this->result_url);
@@ -147,26 +168,6 @@
 							return false;
 						}
 
-					}
-
-				//--------------------------------------------------
-				// Quick db check, incase lock file has been deleted
-
-					$db->query('SELECT 1 FROM ' . DB_PREFIX . 'system_maintenance WHERE run_end = "0000-00-00 00:00:00"');
-					if ($db->num_rows() > 0) {
-						if ($this->result_url) {
-
-							$this->result_url->param_set('state', 'locked');
-							$this->result_url->param_set('time', time());
-
-							$loading->done($this->result_url);
-
-						} else {
-
-							$lock->close();
-
-						}
-						return false;
 					}
 
 				//--------------------------------------------------
