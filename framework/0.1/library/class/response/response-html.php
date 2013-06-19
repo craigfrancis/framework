@@ -144,7 +144,7 @@
 			public function view_set_html($html) {
 				$this->view_html = $html;
 				$this->view_folders = NULL;
-				$this->view_path = NULL;
+				$this->view_path = NULL; // Not empty string
 			}
 
 			public function view_add_html($html) {
