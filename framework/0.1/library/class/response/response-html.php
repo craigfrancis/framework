@@ -170,7 +170,7 @@
 
 			public function view_path_get() {
 
-				if ($this->view_path) {
+				if ($this->view_path !== '') { // If set to NULL, then we won't be using a view path
 					return $this->view_path;
 				}
 
