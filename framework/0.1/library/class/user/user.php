@@ -23,6 +23,7 @@
 			protected $cookie_login_last = 'user_login_last_id';
 			protected $remember_login = true;
 			protected $password_reset_url = NULL;
+			protected $login_url = '/';
 
 			protected $db_link;
 
@@ -198,6 +199,16 @@
 
 		//--------------------------------------------------
 		// Support functions
+
+			protected function login_redirect($url) {
+				save_request_redirect($url, $this->last_login_get());
+			}
+
+			public function require_login() {
+				if ($this->user_id == 0) {
+					$this->login_redirect(url($this->login_url));
+				}
+			}
 
 			public function require_by_id($user_id) {
 				$user_identification = $this->auth->identification_name_get($user_id);
