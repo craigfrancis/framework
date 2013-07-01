@@ -200,7 +200,7 @@
 		//--------------------------------------------------
 		// Support functions
 
-			protected function login_redirect($url) {
+			public function login_redirect($url) {
 				save_request_redirect($url, $this->last_login_get());
 			}
 
