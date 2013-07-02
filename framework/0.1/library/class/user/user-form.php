@@ -20,6 +20,7 @@
 			} else {
 
 				$field_identification = new form_field_email($this, $this->user_obj->text_get('identification_label'), ($name === NULL ? 'identification' : $name));
+				$field_identification->check_domain_set(false);
 				$field_identification->format_error_set($this->user_obj->text_get('identification_format'));
 				$field_identification->min_length_set($this->user_obj->text_get('identification_min_len'), 1);
 				$field_identification->max_length_set($this->user_obj->text_get('identification_max_len'), 250);

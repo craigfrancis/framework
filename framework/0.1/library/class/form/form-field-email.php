@@ -5,8 +5,9 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $format_error_set;
-			protected $format_error_found;
+			protected $check_domain = true;
+			protected $format_error_set = false;
+			protected $format_error_found = false;
 
 		//--------------------------------------------------
 		// Setup
@@ -21,11 +22,13 @@
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->format_error_set = false;
-					$this->format_error_found = false;
 					$this->type = 'email';
 					$this->input_type = 'email';
 
+			}
+
+			public function check_domain_set($check_domain) {
+				$this->check_domain = $check_domain;
 			}
 
 		//--------------------------------------------------
@@ -37,7 +40,7 @@
 
 			public function format_error_set_html($error_html) {
 
-				if ($this->form_submitted && $this->value != '' && !is_email($this->value)) {
+				if ($this->form_submitted && $this->value != '' && !is_email($this->value, $this->check_domain)) {
 
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 
