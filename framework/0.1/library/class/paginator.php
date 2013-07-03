@@ -9,10 +9,10 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $config = array();
-			protected $url = NULL;
-			protected $page_count = NULL;
-			protected $page_number = NULL;
+			private $config = array();
+			private $url = NULL;
+			private $page_count = NULL;
+			private $page_number = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -75,13 +75,25 @@
 
 			}
 
-			public function item_count_set($item_count) {
+			public function item_count_set($item_count, $redirect = false) {
 
 				if ($this->config['item_count'] != $item_count) {
+
+					$page_requested = $this->page_number_get();
 
 					$this->config['item_count'] = $item_count;
 
 					$this->item_count_update();
+
+					if ($redirect) {
+
+						$page_current = $this->page_number_get();
+
+						if ($page_requested != $page_current) {
+							redirect($this->page_url_get($page_current));
+						}
+
+					}
 
 				}
 
@@ -284,7 +296,7 @@
 				//--------------------------------------------------
 				// Return the html
 
-					return $this->_html_format(array(
+					return $this->html_format(array(
 							'first' => $nav_links_html['first'],
 							'back' => $nav_links_html['back'],
 							'links' => $links_html,
@@ -297,7 +309,7 @@
 
 			}
 
-			protected function _html_format($elements_html) {
+			protected function html_format($elements_html) {
 
 					// $elements_html['first']
 					// $elements_html['back']
@@ -306,7 +318,7 @@
 					// $elements_html['next']
 					// $elements_html['last']
 					// $elements_html['extra']
-					// $elements_html['hidden']
+					// $elements_html['hidden'] - used in 'form' mode
 
 				$html = '';
 
