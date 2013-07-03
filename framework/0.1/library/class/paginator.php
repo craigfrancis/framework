@@ -28,7 +28,7 @@
 
 					$default_config = array(
 							'item_limit' => 24, // Divisible by 1, 2, 3, 4, 6, 12
-							'item_count' => 0,
+							'item_count' => NULL, // Unknown
 							'base_url' => NULL,
 							'mode' => 'link', // or 'form'
 							'variable' => 'page',
@@ -50,17 +50,47 @@
 				// Set config
 
 					if (!is_array($config)) { // May be a string, number, or false (if database did not return record count)
-						$config = array(
-								'item_count' => intval($config),
-							);
+						if ($config === NULL) {
+							$config = array();
+						} else {
+							$config = array(
+									'item_count' => intval($config),
+								);
+						}
 					}
 
 					$this->config = array_merge($default_config, $config);
 
 				//--------------------------------------------------
-				// Page variables
+				// Item count
 
-					$this->url = NULL;
+					if ($this->config['item_count'] !== NULL) {
+						$this->item_count_update();
+					} else {
+						$this->page_number = intval(request($this->config['variable'])); // Assume valid, for limit_get_sql()
+						if ($this->page_number < 1) {
+							$this->page_number = 1;
+						}
+					}
+
+			}
+
+			public function item_count_set($item_count) {
+
+				if ($this->config['item_count'] != $item_count) {
+
+					$this->config['item_count'] = $item_count;
+
+					$this->item_count_update();
+
+				}
+
+			}
+
+			protected function item_count_update() {
+
+				//--------------------------------------------------
+				// Page count
 
 					if ($this->config['item_limit'] > 0) {
 						$this->page_count = ceil($this->config['item_count'] / $this->config['item_limit']);
@@ -72,42 +102,41 @@
 						$this->page_count = 1; // Always 1 page to show
 					}
 
-					if ($this->page_number === NULL || isset($config['variable'])) { // No known page number yet, or the variable has been changed
+				//--------------------------------------------------
+				// Page number
 
-						$page_number = intval(request($this->config['variable']));
-						$page_rel = request($this->config['variable'] . '_rel');
+					$page_number = intval(request($this->config['variable']));
+					$page_rel = request($this->config['variable'] . '_rel');
 
-						if ($this->config['mode'] == 'form' && $page_rel !== NULL) {
+					if ($this->config['mode'] == 'form' && $page_rel !== NULL) {
 
-							$page_relative = html($page_rel);
+						$page_relative = html($page_rel);
 
-							if ($page_relative == $this->config['first_html']) {
+						if ($page_relative == $this->config['first_html']) {
 
-								$page_number = 1;
+							$page_number = 1;
 
-							} else if ($page_relative == $this->config['last_html']) {
+						} else if ($page_relative == $this->config['last_html']) {
 
-								$page_number = $this->page_count;
+							$page_number = $this->page_count;
 
-							} else if ($page_relative == $this->config['back_html']) {
+						} else if ($page_relative == $this->config['back_html']) {
 
-								$page_number -= 1;
+							$page_number -= 1;
 
-							} else if ($page_relative == $this->config['next_html']) {
+						} else if ($page_relative == $this->config['next_html']) {
 
-								$page_number += 1;
+							$page_number += 1;
 
-							} else {
+						} else {
 
-								$page_number = $page_relative;
-
-							}
+							$page_number = $page_relative;
 
 						}
 
-						$this->page_number_set($page_number);
-
 					}
+
+					$this->page_number_set($page_number);
 
 			}
 
