@@ -27,8 +27,8 @@
 				// Default config
 
 					$default_config = array(
-							'items_per_page' => 24, // Divisible by 1, 2, 3, 4, 6, 12
-							'items_count' => 0,
+							'item_limit' => 24, // Divisible by 1, 2, 3, 4, 6, 12
+							'item_count' => 0,
 							'base_url' => NULL,
 							'mode' => 'link', // or 'form'
 							'variable' => 'page',
@@ -51,7 +51,7 @@
 
 					if (!is_array($config)) { // May be a string, number, or false (if database did not return record count)
 						$config = array(
-								'items_count' => intval($config),
+								'item_count' => intval($config),
 							);
 					}
 
@@ -62,8 +62,8 @@
 
 					$this->url = NULL;
 
-					if ($this->config['items_per_page'] > 0) {
-						$this->page_count = ceil($this->config['items_count'] / $this->config['items_per_page']);
+					if ($this->config['item_limit'] > 0) {
+						$this->page_count = ceil($this->config['item_count'] / $this->config['item_limit']);
 					} else {
 						$this->page_count = 1;
 					}
@@ -111,8 +111,8 @@
 
 			}
 
-			public function items_count_get() {
-				return $this->config['items_count'];
+			public function item_count_get() {
+				return $this->config['item_count'];
 			}
 
 			public function limit_get_sql() {
@@ -128,7 +128,7 @@
 			}
 
 			public function page_size_get() {
-				return $this->config['items_per_page'];
+				return $this->config['item_limit'];
 			}
 
 			public function page_number_get() {

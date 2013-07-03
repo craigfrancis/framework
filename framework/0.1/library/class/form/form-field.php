@@ -406,6 +406,10 @@
 				$this->form->_field_error_add_html($this->form_field_uid, $error_html);
 			}
 
+			public function error_count() {
+				return count($this->errors_html());
+			}
+
 			public function errors_html() {
 				return $this->form->_field_errors_get_html($this->form_field_uid);
 			}

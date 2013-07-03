@@ -14,8 +14,8 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 	//--------------------------------------------------
 	// Site config
 
-		paginator.items_per_page
-		paginator.items_count
+		paginator.item_limit
+		paginator.item_count
 		paginator... see below for the rest
 
 	//--------------------------------------------------
@@ -26,8 +26,8 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 		$paginator = new paginator($result_count);
 
 		$paginator = new paginator(array(
-				'items_per_page' => 3,
-				'items_count' => $result_count,
+				'item_limit' => 3,
+				'item_count' => $result_count,
 			));
 
 	//--------------------------------------------------
