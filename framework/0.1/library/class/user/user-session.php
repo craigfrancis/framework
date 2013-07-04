@@ -5,15 +5,16 @@
 
 	class user_session_base extends check {
 
-		protected $user_obj;
+		private $length = 1800; // 30 minutes, or set to 0 for indefinite length
+		private $lock_to_ip = false; // By default this is disabled (AOL users)
+		private $allow_concurrent = false; // Close previous sessions on new session start
+		private $use_cookies = false; // Use sessions by default
+		private $history_length = 2592000; // Keep session data for 30 days, 0 to delete once expired, -1 to keep data indefinitely
 
-		protected $db_where_sql;
+		private $user_obj = NULL;
+		private $session_id = 0;
 
-		protected $length;
-		protected $lock_to_ip;
-		protected $allow_concurrent;
-		protected $history_length;
-		protected $session_id;
+		protected $db_where_sql = 'true';
 
 		public function __construct($user) {
 			$this->setup($user);
@@ -26,23 +27,12 @@
 
 				$this->user_obj = $user;
 
-			//--------------------------------------------------
-			// Table
-
-				$this->db_where_sql = 'true';
-
-			//--------------------------------------------------
-			// Miscellaneous
-
-				$this->length = 0; // Indefinite length, otherwise set to seconds
-				$this->history_length = -1; // Default to keep session data indefinitely
-				$this->allow_concurrent = false; // Close previous sessions on new session start
-				$this->lock_to_ip = false; // By default this is disabled (AOL users)
-				$this->session_id = 0;
-
 		}
 
 		public function length_set($length) {
+			if (!$this->use_cookies && (ini_get('session.gc_maxlifetime') / $length) < 0.5) { // Default server gc lifetime is 24 minutes (over 50% of 30 minutes)
+				exit_with_error('Session max lifetime is too short for user session length, perhaps use cookies instead?');
+			}
 			$this->length = $length;
 		}
 
@@ -56,6 +46,10 @@
 
 		public function allow_concurrent_set($enable) {
 			$this->allow_concurrent = $enable;
+		}
+
+		public function use_cookies_set($use_cookies) {
+			$this->use_cookies = $use_cookies;
 		}
 
 		public function session_create($user_id) {
@@ -142,9 +136,14 @@
 
 				$session_name = $this->user_obj->session_name_get();
 
-				session::regenerate(); // State change, new session id (additional check against session fixation)
-				session::set($session_name . '_id', $session_id);
-				session::set($session_name . '_pass', $session_pass); // Password support added so an "auth_token" can be passed to the user.
+				if ($this->use_cookies) {
+					cookie::set($session_name . '_id', $session_id);
+					cookie::set($session_name . '_pass', $session_pass);
+				} else {
+					session::regenerate(); // State change, new session id (additional check against session fixation)
+					session::set($session_name . '_id', $session_id);
+					session::set($session_name . '_pass', $session_pass); // Password support still used so an "auth_token" can be passed to the user.
+				}
 
 		}
 
@@ -155,8 +154,13 @@
 
 				$session_name = $this->user_obj->session_name_get();
 
-				$session_id = session::get($session_name . '_id');
-				$session_pass = session::get($session_name . '_pass');
+				if ($this->use_cookies) {
+					$session_id = cookie::get($session_name . '_id');
+					$session_pass = cookie::get($session_name . '_pass');
+				} else {
+					$session_id = session::get($session_name . '_id');
+					$session_pass = session::get($session_name . '_pass');
+				}
 
 				$session_id = intval($session_id);
 
@@ -312,9 +316,14 @@
 
 				$session_name = $this->user_obj->session_name_get();
 
-				session::regenerate(); // State change, new session id
-				session::delete($session_name . '_id');
-				session::delete($session_name . '_pass');
+				if ($this->use_cookies) {
+					cookie::delete($session_name . '_id');
+					cookie::delete($session_name . '_pass');
+				} else {
+					session::regenerate(); // State change, new session id
+					session::delete($session_name . '_id');
+					session::delete($session_name . '_pass');
+				}
 
 		}
 

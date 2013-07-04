@@ -397,9 +397,9 @@
 //--------------------------------------------------
 // Check that an email address is valid
 
-	function is_email($email) {
+	function is_email($email, $check_domain = true) {
 		if (preg_match('/^\w[-=.+\'\w]*@(\w[-._\w]*\.[a-zA-Z]{2,}.*)$/', $email, $matches)) {
-			if (config::get('email.check_domain', true) && function_exists('checkdnsrr')) {
+			if ($check_domain && config::get('email.check_domain', true) && function_exists('checkdnsrr')) {
 				if (checkdnsrr($matches[1] . '.', 'MX')) return true; // If a 'mail exchange' record exists
 				if (checkdnsrr($matches[1] . '.', 'A'))  return true; // Mail servers can fall back on 'A' records
 			} else {

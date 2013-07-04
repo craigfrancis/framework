@@ -570,7 +570,7 @@
 
 					$explain_html = '';
 
-					if (preg_match('/^\W*\(?\W*SELECT/i', $query)) {
+					if (preg_match('/^\W*\(?\W*SELECT.*FROM/i', $query)) { // Don't debug queries without a table, e.g. SELECT FOUND_ROWS();
 
 						$explain_html .= '
 							<table>';

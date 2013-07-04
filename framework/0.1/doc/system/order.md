@@ -14,7 +14,7 @@ Will probably also want to look at the [payment](../../doc/system/payment.md) he
 	//--------------------------------------------------
 	// Item count - quick summary for a basket count
 
-		echo $order->items_count_get();
+		echo $order->item_count();
 
 	//--------------------------------------------------
 	// Add an item
@@ -64,7 +64,7 @@ Will probably also want to look at the [payment](../../doc/system/payment.md) he
 
 			$response->set('form', $form);
 			$response->set('table_html', $table_html);
-			$response->set('empty_basket', ($order->items_count_get() == 0));
+			$response->set('empty_basket', ($order->item_count() == 0));
 
 		//--------------------------------------------------
 		// View

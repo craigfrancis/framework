@@ -628,7 +628,7 @@
 
 			}
 
-			public function items_count_get() {
+			public function item_count() {
 				$items = 0;
 				foreach ($this->items_get() as $item) { // In most cases items_get() is used elsewhere (cached data)... so usually quicker than doing an extra 'SELECT SUM(quantity)'
 					$items += $item['quantity'];

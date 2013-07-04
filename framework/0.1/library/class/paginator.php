@@ -9,10 +9,10 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $config = array();
-			protected $url = NULL;
-			protected $page_count = NULL;
-			protected $page_number = NULL;
+			private $config = array();
+			private $url = NULL;
+			private $page_count = NULL;
+			private $page_number = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -27,8 +27,8 @@
 				// Default config
 
 					$default_config = array(
-							'items_per_page' => 24, // Divisible by 1, 2, 3, 4, 6, 12
-							'items_count' => 0,
+							'item_limit' => 24, // Divisible by 1, 2, 3, 4, 6, 12
+							'item_count' => NULL, // Unknown
 							'base_url' => NULL,
 							'mode' => 'link', // or 'form'
 							'variable' => 'page',
@@ -50,20 +50,62 @@
 				// Set config
 
 					if (!is_array($config)) { // May be a string, number, or false (if database did not return record count)
-						$config = array(
-								'items_count' => intval($config),
-							);
+						if ($config === NULL) {
+							$config = array();
+						} else {
+							$config = array(
+									'item_count' => intval($config),
+								);
+						}
 					}
 
 					$this->config = array_merge($default_config, $config);
 
 				//--------------------------------------------------
-				// Page variables
+				// Item count
 
-					$this->url = NULL;
+					if ($this->config['item_count'] !== NULL) {
+						$this->item_count_update();
+					} else {
+						$this->page_number = intval(request($this->config['variable'])); // Assume valid, for limit_get_sql()
+						if ($this->page_number < 1) {
+							$this->page_number = 1;
+						}
+					}
 
-					if ($this->config['items_per_page'] > 0) {
-						$this->page_count = ceil($this->config['items_count'] / $this->config['items_per_page']);
+			}
+
+			public function item_count_set($item_count, $redirect = false) {
+
+				if ($this->config['item_count'] != $item_count) {
+
+					$page_requested = $this->page_number_get();
+
+					$this->config['item_count'] = $item_count;
+
+					$this->item_count_update();
+
+					if ($redirect) {
+
+						$page_current = $this->page_number_get();
+
+						if ($page_requested != $page_current) {
+							redirect($this->page_url_get($page_current));
+						}
+
+					}
+
+				}
+
+			}
+
+			protected function item_count_update() {
+
+				//--------------------------------------------------
+				// Page count
+
+					if ($this->config['item_limit'] > 0) {
+						$this->page_count = ceil($this->config['item_count'] / $this->config['item_limit']);
 					} else {
 						$this->page_count = 1;
 					}
@@ -72,47 +114,46 @@
 						$this->page_count = 1; // Always 1 page to show
 					}
 
-					if ($this->page_number === NULL || isset($config['variable'])) { // No known page number yet, or the variable has been changed
+				//--------------------------------------------------
+				// Page number
 
-						$page_number = intval(request($this->config['variable']));
-						$page_rel = request($this->config['variable'] . '_rel');
+					$page_number = intval(request($this->config['variable']));
+					$page_rel = request($this->config['variable'] . '_rel');
 
-						if ($this->config['mode'] == 'form' && $page_rel !== NULL) {
+					if ($this->config['mode'] == 'form' && $page_rel !== NULL) {
 
-							$page_relative = html($page_rel);
+						$page_relative = html($page_rel);
 
-							if ($page_relative == $this->config['first_html']) {
+						if ($page_relative == $this->config['first_html']) {
 
-								$page_number = 1;
+							$page_number = 1;
 
-							} else if ($page_relative == $this->config['last_html']) {
+						} else if ($page_relative == $this->config['last_html']) {
 
-								$page_number = $this->page_count;
+							$page_number = $this->page_count;
 
-							} else if ($page_relative == $this->config['back_html']) {
+						} else if ($page_relative == $this->config['back_html']) {
 
-								$page_number -= 1;
+							$page_number -= 1;
 
-							} else if ($page_relative == $this->config['next_html']) {
+						} else if ($page_relative == $this->config['next_html']) {
 
-								$page_number += 1;
+							$page_number += 1;
 
-							} else {
+						} else {
 
-								$page_number = $page_relative;
-
-							}
+							$page_number = $page_relative;
 
 						}
 
-						$this->page_number_set($page_number);
-
 					}
+
+					$this->page_number_set($page_number);
 
 			}
 
-			public function items_count_get() {
-				return $this->config['items_count'];
+			public function item_count_get() {
+				return $this->config['item_count'];
 			}
 
 			public function limit_get_sql() {
@@ -128,7 +169,7 @@
 			}
 
 			public function page_size_get() {
-				return $this->config['items_per_page'];
+				return $this->config['item_limit'];
 			}
 
 			public function page_number_get() {
@@ -255,7 +296,7 @@
 				//--------------------------------------------------
 				// Return the html
 
-					return $this->_html_format(array(
+					return $this->html_format(array(
 							'first' => $nav_links_html['first'],
 							'back' => $nav_links_html['back'],
 							'links' => $links_html,
@@ -268,7 +309,7 @@
 
 			}
 
-			protected function _html_format($elements_html) {
+			protected function html_format($elements_html) {
 
 					// $elements_html['first']
 					// $elements_html['back']
@@ -277,7 +318,7 @@
 					// $elements_html['next']
 					// $elements_html['last']
 					// $elements_html['extra']
-					// $elements_html['hidden']
+					// $elements_html['hidden'] - used in 'form' mode
 
 				$html = '';
 

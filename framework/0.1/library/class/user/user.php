@@ -20,7 +20,7 @@
 			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $form_name = 'user_form';
 			protected $identification_type = 'email';
-			protected $cookie_login_last = 'user_login_last_id';
+			protected $cookie_login_last = 'user_last';
 			protected $remember_login = true;
 			protected $password_reset_url = NULL;
 			protected $login_url = '/';
@@ -46,13 +46,6 @@
 					if ($this->session === NULL) $this->session = new user_session($this);
 					if ($this->details === NULL) $this->details = new user_detail($this);
 					if ($this->auth    === NULL) $this->auth = new user_auth($this);
-
-				//--------------------------------------------------
-				// Session defaults
-
-					$this->session->length_set(60*30); // How long a session lasts... 0 for indefinite length
-					$this->session->history_length_set(60*60*24*30); // How long a session history lasts... 0 to delete once expired, -1 to keep data indefinitely
-					$this->session->allow_concurrent_set(false); // If the user can login more than once at a time
 
 				//--------------------------------------------------
 				// Tables
