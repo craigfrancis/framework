@@ -45,8 +45,9 @@
 				if ($this->view_path !== NULL) {
 
 					ob_start();
-					extract($this->view_variables);
-					require($this->view_path);
+
+					script_run($this->view_path, $this->view_variables);
+
 					$view_html = ob_get_clean();
 
 				} else {

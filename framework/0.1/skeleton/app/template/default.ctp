@@ -3,9 +3,9 @@
 //--------------------------------------------------
 // Resources
 
-	$this->css_auto();
+	$response->css_auto();
 
-	// $this->js_add('/a/js/script.js');
+	// $response->js_add('/a/js/script.js');
 
 //--------------------------------------------------
 // Navigation
@@ -16,22 +16,22 @@
 
 ?>
 <!DOCTYPE html>
-<html lang="<?= html($this->lang_get()) ?>" xml:lang="<?= html($this->lang_get()) ?>" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="<?= html($response->lang_get()) ?>" xml:lang="<?= html($response->lang_get()) ?>" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
-	<?= $this->head_get_html(); ?>
+	<?= $response->head_get_html(); ?>
 
 	<!--[if lt IE 9]>
 		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 
 </head>
-<body id="<?= html($this->page_id_get()) ?>">
+<body id="<?= html($response->page_id_get()) ?>">
 
 	<div id="page_wrapper">
 
 		<header id="page_title" role="banner">
-			<h1><a href="/"><?= html($this->title_get()) ?></a></h1>
+			<h1><a href="/"><?= html($response->title_get()) ?></a></h1>
 		</header>
 
 		<div id="page_container">
@@ -56,9 +56,9 @@
 
 <!-- END OF PAGE TOP -->
 
-	<?= $this->message_get_html(); ?>
+	<?= $response->message_get_html(); ?>
 
-	<?= $this->view_get_html(); ?>
+	<?= $response->view_get_html(); ?>
 
 <!-- START OF PAGE BOTTOM -->
 
@@ -81,7 +81,7 @@
 
 	</div>
 
-	<?= $this->foot_get_html(); ?>
+	<?= $response->foot_get_html(); ?>
 
 </body>
 </html>

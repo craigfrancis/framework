@@ -521,14 +521,20 @@
 	}
 
 //--------------------------------------------------
-// Run a script with no local variables
+// Run a script with no (or limited) local variables
 
 	function script_run() {
-		require(func_get_arg(0)); // No local variables
+		if (func_num_args() > 1) {
+			extract(func_get_arg(1));
+		}
+		require(func_get_arg(0));
 	}
 
 	function script_run_once() {
-		require_once(func_get_arg(0)); // No local variables
+		if (func_num_args() > 1) {
+			extract(func_get_arg(1));
+		}
+		require_once(func_get_arg(0));
 	}
 
 //--------------------------------------------------

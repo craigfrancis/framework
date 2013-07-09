@@ -18,13 +18,13 @@ If you're adding a HTML page, then you just need to create a [view file](../doc/
 The output from this is added to a [template](../doc/setup/templates.md), where the common HTML for the website is added (such as the site navigation).
 
 	<!DOCTYPE html>
-	<html lang="<?= html($this->lang_get()) ?>">
+	<html lang="<?= html($response->lang_get()) ?>">
 	<head>
-		<?= $this->head_get_html(); ?>
+		<?= $response->head_get_html(); ?>
 	</head>
-	<body id="<?= html($this->page_id_get()) ?>">
+	<body id="<?= html($response->page_id_get()) ?>">
 
-		<h1><?= html($this->title_get()) ?></h1>
+		<h1><?= html($response->title_get()) ?></h1>
 
 		<div id="page_nav">
 
@@ -34,9 +34,9 @@ The output from this is added to a [template](../doc/setup/templates.md), where 
 
 		<div id="page_content">
 
-			<?= $this->message_get_html(); ?>
+			<?= $response->message_get_html(); ?>
 
-			<?= $this->view_get_html(); ?>
+			<?= $response->view_get_html(); ?>
 
 		</div>
 
@@ -83,7 +83,7 @@ The HTML for the unit can then be:
 
 		<p>Use the form below to contact us:</p>
 
-		<?= $this->html(); ?>
+		<?= $form->html(); ?>
 
 Note that when creating the HTML for the form, this is just a shortcut. The fields could be printed out in several different ways.
 

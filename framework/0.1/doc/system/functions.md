@@ -87,7 +87,7 @@ For other variables, you should probably use the [cookie](../../doc/system/cooki
 		// 'admin'
 
 	message_set('Thank you for...');
-		// Message to be shown on next page, when the template uses $this->message_get_html();
+		// Message to be shown on next page, when the template uses $response->message_get_html();
 
 	error_send('page-not-found');
 		// Will also exit() for you, with the 'page-not-found' error.

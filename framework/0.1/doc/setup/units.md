@@ -140,7 +140,7 @@ Add the HTML:
 
 		<p>Use the form below to contact us:</p>
 
-		<?= $this->html(); ?>
+		<?= $form->html(); ?>
 
 Then any time you need it, call the following in the controller:
 

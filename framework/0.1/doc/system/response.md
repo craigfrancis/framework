@@ -76,7 +76,7 @@ This will start sending your `<head>` to the browser so it can start downloading
 
 	class response_html extends response_html_base {
 		public function setup() {
-			$this->css_auto();
+			$response->css_auto();
 		}
 	}
 

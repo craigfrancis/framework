@@ -1087,7 +1087,11 @@
 
 						if ($view_path !== NULL) {
 
-							$this->view_add_html($this->_process_file($view_path));
+							ob_start();
+
+							script_run($view_path, $this->variables);
+
+							$this->view_add_html(ob_get_clean());
 
 						} else if (count($this->units) > 0) {
 
@@ -1109,7 +1113,7 @@
 				//--------------------------------------------------
 				// Send template
 
-					echo $this->_process_file($this->_template_path_get());
+					script_run($this->_template_path_get(), array_merge($this->variables, array('response' => $this)));
 
 				//--------------------------------------------------
 				// If view_get_html() was not called
@@ -1321,13 +1325,6 @@
 
 		//--------------------------------------------------
 		// Support functions
-
-			private function _process_file() {
-				ob_start();
-				extract($this->variables);
-				require(func_get_arg(0));
-				return ob_get_clean();
-			}
 
 			private function _js_code_save($code, $position = 'foot') { // Don't call directly, use js_code_add()
 

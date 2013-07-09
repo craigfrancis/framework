@@ -46,7 +46,7 @@
 				$return = NULL;
 
 				if (is_file($this->test_path)) {
-					require($this->test_path); // Don't use script_run() jail, as we need to have $info as local variable
+					script_run($this->test_path, array('info' => $info));
 				} else {
 					$this->test_output_add('Missing test file.', -1);
 				}

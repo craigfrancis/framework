@@ -89,7 +89,7 @@ Some sites can simply get away with a single CSS file, but if they become too la
 
 So if you update your [template](../../doc/setup/templates.md) file, so that it simply executes:
 
-	$this->css_auto();
+	$response->css_auto();
 
 Then by default, the following 3 files (if they exist), will be included:
 
