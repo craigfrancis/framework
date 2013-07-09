@@ -97,7 +97,7 @@ Which is just a shortcut for:
 	$response = response_get();
 	$response->unit_add('contact_form', $config);
 
-The `$config` variable is optional, and allows you to pass in an an array to configure the unit. For example:
+The `$config` variable is optional, but allows you to pass in an an array to configure the unit. For example:
 
 	unit_add('news_admin_edit', array(
 			'id' => $article_id,
@@ -108,19 +108,20 @@ The `$config` variable is optional, and allows you to pass in an an array to con
 
 ## Sub-unit usage
 
-If you have a unit that in turn needs to use another unit (e.g. a table that starts off with a search form), then call:
+If you have a unit that in turn needs to use another unit (e.g. a table starting with a search form), then call:
 
 	$search_form = unit_get('search_form');
 
-This will just return the object, and allow you to call methods on it:
+This will return the unit object, and allow you to call methods on it:
 
-	$search_form->value_get();
+	$search_form->get('search');
+	$search_form->value_get(); // Custom method
 
-Or pass it to the current units HTML:
+You can then pass it to the current units HTML:
 
 	$this->set('search_form', $search_form);
 
-And then print its HTML:
+Then if your using a "ctp" file, print its HTML with:
 
 	<?= $search_form->html(); ?>
 

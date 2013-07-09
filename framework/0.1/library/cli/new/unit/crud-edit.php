@@ -109,8 +109,8 @@
 			//--------------------------------------------------
 			// Page URLs
 
-				if ($action_edit && $config['delete_url']) {
-					$this->set('delete_url', $config['delete_url']->get(array('id' => $config['id'])));
+				if ($action_edit) {
+					$this->set('delete_url', $config['delete_url']);
 				}
 
 			//--------------------------------------------------
@@ -126,11 +126,11 @@
 /*--------------------------------------------------*/
 /* Example
 
-	unit_add('[CLASS_NAME]', array(
-			'id' => request('id'),
-			'delete_url' => url('/path/to/delete/'),
-		));
+	$id = request('id');
 
-/*--------------------------------------------------*/
+	unit_add('[CLASS_NAME]', array(
+			'id' => $id,
+			'delete_url' => url('/path/to/delete/', array('id' => $id)),
+		));
 
 ?>
