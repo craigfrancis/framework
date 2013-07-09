@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="<?= html($this->lang_get()) ?>" xml:lang="<?= html($this->lang_get()) ?>" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="<?= html($response->lang_get()) ?>" xml:lang="<?= html($response->lang_get()) ?>" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
-	<?= $this->head_get_html(); ?>
+	<?= $response->head_get_html(); ?>
 
 </head>
-<body id="<?= html($this->page_id_get()) ?>">
+<body id="<?= html($response->page_id_get()) ?>">
 
-	<?= $this->view_get_html(); ?>
+	<?= $response->view_get_html(); ?>
 
-	<?= $this->foot_get_html(); ?>
+	<?= $response->foot_get_html(); ?>
 
 </body>
 </html>
