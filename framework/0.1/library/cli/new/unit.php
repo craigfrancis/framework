@@ -103,7 +103,7 @@
 		// PHP Contents
 
 			$contents_php = file_get_contents($template_php);
-			$contents_php = str_replace('[CLASS_NAME]', $name_class . '_unit', $contents_php);
+			$contents_php = str_replace('[CLASS_NAME]', $name_class, $contents_php);
 
 			if (($pos = strpos($contents_php, '/* Example')) !== false) {
 
@@ -140,7 +140,7 @@
 
 	echo '--------------------------------------------------' . "\n\n";
 
-	echo 'Example initialisation:' . "\n\n";
+	echo 'Example contoller usage:' . "\n\n";
 	echo "\t" . $example_php . "\n\n";
 
 	echo 'Example view usage:' . "\n\n";

@@ -1,6 +1,6 @@
 <?php
 
-	class [CLASS_NAME] extends unit {
+	class [CLASS_NAME]_unit extends unit {
 
 		public function setup($config) {
 
@@ -25,7 +25,7 @@
 /*--------------------------------------------------*/
 /* Example
 
-	unit_add('[CLASS_NAME]', array(
+	$unit = unit_add('[CLASS_NAME]', array(
 			'name' => 'Test',
 		));
 

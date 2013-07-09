@@ -1,6 +1,6 @@
 <?php
 
-	class [CLASS_NAME] extends unit {
+	class [CLASS_NAME]_unit extends unit {
 
 		public function setup($config) {
 
@@ -17,7 +17,7 @@
 			//--------------------------------------------------
 			// Details
 
-				$table_sql = DB_PREFIX . 'item_table';
+				$table_sql = DB_PREFIX . 'item';
 				$where_sql = NULL;
 
 				$action_edit = ($config['id'] > 0);
@@ -28,7 +28,7 @@
 						id = "' . $db->escape($config['id']) . '" AND
 						deleted = "0000-00-00 00:00:00"';
 
-					$db->select($table_sql, array('id', 'name'), $where_sql);
+					$db->select($table_sql, array('name'), $where_sql);
 
 					if ($row = $db->fetch_row()) {
 
@@ -128,9 +128,11 @@
 
 	$id = request('id');
 
-	unit_add('[CLASS_NAME]', array(
+	$unit = unit_add('[CLASS_NAME]', array(
 			'id' => $id,
-			'delete_url' => url('/path/to/delete/', array('id' => $id)),
+			'delete_url' => url('/admin/item/delete/', array('id' => $id)),
 		));
+
+	$item_name = $unit->get('item_name');
 
 ?>

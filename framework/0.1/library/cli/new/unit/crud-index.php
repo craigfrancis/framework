@@ -1,6 +1,6 @@
 <?php
 
-	class [CLASS_NAME] extends unit {
+	class [CLASS_NAME]_unit extends unit {
 
 		public function setup($config) {
 
@@ -40,7 +40,7 @@
 				$table = new table();
 				$table->anchor_set('results');
 				$table->class_set('basic_table full_width');
-				$table->no_records_set('No records found');
+				$table->no_records_set('No items found');
 
 				$table->heading_add('Name', 'name', 'text');
 				$table->heading_add('Name', 'name', 'text');
@@ -145,7 +145,7 @@
 /*--------------------------------------------------*/
 /* Example
 
-	unit_add('[CLASS_NAME]', array(
+	$unit = unit_add('[CLASS_NAME]', array(
 			'id' => request('id'),
 			'add_url' => url('/admin/item/edit/'),
 			'edit_url' => url('/admin/item/edit/'),
