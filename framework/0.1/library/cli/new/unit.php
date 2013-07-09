@@ -1,18 +1,40 @@
 <?php
 
 //--------------------------------------------------
+// Parameters
+
+	$param_files = NULL;
+	$param_name = NULL;
+
+	foreach ($params as $param) {
+
+		$path = realpath(getenv('SRC_WD') . '/' . $param);
+
+		if (is_file($path)) {
+
+			$param_files[] = $path;
+
+		} else if ($param_name === NULL && $param == safe_file_name($param)) {
+
+			$param_name = $param;
+
+		}
+
+	}
+
+//--------------------------------------------------
 // Name
 
-	echo "\n" . 'Unit name: ';
-
-//	$name = trim(fgets(STDIN));
-$name = 'testing';
-echo $name . "\n";
-
-	$name_class = human_to_ref($name);
-	$name_file = human_to_link($name);
-
 	echo "\n";
+
+	if (!$param_name) {
+		echo 'Unit name: ';
+		$param_name = trim(fgets(STDIN));
+		echo "\n";
+	}
+
+	$name_class = human_to_ref($param_name);
+	$name_file = human_to_link($param_name);
 
 //--------------------------------------------------
 // Paths
@@ -38,69 +60,78 @@ echo $name . "\n";
 	}
 
 //--------------------------------------------------
-// Template
+// Files
 
-	$templates = glob(FRAMEWORK_ROOT . '/library/cli/new/unit/*.php');
+	$example_php = 'unit_add(\'' . $name_class . '\');';
 
-	do {
+	if (count($param_files) > 0) {
 
-		echo 'Templates: ' . "\n";
+		//--------------------------------------------------
+		// Custom files
 
-		foreach ($templates as $k => $template) {
-			echo ' ' . ($k + 1) . ') ' . substr($template, (strrpos($template, '/') + 1), -4) . "\n";
-		}
-
-		echo "\n" . 'Unit template: ';
-
-		// $template_id = intval(fgets(STDIN));
-$template_id = 2;
-echo $template_id . "\n";
-
-		if ($template_id > 0 && isset($templates[($template_id - 1)])) {
-			$template_php = $templates[($template_id - 1)];
-		} else {
-			$template_php = NULL;
-		}
-
-		echo "\n";
-
-	} while ($template_php === NULL);
-
-//--------------------------------------------------
-// PHP Contents
-
-	$contents_php = file_get_contents($template_php);
-	$contents_php = str_replace('[CLASS_NAME]', $name_class . '_unit', $contents_php);
-
-	if (($pos = strpos($contents_php, '/* Example')) !== false) {
-
-		$pos = strrpos($contents_php, '/*-', (0 - (strlen($contents_php) - $pos)));
-
-		$example_php = substr($contents_php, $pos);
-		$example_php = preg_replace('/^\/\*.*/m', '', $example_php);
-		$example_php = str_replace('?>', '', $example_php);
-		$example_php = trim($example_php);
-
-		$contents_php = substr($contents_php, 0, $pos) . '?>';
+			file_put_contents($path_php, '');
+			file_put_contents($path_ctp, '');
 
 	} else {
 
-		$example_php = 'unit_add(\'' . $name_class . '\');';
+		//--------------------------------------------------
+		// Template
 
-	}
+			$templates = glob(FRAMEWORK_ROOT . '/library/cli/new/unit/*.php');
 
-	file_put_contents($path_php, $contents_php);
+			do {
 
-//--------------------------------------------------
-// CTP Contents
+				echo 'Templates: ' . "\n";
 
-	$template_ctp = substr($template_php, 0, -4) . '.ctp';
+				foreach ($templates as $k => $template) {
+					echo ' ' . ($k + 1) . ') ' . substr($template, (strrpos($template, '/') + 1), -4) . "\n";
+				}
 
-	if (is_file($template_ctp)) {
+				echo "\n" . 'Unit template: ';
+				$template_id = intval(fgets(STDIN));
+				echo "\n";
 
-		$contents_ctp = file_get_contents($template_ctp);
+				if ($template_id > 0 && isset($templates[($template_id - 1)])) {
+					$template_php = $templates[($template_id - 1)];
+				} else {
+					$template_php = NULL;
+				}
 
-		file_put_contents($path_ctp, $contents_ctp);
+			} while ($template_php === NULL);
+
+		//--------------------------------------------------
+		// PHP Contents
+
+			$contents_php = file_get_contents($template_php);
+			$contents_php = str_replace('[CLASS_NAME]', $name_class . '_unit', $contents_php);
+
+			if (($pos = strpos($contents_php, '/* Example')) !== false) {
+
+				$pos = strrpos($contents_php, '/*-', (0 - (strlen($contents_php) - $pos)));
+
+				$example_php = substr($contents_php, $pos);
+				$example_php = preg_replace('/^\/\*.*/m', '', $example_php);
+				$example_php = str_replace('?>', '', $example_php);
+				$example_php = trim($example_php);
+
+				$contents_php = substr($contents_php, 0, $pos) . '?>';
+
+			}
+
+			file_put_contents($path_php, $contents_php);
+
+		//--------------------------------------------------
+		// CTP Contents
+
+			$template_ctp = substr($template_php, 0, -4) . '.ctp';
+
+			if (is_file($template_ctp)) {
+
+				$contents_ctp = file_get_contents($template_ctp);
+
+				file_put_contents($path_ctp, $contents_ctp);
+
+			}
 
 	}
 

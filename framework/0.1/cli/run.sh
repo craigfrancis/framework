@@ -1,10 +1,11 @@
 #!/bin/bash
 
 FILE="$0";
-INIT=`pwd -P`;
+export SRC_WD=`pwd -P`;
+
 cd `dirname "${FILE}"`;
 FILE=`basename "${FILE}"`;
-SOURCE=`pwd -P`;
+PRJ_WD=`pwd -P`;
 
 if [ "${FILE}" == "run.sh" ]; then
 
@@ -15,7 +16,7 @@ if [ "${FILE}" == "run.sh" ]; then
 		fi
 	done
 
-	if [ -L "${INIT}/cli" ]; then
+	if [ -L "${SRC_WD}/cli" ]; then
 
 		echo;
 		echo "Please use your cli symlink, so we know where your project root is:";
@@ -26,8 +27,8 @@ if [ "${FILE}" == "run.sh" ]; then
 
 	elif [ "${INSTALL}" == "1" ]; then
 
-		ln -s "$0" "${INIT}/cli";
-		SOURCE="${INIT}";
+		ln -s "$0" "${SRC_WD}/cli";
+		PRJ_WD="${SRC_WD}";
 
 	else
 
@@ -55,6 +56,6 @@ while [ -L "${FILE}" ]; do
 done
 
 DIR=`pwd -P`;
-cd "$SOURCE";
+cd "$PRJ_WD";
 
 php "${DIR}/run.php" $@;

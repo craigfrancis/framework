@@ -5,24 +5,28 @@
 		//--------------------------------------------------
 		// Additional arguments (non standard)
 
-			global $argv;
+			$params = NULL;
 
-			$additional = NULL;
-
-			foreach ($argv as $arg) {
-				if ($additional === NULL) {
-					if (substr($arg, 0, 2) == '-n' || substr($arg, 0, 5) == '--new') {
-						$additional = array();
-					}
-				} else {
-					if (substr($arg, 0, 1) == '-') {
-						break;
-					} else if ($arg == 'unit' && count($additional) == 0) {
-						continue;
+			if (isset($_SERVER['argv'])) {
+				foreach ($_SERVER['argv'] as $arg) {
+					if ($params === NULL) {
+						if (substr($arg, 0, 2) == '-n' || substr($arg, 0, 5) == '--new') {
+							$params = array();
+						}
 					} else {
-						$additional[] = $arg;
+						if (substr($arg, 0, 1) == '-') {
+							break;
+						} else if ($arg == 'unit' && count($params) == 0) {
+							continue;
+						} else {
+							$params[] = $arg;
+						}
 					}
 				}
+			}
+
+			if ($params === NULL) {
+				$params = array();
 			}
 
 			// Issues:
@@ -37,7 +41,7 @@
 
 			if (is_file($new_script)) {
 
-				script_run($new_script, array('additional' => $additional));
+				script_run($new_script, array('params' => $params));
 
 			} else {
 
