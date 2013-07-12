@@ -21,7 +21,7 @@
 			protected $current_url = NULL;
 			protected $no_records_html = 'No records found';
 			protected $data_inherit_heading_class = true;
-			protected $footer_inherit_heading_class = false;
+			protected $footer_inherit_heading_class = true;
 			protected $charset_input = NULL;
 			protected $charset_output = NULL;
 
