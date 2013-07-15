@@ -254,25 +254,27 @@
 					$b_field_info = $b[$table]['fields'][$a_field_name];
 
 					foreach ($a_field_info as $a_info_name => $a_info_value) {
-						if (!array_key_exists($a_info_name, $b_field_info)) {
 
+						if ($a_info_name == 'index_comment') {
+							continue; // Ignore
+						}
+
+						if (!array_key_exists($a_info_name, $b_field_info)) {
 							$details[$table][] = 'Field: Unknown "' . $a_field_name . '.' . $a_info_name . '" propertly in current database.';
 							continue;
-
-						} else {
-
-							$b_info_value = $b_field_info[$a_info_name];
-							if (is_array($a_info_value) && is_array($b_info_value)) { // Enum options
-								$a_info_value = '\'' . implode('\', \'', $a_info_value) . '\'';
-								$b_info_value = '\'' . implode('\', \'', $b_info_value) . '\'';
-							}
-
-							if ($a_info_value != $b_info_value) {
-								$details[$table][] = 'Field: Changed "' . $a_field_name . '.' . $a_info_name . '" propertly ("' . $a_info_value . '" != "' . $b_info_value . '").';
-								continue;
-							}
-
 						}
+
+						$b_info_value = $b_field_info[$a_info_name];
+						if (is_array($a_info_value) && is_array($b_info_value)) { // Enum options
+							$a_info_value = '\'' . implode('\', \'', $a_info_value) . '\'';
+							$b_info_value = '\'' . implode('\', \'', $b_info_value) . '\'';
+						}
+
+						if ($a_info_value != $b_info_value) {
+							$details[$table][] = 'Field: Changed "' . $a_field_name . '.' . $a_info_name . '" propertly ("' . $a_info_value . '" != "' . $b_info_value . '").';
+							continue;
+						}
+
 					}
 
 				}
@@ -325,17 +327,21 @@
 								$b_key_field_info = $b[$table]['keys'][$a_key_name][$a_key_field_seq];
 
 								foreach ($a_key_field_info as $a_name => $a_value) {
-									if (!array_key_exists($a_name, $b_key_field_info)) {
 
+									if ($a_info_name == 'cardinality') {
+										continue; // Ignore
+									}
+
+									if (!array_key_exists($a_name, $b_key_field_info)) {
 										$details[$table][] = 'Key: Unknown "' . $a_key_name . '.' . $a_key_field_seq . '.' . strtolower($a_name) . '" property in current database.';
 										continue;
+									}
 
-									} else if ($b_key_field_info[$a_name] != $a_value && $a_name != 'cardinality') {
-
+									if ($b_key_field_info[$a_name] != $a_value) {
 										$details[$table][] = 'Key: Changed "' . $a_key_name . '.' . $a_key_field_seq . '.' . strtolower($a_name) . '" property ("' . $b_key_field_info[$a_name] . '" != "' . $a_value . '").';
 										continue;
-
 									}
+
 								}
 
 							}
