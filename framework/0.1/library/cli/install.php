@@ -255,10 +255,6 @@
 
 					foreach ($a_field_info as $a_info_name => $a_info_value) {
 
-						if ($a_info_name == 'index_comment') {
-							continue; // Ignore
-						}
-
 						if (!array_key_exists($a_info_name, $b_field_info)) {
 							$details[$table][] = 'Field: Unknown "' . $a_field_name . '.' . $a_info_name . '" propertly in current database.';
 							continue;
@@ -328,7 +324,7 @@
 
 								foreach ($a_key_field_info as $a_name => $a_value) {
 
-									if ($a_name == 'cardinality') {
+									if ($a_name == 'cardinality' || $a_name == 'index_comment') {
 										continue; // Ignore
 									}
 
