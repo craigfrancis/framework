@@ -189,7 +189,7 @@
 
 			$setup_path = APP_ROOT . '/library/setup/database.txt';
 
-			if (is_file($setup_path)) {
+			if (config::get('db.host') !== NULL && is_file($setup_path)) {
 
 				$stored_db = json_decode(file_get_contents($setup_path), true); // Assoc array
 
@@ -328,7 +328,7 @@
 
 								foreach ($a_key_field_info as $a_name => $a_value) {
 
-									if ($a_info_name == 'cardinality') {
+									if ($a_name == 'cardinality') {
 										continue; // Ignore
 									}
 
