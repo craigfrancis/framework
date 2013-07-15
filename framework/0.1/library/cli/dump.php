@@ -35,9 +35,7 @@
 
 		$tables = array();
 
-		$sql = 'SHOW TABLES';
-
-		foreach ($db->fetch_all($sql) as $row) {
+		foreach ($db->fetch_all('SHOW TABLES') as $row) {
 
 			//--------------------------------------------------
 			// Table
@@ -54,17 +52,7 @@
 			//--------------------------------------------------
 			// Fields
 
-				foreach ($db->fetch_fields($table_sql) as $field_name => $field_info) {
-
-					$field_info['flags'] = implode(' ', $field_info['flags']); // MySQL uses space sepatation
-
-					if ($field_info['type'] == 'enum' || $field_info['type'] == 'set') {
-						$field_info['values'] = '(\'' . implode('\', \'', $db->enum_values($table_sql, $field_name)) . '\')';
-					}
-
-					$tables[$table]['fields'][$field_name] = $field_info;
-
-				}
+				$tables[$table]['fields'] = $db->fetch_fields($table_sql);
 
 			//--------------------------------------------------
 			// Indexes

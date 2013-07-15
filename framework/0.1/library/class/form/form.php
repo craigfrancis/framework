@@ -351,17 +351,7 @@
 				//--------------------------------------------------
 				// Field details
 
-					$this->db_fields = array();
-
-					foreach ($db->fetch_fields($this->db_table_name_sql) as $field_name => $field_info) {
-
-						$this->db_fields[$field_name] = array(
-								'length' => $field_info['max_length'],
-								'type' => $field_info['type'],
-								'null' => (!$field_info['not_null']),
-							);
-
-					}
+					$this->db_fields = $db->fetch_fields($this->db_table_name_sql);
 
 			}
 
@@ -373,12 +363,17 @@
 				return $this->db_table_alias_sql;
 			}
 
-			public function db_field_get($field) {
-				if (isset($this->db_fields[$field])) {
-					return $this->db_fields[$field];
+			public function db_field_get($field, $key = NULL) {
+				if ($key) {
+					if (isset($this->db_fields[$field][$key])) {
+						return $this->db_fields[$field][$key];
+					}
 				} else {
-					return false;
+					if (isset($this->db_fields[$field])) {
+						return $this->db_fields[$field];
+					}
 				}
+				return NULL;
 			}
 
 			public function db_fields_get() {
@@ -387,15 +382,9 @@
 
 			public function db_field_options_get($field) {
 				if (isset($this->db_fields[$field]) && ($this->db_fields[$field]['type'] == 'enum' || $this->db_fields[$field]['type'] == 'set')) {
-
-					$db = $this->db_get();
-
-					return $db->enum_values($this->db_table_name_sql, $field);
-
+					return $this->db_fields[$field]['options'];
 				} else {
-
 					return NULL;
-
 				}
 			}
 

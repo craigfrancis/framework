@@ -5,7 +5,8 @@
 		private $result;
 		private $connection;
 		private $link;
-		private $enum_cache;
+		private $structure_table_cache;
+		private $structure_field_cache;
 
 		public function __construct($connection = 'default') {
 			$this->connection = $connection;
@@ -96,75 +97,102 @@
 			}
 		}
 
-		public function fetch_fields($table_sql, $fields = NULL) {
+		public function fetch_fields($table_sql, $field = NULL) {
 
-			if ($fields === NULL) {
-				$fields_sql = '*';
+			if ($field) {
+				if (isset($this->structure_table_cache[$table_sql][$field])) {
+					return $this->structure_table_cache[$table_sql][$field];
+				} else if (isset($this->structure_field_cache[$table_sql][$field])) {
+					return $this->structure_field_cache[$table_sql][$field];
+				}
 			} else {
-				$fields_sql = implode(', ', array_map(array($this, 'escape_field'), $fields));
+				if (isset($this->structure_table_cache[$table_sql])) {
+					return $this->structure_table_cache[$table_sql];
+				}
 			}
 
-			$rst = $this->query('SELECT ' . $fields_sql . ' FROM ' . $table_sql . ' LIMIT 0', false); // Don't return ANY data, and don't run debug (which checks for "deleted" columns).
+			$sql = 'SHOW FULL COLUMNS FROM ' . $table_sql;
 
-// Need to return Collation
-// NOTE, see "SHOW COLUMNS FROM table" ... may be more usable?
+			if ($field !== NULL) {
+				$sql .= ' LIKE "' . $this->escape_like($field) . '"';
+			}
 
 			$details = array();
-			$count = mysql_num_fields($rst);
 
-			for ($k = 0; $k < $count; $k++) {
+			foreach ($this->fetch_all($sql) as $row) {
 
-				//--------------------------------------------------
-				// Details
+				$type = $row['Type'];
 
-					$field = mysql_fetch_field($rst, $k);
-					$field = get_object_vars($field); // Array, for consitancy
+				if (($pos = strpos($type, '(')) !== false) {
+					$info = substr($type, ($pos + 1), -1);
+					$type = substr($type, 0, $pos);
+				} else {
+					$info = NULL;
+				}
 
-					$name = $field['name'];
+				$options = NULL;
 
-					unset($field['name']);
-					unset($field['table']);
+				if ($type == 'int' || $type == 'tinyint' || $type == 'smallint' || $type == 'mediumint' || $type == 'bigint' || $type == 'char' || $type == 'binary' || $type == 'varchar' || $type == 'varbinary') {
+					$length = $info;
+				} else if ($type == 'decimal') {
+					$pos = strpos($info, ',');
+					$length = substr($info, 0, $pos); // e.g. decimal(10,2) = precision 10
+				} else if ($type == 'tinytext' || $type == 'tinyblob') {
+					$length = 255;
+				} else if ($type == 'text' || $type == 'blob') {
+					$length = 65535;
+				} else if ($type == 'mediumtext' || $type == 'mediumblob') {
+					$length = 16777215;
+				} else if ($type == 'longtext' || $type == 'longblob') {
+					$length = 4294967295;
+				} else if ($type == 'date') {
+					$length = 10;
+				} else if ($type == 'datetime') {
+					$length = 19;
+				} else if ($type == 'time') {
+					$length = 8;
+				} else if ($type == 'year') {
+					$length = 4;
+				} else if ($type == 'bool') {
+					$length = 1;
+				} else if ($type == 'float' || $type == 'double' || $type == 'timestamp') {
+					$length = NULL; // Not really aplicable
+				} else if ($type == 'enum' || $type == 'set') {
+					$options = str_getcsv($info, ',', "'");
+					$length = count($options);
+				} else {
+					$this->_error('Unknown type "' . $row['Type'] . '" for field "' . $row['Field'] . '"', true);
+				}
 
-					$field['flags'] = explode(' ', mysql_field_flags($rst, $k));
-
-				//--------------------------------------------------
-				// Type override
-
-					if (in_array('enum', $field['flags'])) {
-						$field['type'] = 'enum';
-					} else if (in_array('set', $field['flags'])) {
-						$field['type'] = 'set';
-					}
-
-				//--------------------------------------------------
-				// Max length ... it returns the max length of the
-				// returned data, not the fields actual max length.
-
-					$max_length = mysql_field_len($rst, $k);
-
-					if ($max_length < 0) {
-						$this->query('SHOW COLUMNS FROM ' . $table_sql . ' LIKE "' . $this->escape($name) . '"'); // Backup when longtext returns -1 (Latin) or -3 (UFT8).
-						if ($row = $this->fetch_row()) {
-							if ($row['Type'] == 'tinytext') $max_length = 255;
-							if ($row['Type'] == 'text') $max_length = 65535;
-							if ($row['Type'] == 'longtext') $max_length = 4294967295;
-						}
-					}
-
-					if (($field['type'] == 'blob' || $field['type'] == 'string') && config::get('output.charset') == 'UTF-8') {
-						$max_length = ($max_length / 3);
-					}
-
-					$field['max_length'] = $max_length;
-
-				//--------------------------------------------------
-				// Store
-
-					$details[$name] = $field;
+				$details[$row['Field']] = array(
+						'type' => $type,
+						'length' => $length,
+						'collation' => $row['Collation'],
+						'null' => ($row['Null'] == 'YES'),
+						'default' => $row['Default'],
+						'extra' => $row['Extra'],
+						'options' => $options,
+					);
 
 			}
 
-			return $details;
+			if ($field) {
+
+				if (!isset($details[$field])) {
+					$this->_error('Cannot find field "' . $field . '" in table "' . $table_sql . '"', true);
+				}
+
+				$this->structure_field_cache[$table_sql][$field] = $details[$field];
+
+				return $details[$field];
+
+			} else {
+
+				$this->structure_table_cache[$table_sql] = $details;
+
+				return $details;
+
+			}
 
 		}
 
@@ -177,15 +205,8 @@
 		}
 
 		public function enum_values($table_sql, $field) {
-			if (!isset($this->enum_cache[$table_sql][$field])) {
-				$sql = 'SHOW COLUMNS FROM ' . $table_sql . ' LIKE "' . $this->escape($field) . '"';
-				if ($row = $this->fetch($sql)) {
-					$this->enum_cache[$table_sql][$field] = str_getcsv(preg_replace('/(enum|set)\((.*?)\)/', '\2', $row['Type']), ',', "'");
-				} else {
-					$this->_error('Could not return enum values for field "' . $field . '"');
-				}
-			}
-			return $this->enum_cache[$table_sql][$field];
+			$field_info = $this->fetch_fields($table_sql, $field);
+			return $field_info['options'];
 		}
 
 		public function insert($table_sql, $values, $on_duplicate = NULL) {
