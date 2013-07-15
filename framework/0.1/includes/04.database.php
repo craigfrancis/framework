@@ -96,7 +96,7 @@
 			}
 		}
 
-		public function fetch_fields($table, $fields = NULL) {
+		public function fetch_fields($table_sql, $fields = NULL) {
 
 			if ($fields === NULL) {
 				$fields_sql = '*';
@@ -104,7 +104,10 @@
 				$fields_sql = implode(', ', array_map(array($this, 'escape_field'), $fields));
 			}
 
-			$rst = $this->query('SELECT ' . $fields_sql . ' FROM ' . $this->escape_field($table) . ' LIMIT 0', false); // Don't return ANY data, and don't run debug (which checks for "deleted" columns).
+			$rst = $this->query('SELECT ' . $fields_sql . ' FROM ' . $table_sql . ' LIMIT 0', false); // Don't return ANY data, and don't run debug (which checks for "deleted" columns).
+
+// Need to return Collation
+// NOTE, see "SHOW COLUMNS FROM table" ... may be more usable?
 
 			$details = array();
 			$count = mysql_num_fields($rst);
@@ -115,28 +118,32 @@
 				// Details
 
 					$field = mysql_fetch_field($rst, $k);
-					$field = get_object_vars($field); // Array for consitancy
+					$field = get_object_vars($field); // Array, for consitancy
 
 					$name = $field['name'];
+
 					unset($field['name']);
 					unset($field['table']);
+
+					$field['flags'] = explode(' ', mysql_field_flags($rst, $k));
 
 				//--------------------------------------------------
 				// Type override
 
-					if (strpos(mysql_field_flags($rst, $k), 'enum') !== false) {
+					if (in_array('enum', $field['flags'])) {
 						$field['type'] = 'enum';
-					} else if (strpos(mysql_field_flags($rst, $k), 'set') !== false) {
+					} else if (in_array('set', $field['flags'])) {
 						$field['type'] = 'set';
 					}
 
 				//--------------------------------------------------
-				// Max length override
+				// Max length ... it returns the max length of the
+				// returned data, not the fields actual max length.
 
-					$max_length = mysql_field_len($rst, $k); // Done as $field['max_length'] returns 0
+					$max_length = mysql_field_len($rst, $k);
 
 					if ($max_length < 0) {
-						$this->query('SHOW COLUMNS FROM ' . $this->escape_field($table) . ' LIKE "' . $this->escape($name) . '"'); // Backup when longtext returns -1 (Latin) or -3 (UFT8).
+						$this->query('SHOW COLUMNS FROM ' . $table_sql . ' LIKE "' . $this->escape($name) . '"'); // Backup when longtext returns -1 (Latin) or -3 (UFT8).
 						if ($row = $this->fetch_row()) {
 							if ($row['Type'] == 'tinytext') $max_length = 255;
 							if ($row['Type'] == 'text') $max_length = 65535;

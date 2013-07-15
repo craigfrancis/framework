@@ -142,10 +142,15 @@
 					unset($setup_folder);
 
 					if (!$option_value || $option_value == 'dir') {
-						dump_dir();
+						file_put_contents(APP_ROOT . '/library/setup/dir.files.txt', implode("\n", dump_dir(FILE_ROOT)));
+						file_put_contents(APP_ROOT . '/library/setup/dir.private.txt', implode("\n", dump_dir(PRIVATE_ROOT)));
 					}
+
 					if (!$option_value || $option_value == 'db') {
-						dump_db();
+						if (!defined('JSON_PRETTY_PRINT')) {
+							define('JSON_PRETTY_PRINT', 0);
+						}
+						file_put_contents(APP_ROOT . '/library/setup/database.txt', json_encode(dump_db(), JSON_PRETTY_PRINT));
 					}
 
 					break;
