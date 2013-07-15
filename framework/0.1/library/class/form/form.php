@@ -353,36 +353,13 @@
 
 					$this->db_fields = array();
 
-					$rst = $db->query('SELECT * FROM ' . $this->db_table_name_sql . ' LIMIT 0', false); // Don't return ANY data, and don't run debug (can't have it asking for "deleted" columns).
+					foreach ($db->fetch_fields($this->db_table_name_sql) as $field_name => $field_info) {
 
-					for ($k = (mysql_num_fields($rst) - 1); $k >= 0; $k--) {
-
-						$mysql_field = mysql_fetch_field($rst, $k);
-
-						if (strpos(mysql_field_flags($rst, $k), 'enum') !== false) {
-							$type = 'enum';
-						} else if (strpos(mysql_field_flags($rst, $k), 'set') !== false) {
-							$type = 'set';
-						} else {
-							$type = $mysql_field->type;
-						}
-
-						$length = mysql_field_len($rst, $k); // $mysql_field->max_length returns 0
-						if ($length < 0) {
-							$db->query('SHOW COLUMNS FROM ' .  $this->db_table_name_sql . ' LIKE "' . $db->escape($mysql_field->name) . '"'); // Backup when longtext returns -1 (Latin) or -3 (UFT8).
-							if ($row = $db->fetch_row()) {
-								if ($row['Type'] == 'tinytext') $length = 255;
-								if ($row['Type'] == 'text') $length = 65535;
-								if ($row['Type'] == 'longtext') $length = 4294967295;
-							}
-						}
-						if (($type == 'blob' || $type == 'string') && config::get('output.charset') == 'UTF-8') {
-							$length = ($length / 3);
-						}
-
-						$this->db_fields[$mysql_field->name]['length'] = $length;
-						$this->db_fields[$mysql_field->name]['type'] = $type;
-						$this->db_fields[$mysql_field->name]['null'] = !($mysql_field->not_null);
+						$this->db_fields[$field_name] = array(
+								'length' => $field_info['max_length'],
+								'type' => $field_info['type'],
+								'null' => (!$field_info['not_null']),
+							);
 
 					}
 
