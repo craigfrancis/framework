@@ -59,8 +59,8 @@
 			return $this->result;
 		}
 
-		public function num_rows($result = null) {
-			if ($result === null) $result = $this->result;
+		public function num_rows($result = NULL) {
+			if ($result === NULL) $result = $this->result;
 			return mysql_num_rows($result);
 		}
 
@@ -82,18 +82,83 @@
 			return $data;
 		}
 
-		public function fetch_row($result = null) {
-			if ($result === null) $result = $this->result;
+		public function fetch_row($result = NULL) {
+			if ($result === NULL) $result = $this->result;
 			return mysql_fetch_assoc($result);
 		}
 
-		public function fetch_result($row = 0, $col = 0, $result = null) {
-			if ($result === null) $result = $this->result;
+		public function fetch_result($row = 0, $col = 0, $result = NULL) {
+			if ($result === NULL) $result = $this->result;
 			if (mysql_num_rows($result) > $row) {
 				return mysql_result($result, $row, $col);
 			} else {
 				return NULL;
 			}
+		}
+
+		public function fetch_fields($table, $fields = NULL) {
+
+			if ($fields === NULL) {
+				$fields_sql = '*';
+			} else {
+				$fields_sql = implode(', ', array_map(array($this, 'escape_field'), $fields));
+			}
+
+			$rst = $this->query('SELECT ' . $fields_sql . ' FROM ' . $this->escape_field($table) . ' LIMIT 0', false); // Don't return ANY data, and don't run debug (which checks for "deleted" columns).
+
+			$details = array();
+			$count = mysql_num_fields($rst);
+
+			for ($k = 0; $k < $count; $k++) {
+
+				//--------------------------------------------------
+				// Details
+
+					$field = mysql_fetch_field($rst, $k);
+					$field = get_object_vars($field); // Array for consitancy
+
+					$name = $field['name'];
+					unset($field['name']);
+					unset($field['table']);
+
+				//--------------------------------------------------
+				// Type override
+
+					if (strpos(mysql_field_flags($rst, $k), 'enum') !== false) {
+						$field['type'] = 'enum';
+					} else if (strpos(mysql_field_flags($rst, $k), 'set') !== false) {
+						$field['type'] = 'set';
+					}
+
+				//--------------------------------------------------
+				// Max length override
+
+					$max_length = mysql_field_len($rst, $k); // Done as $field['max_length'] returns 0
+
+					if ($max_length < 0) {
+						$this->query('SHOW COLUMNS FROM ' . $this->escape_field($table) . ' LIKE "' . $this->escape($name) . '"'); // Backup when longtext returns -1 (Latin) or -3 (UFT8).
+						if ($row = $this->fetch_row()) {
+							if ($row['Type'] == 'tinytext') $max_length = 255;
+							if ($row['Type'] == 'text') $max_length = 65535;
+							if ($row['Type'] == 'longtext') $max_length = 4294967295;
+						}
+					}
+
+					if (($field['type'] == 'blob' || $field['type'] == 'string') && config::get('output.charset') == 'UTF-8') {
+						$max_length = ($max_length / 3);
+					}
+
+					$field['max_length'] = $max_length;
+
+				//--------------------------------------------------
+				// Store
+
+					$details[$name] = $field;
+
+			}
+
+			return $details;
+
 		}
 
 		public function insert_id() {
