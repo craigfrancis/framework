@@ -30,7 +30,29 @@ Defaults can be set with the [site config](../../doc/setup/config.md) using:
 
 ---
 
-## Example usage
+## Example array usage
+
+To use the paginator to slice an array:
+
+	$paginator = new paginator();
+
+	$array = $paginator->limit_array($array);
+
+And to print
+
+	<?= $paginator->html(); ?>
+
+---
+
+## Example database usage
+
+To use the paginator to return some records in a table:
+
+
+
+---
+
+## Example function calls
 
 To get details from the paginator, you can use:
 
@@ -42,10 +64,6 @@ To get details from the paginator, you can use:
 	$page_count = $paginator->page_count_get();
 
 	$page_5_url = $paginator->page_url_get(5);
-
-And to print out the HTML:
-
-	<?= $paginator->html(); ?>
 
 ---
 

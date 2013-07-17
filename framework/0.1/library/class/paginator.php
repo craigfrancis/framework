@@ -163,9 +163,16 @@
 			}
 
 			public function limit_array($array) {
+
+				if ($this->config['item_count'] === NULL) {
+					$this->item_count_set(count($array));
+				}
+
 				$page_number = $this->page_number_get();
 				$page_size = $this->page_size_get();
+
 				return array_slice($array, intval(($page_number - 1) * $page_size), $page_size, true);
+
 			}
 
 			public function page_size_get() {
