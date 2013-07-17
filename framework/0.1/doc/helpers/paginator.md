@@ -15,7 +15,7 @@ To create a paginator object, you typically just pass in the number of items:
 
 	$paginator = new paginator(1234);
 
-Alternatively, to configure it further you can pass in an array of options:
+Alternatively, you can pass in an array of options:
 
 	$paginator = new paginator(array(
 			'item_limit' => 3,
@@ -32,7 +32,7 @@ Defaults can be set with the [site config](../../doc/setup/config.md) using:
 
 ## Example function calls
 
-To get details from the paginator, you can use:
+To get details from the paginator, you could use:
 
 	$limit_sql = $paginator->limit_get_sql();
 
@@ -90,6 +90,8 @@ Then the actual query:
 And to print:
 
 	<?= $paginator->html(); ?>
+
+This works well with the [table helper](../../doc/helpers/table.md).
 
 ---
 
