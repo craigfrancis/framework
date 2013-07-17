@@ -30,28 +30,6 @@ Defaults can be set with the [site config](../../doc/setup/config.md) using:
 
 ---
 
-## Example array usage
-
-To use the paginator to slice an array:
-
-	$paginator = new paginator();
-
-	$array = $paginator->limit_array($array);
-
-And to print
-
-	<?= $paginator->html(); ?>
-
----
-
-## Example database usage
-
-To use the paginator to return some records in a table:
-
-
-
----
-
 ## Example function calls
 
 To get details from the paginator, you can use:
@@ -67,23 +45,71 @@ To get details from the paginator, you can use:
 
 ---
 
-## Usage with SQL Found Rows
+## Example array usage
 
-Only do this if it's **actually** more efficient, many times it can be [much slower](http://stackoverflow.com/q/186588) than two separate queries (one to count the rows and one to return the records).
+To use the paginator to slice an array:
 
 	$paginator = new paginator();
 
-	$db->query('SELECT SQL_CALC_FOUND_ROWS
-					id,
-					name
-				FROM
-					' . DB_PREFIX . 'table
-				WHERE
-					deleted = "0000-00-00 00:00:00"
-				LIMIT
-					' . $paginator->limit_get_sql());
+	$array = $paginator->limit_array($array);
 
-	while ($row = $db->fetch_row()) {
+And to print:
+
+	<?= $paginator->html(); ?>
+
+---
+
+## Example database usage
+
+To use the paginator to return some records in a table:
+
+	$db->query('SELECT
+					COUNT(id)
+				FROM
+					table');
+
+	$result_count = $db->fetch_result();
+
+	$paginator = new paginator($result_count);
+
+Then the actual query:
+
+	$sql = 'SELECT
+				id,
+				name
+			FROM
+				table
+			LIMIT
+				' . $paginator->limit_get_sql();
+
+	foreach ($db->fetch_all($sql) as $row) {
+	}
+
+	$response->set('paginator', $paginator);
+
+And to print:
+
+	<?= $paginator->html(); ?>
+
+---
+
+## Usage with SQL Found Rows
+
+Only do this if it's **actually** more efficient, many times it can be [much slower](http://stackoverflow.com/q/186588) than two separate queries (see above).
+
+	$paginator = new paginator();
+
+	$sql = 'SELECT SQL_CALC_FOUND_ROWS
+				id,
+				name
+			FROM
+				' . DB_PREFIX . 'table
+			WHERE
+				deleted = "0000-00-00 00:00:00"
+			LIMIT
+				' . $paginator->limit_get_sql();
+
+	foreach ($db->fetch_all($sql) as $row) {
 	}
 
 	$db->query('SELECT FOUND_ROWS();');
