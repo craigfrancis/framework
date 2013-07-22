@@ -8,9 +8,9 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 	//--------------------------------------------------
 	// Site config
 
-		table.active_asc_suffix_html
-		table.active_desc_suffix_html
-		table.inactive_suffix_html
+		$config['table.active_asc_suffix_html']  = ' <span class="sort asc" title="Ascending">&#9650;</span>';
+		$config['table.active_desc_suffix_html'] = ' <span class="sort desc" title="Descending">&#9660;</span>';
+		$config['table.inactive_suffix_html']    = ' <span class="sort inactive" title="Sort">&#9650;</span>';
 
 	//--------------------------------------------------
 	// Example setup
