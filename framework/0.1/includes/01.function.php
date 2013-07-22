@@ -55,63 +55,6 @@
 	}
 
 //--------------------------------------------------
-// Shortcut for url object - to avoid saying 'new'
-
-	if (version_compare(PHP_VERSION, '5.2.0', '<')) {
-
-		function url() {
-			$obj = new ReflectionClass('url');
-			$url = $obj->newInstanceArgs(func_get_args());
-			return $url->get();
-		}
-
-	} else {
-
-		function url() {
-			$obj = new ReflectionClass('url');
-			return $obj->newInstanceArgs(func_get_args());
-		}
-
-		function http_url() {
-			$obj = new ReflectionClass('url');
-			$url = $obj->newInstanceArgs(func_get_args());
-			$url->scheme_set('http');
-			return $url;
-		}
-
-		function https_url() {
-			$obj = new ReflectionClass('url');
-			$url = $obj->newInstanceArgs(func_get_args());
-			$url->scheme_set('https');
-			return $url;
-		}
-
-	}
-
-//--------------------------------------------------
-// Shortcut for gateway url's
-
-	function gateway_url($api_name, $parameters = NULL) {
-
-		$api_path = config::get('gateway.url') . '/' . urlencode($api_name) . '/';
-
-		if (is_array($parameters)) {
-
-			return url($api_path, $parameters);
-
-		} else {
-
-			if (is_string($parameters)) {
-				$api_path .= urlencode($parameters) . (strpos($parameters, '.') === false ? '/' : ''); // Don't add trailing slash if it looks like a filename (ref 'framework-file')
-			}
-
-			return url($api_path);
-
-		}
-
-	}
-
-//--------------------------------------------------
 // Quick functions used to convert text into a safe
 // form of HTML/XML/CSV without having to write the
 // full native function in the script.
@@ -535,6 +478,70 @@
 			extract(func_get_arg(1));
 		}
 		require_once(func_get_arg(0));
+	}
+
+//--------------------------------------------------
+// Shortcut for url object - to avoid saying 'new'
+
+	if (version_compare(PHP_VERSION, '5.2.0', '<')) {
+
+		function url() {
+			$obj = new ReflectionClass('url');
+			$url = $obj->newInstanceArgs(func_get_args());
+			return $url->get();
+		}
+
+	} else {
+
+		function url() {
+			$obj = new ReflectionClass('url');
+			return $obj->newInstanceArgs(func_get_args());
+		}
+
+		function http_url() {
+			$obj = new ReflectionClass('url');
+			$url = $obj->newInstanceArgs(func_get_args());
+			$url->scheme_set('http');
+			return $url;
+		}
+
+		function https_url() {
+			$obj = new ReflectionClass('url');
+			$url = $obj->newInstanceArgs(func_get_args());
+			$url->scheme_set('https');
+			return $url;
+		}
+
+	}
+
+//--------------------------------------------------
+// Data URI
+
+	function data_uri($mime, $content) {
+		return 'data:' . $mime . ';base64,' . base64_encode($content);
+	}
+
+//--------------------------------------------------
+// Shortcut for gateway url's
+
+	function gateway_url($api_name, $parameters = NULL) {
+
+		$api_path = config::get('gateway.url') . '/' . urlencode($api_name) . '/';
+
+		if (is_array($parameters)) {
+
+			return url($api_path, $parameters);
+
+		} else {
+
+			if (is_string($parameters)) {
+				$api_path .= urlencode($parameters) . (strpos($parameters, '.') === false ? '/' : ''); // Don't add trailing slash if it looks like a filename (ref 'framework-file')
+			}
+
+			return url($api_path);
+
+		}
+
 	}
 
 //--------------------------------------------------
