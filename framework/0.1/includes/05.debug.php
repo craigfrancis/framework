@@ -495,7 +495,7 @@
 		//--------------------------------------------------
 		// Show configuration
 
-			if (config::get('debug.level') >= 3) {
+			if (config::get('debug.level') >= 3 && !defined('CLI_MODE')) { // In CLI mode, use the "-c" option
 				debug_note_html(debug_config_html(), 'C');
 				debug_note_html(debug_constants_html(), 'C');
 			}

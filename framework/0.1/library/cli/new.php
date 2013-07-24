@@ -1,53 +1,87 @@
 <?php
 
-	function new_item($type) {
+//--------------------------------------------------
+// New item
+
+	function new_item($params) {
 
 		//--------------------------------------------------
-		// Additional arguments (non standard)
+		// Split params
 
-			$params = NULL;
+			$params = explode(',', $params);
 
-			if (isset($_SERVER['argv'])) {
-				foreach ($_SERVER['argv'] as $arg) {
-					if ($params === NULL) {
-						if (substr($arg, 0, 2) == '-n' || substr($arg, 0, 5) == '--new') {
-							$params = array();
-						}
-					} else {
-						if (substr($arg, 0, 1) == '-') {
-							break;
-						} else if ($arg == 'unit' && count($params) == 0) {
-							continue;
-						} else {
-							$params[] = $arg;
-						}
-					}
+		//--------------------------------------------------
+		// Type
+
+			echo "\n";
+
+			$type_paths = array();
+
+			foreach (glob(FRAMEWORK_ROOT . '/library/cli/new/*.php') as $type_path) {
+				$type_name = substr($type_path, (strrpos($type_path, '/') + 1), -4);
+				if ($type_name) {
+					$type_paths[$type_name] = $type_path;
 				}
 			}
 
-			if ($params === NULL) {
-				$params = array();
+			$type = array_shift($params);
+
+			if (!$type) {
+				$type = new_selection('Type', array_keys($type_paths));
 			}
 
-			// Issues:
-			// - Not really standard behaviour
-			// - Only gets additional arguments for first "new" option
-			// - Assumes all options start with a "-"
+			if (isset($type_paths[$type])) {
+				$new_script = $type_paths[$type];
+			} else {
+				echo 'Invalid type "' . $type . '"' . "\n\n";
+				return;
+			}
 
 		//--------------------------------------------------
 		// Run
 
-			$new_script = FRAMEWORK_ROOT . '/library/cli/new/' . safe_file_name($type) . '.php';
+			script_run($new_script, array('params' => $params));
 
-			if (is_file($new_script)) {
+	}
 
-				script_run($new_script, array('params' => $params));
+//--------------------------------------------------
+// Get selection from user
 
-			} else {
+	function new_selection($name, $options) {
 
-				echo 'Unknown item type "' . $type . '"' . "\n";
+		$count = count($options);
 
+		if ($count == 0) {
+
+			exit_with_error('No options available');
+
+		} else if ($count == 1) {
+
+			return reset($options);
+
+		}
+
+		for ($k = 0; $k < 10; $k++) {
+
+			echo ucfirst($name) . 's: ' . "\n";
+
+			foreach ($options as $id => $option) {
+				echo ' ' . ($id + 1) . ') ' . $option . "\n";
 			}
+
+			echo "\n" . 'Select ' . strtolower($name) . ': ';
+			$option = trim(fgets(STDIN));
+			echo "\n";
+
+			if (isset($options[($option - 1)])) {
+				return $options[($option - 1)];
+			} else if (in_array($option, $options)) {
+				return $option;
+			}
+
+		}
+
+		exit_with_error('Too many attempts, giving up.');
 
 	}
 

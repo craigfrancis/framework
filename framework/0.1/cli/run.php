@@ -11,10 +11,6 @@
 	define('FRAMEWORK_INIT_ONLY', true);
 
 	require_once(CLI_ROOT . '/../bootstrap.php');
-	require_once(FRAMEWORK_ROOT . '/library/cli/install.php');
-	require_once(FRAMEWORK_ROOT . '/library/cli/new.php');
-	require_once(FRAMEWORK_ROOT . '/library/cli/permission.php');
-	require_once(FRAMEWORK_ROOT . '/library/cli/dump.php');
 
 //--------------------------------------------------
 // Mime type
@@ -45,13 +41,14 @@
 			'c::' => 'config::', // Optional value
 			'g:' => 'gateway:', // Requires value
 			'm' => 'maintenance',
-			'n:' => 'new:', // Requires value
 			'i' => 'install',
 			'p' => 'permissions',
 		);
 
 	$extra_parameters = array(
+			'new::',
 			'dump::',
+			'diff::',
 		);
 
 	if (version_compare(PHP_VERSION, '5.3.0', '<')) {
@@ -105,6 +102,11 @@
 					print_help();
 					break;
 
+				case 'd':
+				case 'debug':
+
+					break; // Don't show help
+
 				case 'c':
 				case 'config':
 
@@ -121,40 +123,6 @@
 
 					break;
 
-				case 'p':
-				case 'permissions':
-
-					permission_reset();
-					break;
-
-				case 'i':
-				case 'install':
-
-					install_run();
-					break;
-
-				case 'dump':
-
-					$setup_folder = APP_ROOT . '/library/setup';
-					if (!is_dir($setup_folder)) {
-						mkdir($setup_folder);
-					}
-					unset($setup_folder);
-
-					if (!$option_value || $option_value == 'dir') {
-						file_put_contents(APP_ROOT . '/library/setup/dir.files.txt', implode("\n", dump_dir(FILE_ROOT)));
-						file_put_contents(APP_ROOT . '/library/setup/dir.private.txt', implode("\n", dump_dir(PRIVATE_ROOT)));
-					}
-
-					if (!$option_value || $option_value == 'db') {
-						if (!defined('JSON_PRETTY_PRINT')) {
-							define('JSON_PRETTY_PRINT', 0);
-						}
-						file_put_contents(APP_ROOT . '/library/setup/database.txt', json_encode(dump_db(), JSON_PRETTY_PRINT));
-					}
-
-					break;
-
 				case 'g':
 				case 'gateway':
 
@@ -167,12 +135,6 @@
 						exit('Invalid gateway "' . $option_value . '"' . "\n");
 					}
 
-					break;
-
-				case 'n':
-				case 'new':
-
-					new_item($option_value);
 					break;
 
 				case 'm':
@@ -208,10 +170,44 @@
 
 					break;
 
-				case 'd':
-				case 'debug':
+				case 'i':
+				case 'install':
 
-					break; // Don't show help
+					require_once(FRAMEWORK_ROOT . '/library/cli/install.php');
+					require_once(FRAMEWORK_ROOT . '/library/cli/permission.php');
+
+					install_run();
+					break;
+
+				case 'p':
+				case 'permissions':
+
+					require_once(FRAMEWORK_ROOT . '/library/cli/permission.php');
+
+					permission_reset();
+					break;
+
+				case 'new':
+
+					require_once(FRAMEWORK_ROOT . '/library/cli/new.php');
+
+					new_item($option_value);
+					break;
+
+				case 'dump':
+
+					require_once(FRAMEWORK_ROOT . '/library/cli/dump.php');
+
+					dump_run($option_value);
+					break;
+
+				case 'diff':
+
+					require_once(FRAMEWORK_ROOT . '/library/cli/diff.php');
+					require_once(FRAMEWORK_ROOT . '/library/cli/dump.php');
+
+					diff_run($option_value);
+					break;
 
 				default:
 

@@ -14,13 +14,14 @@
  -m
  --maintenance     Run the maintenance scripts.
 
- -n=type
- --new=type        Add new thing (e.g. unit).
-
  -i
  --install         Run install.
 
  -p
  --permissions     Correct file and folder permissions.
 
- --dump[=name]     Save the dir/db structure to the setup folder.
+ --new[=params]    Add new thing (e.g. unit).
+
+ --dump[=mode]     Save 'dir' and/or 'db' structure to the setup folder.
+
+ --diff[=mode]     Compare 'dir' and/or 'db' to the current site.

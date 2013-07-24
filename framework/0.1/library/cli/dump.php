@@ -1,7 +1,32 @@
 <?php
 
 //--------------------------------------------------
-// Directories
+// Dump
+
+	function dump_run($mode = NULL) {
+
+		$setup_folder = APP_ROOT . '/library/setup';
+		if (!is_dir($setup_folder)) {
+			mkdir($setup_folder);
+		}
+		unset($setup_folder);
+
+		if (!$mode || $mode == 'dir') {
+			file_put_contents(APP_ROOT . '/library/setup/dir.files.txt', implode("\n", dump_dir(FILE_ROOT)));
+			file_put_contents(APP_ROOT . '/library/setup/dir.private.txt', implode("\n", dump_dir(PRIVATE_ROOT)));
+		}
+
+		if (!$mode || $mode == 'db') {
+			if (!defined('JSON_PRETTY_PRINT')) {
+				define('JSON_PRETTY_PRINT', 0);
+			}
+			file_put_contents(APP_ROOT . '/library/setup/database.txt', json_encode(dump_db(), JSON_PRETTY_PRINT));
+		}
+
+	}
+
+//--------------------------------------------------
+// Dump directories
 
 	function dump_dir($folder_path) {
 
@@ -27,7 +52,7 @@
 	}
 
 //--------------------------------------------------
-// Database
+// Dump database
 
 	function dump_db() {
 
