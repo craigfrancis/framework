@@ -151,7 +151,7 @@
 
 								foreach ($a_key_field_info as $a_name => $a_value) {
 
-									if ($a_name == 'cardinality' || $a_name == 'index_comment') {
+									if ($a_name == 'index_comment') {
 										continue; // Ignore
 									}
 
