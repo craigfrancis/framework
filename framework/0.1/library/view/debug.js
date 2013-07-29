@@ -57,7 +57,7 @@
 			debug_links = document.createElement('p');
 			debug_links.id = 'debug_links';
 
-			wrapper.id = 'debug_wrapper';
+			wrapper.id = 'debug_output';
 
 			for (k in debug_types) {
 				if (debug_types[k].notes.length > 0) {
@@ -71,8 +71,8 @@
 					// Notes
 
 						notes = document.createElement('div');
-						notes.className = 'debug_output';
-						notes.id = 'debug_output_' + ref;
+						notes.className = 'debug_notes';
+						notes.id = 'debug_notes_' + ref;
 						notes.style.display = 'none';
 
 						for (j in debug_types[k].notes) {
@@ -116,7 +116,7 @@
 						link.appendChild(document.createTextNode('[' + k + ']'));
 						link.className = 'debug_link';
 						link.title = debug_types[k].name;
-						link.href = '#debug_output_' + ref;
+						link.href = '#debug_notes_' + ref;
 						link.debugOutput = notes;
 						link.onclick = debug_open_link;
 
