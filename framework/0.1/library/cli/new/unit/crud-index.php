@@ -146,7 +146,6 @@
 /* Example
 
 	$unit = unit_add('[CLASS_NAME]', array(
-			'id' => request('id'),
 			'add_url' => url('/admin/item/edit/'),
 			'edit_url' => url('/admin/item/edit/'),
 			'delete_url' => url('/admin/item/delete/'),

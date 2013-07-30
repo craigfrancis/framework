@@ -36,11 +36,11 @@
 			protected $sort_default_order = NULL;
 			protected $sort_fields = array();
 			protected $sort_active_asc_prefix_html = '';
-			protected $sort_active_asc_suffix_html = '';
+			protected $sort_active_asc_suffix_html = ' <span class="sort asc" title="Ascending">&#9650;</span>';
 			protected $sort_active_desc_prefix_html = '';
-			protected $sort_active_desc_suffix_html = '';
+			protected $sort_active_desc_suffix_html = ' <span class="sort desc" title="Descending">&#9660;</span>';
 			protected $sort_inactive_prefix_html = '';
-			protected $sort_inactive_suffix_html = '';
+			protected $sort_inactive_suffix_html = ' <span class="sort inactive" title="Sort">&#9650;</span>';
 
 		//--------------------------------------------------
 		// Setup

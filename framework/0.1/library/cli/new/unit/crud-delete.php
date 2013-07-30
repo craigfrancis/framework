@@ -65,7 +65,7 @@
 										'deleted' => date('Y-m-d H:i:s'),
 									);
 
-								$db->update($table_sql, $values, $where_sql)
+								$db->update($table_sql, $values, $where_sql);
 
 							//--------------------------------------------------
 							// Thank you message
