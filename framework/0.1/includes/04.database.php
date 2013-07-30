@@ -257,7 +257,7 @@
 
 		}
 
-		public function select($table_sql, $fields, $where_sql, $limit = NULL) {
+		public function select($table_sql, $fields, $where_sql, $options = array()) { // Table first, like all other methods
 
 			if ($fields === 1) {
 				$fields_sql = '1';
@@ -269,9 +269,21 @@
 				$fields_sql = implode(', ', array_map(array($this, 'escape_field'), $fields));
 			}
 
-			$limit_sql = ($limit === NULL ? '' : ' LIMIT ' . intval($limit));
+			if (is_array($where_sql)) {
+				if (count($where_sql) > 0) {
+					$where_sql = '(' . implode(') AND (', $where_sql) . ')';
+				} else {
+					$where_sql = 'true';
+				}
+			}
 
-			return $this->query('SELECT ' . $fields_sql . ' FROM ' . $table_sql . ' WHERE ' . $where_sql . $limit_sql);
+			$sql = 'SELECT ' . $fields_sql . ' FROM ' . $table_sql . ' WHERE ' . $where_sql;
+
+			if (isset($options['group_sql'])) $sql .= ' GROUP BY ' . $options['group_sql'];
+			if (isset($options['order_sql'])) $sql .= ' ORDER BY ' . $options['order_sql'];
+			if (isset($options['limit_sql'])) $sql .= ' LIMIT '    . $options['limit_sql'];
+
+			return $this->query($sql);
 
 		}
 

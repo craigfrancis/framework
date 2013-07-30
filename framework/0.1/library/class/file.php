@@ -103,7 +103,7 @@
 					$divide = (floor($id / $division_int) * $division_int);
 					$divide = str_pad(intval($divide), ($division_len + 2), '0', STR_PAD_LEFT);
 
-					$folder = $this->config['file_root'] . '/files/' . $folder . '/' . $divide;
+					$folder = $this->folder_path_get() . '/' . $divide;
 
 					if (!is_dir($folder)) {
 						@mkdir($folder, 0777, true);
@@ -115,15 +115,6 @@
 					}
 
 					$path = $folder . '/' . str_pad($id, $division_len, '0', STR_PAD_LEFT);
-
-					if (!is_dir($path)) {
-						@mkdir($path, 0777, true);
-						if (!is_dir($path)) {
-							exit_with_error('Cannot create sub folder ' . $path);
-						} else {
-							@chmod($path, 0777);
-						}
-					}
 
 					if ($ext !== NULL) {
 						$path .= '.' . safe_file_name($ext);
