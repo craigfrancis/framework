@@ -332,7 +332,7 @@
 						id = "' . $db->escape($this->order_id) . '" AND
 						deleted = "0000-00-00 00:00:00"';
 
-					$db->select($this->db_table_main, $fields, $where_sql, 1);
+					$db->select($this->db_table_main, $fields, $where_sql);
 
 					if ($row = $db->fetch_row()) {
 						return $row;

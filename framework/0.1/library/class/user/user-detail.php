@@ -60,7 +60,7 @@
 
 			$db = $this->user_obj->db_get();
 
-			$db->select($this->user_obj->db_table_main, $fields, $this->db_where_get_sql($user_id), 1);
+			$db->select($this->user_obj->db_table_main, $fields, $this->db_where_get_sql($user_id));
 
 			if ($row = $db->fetch_row()) {
 				return $row;
