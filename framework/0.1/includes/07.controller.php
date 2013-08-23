@@ -306,10 +306,6 @@
 
 		}
 
-		if (extension_loaded('newrelic')) {
-			newrelic_name_transaction(config::get('request.path'));
-		}
-
 		config::set('output.folders', $action_route_stack_used);
 
 		$controllers[$action_controller_id]->before();
