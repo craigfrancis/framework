@@ -478,22 +478,9 @@
 					return false;
 				}
 
-if (config::get('request.ip') == '92.27.98.57') {
-	debug($this->saved_values_used);
-}
-
 				if ($this->saved_values_used === NULL) {
 
 					$this->saved_values_used = false;
-
-if (config::get('request.ip') == '92.27.98.57') {
-	debug(session::get('save_request_url'));
-	debug(config::get('request.uri'));
-	debug(config::get('request.method'));
-	debug(session::get('save_request_data'));
-	debug($this->form_id);
-	debug($this->form_method);
-}
 
 					if (session::open() && session::get('save_request_url') == config::get('request.uri') && config::get('request.method') == 'GET' && $this->form_method == 'POST') {
 

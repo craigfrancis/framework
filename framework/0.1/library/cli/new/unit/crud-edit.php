@@ -96,7 +96,7 @@
 
 						}
 
-				} else {
+				} else if (!$form->saved_values_available()) {
 
 					//--------------------------------------------------
 					// Defaults
