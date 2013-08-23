@@ -478,6 +478,10 @@
 					return false;
 				}
 
+if (config::get('request.ip') == '92.27.98.57') {
+	debug($this->saved_values_used);
+}
+
 				if ($this->saved_values_used === NULL) {
 
 					$this->saved_values_used = false;
