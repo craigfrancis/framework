@@ -15,6 +15,10 @@
 
 		$route_path = str_replace('//', '/', $route_path);
 
+		if (extension_loaded('newrelic')) {
+			newrelic_name_transaction($route_path);
+		}
+
 		unset($url_prefix);
 
 	//--------------------------------------------------

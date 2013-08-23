@@ -306,10 +306,6 @@
 
 		}
 
-		if (extension_loaded('newrelic')) {
-			newrelic_name_transaction(str_replace(CONTROLLER_ROOT, '', $action_controller_path) . '->' . $action_method . '()');
-		}
-
 		config::set('output.folders', $action_route_stack_used);
 
 		$controllers[$action_controller_id]->before();
@@ -322,10 +318,6 @@
 
 		if (config::get('debug.level') >= 3) {
 			debug_note_html('<strong>Action</strong>: Missing', 'H');
-		}
-
-		if (extension_loaded('newrelic')) {
-			newrelic_name_transaction(str_replace(VIEW_ROOT, '', view_path($route_folders)));
 		}
 
 		config::set('output.folders', $route_folders);
