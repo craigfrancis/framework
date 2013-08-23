@@ -183,6 +183,8 @@
 				//--------------------------------------------------
 				// Selected link
 
+					$this->selected_link_found = false; // Reset, incase this function is called twice
+
 					$selected_id = $this->selected_id;
 
 					if ($selected_id === NULL && $this->automatically_select_link) {
