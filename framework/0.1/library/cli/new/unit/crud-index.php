@@ -83,13 +83,18 @@
 
 						}
 
+				//--------------------------------------------------
+				// From
+
+					$from_sql = DB_PREFIX . 'item AS i';
+
 			//--------------------------------------------------
 			// Setup the paginator
 
 				$db->query('SELECT
 								COUNT(1)
 							FROM
-								' . DB_PREFIX . 'item AS i
+								' . $from_sql . '
 							WHERE
 								' . $where_sql);
 
@@ -104,7 +109,7 @@
 								i.id,
 								i.name
 							FROM
-								' . DB_PREFIX . 'item AS i
+								' . $from_sql . '
 							WHERE
 								' . $where_sql . '
 							ORDER BY
