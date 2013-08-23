@@ -491,7 +491,6 @@ if (config::get('request.ip') == '92.27.98.57') {
 	debug(config::get('request.uri'));
 	debug(config::get('request.method'));
 	debug(session::get('save_request_data'));
-	debug($data['act']);
 	debug($this->form_id);
 	debug($this->form_method);
 }
