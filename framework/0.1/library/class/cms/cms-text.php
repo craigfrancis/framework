@@ -266,6 +266,12 @@
 
 			}
 
+			static function cache_clear($path = NULL) {
+				foreach (cms_text::cache_files($path) as $cache_path) {
+					unlink($cache_path);
+				}
+			}
+
 		//--------------------------------------------------
 		// Return content
 

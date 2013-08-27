@@ -237,9 +237,7 @@
 							// Clear cache
 
 								if ($clear_cache) {
-									foreach (cms_text::cache_files($config['global'] == 'true' ? NULL : $config['path']) as $cache_path) {
-										unlink($cache_path);
-									}
+									cms_text::cache_clear($config['global'] == 'true' ? NULL : $config['path']);
 								}
 
 							//--------------------------------------------------

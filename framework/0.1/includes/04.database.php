@@ -74,10 +74,14 @@
 
 		public function fetch_all($sql = NULL) {
 			$data = array();
-			if ($sql !== NULL) {
-				$this->query($sql);
+			if (is_string($sql)) {
+				$result = $this->query($sql);
+			} else if ($sql !== NULL) {
+				$result = $sql;
+			} else {
+				$result = $this->result;
 			}
-			while ($row = mysql_fetch_assoc($this->result)) {
+			while ($row = mysql_fetch_assoc($result)) {
 				$data[] = $row;
 			}
 			return $data;
