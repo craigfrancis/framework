@@ -98,9 +98,20 @@ Priority examples:
 
 ---
 
-Also explain about `cms_tags/cms_markdown`.
+Helper methods
+
+	cms_text::cache_files();
+	cms_text::cache_clear();
+
+This will return/clear all cache files, or you can pass in a path for a particular page.
+
+---
+
+Explain about `cms_tags/cms_markdown`.
 
 http://www.w3.org/International/articles/composite-messages/Overview
 
 http://www.localeapp.com/
+
+And the cms_text controller for the admin.
 
