@@ -6,6 +6,36 @@
 		// URL to ID conversion functions
 
 			public static function page_url_get($id) {
+
+				// $k = 0;
+				// $pageUrl = '/';
+
+				// do {
+
+				// 	$db->query('SELECT
+				// 					parent_id,
+				// 					url
+				// 				FROM
+				// 					' . DB_T_PREFIX . 'page
+				// 				WHERE
+				// 					id = "' . $db->escape($pageId) . '" AND
+				// 					deleted = "0000-00-00 00:00:00"');
+
+				// 	if ($row = $db->fetchAssoc()) {
+				// 		$pageId = $row['parent_id'];
+				// 		$pageUrl = '/' . $row['url'] . $pageUrl;
+				// 	} else {
+				// 		return NULL;
+				// 	}
+
+				// } while ($pageId > 0 && $k++ < 10);
+
+				// if ($pageUrl == '/home/') {
+				// 	return '/';
+				// } else {
+				// 	return $pageUrl;
+				// }
+
 			}
 
 			public static function page_id_get($url) {
