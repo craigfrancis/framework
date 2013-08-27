@@ -18,21 +18,9 @@
 			//--------------------------------------------------
 			// Search form
 
-				$search_form = new form();
-				$search_form->form_passive_set(true, 'GET');
-				$search_form->form_class_set('search_form');
-				$search_form->form_button_set('Search');
+				$search_form = unit_get('search_form');
 
-				$search_field = new form_field_text($search_form, 'Search');
-				$search_field->max_length_set('The search cannot be longer than XXX characters.', 200);
-
-				if ($search_form->valid()) {
-					$search = $search_field->value_get();
-				} else {
-					$search = '';
-				}
-
-				$this->set('search', $search_form);
+				$this->set('search_form', $search_form);
 
 			//--------------------------------------------------
 			// Setup the table
@@ -61,25 +49,17 @@
 					//--------------------------------------------------
 					// Keywords
 
-						foreach (preg_split('/\W+/', trim($search)) as $word) {
-							if ($word != '') {
+						$search = $search_form->value_get();
+						if ($search != '') {
 
-								$where_sql[] = '
-									i.name LIKE "%' . $db->escape_like($word) . '%"';
+							foreach (preg_split('/\W+/', trim($search)) as $word) {
+								if ($word != '') {
 
+									$where_sql[] = '
+										i.name LIKE "%' . $db->escape_like($word) . '%"';
+
+								}
 							}
-						}
-
-					//--------------------------------------------------
-					// Join
-
-						if (count($where_sql) > 0) {
-
-							$where_sql = '(' . implode(') AND (', $where_sql) . ')';
-
-						} else {
-
-							$where_sql = 'true';
 
 						}
 
@@ -91,12 +71,7 @@
 			//--------------------------------------------------
 			// Setup the paginator
 
-				$db->query('SELECT
-								COUNT(1)
-							FROM
-								' . $from_sql . '
-							WHERE
-								' . $where_sql);
+				$db->select($from_sql, 'count', $where_sql);
 
 				$result_count = $db->fetch_result();
 
@@ -105,19 +80,12 @@
 			//--------------------------------------------------
 			// Query
 
-				$db->query('SELECT
-								i.id,
-								i.name
-							FROM
-								' . $from_sql . '
-							WHERE
-								' . $where_sql . '
-							ORDER BY
-								' . $table->sort_get_sql() . '
-							LIMIT
-								' . $paginator->limit_get_sql());
+				$fields = array('i.id', 'i.name');
 
-				while ($row = $db->fetch_row()) {
+				$db->select($from_sql, $fields, $where_sql, array('order_sql' => $table->sort_get_sql(), 'limit_sql' => $paginator->limit_get_sql()));
+
+				foreach ($db->fetch_all() as $row) {
+
 
 					//--------------------------------------------------
 					// Details
