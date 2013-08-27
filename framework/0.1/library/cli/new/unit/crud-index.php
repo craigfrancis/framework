@@ -138,10 +138,10 @@
 			//--------------------------------------------------
 			// Variables
 
-				$this->set('add_url', $config['add_url']);
-
 				$this->set('table', $table);
 				$this->set('paginator', $paginator);
+
+				$this->set('add_url', $config['add_url']);
 
 		}
 

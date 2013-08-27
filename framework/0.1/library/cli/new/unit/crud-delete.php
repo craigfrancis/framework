@@ -84,9 +84,9 @@
 			//--------------------------------------------------
 			// Variables
 
-				$this->set('edit_url', $config['edit_url']);
-
 				$this->set('form', $form);
+
+				$this->set('edit_url', $config['edit_url']);
 
 		}
 

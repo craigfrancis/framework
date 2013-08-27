@@ -107,17 +107,14 @@
 				}
 
 			//--------------------------------------------------
-			// Page URLs
-
-				if ($action_edit) {
-					$this->set('delete_url', $config['delete_url']);
-				}
-
-			//--------------------------------------------------
 			// Variables
 
 				$this->set('action_edit', $action_edit);
 				$this->set('form', $form);
+
+				if ($action_edit) {
+					$this->set('delete_url', $config['delete_url']);
+				}
 
 		}
 
