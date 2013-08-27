@@ -12,6 +12,8 @@
 						'delete_url' => NULL,
 					), $config);
 
+				$item_id = intval($config['id']);
+
 				$db = db_get();
 
 			//--------------------------------------------------
@@ -20,12 +22,12 @@
 				$table_sql = DB_PREFIX . 'item';
 				$where_sql = NULL;
 
-				$action_edit = ($config['id'] > 0);
+				$action_edit = ($item_id > 0);
 
 				if ($action_edit) {
 
 					$where_sql = '
-						id = "' . $db->escape($config['id']) . '" AND
+						id = "' . $db->escape($item_id) . '" AND
 						deleted = "0000-00-00 00:00:00"';
 
 					$db->select($table_sql, array('name'), $where_sql);
@@ -36,7 +38,7 @@
 
 					} else {
 
-						exit_with_error('Cannot find item id "' . $config['id'] . '"');
+						exit_with_error('Cannot find item id "' . $item_id . '"');
 
 					}
 
@@ -77,7 +79,7 @@
 								if ($action_edit) {
 									$form->db_save();
 								} else {
-									$config['id'] = $form->db_insert();
+									$item_id = $form->db_insert();
 								}
 
 							//--------------------------------------------------
@@ -92,7 +94,7 @@
 							//--------------------------------------------------
 							// Next page
 
-								$form->dest_redirect(url(array('id' => $config['id'])));
+								$form->dest_redirect(url(array('id' => $item_id)));
 
 						}
 
