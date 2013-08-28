@@ -14,7 +14,7 @@
 
 				// 	$db->query('SELECT
 				// 					parent_id,
-				// 					url
+				// 					ref
 				// 				FROM
 				// 					' . DB_T_PREFIX . 'page
 				// 				WHERE
@@ -23,7 +23,7 @@
 
 				// 	if ($row = $db->fetchAssoc()) {
 				// 		$pageId = $row['parent_id'];
-				// 		$pageUrl = '/' . $row['url'] . $pageUrl;
+				// 		$pageUrl = '/' . $row['ref'] . $pageUrl;
 				// 	} else {
 				// 		return NULL;
 				// 	}
@@ -58,7 +58,7 @@
 									' . DB_PREFIX . 'cms_page AS cp
 								WHERE
 									cp.parent_id = "0" AND
-									cp.url = "home" AND
+									cp.ref = "home" AND
 									cp.deleted = "0000-00-00 00:00:00"';
 
 						if ($row = $db->fetch($sql)) {
@@ -82,7 +82,7 @@
 									' . DB_PREFIX . 'cms_page AS cp
 								WHERE
 									cp.parent_id = "' . $db->escape($page_id) . '" AND
-									cp.url = "' . $db->escape($folder) . '" AND
+									cp.ref = "' . $db->escape($folder) . '" AND
 									cp.deleted = "0000-00-00 00:00:00"';
 
 						if ($row = $db->fetch($sql)) {
