@@ -1,5 +1,9 @@
 
+	<?= (isset($page_start_html) ? $page_start_html : '') ?>
+
 	<?= $form->html(); ?>
+
+	<?= (isset($page_middle_html) ? $page_middle_html : '') ?>
 
 	<?php if (isset($history)) { ?>
 		<?php foreach ($history as $version_name => $version_history) { ?>
@@ -23,3 +27,5 @@
 
 		<?php } ?>
 	<?php } ?>
+
+	<?= (isset($page_end_html) ? $page_end_html : '') ?>
