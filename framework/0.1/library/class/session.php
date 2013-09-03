@@ -124,13 +124,16 @@
 					$ignore_errors = (headers_sent() && config::get('session.started') === true);
 
 					if ($ignore_errors) {
-						$error_reporting = error_reporting(0); // Don't show warnings about headers, which happens in loading object.
+						$error_reporting = error_reporting(0); // Don't show warnings about headers, which happens in 'loading' helper.
 					}
 
-					session_start();
+					$result = session_start();
 
 					if ($ignore_errors) {
 						error_reporting($error_reporting);
+						if (!$result) {
+							session_start(); // Try again, this time the error can appear in logs.
+						}
 					}
 
 					config::set('session.started', true);
