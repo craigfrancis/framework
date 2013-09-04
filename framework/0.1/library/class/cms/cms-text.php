@@ -437,7 +437,7 @@
 					} else {
 
 						return '
-							<div class="cms_text_link' . html($cms_class) . '">
+							<div class="cms_text' . html($cms_class) . '">
 								' . $content_html . '
 								' . ($config['editable'] ? '<p class="cms_text_link_wrapper"><a href="' . html($admin_url) . '" class="cms_text_link">[E]</a></p>' : '') . '
 							</div>';
