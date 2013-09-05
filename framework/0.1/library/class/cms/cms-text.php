@@ -359,7 +359,7 @@
 				//--------------------------------------------------
 				// Empty defaults
 
-					if ($content_html == '') {
+					if (trim($content_html) == '') {
 
 						if ($config['editable']) {
 							if ($config['wrapper_tag'] == '') {
