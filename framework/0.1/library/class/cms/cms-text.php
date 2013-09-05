@@ -362,11 +362,7 @@
 					if (trim($content_html) == '') {
 
 						if ($config['editable']) {
-							if ($config['wrapper_tag'] == '') {
-								$content_html = '<p>&#xA0;</p>';
-							} else {
-								$content_html = '&#xA0;';
-							}
+							$content_html = '&#xA0;'; // Something to click on
 						} else {
 							return '';
 						}
