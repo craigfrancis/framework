@@ -1,5 +1,33 @@
 <?php
 
+/*--------------------------------------------------*/
+/* Example usage
+
+	//--------------------------------------------------
+	// Edit form
+
+		$cms_blocks = new cms_blocks('news', $article_id);
+		$cms_blocks->form_setup($form);
+
+		if ($form->submitted()) {
+			if ($form->valid()) {
+				$cms_blocks->form_save();
+			}
+		}
+
+		$this->set('cms_blocks_html', $cms_blocks->form_html());
+
+		echo $cms_blocks_html;
+
+	//--------------------------------------------------
+	// Output
+
+		$cms_blocks = new cms_blocks('news', $article_id);
+
+		$this->set('article_html', $cms_blocks->html());
+
+/*--------------------------------------------------*/
+
 	class cms_blocks_base extends check {
 
 		//--------------------------------------------------
