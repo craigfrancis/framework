@@ -65,98 +65,110 @@
 
 	class config extends check {
 
-		private $store = array();
+		//--------------------------------------------------
+		// Variables
 
-		public static function set($variable, $value = NULL) {
-			$obj = config::instance_get();
-			if (is_array($variable) && $value === NULL) {
-				$obj->store = array_merge($obj->store, $variable);
-			} else {
-				$obj->store[$variable] = $value;
-			}
-		}
+			private $store = array();
 
-		public static function set_default($variable, $value) {
-			$obj = config::instance_get();
-			if (!isset($obj->store[$variable])) {
-				$obj->store[$variable] = $value;
-			}
-		}
+		//--------------------------------------------------
+		// Set and get
 
-		public static function get($variable, $default = NULL) {
-			$obj = config::instance_get();
-			if (isset($obj->store[$variable])) {
-				return $obj->store[$variable];
-			} else {
-				return $default;
-			}
-		}
-
-		public static function get_all($prefix = '') {
-			$obj = config::instance_get();
-			$prefix .= '.';
-			$prefix_length = strlen($prefix);
-			if ($prefix_length <= 1) {
-				return $obj->store;
-			} else {
-				$data = array();
-				foreach ($obj->store as $k => $v) {
-					if (substr($k, 0, $prefix_length) == $prefix) {
-						$data[substr($k, $prefix_length)] = $v;
-					}
+			public static function set($variable, $value = NULL) {
+				$obj = config::instance_get();
+				if (is_array($variable) && $value === NULL) {
+					$obj->store = array_merge($obj->store, $variable);
+				} else {
+					$obj->store[$variable] = $value;
 				}
-				return $data;
 			}
-		}
 
-		public static function array_push($variable, $value) {
-			$obj = config::instance_get();
-			if (!isset($obj->store[$variable]) || !is_array($obj->store[$variable])) {
-				$obj->store[$variable] = array();
+			public static function set_default($variable, $value) {
+				$obj = config::instance_get();
+				if (!isset($obj->store[$variable])) {
+					$obj->store[$variable] = $value;
+				}
 			}
-			$obj->store[$variable][] = $value;
-		}
 
-		public static function array_set($variable, $key, $value) {
-			$obj = config::instance_get();
-			if (!isset($obj->store[$variable]) || !is_array($obj->store[$variable])) {
-				$obj->store[$variable] = array();
+			public static function get($variable, $default = NULL) {
+				$obj = config::instance_get();
+				if (isset($obj->store[$variable])) {
+					return $obj->store[$variable];
+				} else {
+					return $default;
+				}
 			}
-			$obj->store[$variable][$key] = $value;
-		}
 
-		public static function array_get($variable, $key, $default = NULL) {
-			$obj = config::instance_get();
-			if (isset($obj->store[$variable][$key])) {
-				return $obj->store[$variable][$key];
-			} else {
-				return $default;
+			public static function get_all($prefix = '') {
+				$obj = config::instance_get();
+				$prefix .= '.';
+				$prefix_length = strlen($prefix);
+				if ($prefix_length <= 1) {
+					return $obj->store;
+				} else {
+					$data = array();
+					foreach ($obj->store as $k => $v) {
+						if (substr($k, 0, $prefix_length) == $prefix) {
+							$data[substr($k, $prefix_length)] = $v;
+						}
+					}
+					return $data;
+				}
 			}
-		}
 
-		public static function array_search($variable, $value) {
-			$obj = config::instance_get();
-			if (isset($obj->store[$variable]) && is_array($obj->store[$variable])) {
-				return array_search($value, $obj->store[$variable]);
+		//--------------------------------------------------
+		// Array support
+
+			public static function array_push($variable, $value) {
+				$obj = config::instance_get();
+				if (!isset($obj->store[$variable]) || !is_array($obj->store[$variable])) {
+					$obj->store[$variable] = array();
+				}
+				$obj->store[$variable][] = $value;
 			}
-			return false;
-		}
 
-		private static function instance_get() {
-			static $instance = NULL;
-			if (!$instance) {
-				$instance = new config();
+			public static function array_set($variable, $key, $value) {
+				$obj = config::instance_get();
+				if (!isset($obj->store[$variable]) || !is_array($obj->store[$variable])) {
+					$obj->store[$variable] = array();
+				}
+				$obj->store[$variable][$key] = $value;
 			}
-			return $instance;
-		}
 
-		final private function __construct() {
-			// Being private prevents direct creation of object.
-		}
+			public static function array_get($variable, $key, $default = NULL) {
+				$obj = config::instance_get();
+				if (isset($obj->store[$variable][$key])) {
+					return $obj->store[$variable][$key];
+				} else {
+					return $default;
+				}
+			}
 
-		final private function __clone() {
-			trigger_error('Clone of config object is not allowed.', E_USER_ERROR);
-		}
+			public static function array_search($variable, $value) {
+				$obj = config::instance_get();
+				if (isset($obj->store[$variable]) && is_array($obj->store[$variable])) {
+					return array_search($value, $obj->store[$variable]);
+				}
+				return false;
+			}
+
+		//--------------------------------------------------
+		// Singleton
+
+			private static function instance_get() {
+				static $instance = NULL;
+				if (!$instance) {
+					$instance = new config();
+				}
+				return $instance;
+			}
+
+			final private function __construct() {
+				// Being private prevents direct creation of object.
+			}
+
+			final private function __clone() {
+				trigger_error('Clone of config object is not allowed.', E_USER_ERROR);
+			}
 
 	}
 
