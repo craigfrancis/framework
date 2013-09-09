@@ -74,7 +74,11 @@
 
 		public static function regenerate() {
 
-			session_regenerate_id(true); // Also delete old session file
+			$result = session_regenerate_id(true); // Also delete old session file
+
+			if (!$result) {
+				exit_with_error('Cannot regenerate session id', config::get('session.id') . "\n\n" . debug_dump($_SESSION) . "\n\n" . debug_dump($_COOKIE));
+			}
 
 			config::set('session.id', session_id());
 
