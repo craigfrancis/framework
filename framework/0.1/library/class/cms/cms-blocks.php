@@ -26,6 +26,39 @@
 
 		$this->set('article_html', $cms_blocks->html());
 
+	//--------------------------------------------------
+	// SQL
+
+		CREATE TABLE thr_cms_block (
+			id int(11) NOT NULL AUTO_INCREMENT,
+			parent_type varchar(30) NOT NULL,
+			parent_id int(11) NOT NULL,
+			sort int(11) NOT NULL,
+			type varchar(30) NOT NULL,
+			created datetime NOT NULL,
+			edited datetime NOT NULL,
+			deleted datetime NOT NULL,
+			PRIMARY KEY (id),
+			KEY page_type (parent_type,parent_id,deleted)
+		);
+
+		CREATE TABLE thr_cms_block_heading (
+			block_id int(11) NOT NULL,
+			level tinyint(4) NOT NULL,
+			text tinytext NOT NULL,
+			created datetime NOT NULL,
+			deleted datetime NOT NULL,
+			UNIQUE KEY block_id (block_id,deleted)
+		);
+
+		CREATE TABLE thr_cms_block_text (
+			block_id int(11) NOT NULL,
+			text text NOT NULL,
+			created datetime NOT NULL,
+			deleted datetime NOT NULL,
+			UNIQUE KEY block_id (block_id,deleted)
+		);
+
 /*--------------------------------------------------*/
 
 	class cms_blocks_base extends check {
