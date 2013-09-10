@@ -60,20 +60,7 @@
 			return $this->result;
 		}
 
-		public function num_rows($result = NULL) {
-			if ($result === NULL) $result = $this->result;
-			return mysql_num_rows($result);
-		}
-
-		public function fetch($sql = NULL) {
-			if ($sql !== NULL) {
-				$this->query($sql);
-			}
-			return $this->fetch_row();
-		}
-
-		public function fetch_all($sql = NULL) {
-			$data = array();
+		public function num_rows($sql = NULL) {
 			if (is_string($sql)) {
 				$result = $this->query($sql);
 			} else if ($sql !== NULL) {
@@ -81,15 +68,37 @@
 			} else {
 				$result = $this->result;
 			}
+			return mysql_num_rows($result);
+		}
+
+		public function fetch($sql = NULL) {
+			if (is_string($sql)) {
+				$result = $this->query($sql);
+			} else if ($sql !== NULL) {
+				$result = $sql;
+			} else {
+				$result = $this->result;
+			}
+			return mysql_fetch_assoc($result);
+		}
+
+		public function fetch_all($sql = NULL) {
+			if (is_string($sql)) {
+				$result = $this->query($sql);
+			} else if ($sql !== NULL) {
+				$result = $sql;
+			} else {
+				$result = $this->result;
+			}
+			$data = array();
 			while ($row = mysql_fetch_assoc($result)) {
 				$data[] = $row;
 			}
 			return $data;
 		}
 
-		public function fetch_row($result = NULL) {
-			if ($result === NULL) $result = $this->result;
-			return mysql_fetch_assoc($result);
+		public function fetch_row($sql = NULL) {
+			return $this->fetch($sql); // Backwards compatability
 		}
 
 		public function fetch_result($row = 0, $col = 0, $result = NULL) {
