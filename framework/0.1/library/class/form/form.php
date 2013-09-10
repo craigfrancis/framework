@@ -618,7 +618,7 @@
 				//--------------------------------------------------
 				// CSRF check
 
-					if (!$this->form_passive) {
+					if (!$this->form_passive && $this->csrf_error_html != NULL) { // Cant type check, as html() will convert NULL to string
 
 						$csrf_token = request('csrf', $this->form_method);
 
