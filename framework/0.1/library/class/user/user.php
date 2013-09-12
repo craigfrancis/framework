@@ -459,7 +459,7 @@
 		// New password - request goes to email address
 		// and they can set the new password later
 
-			public function password_reset_request($request_url = NULL) {
+			public function password_reset_request($request_url = NULL, $identification = NULL) {
 
 				//--------------------------------------------------
 				// Check table exists
@@ -486,7 +486,9 @@
 
 					$form = $this->form_get();
 
-					$identification = $form->field_get('identification')->value_get();
+					if ($identification === NULL) {
+						$identification = $form->field_get('identification')->value_get();
+					}
 
 				//--------------------------------------------------
 				// Process
