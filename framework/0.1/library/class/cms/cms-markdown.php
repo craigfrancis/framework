@@ -145,6 +145,7 @@ class cms_markdown_base extends check {
 	}
 
 	function process_inline_html($text) {
+		$text = preg_replace('{\r\n?}', "\n", $text);
 		$text = $this->runSpanGamut($text);
 		$text = $this->unhash($text);
 		return $text;
