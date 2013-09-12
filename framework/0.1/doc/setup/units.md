@@ -127,6 +127,26 @@ Then if your using a "ctp" file, print its HTML with:
 
 ---
 
+## Multiple view files
+
+If the unit will show multiple (separate) views, you can use:
+
+	$this->view_name_set('name');
+
+This allows you to do something like:
+
+	class example_unit extends unit {
+
+		public function setup($config) {
+			$this->view_name_set('a');
+		}
+
+	}
+
+	/app/unit/example-a.ctp
+
+---
+
 ## Example
 
 To create a self contained "contact us" form, first create the object:

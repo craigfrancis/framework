@@ -5,21 +5,23 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $view_path = NULL;
+			private $unit_path = NULL;
+			private $view_name = NULL;
 			private $view_variables = array();
 
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($config) {
+			public function __construct($path, $config) {
+				$this->unit_path = $path;
 				$this->setup($config);
 			}
 
 			protected function setup($config) {
 			}
 
-			public function view_path_set($path) {
-				$this->view_path = $path;
+			public function view_name_set($name) {
+				$this->view_name = $name;
 			}
 
 		//--------------------------------------------------
@@ -42,11 +44,20 @@
 
 			public function html() {
 
-				if ($this->view_path !== NULL) {
+				if ($this->view_name !== NULL) {
+					$view_path = substr($this->unit_path, 0, -4) . '-' . safe_file_name($this->view_name) . '.ctp';
+				} else {
+					$view_path = substr($this->unit_path, 0, -4) . '.ctp';
+					if (!is_file($view_path)) {
+						$view_path = NULL; // No default view file, just print all variables.
+					}
+				}
+
+				if ($view_path !== NULL) {
 
 					ob_start();
 
-					script_run($this->view_path, $this->view_variables);
+					script_run($view_path, $this->view_variables);
 
 					$view_html = ob_get_clean();
 

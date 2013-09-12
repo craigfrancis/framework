@@ -585,15 +585,7 @@
 
 				require_once($object_path);
 
-				$unit_object = new $unit_class_name($config);
-
-				$view_path = substr($object_path, 0, -4) . '.ctp';
-
-				if (is_file($view_path)) {
-					$unit_object->view_path_set($view_path);
-				}
-
-				return $unit_object;
+				return new $unit_class_name($object_path, $config);
 
 			}
 		}
