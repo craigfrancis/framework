@@ -828,6 +828,7 @@
 				}
 
 				public function complete_register() {
+					// Use $this->user_id to get details from db, or form... do not add the password to the email though (insecure).
 				}
 
 				public function complete_save() {
