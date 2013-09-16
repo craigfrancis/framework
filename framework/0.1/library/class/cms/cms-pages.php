@@ -39,7 +39,7 @@
 
 					$page_url = $folder_url . $row['ref'] . '/';
 
-					$pages[] = array(
+					$pages[$row['ref']] = array(
 							'ref' => $row['ref'],
 							'url' => $page_url,
 							'title' => cms_page_title($page_url),
