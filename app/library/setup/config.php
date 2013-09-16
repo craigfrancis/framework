@@ -96,6 +96,9 @@
 //--------------------------------------------------
 // Pagination
 
+	$config['file.test-png.image_type'] = 'png';
+	$config['file.test-gif.image_type'] = 'gif';
+
 	// $config['paginator.elements'] = array('<ul class="pagination">', 'first', 'back', 'links', 'next', 'last', '</ul>', 'extra', "\n");
 	// $config['paginator.link_wrapper_element'] = 'li';
 

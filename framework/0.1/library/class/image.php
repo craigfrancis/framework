@@ -90,8 +90,9 @@
 				if (is_object($file_path) && (get_class($file_path) == 'image' || is_subclass_of($file_path, 'image'))) {
 					$this->alpha_blend = $file_path->alpha_blend;
 					$this->alpha_save = $file_path->alpha_save;
-					$this->_alpha_update($this->image_ref);
 				}
+
+				$this->_alpha_update($this->image_ref);
 
 				if (!imageistruecolor($this->image_ref)) { // Happens when using imagecreatefromgif
 

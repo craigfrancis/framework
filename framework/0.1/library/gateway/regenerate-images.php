@@ -27,14 +27,17 @@
 				echo '  ' . $type_name . "\n";
 
 				$file = new file($type_name);
+				$type = $file->config_get('image_type');
 
 				if ($handle_item = opendir($type_path . '/original/')) {
 					while (false !== ($id = readdir($handle_item))) {
-						if (preg_match('/^([0-9]+)\.[a-z]+$/', $id, $matches)) {
+						if (preg_match('/^([0-9]+)\.([a-z]+)$/', $id, $matches)) {
 
-							$file->image_save($matches[1]);
-
-							set_time_limit(5); // Don't time out
+							if ($matches[2] == $type) {
+								$file->image_save($matches[1]);
+							} else {
+								echo '    Invalid file "' . $id . '" (not ' . $type . ')' . "\n";
+							}
 
 						}
 					}

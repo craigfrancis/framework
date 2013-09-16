@@ -72,6 +72,14 @@
 
 			}
 
+			public function config_get($key) {
+				if (isset($this->config[$key])) {
+					return $this->config[$key];
+				} else {
+					exit_with_error('Unknown file config type "' . $key . '"');
+				}
+			}
+
 			public function folder_path_get() {
 				return $this->config['file_root'] . '/' . safe_file_name($this->config['profile']);
 			}
@@ -239,6 +247,8 @@
 
 					ini_set('memory_limit', '1024M');
 
+					set_time_limit(5); // Don't time out
+
 				//--------------------------------------------------
 				// Original image
 
@@ -248,14 +258,13 @@
 
 						$path = $original_path;
 
-						$source_image = new image($path);
-
 					} else {
 
 						$this->_writable_check(dirname($original_path));
 
 						$source_image = new image($path); // The image needs to be re-saved, ensures no hacked files are uploaded and exposed on the website
 						$source_image->save($original_path, $this->config['image_type'], $this->config['image_quality']);
+						$source_image->destroy();
 
 					}
 
@@ -343,11 +352,6 @@
 						}
 						closedir($handle);
 					}
-
-				//--------------------------------------------------
-				// Cleanup source image
-
-					$source_image->destroy();
 
 			}
 
