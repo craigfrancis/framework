@@ -77,7 +77,11 @@
 			$result = session_regenerate_id(true); // Also delete old session file
 
 			if (!$result) {
-				exit_with_error('Cannot regenerate session id', config::get('session.id') . "\n\n" . debug_dump($_SESSION) . "\n\n" . debug_dump($_COOKIE));
+				$debug = array(config::get('session.id'), debug_dump($_SESSION), debug_dump($_COOKIE));
+				if (headers_sent($file, $line)) {
+					$debug[] = 'Headers sent: ' . $file . ' (line ' . $line . ')';
+				}
+				exit_with_error('Cannot regenerate session id', implode("\n\n", $debug));
 			}
 
 			config::set('session.id', session_id());
