@@ -1049,11 +1049,64 @@
 						}
 
 					//--------------------------------------------------
+					// Exists
+
+						$view_exists = ($view_path !== NULL || $this->view_html != '' || count($this->units) > 0);
+
+					//--------------------------------------------------
+					// Redirect
+
+						if (!$view_exists && config::get('db.host') !== NULL) {
+
+							if (config::get('debug.level') > 0) {
+
+								debug_require_db_table(DB_PREFIX . 'system_redirect', '
+										CREATE TABLE [TABLE] (
+											url_old varchar(150) NOT NULL,
+											url_new varchar(150) NOT NULL,
+											permanent enum(\'false\',\'true\') NOT NULL,
+											enabled enum(\'false\',\'true\') NOT NULL,
+											created datetime NOT NULL,
+											edited datetime NOT NULL,
+											PRIMARY KEY (url_old),
+											KEY url_old (url_old, enabled, url_new, permanent)
+										);');
+
+							}
+
+							$db = db_get();
+
+							$url = config::get('request.uri');
+
+							$sql = 'SELECT url_new, permanent FROM ' . DB_PREFIX . 'system_redirect WHERE url_old = "' . $db->escape($url) . '" AND enabled = "true"';
+
+							if ($row = $db->fetch($sql)) {
+
+								redirect($row['url_new'], ($row['permanent'] == 'true' ? 301 : 302));
+
+							} else {
+
+								$db->insert(DB_PREFIX . 'system_redirect', array(
+										'url_old' => $url,
+										'url_new' => '',
+										'permanent' => 'false',
+										'enabled' => 'false',
+										'created' => date('Y-m-d H:i:s'),
+										'edited' => '',
+									), array(
+										'url_old' => $url,
+									));
+
+							}
+
+						}
+
+					//--------------------------------------------------
 					// Error
 
 						$error = $this->error;
 
-						if (is_string($error) || ($view_path === NULL && $this->view_html == '' && count($this->units) == 0)) {
+						if (is_string($error) || !$view_exists) {
 
 							if ($error === false || $error === NULL) {
 								$error = 'page-not-found';
