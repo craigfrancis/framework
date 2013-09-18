@@ -102,7 +102,7 @@
 			}
 
 			public function response_mime_get() {
-				if (preg_match('/^Content-Type: ?("|)([^;]+)\1/im', $this->response_headers, $matches)) {
+				if (preg_match('/^Content-Type: ?("|)([^;\r\n]+)\1/im', $this->response_headers, $matches)) {
 					return $matches[2];
 				} else {
 					return NULL;
