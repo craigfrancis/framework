@@ -1062,39 +1062,30 @@
 
 								debug_require_db_table(DB_PREFIX . 'system_redirect', '
 										CREATE TABLE [TABLE] (
-											url_old varchar(150) NOT NULL,
-											url_new varchar(150) NOT NULL,
+											url_src varchar(150) NOT NULL,
+											url_dst varchar(150) NOT NULL,
 											permanent enum(\'false\',\'true\') NOT NULL,
 											enabled enum(\'false\',\'true\') NOT NULL,
 											created datetime NOT NULL,
 											edited datetime NOT NULL,
-											PRIMARY KEY (url_old),
-											KEY url_old (url_old, enabled, url_new, permanent)
+											PRIMARY KEY (url_src)
 										);');
 
 							}
 
-							$db = db_get();
-
 							$url = config::get('request.uri');
 
-							$sql = 'SELECT url_new, permanent FROM ' . DB_PREFIX . 'system_redirect WHERE url_old = "' . $db->escape($url) . '" AND enabled = "true"';
+							if (($redirect = system_redirect($url)) !== NULL) {
 
-							if ($row = $db->fetch($sql)) {
-
-								redirect($row['url_new'], ($row['permanent'] == 'true' ? 301 : 302));
+								if ($redirect['enabled'] && $redirect['url'] != '') {
+									redirect($redirect['url'], ($redirect['permanent'] ? 301 : 302));
+								}
 
 							} else {
 
-								$db->insert(DB_PREFIX . 'system_redirect', array(
-										'url_old' => $url,
-										'url_new' => '',
-										'permanent' => 'false',
-										'enabled' => 'false',
-										'created' => date('Y-m-d H:i:s'),
-										'edited' => '',
-									), array(
-										'url_old' => $url,
+								system_redirect($url, '', array(
+										'permanent' => false,
+										'enabled' => false,
 									));
 
 							}

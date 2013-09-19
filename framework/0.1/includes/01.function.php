@@ -545,6 +545,64 @@
 	}
 
 //--------------------------------------------------
+// System redirect
+
+	function system_redirect($url_src, $url_dst = NULL, $config = array()) {
+
+		$config = array_merge(array(
+				'permanent' => true,
+				'enabled' => true,
+			), $config);
+
+		$db = db_get();
+
+		if ($url_dst !== NULL) {
+
+			$db->insert(DB_PREFIX . 'system_redirect', array(
+					'url_src' => strval($url_src),
+					'url_dst' => strval($url_dst),
+					'permanent' => ($config['permanent'] ? 'true' : 'false'),
+					'enabled' => ($config['enabled'] ? 'true' : 'false'),
+					'created' => date('Y-m-d H:i:s'),
+				), array(
+					'url_src' => strval($url_src),
+					'edited' => date('Y-m-d H:i:s'),
+				));
+
+			$db->query('UPDATE
+							' . DB_PREFIX . 'system_redirect AS sr
+						SET
+							sr.url_dst = "' . $db->escape(strval($url_dst)) . '",
+							sr.edited = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+						WHERE
+							sr.url_dst = "' . $db->escape(strval($url_src)) . '"');
+
+		} else {
+
+			$sql = 'SELECT
+						url_dst,
+						permanent,
+						enabled
+					FROM
+						' . DB_PREFIX . 'system_redirect
+					WHERE
+						url_src = "' . $db->escape($url_src) . '"';
+
+			if ($row = $db->fetch($sql)) {
+				return array(
+					'url' => $row['url_dst'],
+					'permanent' => ($row['permanent'] == 'true'),
+					'enabled' => ($row['enabled'] == 'true'),
+				);
+			} else {
+				return NULL;
+			}
+
+		}
+
+	}
+
+//--------------------------------------------------
 // Get the database object
 
 	function db_get($connection = 'default') {
