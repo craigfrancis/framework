@@ -549,33 +549,58 @@
 
 	function system_redirect($url_src, $url_dst = NULL, $config = array()) {
 
+		if (is_array($url_dst)) {
+			$config = $url_dst;
+			$url_dst = NULL;
+		}
+
 		$config = array_merge(array(
 				'permanent' => true,
 				'enabled' => true,
+				'requested' => false,
 			), $config);
 
 		$db = db_get();
 
 		if ($url_dst !== NULL) {
 
+			$update_sql = '
+				url_dst = "' . $db->escape($url_dst) . '",
+				permanent = "' . $db->escape($config['permanent'] ? 'true' : 'false') . '",
+				enabled = "' . $db->escape($config['enabled'] ? 'true' : 'false') . '"';
+
+			if ($config['requested']) {
+				$update_sql .= ', requests = (requests + 1)';
+			}
+
 			$db->insert(DB_PREFIX . 'system_redirect', array(
-					'url_src' => strval($url_src),
-					'url_dst' => strval($url_dst),
+					'url_src' => $url_src,
+					'url_dst' => $url_dst,
 					'permanent' => ($config['permanent'] ? 'true' : 'false'),
 					'enabled' => ($config['enabled'] ? 'true' : 'false'),
+					'requests' => ($config['requested'] ? 1 : 0),
 					'created' => date('Y-m-d H:i:s'),
-				), array(
-					'url_src' => strval($url_src),
-					'edited' => date('Y-m-d H:i:s'),
-				));
+				), $update_sql);
 
-			$db->query('UPDATE
-							' . DB_PREFIX . 'system_redirect AS sr
-						SET
-							sr.url_dst = "' . $db->escape(strval($url_dst)) . '",
-							sr.edited = "' . $db->escape(date('Y-m-d H:i:s')) . '"
-						WHERE
-							sr.url_dst = "' . $db->escape(strval($url_src)) . '"');
+			if ($url_dst != '') {
+
+				$db->query('UPDATE
+								' . DB_PREFIX . 'system_redirect AS sr
+							SET
+								sr.url_dst = "' . $db->escape($url_dst) . '",
+								sr.edited = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+							WHERE
+								sr.url_dst = "' . $db->escape($url_src) . '"'); // Update old redirects linking to this source.
+
+				$db->query('UPDATE
+								' . DB_PREFIX . 'system_redirect AS sr
+							SET
+								sr.enabled = "false",
+								sr.edited = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+							WHERE
+								sr.url_src = "' . $db->escape($url_dst) . '"'); // Disable redirect away from dest (should exist now).
+
+			}
 
 		} else {
 
@@ -589,13 +614,24 @@
 						url_src = "' . $db->escape($url_src) . '"';
 
 			if ($row = $db->fetch($sql)) {
+
+				if ($config['requested']) {
+
+					$db->query('UPDATE
+									' . DB_PREFIX . 'system_redirect AS sr
+								SET
+									sr.requests = (sr.requests + 1)
+								WHERE
+									url_src = "' . $db->escape($url_src) . '"');
+
+				}
+
 				return array(
-					'url' => $row['url_dst'],
-					'permanent' => ($row['permanent'] == 'true'),
-					'enabled' => ($row['enabled'] == 'true'),
-				);
-			} else {
-				return NULL;
+						'url' => $row['url_dst'],
+						'permanent' => ($row['permanent'] == 'true'),
+						'enabled' => ($row['enabled'] == 'true'),
+					);
+
 			}
 
 		}

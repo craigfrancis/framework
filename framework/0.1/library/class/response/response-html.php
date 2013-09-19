@@ -1066,6 +1066,7 @@
 											url_dst varchar(150) NOT NULL,
 											permanent enum(\'false\',\'true\') NOT NULL,
 											enabled enum(\'false\',\'true\') NOT NULL,
+											requests int(11) NOT NULL,
 											created datetime NOT NULL,
 											edited datetime NOT NULL,
 											PRIMARY KEY (url_src)
@@ -1075,7 +1076,11 @@
 
 							$url = config::get('request.uri');
 
-							if (($redirect = system_redirect($url)) !== NULL) {
+							$redirect = system_redirect($url, array(
+										'requested' => true,
+									));
+
+							if ($redirect) {
 
 								if ($redirect['enabled'] && $redirect['url'] != '') {
 									redirect($redirect['url'], ($redirect['permanent'] ? 301 : 302));
@@ -1084,6 +1089,7 @@
 							} else {
 
 								system_redirect($url, '', array(
+										'requested' => true,
 										'permanent' => false,
 										'enabled' => false,
 									));
