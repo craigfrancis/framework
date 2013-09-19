@@ -398,28 +398,26 @@
 	}
 
 //--------------------------------------------------
-// Format british postcode
+// Format british postcode: AN NAA | ANN NAA |
+// AAN NAA | AANN NAA | ANA NAA | AANA NAA | BFPO NN
 
 	function format_british_postcode($postcode) {
 
-		//--------------------------------------------------
-		// Clean up the user input
+		$postcode = preg_replace('/[^A-Z0-9]/', '', strtoupper($postcode));
 
-			$postcode = strtoupper($postcode);
-			$postcode = preg_replace('/[^A-Z0-9]/', '', $postcode);
-			$postcode = preg_replace('/([A-Z0-9]{3})$/', ' \1', $postcode);
-			$postcode = trim($postcode);
+		if (preg_match('/^([A-Z](?:\d[A-Z\d]?|[A-Z]\d[A-Z\d]?))(\d[A-Z]{2})$/', $postcode, $matches)) {
 
-		//--------------------------------------------------
-		// Check that the submitted value is a valid
-		// British postcode: AN NAA | ANN NAA | AAN NAA |
-		// AANN NAA | ANA NAA | AANA NAA
+			return $matches[1] . ' ' . $matches[2];
 
-			if (preg_match('/^[a-z](\d[a-z\d]?|[a-z]\d[a-z\d]?) \d[a-z]{2}$/i', $postcode)) {
-				return $postcode;
-			} else {
-				return NULL;
-			}
+		} else if (preg_match('/^(BFPO) *([0-9]+)$/', $postcode, $matches)) { // British forces post office
+
+			return $matches[1] . ' ' . $matches[2];
+
+		} else {
+
+			return NULL;
+
+		}
 
 	}
 
