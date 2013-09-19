@@ -558,29 +558,26 @@
 				'permanent' => true,
 				'enabled' => true,
 				'requested' => false,
+				'referrer' => NULL,
 			), $config);
 
 		$db = db_get();
 
+		$return = NULL;
+
 		if ($url_dst !== NULL) {
 
-			$update_sql = '
-				url_dst = "' . $db->escape($url_dst) . '",
-				permanent = "' . $db->escape($config['permanent'] ? 'true' : 'false') . '",
-				enabled = "' . $db->escape($config['enabled'] ? 'true' : 'false') . '"';
-
-			if ($config['requested']) {
-				$update_sql .= ', requests = (requests + 1)';
-			}
-
-			$db->insert(DB_PREFIX . 'system_redirect', array(
+			$values_update = array(
 					'url_src' => $url_src,
 					'url_dst' => $url_dst,
 					'permanent' => ($config['permanent'] ? 'true' : 'false'),
 					'enabled' => ($config['enabled'] ? 'true' : 'false'),
-					'requests' => ($config['requested'] ? 1 : 0),
-					'created' => date('Y-m-d H:i:s'),
-				), $update_sql);
+				);
+
+			$values_insert = $values_update;
+			$values_insert['created'] = date('Y-m-d H:i:s');
+
+			$db->insert(DB_PREFIX . 'system_redirect', $values_insert, $values_update);
 
 			if ($url_dst != '') {
 
@@ -615,18 +612,7 @@
 
 			if ($row = $db->fetch($sql)) {
 
-				if ($config['requested']) {
-
-					$db->query('UPDATE
-									' . DB_PREFIX . 'system_redirect AS sr
-								SET
-									sr.requests = (sr.requests + 1)
-								WHERE
-									url_src = "' . $db->escape($url_src) . '"');
-
-				}
-
-				return array(
+				$return = array(
 						'url' => $row['url_dst'],
 						'permanent' => ($row['permanent'] == 'true'),
 						'enabled' => ($row['enabled'] == 'true'),
@@ -635,6 +621,23 @@
 			}
 
 		}
+
+		if (($url_dst !== NULL || $return) && ($config['requested'] || $config['referrer'])) {
+
+			$set_sql = array();
+			if ($config['requested']) $set_sql[] = 'sr.requests = (sr.requests + 1)';
+			if ($config['referrer']) $set_sql[] = 'sr.referrer = "' . $db->escape($config['referrer']) . '"';
+
+			$db->query('UPDATE
+							' . DB_PREFIX . 'system_redirect AS sr
+						SET
+							' . implode(', ', $set_sql) . '
+						WHERE
+							url_src = "' . $db->escape($url_src) . '"');
+
+		}
+
+		return $return;
 
 	}
 

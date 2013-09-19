@@ -1067,6 +1067,7 @@
 											permanent enum(\'false\',\'true\') NOT NULL,
 											enabled enum(\'false\',\'true\') NOT NULL,
 											requests int(11) NOT NULL,
+											referrer tinytext NOT NULL,
 											created datetime NOT NULL,
 											edited datetime NOT NULL,
 											PRIMARY KEY (url_src)
@@ -1078,6 +1079,7 @@
 
 							$redirect = system_redirect($url, array(
 										'requested' => true,
+										'referrer' => config::get('request.referrer'),
 									));
 
 							if ($redirect) {
@@ -1089,9 +1091,10 @@
 							} else {
 
 								system_redirect($url, '', array(
-										'requested' => true,
 										'permanent' => false,
 										'enabled' => false,
+										'requested' => true,
+										'referrer' => config::get('request.referrer'),
 									));
 
 							}
