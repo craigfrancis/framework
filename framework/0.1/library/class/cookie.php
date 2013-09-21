@@ -12,7 +12,7 @@
 			self::set('cookie_check', 'true');
 		}
 
-		public static function set($variable, $value, $expiration = NULL, $config = NULL) {
+		public static function set($variable, $value, $expiration = NULL, $config = array()) {
 
 			//--------------------------------------------------
 			// Config
@@ -25,14 +25,12 @@
 					$expiration = strtotime($expiration);
 				}
 
-				if ($config === NULL) {
-					$config = array();
-				}
-
-				if (!isset($config['path']))      $config['path']      = '/';
-				if (!isset($config['domain']))    $config['domain']    = NULL;
-				if (!isset($config['secure']))    $config['secure']    = https_only();
-				if (!isset($config['http_only'])) $config['http_only'] = true;
+				$config = array_merge(array(
+						'path' => '/',
+						'domain' => NULL,
+						'secure' => https_only(),
+						'http_only' => true,
+					), $config);
 
 			//--------------------------------------------------
 			// Value
