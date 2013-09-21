@@ -137,12 +137,18 @@
 				$session_name = $this->user_obj->session_name_get();
 
 				if ($this->use_cookies) {
-					cookie::set($session_name . '_id', $session_id);
-					cookie::set($session_name . '_pass', $session_pass);
+
+					$cookie_age = (time() + $this->length);
+
+					cookie::set($session_name . '_id', $session_id, $cookie_age);
+					cookie::set($session_name . '_pass', $session_pass, $cookie_age);
+
 				} else {
+
 					session::regenerate(); // State change, new session id (additional check against session fixation)
 					session::set($session_name . '_id', $session_id);
 					session::set($session_name . '_pass', $session_pass); // Password support still used so an "auth_token" can be passed to the user.
+
 				}
 
 		}
@@ -248,6 +254,20 @@
 												user_id = user_id AND
 												id = "' . $db->escape($session_id) . '" AND
 												deleted = "0000-00-00 00:00:00"');
+
+							//--------------------------------------------------
+							// Update the cookies - if used
+
+								if ($auth_token === NULL && $this->use_cookies) {
+
+									$session_name = $this->user_obj->session_name_get();
+
+									$cookie_age = (time() + $this->length); // Update cookie expiry date/time on client
+
+									cookie::set($session_name . '_id', $session_id, $cookie_age);
+									cookie::set($session_name . '_pass', $session_pass, $cookie_age);
+
+								}
 
 							//--------------------------------------------------
 							// Store session, for later
