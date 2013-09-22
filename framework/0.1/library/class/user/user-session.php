@@ -258,7 +258,7 @@
 							//--------------------------------------------------
 							// Update the cookies - if used
 
-								if ($auth_token === NULL && $this->use_cookies) {
+								if ($auth_token === NULL && $this->use_cookies && config::get('output.mode') === NULL) { // Not a gateway/maintenance/asset script
 
 									$session_name = $this->user_obj->session_name_get();
 
