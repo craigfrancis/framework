@@ -1056,7 +1056,7 @@
 					//--------------------------------------------------
 					// Redirect
 
-						if (!$view_exists && config::get('db.host') !== NULL && ($this->error == false || $this->error == 'page-not-found')) {
+						if (!$view_exists && config::get('db.host') !== NULL && ($this->error === false || $this->error == 'page-not-found')) {
 
 							if (config::get('debug.level') > 0) {
 
