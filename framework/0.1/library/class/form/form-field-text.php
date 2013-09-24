@@ -50,6 +50,10 @@
 
 			}
 
+			public function input_type_set($input_type) {
+				$this->input_type = $input_type; // e.g. "tel"
+			}
+
 			public function input_size_set($input_size) {
 				$this->input_size = $input_size;
 			}
