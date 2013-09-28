@@ -88,6 +88,10 @@
 
 		}
 
+		public static function regenerate_block($blocked) {
+			session::set('session.regenerate_block', ($blocked == true));
+		}
+
 		public static function destroy() {
 
 			if (config::get('session.id') !== NULL) {
@@ -196,6 +200,8 @@
 					if (config::get('output.mode') === NULL && !headers_sent()) { // Not a gateway/maintenance/asset script
 
 						$session_age = session::get('session.age');
+
+						session::set('session.regenerate_age', $session_age);
 
 						if ($session_age === NULL || $session_age < (time() - 300)) {
 
