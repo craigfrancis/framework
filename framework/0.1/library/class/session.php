@@ -76,6 +76,8 @@
 
 			$result = session_regenerate_id(true); // Also delete old session file
 
+// TODO: Remove
+
 			if (!$result) {
 				$debug = array(config::get('session.id'), debug_dump($_SESSION), debug_dump($_COOKIE));
 				if (headers_sent($file, $line)) {
