@@ -1300,6 +1300,18 @@
 						header('Content-Type: ' . head($mime_type) . '; charset=' . head($this->charset_get()));
 
 					//--------------------------------------------------
+					// Cache control - adding "no-transform" due to CSP,
+					// and because we have extenal CSS files for a reason!
+
+						foreach (headers_list() as $header) {
+							if (strtolower(substr($header, 0, 14)) == 'cache-control:') {
+								$value = trim(substr($header, 14));
+								header('Cache-Control: ' . $value . ', no-transform');
+								break;
+							}
+						}
+
+					//--------------------------------------------------
 					// Framing options
 
 						header('X-Frame-Options: ' . head(strtoupper(config::get('output.framing', 'DENY'))));
