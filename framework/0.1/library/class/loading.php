@@ -186,6 +186,7 @@
 				session::set($this->session_prefix . 'started', true);
 				session::set($this->session_prefix . 'done_url', NULL);
 				session::set($this->session_prefix . 'error', false);
+				session::regenerate_block(true);
 
 				session::close();
 
@@ -291,6 +292,7 @@
 				session::delete($this->session_prefix . 'variables');
 				session::delete($this->session_prefix . 'done_url');
 				session::delete($this->session_prefix . 'error');
+				session::regenerate_block(false);
 			}
 
 		//--------------------------------------------------
