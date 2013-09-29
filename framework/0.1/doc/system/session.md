@@ -57,11 +57,11 @@ And if your done with the session, and want to delete all its values:
 
 	session::destroy();
 
-Or as a shortcut to destroy, then start a new session:
+Or as a shortcut to destroy, and then start a new session:
 
 	session::reset();
 
-To regenerate the session ID (see below):
+To regenerate the session ID (see security section below):
 
 	session::regenerate();
 

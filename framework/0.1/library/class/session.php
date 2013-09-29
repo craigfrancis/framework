@@ -94,6 +94,10 @@
 
 		public static function destroy() {
 
+			$params = session_get_cookie_params();
+
+			setcookie(config::get('session.name'), '', (time() - 42000), $params['path'], $params['domain'], https_only(), true);
+
 			if (config::get('session.id') !== NULL) {
 
 				session_destroy();
@@ -199,13 +203,12 @@
 
 					if (config::get('output.mode') === NULL && !headers_sent()) { // Not a gateway/maintenance/asset script
 
-						$session_age = session::get('session.age');
+						$session_block = session::get('session.regenerate_block');
+						$session_age = session::get('session.regenerate_age');
 
-						session::set('session.regenerate_age', $session_age);
+						if (($session_block !== true) && ($session_age === NULL || $session_age < (time() - 300))) {
 
-						if ($session_age === NULL || $session_age < (time() - 300)) {
-
-							session::set('session.age', time());
+							session::set('session.regenerate_age', time());
 
 							if ($session_age !== NULL) {
 								session::regenerate();
