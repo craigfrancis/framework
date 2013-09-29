@@ -1306,7 +1306,7 @@
 						foreach (headers_list() as $header) {
 							if (strtolower(substr($header, 0, 14)) == 'cache-control:') {
 								$value = trim(substr($header, 14));
-								//header('Cache-Control: ' . $value . ', no-transform');
+								header('Cache-Control: ' . $value . ', no-transform');
 								break;
 							}
 						}
