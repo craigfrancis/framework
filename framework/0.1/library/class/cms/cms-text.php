@@ -108,7 +108,8 @@
 				//--------------------------------------------------
 				// Content
 
-					$cache_path = tmp_folder('cms-text') . '/' . intval($this->config['revision']) . '-' . base64_encode($this->config['path']);
+					$cache_name = intval($this->config['revision']) . '-' . base64_encode($this->config['path']);
+					$cache_path = tmp_folder('cms-text') . '/' . $cache_name;
 
 					if (is_file($cache_path)) {
 						$this->content = unserialize(file_get_contents($cache_path));
@@ -116,7 +117,7 @@
 						$this->content = NULL;
 					}
 
-					if (!is_array($this->content)) {
+					if (!is_array($this->content) && strlen($cache_name) <= 255) { // Can't use cache (filename too long - assuming ext3), so don't work at all.
 
 						//--------------------------------------------------
 						// Processor
