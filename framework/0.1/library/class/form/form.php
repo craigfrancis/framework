@@ -684,7 +684,7 @@
 							$value = $field->value_get();
 						}
 
-						$values[] = array($field_name, $value); // Allow multiple fields to have the same label
+						$values[$field->input_name_get()] = array($field_name, $value); // Input name should be unique
 
 					}
 
