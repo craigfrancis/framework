@@ -8,7 +8,11 @@
 			protected $item_id = 0;
 			protected $item_type = NULL;
 			protected $form_name = NULL;
-			protected $db_table_name = NULL;
+			protected $db_table_name_sql = NULL;
+			protected $db_where_sql = NULL;
+			protected $db_select_fields = array('id', 'name');
+			protected $editor_id = NULL;
+			protected $cache = array();
 
 			protected $form = NULL;
 
@@ -34,7 +38,28 @@
 			}
 
 			public function select_by_id($id) {
-				exit_with_error('The $' . get_class($this) . '->select_by_id() method has not been implemented yet.');
+
+				// This function should perform a quick SELECT
+				// based on the ID. It should be written to check
+				// users access to the record, and return common
+				// values most scripts will need to use.
+
+				$db = db_get();
+
+				$this->db_where_sql = '
+					id = "' . $db->escape($id) . '" AND
+					deleted = "0000-00-00 00:00:00"';
+
+				$db->select($this->db_table_name_sql, $this->db_select_fields, $this->db_where_sql);
+
+				if ($row = $db->fetch_row()) {
+					$this->item_id = $id;
+					$this->cache = $row;
+				} else {
+					$this->item_id = 0;
+					$this->cache = array();
+				}
+
 			}
 
 			public function require_by_id($id) {
@@ -62,18 +87,36 @@
 
 			public function values_get($fields) {
 
-				$db = db_get();
+				$return = array();
+				$request = array();
 
-				$where_sql = '
-					id = "' . $db->escape($this->item_id) . '" AND
-					deleted = "0000-00-00 00:00:00"';
-
-				$db->select($this->db_table_name, $fields, $where_sql);
-				if ($row = $db->fetch_row()) {
-					return $row;
-				} else {
-					exit_with_error('Cannot return details for item id "' . $this->item_id . '"');
+				foreach ($fields as $field) {
+					if (isset($this->cache[$field])) {
+						$return[$field] = $this->cache[$field];
+					} else {
+						$request[] = $field;
+					}
 				}
+
+				if (count($request) > 0) {
+
+					$db = db_get();
+
+					$where_sql = '
+						id = "' . $db->escape($this->item_id) . '" AND
+						deleted = "0000-00-00 00:00:00"';
+
+					$db->select($this->db_table_name_sql, $request, $where_sql);
+					if ($row = $db->fetch_row()) {
+						$this->cache = array_merge($this->cache, $row);
+						$return = array_merge($return, $row);
+					} else {
+						exit_with_error('Cannot return details for item id "' . $this->item_id . '"');
+					}
+
+				}
+
+				return $return;
 
 			}
 
@@ -99,7 +142,7 @@
 
 						$insert_values = array_merge($insert_values, $this->_db_insert_values());
 
-						$db->insert($this->db_table_name, $insert_values);
+						$db->insert($this->db_table_name_sql, $insert_values);
 
 						$this->item_id = $db->insert_id();
 
@@ -124,7 +167,7 @@
 
 					$changed = false;
 
-					$db->select($this->db_table_name, array_keys($new_values), $where_sql);
+					$db->select($this->db_table_name_sql, array_keys($new_values), $where_sql);
 					if ($old_values = $db->fetch_row()) {
 
 						foreach ($new_values as $field => $new_value) {
@@ -136,7 +179,7 @@
 										'field' => $field,
 										'old_value' => $old_values[$field],
 										'new_value' => $new_value,
-										'editor_id' => USER_ID,
+										'editor_id' => $this->editor_id,
 										'created' => date('Y-m-d H:i:s'),
 									));
 
@@ -158,8 +201,14 @@
 				//--------------------------------------------------
 				// Update
 
-					$db->update($this->db_table_name, $new_values, $where_sql);
+					$db->update($this->db_table_name_sql, $new_values, $where_sql);
 
+					$this->cache = array_merge($this->cache, $new_values);
+
+			}
+
+			public function value_set($field, $value) {
+				return $this->values_set(array($field => $value));
 			}
 
 		//--------------------------------------------------
@@ -169,9 +218,9 @@
 				if ($this->form === NULL) {
 
 					$this->form = new $this->form_name();
-					$this->form->model_ref_set($this);
+					$this->form->model_set($this);
 					$this->form->db_save_disable();
-					$this->form->db_table_set_sql($this->db_table_name);
+					$this->form->db_table_set_sql($this->db_table_name_sql);
 
 					if ($this->item_id > 0) {
 
@@ -190,6 +239,9 @@
 			}
 
 			public function form_populate() {
+			}
+
+			protected function form_validate() {
 			}
 
 			public function form_save() {
@@ -215,9 +267,6 @@
 
 					return true;
 
-			}
-
-			protected function form_validate() {
 			}
 
 		//--------------------------------------------------
