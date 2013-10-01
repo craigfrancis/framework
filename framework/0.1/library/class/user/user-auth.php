@@ -328,7 +328,6 @@
 							' . $this->user_obj->db_table_reset . '
 						WHERE
 							id = "' . $db->escape($request_id) . '" AND
-							user_id = user_id AND
 							pass = "' . $db->escape($request_pass) . '" AND
 							sent > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-90 minutes'))) . '" AND
 							used = "0000-00-00 00:00:00"';
@@ -358,7 +357,6 @@
 							used = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 						WHERE
 							id = "' . $db->escape($request_id) . '" AND
-							user_id = user_id AND
 							used = "0000-00-00 00:00:00"');
 
 		}

@@ -6,7 +6,7 @@
 
 		public function action_index() {
 
-			$unit = unit_add($this->unit_prefix . '_table', array(
+			$unit = unit_add($this->unit_prefix . '_index', array(
 					'add_url' => url('./edit/'),
 					'edit_url' => url('./edit/'),
 					'delete_url' => url('./delete/'),

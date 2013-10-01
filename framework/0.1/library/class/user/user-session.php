@@ -92,7 +92,6 @@
 									' . $db->escape_field($this->user_obj->db_table_session) . '
 								WHERE
 									' . $this->db_where_sql . ' AND
-									user_id = user_id AND
 									deleted != "0000-00-00 00:00:00" AND
 									deleted < "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->history_length))) . '"');
 
@@ -102,7 +101,6 @@
 										' . $db->escape_field($this->user_obj->db_table_session) . '
 									WHERE
 										' . $this->db_where_sql . ' AND
-										user_id = user_id AND
 										deleted = "0000-00-00 00:00:00" AND
 										last_used < "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->length - $this->history_length))) . '"');
 
@@ -218,7 +216,6 @@
 					$db = $this->user_obj->db_get();
 
 					$where_sql = $this->db_where_sql . ' AND
-									user_id = user_id AND
 									pass != "" AND
 									id = "' . $db->escape($session_id) . '" AND
 									deleted = "0000-00-00 00:00:00"';
@@ -251,7 +248,6 @@
 												last_used = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 											WHERE
 												' . $this->db_where_sql . ' AND
-												user_id = user_id AND
 												id = "' . $db->escape($session_id) . '" AND
 												deleted = "0000-00-00 00:00:00"');
 
@@ -311,7 +307,6 @@
 										' . $db->escape_field($this->user_obj->db_table_session) . '
 									WHERE
 										' . $this->db_where_sql . ' AND
-										user_id = user_id AND
 										id = "' . $db->escape($this->session_id) . '" AND
 										deleted = "0000-00-00 00:00:00"');
 
@@ -323,7 +318,6 @@
 										deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 									WHERE
 										' . $this->db_where_sql . ' AND
-										user_id = user_id AND
 										id = "' . $db->escape($this->session_id) . '" AND
 										deleted = "0000-00-00 00:00:00"');
 
