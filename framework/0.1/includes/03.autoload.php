@@ -12,7 +12,7 @@
 		//--------------------------------------------------
 		// Paths
 
-			if (substr($class_name, 0, 11) == 'controller_') {
+			if (prefix_match('controller_', $class_name)) {
 
 				$base_mode = true;
 
@@ -21,6 +21,17 @@
 				$paths = array(
 						APP_ROOT . '/library/controller/' . $class_file_name . '.php',
 						FRAMEWORK_ROOT . '/library/controller/' . $class_file_name . '.php',
+					);
+
+			} else if (substr($class_name, -6) == '_model') {
+
+				$base_mode = true;
+
+				$class_file_name = str_replace('_', '-', substr($class_name, 0, -6));
+
+				$paths = array(
+						APP_ROOT . '/library/model/' . $class_file_name . '.php',
+						FRAMEWORK_ROOT . '/library/model/' . $class_file_name . '.php',
 					);
 
 			} else {
