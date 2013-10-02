@@ -23,7 +23,7 @@
 				$this->set('search_form', $search_form);
 
 			//--------------------------------------------------
-			// Setup the table
+			// Table
 
 				$table = new table();
 				$table->anchor_set('results');
@@ -35,7 +35,7 @@
 				$table->heading_add('', NULL, 'action');
 
 			//--------------------------------------------------
-			// Return
+			// Source
 
 				//--------------------------------------------------
 				// Where
@@ -69,7 +69,7 @@
 					$from_sql = DB_PREFIX . 'item AS i';
 
 			//--------------------------------------------------
-			// Setup the paginator
+			// Pagination
 
 				$db->select($from_sql, 'count', $where_sql);
 

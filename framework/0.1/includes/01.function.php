@@ -48,7 +48,7 @@
 			}
 
 		//--------------------------------------------------
-		// Return value
+		// Return
 
 			return $value;
 
@@ -262,7 +262,7 @@
 				$output_text = preg_replace('/, ([^,]+)$/', ', and $1', $output_text);
 
 			//--------------------------------------------------
-			// Return the output
+			// Return
 
 				return $output_text;
 
