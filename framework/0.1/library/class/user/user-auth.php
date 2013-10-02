@@ -426,7 +426,13 @@
 			// failures, as this could help towards a DOS attack
 
 				if ($error == '') {
+
+					if (extension_loaded('newrelic')) {
+						newrelic_ignore_transaction(); // This will be slow!
+					}
+
 					$valid = password::verify($password, $db_hash, $db_id);
+
 				}
 
 			//--------------------------------------------------
