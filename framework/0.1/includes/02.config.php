@@ -330,4 +330,11 @@
 
 	setlocale(LC_ALL, str_replace('-', '_', config::get('output.lang')) . '.' . config::get('output.charset'));
 
+//--------------------------------------------------
+// Extra
+
+	if (!defined('JSON_PRETTY_PRINT')) {
+		define('JSON_PRETTY_PRINT', 0);
+	}
+
 ?>

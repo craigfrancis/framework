@@ -17,9 +17,6 @@
 		}
 
 		if (!$mode || $mode == 'db') {
-			if (!defined('JSON_PRETTY_PRINT')) {
-				define('JSON_PRETTY_PRINT', 0);
-			}
 			file_put_contents(APP_ROOT . '/library/setup/database.txt', json_encode(dump_db(), JSON_PRETTY_PRINT));
 		}
 
