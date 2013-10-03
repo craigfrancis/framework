@@ -312,7 +312,7 @@
 
 						$result = @fwrite($this->connection, $request); // Send request
 
-						if ($result !== false) {
+						if ($result == strlen($request)) { // Connection lost will result in some bytes being written
 							return true;
 						}
 
