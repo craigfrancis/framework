@@ -458,7 +458,7 @@
 					foreach ($this->resources_get($position == 'head' ? 'js_head' : 'js_foot') as $file) {
 
 						$src = $file['path'];
-						if (substr($src, 0, 1) == '/') {
+						if ($js_prefix && substr($src, 0, 1) == '/') {
 							$src = $js_prefix . substr($src, 1);
 						}
 
@@ -659,7 +659,7 @@
 
 					foreach ($this->resources_get('css') as $file) { // Cannot use array_unique, as some versions of php do not support multi-dimensional arrays
 
-						if (substr($file['path'], 0, 1) == '/') {
+						if ($css_prefix && substr($file['path'], 0, 1) == '/') {
 							$file['path'] = $css_prefix . substr($file['path'], 1);
 						}
 
