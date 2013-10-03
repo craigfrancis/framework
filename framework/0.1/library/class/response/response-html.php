@@ -453,13 +453,13 @@
 				if ($this->js_enabled && $this->browser_advanced) {
 
 					$js_files = array();
-					$js_prefix = config::get('output.js_path_prefix', '');
+					$js_prefix = config::get('output.js_path_prefix', ''); // e.g. '.' or '../..'
 
 					foreach ($this->resources_get($position == 'head' ? 'js_head' : 'js_foot') as $file) {
 
 						$src = $file['path'];
-						if ($js_prefix && substr($src, 0, 1) == '/') {
-							$src = $js_prefix . substr($src, 1);
+						if (substr($src, 0, 1) == '/') {
+							$src = $js_prefix . $src;
 						}
 
 						$js_files[$file['path']] = array_merge(array('src' => $src), $file['attributes']); // Unique path
@@ -655,12 +655,12 @@
 
 					$return = '';
 
-					$css_prefix = config::get('output.css_path_prefix', ''); // e.g. '../'
+					$css_prefix = config::get('output.css_path_prefix', ''); // e.g. '.' or '../..'
 
 					foreach ($this->resources_get('css') as $file) { // Cannot use array_unique, as some versions of php do not support multi-dimensional arrays
 
-						if ($css_prefix && substr($file['path'], 0, 1) == '/') {
-							$file['path'] = $css_prefix . substr($file['path'], 1);
+						if (substr($file['path'], 0, 1) == '/') {
+							$file['path'] = $css_prefix . $file['path'];
 						}
 
 						if ($mode == 'html') {
@@ -680,7 +680,7 @@
 						foreach ($files_alternate as $file) {
 
 							if (substr($file['path'], 0, 1) == '/') {
-								$file['path'] = $css_prefix . substr($file['path'], 1);
+								$file['path'] = $css_prefix . $file['path'];
 							}
 
 							if ($mode == 'html') {
