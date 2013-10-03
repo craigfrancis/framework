@@ -310,20 +310,24 @@
 					$this->connection = @fsockopen($socket_host, $port, $errno, $errstr, 5);
 					if ($this->connection) {
 
-						fwrite($this->connection, $request); // Send request
+						$result = @fwrite($this->connection, $request); // Send request
 
-						return true;
+						if ($result !== false) {
+							return true;
+						}
+
+						$this->error_string = 'Connection lost to "' . $socket_host . ':' . $port . '"';
 
 					} else {
 
-						$this->error_string = 'Failed connection to "' . $socket_host . '" (' . $errno . ': ' . $errstr . ')';
+						$this->error_string = 'Failed connection to "' . $socket_host . ':' . $port . '" (' . $errno . ': ' . $errstr . ')';
 
-						if ($this->exit_on_error) {
-							exit_with_error($this->error_string);
-						} else {
-							return false;
-						}
+					}
 
+					if ($this->exit_on_error) {
+						exit_with_error($this->error_string);
+					} else {
+						return false;
 					}
 
 			}
