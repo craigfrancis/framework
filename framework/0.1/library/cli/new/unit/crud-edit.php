@@ -56,6 +56,7 @@
 				$form->form_class_set('basic_form');
 				$form->db_table_set_sql($table_sql);
 				$form->db_where_set_sql($where_sql);
+				// $form->db_log_set(DB_PREFIX . 'system_log', array('item_type' => 'item', 'item_id' => $item_id, 'editor_id' => ADMIN_ID));
 
 				text
 
