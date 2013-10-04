@@ -9,6 +9,7 @@
 
 				$config = array_merge(array(
 						'id' => NULL,
+						'index_url' => NULL,
 						'delete_url' => NULL,
 					), $config);
 
@@ -129,6 +130,7 @@
 
 	$unit = unit_add('[CLASS_NAME]', array(
 			'id' => $id,
+			'index_url' => url('/admin/item/'),
 			'delete_url' => url('/admin/item/delete/', array('id' => $id)),
 		));
 

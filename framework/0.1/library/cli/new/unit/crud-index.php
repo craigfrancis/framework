@@ -20,7 +20,7 @@
 
 				$search_form = unit_get('search_form');
 
-				$this->set('search_form', $search_form);
+				$this->set('search', $search_form);
 
 			//--------------------------------------------------
 			// Table
@@ -85,7 +85,6 @@
 				$db->select($from_sql, $fields, $where_sql, array('order_sql' => $table->sort_get_sql(), 'limit_sql' => $paginator->limit_get_sql()));
 
 				foreach ($db->fetch_all() as $row) {
-
 
 					//--------------------------------------------------
 					// Details

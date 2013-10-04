@@ -38,8 +38,9 @@
 			private $db_table_name_sql = NULL;
 			private $db_table_alias_sql = NULL;
 			private $db_where_sql = NULL;
-			private $db_select_values = array();
-			private $db_select_done = false;
+			private $db_log_table = NULL;
+			private $db_log_values = array();
+			private $db_select_values = NULL;
 			private $db_fields = array();
 			private $db_values = array();
 			private $db_save_disabled = false;
@@ -327,15 +328,15 @@
 				return $this->error_override_function;
 			}
 
+			public function db_set($db_link) {
+				$this->db_link = $db_link;
+			}
+
 			public function db_get() {
 				if ($this->db_link === NULL) {
 					$this->db_link = db_get();
 				}
 				return $this->db_link;
-			}
-
-			public function db_set($db_link) {
-				$this->db_link = $db_link;
 			}
 
 			public function db_table_set_sql($table_sql, $alias_sql = NULL) {
@@ -363,6 +364,15 @@
 				return $this->db_table_alias_sql;
 			}
 
+			public function db_where_set_sql($where_sql) {
+				$this->db_where_sql = $where_sql;
+			}
+
+			public function db_log_set($table, $values = array()) {
+				$this->db_log_table = $table;
+				$this->db_log_values = $values;
+			}
+
 			public function db_field_get($field, $key = NULL) {
 				if ($key) {
 					if (isset($this->db_fields[$field][$key])) {
@@ -386,10 +396,6 @@
 				} else {
 					return NULL;
 				}
-			}
-
-			public function db_where_set_sql($where_sql) {
-				$this->db_where_sql = $where_sql;
 			}
 
 			public function db_save_disable() {
@@ -419,37 +425,20 @@
 				//--------------------------------------------------
 				// Get values
 
-					if (!$this->db_select_done) {
+					if ($this->db_select_values === NULL) {
 
-						//--------------------------------------------------
-						// Validation
+						if ($this->db_table_name_sql === NULL) exit('<p>You need to call "db_table_set_sql" on the form object</p>');
+						if ($this->db_where_sql === NULL) exit('<p>You need to call "db_where_set_sql" on the form object</p>');
 
-							if ($this->db_table_name_sql === NULL) exit('<p>You need to call "db_table_set_sql" on the form object</p>');
-							if ($this->db_where_sql === NULL) exit('<p>You need to call "db_where_set_sql" on the form object</p>');
+						$fields = $this->db_select_fields();
 
-						//--------------------------------------------------
-						// Select
+						if (count($fields) > 0) {
+							$this->db_select_values = $this->_db_select_values_get($fields);
+						}
 
-							$fields = $this->db_select_fields();
-
-							if (count($fields) > 0) {
-
-								$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
-
-								$db = $this->db_get();
-
-								$db->select($table_sql, $fields, $this->db_where_sql);
-
-								if ($row = $db->fetch_row()) {
-									$this->db_select_values = $row;
-								}
-
-							}
-
-						//--------------------------------------------------
-						// Done
-
-							$this->db_select_done = true;
+						if (!$this->db_select_values) {
+							$this->db_select_values = array(); // Don't lookup again if select failed (false), or there were no fields (NULL).
+						}
 
 					}
 
@@ -462,9 +451,21 @@
 
 					} else {
 
-						exit('<p>Could not find field "' . html($field) . '" - have you called "db_table_set_sql" and "db_where_set_sql" on the form object</p>');
+						exit('<p>Could not find field "' . html($field) . '" - have you called "db_table_set_sql" and "db_where_set_sql" on the form object?</p>');
 
 					}
+
+			}
+
+			private function _db_select_values_get($fields) {
+
+				$db = $this->db_get();
+
+				$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
+
+				$db->select($table_sql, $fields, $this->db_where_sql);
+
+				return $db->fetch_row();
 
 			}
 
@@ -763,7 +764,42 @@
 
 					$values = $this->data_db_get();
 
-					if (isset($this->db_fields['edited'])) {
+				//--------------------------------------------------
+				// Log changes
+
+					if ($this->db_log_table && $this->db_where_sql !== NULL) { // Logging enabled for a record edit (n/a on add)
+
+						$changed = false;
+
+						$old_values = $this->_db_select_values_get(array_keys($values));
+
+						$db = $this->db_get();
+
+						foreach ($values as $field => $new_value) {
+							if (strval($new_value) !== strval($old_values[$field])) { // If the value changes from "123" to "0123", and ignore an INT field being set to NULL (NULL === 0)
+
+								$db->insert($this->db_log_table, array_merge($this->db_log_values, array(
+										'field' => $field,
+										'old_value' => $old_values[$field],
+										'new_value' => $new_value,
+										'created' => date('Y-m-d H:i:s'),
+									)));
+
+								$changed = true;
+
+							}
+						}
+
+					} else {
+
+						$changed = true; // Assume it changed, legacy behaviour (and saves a lookup/compare)
+
+					}
+
+				//--------------------------------------------------
+				// When this happened
+
+					if (isset($this->db_fields['edited']) && $changed) {
 						$values['edited'] = date('Y-m-d H:i:s');
 					}
 
