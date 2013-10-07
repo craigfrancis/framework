@@ -327,7 +327,8 @@
 					//--------------------------------------------------
 					// Path
 
-						$path_new = path_to_array(isset($this->path_data['path']) ? $this->path_data['path'] : $current_path);
+						$path = (isset($this->path_data['path']) ? $this->path_data['path'] : $current_path);
+						$path_new = path_to_array($path);
 
 						if ($format == 'relative') {
 
