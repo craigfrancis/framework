@@ -113,7 +113,7 @@
 
 							if (function_exists('response_get')) {
 								$response = response_get('html');
-								$response->set($error);
+								$response->set($error); // Array with 'message' key
 								$response->error_send('system');
 								exit();
 							} else {
@@ -475,7 +475,7 @@
 					header('Connection: close');
 					header('Content-Length: ' . head(strlen($output)));
 
-					echo $output;
+					echo $output; // If you get the error "Cannot modify header information", check that exit_with_error was not called afterwards.
 
 					flush();
 

@@ -145,8 +145,6 @@
 					$response->set($error);
 					$response->error_send('system');
 
-					exit();
-
 				} else {
 
 					echo '<!DOCTYPE html>
