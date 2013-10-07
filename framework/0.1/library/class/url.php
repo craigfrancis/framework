@@ -328,49 +328,38 @@
 					// Path
 
 						$path = (isset($this->path_data['path']) ? $this->path_data['path'] : $current_path);
+
 						$path_new = path_to_array($path);
 
 						if ($format == 'relative') {
 
-$path_from = path_to_array($current_path);
-debug($path_new);
-debug($path_from);
+							$k = 0; // Folders in common
+							$j = 0; // Folders to work backwards from
 
-							$path_relative = NULL;
-
-							foreach (path_to_array($current_path) as $k => $folder) {
-
-								if ($path_relative === NULL) {
-									if (isset($path_new[$k]) && $folder == $path_new[$k]) {
-										continue;
-									}
-									$path_relative = array();
+							foreach (path_to_array($current_path) as $folder) {
+								if (($j > 0) || (!isset($path_new[$k]) || $folder != $path_new[$k])) {
+									$j++;
+								} else {
+									$k++;
 								}
-
-								$path_relative[] = $folder;
-
 							}
 
-							if (is_array($path_relative)) {
-								$path_relative = array_merge(array_fill(0, count($path_relative), '..'), $path_relative);
+							if ($j > 0) {
+								$output .= str_repeat('../', $j);
 							} else {
-								$path_relative = array();
+								$output .= './';
 							}
 
-							while (isset($path_new[++$k])) {
-								$path_relative[] = $path_new[$k];
-							}
-
-debug($path_relative);
+							$output .= implode('/', array_splice($path_new, $k));
 
 						} else {
 
 							$output .= '/' . implode($path_new, '/');
 
-							if (substr($path, -1) == '/') {
-								$output .= '/';
-							}
+						}
 
+						if (substr($path, -1) == '/' && substr($output, -1) != '/') { // Output could be '../'
+							$output .= '/';
 						}
 
 				//--------------------------------------------------
@@ -428,6 +417,12 @@ debug($path_relative);
 		echo '&#xA0; ' . html($example) . '<br />' . "\n";
 		echo '&#xA0; ' . html($example->get(array('id' => 15))) . '<br />' . "\n";
 		echo '&#xA0; ' . html($example) . '<br />' . "\n";
+
+		$url = url('./');
+		$url->format_set('relative');
+		echo "<br />\n";
+		echo "URL Testing as relative:<br />\n";
+		echo '&#xA0; ' . html($url) . '<br />' . "\n";
 
 		echo "<br />\n";
 		echo "URL Testing with prefix:<br />\n";
