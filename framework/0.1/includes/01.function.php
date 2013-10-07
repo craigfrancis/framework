@@ -276,6 +276,7 @@
 	}
 
 	function path_to_array($path) {
+		$path = str_replace('\\', '/', $path); // Windows
 		$output = array();
 		foreach (explode('/', $path) as $name) {
 			if ($name == '..') { // Move up a folder

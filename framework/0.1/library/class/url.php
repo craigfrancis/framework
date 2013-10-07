@@ -97,9 +97,7 @@
 
 			public function parse($url, $replace_parameters = true) {
 
-				if (is_object($url) && (get_class($url) == 'url' || is_subclass_of($url, 'url'))) {
-					$url = $url->get();
-				}
+				$url = strval($url); // url object calls get(), and xml node is converted.
 
 				if (substr($url, 0, 1) == '/') {
 					$url = config::get('url.prefix') . $url;
@@ -245,7 +243,7 @@
 						$format = 'full';
 					}
 
-					if ($format !== 'full') {
+					if ($format !== 'full' && $format !== 'relative') {
 						$format = 'absolute'; // Default
 					}
 
@@ -329,44 +327,50 @@
 					//--------------------------------------------------
 					// Path
 
-						//--------------------------------------------------
-						// Clean
+						$path_new = path_to_array(isset($this->path_data['path']) ? $this->path_data['path'] : $current_path);
 
-							$path = (isset($this->path_data['path']) ? $this->path_data['path'] : $current_path);
-							$path = str_replace('\\', '/', $path); // Bah, Windows!
-							$path = explode('/', $path);
+						if ($format == 'relative') {
 
-							$path_new = array();
+$path_from = path_to_array($current_path);
+debug($path_new);
+debug($path_from);
 
-							foreach ($path as $dir) {
-								if ($dir == '..') {
-									array_pop($path_new);
-								} else if ($dir != '.' && $dir != '') {
-									array_push($path_new, $dir);
+							$path_relative = NULL;
+
+							foreach (path_to_array($current_path) as $k => $folder) {
+
+								if ($path_relative === NULL) {
+									if (isset($path_new[$k]) && $folder == $path_new[$k]) {
+										continue;
+									}
+									$path_relative = array();
 								}
-							}
 
-							if (end($path) == '') {
-								$path_new[] = '';
-							}
-
-							$path_new = implode($path_new, '/');
-
-							if (!preg_match('/^\//', $path_new)) {
-								$path_new = '/' . $path_new;
-							}
-
-						//--------------------------------------------------
-						// Relative
-
-							if ($format == 'relative') {
+								$path_relative[] = $folder;
 
 							}
 
-						//--------------------------------------------------
-						// Append
+							if (is_array($path_relative)) {
+								$path_relative = array_merge(array_fill(0, count($path_relative), '..'), $path_relative);
+							} else {
+								$path_relative = array();
+							}
 
-							$output .= $path_new;
+							while (isset($path_new[++$k])) {
+								$path_relative[] = $path_new[$k];
+							}
+
+debug($path_relative);
+
+						} else {
+
+							$output .= '/' . implode($path_new, '/');
+
+							if (substr($path, -1) == '/') {
+								$output .= '/';
+							}
+
+						}
 
 				//--------------------------------------------------
 				// Return
