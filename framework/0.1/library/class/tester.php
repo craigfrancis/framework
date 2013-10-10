@@ -9,7 +9,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $session;
+			protected $webdriver;
 
 			private $tester_path;
 			private $tester_output = array();
@@ -137,25 +137,25 @@
 		// Shortcuts
 
 			protected function session_open() {
-
-				$web_driver = new webdriver();
-
-				// $this->session = $web_driver->session('htmlunit');
-				$this->session = $web_driver->session('firefox');
-
+				$this->webdriver = new webdriver('localhost', '4444');
+				$this->webdriver->connect('firefox');
 			}
 
 			protected function session_close() {
-				$this->session->close();
+				$this->webdriver->close();
 			}
 
 			protected function url_load($url) {
-				$this->session->open(strval($url)); // Can't pass a url object directly to "open" method.
+				$this->webdriver->get(strval($url)); // Can't pass a url object directly to "open" method.
+			}
+
+			protected function url_get() {
+				return $this->webdriver->getCurrentUrl();
 			}
 
 			protected function url_param_get($param) {
 
-				$url = $this->session->url();
+				$url = $this->url_get();
 				$query = parse_url($url, PHP_URL_QUERY);
 				parse_str($query, $values);
 
@@ -195,8 +195,8 @@
 					while (true) {
 
 						try {
-							return $this->session->element($using, $selector);
-						} catch (NoSuchElementWebDriverError $e) {
+							return $this->webdriver->findElementBy($using, $selector);
+						} catch (NoSuchElementException $e) {
 							if ($config['test']) {
 								return false;
 							} else if ($config['wait'] == false || $k++ > ($config['wait'] * 2)) {
@@ -211,24 +211,24 @@
 			}
 
 			protected function element_text_get($using, $selector) {
-				return $this->element_get($using, $selector)->text();
+				return $this->element_get($using, $selector)->getText();
 			}
 
 			protected function element_text_check($using, $selector, $required_value) {
 				$current_value = $this->element_text_get($using, $selector);
 				if ($current_value !== $required_value) {
-					$this->test_output_add('Incorrect text for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url());
+					$this->test_output_add('Incorrect text for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->url_get());
 				}
 			}
 
 			protected function element_name_get($using, $selector) {
-				return $this->element_get($using, $selector)->name();
+				return $this->element_get($using, $selector)->getName();
 			}
 
 			protected function element_name_check($using, $selector, $required_value) {
 				$current_value = $this->element_name_get($using, $selector);
 				if ($current_value !== $required_value) {
-					$this->test_output_add('Incorrect name for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url());
+					$this->test_output_add('Incorrect name for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->url_get());
 				}
 			}
 
@@ -241,13 +241,13 @@
 			}
 
 			protected function element_attribute_get($using, $selector, $attribute) {
-				return $this->element_get($using, $selector)->attribute($attribute);
+				return $this->element_get($using, $selector)->getAttribute($attribute);
 			}
 
 			protected function element_attribute_check($using, $selector, $attribute, $required_value) {
 				$current_value = $this->element_attribute_get($using, $selector, $attribute);
 				if ($current_value !== $required_value) {
-					$this->test_output_add('Incorrect ' . $attribute . ' for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->session->url());
+					$this->test_output_add('Incorrect ' . $attribute . ' for element "' . $selector . '".' . "\n" . '   Current value: ' . debug_dump($current_value) . "\n" . '   Required value: ' . debug_dump($required_value) . "\n" . '   Request URL: ' . $this->url_get());
 				}
 			}
 
@@ -256,7 +256,7 @@
 				if (isset($config['clear']) && $config['clear']) {
 					$this->element_get($using, $selector)->clear();
 				}
-				$this->element_get($using, $selector)->value(split_keys($keys));
+				$this->element_get($using, $selector)->sendKeys(array(strval($keys))); // Convert integers to strings
 
 				if ($this->element_name_get($using, $selector) == 'select') {
 
@@ -278,7 +278,7 @@
 				if (isset($config['clear']) && $config['clear']) {
 					$this->element_get($using, $selector)->clear();
 				}
-				$this->element_get($using, $selector)->value(split_keys($keys));
+				$this->element_get($using, $selector)->sendKeys(array(strval($keys)));
 				return $keys;
 			}
 
@@ -286,7 +286,7 @@
 				if ($using == 'id') {
 					$selector = '#' . $selector;
 				}
-				$this->session->element('css selector', $selector . ' option[value="' . html($value) . '"]')->click();
+				$this->element_get('css', $selector . ' option[value="' . html($value) . '"]')->click();
 			}
 
 			protected function form_button_submit($button) {

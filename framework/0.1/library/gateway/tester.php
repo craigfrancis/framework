@@ -74,7 +74,7 @@
 
 							$tester->run();
 
-						} catch (NoSuchElementWebDriverError $e) {
+						} catch (NoSuchElementException $e) {
 
 							if ($ob_level != ob_get_level()) { // Individual test output buffer started, but didn't get a chance to end.
 								$output = ob_get_clean();
