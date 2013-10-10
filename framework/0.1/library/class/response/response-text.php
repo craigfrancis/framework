@@ -51,7 +51,11 @@
 		// Content type
 
 			public function mime_get() {
-				return 'text/plain';
+				if ($this->mime === NULL) {
+					return 'text/plain';
+				} else {
+					return $this->mime;
+				}
 			}
 
 		//--------------------------------------------------
