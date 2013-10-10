@@ -46,7 +46,7 @@
 				$return = NULL;
 
 				if (is_file($this->test_path)) {
-					script_run($this->test_path, array('info' => $info));
+					require($this->test_path); // Cannot use script_run, as $this and $return needs to be available.
 				} else {
 					$this->test_output_add('Missing test file.', -1);
 				}
