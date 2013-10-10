@@ -122,3 +122,11 @@ Pretty much the same as above really:
 
 	$response->send();
 	exit();
+
+Or for an example with JSON data:
+
+	$response = response_get('text');
+	$response->mime_set('application/json');
+	$response->content_add(json_encode($data, JSON_PRETTY_PRINT));
+	$response->send();
+	exit();
