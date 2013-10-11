@@ -430,6 +430,7 @@
 						}
 
 						$attributes['value'] = $value;
+						$attributes['type'] = 'text';
 
 						if ($input_config['size']) {
 							$attributes['maxlength'] = $input_config['size'];
