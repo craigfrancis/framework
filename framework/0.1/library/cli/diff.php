@@ -183,6 +183,15 @@
 
 		}
 
+		foreach ($b as $table => $b_table_info) {
+
+			if (!isset($a[$table])) {
+				$details[$table][] = 'Table: Created in current database.';
+				continue;
+			}
+
+		}
+
 		return $details;
 
 	}
