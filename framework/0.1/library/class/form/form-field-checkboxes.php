@@ -6,6 +6,7 @@
 		// Variables
 
 			protected $value_print_cache;
+			protected $options_info_html;
 
 		//--------------------------------------------------
 		// Setup
@@ -139,6 +140,26 @@
 
 				return $attributes;
 
+			}
+
+		//--------------------------------------------------
+		// HTML info
+
+			public function options_info_set($options_info) {
+				$this->options_info_set_html(array_map('html', $options_info));
+			}
+
+			public function options_info_set_html($options_info_html) {
+				$this->options_info_html = $options_info_html;
+			}
+
+			public function html_info_by_key($key) {
+				if (isset($this->options_info_html[$key])) {
+					return '
+									<span class="info">' . $this->options_info_html[$key] . '</span>';
+				} else {
+					return '';
+				}
 			}
 
 	}

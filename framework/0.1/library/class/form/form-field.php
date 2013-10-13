@@ -568,7 +568,7 @@
 						$html .= '
 								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . ' ' . html('key_' . human_to_ref($key)) . ' ' . html('value_' . human_to_ref($value)) . '">
 									' . $this->html_input_by_key($key) . '
-									' . $this->html_label_by_key($key) . '
+									' . $this->html_label_by_key($key) . $this->html_info_by_key($key) . '
 								</' . html($this->input_wrapper_tag) . '>';
 					}
 					$html .= $this->html_format(8) . $this->html_info(8) . '

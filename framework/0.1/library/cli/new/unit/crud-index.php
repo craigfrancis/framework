@@ -66,12 +66,18 @@
 				//--------------------------------------------------
 				// From
 
-					$from_sql = DB_PREFIX . 'item AS i';
+					$from_sql = '
+						' . DB_PREFIX . 'item AS i';
 
 			//--------------------------------------------------
 			// Pagination
 
-				$db->select($from_sql, 'count', $where_sql);
+				$db->query('SELECT
+								COUNT(i.id)
+							FROM
+								' . $from_sql . '
+							WHERE
+								' . $where_sql);
 
 				$result_count = $db->fetch_result();
 
@@ -80,11 +86,19 @@
 			//--------------------------------------------------
 			// Query
 
-				$fields = array('i.id', 'i.name');
+				$sql = 'SELECT
+							i.id,
+							i.name
+						FROM
+							' . $from_sql . '
+						WHERE
+							' . $where_sql . '
+						ORDER BY
+							' . $table->sort_get_sql() . '
+						LIMIT
+							' . $paginator->limit_get_sql();
 
-				$db->select($from_sql, $fields, $where_sql, array('order_sql' => $table->sort_get_sql(), 'limit_sql' => $paginator->limit_get_sql()));
-
-				foreach ($db->fetch_all() as $row) {
+				foreach ($db->fetch_all($sql) as $row) {
 
 					//--------------------------------------------------
 					// Details
