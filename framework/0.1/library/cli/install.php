@@ -185,11 +185,16 @@
 			}
 
 		//--------------------------------------------------
-		// Run install script
+		// Run install scripts
 
-			$install_root = APP_ROOT . '/library/setup/install.php';
-			if (is_file($install_root)) {
-				script_run($install_root);
+			$install_path = APP_ROOT . '/library/setup/install.php';
+			if (is_file($install_path)) {
+				script_run($install_path);
+			}
+
+			$install_path = APP_ROOT . '/library/setup/install.sh';
+			if (is_file($install_path)) {
+				execute_command($install_path, true);
 			}
 
 	}

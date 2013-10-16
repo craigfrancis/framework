@@ -73,6 +73,14 @@
 		}
 		execute_command('chmod 755 ' . escapeshellarg(FRAMEWORK_ROOT . '/cli/run.sh') . ' 2>&1', $show_output);
 
+		$install_path = APP_ROOT . '/library/setup/install.sh';
+		if (is_file($install_path)) {
+			if ($show_output) {
+				echo 'Install script' . "\n";
+			}
+			execute_command('chmod 755 ' . escapeshellarg($install_path) . ' 2>&1', $show_output);
+		}
+
 		if ($show_output) {
 			echo "\n";
 		}
