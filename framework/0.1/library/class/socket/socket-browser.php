@@ -10,6 +10,7 @@
 		// Variables
 
 			protected $socket = NULL;
+			protected $debug = false;
 			protected $user_agent = NULL;
 			protected $current_data = NULL;
 			protected $current_code = NULL;
@@ -29,12 +30,20 @@
 				$this->socket->exit_on_error_set(false);
 			}
 
+			public function debug_set($debug) {
+				$this->debug = $debug;
+			}
+
 			public function user_agent_get() {
 				return $this->user_agent;
 			}
 
 			public function user_agent_set($user_agent) {
 				$this->user_agent = $user_agent;
+			}
+
+			public function cookie_set($name, $value, $domain = NULL, $path = '/') {
+				$this->cookies[$domain][$path][$name] = $value;
 			}
 
 		//--------------------------------------------------
@@ -302,6 +311,13 @@
 						}
 
 				//--------------------------------------------------
+				// Debug
+
+					if ($this->debug) {
+						debug($this->form);
+					}
+
+				//--------------------------------------------------
 				// Success
 
 					return true;
@@ -349,7 +365,9 @@
 			public function form_fields_get() {
 				$fields = array();
 				foreach ($this->form['fields'] as $name => $info) {
-					$fields[$name] = $info['value'];
+					if ($info['value'] !== NULL) { // Removed value, e.g. a checkbox
+						$fields[$name] = $info['value'];
+					}
 				}
 				return $fields;
 			}
@@ -508,17 +526,26 @@
 
 							$cookies = array();
 
-							if (isset($this->cookies[$url_host])) {
-								foreach ($this->cookies[$url_host] as $host_path => $host_cookies) {
-									if (prefix_match($host_path, $url_path)) {
-										foreach ($host_cookies as $name => $value) {
-											$cookies[$name] = $value;
+							foreach (array($url_host, NULL) as $domain) { // NULL to match all domains
+								if (isset($this->cookies[$domain])) {
+									foreach ($this->cookies[$domain] as $host_path => $host_cookies) {
+										if (prefix_match($host_path, $url_path)) {
+											foreach ($host_cookies as $name => $value) {
+												$cookies[$name] = $value;
+											}
 										}
 									}
 								}
 							}
 
 							$this->socket->cookies_set($cookies);
+
+						//--------------------------------------------------
+						// Debug
+
+							if ($this->debug) {
+								debug(array('url' => $url, 'method' => $method, 'data' => $data, 'cookies' => $cookies));
+							}
 
 						//--------------------------------------------------
 						// Request
