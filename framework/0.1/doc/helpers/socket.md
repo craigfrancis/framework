@@ -60,6 +60,7 @@ Imitate a basic browser
 	// Setup
 
 		$browser = new socket_browser();
+		// $browser->debug_set(true);
 
 	//--------------------------------------------------
 	// Pre-load url and data (testing)
