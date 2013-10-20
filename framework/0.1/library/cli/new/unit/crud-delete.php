@@ -10,7 +10,7 @@
 				$config = array_merge(array(
 						'id' => NULL,
 						'index_url' => NULL,
-						'edit_url' => NULL,
+						'view_url' => NULL,
 					), $config);
 
 				$item_id = intval($config['id']);
@@ -88,7 +88,7 @@
 
 				$this->set('form', $form);
 
-				$this->set('edit_url', $config['edit_url']);
+				$this->set('view_url', $config['view_url']);
 
 		}
 
@@ -102,7 +102,7 @@
 	$unit = unit_add('[CLASS_NAME]', array(
 			'id' => $id,
 			'index_url' => url('/admin/item/'),
-			'edit_url' => url('/admin/item/edit/', array('id' => $id)),
+			'view_url' => url('/admin/item/edit/', array('id' => $id)),
 		));
 
 	$item_name = $unit->get('item_name');
