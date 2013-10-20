@@ -106,7 +106,7 @@
 				$form->form_button_set('Save');
 
 				$field_name = new form_field_info($form, 'Page');
-				$field_name->link_set($config['path'], $config['path']);
+				$field_name->value_set_link($config['path'], $config['path']);
 
 				$field_section = new form_field_info($form, 'Section');
 				$field_section->value_set($config['section']);
@@ -386,7 +386,7 @@
 				$form->form_button_set(NULL);
 
 				$field_name = new form_field_info($form, 'Page');
-				$field_name->link_set($config['path'], $config['path']);
+				$field_name->value_set_link($config['path'], $config['path']);
 
 				$field_section = new form_field_info($form, 'Section');
 				$field_section->value_set($config['section']);
@@ -398,7 +398,7 @@
 				$field_content->value_set($text_content);
 
 				$field_name = new form_field_info($form);
-				$field_name->link_set($back_url, 'Back');
+				$field_name->value_set_link($back_url, 'Back');
 
 				$response->set('form', $form);
 

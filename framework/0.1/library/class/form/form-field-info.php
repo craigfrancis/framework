@@ -49,11 +49,11 @@
 				$this->value_html = $html;
 			}
 
-			public function link_set($url, $text) {
-				if ($url === NULL) {
-					$this->value_set($text);
-				} else {
+			public function value_set_link($url, $text) {
+				if ($url) {
 					$this->value_set_html('<a href="' . html($url) . '">' . html($text) . '</a>');
+				} else {
+					$this->value_set($text);
 				}
 			}
 

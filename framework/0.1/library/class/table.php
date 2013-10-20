@@ -1015,6 +1015,14 @@
 				);
 		}
 
+		public function cell_add_link($url, $text) {
+			if ($url) {
+				$table_row->cell_add_html('<a href="' . html($url) . '">' . html($text) . '</a>');
+			} else {
+				$table_row->cell_add($text);
+			}
+		}
+
 	}
 
 ?>

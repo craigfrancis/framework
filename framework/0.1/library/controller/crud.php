@@ -8,7 +8,7 @@
 
 			$unit = unit_add($this->unit_prefix . '_index', array(
 					'add_url' => url('./edit/'),
-					'edit_url' => url('./edit/'),
+					'view_url' => url('./edit/'),
 					'delete_url' => url('./delete/'),
 				));
 
@@ -33,7 +33,7 @@
 			$unit = unit_add($this->unit_prefix . '_delete', array(
 					'id' => $id,
 					'index_url' => url('../'),
-					'edit_url' => url('../edit/', array('id' => $id)),
+					'view_url' => url('../edit/', array('id' => $id)),
 				));
 
 		}

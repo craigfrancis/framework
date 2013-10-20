@@ -9,7 +9,7 @@
 
 				$config = array_merge(array(
 						'add_url' => NULL,
-						'edit_url' => NULL,
+						'view_url' => NULL,
 						'delete_url' => NULL,
 					), $config);
 
@@ -103,14 +103,14 @@
 					//--------------------------------------------------
 					// Details
 
-						$edit_url = $config['edit_url']->get(array('id' => $row['id']));
+						$view_url = $config['view_url']->get(array('id' => $row['id']));
 						$delete_url = $config['delete_url']->get(array('id' => $row['id']));
 
 					//--------------------------------------------------
 					// Add row
 
 						$table_row = new table_row($table);
-						$table_row->cell_add_html('<a href="' . html($edit_url) . '">' . html($row['name']) . '</a>');
+						$table_row->cell_add_html('<a href="' . html($view_url) . '">' . html($row['name']) . '</a>');
 						$table_row->cell_add($row['name']);
 						$table_row->cell_add_html('<a href="' . html($delete_url) . '">Delete</a>');
 
@@ -133,7 +133,7 @@
 
 	$unit = unit_add('[CLASS_NAME]', array(
 			'add_url' => url('/admin/item/edit/'),
-			'edit_url' => url('/admin/item/edit/'),
+			'view_url' => url('/admin/item/edit/'),
 			'delete_url' => url('/admin/item/delete/'),
 		));
 
