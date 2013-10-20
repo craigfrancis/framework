@@ -26,13 +26,14 @@
 			// Table
 
 				$table = new table();
-				$table->anchor_set('results');
 				$table->class_set('basic_table full_width');
-				$table->no_records_set('No items found');
+				// $table->sort_default_set('tn.created', 'desc');
+				// $table->sort_preserve_set(true);
+				// $table->anchor_set('results');
 
 				$table->heading_add('Name', 'name', 'text');
-				$table->heading_add('Name', 'name', 'text');
-				$table->heading_add('', NULL, 'action');
+
+				if ($config['delete_url']) $table->heading_add('', NULL, 'action');
 
 			//--------------------------------------------------
 			// Source
@@ -103,16 +104,24 @@
 					//--------------------------------------------------
 					// Details
 
-						$view_url = $config['view_url']->get(array('id' => $row['id']));
-						$delete_url = $config['delete_url']->get(array('id' => $row['id']));
+						if ($config['view_url']) {
+							$view_url = $config['view_url']->get(array('id' => $row['id']));
+						} else {
+							$view_url = NULL;
+						}
 
 					//--------------------------------------------------
 					// Add row
 
 						$table_row = new table_row($table);
-						$table_row->cell_add_html('<a href="' . html($view_url) . '">' . html($row['name']) . '</a>');
-						$table_row->cell_add($row['name']);
-						$table_row->cell_add_html('<a href="' . html($delete_url) . '">Delete</a>');
+						$table_row->cell_add_link($view_url, $row['name']);
+
+						// $table_row->cell_add(XXX);
+						// $table_row->cell_add_html(XXX);
+
+						if ($config['delete_url']) {
+							$table_row->cell_add_link($config['delete_url']->get(array('id' => $row['id'])), 'Delete');
+						}
 
 				}
 
