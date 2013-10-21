@@ -113,7 +113,7 @@
 				$this->set('form', $form);
 
 				if ($action_edit) {
-					$this->set('delete_url', $config['delete_url']);
+					$this->set('delete_url', $config['delete_url']->get(array('id' => $item_id)));
 				}
 
 		}
@@ -128,7 +128,7 @@
 	$unit = unit_add('[CLASS_NAME]', array(
 			'id' => $id,
 			'index_url' => url('/admin/item/'),
-			'delete_url' => url('/admin/item/delete/', array('id' => $id)),
+			'delete_url' => url('/admin/item/delete/'),
 		));
 
 	$item_name = $unit->get('item_name');

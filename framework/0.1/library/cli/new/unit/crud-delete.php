@@ -88,7 +88,7 @@
 
 				$this->set('form', $form);
 
-				$this->set('view_url', $config['view_url']);
+				$this->set('view_url', $config['view_url']->get(array('id' => $item_id)));
 
 		}
 
@@ -102,7 +102,7 @@
 	$unit = unit_add('[CLASS_NAME]', array(
 			'id' => $id,
 			'index_url' => url('/admin/item/'),
-			'view_url' => url('/admin/item/edit/', array('id' => $id)),
+			'view_url' => url('/admin/item/edit/'),
 		));
 
 	$item_name = $unit->get('item_name');
