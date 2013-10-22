@@ -980,10 +980,19 @@
 					$form_action = $this->form_action;
 
 					if ($this->form_method == 'GET') {
+
 						$pos = strpos($form_action, '?');
 						if ($pos !== false) {
+
 							$form_action = substr($form_action, 0, $pos);
+
+							$pos = strrpos($this->form_action, '#');
+							if ($pos !== false) {
+								$form_action .= substr($this->form_action, $pos);
+							}
+
 						}
+
 					}
 
 				//--------------------------------------------------
