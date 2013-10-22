@@ -71,15 +71,8 @@
 			return mysql_num_rows($result);
 		}
 
-		public function fetch($sql = NULL) {
-			if (is_string($sql)) {
-				$result = $this->query($sql);
-			} else if ($sql !== NULL) {
-				$result = $sql;
-			} else {
-				$result = $this->result;
-			}
-			return mysql_fetch_assoc($result);
+		public function fetch($sql = NULL) { // Backwards compatability
+			return $this->fetch_row($sql);
 		}
 
 		public function fetch_all($sql = NULL) {
@@ -98,7 +91,14 @@
 		}
 
 		public function fetch_row($sql = NULL) {
-			return $this->fetch($sql); // Backwards compatability
+			if (is_string($sql)) {
+				$result = $this->query($sql);
+			} else if ($sql !== NULL) {
+				$result = $sql;
+			} else {
+				$result = $this->result;
+			}
+			return mysql_fetch_assoc($result);
 		}
 
 		public function fetch_result($row = 0, $col = 0, $result = NULL) {

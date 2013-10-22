@@ -182,7 +182,7 @@ So for reference I use code like the following:
 				`name` = "' . $db->escape($name) . '" AND
 				`pass` = "' . $db->escape($pass) . '"';
 
-	if ($row = $db->fetch($sql)) {
+	if ($row = $db->fetch_row($sql)) {
 	}
 
 And if the query needs to be built up, then a [simple naming convention](../../../doc/security/strings.md) of using "_sql" suffix to any SQL variables.

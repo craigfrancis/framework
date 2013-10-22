@@ -609,7 +609,7 @@
 					WHERE
 						url_src = "' . $db->escape($url_src) . '"';
 
-			if ($row = $db->fetch($sql)) {
+			if ($row = $db->fetch_row($sql)) {
 
 				$return = array(
 						'url' => $row['url_dst'],

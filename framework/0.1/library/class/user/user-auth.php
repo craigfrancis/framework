@@ -332,7 +332,7 @@
 							sent > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-90 minutes'))) . '" AND
 							used = "0000-00-00 00:00:00"';
 
-				if ($row = $db->fetch($sql)) {
+				if ($row = $db->fetch_row($sql)) {
 
 					return array(
 							'request_id' => $request_id,

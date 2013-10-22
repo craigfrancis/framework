@@ -34,7 +34,7 @@
 							cbh.block_id = "' . $db->escape($this->block_id) . '" AND
 							cbh.deleted = "0000-00-00 00:00:00"';
 
-				if ($row = $db->fetch($sql)) {
+				if ($row = $db->fetch_row($sql)) {
 					return array(
 							'level' => $row['level'],
 							'text' => $row['text'],

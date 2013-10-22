@@ -363,7 +363,7 @@
 									cb.parent_id = "' . $db->escape($this->parent_id) . '" AND
 									cb.deleted = "0000-00-00 00:00:00"';
 
-						if ($row = $db->fetch($sql)) {
+						if ($row = $db->fetch_row($sql)) {
 							$add_sort = (intval($row['sort']) + 1);
 						} else {
 							$add_sort = 1;

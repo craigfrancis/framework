@@ -166,7 +166,7 @@
 													' . $where_sql . ' AND
 													ct.revision = 0';
 
-										if ($row = $db->fetch($sql)) {
+										if ($row = $db->fetch_row($sql)) {
 
 											if ($row['content'] == $value && $row['global'] == $config['global'] && $row['marker'] == $config['marker']) {
 												continue; // No change
@@ -262,7 +262,7 @@
 										' . $config['version_where_sql'][$version_name] . ' AND
 										revision = "0"';
 
-							if ($row = $db->fetch($sql)) {
+							if ($row = $db->fetch_row($sql)) {
 								$fields[$version_name]->value_set($row['content']);
 							} else {
 								$fields[$version_name]->value_set($config['default']);
@@ -371,7 +371,7 @@
 							' . $config['version_where_sql'][$version_name] . ' AND
 							ct.revision = "' . $db->escape($revision) . '"';
 
-				if ($row = $db->fetch($sql)) {
+				if ($row = $db->fetch_row($sql)) {
 					$text_created = $row['created'];
 					$text_content = $row['content'];
 				} else {

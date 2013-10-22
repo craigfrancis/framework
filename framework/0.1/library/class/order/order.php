@@ -589,7 +589,7 @@
 										oi.type = "item" AND
 										oi.deleted = "0000-00-00 00:00:00"';
 
-							if ($row = $db->fetch($sql)) {
+							if ($row = $db->fetch_row($sql)) {
 
 								if ($row['quantity'] == $quantity) {
 									return false; // No change

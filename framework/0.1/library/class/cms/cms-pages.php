@@ -120,7 +120,7 @@
 									cp.ref = "' . $db->escape($folder) . '" AND
 									cp.deleted = "0000-00-00 00:00:00"';
 
-						if ($row = $db->fetch($sql)) {
+						if ($row = $db->fetch_row($sql)) {
 							$page_id = $row['id'];
 						} else {
 							$page_id = NULL;
