@@ -521,7 +521,14 @@
 	}
 
 //--------------------------------------------------
-// Shortcut for gateway url's
+// Jobs
+
+	function job_get($name) {
+		// TODO
+	}
+
+//--------------------------------------------------
+// Gateways
 
 	function gateway_url($api_name, $parameters = NULL) {
 
@@ -539,6 +546,160 @@
 
 			return url($api_path);
 
+		}
+
+	}
+
+	function gateway_get($name) {
+		// TODO
+	}
+
+//--------------------------------------------------
+// Controller
+
+	function controller_get($name) {
+		// TODO
+	}
+
+//--------------------------------------------------
+// Get a unit object
+
+	function unit_add($unit_name, $config = array()) {
+		$response = response_get();
+		return $response->unit_add($unit_name, $config);
+	}
+
+	function unit_get($unit_name, $config = array()) {
+
+		$unit_class_name = $unit_name . '_unit';
+		$unit_file_name = safe_file_name(str_replace('_', '-', $unit_name));
+
+		if (($pos = strpos($unit_file_name, '-')) !== false) {
+			$folder = substr($unit_file_name, 0, $pos);
+		} else {
+			$folder = $unit_file_name;
+		}
+
+		$object_paths = array(
+				APP_ROOT . '/unit/' . $unit_file_name . '.php',
+				APP_ROOT . '/unit/' . $folder . '/' . $unit_file_name . '.php',
+			);
+
+		foreach ($object_paths as $object_path) {
+			if (is_file($object_path)) {
+
+				require_once($object_path);
+
+				return new $unit_class_name($object_path, $config);
+
+			}
+		}
+
+		return NULL;
+
+	}
+
+//--------------------------------------------------
+// Database
+
+	function db_get($connection = 'default') {
+		$db = config::array_get('db.link', $connection);
+		if (!$db) {
+			$db = new db($connection);
+			config::array_set('db.link', $connection, $db);
+		}
+		return $db;
+	}
+
+//--------------------------------------------------
+// Response
+
+	function response_get($type = NULL) {
+		if ($type !== NULL) {
+
+			$class = 'response_' . $type;
+			if (class_exists($class)) {
+				$response = new $class();
+				config::set('output.response', $response);
+			} else {
+				exit_with_error('Unknown response type "' . $type . '"');
+			}
+
+		} else {
+
+			$response = config::get('output.response');
+			if (!$response) {
+				$response = new response_html();
+				config::set('output.response', $response);
+			}
+
+		}
+		return $response;
+	}
+
+//--------------------------------------------------
+// Send an error page (shortcut)
+
+	function error_send($error) {
+		$response = response_get(); // Keep current response (ref framework documentation, where the nav was setup in controller)
+		$response->error_send($error);
+		exit();
+	}
+
+//--------------------------------------------------
+// Set message (shortcut)
+
+	function message_set($message) {
+		session::set('message', $message);
+	}
+
+//--------------------------------------------------
+// Set mime type
+
+	function mime_set($mime_type = NULL) {
+
+		if ($mime_type !== NULL) {
+			config::set('output.mime', $mime_type);
+		}
+
+		header('Content-Type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
+
+	}
+
+//--------------------------------------------------
+// Function to send the user onto another page.
+// This takes into IE6 into consideration when
+// redirecting from a HTTPS connection to the
+// standard HTTP
+
+	function redirect($url, $http_response_code = 302) {
+
+		mime_set('text/html');
+
+		if (substr($url, 0, 1) == '/') {
+			$url = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain') . $url;
+		}
+
+		$next_html = '<p>Go to <a href="' . html($url) . '">next page</a>.</p>';
+
+		$output = '';
+		while (ob_get_level() > 0) {
+			$output = ob_get_clean() . $output;
+		}
+		if ($output != '' || headers_sent()) {
+			if (function_exists('debug_exit')) {
+				debug_exit($output . $next_html);
+			} else {
+				exit($output . $next_html);
+			}
+		}
+
+		if (substr($url, 0, 7) == 'http://' && config::get('request.https') && strpos(config::get('request.browser'), 'MSIE 6') !== false) {
+			header('Refresh: 0; url=' . head($url));
+			exit('<p><a href="' . html($url) . '">Loading...</a></p>');
+		} else {
+			header('Location: ' . head($url), true, $http_response_code);
+			exit($next_html);
 		}
 
 	}
@@ -637,149 +798,6 @@
 		}
 
 		return $return;
-
-	}
-
-//--------------------------------------------------
-// Get the database object
-
-	function db_get($connection = 'default') {
-		$db = config::array_get('db.link', $connection);
-		if (!$db) {
-			$db = new db($connection);
-			config::array_set('db.link', $connection, $db);
-		}
-		return $db;
-	}
-
-//--------------------------------------------------
-// Get a unit object
-
-	function unit_add($unit_name, $config = array()) {
-		$response = response_get();
-		return $response->unit_add($unit_name, $config);
-	}
-
-	function unit_get($unit_name, $config = array()) {
-
-		$unit_class_name = $unit_name . '_unit';
-		$unit_file_name = safe_file_name(str_replace('_', '-', $unit_name));
-
-		if (($pos = strpos($unit_file_name, '-')) !== false) {
-			$folder = substr($unit_file_name, 0, $pos);
-		} else {
-			$folder = $unit_file_name;
-		}
-
-		$object_paths = array(
-				APP_ROOT . '/unit/' . $unit_file_name . '.php',
-				APP_ROOT . '/unit/' . $folder . '/' . $unit_file_name . '.php',
-			);
-
-		foreach ($object_paths as $object_path) {
-			if (is_file($object_path)) {
-
-				require_once($object_path);
-
-				return new $unit_class_name($object_path, $config);
-
-			}
-		}
-
-		return NULL;
-
-	}
-
-//--------------------------------------------------
-// Get the current response object
-
-	function response_get($type = NULL) {
-		if ($type !== NULL) {
-
-			$class = 'response_' . $type;
-			if (class_exists($class)) {
-				$response = new $class();
-				config::set('output.response', $response);
-			} else {
-				exit_with_error('Unknown response type "' . $type . '"');
-			}
-
-		} else {
-
-			$response = config::get('output.response');
-			if (!$response) {
-				$response = new response_html();
-				config::set('output.response', $response);
-			}
-
-		}
-		return $response;
-	}
-
-//--------------------------------------------------
-// Send an error page (shortcut)
-
-	function error_send($error) {
-		$response = response_get(); // Keep current response (ref framework documentation, where the nav was setup in controller)
-		$response->error_send($error);
-		exit();
-	}
-
-//--------------------------------------------------
-// Set message (shortcut)
-
-	function message_set($message) {
-		session::set('message', $message);
-	}
-
-//--------------------------------------------------
-// Set mime type
-
-	function mime_set($mime_type = NULL) {
-
-		if ($mime_type !== NULL) {
-			config::set('output.mime', $mime_type);
-		}
-
-		header('Content-Type: ' . head(config::get('output.mime')) . '; charset=' . head(config::get('output.charset')));
-
-	}
-
-//--------------------------------------------------
-// Function to send the user onto another page.
-// This takes into IE6 into consideration when
-// redirecting from a HTTPS connection to the
-// standard HTTP
-
-	function redirect($url, $http_response_code = 302) {
-
-		mime_set('text/html');
-
-		if (substr($url, 0, 1) == '/') {
-			$url = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain') . $url;
-		}
-
-		$next_html = '<p>Go to <a href="' . html($url) . '">next page</a>.</p>';
-
-		$output = '';
-		while (ob_get_level() > 0) {
-			$output = ob_get_clean() . $output;
-		}
-		if ($output != '' || headers_sent()) {
-			if (function_exists('debug_exit')) {
-				debug_exit($output . $next_html);
-			} else {
-				exit($output . $next_html);
-			}
-		}
-
-		if (substr($url, 0, 7) == 'http://' && config::get('request.https') && strpos(config::get('request.browser'), 'MSIE 6') !== false) {
-			header('Refresh: 0; url=' . head($url));
-			exit('<p><a href="' . html($url) . '">Loading...</a></p>');
-		} else {
-			header('Location: ' . head($url), true, $http_response_code);
-			exit($next_html);
-		}
 
 	}
 
