@@ -212,9 +212,9 @@
 
 								$job = new job($job_name, $this, $this->run_id);
 
-								$success = $job->run_wrapper();
+								$result = $job->run_wrapper();
 
-								if ($success !== false) {
+								if ($result !== false) {
 									$this->jobs_run[] = $job_name;
 								}
 
@@ -273,17 +273,8 @@
 			}
 
 			public function execute($job_name) {
-
 				$job = new job($job_name, $this, $this->run_id);
-
-				$success = $job->run_wrapper(true); // Force the running of the job, bypassing should_run() check
-
-				if ($success) {
-					$this->jobs_run[] = $job_name;
-				}
-
-				return $success;
-
+				return $job->run_wrapper(true); // Force the running of the job, bypassing should_run() check
 			}
 
 			public function job_paths_get() {
@@ -364,6 +355,10 @@
 
 			public function email_addresses_get() {
 				return array();
+			}
+
+			public function email_title_get() {
+				return ref_to_human($this->job_name) . ' @ ' . date('Y-m-d H:i:s');
 			}
 
 			public function should_run() {
@@ -455,13 +450,6 @@
 					$job_output_html = ob_get_clean();
 
 				//--------------------------------------------------
-				// Email title
-
-					$email_title = ref_to_human($this->job_name) . ' @ ' . date('Y-m-d H:i:s');
-
-					$email_addresses = array();
-
-				//--------------------------------------------------
 				// Object mode support
 
 					if (class_exists($job_object)) {
@@ -502,10 +490,7 @@
 						//--------------------------------------------------
 						// Email
 
-							if (method_exists($job, 'email_title_get')) {
-								$email_title = $job->email_title_get();
-							}
-
+							$email_title = $job->email_title_get();
 							$email_addresses = $job->email_addresses_get();
 
 						//--------------------------------------------------
@@ -514,6 +499,14 @@
 							if ($job->halt_maintenance_run() == true) {
 								$this->halt_maintenance_run = true;
 							}
+
+					} else {
+
+						//--------------------------------------------------
+						// Email
+
+							$email_title = $this->email_title_get();
+							$email_addresses = array();
 
 					}
 
@@ -544,7 +537,7 @@
 
 						$email = new email();
 						$email->subject_set($email_title);
-						$email->body_html_add($job_output_html);
+						$email->body_html_add($job_output_html); // Assume HTML
 						$email->send($email_addresses);
 
 					}

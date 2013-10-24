@@ -1011,7 +1011,7 @@
 
 					$attributes = array(
 						'id' => $this->form_id,
-						'class' => $this->form_class,
+						'class' => ($this->form_class == '' ? NULL : $this->form_class),
 						'action' => $form_action,
 						'method' => strtolower($this->form_method), // Lowercase for the HTML5 checker on totalvalidator.com
 						'accept-charset' => config::get('output.charset'), // When text from MS Word is pasted in an IE6 input field, it does not translate to UTF-8

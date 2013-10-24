@@ -3,7 +3,22 @@
 
 Helper function:
 
-	gateway_url('name');
+	gateway_url('xyz');
+
+Returns a url such as:
+
+	/a/api/xyz/
+
+Which can be loaded by a browser (i.e. to return JSON data to some JavaScript).
+
+This URL runs the script located at:
+
+	/app/gateway/xyz.php
+
+To run a gateway from elsewhere on the site use:
+
+	$gateway = new gateway();
+	$gateway->run('xyz');
 
 ---
 
