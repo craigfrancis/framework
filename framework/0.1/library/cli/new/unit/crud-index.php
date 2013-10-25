@@ -23,6 +23,15 @@
 				$this->set('search', $search_form);
 
 			//--------------------------------------------------
+			// Columns
+
+				$columns = array('name');
+
+				if ($config['delete_url']) {
+					$columns[] = 'delete';
+				}
+
+			//--------------------------------------------------
 			// Table
 
 				$table = new table();
@@ -31,9 +40,8 @@
 				// $table->sort_preserve_set(true);
 				// $table->anchor_set('results');
 
-				$table->heading_add('Name', 'name', 'text');
-
-				if ($config['delete_url']) $table->heading_add('', NULL, 'action');
+				if (in_array('name',   $columns)) $table->heading_add('Name', 'name', 'text');
+				if (in_array('delete', $columns)) $table->heading_add('', NULL, 'action');
 
 			//--------------------------------------------------
 			// Source
@@ -119,14 +127,9 @@
 					// Add row
 
 						$table_row = new table_row($table);
-						$table_row->cell_add_link($view_url, $row['name']);
 
-						// $table_row->cell_add(XXX);
-						// $table_row->cell_add_html(XXX);
-
-						if ($config['delete_url']) {
-							$table_row->cell_add_link($config['delete_url']->get(array('id' => $row['id'])), 'Delete');
-						}
+						if (in_array('name',   $columns)) $table_row->cell_add_link($view_url, $row['name']);
+						if (in_array('delete', $columns)) $table_row->cell_add_link($config['delete_url']->get(array('id' => $row['id'])), 'Delete');
 
 				}
 

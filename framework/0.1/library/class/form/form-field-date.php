@@ -165,6 +165,8 @@
 			public function value_time_stamp_get() {
 				if ($this->value['M'] == 0 && $this->value['D'] == 0 && $this->value['Y'] == 0) {
 					$timestamp = false;
+				} else if ($this->value['Y'] < 100) {
+					$timestamp = false; // mktime converts 0-99 year values to 20* values, lets avoid ambiguity (and hope we don't need those years).
 				} else {
 					$timestamp = mktime(0, 0, 0, $this->value['M'], $this->value['D'], $this->value['Y']);
 					if ($timestamp === -1) {
