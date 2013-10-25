@@ -166,7 +166,8 @@
 				if ($this->value['M'] == 0 && $this->value['D'] == 0 && $this->value['Y'] == 0) {
 					$timestamp = false;
 				} else if ($this->value['Y'] < 100) {
-					$timestamp = false; // mktime converts 0-99 year values to 20* values, lets avoid ambiguity (and hope we don't need those years).
+					$timestamp = mktime(0, 0, 0, $this->value['M'], $this->value['D'], $this->value['Y'] + 100);
+					$timestamp = strtotime('-100 years', $timestamp); // mktime will auto convert two digit years to four.
 				} else {
 					$timestamp = mktime(0, 0, 0, $this->value['M'], $this->value['D'], $this->value['Y']);
 					if ($timestamp === -1) {
@@ -205,9 +206,9 @@
 
 					if (is_numeric($value)) {
 						return array(
-								'D' => date('j', $value),
-								'M' => date('n', $value),
-								'Y' => date('Y', $value),
+								'D' => intval(date('j', $value)),
+								'M' => intval(date('n', $value)),
+								'Y' => intval(date('Y', $value)), // Don't render year as "0013"
 							);
 					}
 
