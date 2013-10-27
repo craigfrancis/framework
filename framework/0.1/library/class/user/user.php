@@ -367,16 +367,9 @@
 					$identification = $form->field_get('identification')->value_get();
 
 					if ($form->field_exists('password')) {
-
 						$password = $form->field_get('password')->value_get();
-
 					} else {
-
 						$password = '';
-						for ($k=0; $k<5; $k++) {
-							$password .= chr(mt_rand(97,122));
-						}
-
 					}
 
 				//--------------------------------------------------
@@ -392,9 +385,11 @@
 
 						$this->user_id = $this->auth->register($identification);
 
-						$this->auth->password_set($this->user_id, $password);
+						if ($password != '') {
+							$this->auth->password_set($this->user_id, $password);
+						}
 
-						$this->complete_save();
+						$this->complete_save(); // Also sets values from form 'data_db'
 						$this->complete_register();
 
 						return true;
