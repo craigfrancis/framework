@@ -780,8 +780,8 @@
 
 								$db->insert($this->db_log_table, array_merge($this->db_log_values, array(
 										'field' => $field,
-										'old_value' => $old_values[$field],
-										'new_value' => $new_value,
+										'old_value' => strval($old_values[$field]),
+										'new_value' => strval($new_value),
 										'created' => date('Y-m-d H:i:s'),
 									)));
 
