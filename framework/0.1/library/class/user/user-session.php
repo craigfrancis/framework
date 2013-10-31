@@ -117,7 +117,6 @@
 			// Create a new session
 
 				$db->insert($this->user_obj->db_table_session, array(
-						'id' => '',
 						'pass' => $session_pass, // Using CRYPT_BLOWFISH in password::hash(), makes page loading too slow!
 						'user_id' => $user_id,
 						'ip' => config::get('request.ip'),

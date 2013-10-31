@@ -370,7 +370,6 @@
 						}
 
 						$db->insert(DB_PREFIX . 'cms_block', array(
-								'id' => '',
 								'parent_type' => $this->parent_type,
 								'parent_id' => $this->parent_id,
 								'sort' => $add_sort,

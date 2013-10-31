@@ -230,7 +230,6 @@
 				if ($user_id === false) {
 
 					$db->insert($this->user_obj->db_table_reset, array(
-							'id' => '',
 							'pass' => '',
 							'user_id' => 0,
 							'ip' => config::get('request.ip'),
@@ -275,7 +274,6 @@
 					$request_pass = mt_rand(1000000, 9999999);
 
 					$db->insert($this->user_obj->db_table_reset, array(
-							'id' => '',
 							'pass' => $request_pass,
 							'user_id' => $user_id,
 							'ip' => config::get('request.ip'),
@@ -483,7 +481,6 @@
 				if (!in_array($request_ip, config::get('user.ip_whitelist', array()))) {
 
 					$db->insert($this->user_obj->db_table_session, array(
-							'id' => '',
 							'pass' => '', // Will remain blank to record failure
 							'user_id' => $db_id,
 							'ip' => $request_ip,

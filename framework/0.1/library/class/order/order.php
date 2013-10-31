@@ -451,7 +451,6 @@
 					$values = array_merge(array(
 							'quantity' => 1,
 						), $details, array(
-							'id' => '',
 							'order_id' => $this->order_id,
 							'type' => 'item',
 							'created' => date('Y-m-d H:i:s'),
@@ -1013,7 +1012,6 @@
 					$date = date('Y-m-d H:i:s');
 
 					$values = array_merge(array(
-							'id' => '',
 							'pass' => $order_pass,
 							'ip' => config::get('request.ip'),
 							'created' => $date,
@@ -1098,7 +1096,6 @@
 										oi.deleted = "0000-00-00 00:00:00"');
 
 						$db->insert($this->db_table_item, array(
-								'id' => '',
 								'order_id' => $this->order_id,
 								'type' => 'delivery',
 								'price' => $delivery_price,
