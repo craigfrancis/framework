@@ -656,17 +656,31 @@
 					$return = '';
 
 					$css_prefix = config::get('output.css_path_prefix', ''); // e.g. '.' or '../..'
+					$css_query_string = config::get('output.css_query_string', NULL);
+
+					if (preg_match('/MSIE [6-8]\./', config::get('request.browser'))) {
+						if ($css_query_string === NULL) {
+							$css_query_string = array();
+						}
+						$css_query_string['viewport_width'] = '60em'; /* (60em * 16px) = 960px */
+					}
 
 					foreach ($this->resources_get('css') as $file) { // Cannot use array_unique, as some versions of php do not support multi-dimensional arrays
 
-						if (substr($file['path'], 0, 1) == '/') {
-							$file['path'] = $css_prefix . $file['path'];
+						$path = $file['path'];
+
+						if (substr($path, 0, 1) == '/') {
+							$path = $css_prefix . $path;
+						}
+
+						if ($css_query_string) {
+							$path = url($path, $css_query_string);
 						}
 
 						if ($mode == 'html') {
-							$return .= "\n\t" . '<link rel="stylesheet" type="text/css" href="' . html($file['path']) . '" media="' . html($file['media']) . '" />';
+							$return .= "\n\t" . '<link rel="stylesheet" type="text/css" href="' . html($path) . '" media="' . html($file['media']) . '" />';
 						} else if ($mode == 'xml') {
-							$return .= "\n" . '<?xml-stylesheet href="' . xml($file['path']) . '" media="' . xml($file['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
+							$return .= "\n" . '<?xml-stylesheet href="' . xml($path) . '" media="' . xml($file['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
 						}
 
 					}
@@ -679,14 +693,20 @@
 
 						foreach ($files_alternate as $file) {
 
-							if (substr($file['path'], 0, 1) == '/') {
-								$file['path'] = $css_prefix . $file['path'];
+							$path = $file['path'];
+
+							if (substr($path, 0, 1) == '/') {
+								$path = $css_prefix . $path;
+							}
+
+							if ($css_query_string) {
+								$path = url($path, $css_query_string);
 							}
 
 							if ($mode == 'html') {
-								$return .= "\n\t" . '<link rel="alternate stylesheet" type="text/css" href="' . html($file['path']) . '" media="' . html($file['media']) . '" title="' . html($file['title']) . '" />';
+								$return .= "\n\t" . '<link rel="alternate stylesheet" type="text/css" href="' . html($path) . '" media="' . html($file['media']) . '" title="' . html($file['title']) . '" />';
 							} else if ($mode == 'xml') {
-								$return .= "\n" . '<?xml-stylesheet href="' . html($file['path']) . '" alternate="yes" title="' . html($file['title']) . '" media="' . html($file['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
+								$return .= "\n" . '<?xml-stylesheet href="' . html($path) . '" alternate="yes" title="' . html($file['title']) . '" media="' . html($file['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
 							}
 
 						}
@@ -1196,8 +1216,6 @@
 
 				//--------------------------------------------------
 				// Browser on black list (no css/js)
-
-					$this->browser_advanced = true;
 
 					$browser = config::get('request.browser');
 					if ($browser != '') {
