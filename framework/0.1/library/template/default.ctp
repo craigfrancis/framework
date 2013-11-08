@@ -13,7 +13,7 @@
 
 		$root_path = VIEW_ROOT . '/';
 		$root_folders = array();
-		if ($handle = opendir($root_path)) {
+		if (is_dir($root_path) && $handle = opendir($root_path)) {
 			while (false !== ($file = readdir($handle))) {
 
 				if (is_file($root_path . $file) && substr($file, -4) == '.ctp' && $file != 'home.ctp') {
