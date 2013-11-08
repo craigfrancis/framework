@@ -47,6 +47,10 @@
 			return $field_sql;
 		}
 
+		public function escape_table($table) {
+			return '`' . str_replace('`', '', $table) . '`';
+		}
+
 		public function query($sql, $run_debug = true) {
 			$this->connect();
 			if ($run_debug && function_exists('debug_database')) {
