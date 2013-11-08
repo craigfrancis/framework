@@ -160,7 +160,7 @@
 					if ($hidden_info !== NULL) {
 						echo '
 							<hr />
-							<p>' . nl2br(html($hidden_info)) . '</p>';
+							<pre>' . html($hidden_info) . '</pre>';
 					}
 
 					echo '
