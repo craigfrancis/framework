@@ -16,6 +16,10 @@ Usage:
 	$cms_markdown = new cms_markdown();
 	$cms_markdown->process_block_html($text);
 
+Possible alternative:
+	http://parsedown.org/
+	https://github.com/erusev/parsedown
+
 PHP Markdown (1.0.1o)
 	Copyright (c) 2004-2012 Michel Fortin
 	<http://michelf.com/projects/php-markdown/>
