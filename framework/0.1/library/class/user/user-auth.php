@@ -9,6 +9,9 @@
 
 		protected $db_table_fields;
 		protected $db_where_sql;
+		protected $lockout_attempts = 60; // Once every 30 seconds, for the 30 minutes
+		protected $lockout_timeout = 1800;
+		protected $lockout_type = NULL;
 
 		public function __construct($user) {
 			$this->setup($user);
@@ -43,6 +46,12 @@
 
 		public function db_table_field_get($field) {
 			return $this->db_table_fields[$field];
+		}
+
+		public function lockout_config_set($attempts, $timeout, $type = NULL) {
+			$this->lockout_attempts = $attempts;
+			$this->lockout_timeout = $timeout;
+			$this->lockout_type = $type;
 		}
 
 		public function identification_unique($identification) {
@@ -383,23 +392,31 @@
 			//--------------------------------------------------
 			// Too many failed logins?
 
-				$db->query('SELECT
-								1
-							FROM
-								' . $db->escape_field($this->user_obj->db_table_session) . '
-							WHERE
-								(
-									user_id = "' . $db->escape($db_id) . '" OR
-									ip = "' . $db->escape(config::get('request.ip')) . '"
-								) AND
-								pass = "" AND
-								created > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-30 minutes'))) . '" AND
-								deleted = "0000-00-00 00:00:00"');
+				$where_sql = array();
 
-				if ($db->num_rows() >= 60) { // Once every 30 seconds, for the 30 minutes
-					$error = 'failure_repetition';
-				} else {
-					$error = '';
+				if ($this->lockout_type === NULL || $this->lockout_type == 'user') $where_sql[] = 'user_id = "' . $db->escape($db_id) . '"';
+				if ($this->lockout_type === NULL || $this->lockout_type == 'ip') $where_sql[] = 'ip = "' . $db->escape(config::get('request.ip')) . '"';
+
+				if (count($where_sql) > 0) {
+
+					$db->query('SELECT
+									1
+								FROM
+									' . $db->escape_field($this->user_obj->db_table_session) . '
+								WHERE
+									(
+										' . implode(' OR ', $where_sql) . '
+									) AND
+									pass = "" AND
+									created > "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->lockout_timeout))) . '" AND
+									deleted = "0000-00-00 00:00:00"');
+
+					if ($db->num_rows() >= $this->lockout_attempts) { // Once every 30 seconds, for the 30 minutes
+						$error = 'failure_repetition';
+					} else {
+						$error = '';
+					}
+
 				}
 
 			//--------------------------------------------------
