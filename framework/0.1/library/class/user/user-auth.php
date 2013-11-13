@@ -41,6 +41,10 @@
 			$this->db_table_fields[$field] = $name;
 		}
 
+		public function db_table_field_get($field) {
+			return $this->db_table_fields[$field];
+		}
+
 		public function identification_unique($identification) {
 			return ($this->identification_id_get($identification) === false);
 		}
@@ -97,18 +101,19 @@
 
 		}
 
-		public function identification_set($user_id, $new_identification) {
+		public function password_generate($user_id) {
 
 			//--------------------------------------------------
-			// Update
+			// Throttle requests
 
 				$db = $this->user_obj->db_get();
 
-				$db->query('UPDATE
+				$error = NULL;
+
+				$db->query('SELECT
+								' . $db->escape_field($this->db_table_fields['edited']) . ' AS edited
+							FROM
 								' . $db->escape_field($this->user_obj->db_table_main) . '
-							SET
-								' . $db->escape_field($this->db_table_fields['edited']) . ' = "' . $db->escape(date('Y-m-d H:i:s')) . '",
-								' . $db->escape_field($this->db_table_fields['identification']) . ' = "' . $db->escape($new_identification) . '"
 							WHERE
 								' . $this->db_where_sql . ' AND
 								' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($user_id) . '" AND
@@ -116,53 +121,31 @@
 							LIMIT
 								1');
 
-		}
-
-		public function password_set($user_id, $new_password = NULL) {
-
-			//--------------------------------------------------
-			// Throttle random passwords (e.g. forgotten password)
-
-				$db = $this->user_obj->db_get();
-
-				if ($new_password === NULL) {
-
-					$db->query('SELECT
-									' . $db->escape_field($this->db_table_fields['edited']) . ' AS edited
-								FROM
-									' . $db->escape_field($this->user_obj->db_table_main) . '
-								WHERE
-									' . $this->db_where_sql . ' AND
-									' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($user_id) . '" AND
-									' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"
-								LIMIT
-									1');
-
-					if ($row = $db->fetch_row()) {
-
-						if ((strtotime($row['edited']) + 60*30) > time()) {
-							return 'recently_changed';
-						}
-
-					} else {
-
-						return 'invalid_user';
-
+				if ($row = $db->fetch_row()) {
+					if ((strtotime($row['edited']) + 60*30) > time()) {
+						$error = 'recently_changed';
 					}
-
+				} else {
+					$error = 'invalid_user';
 				}
 
 			//--------------------------------------------------
-			// Generate password, if necessary
+			// Generate password
 
-				if ($new_password === NULL) {
-					$new_password = mt_rand(1000000, 9999999);
-				}
+				$new_password = mt_rand(1000000, 9999999);
 
 			//--------------------------------------------------
-			// Hash password
+			// Hash password - always run, so we don't expose
+			// if a valid account exists or not.
 
-				$db_hash = password::hash($new_password, $user_id);
+				$db_hash = $this->password_hash($user_id, $new_password);
+
+			//--------------------------------------------------
+			// Return error
+
+				if ($error !== NULL) {
+					return $error;
+				}
 
 			//--------------------------------------------------
 			// Update
@@ -357,6 +340,10 @@
 							id = "' . $db->escape($request_id) . '" AND
 							used = "0000-00-00 00:00:00"');
 
+		}
+
+		public function password_hash($user_id, $new_password) {
+			return password::hash($new_password, $user_id);
 		}
 
 		public function verify($identification, $password) {

@@ -386,7 +386,7 @@
 						$this->user_id = $this->auth->register($identification);
 
 						if ($password != '') {
-							$this->auth->password_set($this->user_id, $password);
+							$form->db_value_set($this->auth->db_table_field_get('password'), $this->auth->password_hash($this->user_id, $password));
 						}
 
 						$this->complete_save(); // Also sets values from form 'data_db'
@@ -403,11 +403,12 @@
 			}
 
 		//--------------------------------------------------
-		// New password - simple method, enter identification
-		// and a new password will be generated, this could
-		// then be emailed to the user.
+		// Generate password - simple method, enter
+		// identification and a new password will be
+		// generated, this could then be emailed to the
+		// user (not recommended).
 
-			public function password_new() {
+			public function password_generate() {
 
 				//--------------------------------------------------
 				// Form reference + values
@@ -429,7 +430,7 @@
 
 						} else {
 
-							$new_password = $this->auth->password_set($user_id);
+							$new_password = $this->auth->password_generate($user_id);
 
 							if ($new_password === 'invalid_user') {
 								$form->error_add($this->text['new_pass_invalid_identification']); // Should not happen
@@ -564,7 +565,9 @@
 
 						if (is_array($result)) {
 
-							$this->auth->password_set($result['user_id'], $password_new_value);
+							$this->values_set(array(
+									$this->auth->db_table_field_get('password') => $this->auth->password_hash($result['user_id'], $password_new_value),
+								));
 
 							$this->auth->password_reset_expire($result['request_id']);
 
@@ -810,7 +813,7 @@
 			//--------------------------------------------------
 			// Result
 
-				public function complete_login() {
+				protected function complete_login() {
 
 					//--------------------------------------------------
 					// Open session
@@ -819,28 +822,21 @@
 
 				}
 
-				public function complete_logout() {
+				protected function complete_logout() {
 				}
 
-				public function complete_register() {
+				protected function complete_register() {
 					// Use $this->user_id to get details from db, or form... do not add the password to the email though (insecure).
 				}
 
-				public function complete_save() {
+				protected function complete_save() {
 
 					//--------------------------------------------------
-					// Form reference
+					// Values
 
 						$form = $this->form_get();
 
-					//--------------------------------------------------
-					// Update
-
 						$values = $form->data_db_get();
-
-						if (count($values) > 0) {
-							$this->values_set($values);
-						}
 
 					//--------------------------------------------------
 					// New password
@@ -850,7 +846,7 @@
 							$password_new_value = $form->field_get('password_new')->value_get();
 
 							if ($password_new_value != '') {
-								$this->auth->password_set($this->user_id, $password_new_value);
+								$values[$this->auth->db_table_field_get('password')] = $this->auth->password_hash($this->user_id, $password_new_value);
 							}
 
 						}
@@ -859,7 +855,16 @@
 					// New identification
 
 						if ($form->field_exists('identification_new')) {
-							$this->auth->identification_set($this->user_id, $form->field_get('identification_new')->value_get());
+
+							$values[$this->auth->db_table_field_get('identification')] = $form->field_get('identification_new')->value_get();
+
+						}
+
+					//--------------------------------------------------
+					// Update
+
+						if (count($values) > 0) {
+							$this->values_set($values);
 						}
 
 				}
