@@ -11,7 +11,7 @@
 		protected $db_where_sql;
 		protected $lockout_attempts = 60; // Once every 30 seconds, for the 30 minutes
 		protected $lockout_timeout = 1800;
-		protected $lockout_type = NULL;
+		protected $lockout_mode = NULL;
 
 		public function __construct($user) {
 			$this->setup($user);
@@ -48,10 +48,10 @@
 			return $this->db_table_fields[$field];
 		}
 
-		public function lockout_config_set($attempts, $timeout, $type = NULL) {
+		public function lockout_config_set($attempts, $timeout, $mode = NULL) {
 			$this->lockout_attempts = $attempts;
 			$this->lockout_timeout = $timeout;
-			$this->lockout_type = $type;
+			$this->lockout_mode = $mode;
 		}
 
 		public function identification_unique($identification) {
@@ -392,12 +392,16 @@
 			//--------------------------------------------------
 			// Too many failed logins?
 
-				$where_sql = array();
+				if ($this->lockout_attempts > 0) {
 
-				if ($this->lockout_type === NULL || $this->lockout_type == 'user') $where_sql[] = 'user_id = "' . $db->escape($db_id) . '"';
-				if ($this->lockout_type === NULL || $this->lockout_type == 'ip') $where_sql[] = 'ip = "' . $db->escape(config::get('request.ip')) . '"';
+					$where_sql = array();
 
-				if (count($where_sql) > 0) {
+					if ($this->lockout_mode === NULL || $this->lockout_mode == 'user') $where_sql[] = 'user_id = "' . $db->escape($db_id) . '"';
+					if ($this->lockout_mode === NULL || $this->lockout_mode == 'ip') $where_sql[] = 'ip = "' . $db->escape(config::get('request.ip')) . '"';
+
+					if (count($where_sql) == 0) {
+						exit_with_error('Unknown logout mode (' . $this->lockout_mode . ')');
+					}
 
 					$db->query('SELECT
 									1
