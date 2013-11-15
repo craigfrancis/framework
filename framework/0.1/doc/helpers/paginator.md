@@ -122,7 +122,7 @@ Note that the '`true`' used to set the item count will trigger a redirect if the
 
 ---
 
-## Add record count
+## Show page count
 
 See below for a more customisable solution, but if you just want to show the number of pages/records next to all paginators:
 
