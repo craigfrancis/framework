@@ -126,13 +126,13 @@ Note that the '`true`' used to set the item count will trigger a redirect if the
 
 See below for a more customisable solution, but if you just want to show the number of pages/records next to all paginators:
 
-	$config['paginator.extra_html'] = '<span class="pagination_extra">Page [PAGE] of [COUNT]</span>';
+	$config['paginator.extra_html'] = '<span class="pagination_extra">Page [PAGE_NUMBER] of [PAGE_COUNT]</span>';
 
 Or just the one:
 
 	$paginator = new paginator(array(
 			'item_count' => 1234,
-			'extra_html' => '<span class="pagination_extra">Page [PAGE] of [COUNT]</span>',
+			'extra_html' => '<span class="pagination_extra">Page [PAGE_NUMBER] of [PAGE_COUNT]</span>',
 		));
 
 Or maybe you want to print the paginator twice (above/below table), but only show the page and item count on the first one:
@@ -144,7 +144,7 @@ Or maybe you want to print the paginator twice (above/below table), but only sho
 		protected function html_extra() {
 			if ($this->print_count++ == 0) {
 				$item_count = $this->item_count_get();
-				return '<span class="pagination_extra"> - [COUNT] pages - ' . html(number_format($item_count)) . ($item_count == 1 ? ' record' : ' records') . '</span>';
+				return '<span class="pagination_extra"> - [PAGE_COUNT] pages - ' . html(number_format($item_count)) . ($item_count == 1 ? ' record' : ' records') . '</span>';
 			} else {
 				return '';
 			}
@@ -210,7 +210,7 @@ The pagination helper has the following configuration options available.
 		'span'
 
 	extra_html
-		NULL, but could be '<span class="pagination_extra">Page [PAGE] of [COUNT]</span>'
+		NULL, but could be '<span class="pagination_extra">Page [PAGE_NUMBER] of [PAGE_COUNT]</span>'
 
 If you need to customise the output further, it is possible to extend the pagination class with your own `html_format()` or `html()` methods:
 

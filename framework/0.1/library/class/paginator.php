@@ -41,7 +41,7 @@
 							'number_pad' => 0,
 							'link_count' => 9,
 							'link_wrapper_element' => 'span',
-							'extra_html' => NULL, // '<span class="pagination_extra">Page [PAGE] of [COUNT]</span>'
+							'extra_html' => NULL, // '<span class="pagination_extra">Page [PAGE_NUMBER] of [PAGE_COUNT]</span>'
 						);
 
 					$default_config = array_merge($default_config, config::get_all('paginator'));
@@ -291,8 +291,9 @@
 
 					if ($extra_html != '') {
 						$extra_html = $this->config['indent_html'] . "\t" . $extra_html;
-						$extra_html = str_replace('[PAGE]', html($this->page_number), $extra_html);
-						$extra_html = str_replace('[COUNT]', html($this->page_count), $extra_html);
+						$extra_html = str_replace('[PAGE_NUMBER]', html($this->page_number), $extra_html);
+						$extra_html = str_replace('[PAGE_COUNT]', html($this->page_count), $extra_html);
+						$extra_html = str_replace('[ITEM_COUNT]', html($this->item_count_get()), $extra_html);
 					} else {
 						$extra_html = '';
 					}
