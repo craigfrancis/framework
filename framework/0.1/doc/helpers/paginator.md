@@ -122,6 +122,38 @@ Note that the '`true`' used to set the item count will trigger a redirect if the
 
 ---
 
+## Add record count
+
+See below for a more customisable solution, but if you just want to show the number of pages/records next to all paginators:
+
+	$config['paginator.extra_html'] = '<span class="pagination_extra">Page [PAGE] of [COUNT]</span>';
+
+Or just the one:
+
+	$paginator = new paginator(array(
+			'item_count' => 1234,
+			'extra_html' => '<span class="pagination_extra">Page [PAGE] of [COUNT]</span>',
+		));
+
+Or maybe you want to print the paginator twice (above/below table), but only show the page and item count on the first one:
+
+	class paginator extends paginator_base {
+
+		private $print_count = 0;
+
+		protected function html_extra() {
+			if ($this->print_count++ == 0) {
+				$item_count = $this->item_count_get();
+				return '<span class="pagination_extra"> - [COUNT] pages - ' . html(number_format($item_count)) . ($item_count == 1 ? ' record' : ' records') . '</span>';
+			} else {
+				return '';
+			}
+		}
+
+	}
+
+---
+
 ## Config options
 
 The pagination helper has the following configuration options available.

@@ -284,10 +284,15 @@
 
 					$nav_links_html = $this->_nav_links_html();
 
-					if ($this->config['extra_html'] != '') {
-						$extra_html = $this->config['indent_html'] . "\t" . $this->config['extra_html'];
-						$extra_html = str_replace('[PAGE]', $this->page_number, $extra_html);
-						$extra_html = str_replace('[COUNT]', $this->page_count, $extra_html);
+				//--------------------------------------------------
+				// Extra HTML
+
+					$extra_html = $this->html_extra();
+
+					if ($extra_html != '') {
+						$extra_html = $this->config['indent_html'] . "\t" . $extra_html;
+						$extra_html = str_replace('[PAGE]', html($this->page_number), $extra_html);
+						$extra_html = str_replace('[COUNT]', html($this->page_count), $extra_html);
 					} else {
 						$extra_html = '';
 					}
@@ -316,6 +321,10 @@
 							'hidden' => ($this->config['mode'] == 'form' ? '<input type="hidden" name="' . html($this->config['variable']) . '" value="' . html($this->page_number) . '" />' : ''),
 						));
 
+			}
+
+			protected function html_extra() {
+				return $this->config['extra_html'];
 			}
 
 			protected function html_format($elements_html) {
