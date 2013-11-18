@@ -565,16 +565,17 @@
 
 						if (is_array($result)) {
 
-							$this->user_id = $result['user_id'];
+							$current_user_id = $this->user_id;
 
-
-// TODO
+							$this->user_id = $result['user_id']; // So values_set can change the correct password
 
 							$this->values_set(array(
 									$this->auth->db_table_field_get('password') => $this->auth->password_hash($result['user_id'], $password_new_value),
 								));
 
 							$this->auth->password_reset_expire($result['request_id']);
+
+							$this->user_id = $current_user_id;
 
 							return true;
 
