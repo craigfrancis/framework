@@ -75,10 +75,6 @@
 			return mysql_num_rows($result);
 		}
 
-		public function fetch($sql = NULL) { // Backwards compatability
-			return $this->fetch_row($sql);
-		}
-
 		public function fetch_all($sql = NULL) {
 			if (is_string($sql)) {
 				$result = $this->query($sql);

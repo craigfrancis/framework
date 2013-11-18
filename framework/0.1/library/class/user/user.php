@@ -565,6 +565,11 @@
 
 						if (is_array($result)) {
 
+							$this->user_id = $result['user_id'];
+
+
+// TODO
+
 							$this->values_set(array(
 									$this->auth->db_table_field_get('password') => $this->auth->password_hash($result['user_id'], $password_new_value),
 								));
