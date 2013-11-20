@@ -1292,7 +1292,7 @@
 
 								if ($head_js != '') { // Is working
 
-									// $this->js_add(gateway_url('js-newrelic', 'head.js'), NULL, 'head'); // Can be cached
+									$this->js_add(gateway_url('js-newrelic', 'head.js'), NULL, 'head'); // Can be cached
 
 									$this->js_code_add(newrelic_get_browser_timing_footer(false), 'async', 'foot');
 
