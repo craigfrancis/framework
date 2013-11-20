@@ -77,6 +77,13 @@
 						$name = substr(human_to_ref($label), 0, 30);
 					}
 
+					$name_original = $name;
+
+					$k = 1;
+					while (config::array_search('form.fields', $name) !== false) {
+						$name = $name_original . '_' . ++$k;
+					}
+
 					$this->input_name_set($name);
 
 				//--------------------------------------------------
@@ -223,16 +230,9 @@
 					}
 				}
 
-				$name_original = $name;
-
-				$k = 1;
-				while (config::array_search('form.fields', $name) !== false) {
-					$name = $name_original . '_' . ++$k;
-				}
-
-				config::array_push('form.fields', $name);
-
 				$this->name = $name;
+
+				config::array_push('form.fields', $this->name);
 
 			}
 
