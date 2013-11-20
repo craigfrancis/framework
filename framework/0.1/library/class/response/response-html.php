@@ -40,13 +40,11 @@
 		// Variables
 
 			public function set($variable, $value = NULL) {
-
 				if (is_array($variable) && $value === NULL) {
 					$this->variables = array_merge($this->variables, $variable);
 				} else {
 					$this->variables[$variable] = $value;
 				}
-
 			}
 
 			public function get($variable, $default = NULL) {

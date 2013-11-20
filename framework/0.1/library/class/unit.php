@@ -28,7 +28,11 @@
 		// Variables
 
 			public function set($variable, $value = NULL) {
-				$this->view_variables[$variable] = $value;
+				if (is_array($variable) && $value === NULL) {
+					$this->view_variables = array_merge($this->view_variables, $variable);
+				} else {
+					$this->view_variables[$variable] = $value;
+				}
 			}
 
 			public function get($variable, $default = NULL) {
