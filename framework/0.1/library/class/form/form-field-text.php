@@ -9,8 +9,10 @@
 			protected $min_length;
 			protected $max_length;
 			protected $placeholder;
-			protected $input_size;
 			protected $input_type;
+			protected $input_size;
+			protected $input_list_id;
+			protected $input_list_options;
 
 		//--------------------------------------------------
 		// Setup
@@ -45,8 +47,10 @@
 					$this->max_length = NULL;
 					$this->placeholder = NULL;
 					$this->type = 'text';
-					$this->input_size = NULL;
 					$this->input_type = 'text';
+					$this->input_size = NULL;
+					$this->input_list_id = NULL;
+					$this->input_list_options = NULL;
 
 			}
 
@@ -56,6 +60,24 @@
 
 			public function input_size_set($input_size) {
 				$this->input_size = $input_size;
+			}
+
+			public function input_list_set($options, $id = NULL) {
+				if (count($options) > 0) {
+
+					if ($id === NULL) {
+						$id = $this->input_id_get() . '_list';
+					}
+
+					$this->input_list_id = $id;
+					$this->input_list_options = $options;
+
+				} else {
+
+					$this->input_list_id = NULL;
+					$this->input_list_options = NULL;
+
+				}
 			}
 
 			public function placeholder_set($placeholder) {
@@ -176,6 +198,10 @@
 					$attributes['size'] = intval($this->input_size);
 				}
 
+				if ($this->input_list_id !== NULL) {
+					$attributes['list'] = $this->input_list_id;
+				}
+
 				if ($this->max_length !== NULL && $this->max_length > 0) {
 					$attributes['maxlength'] = intval($this->max_length);
 				}
@@ -192,7 +218,15 @@
 		// HTML
 
 			public function html_input() {
-				return $this->_html_input(array('value' => $this->_value_print_get()));
+				$html = $this->_html_input(array('value' => $this->_value_print_get()));
+				if ($this->input_list_id !== NULL) {
+					$html .= '<datalist id="' . html($this->input_list_id) . '">';
+					foreach ($this->input_list_options as $id => $value) {
+						$html .= '<option value="' . html($value) . '" />';
+					}
+					$html .= '</datalist>';
+				}
+				return $html;
 			}
 
 	}
