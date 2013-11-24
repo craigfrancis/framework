@@ -1257,11 +1257,16 @@
 						if (!is_array($attributes)) {
 							$attributes = array('value' => $attributes);
 						}
-						if (!isset($attributes['value'])) {
-							$attributes['value'] = 'Save';
-						}
-						$html .= '
+						if (isset($attributes['html'])) {
+							$html .= '
+								' . $attributes['html'];
+						} else {
+							if (!isset($attributes['value'])) {
+								$attributes['value'] = 'Save';
+							}
+							$html .= '
 								' . html_tag('input', array_merge(array('type' => 'submit', 'name' => $this->form_button_name), $attributes));
+						}
 					}
 
 					return $html . '
