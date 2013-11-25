@@ -160,7 +160,7 @@
 					if ($hidden_info !== NULL) {
 						echo '
 							<hr />
-							<pre>' . html($hidden_info) . '</pre>';
+							<div>' . nl2br(html($hidden_info)) . '</div>'; // Don't use <pre>, SQL can have very long lines.
 					}
 
 					echo '

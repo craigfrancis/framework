@@ -8,6 +8,6 @@
 	<?php if (isset($hidden_info) && $hidden_info !== NULL) { ?>
 
 		<hr />
-		<pre><?= html($hidden_info) ?></pre>
+		<div><?= nl2br(html($hidden_info)) ?></div>
 
 	<?php } ?>
