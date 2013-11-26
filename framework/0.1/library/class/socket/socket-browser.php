@@ -580,7 +580,7 @@
 						// Cookies
 
 							foreach ($this->socket->response_header_get_all('Set-Cookie') as $header_cookie) {
-								if (preg_match('/^([^=]+)=([^;\n]+)(.*?path=([^;\n]+))?/i', $header_cookie, $matches)) {
+								if (preg_match('/^([^=]+)=([^;\n]+)([^\n]*?path=([^;\n]+))?/i', $header_cookie, $matches)) {
 
 									$path = (isset($matches[4]) ? $matches[4] : '/');
 
