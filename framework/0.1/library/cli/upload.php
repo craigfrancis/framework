@@ -59,7 +59,10 @@
 		//
 		//--------------------------------------------------
 
-		// Possibly establish connection first (single connection?), as a background process.
+		// Possibly establish connection first (single connection?), as a background process, ref:
+		//   Host *
+		//      ControlMaster auto
+		//      ControlPath ~/.ssh/master-%r@%h:%p
 
 		// Ensure the folder /dest_dir/upload/ exists.
 
