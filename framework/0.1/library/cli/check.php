@@ -66,10 +66,10 @@
 
 						$table_sql = $db->escape_table($row['Name']);
 
-						$table_setup = $default_setup;
-
 						if (isset($database_setup[$table])) {
-							$table_setup = array_merge($table_setup, $database_setup[$table]);
+							$table_setup = array_merge($default_setup, $database_setup[$table]);
+						} else {
+							$table_setup = $default_setup;
 						}
 
 					//--------------------------------------------------
