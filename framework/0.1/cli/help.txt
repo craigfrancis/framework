@@ -17,6 +17,8 @@
  -i
  --install         Run install process.
 
+ --new[=params]    Add new thing (e.g. unit).
+
  -p
  --permissions     Correct file and folder permissions.
 
@@ -26,4 +28,4 @@
 
  --diff[=mode]     Compare saved 'dir' and/or 'db' to the current site.
 
- --new[=params]    Add new thing (e.g. unit).
+ --upload=server   Upload to server (demo or live).

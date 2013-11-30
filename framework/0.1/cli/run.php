@@ -47,9 +47,10 @@
 
 	$extra_parameters = array(
 			'new::',
+			'check::',
 			'dump::',
 			'diff::',
-			'check::',
+			'upload:',
 		);
 
 	if (version_compare(PHP_VERSION, '5.3.0', '<')) {
@@ -180,6 +181,13 @@
 					install_run();
 					break;
 
+				case 'new':
+
+					require_once(FRAMEWORK_ROOT . '/library/cli/new.php');
+
+					new_item($option_value);
+					break;
+
 				case 'p':
 				case 'permissions':
 
@@ -188,11 +196,11 @@
 					permission_reset();
 					break;
 
-				case 'new':
+				case 'check':
 
-					require_once(FRAMEWORK_ROOT . '/library/cli/new.php');
+					require_once(FRAMEWORK_ROOT . '/library/cli/check.php');
 
-					new_item($option_value);
+					check_run($option_value);
 					break;
 
 				case 'dump':
@@ -210,11 +218,11 @@
 					diff_run($option_value);
 					break;
 
-				case 'check':
+				case 'upload':
 
-					require_once(FRAMEWORK_ROOT . '/library/cli/check.php');
+					require_once(FRAMEWORK_ROOT . '/library/cli/upload.php');
 
-					check_run($option_value);
+					upload_run($option_value);
 					break;
 
 				default:
