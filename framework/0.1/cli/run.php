@@ -49,6 +49,7 @@
 			'new::',
 			'dump::',
 			'diff::',
+			'check::',
 		);
 
 	if (version_compare(PHP_VERSION, '5.3.0', '<')) {
@@ -207,6 +208,13 @@
 					require_once(FRAMEWORK_ROOT . '/library/cli/dump.php');
 
 					diff_run($option_value);
+					break;
+
+				case 'check':
+
+					require_once(FRAMEWORK_ROOT . '/library/cli/check.php');
+
+					check_run($option_value);
 					break;
 
 				default:

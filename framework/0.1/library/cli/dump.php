@@ -64,7 +64,7 @@
 
 				$table = array_pop($row);
 
-				$table_sql = $db->escape_field($table);
+				$table_sql = $db->escape_table($table);
 
 				$tables[$table] = array(
 						'fields' => array(),
@@ -94,7 +94,7 @@
 					unset($row['cardinality']);
 
 					if (isset($tables[$table]['keys'][$name][$seq])) {
-						exit_with_error('Duplate key name "' . $name . '" in table "' . $table . '"');
+						exit_with_error('Duplicate key name "' . $name . '" in table "' . $table . '"');
 					}
 
 					$tables[$table]['keys'][$name][$seq] = $row;

@@ -143,6 +143,7 @@
 					$info = NULL;
 				}
 
+				$null = ($row['Null'] == 'YES');
 				$options = NULL;
 
 				if ($type == 'int' || $type == 'tinyint' || $type == 'smallint' || $type == 'mediumint' || $type == 'bigint' || $type == 'char' || $type == 'binary' || $type == 'varchar' || $type == 'varbinary') {
@@ -169,7 +170,7 @@
 				} else if ($type == 'bool') {
 					$length = 1;
 				} else if ($type == 'float' || $type == 'double' || $type == 'timestamp') {
-					$length = NULL; // Not really aplicable
+					$length = NULL; // Not really applicable
 				} else if ($type == 'enum' || $type == 'set') {
 					$options = str_getcsv($info, ',', "'");
 					$length = count($options);
@@ -181,10 +182,11 @@
 						'type' => $type,
 						'length' => $length,
 						'collation' => $row['Collation'],
-						'null' => ($row['Null'] == 'YES'),
+						'null' => $null,
 						'default' => $row['Default'],
 						'extra' => $row['Extra'],
 						'options' => $options,
+						'definition' => $row['Type'] . ($null ? ' NULL' : ' NOT NULL') . ($row['Default'] ? ' DEFAULT "' . $this->escape($row['Default']) . '"' : '') . ($row['Extra'] ? ' ' . $row['Extra'] : ''),
 					);
 
 			}

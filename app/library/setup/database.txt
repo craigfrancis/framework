@@ -8,7 +8,8 @@
                 "null": false,
                 "default": null,
                 "extra": "auto_increment",
-                "options": null
+                "options": null,
+                "definition": "int(11) NOT NULL auto_increment"
             },
             "name": {
                 "type": "tinytext",
@@ -17,7 +18,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "email": {
                 "type": "tinytext",
@@ -26,7 +28,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "message": {
                 "type": "text",
@@ -35,7 +38,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "text NOT NULL"
             },
             "url": {
                 "type": "tinytext",
@@ -44,7 +48,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "password": {
                 "type": "tinytext",
@@ -53,7 +58,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "check": {
                 "type": "enum",
@@ -65,7 +71,8 @@
                 "options": [
                     "false",
                     "true"
-                ]
+                ],
+                "definition": "enum('false','true') NOT NULL"
             },
             "items": {
                 "type": "enum",
@@ -78,7 +85,8 @@
                     "A",
                     "B",
                     "C"
-                ]
+                ],
+                "definition": "enum('A','B','C') NOT NULL"
             },
             "selection": {
                 "type": "set",
@@ -91,7 +99,8 @@
                     "1",
                     "2",
                     "3"
-                ]
+                ],
+                "definition": "set('1','2','3') NOT NULL"
             },
             "date": {
                 "type": "date",
@@ -100,7 +109,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "date NOT NULL"
             },
             "time": {
                 "type": "time",
@@ -109,7 +119,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "time NOT NULL"
             },
             "number": {
                 "type": "int",
@@ -118,7 +129,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "int(11) NOT NULL"
             },
             "amount": {
                 "type": "float",
@@ -127,7 +139,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "float NOT NULL"
             },
             "postcode": {
                 "type": "tinytext",
@@ -136,7 +149,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "ip": {
                 "type": "tinytext",
@@ -145,7 +159,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "created": {
                 "type": "datetime",
@@ -154,7 +169,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "datetime NOT NULL"
             }
         },
         "keys": {
@@ -182,7 +198,8 @@
                 "null": false,
                 "default": null,
                 "extra": "auto_increment",
-                "options": null
+                "options": null,
+                "definition": "int(11) NOT NULL auto_increment"
             },
             "name": {
                 "type": "tinytext",
@@ -191,7 +208,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "email": {
                 "type": "tinytext",
@@ -200,7 +218,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "message": {
                 "type": "text",
@@ -209,7 +228,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "text NOT NULL"
             },
             "homepage": {
                 "type": "tinytext",
@@ -218,7 +238,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "where": {
                 "type": "tinytext",
@@ -227,7 +248,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "accept_terms": {
                 "type": "enum",
@@ -239,7 +261,8 @@
                 "options": [
                     "false",
                     "true"
-                ]
+                ],
+                "definition": "enum('false','true') NOT NULL"
             },
             "items": {
                 "type": "enum",
@@ -252,7 +275,8 @@
                     "A",
                     "B",
                     "C"
-                ]
+                ],
+                "definition": "enum('A','B','C') NOT NULL"
             },
             "selection": {
                 "type": "enum",
@@ -265,7 +289,8 @@
                     "1",
                     "2",
                     "3"
-                ]
+                ],
+                "definition": "enum('1','2','3') NOT NULL"
             },
             "options": {
                 "type": "set",
@@ -279,7 +304,8 @@
                     "Option 2",
                     "Option 3",
                     "Option ' 4"
-                ]
+                ],
+                "definition": "set('Option 1','Option 2','Option 3','Option '' 4') NOT NULL"
             },
             "date": {
                 "type": "date",
@@ -288,7 +314,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "date NOT NULL"
             },
             "number": {
                 "type": "int",
@@ -297,7 +324,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "int(11) NOT NULL"
             },
             "amount": {
                 "type": "float",
@@ -306,7 +334,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "float NOT NULL"
             },
             "postcode": {
                 "type": "tinytext",
@@ -315,7 +344,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "ip": {
                 "type": "tinytext",
@@ -324,7 +354,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "created": {
                 "type": "datetime",
@@ -333,7 +364,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "datetime NOT NULL"
             }
         },
         "keys": {
@@ -361,7 +393,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "varchar(150) NOT NULL"
             },
             "url_dst": {
                 "type": "varchar",
@@ -370,7 +403,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "varchar(150) NOT NULL"
             },
             "permanent": {
                 "type": "enum",
@@ -382,7 +416,8 @@
                 "options": [
                     "false",
                     "true"
-                ]
+                ],
+                "definition": "enum('false','true') NOT NULL"
             },
             "enabled": {
                 "type": "enum",
@@ -394,7 +429,8 @@
                 "options": [
                     "false",
                     "true"
-                ]
+                ],
+                "definition": "enum('false','true') NOT NULL"
             },
             "requests": {
                 "type": "int",
@@ -403,7 +439,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "int(11) NOT NULL"
             },
             "referrer": {
                 "type": "tinytext",
@@ -412,7 +449,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "created": {
                 "type": "datetime",
@@ -421,7 +459,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "datetime NOT NULL"
             },
             "edited": {
                 "type": "datetime",
@@ -430,7 +469,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "datetime NOT NULL"
             }
         },
         "keys": {
@@ -458,7 +498,8 @@
                 "null": false,
                 "default": null,
                 "extra": "auto_increment",
-                "options": null
+                "options": null,
+                "definition": "int(11) NOT NULL auto_increment"
             },
             "type": {
                 "type": "tinytext",
@@ -467,7 +508,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "created": {
                 "type": "datetime",
@@ -476,7 +518,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "datetime NOT NULL"
             },
             "message": {
                 "type": "text",
@@ -485,7 +528,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "text NOT NULL"
             },
             "request": {
                 "type": "tinytext",
@@ -494,7 +538,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "referrer": {
                 "type": "tinytext",
@@ -503,7 +548,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "ip": {
                 "type": "tinytext",
@@ -512,7 +558,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             }
         },
         "keys": {
@@ -540,7 +587,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "varchar(100) NOT NULL"
             },
             "violated_directive": {
                 "type": "varchar",
@@ -549,7 +597,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "varchar(100) NOT NULL"
             },
             "referrer": {
                 "type": "tinytext",
@@ -558,7 +607,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "document_uri": {
                 "type": "tinytext",
@@ -567,7 +617,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "original_policy": {
                 "type": "text",
@@ -576,7 +627,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "text NOT NULL"
             },
             "data_raw": {
                 "type": "text",
@@ -585,7 +637,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "text NOT NULL"
             },
             "ip": {
                 "type": "tinytext",
@@ -594,7 +647,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "browser": {
                 "type": "tinytext",
@@ -603,7 +657,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "created": {
                 "type": "datetime",
@@ -612,7 +667,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "datetime NOT NULL"
             },
             "updated": {
                 "type": "datetime",
@@ -621,7 +677,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "datetime NOT NULL"
             }
         },
         "keys": {
@@ -660,7 +717,8 @@
                 "null": false,
                 "default": null,
                 "extra": "auto_increment",
-                "options": null
+                "options": null,
+                "definition": "int(11) NOT NULL auto_increment"
             },
             "name": {
                 "type": "tinytext",
@@ -669,7 +727,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "email": {
                 "type": "tinytext",
@@ -678,7 +737,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "date_of_birth": {
                 "type": "date",
@@ -687,7 +747,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "date NOT NULL"
             },
             "type": {
                 "type": "enum",
@@ -700,7 +761,8 @@
                     "user",
                     "test",
                     "admin"
-                ]
+                ],
+                "definition": "enum('user','test','admin') NOT NULL"
             },
             "homepage": {
                 "type": "tinytext",
@@ -709,7 +771,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "password": {
                 "type": "tinytext",
@@ -718,7 +781,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "address_postcode": {
                 "type": "tinytext",
@@ -727,7 +791,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "tinytext NOT NULL"
             },
             "opt_in": {
                 "type": "enum",
@@ -739,7 +804,8 @@
                 "options": [
                     "opt-out",
                     "opt-in"
-                ]
+                ],
+                "definition": "enum('opt-out','opt-in') NOT NULL"
             },
             "balance": {
                 "type": "float",
@@ -748,7 +814,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "float NOT NULL"
             },
             "comments": {
                 "type": "text",
@@ -757,7 +824,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "text NOT NULL"
             },
             "created": {
                 "type": "datetime",
@@ -766,7 +834,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "datetime NOT NULL"
             },
             "edited": {
                 "type": "datetime",
@@ -775,7 +844,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "datetime NOT NULL"
             },
             "deleted": {
                 "type": "datetime",
@@ -784,7 +854,8 @@
                 "null": false,
                 "default": null,
                 "extra": "",
-                "options": null
+                "options": null,
+                "definition": "datetime NOT NULL"
             }
         },
         "keys": {

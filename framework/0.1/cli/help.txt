@@ -15,13 +15,15 @@
  --maintenance     Run the maintenance scripts.
 
  -i
- --install         Run install.
+ --install         Run install process.
 
  -p
  --permissions     Correct file and folder permissions.
 
- --new[=params]    Add new thing (e.g. unit).
+ --check[=mode]    Check for issues, such as 'db' collation/engines.
 
  --dump[=mode]     Save 'dir' and/or 'db' structure to the setup folder.
 
- --diff[=mode]     Compare 'dir' and/or 'db' to the current site.
+ --diff[=mode]     Compare saved 'dir' and/or 'db' to the current site.
+
+ --new[=params]    Add new thing (e.g. unit).

@@ -83,7 +83,7 @@
 					foreach ($a_field_info as $a_info_name => $a_info_value) {
 
 						if (!array_key_exists($a_info_name, $b_field_info)) {
-							$details[$table][] = 'Field: Unknown "' . $a_field_name . '.' . $a_info_name . '" propertly in current database.';
+							$details[$table][] = 'Field: Unknown "' . $a_field_name . '.' . $a_info_name . '" property in current database.';
 							continue;
 						}
 
@@ -94,7 +94,7 @@
 						}
 
 						if ($a_info_value != $b_info_value) {
-							$details[$table][] = 'Field: Changed "' . $a_field_name . '.' . $a_info_name . '" propertly ("' . $a_info_value . '" != "' . $b_info_value . '").';
+							$details[$table][] = 'Field: Changed "' . $a_field_name . '.' . $a_info_name . '" property ("' . $a_info_value . '" != "' . $b_info_value . '").';
 							continue;
 						}
 

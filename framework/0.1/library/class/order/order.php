@@ -136,7 +136,7 @@
 					$this->form->order_ref_set($this);
 					$this->form->db_set($this->db_get());
 					$this->form->db_save_disable();
-					$this->form->db_table_set_sql($db->escape_field($this->db_table_main));
+					$this->form->db_table_set_sql($db->escape_table($this->db_table_main));
 
 					if ($this->order_id > 0) {
 
@@ -245,7 +245,7 @@
 				$db->query('SELECT
 								' . implode(', ', $fields_sql) . '
 							FROM
-								' . $db->escape_field($this->db_table_main) . '
+								' . $db->escape_table($this->db_table_main) . '
 							WHERE
 								' . $where_sql);
 
@@ -564,7 +564,7 @@
 						// Simple delete
 
 							$db->query('UPDATE
-											' . $db->escape_field($this->db_table_item) . ' AS oi
+											' . $db->escape_table($this->db_table_item) . ' AS oi
 										SET
 											oi.deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 										WHERE
@@ -581,7 +581,7 @@
 							$sql = 'SELECT
 										*
 									FROM
-										' . $db->escape_field($this->db_table_item) . ' AS oi
+										' . $db->escape_table($this->db_table_item) . ' AS oi
 									WHERE
 										oi.id = "' . $db->escape($item_id) . '" AND
 										oi.order_id = "' . $db->escape($this->order_id) . '" AND
@@ -609,7 +609,7 @@
 						// Update the quantity
 
 							$db->query('UPDATE
-											' . $db->escape_field($this->db_table_item) . ' AS oi
+											' . $db->escape_table($this->db_table_item) . ' AS oi
 										SET
 											oi.quantity = "' . $db->escape($quantity) . '"
 										WHERE
@@ -670,7 +670,7 @@
 					$sql = 'SELECT
 								*
 							FROM
-								' . $db->escape_field($this->db_table_item) . ' AS oi
+								' . $db->escape_table($this->db_table_item) . ' AS oi
 							WHERE
 								oi.order_id = "' . $db->escape($this->order_id) . '" AND
 								oi.type = "item" AND
@@ -818,7 +818,7 @@
 								oi.type,
 								SUM(oi.price * oi.quantity) AS total
 							FROM
-								' . $db->escape_field($this->db_table_item) . ' AS oi
+								' . $db->escape_table($this->db_table_item) . ' AS oi
 							WHERE
 								oi.order_id = "' . $db->escape($this->order_id) . '" AND
 								oi.type != "item" AND
@@ -1071,7 +1071,7 @@
 						$sql = 'SELECT
 									oi.price
 								FROM
-									' . $db->escape_field($this->db_table_item) . ' AS oi
+									' . $db->escape_table($this->db_table_item) . ' AS oi
 								WHERE
 									oi.order_id = "' . $db->escape($this->order_id) . '" AND
 									oi.type = "delivery" AND
@@ -1087,7 +1087,7 @@
 					// Replace delivery record
 
 						$db->query('UPDATE
-										' . $db->escape_field($this->db_table_item) . ' AS oi
+										' . $db->escape_table($this->db_table_item) . ' AS oi
 									SET
 										oi.deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 									WHERE

@@ -68,7 +68,7 @@
 				$db->query('SELECT
 								' . $db->escape_field($this->db_table_fields['id']) . ' AS id
 							FROM
-								' . $db->escape_field($this->user_obj->db_table_main) . '
+								' . $db->escape_table($this->user_obj->db_table_main) . '
 							WHERE
 								' . $this->db_where_sql . ' AND
 								' . $db->escape_field($this->db_table_fields['identification']) . ' = "' . $db->escape(strval($identification)) . '" AND
@@ -94,7 +94,7 @@
 				$db->query('SELECT
 								' . $db->escape_field($this->db_table_fields['identification']) . ' AS identification
 							FROM
-								' . $db->escape_field($this->user_obj->db_table_main) . '
+								' . $db->escape_table($this->user_obj->db_table_main) . '
 							WHERE
 								' . $this->db_where_sql . ' AND
 								' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($user_id) . '" AND
@@ -122,7 +122,7 @@
 				$db->query('SELECT
 								' . $db->escape_field($this->db_table_fields['edited']) . ' AS edited
 							FROM
-								' . $db->escape_field($this->user_obj->db_table_main) . '
+								' . $db->escape_table($this->user_obj->db_table_main) . '
 							WHERE
 								' . $this->db_where_sql . ' AND
 								' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($user_id) . '" AND
@@ -160,7 +160,7 @@
 			// Update
 
 				$db->query('UPDATE
-								' . $db->escape_field($this->user_obj->db_table_main) . '
+								' . $db->escape_table($this->user_obj->db_table_main) . '
 							SET
 								' . $db->escape_field($this->db_table_fields['edited']) . ' = "' . $db->escape(date('Y-m-d H:i:s')) . '",
 								' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($db_hash) . '"
@@ -197,7 +197,7 @@
 				$db->query('SELECT
 								1
 							FROM
-								' . $db->escape_field($this->user_obj->db_table_reset) . '
+								' . $db->escape_table($this->user_obj->db_table_reset) . '
 							WHERE
 								(
 									(
@@ -372,7 +372,7 @@
 								' . $db->escape_field($this->db_table_fields['id']) . ' AS id,
 								' . $db->escape_field($this->db_table_fields['password']) . ' AS password
 							FROM
-								' . $db->escape_field($this->user_obj->db_table_main) . '
+								' . $db->escape_table($this->user_obj->db_table_main) . '
 							WHERE
 								' . $where_sql . ' AND
 								' . $this->db_where_sql . ' AND
@@ -406,7 +406,7 @@
 					$db->query('SELECT
 									1
 								FROM
-									' . $db->escape_field($this->user_obj->db_table_session) . '
+									' . $db->escape_table($this->user_obj->db_table_session) . '
 								WHERE
 									(
 										' . implode(' OR ', $where_sql) . '
@@ -454,7 +454,7 @@
 								$new_hash = password::hash($password, $db_id);
 
 								$db->query('UPDATE
-												' . $db->escape_field($this->user_obj->db_table_main) . '
+												' . $db->escape_table($this->user_obj->db_table_main) . '
 											SET
 												' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($new_hash) . '"
 											WHERE

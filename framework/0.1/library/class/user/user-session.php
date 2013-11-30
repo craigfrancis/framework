@@ -63,7 +63,7 @@
 					if ($this->history_length == 0) {
 
 						$db->query('DELETE FROM
-										' . $db->escape_field($this->user_obj->db_table_session) . '
+										' . $db->escape_table($this->user_obj->db_table_session) . '
 									WHERE
 										' . $this->db_where_sql . ' AND
 										user_id = "' . $db->escape($user_id) . '" AND
@@ -72,7 +72,7 @@
 					} else {
 
 						$db->query('UPDATE
-										' . $db->escape_field($this->user_obj->db_table_session) . '
+										' . $db->escape_table($this->user_obj->db_table_session) . '
 									SET
 										deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 									WHERE
@@ -89,7 +89,7 @@
 				if ($this->history_length >= 0) {
 
 					$db->query('DELETE FROM
-									' . $db->escape_field($this->user_obj->db_table_session) . '
+									' . $db->escape_table($this->user_obj->db_table_session) . '
 								WHERE
 									' . $this->db_where_sql . ' AND
 									deleted != "0000-00-00 00:00:00" AND
@@ -98,7 +98,7 @@
 					if ($this->length > 0) {
 
 						$db->query('DELETE FROM
-										' . $db->escape_field($this->user_obj->db_table_session) . '
+										' . $db->escape_table($this->user_obj->db_table_session) . '
 									WHERE
 										' . $this->db_where_sql . ' AND
 										deleted = "0000-00-00 00:00:00" AND
@@ -228,7 +228,7 @@
 									pass,
 									ip
 								FROM
-									' . $db->escape_field($this->user_obj->db_table_session) . '
+									' . $db->escape_table($this->user_obj->db_table_session) . '
 								WHERE
 									' . $where_sql);
 
@@ -242,7 +242,7 @@
 							// Update the session - keep active
 
 								$db->query('UPDATE
-												' . $db->escape_field($this->user_obj->db_table_session) . '
+												' . $db->escape_table($this->user_obj->db_table_session) . '
 											SET
 												last_used = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 											WHERE
@@ -303,7 +303,7 @@
 					if ($this->history_length == 0) {
 
 						$db->query('DELETE FROM
-										' . $db->escape_field($this->user_obj->db_table_session) . '
+										' . $db->escape_table($this->user_obj->db_table_session) . '
 									WHERE
 										' . $this->db_where_sql . ' AND
 										id = "' . $db->escape($this->session_id) . '" AND
@@ -312,7 +312,7 @@
 					} else {
 
 						$db->query('UPDATE
-										' . $db->escape_field($this->user_obj->db_table_session) . '
+										' . $db->escape_table($this->user_obj->db_table_session) . '
 									SET
 										deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
 									WHERE
