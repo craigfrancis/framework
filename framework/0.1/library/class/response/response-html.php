@@ -1130,30 +1130,28 @@
 					//--------------------------------------------------
 					// Error
 
-						$error = $this->error;
+						if (is_string($this->error) || !$view_exists) {
 
-						if (is_string($error) || !$view_exists) {
-
-							if ($error === false || $error === NULL) {
-								$error = 'page-not-found';
+							if ($this->error === false || $this->error === NULL) {
+								$this->error = 'page-not-found';
 							}
 
 							if (!headers_sent()) {
-								if ($error == 'page-not-found') {
+								if ($this->error == 'page-not-found') {
 									http_response_code(404);
-								} else if ($error == 'system') {
+								} else if ($this->error == 'system') {
 									http_response_code(500);
 								}
 							}
 
-							if ($error == 'page-not-found') {
+							if ($this->error == 'page-not-found') {
 								error_log('File does not exist: ' . config::get('request.uri'), 4);
 							}
 
-							$view_path = view_path(array('error', $error));
+							$view_path = view_path(array('error', $this->error));
 
 							if (!is_file($view_path)) {
-								$view_path = FRAMEWORK_ROOT . '/library/view/error-' . safe_file_name($error) . '.ctp';
+								$view_path = FRAMEWORK_ROOT . '/library/view/error-' . safe_file_name($this->error) . '.ctp';
 							}
 							if (!is_file($view_path)) {
 								$view_path = FRAMEWORK_ROOT . '/library/view/error-page-not-found.ctp';

@@ -640,8 +640,9 @@
 //--------------------------------------------------
 // Send an error page (shortcut)
 
-	function error_send($error) {
+	function error_send($error, $variables = array()) {
 		$response = response_get(); // Keep current response (ref framework documentation, where the nav was setup in controller)
+		$response->set($variables);
 		$response->error_send($error);
 		exit();
 	}
