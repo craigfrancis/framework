@@ -1137,7 +1137,7 @@
 							}
 
 							if (!headers_sent()) {
-								if ($this->error == 'page-not-found') {
+								if ($this->error == 'page-not-found' || $this->error == 'deleted') {
 									http_response_code(404);
 								} else if ($this->error == 'system') {
 									http_response_code(500);
