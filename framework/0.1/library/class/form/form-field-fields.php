@@ -35,7 +35,7 @@
 
 					$this->value = NULL;
 
-					if ($this->form_submitted) {
+					if ($this->form_submitted || $this->form->saved_values_available()) {
 
 						$hidden_value = $this->form->hidden_value_get($this->name);
 
@@ -45,7 +45,12 @@
 
 						} else {
 
-							$request_value = request($this->name, $this->form->form_method_get());
+							if ($this->form_submitted) {
+								$request_value = request($this->name, $this->form->form_method_get());
+							} else {
+								$request_value = $this->form->saved_value_get($this->name);
+							}
+
 							if ($request_value !== NULL) {
 								$this->value_set($request_value);
 							}
@@ -212,11 +217,7 @@
 
 			protected function _value_print_get() {
 				if ($this->value === NULL) {
-					if ($this->form->saved_values_available()) {
-						return $this->_value_parse($this->form->saved_value_get($this->name));
-					} else {
-						return $this->_value_parse($this->form->db_select_value_get($this->db_field_name));
-					}
+					return $this->_value_parse($this->form->db_select_value_get($this->db_field_name));
 				}
 				return $this->value;
 			}

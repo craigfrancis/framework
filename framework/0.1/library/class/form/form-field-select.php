@@ -33,9 +33,13 @@
 
 					$this->values = NULL; // Array of selected key(s), or NULL when not set
 
-					if ($this->form_submitted) {
+					if ($this->form_submitted || $this->form->saved_values_available()) {
 
-						$this->values = request($this->name, $this->form->form_method_get());
+						if ($this->form_submitted) {
+							$this->values = request($this->name, $this->form->form_method_get());
+						} else {
+							$this->values = $this->form->saved_value_get($this->name);
+						}
 
 						if ($this->values === NULL) {
 							$this->values = $this->form->hidden_value_get($this->name);
@@ -255,16 +259,6 @@
 				if ($this->values !== NULL) {
 
 					$values = $this->values;
-
-				} else if ($this->form->saved_values_available()) {
-
-					$values = $this->form->saved_value_get($this->name);
-
-					if ($values === NULL) {
-						$values = array();
-					} else if (!is_array($values)) {
-						$values = array($values);
-					}
 
 				} else if ($this->db_field_name !== NULL) {
 

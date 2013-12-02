@@ -96,21 +96,7 @@
 
 			protected function _value_print_get() {
 				if ($this->value === NULL) {
-
-					if ($this->form->saved_values_available()) {
-
-						return ($this->form->saved_value_get($this->name) == 'true');
-
-					} else {
-
-						if ($this->text_value_true) {
-							return ($this->form->db_select_value_get($this->db_field_name) == $this->text_value_true);
-						} else {
-							return ($this->form->db_select_value_get($this->db_field_name) == true);
-						}
-
-					}
-
+					return ($this->form->db_select_value_get($this->db_field_name) == ($this->text_value_true !== NULL ? $this->text_value_true : true));
 				}
 				return $this->value;
 			}

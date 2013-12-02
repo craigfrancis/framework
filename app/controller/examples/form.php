@@ -82,7 +82,7 @@
 				if ($preserved) {
 					$response = response_get('html');
 					$response->template_set('blank');
-					$response->view_add_html('<a href="' . html(url(array('preserved' => NULL))) . '">Return to form</a>');
+					$response->view_set_html('<a href="' . html(url(array('preserved' => NULL))) . '">Return to form</a>');
 					$response->send();
 					exit();
 				}
@@ -105,7 +105,6 @@
 					if ($database) {
 						$form->db_table_set_sql(DB_PREFIX . 'form_example');
 						$form->db_where_set_sql('id = 1');
-
 					}
 
 				//--------------------------------------------------

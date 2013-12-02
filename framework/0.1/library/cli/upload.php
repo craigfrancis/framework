@@ -81,6 +81,7 @@
 		// Scripts
 		//   .../framework/0.1/library/cli/upload/init.sh - run locally
 		//   .../framework/0.1/library/cli/upload/process.sh - run remotely, from /dest_dir/upload/files/framework/
+		//   .../framework/0.1/library/cli/upload/publish.sh - separate script, to run on remote server once files are in /dest_dir/upload/files/
 
 	}
 

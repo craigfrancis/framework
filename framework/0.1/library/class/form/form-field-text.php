@@ -33,11 +33,18 @@
 
 					$this->value = NULL;
 
-					if ($this->form_submitted) {
-						$this->value = request($this->name, $this->form->form_method_get());
+					if ($this->form_submitted || $this->form->saved_values_available()) {
+
+						if ($this->form_submitted) {
+							$this->value = request($this->name, $this->form->form_method_get());
+						} else {
+							$this->value = $this->form->saved_value_get($this->name);
+						}
+
 						if ($this->value === NULL) {
 							$this->value = $this->form->hidden_value_get($this->name);
 						}
+
 					}
 
 				//--------------------------------------------------
@@ -145,11 +152,7 @@
 
 			protected function _value_print_get() {
 				if ($this->value === NULL) {
-					if ($this->form->saved_values_available()) {
-						return $this->form->saved_value_get($this->name);
-					} else {
-						return $this->form->db_select_value_get($this->db_field_name);
-					}
+					return $this->form->db_select_value_get($this->db_field_name);
 				}
 				return $this->value; // Don't use $this->value_get(), as fields such as currency/postcode use that function to return the clean version.
 			}

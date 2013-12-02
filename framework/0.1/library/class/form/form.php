@@ -245,7 +245,11 @@
 				if (isset($this->hidden_values[$name])) {
 					return $this->hidden_values[$name];
 				} else {
-					$value = request('h-' . $name);
+					if ($this->saved_values_available()) {
+						$value = $this->saved_value_get('h-' . $name);
+					} else {
+						$value = request('h-' . $name);
+					}
 					return ($value === NULL ? NULL : urldecode($value));
 				}
 			}
