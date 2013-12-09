@@ -291,9 +291,6 @@
 
 					if ($extra_html != '') {
 						$extra_html = $this->config['indent_html'] . "\t" . $extra_html;
-						$extra_html = str_replace('[PAGE_NUMBER]', html($this->page_number), $extra_html);
-						$extra_html = str_replace('[PAGE_COUNT]', html($this->page_count), $extra_html);
-						$extra_html = str_replace('[ITEM_COUNT]', html($this->item_count_get()), $extra_html);
 					} else {
 						$extra_html = '';
 					}
@@ -324,8 +321,12 @@
 
 			}
 
-			protected function html_extra() {
-				return $this->config['extra_html'];
+			public function html_extra() {
+				$extra_html = $this->config['extra_html'];
+				$extra_html = str_replace('[PAGE_NUMBER]', html($this->page_number_get()), $extra_html);
+				$extra_html = str_replace('[PAGE_COUNT]', html($this->page_count_get()), $extra_html);
+				$extra_html = str_replace('[ITEM_COUNT]', html($this->item_count_get()), $extra_html);
+				return $extra_html;
 			}
 
 			protected function html_format($elements_html) {

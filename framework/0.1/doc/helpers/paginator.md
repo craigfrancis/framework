@@ -141,10 +141,10 @@ Or maybe you want to print the paginator twice (above/below table), but only sho
 
 		private $print_count = 0;
 
-		protected function html_extra() {
+		public function html_extra() {
 			if ($this->print_count++ == 0) {
 				$item_count = $this->item_count_get();
-				return '<span class="pagination_extra"> - [PAGE_COUNT] pages - ' . html(number_format($item_count)) . ($item_count == 1 ? ' record' : ' records') . '</span>';
+				return '<span class="pagination_extra"> - ' . html($this->page_count_get()) . ' pages, ' . html(number_format($item_count)) . ($item_count == 1 ? ' record' : ' records') . '</span>';
 			} else {
 				return '';
 			}
