@@ -66,11 +66,11 @@
 			   2 => array('pipe', 'w'),
 			);
 
-		$descriptor = array(
-			   0 => array('file', '/dev/tty', 'r'),
-			   1 => array('pipe', 'w'),
-			   2 => array('pipe', 'w'),
-			);
+		// $descriptor = array(
+		// 	   0 => array('file', '/dev/tty', 'r'),
+		// 	   1 => array('pipe', 'w'),
+		// 	   2 => array('pipe', 'w'),
+		// 	);
 
 		$process = proc_open($exec_command, $descriptor, $pipes);
 
