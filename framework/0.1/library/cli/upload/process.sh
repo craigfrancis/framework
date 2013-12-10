@@ -59,7 +59,7 @@
 
 	remote_cmd "mkdir -p '${DST_PATH}/upload/'";
 	remote_scp './publish.sh' "${DST_PATH}/upload/publish.sh";
-	remote_cmd "${DST_PATH}/upload/publish.sh";
+	remote_cmd "ls -la '${DST_PATH}/upload/publish.sh'";
 
 #--------------------------------------------------
 # Clean up
