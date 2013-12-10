@@ -88,11 +88,9 @@
 
 	else
 
-echo "${FRAMEWORK_ROOT}/../";
-
-		remote_scp "${SRC_PATH}/app/"   "${DST_PATH}/upload/files/app/";
-		remote_scp "${SRC_PATH}/httpd/" "${DST_PATH}/upload/files/httpd/";
-		remote_scp "${FRAMEWORK_ROOT}/../"  "${DST_PATH}/upload/files/framework/";
+		remote_scp "${SRC_PATH}/app/"            "${DST_PATH}/upload/files/app/";
+		remote_scp "${SRC_PATH}/httpd/"          "${DST_PATH}/upload/files/httpd/";
+		remote_scp "`dirname ${FRAMEWORK_ROOT}`" "${DST_PATH}/upload/files/framework/";
 
 	fi
 
