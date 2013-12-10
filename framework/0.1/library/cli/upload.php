@@ -66,7 +66,8 @@
 		$process = proc_open($exec_command, $descriptor, $pipes);
 
 		if (is_resource($process)) {
-		    // echo stream_get_contents($pipes[1]);
+		    echo stream_get_contents($pipes[1]);
+		    echo stream_get_contents($pipes[2]);
 		}
 
 // popen
