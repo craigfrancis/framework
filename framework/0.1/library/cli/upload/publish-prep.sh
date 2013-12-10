@@ -41,7 +41,7 @@
 	mkdir -p "${DST_PATH}/private/";
 	mkdir -p "${DST_PATH}/upload/files/";
 
-	echo "  Done";
+	echo " Done";
 	echo;
 
 #--------------------------------------------------

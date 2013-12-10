@@ -24,6 +24,8 @@
 # Testing
 #--------------------------------------------------
 
+	echo;
+
 	CONTINUE="false";
 
 	while [ $CONTINUE = "false" ];
@@ -69,7 +71,6 @@
 # Wait until the user is ready
 #--------------------------------------------------
 
-	echo;
 	echo "Press enter to continue...";
 	read KEY;
 
@@ -117,11 +118,11 @@
 		# Move to live
 		#--------------------------------------------------
 
-			mv "${DST_PATH}/upload/${F}" "${DST_PATH}/${F}/";
+			mv "${DST_PATH}/upload/files/${F}" "${DST_PATH}/${F}/";
 
 	done
 
-	echo "  Done";
+	echo " Done";
 
 #--------------------------------------------------
 # CLI
@@ -146,7 +147,7 @@
 
 	./cli --install;
 
-	echo "  Done";
+	echo " Done";
 
 #--------------------------------------------------
 # Cleanup
