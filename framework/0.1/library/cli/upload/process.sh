@@ -33,7 +33,7 @@
 	}
 
 	function remote_scp {
-		scp -o 'LogLevel=QUIET' -o "ControlPath=${SSH_CONTROL}" "${1}" "${DST_HOST}:${2}";
+		scp -o "ControlPath=${SSH_CONTROL}" "${1}" "${DST_HOST}:${2}";
 	}
 
 	function remote_close {
@@ -54,12 +54,30 @@
 	fi
 
 #--------------------------------------------------
-# Upload and run publish script
+# Upload publish scripts
 #--------------------------------------------------
 
 	remote_cmd "mkdir -p '${DST_PATH}/upload/'";
-	remote_scp './publish.sh' "${DST_PATH}/upload/publish.sh";
-	remote_cmd "${DST_PATH}/upload/publish.sh";
+	remote_scp './publish-prep.sh' "${DST_PATH}/upload/publish-prep.sh";
+	remote_cmd "chmod 755 ${DST_PATH}/upload/publish-{prep,run}.sh";
+
+#--------------------------------------------------
+# Execute prep script
+#--------------------------------------------------
+
+	remote_cmd "${DST_PATH}/upload/publish-prep.sh";
+
+#--------------------------------------------------
+# Upload files
+#--------------------------------------------------
+
+
+
+#--------------------------------------------------
+# Execute run script
+#--------------------------------------------------
+
+	remote_cmd "${DST_PATH}/upload/publish-run.sh";
 
 #--------------------------------------------------
 # Clean up
