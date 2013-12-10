@@ -79,6 +79,7 @@
 		echo "--------------------------------";
 		remote_cmd "cat '${DST_PATH}/upload/block.txt'";
 		echo "--------------------------------";
+		remote_close;
 		exit 0;
 
 	fi
