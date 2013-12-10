@@ -37,6 +37,7 @@
 	}
 
 	function remote_rsync {
+		echo 'TODO';
 	}
 
 	function remote_close {
