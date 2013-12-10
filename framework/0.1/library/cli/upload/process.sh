@@ -33,7 +33,7 @@
 	}
 
 	function remote_scp {
-		scp -o "ControlPath=${SSH_CONTROL}" "${1}" "${DST_HOST}:${2}";
+		scp -o "ControlPath=${SSH_CONTROL}" -r "${1}" "${DST_HOST}:${2}";
 	}
 
 	function remote_rsync {

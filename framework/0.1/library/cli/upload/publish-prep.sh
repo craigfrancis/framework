@@ -14,20 +14,22 @@
 		exit;
 	fi
 
-echo "Prep...";
-echo "# ${UPLOAD_SERVER}";
-echo "# ${UPLOAD_METHOD}";
-echo "# ${DST_PATH}";
-echo;
-
 #--------------------------------------------------
 # Ensure all folders exist on live
 #--------------------------------------------------
 
+	echo;
+
+	if [[ ! -d "${DST_PATH}" ]]; then
+		echo "Missing root path: ${DST_PATH}";
+		exit;
+	fi
+
+	echo "Check main folders:";
+
 	cd "${DST_PATH}";
 
-	if [ -d "${DST_PATH}/upload/files/" ]; then
-echo "Remove failed files upload";
+	if [[ -d "${DST_PATH}/upload/files/" ]]; then
 		rm -rf "${DST_PATH}/upload/files/";
 	fi
 
@@ -37,8 +39,10 @@ echo "Remove failed files upload";
 	mkdir -p "${DST_PATH}/httpd/";
 	mkdir -p "${DST_PATH}/logs/";
 	mkdir -p "${DST_PATH}/private/";
-	mkdir -p "${DST_PATH}/FISH/";
 	mkdir -p "${DST_PATH}/upload/files/";
+
+	echo "  Done";
+	echo;
 
 #--------------------------------------------------
 # Copy current files for rsync support
