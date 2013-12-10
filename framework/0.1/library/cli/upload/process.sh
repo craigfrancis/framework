@@ -3,7 +3,7 @@
 	echo "Process";
 	echo;
 
-# ${UPLOAD_MODE} == 'scm' ... Connect to $config['dst_host'] to run install script? how about checking the db?
+# ${UPLOAD_METHOD} or SRC_HOST? == 'scm' ... Connect to $config['dst_host'] to run install script? how about checking the db?
 
 
 

@@ -54,7 +54,7 @@
 	function upload_exec($script, $server, $config) {
 
 		$exec_script = FRAMEWORK_ROOT . '/library/cli/upload/' . safe_file_name($script) . '.sh';
-		$exec_params = escapeshellarg($server) . ' ' . escapeshellarg($config['mode']) . ' ' . escapeshellarg($config['src_host']) . ' ' . escapeshellarg($config['src_path']) . ' ' . escapeshellarg($config['dst_host']) . ' ' . escapeshellarg($config['dst_path']);
+		$exec_params = escapeshellarg($server) . ' ' . escapeshellarg($config['method']) . ' ' . escapeshellarg($config['src_host']) . ' ' . escapeshellarg($config['src_path']) . ' ' . escapeshellarg($config['dst_host']) . ' ' . escapeshellarg($config['dst_path']);
 
 		execute_command(escapeshellarg($exec_script) . ' ' . $exec_params, true);
 
