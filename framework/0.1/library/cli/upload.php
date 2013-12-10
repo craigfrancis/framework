@@ -105,6 +105,8 @@
 		//--------------------------------------------------
 		// Run
 
+echo $server . ' - ' . SERVER;
+
 			if ($server != SERVER) {
 				upload_exec('connect', $server, $config);
 			} else {
