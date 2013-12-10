@@ -29,7 +29,7 @@
 	ssh -fN -M  -S "${SSH_CONTROL}" "${DST_HOST}";
 
 	function remote_cmd {
-		ssh -S "${SSH_CONTROL}" "${DST_HOST}" $@;
+		ssh -S "${SSH_CONTROL}" "${DST_HOST}" $@ 2> /dev/null;
 	}
 
 	function remote_close {
