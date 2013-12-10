@@ -66,8 +66,8 @@
 	echo "Uploading prep scripts:";
 
 	remote_cmd "mkdir -p '${DST_PATH}/upload/'";
-	remote_scp '${FRAMEWORK_ROOT}/library/cli/upload/publish-prep.sh' "${DST_PATH}/upload/publish-prep.sh";
-	remote_scp '${FRAMEWORK_ROOT}/library/cli/upload/publish-run.sh' "${DST_PATH}/upload/publish-run.sh";
+	remote_scp "${FRAMEWORK_ROOT}/library/cli/upload/publish-prep.sh" "${DST_PATH}/upload/publish-prep.sh";
+	remote_scp "${FRAMEWORK_ROOT}/library/cli/upload/publish-run.sh" "${DST_PATH}/upload/publish-run.sh";
 	remote_cmd "chmod 755 ${DST_PATH}/upload/publish-{prep,run}.sh";
 
 	echo "  Done";
@@ -87,6 +87,8 @@
 		echo 'TODO: Add rsync support';
 
 	else
+
+echo "${FRAMEWORK_ROOT}/../";
 
 		remote_scp "${SRC_PATH}/app/"   "${DST_PATH}/upload/files/app/";
 		remote_scp "${SRC_PATH}/httpd/" "${DST_PATH}/upload/files/httpd/";
