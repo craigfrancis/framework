@@ -73,12 +73,12 @@
 
 	if [[ "${BLOCK_EXISTS}" != 'no' ]]; then
 
+		echo;
 		echo "ERROR: An upload block has been created for this project.";
-		echo ;
+		echo;
 		echo "--------------------------------";
 		remote_cmd "cat '${DST_PATH}/upload/block.txt'";
 		echo "--------------------------------";
-		echo ;
 		exit 0;
 
 	fi

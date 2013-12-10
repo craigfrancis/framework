@@ -148,7 +148,7 @@
 # Run install file
 #--------------------------------------------------
 
-	echo ;
+	echo;
 	echo "Run install script... ";
 
 	./cli --install;
