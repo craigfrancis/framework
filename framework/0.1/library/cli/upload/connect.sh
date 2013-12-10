@@ -26,6 +26,7 @@
 	echo;
 	echo "Connecting to ${SRC_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${SRC_HOST}";
+	echo "  Done";
 	echo;
 
 	function remote_cmd {
