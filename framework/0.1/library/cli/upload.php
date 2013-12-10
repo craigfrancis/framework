@@ -53,7 +53,8 @@
 
 	function upload_exec($script, $server, $config) {
 
-		$exec_script = FRAMEWORK_ROOT . '/library/cli/upload/' . safe_file_name($script) . '.sh';
+		$exec_dir = FRAMEWORK_ROOT . '/library/cli/upload';
+		$exec_script = $exec_dir . '/' . safe_file_name($script) . '.sh';
 		$exec_params = escapeshellarg($server) . ' ' . escapeshellarg($config['method']) . ' ' . escapeshellarg($config['src_host']) . ' ' . escapeshellarg($config['src_path']) . ' ' . escapeshellarg($config['dst_host']) . ' ' . escapeshellarg($config['dst_path']);
 		$exec_command = escapeshellcmd($exec_script) . ' ' . $exec_params;
 
@@ -66,7 +67,7 @@
 			   2 => array('file', 'php://stderr', 'r'),
 			);
 
-		$process = proc_open($exec_command, $descriptor, $pipes);
+		$process = proc_open($exec_command, $descriptor, $pipes, $exec_dir);
 
 	}
 

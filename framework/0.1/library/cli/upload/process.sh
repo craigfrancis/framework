@@ -50,10 +50,12 @@
 	fi
 
 #--------------------------------------------------
-# Upload publish script
+# Upload and run publish script
 #--------------------------------------------------
 
 	remote_cmd "mkdir -p '${DST_PATH}/upload/'";
+	remote_cmd "scp ./publish.sh '${DST_PATH}/upload/publish.sh'";
+	remote_cmd "${DST_PATH}/upload/publish.sh";
 
 #--------------------------------------------------
 # Clean up
