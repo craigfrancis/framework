@@ -62,9 +62,9 @@
 		// return;
 
 		$descriptor = array(
-			   0 => array('file', 'php://stdin', 'r'),
-			   1 => array('file', 'php://stdout', 'r'),
-			   2 => array('file', 'php://stderr', 'r'),
+				0 => array('file', 'php://stdin', 'r'),
+				1 => array('file', 'php://stdout', 'r'),
+				2 => array('file', 'php://stderr', 'r'),
 			);
 
 		$process = proc_open($exec_command, $descriptor, $pipes, $exec_dir . '/');
