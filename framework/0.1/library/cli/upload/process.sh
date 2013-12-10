@@ -59,6 +59,7 @@
 
 	remote_cmd "mkdir -p '${DST_PATH}/upload/'";
 	remote_scp './publish-prep.sh' "${DST_PATH}/upload/publish-prep.sh";
+	remote_scp './publish-run.sh' "${DST_PATH}/upload/publish-run.sh";
 	remote_cmd "chmod 755 ${DST_PATH}/upload/publish-{prep,run}.sh";
 
 #--------------------------------------------------
