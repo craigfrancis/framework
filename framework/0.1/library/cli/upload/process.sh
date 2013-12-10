@@ -33,8 +33,8 @@
 	}
 
 	function remote_scp {
-		echo scp -o 'LogLevel=QUIET' -o "ControlPath='${SSH_CONTROL}'" $@;
-		scp -o 'LogLevel=QUIET' -o "ControlPath='${SSH_CONTROL}'" $@;
+		echo scp -o 'LogLevel=QUIET' -o "ControlPath='${SSH_CONTROL}'" "${1}" "${DST_HOST}:${2}";
+		scp -o 'LogLevel=QUIET' -o "ControlPath='${SSH_CONTROL}'" "${1}" "${DST_HOST}:${2}";
 	}
 
 	function remote_close {
@@ -59,7 +59,8 @@
 #--------------------------------------------------
 
 	remote_cmd "mkdir -p '${DST_PATH}/upload/'";
-	remote_scp "./publish.sh '${DST_HOST}:${DST_PATH}/upload/publish.sh'";
+	remote_scp './publish.sh' '/upload/publish.sh';
+
 	# remote_cmd "${DST_PATH}/upload/publish.sh";
 
 #--------------------------------------------------
