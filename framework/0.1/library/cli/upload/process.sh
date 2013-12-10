@@ -4,6 +4,8 @@
 # Config
 #--------------------------------------------------
 
+	set -u;
+
 	FRAMEWORK_ROOT="$1";
 	UPLOAD_SERVER="$2";
 	UPLOAD_METHOD="$3";

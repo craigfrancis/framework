@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -u;
+
 FILE="$0";
 export SRC_WD=`pwd -P`;
 

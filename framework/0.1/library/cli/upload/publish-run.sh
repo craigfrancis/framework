@@ -4,6 +4,8 @@
 # Config
 #--------------------------------------------------
 
+	set -u;
+
 	UPLOAD_SERVER="$1";
 	UPLOAD_METHOD="$2";
 	DST_PATH="$3";
