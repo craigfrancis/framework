@@ -57,32 +57,6 @@
 		$exec_params = escapeshellarg($server) . ' ' . escapeshellarg($config['method']) . ' ' . escapeshellarg($config['src_host']) . ' ' . escapeshellarg($config['src_path']) . ' ' . escapeshellarg($config['dst_host']) . ' ' . escapeshellarg($config['dst_path']);
 
 		execute_command(escapeshellcmd($exec_script) . ' ' . $exec_params, true);
-		return;
-
-		$descriptor = array(
-			   0 => array('file', 'php://stdin', 'r'),
-			   1 => array('pipe', 'w'),
-			   2 => array('pipe', 'w'),
-			);
-
-		$descriptor = array(
-			   0 => array('file', '/dev/tty', 'r'),
-			   1 => array('pipe', 'w'),
-			   2 => array('pipe', 'w'),
-			);
-
-		$process = proc_open($exec_command, $descriptor, $pipes);
-
-// stream_set_blocking
-//
-
-		if (is_resource($process)) {
-		    echo stream_get_contents($pipes[1]);
-		    echo stream_get_contents($pipes[2]);
-		}
-
-// popen
-// exec
 
 	}
 
