@@ -29,11 +29,11 @@
 	echo "  Done";
 
 	function remote_cmd {
-		ssh -o 'LogLevel=QUIET' -t -S "${SSH_CONTROL}" "${DST_HOST}" $@;
+		ssh -t -o 'LogLevel=QUIET' -o "ControlPath=${SSH_CONTROL}" "${DST_HOST}" $@;
 	}
 
 	function remote_scp {
-		scp -o "LogLevel=QUIET,ControlPath=${SSH_CONTROL}" $@;
+		scp -o 'LogLevel=QUIET' -o "ControlPath=${SSH_CONTROL}" $@;
 	}
 
 	function remote_close {
