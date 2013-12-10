@@ -54,9 +54,8 @@
 	if [[ "${DST_EXISTS}" != 'dir' ]]; then
 
 		echo;
-		echo "This project is not on '${DST_HOST}:${DST_PATH}'.";
+		echo "This project is not on '${DST_HOST}:${DST_PATH}', press [y] to continue...";
 		echo;
-		echo "Press [y] to continue...";
 		read KEY;
 
 		if [ "$KEY" != "y" ]; then
