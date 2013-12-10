@@ -21,7 +21,7 @@
 # SSH control connection
 #--------------------------------------------------
 
-	SSH_CONTROL='~/.ssh/master-%r-%h-%p';
+	SSH_CONTROL='~/.ssh/master-%r@%h:%p';
 
 	echo;
 	echo "Connecting to ${SRC_HOST}:";
