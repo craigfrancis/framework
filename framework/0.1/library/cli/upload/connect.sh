@@ -41,14 +41,10 @@
 #--------------------------------------------------
 
 	CLI_PATH="${SRC_PATH}/cli";
-	CLI_EXISTS=`remote_cmd "if [ -h '${CLI_PATH}' ]; then echo 'link'; else echo 'not'; fi"`;
-
-echo;
-echo $CLI_EXISTS;
-exit;
+	CLI_EXISTS=`remote_cmd "if [ -h '${CLI_PATH}' ]; then echo -n 'link'; else echo -n 'not'; fi"`;
 
 	if [[ "${CLI_EXISTS}" != 'link' ]]; then
-		echo "Cannot find CLI script on server '${SRC_HOST}', path '${CLI_PATH}'";
+		echo "Cannot find CLI script on server '${SRC_HOST}', path '${CLI_PATH}' - '${CLI_EXISTS}'";
 		echo;
 		remote_close;
 		exit;
