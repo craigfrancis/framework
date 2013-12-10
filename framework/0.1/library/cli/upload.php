@@ -103,7 +103,7 @@
 		//--------------------------------------------------
 		// Run
 
-// TODO: Detect if we are running locally
+// TODO: Improve detection for when we are running locally... $server is the destination (live), so won't match SERVER (demo)
 
 			if ($config['src_path'] != ROOT) {
 				upload_exec('connect', $server, $config);

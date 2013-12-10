@@ -1,7 +1,62 @@
 #!/bin/bash
 
+#--------------------------------------------------
+# Config
+#--------------------------------------------------
+
+	UPLOAD_SERVER="$1";
+	UPLOAD_METHOD="$2";
+	SRC_HOST="$3";
+	SRC_PATH="$4";
+	DST_HOST="$5";
+	DST_PATH="$6";
+
+	if [[ -z "${UPLOAD_SERVER}" ]] || [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${SRC_HOST}" ]] || [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
+		echo "Missing parameters";
+		echo;
+		exit;
+	fi
+
 	echo "Process";
 	echo;
+
+#--------------------------------------------------
+# SSH control connection
+#--------------------------------------------------
+
+	SSH_CONTROL='~/.ssh/master-%r@%h:%p';
+
+	# ssh -fN -M  -S "${SSH_CONTROL}" "${DST_HOST}";
+
+	function remote_cmd {
+		ssh -S "${SSH_CONTROL}" "${DST_HOST}" $@;
+	}
+
+	function remote_close {
+		ssh -O exit -S "${SSH_CONTROL}" "${DST_HOST}" 2> /dev/null;
+	}
+
+#--------------------------------------------------
+# Check path on destination
+#--------------------------------------------------
+
+	DST_EXISTS=`remote_cmd "if [ -h '${DST_PATH}' ]; then echo 'link'; else echo 'not'; fi"`;
+
+	if [[ "${CLI_EXISTS}" != 'link' ]]; then
+		echo "Cannot find path '${DST_PATH}' on server '${DST_HOST}'";
+		echo;
+		remote_close;
+		exit;
+	fi
+
+#--------------------------------------------------
+# Upload publish script
+#--------------------------------------------------
+
+	remote_cmd "mkdir -p '${DST_PATH}/upload/'";
+
+
+
 
 # ${UPLOAD_METHOD} or SRC_HOST? == 'scm' ... Connect to $config['dst_host'] to run install script? how about checking the db?
 
