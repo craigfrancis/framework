@@ -43,7 +43,6 @@
 	mkdir -p "${DST_PATH}/upload/files/";
 
 	echo " Done";
-	echo;
 
 #--------------------------------------------------
 # Copy current files for rsync support
