@@ -105,9 +105,9 @@
 
 	else
 
-		remote_rsync "${SRC_PATH}/app/"            "${DST_PATH}/upload/files/app/";
-		remote_rsync "${SRC_PATH}/httpd/"          "${DST_PATH}/upload/files/httpd/";
-		remote_rsync "`dirname ${FRAMEWORK_ROOT}`" "${DST_PATH}/upload/files/framework/";
+		remote_rsync "${SRC_PATH}/app"    "${DST_PATH}/upload/files/app";
+		remote_rsync "${SRC_PATH}/httpd"  "${DST_PATH}/upload/files/httpd";
+		remote_rsync "${FRAMEWORK_ROOT}/" "${DST_PATH}/upload/files/framework/";
 
 	fi
 
