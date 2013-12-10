@@ -100,14 +100,12 @@
 				}
 			}
 
-			debug($config);
-
 		//--------------------------------------------------
 		// Run
 
-echo $server . ' - ' . SERVER;
+// TODO: Detect if we are running locally
 
-			if ($server != SERVER) {
+			if ($config['src_path'] != ROOT) {
 				upload_exec('connect', $server, $config);
 			} else {
 				upload_exec('process', $server, $config);
