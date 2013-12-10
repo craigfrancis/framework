@@ -40,7 +40,7 @@
 # Check path on destination
 #--------------------------------------------------
 
-	DST_EXISTS=`remote_cmd "if [ -d '${DST_PATH}' ]; then echo 'dir'; else echo 'not'; fi"`;
+	DST_EXISTS=`remote_cmd "if [ -d '${DST_PATH}' ]; then echo -n 'dir'; else echo -n 'not'; fi"`;
 
 	if [[ "${CLI_EXISTS}" != 'dir' ]]; then
 		echo "Cannot find path '${DST_PATH}' on server '${DST_HOST}'";
