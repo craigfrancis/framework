@@ -74,17 +74,16 @@
 
 		public static function regenerate() {
 
-			$result = session_regenerate_id(true); // Also delete old session file
+			session_regenerate_id(true); // Also delete old session file
 
-// TODO: Remove
-
-			if (!$result) {
-				$debug = array(config::get('session.id'), debug_dump($_SESSION), debug_dump($_COOKIE));
-				if (headers_sent($file, $line)) {
-					$debug[] = 'Headers sent: ' . $file . ' (line ' . $line . ')';
-				}
-				exit_with_error('Cannot regenerate session id', implode("\n\n", $debug));
-			}
+			// $result = session_regenerate_id(true);
+			// if (!$result) {
+			// 	$debug = array(config::get('session.id'), debug_dump($_SESSION), debug_dump($_COOKIE));
+			// 	if (headers_sent($file, $line)) {
+			// 		$debug[] = 'Headers sent: ' . $file . ' (line ' . $line . ')';
+			// 	}
+			// 	exit_with_error('Cannot regenerate session id', implode("\n\n", $debug));
+			// }
 
 			config::set('session.id', session_id());
 

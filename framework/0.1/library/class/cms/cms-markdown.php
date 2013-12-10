@@ -16,7 +16,7 @@ Usage:
 	$cms_markdown = new cms_markdown();
 	$cms_markdown->process_block_html($text);
 
-Possible alternative (TODO):
+Possible alternative:
 	http://parsedown.org/
 	https://github.com/erusev/parsedown
 
