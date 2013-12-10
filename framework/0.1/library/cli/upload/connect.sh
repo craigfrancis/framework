@@ -4,54 +4,55 @@
 # Config
 #--------------------------------------------------
 
-	SRC_SERVER="$1";
-	SRC_PATH="$2";
-	DST_SERVER="$3";
-	DST_PATH="$4";
+	UPLOAD_SERVER="$1";
+	UPLOAD_MODE="$2";
+	SRC_HOST="$3";
+	SRC_PATH="$4";
+	DST_HOST="$5";
+	DST_PATH="$6";
 
-	if [[ -z "${SRC_SERVER}" ]] || [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_SERVER}" ]] || [[ -z "${DST_PATH}" ]]; then
+	if [[ -z "${UPLOAD_SERVER}" ]] || [[ -z "${UPLOAD_MODE}" ]] || [[ -z "${SRC_HOST}" ]] || [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo "Missing parameters";
 		echo;
 		exit;
 	fi
 
+	echo "Connect";
+	echo;
+
 #--------------------------------------------------
 # SSH control connection
 #--------------------------------------------------
 
-	SSH_CONTROL="~/.ssh/master-%r@%h:%p";
+	SSH_CONTROL='~/.ssh/master-%r@%h:%p';
 
-	# ssh -fN -M  -S "${SSH_CONTROL}" "${SRC_SERVER}";
+	# ssh -fN -M  -S "${SSH_CONTROL}" "${SRC_HOST}";
 
 	function remote_cmd {
-		ssh -S "${SSH_CONTROL}" "${SRC_SERVER}" $@;
+		ssh -S "${SSH_CONTROL}" "${SRC_HOST}" $@;
 	}
 
 	function remote_close {
-		ssh -O exit -S "${SSH_CONTROL}" "${SRC_SERVER}" 2> /dev/null;
+		ssh -O exit -S "${SSH_CONTROL}" "${SRC_HOST}" 2> /dev/null;
 	}
 
 #--------------------------------------------------
-# Check source
+# Check cli on source
 #--------------------------------------------------
 
 	CLI_PATH="${SRC_PATH}/cli";
-
 	CLI_EXISTS=`remote_cmd "if [ -h '${CLI_PATH}' ]; then echo 'link'; else echo 'not'; fi"`;
 
-	echo "${CLI_EXISTS}";
-
-	if [[ "${CLI_EXISTS}" != "link" ]]; then
-		echo "Cannot find CLI script on server '${SRC_SERVER}', path '${CLI_PATH}'";
+	if [[ "${CLI_EXISTS}" == 'link' ]]; then
+		echo "Cannot find CLI script on server '${SRC_HOST}', path '${CLI_PATH}'";
 		echo;
 		remote_close;
 		exit;
 	fi
 
 #--------------------------------------------------
-# Upload
+# Run
 #--------------------------------------------------
 
-	echo "Yay";
-
+	remote_cmd "${CLI_PATH} --upload='${UPLOAD_SERVER}'";
 	remote_close;
