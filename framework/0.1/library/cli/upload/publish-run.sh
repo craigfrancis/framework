@@ -29,9 +29,9 @@
 	echo;
 
 	cd "${DST_PATH}/upload/files/";
-
 	rm -f "./cli";
 	ln -s "./framework/0.1/cli/run.sh" "./cli";
+	chmod 755 "./cli";
 
 	CONTINUE="false";
 
@@ -136,15 +136,13 @@
 #--------------------------------------------------
 
 	cd "${DST_PATH}/";
-
 	rm -f "./cli";
 	ln -s "./framework/0.1/cli/run.sh" "./cli";
+	chmod 755 "./cli";
 
 #--------------------------------------------------
 # Run install file
 #--------------------------------------------------
-
-	chmod 755 "./cli";
 
 	echo ;
 	echo "Run install script... ";
