@@ -44,6 +44,7 @@
 
 			if [ "$RUN" = "Diff" ]; then
 
+				echo;
 				echo "--------------------------------------------------";
 
 				for F in $FOLDERS; do
