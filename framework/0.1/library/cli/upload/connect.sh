@@ -29,7 +29,7 @@
 	ssh -fN -M -S "${SSH_CONTROL}" "${SRC_HOST}";
 
 	function remote_cmd {
-		ssh -t -S "${SSH_CONTROL}" "${SRC_HOST}" $@ 2> /dev/null;
+		ssh -o 'LogLevel=QUIET' -t -S "${SSH_CONTROL}" "${SRC_HOST}" $@;
 	}
 
 	function remote_close {
