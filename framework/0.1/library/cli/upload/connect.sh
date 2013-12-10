@@ -27,7 +27,6 @@
 	echo "Connecting to ${SRC_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${SRC_HOST}";
 	echo "  Done";
-	echo;
 
 	function remote_cmd {
 		ssh -o 'LogLevel=QUIET' -t -S "${SSH_CONTROL}" "${SRC_HOST}" $@;
@@ -56,4 +55,11 @@
 #--------------------------------------------------
 
 	remote_cmd "${CLI_PATH} --upload='${UPLOAD_SERVER}'";
+
+#--------------------------------------------------
+# Clean up
+#--------------------------------------------------
+
 	remote_close;
+
+	echo;
