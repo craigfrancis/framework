@@ -40,8 +40,6 @@
 # Check path on destination
 #--------------------------------------------------
 
-remote_cmd "if [ -d '${DST_PATH}' ]; then echo 'dir'; else echo 'not'; fi";
-
 	DST_EXISTS=`remote_cmd "if [ -d '${DST_PATH}' ]; then echo 'dir'; else echo 'not'; fi"`;
 
 	if [[ "${CLI_EXISTS}" != 'dir' ]]; then
@@ -54,6 +52,8 @@ remote_cmd "if [ -d '${DST_PATH}' ]; then echo 'dir'; else echo 'not'; fi";
 #--------------------------------------------------
 # Upload publish script
 #--------------------------------------------------
+
+echo "mkdir: ${DST_PATH}/upload/";
 
 	remote_cmd "mkdir -p '${DST_PATH}/upload/'";
 
