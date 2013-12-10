@@ -23,7 +23,7 @@ if [ "${FILE}" == "run.sh" ]; then
 		echo;
 		echo "  ./cli $@";
 		echo;
-		exit;
+		exit 0;
 
 	elif [ "${INSTALL}" == "1" ]; then
 
@@ -43,7 +43,7 @@ if [ "${FILE}" == "run.sh" ]; then
 		echo "  ln -s $0 ./cli";
 		echo "  ./cli $@";
 		echo;
-		exit;
+		exit 0;
 
 	fi
 

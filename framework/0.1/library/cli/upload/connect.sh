@@ -15,7 +15,7 @@
 	if [[ -z "${FRAMEWORK_ROOT}" ]] || [[ -z "${UPLOAD_SERVER}" ]] || [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${SRC_HOST}" ]] || [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo "Missing parameters";
 		echo;
-		exit;
+		exit 0;
 	fi
 
 #--------------------------------------------------
@@ -48,7 +48,7 @@
 		echo "Cannot find CLI script on server '${SRC_HOST}', path '${CLI_PATH}' - '${CLI_EXISTS}'";
 		echo;
 		remote_close;
-		exit;
+		exit 0;
 	fi
 
 #--------------------------------------------------

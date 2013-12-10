@@ -15,7 +15,7 @@
 	if [[ -z "${FRAMEWORK_ROOT}" ]] || [[ -z "${UPLOAD_SERVER}" ]] || [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${SRC_HOST}" ]] || [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo "Missing parameters";
 		echo;
-		exit;
+		exit 0;
 	fi
 
 #--------------------------------------------------
@@ -62,9 +62,7 @@
 		if [ "$KEY" != "y" ]; then
 			echo "Canceled";
 			remote_close;
-			exit;
-		else
-			echo;
+			exit 0;
 		fi
 
 	fi

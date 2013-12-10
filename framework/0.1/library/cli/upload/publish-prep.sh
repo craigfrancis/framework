@@ -11,7 +11,7 @@
 	if [[ -z "${UPLOAD_SERVER}" ]] || [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo "Missing parameters";
 		echo;
-		exit;
+		exit 0;
 	fi
 
 #--------------------------------------------------
@@ -22,7 +22,7 @@
 
 	if [[ ! -d "${DST_PATH}" ]]; then
 		echo "Missing root path: ${DST_PATH}";
-		exit;
+		exit 0;
 	fi
 
 	echo "Check main folders:";
