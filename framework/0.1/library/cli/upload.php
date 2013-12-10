@@ -57,6 +57,9 @@
 		$exec_params = escapeshellarg($server) . ' ' . escapeshellarg($config['method']) . ' ' . escapeshellarg($config['src_host']) . ' ' . escapeshellarg($config['src_path']) . ' ' . escapeshellarg($config['dst_host']) . ' ' . escapeshellarg($config['dst_path']);
 		$exec_command = escapeshellcmd($exec_script) . ' ' . $exec_params;
 
+		execute_command($script);
+		return;
+
 		$descriptor = array(
 			   0 => array('file', 'php://stdin', 'r'),
 			   1 => array('pipe', 'w'),
