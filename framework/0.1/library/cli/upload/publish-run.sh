@@ -48,7 +48,7 @@
 
 				for F in $FOLDERS; do
 					echo "${F}";
-					diff -r --ignore-space-change "${DST_PATH}/${F}/" "${DST_PATH}/upload/files/${F}" | sed -r "s#^diff.*(${LIVEROOT}.*) (${DEMOROOT}.*)#\nDIFF \2 \1#g";
+					diff -r --ignore-space-change -x database.txt "${DST_PATH}/${F}/" "${DST_PATH}/upload/files/${F}" | sed -r "s#^diff.*(${LIVEROOT}.*) (${DEMOROOT}.*)#\nDIFF \2 \1#g";
 					echo "--------------------------------------------------";
 				done
 
