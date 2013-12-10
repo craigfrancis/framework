@@ -36,6 +36,9 @@
 		scp -o "ControlPath=${SSH_CONTROL}" "${1}" "${DST_HOST}:${2}";
 	}
 
+	function remote_rsync {
+	}
+
 	function remote_close {
 		ssh -O exit -S "${SSH_CONTROL}" "${DST_HOST}" 2> /dev/null;
 	}
@@ -71,19 +74,29 @@
 # Execute prep script
 #--------------------------------------------------
 
-	remote_cmd "${DST_PATH}/upload/publish-prep.sh '${DST_PATH}'";
+	remote_cmd "${DST_PATH}/upload/publish-prep.sh '${UPLOAD_SERVER}' '${UPLOAD_METHOD}' '${DST_PATH}'";
 
 #--------------------------------------------------
 # Upload files
 #--------------------------------------------------
 
+	if [[ "${UPLOAD_METHOD}" == 'rsync' ]]; then
 
+		echo 'TODO: Add rsync support';
+
+	else
+
+		remote_scp "${SRC_PATH}/app/" "${DST_PATH}/upload/files/app/";
+		remote_scp "${SRC_PATH}/httpd/" "${DST_PATH}/upload/files/httpd/";
+		remote_scp "../../../" "${DST_PATH}/upload/files/framework/";
+
+	fi
 
 #--------------------------------------------------
 # Execute run script
 #--------------------------------------------------
 
-	remote_cmd "${DST_PATH}/upload/publish-run.sh '${DST_PATH}'";
+	remote_cmd "${DST_PATH}/upload/publish-run.sh '${UPLOAD_SERVER}' '${UPLOAD_METHOD}' '${DST_PATH}'";
 
 #--------------------------------------------------
 # Clean up
