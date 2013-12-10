@@ -62,26 +62,11 @@
 
 		$descriptor = array(
 			   0 => array('file', 'php://stdin', 'r'),
-			   1 => array('pipe', 'w'),
-			   2 => array('pipe', 'w'),
+			   1 => array('file', 'php://stdout', 'r'),
+			   2 => array('file', 'php://stderr', 'r'),
 			);
 
-		// $descriptor = array(
-		// 	   0 => array('file', '/dev/tty', 'r'),
-		// 	   1 => array('pipe', 'w'),
-		// 	   2 => array('pipe', 'w'),
-		// 	);
-
 		$process = proc_open($exec_command, $descriptor, $pipes);
-
-// stream_set_blocking
-// popen
-// exec
-
-		if (is_resource($process)) {
-		    echo '#1:' . stream_get_contents($pipes[1]) . "\n";
-		    echo '#2:' . stream_get_contents($pipes[2]) . "\n";
-		}
 
 	}
 
