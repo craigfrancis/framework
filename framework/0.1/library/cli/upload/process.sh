@@ -52,11 +52,27 @@
 	DST_EXISTS=`remote_cmd "if [ -d '${DST_PATH}' ]; then echo -n 'dir'; else echo -n 'not'; fi"`;
 
 	if [[ "${DST_EXISTS}" != 'dir' ]]; then
-		echo "Cannot find path '${DST_PATH}' on server '${DST_HOST}'";
-		echo;
-		remote_close;
-		exit;
+
+		echo "This project is not on '${DST_HOST}:${DST_PATH}'.";
+		echo "Press [y] to continue...";
+		read KEY;
+
+		if [ "$KEY" != "y" ]; then
+			echo "Canceled";
+			echo;
+			remote_close;
+			exit;
+		else
+			echo;
+		fi
+
 	fi
+
+#--------------------------------------------------
+# Block and lock support
+#--------------------------------------------------
+
+	# TODO: Look for block and lock files... maybe in ${DST_PATH}/upload/lock.txt ... with a timestamp and uuid in it?
 
 #--------------------------------------------------
 # Upload publish scripts
@@ -105,24 +121,3 @@
 #--------------------------------------------------
 
 	remote_close;
-
-
-
-
-# ${UPLOAD_METHOD} or SRC_HOST? == 'scm' ... Connect to $config['dst_host'] to run install script? how about checking the db?
-
-
-
-# Ensure the folder /dst_dir/upload/ exists.
-
-# Check for a block file in /dst_dir/upload/block.txt
-
-# Create lock file at dst /dst_dir/upload/lock.txt... maybe with a timestamp and uuid in it?
-
-# Create empty folder, or cp of live site (rsync), at /dst_dir/upload/files/
-
-# SCP or rsync /app/, /framework/, and /httpd/ folders.
-
-# Run the 'mvtolive' script equivalent (from Fey)... provides Diff, Database, Continue, Cancel.
-
-# Run the ./cli --install script, to create folders in /files/ and /private/files/.

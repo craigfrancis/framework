@@ -50,7 +50,7 @@
 
 	if [[ "${UPLOAD_METHOD}" == 'rsync' ]]; then
 
-# keep modified time
+		# keep modified time
 
 		echo 'TODO: Add rsync support';
 

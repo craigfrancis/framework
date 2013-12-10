@@ -115,6 +115,7 @@
 		// Run
 
 // TODO: Improve detection for when we are running locally... $server is the destination (live), so won't match SERVER (demo)
+// TODO: Handle "scm" mode... connect to $config['dst_host'] to run install script? how about checking the db?
 
 			if ($config['src_path'] != ROOT) {
 				upload_exec('connect', $server, $config);

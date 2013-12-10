@@ -66,7 +66,7 @@ To show the content, use a generic function such as:
 
 As we don't want to waste time creating lots of view files, we can get the framework to use a standard view automatically.
 
-Todo this, first create the generic view file:
+To do this, first create the generic view file:
 
 	/app/library/view/place-holder.ctp
 
