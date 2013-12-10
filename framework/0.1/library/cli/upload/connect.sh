@@ -17,16 +17,16 @@
 		exit;
 	fi
 
-	echo "Connect";
-	echo;
-
 #--------------------------------------------------
 # SSH control connection
 #--------------------------------------------------
 
 	SSH_CONTROL='~/.ssh/master-%r@%h:%p';
 
+	echo;
+	echo "Connecting to ${SRC_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${SRC_HOST}";
+	echo;
 
 	function remote_cmd {
 		ssh -o 'LogLevel=QUIET' -t -S "${SSH_CONTROL}" "${SRC_HOST}" $@;
