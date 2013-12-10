@@ -36,6 +36,7 @@
 	mkdir -p "${DST_PATH}/app/";
 	mkdir -p "${DST_PATH}/backup/";
 	mkdir -p "${DST_PATH}/files/";
+	mkdir -p "${DST_PATH}/framework/";
 	mkdir -p "${DST_PATH}/httpd/";
 	mkdir -p "${DST_PATH}/logs/";
 	mkdir -p "${DST_PATH}/private/";
@@ -48,10 +49,10 @@
 # Copy current files for rsync support
 #--------------------------------------------------
 
-	if [[ "${UPLOAD_METHOD}" == 'rsync' ]]; then
+	if [[ "${UPLOAD_METHOD}" != 'scp' ]]; then
 
-		# keep modified time
-
-		echo 'TODO: Add rsync support';
+		cp -a "${DST_PATH}/app/"       "${DST_PATH}/upload/files/app/";
+		cp -a "${DST_PATH}/httpd/"     "${DST_PATH}/upload/files/httpd/";
+		cp -a "${DST_PATH}/framework/" "${DST_PATH}/upload/files/framework/";
 
 	fi

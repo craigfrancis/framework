@@ -38,7 +38,7 @@
 	}
 
 	function remote_rsync {
-		echo 'TODO';
+		rsync -e "ssh -o 'ControlPath=${SSH_CONTROL}'" --delete -v -a -c "${1}" "${DST_HOST}:${2}";
 	}
 
 	function remote_close {
@@ -97,15 +97,17 @@
 # Upload files
 #--------------------------------------------------
 
-	if [[ "${UPLOAD_METHOD}" == 'rsync' ]]; then
-
-		echo 'TODO: Add rsync support';
-
-	else
+	if [[ "${UPLOAD_METHOD}" == 'scp' ]]; then
 
 		remote_scp "${SRC_PATH}/app/"            "${DST_PATH}/upload/files/app/";
 		remote_scp "${SRC_PATH}/httpd/"          "${DST_PATH}/upload/files/httpd/";
 		remote_scp "`dirname ${FRAMEWORK_ROOT}`" "${DST_PATH}/upload/files/framework/";
+
+	else
+
+		remote_rsync "${SRC_PATH}/app/"            "${DST_PATH}/upload/files/app/";
+		remote_rsync "${SRC_PATH}/httpd/"          "${DST_PATH}/upload/files/httpd/";
+		remote_rsync "`dirname ${FRAMEWORK_ROOT}`" "${DST_PATH}/upload/files/framework/";
 
 	fi
 

@@ -107,7 +107,7 @@
 				if ($config['src'] == 'scm') {
 					$config['method'] = 'scm';
 				} else {
-					$config['method'] = ($config['src_host'] == $config['dst_host'] ? 'local' : 'scp');
+					$config['method'] = ($config['src_host'] == $config['dst_host'] ? 'local' : 'rsync');
 				}
 			}
 
