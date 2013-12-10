@@ -31,7 +31,13 @@ echo "Remove failed files upload";
 		rm -rf "${DST_PATH}/upload/files/";
 	fi
 
-	mkdir -p "${DST_PATH}/{app,backup,files,httpd,logs,private,FISH}/";
+	mkdir -p "${DST_PATH}/app/";
+	mkdir -p "${DST_PATH}/backup/";
+	mkdir -p "${DST_PATH}/files/";
+	mkdir -p "${DST_PATH}/httpd/";
+	mkdir -p "${DST_PATH}/logs/";
+	mkdir -p "${DST_PATH}/private/";
+	mkdir -p "${DST_PATH}/FISH/";
 	mkdir -p "${DST_PATH}/upload/files/";
 
 #--------------------------------------------------
@@ -44,4 +50,4 @@ echo "Remove failed files upload";
 
 		echo 'TODO: Add rsync support';
 
-	else
+	fi
