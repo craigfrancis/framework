@@ -55,9 +55,8 @@
 
 		$exec_script = FRAMEWORK_ROOT . '/library/cli/upload/' . safe_file_name($script) . '.sh';
 		$exec_params = escapeshellarg($server) . ' ' . escapeshellarg($config['method']) . ' ' . escapeshellarg($config['src_host']) . ' ' . escapeshellarg($config['src_path']) . ' ' . escapeshellarg($config['dst_host']) . ' ' . escapeshellarg($config['dst_path']);
-		$exec_command = escapeshellcmd($exec_script) . ' ' . $exec_params;
 
-		execute_command($exec_command);
+		execute_command(escapeshellcmd($exec_script) . ' ' . $exec_params);
 		return;
 
 		$descriptor = array(

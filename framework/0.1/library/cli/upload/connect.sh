@@ -26,10 +26,10 @@
 
 	SSH_CONTROL='~/.ssh/master-%r@%h:%p';
 
-	# ssh -fN -M  -S "${SSH_CONTROL}" "${SRC_HOST}";
+	# ssh -fN -M -S "${SSH_CONTROL}" "${SRC_HOST}";
 
 	function remote_cmd {
-		ssh -S "${SSH_CONTROL}" "${SRC_HOST}" $@;
+		ssh -S -t "${SSH_CONTROL}" "${SRC_HOST}" $@;
 	}
 
 	function remote_close {
