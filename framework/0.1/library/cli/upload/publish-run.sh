@@ -52,6 +52,8 @@
 					echo "--------------------------------------------------";
 				done
 
+				echo;
+
 			elif [ "$RUN" = "Database" ]; then
 
 				./cli --diff;
@@ -60,6 +62,8 @@
 
 				CONTINUE="true";
 
+				echo;
+
 			elif [ "$RUN" = "Cancel" ]; then
 
 				echo "Canceled";
@@ -67,7 +71,6 @@
 
 			fi
 
-			echo;
 			break;
 
 		done
