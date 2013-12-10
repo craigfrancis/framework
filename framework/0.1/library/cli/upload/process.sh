@@ -61,7 +61,6 @@
 
 		if [ "$KEY" != "y" ]; then
 			echo "Canceled";
-			echo;
 			remote_close;
 			exit;
 		else
