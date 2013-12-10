@@ -29,7 +29,7 @@
 	echo "  Done";
 
 	function remote_cmd {
-		ssh -o 'LogLevel=QUIET' -t -S "${SSH_CONTROL}" "${SRC_HOST}" $@;
+		ssh -t -o 'LogLevel=QUIET' -S "${SSH_CONTROL}" "${SRC_HOST}" $@;
 	}
 
 	function remote_close {

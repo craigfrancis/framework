@@ -29,11 +29,11 @@
 	echo "  Done";
 
 	function remote_cmd {
-		ssh -t -o 'LogLevel=QUIET' -o "ControlPath=${SSH_CONTROL}" "${DST_HOST}" $@;
+		ssh -t -o 'LogLevel=QUIET' -S "${SSH_CONTROL}" "${DST_HOST}" $@;
 	}
 
 	function remote_scp {
-		scp -o 'LogLevel=QUIET' -o "ControlPath=${SSH_CONTROL}" $@;
+		echo scp -o 'LogLevel=QUIET' -o "ControlPath=${SSH_CONTROL}" $@;
 	}
 
 	function remote_close {
@@ -59,7 +59,7 @@
 
 	remote_cmd "mkdir -p '${DST_PATH}/upload/'";
 	remote_scp "./publish.sh '${DST_HOST}:${DST_PATH}/upload/publish.sh'";
-	remote_cmd "${DST_PATH}/upload/publish.sh";
+	# remote_cmd "${DST_PATH}/upload/publish.sh";
 
 #--------------------------------------------------
 # Clean up
