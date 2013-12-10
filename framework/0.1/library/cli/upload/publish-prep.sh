@@ -1,5 +1,20 @@
+#!/bin/bash
 
-# separate script, to run on remote server once files are in /dst_dir/upload/files/
-# run from /dst_dir/, not old version on remote server.
+#--------------------------------------------------
+# Config
+#--------------------------------------------------
 
-echo "Publish prep";
+	DST_PATH="$1";
+
+	if [[ -z "${DST_PATH}" ]]; then
+		echo "Missing parameters";
+		echo;
+		exit;
+	fi
+
+#--------------------------------------------------
+# Ensure all files exist
+#--------------------------------------------------
+
+	pwd;
+	echo "${DST_PATH}";
