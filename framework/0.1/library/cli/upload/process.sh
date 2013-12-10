@@ -33,6 +33,8 @@
 	}
 
 	function remote_scp {
+		pwd;
+		echo scp -o 'LogLevel=QUIET' -o 'ControlMaster=no' -o "ControlPath='${SSH_CONTROL}'" "${1}" "${DST_HOST}:${2}";
 		scp -o 'LogLevel=QUIET' -o 'ControlMaster=no' -o "ControlPath='${SSH_CONTROL}'" "${1}" "${DST_HOST}:${2}";
 	}
 
