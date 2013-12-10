@@ -28,6 +28,11 @@
 
 	echo;
 
+	cd "${DST_PATH}/upload/files/";
+
+	rm -f "./cli";
+	ln -s "./framework/0.1/cli/run.sh" "./cli";
+
 	CONTINUE="false";
 
 	while [ $CONTINUE = "false" ];
@@ -49,7 +54,7 @@
 
 			elif [ "$RUN" = "Database" ]; then
 
-				echo "TODO";
+				./cli --diff;
 
 			elif [ "$RUN" = "Continue" ]; then
 
@@ -132,10 +137,7 @@
 
 	cd "${DST_PATH}/";
 
-	if [ -f "${DST_PATH}/cli" ]; then
-		rm "${DST_PATH}/cli";
-	fi
-
+	rm -f "./cli";
 	ln -s "./framework/0.1/cli/run.sh" "./cli";
 
 #--------------------------------------------------
