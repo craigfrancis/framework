@@ -66,10 +66,22 @@
 	fi
 
 #--------------------------------------------------
-# Block and lock support
+# Block support
 #--------------------------------------------------
 
-	# TODO: Look for block and lock files... maybe in ${DST_PATH}/upload/lock.txt ... with a timestamp and uuid in it?
+	BLOCK_EXISTS=`remote_cmd "if [ -f '${DST_PATH}/upload/block.txt' ]; then echo -n 'yes'; else echo -n 'no'; fi"`;
+
+	if [[ "${BLOCK_EXISTS}" != 'no' ]]; then
+
+		echo "ERROR: An upload block has been created for this project.";
+		echo ;
+		echo "--------------------------------";
+		remote_cmd "cat '${DST_PATH}/upload/block.txt'";
+		echo "--------------------------------";
+		echo ;
+		exit 0;
+
+	fi
 
 #--------------------------------------------------
 # Upload publish scripts
