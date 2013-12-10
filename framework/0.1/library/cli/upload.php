@@ -67,7 +67,7 @@
 			   2 => array('file', 'php://stderr', 'r'),
 			);
 
-		$process = proc_open($exec_command, $descriptor, $pipes, $exec_dir);
+		$process = proc_open($exec_command, $descriptor, $pipes, $exec_dir . '/');
 
 	}
 
