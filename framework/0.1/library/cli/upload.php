@@ -57,7 +57,7 @@
 		$exec_params = escapeshellarg($server) . ' ' . escapeshellarg($config['method']) . ' ' . escapeshellarg($config['src_host']) . ' ' . escapeshellarg($config['src_path']) . ' ' . escapeshellarg($config['dst_host']) . ' ' . escapeshellarg($config['dst_path']);
 		$exec_command = escapeshellcmd($exec_script) . ' ' . $exec_params;
 
-		execute_command($script);
+		execute_command($exec_command);
 		return;
 
 		$descriptor = array(
