@@ -33,7 +33,7 @@
 	}
 
 	function remote_scp {
-		echo scp -o 'LogLevel=QUIET' -o "ControlPath=${SSH_CONTROL}" $@;
+		echo scp -o 'LogLevel=QUIET' -o "ControlPath='${SSH_CONTROL}'" $@;
 		scp -o 'LogLevel=QUIET' -o "ControlPath='${SSH_CONTROL}'" $@;
 	}
 
