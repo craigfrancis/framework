@@ -32,6 +32,10 @@
 		ssh -o 'LogLevel=QUIET' -t -S "${SSH_CONTROL}" "${DST_HOST}" $@;
 	}
 
+	function remote_scp {
+		scp -o "LogLevel=QUIET,ControlPath=${SSH_CONTROL}" $@;
+	}
+
 	function remote_close {
 		ssh -O exit -S "${SSH_CONTROL}" "${DST_HOST}" 2> /dev/null;
 	}
@@ -54,7 +58,7 @@
 #--------------------------------------------------
 
 	remote_cmd "mkdir -p '${DST_PATH}/upload/'";
-	remote_cmd "scp `pwd`/publish.sh '${DST_PATH}/upload/publish.sh'";
+	remote_scp "./publish.sh '${DST_HOST}:${DST_PATH}/upload/publish.sh'";
 	remote_cmd "${DST_PATH}/upload/publish.sh";
 
 #--------------------------------------------------
