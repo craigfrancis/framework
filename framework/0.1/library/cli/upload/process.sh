@@ -26,7 +26,7 @@
 
 	SSH_CONTROL='~/.ssh/master-%r@%h:%p';
 
-	# ssh -fN -M  -S "${SSH_CONTROL}" "${DST_HOST}";
+	ssh -fN -M  -S "${SSH_CONTROL}" "${DST_HOST}";
 
 	function remote_cmd {
 		ssh -S "${SSH_CONTROL}" "${DST_HOST}" $@;
@@ -52,8 +52,6 @@
 #--------------------------------------------------
 # Upload publish script
 #--------------------------------------------------
-
-echo "mkdir: ${DST_PATH}/upload/";
 
 	remote_cmd "mkdir -p '${DST_PATH}/upload/'";
 
