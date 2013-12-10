@@ -56,7 +56,28 @@
 		$exec_script = FRAMEWORK_ROOT . '/library/cli/upload/' . safe_file_name($script) . '.sh';
 		$exec_params = escapeshellarg($server) . ' ' . escapeshellarg($config['method']) . ' ' . escapeshellarg($config['src_host']) . ' ' . escapeshellarg($config['src_path']) . ' ' . escapeshellarg($config['dst_host']) . ' ' . escapeshellarg($config['dst_path']);
 
-		execute_command(escapeshellarg($exec_script) . ' ' . $exec_params, true);
+		exec(escapeshellcmd($exec_script) . ' ' . $exec_params);
+
+return;
+
+		$descriptorspec = array(
+			   0 => array('pipe', 'r'),
+			   1 => array('pipe', 'w'),
+			);
+
+// popen
+// exec
+
+		$process = proc_open('/full/path/to/a.out', $descriptorspec, $pipes);
+
+		if (is_resource($process)) {
+		    list ($out, $in) = $pipes;
+
+		    fwrite($out, "5\n");
+		    fwrite($out, "7\n");
+
+		    echo stream_get_contents($in);
+		}
 
 	}
 
