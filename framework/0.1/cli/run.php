@@ -112,7 +112,9 @@
 				case 'c':
 				case 'config':
 
-					if ($option_value) {
+					if (in_array($option_value, array('SERVER', 'ROOT', 'FRAMEWORK_ROOT', 'APP_ROOT', 'FILE_ROOT', 'PRIVATE_ROOT'))) {
+						echo constant($option_value) . "\n";
+					} else if ($option_value) {
 						echo config::get($option_value) . "\n";
 					} else {
 						echo "\n";
