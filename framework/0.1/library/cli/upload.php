@@ -90,7 +90,7 @@
 
 					if ($config_dst['source'] != SERVER) {
 
-						upload_exec('connect.sh', array(
+						upload_exec('connect', array(
 								$server,
 								$config_src['location_host'],
 								$config_src['location_path'],
@@ -98,7 +98,7 @@
 
 					} else {
 
-						upload_exec('process.sh', array(
+						upload_exec('process', array(
 								FRAMEWORK_ROOT,
 								$config_dst['method'],
 								$config_src['location_path'],
@@ -117,7 +117,7 @@
 		$exec_params = implode(' ', array_map('escapeshellarg', $exec_params));
 
 		$exec_dir = FRAMEWORK_ROOT . '/library/cli/upload';
-		$exec_script = $exec_dir . '/' . safe_file_name($script);
+		$exec_script = $exec_dir . '/' . safe_file_name($script) . '.sh';
 		$exec_command = escapeshellcmd($exec_script) . ' ' . $exec_params;
 
 		// execute_command($exec_command, true);
