@@ -23,7 +23,7 @@
 	if [[ ! -d "${DST_PATH}" ]]; then
 
 		echo;
-		echo "This project is not on '${DST_HOST}:${DST_PATH}', press [y] to continue...";
+		echo "This project is not on '${DST_PATH}', press [y] to continue...";
 		read KEY;
 
 		if [[ "${KEY}" != 'y' ]]; then
