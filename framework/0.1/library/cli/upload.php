@@ -132,7 +132,7 @@
 		$exec_script = $exec_dir . '/' . safe_file_name($script) . '.sh';
 		$exec_command = escapeshellcmd($exec_script) . ' ' . $exec_params;
 
-		// execute_command($exec_command, true);
+		// command_run($exec_command, true);
 		// return;
 
 		$descriptor = array(

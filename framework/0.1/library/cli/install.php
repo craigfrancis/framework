@@ -176,9 +176,9 @@
 			chmod($temp_folder, 0777);
 
 			if (is_dir(PRIVATE_ROOT . '/.svn')) {
-				$output = execute_command('svn propget svn:ignore ' . escapeshellarg(PRIVATE_ROOT), false);
+				$output = command_run('svn propget svn:ignore ' . escapeshellarg(PRIVATE_ROOT), false);
 				if (!preg_match('/^tmp$/m', $output)) {
-					execute_command('svn propset svn:ignore "tmp" ' . escapeshellarg(PRIVATE_ROOT), true);
+					command_run('svn propset svn:ignore "tmp" ' . escapeshellarg(PRIVATE_ROOT), true);
 				}
 			} else if (is_dir(ROOT . '/.git')) {
 				file_put_contents(PRIVATE_ROOT . '/.gitignore', 'tmp');
@@ -194,7 +194,7 @@
 
 			$install_path = APP_ROOT . '/library/setup/install.sh';
 			if (is_file($install_path)) {
-				execute_command($install_path, true);
+				command_run($install_path, true);
 			}
 
 	}

@@ -222,7 +222,7 @@
 
 		$unit_test_url->format_set('full');
 
-		execute_command('open ' . escapeshellarg($unit_test_url), true);
+		command_run('open ' . escapeshellarg($unit_test_url), true);
 
 	}
 
@@ -231,8 +231,8 @@
 //--------------------------------------------------
 // Open in TextMate
 
-	if (execute_command('which mate')) {
-		execute_command('mate ' . escapeshellarg($path_php), true);
+	if (command_run('which mate')) {
+		command_run('mate ' . escapeshellarg($path_php), true);
 	}
 
 ?>

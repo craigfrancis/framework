@@ -20,7 +20,7 @@
 //--------------------------------------------------
 // Execute command
 
-	function execute_command($command, $show_output = false) {
+	function command_run($command, $show_output = false) {
 		if ($show_output && config::get('debug.show')) {
 			echo '  ' . $command . "\n";
 		}

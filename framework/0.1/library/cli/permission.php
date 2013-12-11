@@ -53,7 +53,7 @@
 				if ($show_output) {
 					echo $name . "\n";
 				}
-				execute_command('find ' . escapeshellarg($info['path']) . ' -mindepth 1 -type ' . escapeshellarg($info['type']) . ' ! -path \'*/\.*\' -exec chmod ' . escapeshellarg($info['permission']) . ' {} \\; 2>&1', $show_output);
+				command_run('find ' . escapeshellarg($info['path']) . ' -mindepth 1 -type ' . escapeshellarg($info['type']) . ' ! -path \'*/\.*\' -exec chmod ' . escapeshellarg($info['permission']) . ' {} \\; 2>&1', $show_output);
 			} else {
 				if ($show_output) {
 					echo $name . " - Skipped\n";
@@ -65,20 +65,20 @@
 			if ($show_output) {
 				echo $name . "\n";
 			}
-			execute_command('chmod ' . escapeshellarg($info['permission']) . ' ' . escapeshellarg($info['path']) . ' 2>&1', $show_output);
+			command_run('chmod ' . escapeshellarg($info['permission']) . ' ' . escapeshellarg($info['path']) . ' 2>&1', $show_output);
 		}
 
 		if ($show_output) {
 			echo 'Shell script' . "\n";
 		}
-		execute_command('chmod 755 ' . escapeshellarg(FRAMEWORK_ROOT . '/cli/run.sh') . ' 2>&1', $show_output);
+		command_run('chmod 755 ' . escapeshellarg(FRAMEWORK_ROOT . '/cli/run.sh') . ' 2>&1', $show_output);
 
 		$install_path = APP_ROOT . '/library/setup/install.sh';
 		if (is_file($install_path)) {
 			if ($show_output) {
 				echo 'Install script' . "\n";
 			}
-			execute_command('chmod 755 ' . escapeshellarg($install_path) . ' 2>&1', $show_output);
+			command_run('chmod 755 ' . escapeshellarg($install_path) . ' 2>&1', $show_output);
 		}
 
 		if ($show_output) {
