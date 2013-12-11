@@ -20,7 +20,7 @@
 # Check path on destination
 #--------------------------------------------------
 
-	if [[ -d '${DST_PATH}' ]]; then
+	if [[ ! -d "${DST_PATH}" ]]; then
 
 		echo;
 		echo "This project is not on '${DST_HOST}:${DST_PATH}', press [y] to continue...";
@@ -37,13 +37,13 @@
 # Block support
 #--------------------------------------------------
 
-	if [[ -f '${DST_PATH}/upload/block.txt' ]]; then
+	if [[ -f "${DST_PATH}/upload/block.txt" ]]; then
 
 		echo;
 		echo 'ERROR: An upload block has been created for this project.';
 		echo;
 		echo '--------------------------------';
-		cat '${DST_PATH}/upload/block.txt';
+		cat "${DST_PATH}/upload/block.txt";
 		echo '--------------------------------';
 		exit 0;
 
