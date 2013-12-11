@@ -3,7 +3,7 @@
 	//--------------------------------------------------
 	// Config:
 	//
-	//   upload.[server].source = [git/server]
+	//   upload.[server].source = [git/svn/server]
 	//   upload.[server].method = [scm/local/rsync/scp] ... usually auto detected
 	//   upload.[server].location = [path]
 	//
@@ -81,10 +81,6 @@
 
 					$config_src = upload_config($config_dst['source']);
 
-					if (!isset($config_dst['method'])) {
-						$config_dst['method'] = ($config_dst['location_host'] == $config_src['location_host'] ? 'local' : 'rsync');
-					}
-
 				//--------------------------------------------------
 				// Upload processing
 
@@ -96,9 +92,21 @@
 								$config_src['location_path'],
 							));
 
+					} else if ($config_dst['location_host'] == $config_src['location_host']) {
+
+						upload_exec('process-local', array(
+								FRAMEWORK_ROOT,
+								$config_src['location_path'],
+								$config_dst['location_path'],
+							));
+
 					} else {
 
-						upload_exec('process', array(
+						if (!isset($config_dst['method'])) {
+							$config_dst['method'] = 'rsync';
+						}
+
+						upload_exec('process-remote', array(
 								FRAMEWORK_ROOT,
 								$config_dst['method'],
 								$config_src['location_path'],
