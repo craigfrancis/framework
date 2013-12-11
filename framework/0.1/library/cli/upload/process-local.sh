@@ -56,8 +56,16 @@
 	# Lock file... maybe in ${DST_PATH}/upload/lock.txt ... with a timestamp and uuid in it?
 
 #--------------------------------------------------
+# Create upload folder
+#--------------------------------------------------
+
+	mkdir -p "${DST_PATH}/upload/";
+
+#--------------------------------------------------
 # Execute prep script
 #--------------------------------------------------
+
+	chmod 755 ${FRAMEWORK_ROOT}/library/cli/upload/publish-{prep,run}.sh
 
 	${FRAMEWORK_ROOT}/library/cli/upload/publish-prep.sh 'local' "${DST_PATH}";
 
