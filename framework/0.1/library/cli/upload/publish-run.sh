@@ -6,26 +6,20 @@
 
 	set -u;
 
-	UPLOAD_SERVER="$1";
-	UPLOAD_METHOD="$2";
-	DST_PATH="$3";
+	UPLOAD_METHOD="$1";
+	DST_PATH="$2";
 
-	if [[ -z "${UPLOAD_SERVER}" ]] || [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${DST_PATH}" ]]; then
+	if [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo "Missing parameters";
 		echo;
 		exit 0;
 	fi
 
 	CURRENT=`date '+%Y_%m_%d'`;
-
-#--------------------------------------------------
-# Folders
-#--------------------------------------------------
-
 	FOLDERS="app httpd framework";
 
 #--------------------------------------------------
-# Testing
+# Checking
 #--------------------------------------------------
 
 	echo;

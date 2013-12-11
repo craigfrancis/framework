@@ -7,14 +7,12 @@
 	set -u;
 
 	FRAMEWORK_ROOT="$1";
-	UPLOAD_SERVER="$2";
-	UPLOAD_METHOD="$3";
-	SRC_HOST="$4";
-	SRC_PATH="$5";
-	DST_HOST="$6";
-	DST_PATH="$7";
+	UPLOAD_METHOD="$2";
+	SRC_PATH="$3";
+	DST_HOST="$4";
+	DST_PATH="$5";
 
-	if [[ -z "${FRAMEWORK_ROOT}" ]] || [[ -z "${UPLOAD_SERVER}" ]] || [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${SRC_HOST}" ]] || [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
+	if [[ -z "${FRAMEWORK_ROOT}" ]] || [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo "Missing parameters";
 		echo;
 		exit 0;
@@ -110,7 +108,7 @@
 # Execute prep script
 #--------------------------------------------------
 
-	remote_cmd "${DST_PATH}/upload/publish-prep.sh '${UPLOAD_SERVER}' '${UPLOAD_METHOD}' '${DST_PATH}'";
+	remote_cmd "${DST_PATH}/upload/publish-prep.sh '${UPLOAD_METHOD}' '${DST_PATH}'";
 
 #--------------------------------------------------
 # Upload files
@@ -139,7 +137,7 @@
 # Execute run script
 #--------------------------------------------------
 
-	remote_cmd "${DST_PATH}/upload/publish-run.sh '${UPLOAD_SERVER}' '${UPLOAD_METHOD}' '${DST_PATH}'";
+	remote_cmd "${DST_PATH}/upload/publish-run.sh '${UPLOAD_METHOD}' '${DST_PATH}'";
 
 #--------------------------------------------------
 # Clean up

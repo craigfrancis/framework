@@ -6,15 +6,11 @@
 
 	set -u;
 
-	FRAMEWORK_ROOT="$1";
-	UPLOAD_SERVER="$2";
-	UPLOAD_METHOD="$3";
-	SRC_HOST="$4";
-	SRC_PATH="$5";
-	DST_HOST="$6";
-	DST_PATH="$7";
+	UPLOAD_SERVER="$1";
+	SRC_HOST="$2";
+	SRC_PATH="$3";
 
-	if [[ -z "${FRAMEWORK_ROOT}" ]] || [[ -z "${UPLOAD_SERVER}" ]] || [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${SRC_HOST}" ]] || [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
+	if [[ -z "${UPLOAD_SERVER}" ]] || [[ -z "${SRC_HOST}" ]] || [[ -z "${SRC_PATH}" ]]; then
 		echo "Missing parameters";
 		echo;
 		exit 0;
