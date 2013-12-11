@@ -7,10 +7,11 @@
 	set -u;
 
 	FRAMEWORK_ROOT="$1";
-	DST_HOST="$2";
-	DST_PATH="$3";
+	DST_SOURCE="$2";
+	DST_HOST="$3";
+	DST_PATH="$4";
 
-	if [[ -z "${FRAMEWORK_ROOT}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
+	if [[ -z "${FRAMEWORK_ROOT}" ]] || [[ -z "${DST_SOURCE}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo "Missing parameters";
 		echo;
 		exit 0;
@@ -53,8 +54,20 @@
 # Run
 #--------------------------------------------------
 
+	# USER_OWNER=`remote_cmd "ls -ld '${DST_PATH}' | awk '{print \\\$3}'"`;
+	# USER_NAME=`remote_cmd "whoami"`;
+
 	remote_cmd "${CLI_PATH} --install";
 	remote_cmd "${CLI_PATH} --diff";
+
+	# Can't really run 'install', as the scm post-commit hook will be under
+	# a different user (probably apache), so won't be able to create or
+	# change permissions on any files.
+
+	# Maybe we could do a svn update, or gill pull? ... but should that
+	# just be for the project and/or framework repositories?
+
+	echo "Process: ${DST_SOURCE}";
 
 #--------------------------------------------------
 # Clean up
