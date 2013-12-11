@@ -21,7 +21,7 @@ if [[ "${FILE}" == "run.sh" ]]; then
 	if [[ -L "${SRC_WD}/cli" ]]; then
 
 		echo;
-		echo "Please use your cli symlink, so we know where your project root is:";
+		echo 'Please use your cli symlink, so we know where your project root is:';
 		echo;
 		echo "  ./cli $@";
 		echo;
@@ -35,12 +35,12 @@ if [[ "${FILE}" == "run.sh" ]]; then
 	else
 
 		echo;
-		echo "If this is a new project you probably want to run:";
+		echo 'If this is a new project you probably want to run:';
 		echo;
 		echo "  $0 -i";
 		echo "  ./cli $@";
 		echo;
-		echo "Or perhaps create a symlink, so we know where your project root is:";
+		echo 'Or perhaps create a symlink, so we know where your project root is:';
 		echo;
 		echo "  ln -s $0 ./cli";
 		echo "  ./cli $@";

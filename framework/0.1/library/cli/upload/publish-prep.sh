@@ -10,7 +10,7 @@
 	DST_PATH="${2}";
 
 	if [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${DST_PATH}" ]]; then
-		echo "Missing parameters";
+		echo 'Missing parameters';
 		echo;
 		exit 0;
 	fi
@@ -26,7 +26,7 @@
 		exit 0;
 	fi
 
-	echo "Check main folders:";
+	echo 'Check main folders:';
 
 	cd "${DST_PATH}";
 
@@ -43,7 +43,7 @@
 	mkdir -p "${DST_PATH}/private/";
 	mkdir -p "${DST_PATH}/upload/files/";
 
-	echo " Done";
+	echo ' Done';
 
 #--------------------------------------------------
 # Copy current files for rsync support

@@ -13,7 +13,7 @@
 	DST_PATH="${5}";
 
 	if [[ -z "${FRAMEWORK_ROOT}" ]] || [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
-		echo "Missing parameters";
+		echo 'Missing parameters';
 		echo;
 		exit 0;
 	fi
@@ -27,7 +27,7 @@
 	echo;
 	echo "Connecting to ${DST_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${DST_HOST}";
-	echo " Done";
+	echo ' Done';
 
 	function remote_cmd {
 		ssh -t -o 'LogLevel=QUIET' -S "${SSH_CONTROL}" "${DST_HOST}" $@;
@@ -57,8 +57,8 @@
 		echo "This project is not on '${DST_HOST}:${DST_PATH}', press [y] to continue...";
 		read KEY;
 
-		if [[ "${KEY}" != "y" ]]; then
-			echo "Canceled";
+		if [[ "${KEY}" != 'y' ]]; then
+			echo 'Canceled';
 			remote_close;
 			exit 0;
 		fi
@@ -74,11 +74,11 @@
 	if [[ "${BLOCK_EXISTS}" != 'no' ]]; then
 
 		echo;
-		echo "ERROR: An upload block has been created for this project.";
+		echo 'ERROR: An upload block has been created for this project.';
 		echo;
-		echo "--------------------------------";
+		echo '--------------------------------';
 		remote_cmd "cat '${DST_PATH}/upload/block.txt'";
-		echo "--------------------------------";
+		echo '--------------------------------';
 		remote_close;
 		exit 0;
 
@@ -95,14 +95,14 @@
 #--------------------------------------------------
 
 	echo;
-	echo "Uploading prep scripts:";
+	echo 'Uploading prep scripts:';
 
 	remote_cmd "mkdir -p '${DST_PATH}/upload/'";
 	remote_scp "${FRAMEWORK_ROOT}/library/cli/upload/publish-prep.sh" "${DST_PATH}/upload/publish-prep.sh";
 	remote_scp "${FRAMEWORK_ROOT}/library/cli/upload/publish-run.sh" "${DST_PATH}/upload/publish-run.sh";
 	remote_cmd "chmod 755 ${DST_PATH}/upload/publish-{prep,run}.sh";
 
-	echo " Done";
+	echo ' Done';
 
 #--------------------------------------------------
 # Execute prep script
@@ -115,7 +115,7 @@
 #--------------------------------------------------
 
 	echo;
-	echo "Uploading files:";
+	echo 'Uploading files:';
 
 	if [[ "${UPLOAD_METHOD}" == 'scp' ]]; then
 
@@ -131,7 +131,7 @@
 
 	fi
 
-	echo " Done";
+	echo ' Done';
 
 #--------------------------------------------------
 # Execute run script

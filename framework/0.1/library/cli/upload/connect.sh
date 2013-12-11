@@ -11,7 +11,7 @@
 	SRC_PATH="${3}";
 
 	if [[ -z "${UPLOAD_SERVER}" ]] || [[ -z "${SRC_HOST}" ]] || [[ -z "${SRC_PATH}" ]]; then
-		echo "Missing parameters";
+		echo 'Missing parameters';
 		echo;
 		exit 0;
 	fi
@@ -25,7 +25,7 @@
 	echo;
 	echo "Connecting to ${SRC_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${SRC_HOST}";
-	echo " Done";
+	echo ' Done';
 
 	function remote_cmd {
 		ssh -t -o 'LogLevel=QUIET' -S "${SSH_CONTROL}" "${SRC_HOST}" $@;

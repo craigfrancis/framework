@@ -10,7 +10,7 @@
 	DST_PATH="${2}";
 
 	if [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${DST_PATH}" ]]; then
-		echo "Missing parameters";
+		echo 'Missing parameters';
 		echo;
 		exit 0;
 	fi
@@ -34,36 +34,34 @@
 	while [ "${CONTINUE}" = "false" ];
 	do
 
-		OPTIONS="Diff Database Continue Cancel";
+		select RUN in 'Diff' 'Database' 'Continue' 'Cancel'; do
 
-		select RUN in "${OPTIONS}"; do
-
-			if [[ "${RUN}" == "Diff" ]]; then
+			if [[ "${RUN}" == 'Diff' ]]; then
 
 				echo;
-				echo "--------------------------------------------------";
+				echo '--------------------------------------------------';
 
 				for F in "${FOLDERS}"; do
 					echo "${F}";
 					diff -r --ignore-space-change -x database.txt "${DST_PATH}/${F}/" "${DST_PATH}/upload/files/${F}" | sed -r "s#^diff.*(${DST_PATH}.*) (${DST_PATH}/upload/files/.*)#\nDIFF \2 \1#g";
-					echo "--------------------------------------------------";
+					echo '--------------------------------------------------';
 				done
 
 				echo;
 
-			elif [[ "${RUN}" == "Database" ]]; then
+			elif [[ "${RUN}" == 'Database' ]]; then
 
 				./cli --diff;
 
-			elif [[ "${RUN}" == "Continue" ]]; then
+			elif [[ "${RUN}" == 'Continue' ]]; then
 
 				CONTINUE="true";
 
 				echo;
 
-			elif [[ "${RUN}" == "Cancel" ]]; then
+			elif [[ "${RUN}" == 'Cancel' ]]; then
 
-				echo "Canceled";
+				echo 'Canceled';
 				exit 0;
 
 			fi
@@ -78,11 +76,11 @@
 # Wait until the user is ready
 #--------------------------------------------------
 
-	echo "Press enter to continue...";
+	echo 'Press enter to continue...';
 	read KEY;
 
-	if [[ "${KEY}" == "c" ]]; then
-		echo "Canceled";
+	if [[ "${KEY}" == 'c' ]]; then
+		echo 'Canceled';
 		exit 0;
 	fi
 
@@ -90,7 +88,7 @@
 # For each folder
 #--------------------------------------------------
 
-	echo "Move files to live..."
+	echo 'Move files to live...';
 
 	for F in "${FOLDERS}"; do
 
@@ -129,7 +127,7 @@
 
 	done
 
-	echo " Done";
+	echo ' Done';
 
 #--------------------------------------------------
 # CLI
@@ -145,11 +143,11 @@
 #--------------------------------------------------
 
 	echo;
-	echo "Run install script... ";
+	echo 'Run install script...';
 
 	./cli --install;
 
-	echo " Done";
+	echo ' Done';
 
 #--------------------------------------------------
 # Cleanup

@@ -12,7 +12,7 @@
 	DST_PATH="${4}";
 
 	if [[ -z "${FRAMEWORK_ROOT}" ]] || [[ -z "${DST_SOURCE}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
-		echo "Missing parameters";
+		echo 'Missing parameters';
 		echo;
 		exit 0;
 	fi
@@ -26,7 +26,7 @@
 	echo;
 	echo "Connecting to ${DST_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${DST_HOST}";
-	echo " Done";
+	echo ' Done';
 
 	function remote_cmd {
 		ssh -t -o 'LogLevel=QUIET' -S "${SSH_CONTROL}" "${DST_HOST}" $@;

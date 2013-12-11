@@ -11,7 +11,7 @@
 	DST_PATH="${3}";
 
 	if [[ -z "${FRAMEWORK_ROOT}" ]] || [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_PATH}" ]]; then
-		echo "Missing parameters";
+		echo 'Missing parameters';
 		echo;
 		exit 0;
 	fi
@@ -26,8 +26,8 @@
 		echo "This project is not on '${DST_HOST}:${DST_PATH}', press [y] to continue...";
 		read KEY;
 
-		if [[ "${KEY}" != "y" ]]; then
-			echo "Canceled";
+		if [[ "${KEY}" != 'y' ]]; then
+			echo 'Canceled';
 			exit 0;
 		fi
 
@@ -40,11 +40,11 @@
 	if [[ -f '${DST_PATH}/upload/block.txt' ]]; then
 
 		echo;
-		echo "ERROR: An upload block has been created for this project.";
+		echo 'ERROR: An upload block has been created for this project.';
 		echo;
-		echo "--------------------------------";
+		echo '--------------------------------';
 		cat '${DST_PATH}/upload/block.txt';
-		echo "--------------------------------";
+		echo '--------------------------------';
 		exit 0;
 
 	fi
@@ -56,17 +56,23 @@
 	# Lock file... maybe in ${DST_PATH}/upload/lock.txt ... with a timestamp and uuid in it?
 
 #--------------------------------------------------
+# Execute prep script
+#--------------------------------------------------
+
+	#${FRAMEWORK_ROOT}/library/cli/upload/publish-prep.sh 'local' '${DST_PATH}';
+
+#--------------------------------------------------
 # Upload files
 #--------------------------------------------------
 
 	echo;
-	echo "Uploading files:";
+	echo 'Uploading files:';
 
 	# remote_scp "${SRC_PATH}/app/"             "${DST_PATH}/upload/files/app/";
 	# remote_scp "${SRC_PATH}/httpd/"           "${DST_PATH}/upload/files/httpd/";
 	# remote_scp "`dirname ${FRAMEWORK_ROOT}`/" "${DST_PATH}/upload/files/framework/";
 
-	echo " Done";
+	echo ' Done';
 
 #--------------------------------------------------
 # Execute run script
