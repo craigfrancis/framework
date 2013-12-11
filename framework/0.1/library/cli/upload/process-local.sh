@@ -59,7 +59,7 @@
 # Execute prep script
 #--------------------------------------------------
 
-	${FRAMEWORK_ROOT}/library/cli/upload/publish-prep.sh 'local' '${DST_PATH}';
+	${FRAMEWORK_ROOT}/library/cli/upload/publish-prep.sh 'local' "${DST_PATH}";
 
 #--------------------------------------------------
 # Upload files
@@ -78,4 +78,4 @@
 # Execute run script
 #--------------------------------------------------
 
-	${FRAMEWORK_ROOT}/library/cli/upload/publish-run.sh 'local' '${DST_PATH}';
+	${FRAMEWORK_ROOT}/library/cli/upload/publish-run.sh 'local' "${DST_PATH}";
