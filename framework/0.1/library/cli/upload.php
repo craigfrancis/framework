@@ -72,7 +72,11 @@
 				//--------------------------------------------------
 				// SCM mode
 
-					exit('SCM Mode'); // TODO: Run install script, and check db?
+					upload_exec('process-scm', array(
+							FRAMEWORK_ROOT,
+							$config_dst['location_host'],
+							$config_dst['location_path'],
+						));
 
 			} else {
 
