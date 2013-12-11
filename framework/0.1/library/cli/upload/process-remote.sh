@@ -38,7 +38,7 @@
 	}
 
 	function remote_rsync {
-		rsync -e "ssh -o 'ControlPath=${SSH_CONTROL}'" --delete -v -a -c "${1}" "${DST_HOST}:${2}";
+		rsync -e "ssh -o 'ControlPath=${SSH_CONTROL}'" --delete -v -a -c --exclude=.svn "${1}" "${DST_HOST}:${2}";
 	}
 
 	function remote_close {
