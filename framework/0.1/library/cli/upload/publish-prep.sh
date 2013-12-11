@@ -49,7 +49,7 @@
 # Copy current files for rsync support
 #--------------------------------------------------
 
-	if [[ "${UPLOAD_METHOD}" != 'scp' ]]; then
+	if [[ "${UPLOAD_METHOD}" == 'rsync' ]]; then
 
 		cp -a "${DST_PATH}/app/"       "${DST_PATH}/upload/files/app/";
 		cp -a "${DST_PATH}/httpd/"     "${DST_PATH}/upload/files/httpd/";
