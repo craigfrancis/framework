@@ -6,10 +6,10 @@
 
 	set -u;
 
-	FRAMEWORK_ROOT="$1";
-	DST_SOURCE="$2";
-	DST_HOST="$3";
-	DST_PATH="$4";
+	FRAMEWORK_ROOT="${1}";
+	DST_SOURCE="${2}";
+	DST_HOST="${3}";
+	DST_PATH="${4}";
 
 	if [[ -z "${FRAMEWORK_ROOT}" ]] || [[ -z "${DST_SOURCE}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo "Missing parameters";
@@ -41,7 +41,7 @@
 #--------------------------------------------------
 
 	CLI_PATH="${DST_PATH}/cli";
-	CLI_EXISTS=`remote_cmd "if [ -h '${CLI_PATH}' ]; then echo -n 'link'; else echo -n 'not'; fi"`;
+	CLI_EXISTS=`remote_cmd "if [[ -h '${CLI_PATH}' ]]; then echo -n 'link'; else echo -n 'not'; fi"`;
 
 	if [[ "${CLI_EXISTS}" != 'link' ]]; then
 		echo "Cannot find CLI script on server '${DST_HOST}', path '${CLI_PATH}' - '${CLI_EXISTS}'";

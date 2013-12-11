@@ -6,11 +6,11 @@
 
 	set -u;
 
-	FRAMEWORK_ROOT="$1";
-	UPLOAD_METHOD="$2";
-	SRC_PATH="$3";
-	DST_HOST="$4";
-	DST_PATH="$5";
+	FRAMEWORK_ROOT="${1}";
+	UPLOAD_METHOD="${2}";
+	SRC_PATH="${3}";
+	DST_HOST="${4}";
+	DST_PATH="${5}";
 
 	if [[ -z "${FRAMEWORK_ROOT}" ]] || [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo "Missing parameters";
@@ -49,7 +49,7 @@
 # Check path on destination
 #--------------------------------------------------
 
-	DST_EXISTS=`remote_cmd "if [ -d '${DST_PATH}' ]; then echo -n 'dir'; else echo -n 'not'; fi"`;
+	DST_EXISTS=`remote_cmd "if [[ -d '${DST_PATH}' ]]; then echo -n 'dir'; else echo -n 'not'; fi"`;
 
 	if [[ "${DST_EXISTS}" != 'dir' ]]; then
 
@@ -57,7 +57,7 @@
 		echo "This project is not on '${DST_HOST}:${DST_PATH}', press [y] to continue...";
 		read KEY;
 
-		if [ "$KEY" != "y" ]; then
+		if [[ "${KEY}" != "y" ]]; then
 			echo "Canceled";
 			remote_close;
 			exit 0;
@@ -69,7 +69,7 @@
 # Block support
 #--------------------------------------------------
 
-	BLOCK_EXISTS=`remote_cmd "if [ -f '${DST_PATH}/upload/block.txt' ]; then echo -n 'yes'; else echo -n 'no'; fi"`;
+	BLOCK_EXISTS=`remote_cmd "if [[ -f '${DST_PATH}/upload/block.txt' ]]; then echo -n 'yes'; else echo -n 'no'; fi"`;
 
 	if [[ "${BLOCK_EXISTS}" != 'no' ]]; then
 

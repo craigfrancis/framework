@@ -6,8 +6,8 @@
 
 	set -u;
 
-	UPLOAD_METHOD="$1";
-	DST_PATH="$2";
+	UPLOAD_METHOD="${1}";
+	DST_PATH="${2}";
 
 	if [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo "Missing parameters";
@@ -31,19 +31,19 @@
 
 	CONTINUE="false";
 
-	while [ $CONTINUE = "false" ];
+	while [ "${CONTINUE}" = "false" ];
 	do
 
 		OPTIONS="Diff Database Continue Cancel";
 
-		select RUN in $OPTIONS; do
+		select RUN in "${OPTIONS}"; do
 
-			if [ "$RUN" = "Diff" ]; then
+			if [[ "${RUN}" == "Diff" ]]; then
 
 				echo;
 				echo "--------------------------------------------------";
 
-				for F in $FOLDERS; do
+				for F in "${FOLDERS}"; do
 					echo "${F}";
 					diff -r --ignore-space-change -x database.txt "${DST_PATH}/${F}/" "${DST_PATH}/upload/files/${F}" | sed -r "s#^diff.*(${DST_PATH}.*) (${DST_PATH}/upload/files/.*)#\nDIFF \2 \1#g";
 					echo "--------------------------------------------------";
@@ -51,17 +51,17 @@
 
 				echo;
 
-			elif [ "$RUN" = "Database" ]; then
+			elif [[ "${RUN}" == "Database" ]]; then
 
 				./cli --diff;
 
-			elif [ "$RUN" = "Continue" ]; then
+			elif [[ "${RUN}" == "Continue" ]]; then
 
 				CONTINUE="true";
 
 				echo;
 
-			elif [ "$RUN" = "Cancel" ]; then
+			elif [[ "${RUN}" == "Cancel" ]]; then
 
 				echo "Canceled";
 				exit 0;
@@ -81,7 +81,7 @@
 	echo "Press enter to continue...";
 	read KEY;
 
-	if [ "$KEY" = "c" ]; then
+	if [[ "${KEY}" == "c" ]]; then
 		echo "Canceled";
 		exit 0;
 	fi
@@ -92,7 +92,7 @@
 
 	echo "Move files to live..."
 
-	for F in $FOLDERS; do
+	for F in "${FOLDERS}"; do
 
 		#--------------------------------------------------
 		# Cleanup
@@ -104,11 +104,11 @@
 		# Backup
 		#--------------------------------------------------
 
-			if [ -d "${DST_PATH}/${F}/" ]; then
+			if [[ -d "${DST_PATH}/${F}/" ]]; then
 
 				BACKUP=`ls -d ${DST_PATH}/backup/${F}_* 2> /dev/null | awk '{print substr($D, length($D) - 9)}'`
 
-				if [ "${BACKUP}" = "" -o "${CURRENT}" != "${BACKUP}" ]; then
+				if [[ "${BACKUP}" == "" -o "${CURRENT}" != "${BACKUP}" ]]; then
 
 					rm -rf ${DST_PATH}/backup/${F}_*;
 					mv "${DST_PATH}/${F}/" "${DST_PATH}/backup/${F}_${CURRENT}/";
@@ -157,6 +157,6 @@
 
 	rm -rf "${DST_PATH}/upload/";
 
-	for F in $FOLDERS; do
+	for F in "${FOLDERS}"; do
 		rm -rf "${DST_PATH}/${F}_del/";
 	done

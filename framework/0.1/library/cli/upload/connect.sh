@@ -6,9 +6,9 @@
 
 	set -u;
 
-	UPLOAD_SERVER="$1";
-	SRC_HOST="$2";
-	SRC_PATH="$3";
+	UPLOAD_SERVER="${1}";
+	SRC_HOST="${2}";
+	SRC_PATH="${3}";
 
 	if [[ -z "${UPLOAD_SERVER}" ]] || [[ -z "${SRC_HOST}" ]] || [[ -z "${SRC_PATH}" ]]; then
 		echo "Missing parameters";
@@ -40,7 +40,7 @@
 #--------------------------------------------------
 
 	CLI_PATH="${SRC_PATH}/cli";
-	CLI_EXISTS=`remote_cmd "if [ -h '${CLI_PATH}' ]; then echo -n 'link'; else echo -n 'not'; fi"`;
+	CLI_EXISTS=`remote_cmd "if [[ -h '${CLI_PATH}' ]]; then echo -n 'link'; else echo -n 'not'; fi"`;
 
 	if [[ "${CLI_EXISTS}" != 'link' ]]; then
 		echo "Cannot find CLI script on server '${SRC_HOST}', path '${CLI_PATH}' - '${CLI_EXISTS}'";

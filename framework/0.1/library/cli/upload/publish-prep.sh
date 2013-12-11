@@ -6,8 +6,8 @@
 
 	set -u;
 
-	UPLOAD_METHOD="$1";
-	DST_PATH="$2";
+	UPLOAD_METHOD="${1}";
+	DST_PATH="${2}";
 
 	if [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo "Missing parameters";
