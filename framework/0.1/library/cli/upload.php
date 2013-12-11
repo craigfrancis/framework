@@ -5,7 +5,7 @@
 	//
 	//   upload.[server].source = [git/svn/server]
 	//   upload.[server].method = [scm/local/rsync/scp] ... usually auto detected
-	//   upload.[server].location = [path]
+	//   upload.[server].location = [server:path]
 	//
 	// Examples:
 	//
@@ -133,16 +133,13 @@
 		$exec_script = $exec_dir . '/' . safe_file_name($script) . '.sh';
 		$exec_command = escapeshellcmd($exec_script) . ' ' . $exec_params;
 
-		// command_run($exec_command, true);
-		// return;
-
 		$descriptor = array(
 				0 => array('file', 'php://stdin', 'r'),
 				1 => array('file', 'php://stdout', 'r'),
 				2 => array('file', 'php://stderr', 'r'),
 			);
 
-		$process = proc_open($exec_command, $descriptor, $pipes, $exec_dir . '/');
+		$process = proc_open($exec_command, $descriptor, $pipes, $exec_dir);
 
 	}
 
@@ -151,7 +148,7 @@
 		$config = config::get_all('upload.' . $server);
 
 		$required = array(
-				'source' => 'Either the server to connect to (e.g. "demo"), or the values "git" / "svn".',
+				'source' => 'Either the server to connect to (e.g. "demo"), "git", or "svn".',
 				'location' => 'Server hostname and path - e.g. "www.example.com:/www/live/company.project/"',
 			);
 
