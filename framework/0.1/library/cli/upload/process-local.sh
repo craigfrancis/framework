@@ -65,7 +65,7 @@
 # Execute prep script
 #--------------------------------------------------
 
-	chmod 755 ${FRAMEWORK_ROOT}/library/cli/upload/publish-{prep,run}.sh
+	chmod -f 755 ${FRAMEWORK_ROOT}/library/cli/upload/publish-{prep,run}.sh
 
 	${FRAMEWORK_ROOT}/library/cli/upload/publish-prep.sh 'local' "${DST_PATH}";
 
@@ -76,9 +76,9 @@
 	echo;
 	echo 'Uploading files:';
 
-	cp -a "${SRC_PATH}/app/"             "${DST_PATH}/upload/files/app/";
-	cp -a "${SRC_PATH}/httpd/"           "${DST_PATH}/upload/files/httpd/";
-	cp -a "`dirname ${FRAMEWORK_ROOT}`/" "${DST_PATH}/upload/files/framework/";
+	cp -a "${SRC_PATH}/app"            "${DST_PATH}/upload/files/app";
+	cp -a "${SRC_PATH}/httpd"          "${DST_PATH}/upload/files/httpd";
+	cp -a "`dirname ${FRAMEWORK_ROOT}`" "${DST_PATH}/upload/files/framework";
 
 	echo ' Done';
 
