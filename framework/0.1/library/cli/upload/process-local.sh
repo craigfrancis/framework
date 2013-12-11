@@ -80,6 +80,12 @@
 	echo cp -a "${SRC_PATH}/httpd"          "${DST_PATH}/upload/files/httpd";
 	echo cp -a "`dirname ${FRAMEWORK_ROOT}`" "${DST_PATH}/upload/files/framework";
 
+	cp -a "${SRC_PATH}/app"            "${DST_PATH}/upload/files/app";
+	cp -a "${SRC_PATH}/httpd"          "${DST_PATH}/upload/files/httpd";
+	cp -a "`dirname ${FRAMEWORK_ROOT}`" "${DST_PATH}/upload/files/framework";
+
+exit 0;
+
 	echo ' Done';
 
 #--------------------------------------------------
