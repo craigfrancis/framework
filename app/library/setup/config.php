@@ -102,4 +102,13 @@
 	// $config['paginator.elements'] = array('<ul class="pagination">', 'first', 'back', 'links', 'next', 'last', '</ul>', 'extra', "\n");
 	// $config['paginator.link_wrapper_element'] = 'li';
 
+//--------------------------------------------------
+// Upload
+
+	$config['upload.demo.source'] = 'git';
+	$config['upload.demo.location'] = 'fey:/www/demo/craig.framework';
+
+	$config['upload.live.source'] = 'demo';
+	$config['upload.live.location'] = 'fey:/www/live/craig.framework';
+
 ?>
