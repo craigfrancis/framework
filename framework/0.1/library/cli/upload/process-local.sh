@@ -59,7 +59,7 @@
 # Execute prep script
 #--------------------------------------------------
 
-	#${FRAMEWORK_ROOT}/library/cli/upload/publish-prep.sh 'local' '${DST_PATH}';
+	${FRAMEWORK_ROOT}/library/cli/upload/publish-prep.sh 'local' '${DST_PATH}';
 
 #--------------------------------------------------
 # Upload files
@@ -68,9 +68,9 @@
 	echo;
 	echo 'Uploading files:';
 
-	# remote_scp "${SRC_PATH}/app/"             "${DST_PATH}/upload/files/app/";
-	# remote_scp "${SRC_PATH}/httpd/"           "${DST_PATH}/upload/files/httpd/";
-	# remote_scp "`dirname ${FRAMEWORK_ROOT}`/" "${DST_PATH}/upload/files/framework/";
+	cp -a "${SRC_PATH}/app/"             "${DST_PATH}/upload/files/app/";
+	cp -a "${SRC_PATH}/httpd/"           "${DST_PATH}/upload/files/httpd/";
+	cp -a "`dirname ${FRAMEWORK_ROOT}`/" "${DST_PATH}/upload/files/framework/";
 
 	echo ' Done';
 
@@ -78,4 +78,4 @@
 # Execute run script
 #--------------------------------------------------
 
-	#${FRAMEWORK_ROOT}/library/cli/upload/publish-run.sh 'local' '${DST_PATH}';
+	${FRAMEWORK_ROOT}/library/cli/upload/publish-run.sh 'local' '${DST_PATH}';
