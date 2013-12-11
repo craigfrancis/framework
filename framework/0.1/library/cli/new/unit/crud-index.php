@@ -8,9 +8,14 @@
 			// Config
 
 				$config = array_merge(array(
+
 						'add_url' => NULL,
 						'view_url' => NULL,
 						'delete_url' => NULL,
+
+						'paginate' => true,
+						'search' => true,
+
 					), $config);
 
 				$db = db_get();
@@ -18,9 +23,15 @@
 			//--------------------------------------------------
 			// Search form
 
-				$search_form = unit_get('search_form');
+				if ($config['search']) {
 
-				$this->set('search', $search_form);
+					$search_form = unit_get('search_form');
+
+				} else {
+
+					$search_form = NULL;
+
+				}
 
 			//--------------------------------------------------
 			// Columns
@@ -58,18 +69,20 @@
 					//--------------------------------------------------
 					// Keywords
 
-						$search = $search_form->value_get();
-						if ($search != '') {
+						if ($search_form) {
+							$search = $search_form->value_get();
+							if ($search != '') {
 
-							foreach (preg_split('/\W+/', trim($search)) as $word) {
-								if ($word != '') {
+								foreach (preg_split('/\W+/', trim($search)) as $word) {
+									if ($word != '') {
 
-									$where_sql[] = '
-										i.name LIKE "%' . $db->escape_like($word) . '%"';
+										$where_sql[] = '
+											i.name LIKE "%' . $db->escape_like($word) . '%"';
 
+									}
 								}
-							}
 
+							}
 						}
 
 					//--------------------------------------------------
@@ -86,16 +99,24 @@
 			//--------------------------------------------------
 			// Pagination
 
-				$db->query('SELECT
-								COUNT(i.id)
-							FROM
-								' . $from_sql . '
-							WHERE
-								' . $where_sql);
+				if ($config['paginate']) {
 
-				$result_count = $db->fetch_result();
+					$db->query('SELECT
+									COUNT(i.id)
+								FROM
+									' . $from_sql . '
+								WHERE
+									' . $where_sql);
 
-				$paginator = new paginator($result_count);
+					$result_count = $db->fetch_result();
+
+					$paginator = new paginator($result_count);
+
+				} else {
+
+					$paginator = NULL;
+
+				}
 
 			//--------------------------------------------------
 			// Query
@@ -108,9 +129,13 @@
 						WHERE
 							' . $where_sql . '
 						ORDER BY
-							' . $table->sort_get_sql() . '
+							' . $table->sort_get_sql();
+
+				if ($paginator) {
+					$sql .= '
 						LIMIT
 							' . $paginator->limit_get_sql();
+				}
 
 				foreach ($db->fetch_all($sql) as $row) {
 
@@ -134,12 +159,22 @@
 				}
 
 			//--------------------------------------------------
+			// Links
+
+				$links_html = array();
+
+				if ($config['add_url']) {
+					$links_html[] = '<a href="' . html($config['add_url']) . '">add item</a>';
+				}
+
+				$this->set('links_html', implode(', ', $links_html));
+
+			//--------------------------------------------------
 			// Variables
 
 				$this->set('table', $table);
 				$this->set('paginator', $paginator);
-
-				$this->set('add_url', $config['add_url']);
+				$this->set('search', $search_form);
 
 		}
 

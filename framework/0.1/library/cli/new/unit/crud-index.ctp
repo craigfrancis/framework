@@ -1,12 +1,18 @@
 
-	<?php if ($add_url) { ?>
-		<p>List of items (<a href="<?= html($add_url) ?>">add item</a>)</p>
+	<?php if ($links_html) { ?>
+		<p>List of items (<?= $links_html ?>)</p>
 	<?php } ?>
 
-	<?= $search->html(); ?>
+	<?php if (isset($search)) { ?>
+		<?= $search->html(); ?>
+	<?php } ?>
 
-	<?= $paginator->html(); ?>
+	<?php if ($paginator) { ?>
+		<?= $paginator->html(); ?>
+	<?php } ?>
 
 	<?= $table->html(); ?>
 
-	<?= $paginator->html(); ?>
+	<?php if ($paginator) { ?>
+		<?= $paginator->html(); ?>
+	<?php } ?>
