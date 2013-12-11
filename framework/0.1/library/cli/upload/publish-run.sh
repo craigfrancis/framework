@@ -106,7 +106,7 @@
 
 				BACKUP=`ls -d ${DST_PATH}/backup/${F}_* 2> /dev/null | awk '{print substr($D, length($D) - 9)}'`
 
-				if [[ "${BACKUP}" == "" -o "${CURRENT}" != "${BACKUP}" ]]; then
+				if [[ "${BACKUP}" == "" ]] || [[ "${CURRENT}" != "${BACKUP}" ]]; then
 
 					rm -rf ${DST_PATH}/backup/${F}_*;
 					mv "${DST_PATH}/${F}/" "${DST_PATH}/backup/${F}_${CURRENT}/";
