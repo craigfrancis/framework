@@ -76,9 +76,9 @@
 	echo;
 	echo 'Uploading files:';
 
-	rsync -a --exclude=.svn "${SRC_PATH}/app"             "${DST_PATH}/upload/files/app";
-	rsync -a --exclude=.svn "${SRC_PATH}/httpd"           "${DST_PATH}/upload/files/httpd";
-	rsync -a --exclude=.svn "`dirname ${FRAMEWORK_ROOT}`" "${DST_PATH}/upload/files/framework";
+	rsync -a --exclude=.svn "${SRC_PATH}/app/"             "${DST_PATH}/upload/files/app/";
+	rsync -a --exclude=.svn "${SRC_PATH}/httpd/"           "${DST_PATH}/upload/files/httpd/";
+	rsync -a --exclude=.svn "`dirname ${FRAMEWORK_ROOT}`/" "${DST_PATH}/upload/files/framework/";
 
 	echo ' Done';
 
