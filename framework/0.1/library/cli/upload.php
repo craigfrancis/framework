@@ -72,12 +72,16 @@
 				//--------------------------------------------------
 				// SCM mode
 
-					// upload_exec('process-scm', array(
-					// 		FRAMEWORK_ROOT,
-					// 		$config_dst['source'],
-					// 		$config_dst['location_host'],
-					// 		$config_dst['location_path'],
-					// 	));
+					if (SERVER == 'stage') {
+
+						upload_exec('process-scm', array(
+								ROOT,
+								$config_dst['source'],
+								$config_dst['location_host'],
+								$config_dst['location_path'],
+							));
+
+					}
 
 			} else {
 

@@ -6,15 +6,26 @@
 
 	set -u;
 
-	FRAMEWORK_ROOT="${1}";
+	ROOT="${1}";
 	DST_SOURCE="${2}";
 	DST_HOST="${3}";
 	DST_PATH="${4}";
 
-	if [[ -z "${FRAMEWORK_ROOT}" ]] || [[ -z "${DST_SOURCE}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
+	if [[ -z "${ROOT}" ]] || [[ -z "${DST_SOURCE}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo 'Missing parameters';
 		echo;
 		exit 0;
+	fi
+
+#--------------------------------------------------
+# Git push
+#--------------------------------------------------
+
+	if [[ "${DST_SOURCE}" == 'git' ]]; then
+
+		cd "${ROOT}";
+		git push origin master;
+
 	fi
 
 #--------------------------------------------------
@@ -51,23 +62,23 @@
 	fi
 
 #--------------------------------------------------
-# Run
+# Run install
 #--------------------------------------------------
 
 	# USER_OWNER=`remote_cmd "ls -ld '${DST_PATH}' | awk '{print \\\$3}'"`;
 	# USER_NAME=`remote_cmd "whoami"`;
 
-	remote_cmd "${CLI_PATH} --install";
-	remote_cmd "${CLI_PATH} --diff";
+	# remote_cmd "${CLI_PATH} --install";
 
 	# Can't really run 'install', as the scm post-commit hook will be under
 	# a different user (probably apache), so won't be able to create or
 	# change permissions on any files.
 
-	# Maybe we could do a svn update, or gill pull? ... but should that
-	# just be for the project and/or framework repositories?
+#--------------------------------------------------
+# Check database
+#--------------------------------------------------
 
-	echo "Process: ${DST_SOURCE}";
+	remote_cmd "${CLI_PATH} --diff";
 
 #--------------------------------------------------
 # Clean up
