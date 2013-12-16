@@ -61,6 +61,7 @@
 
 			elif [[ "${RUN}" == 'Cancel' ]]; then
 
+				rm -rf "${DST_PATH}/upload/";
 				echo 'Canceled';
 				exit 0;
 
@@ -80,6 +81,7 @@
 	read KEY;
 
 	if [[ "${KEY}" == 'c' ]]; then
+		rm -rf "${DST_PATH}/upload/";
 		echo 'Canceled';
 		exit 0;
 	fi
