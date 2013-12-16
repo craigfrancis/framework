@@ -103,13 +103,19 @@
 
 							if ($field_info['collation'] !== NULL && $field_info['collation'] != $field_collation) {
 
-								$definition_sql = $field_info['definition'];
+								$definition_sql = trim($field_info['definition']); // Really make sure we don't start with whitespace
 								$collate_sql = 'CHARACTER SET "' . check_character_set($field_collation) . '" COLLATE "' . $field_collation . '"';
 
-								if (($pos = strpos($definition_sql, ' ')) !== false) {
+								if (($pos = strpos($definition_sql, '(')) !== false) {
+									$offset = strrpos($definition_sql, ')'); // From the end of an enum/set options
+								} else {
+									$offset = 0;
+								}
+
+								if (($pos = strpos($definition_sql, ' ', $offset)) !== false) {
 									$definition_sql = substr($definition_sql, 0, $pos) . ' ' . $collate_sql . substr($definition_sql, $pos);
 								} else {
-									$definition_sql = $definition_sql . ' ' . $collate_sql;
+									exit_with_error('Cannot add the CHARACTER SET to the field definition');
 								}
 
 								$notes_collation[] = $table . '.' . $field_name;
