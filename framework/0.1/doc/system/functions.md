@@ -181,10 +181,10 @@ And the other conversion functions:
 		// format_currency(12);
 		// '£12.00'
 
-	format_british_postcode($postcode);
-		// format_british_postcode('A a1 11A A');
+	format_postcode($postcode, $country);
+		// format_postcode('A a1 11A A', 'UK');
 		// 'AA11 1AA'
-		// format_british_postcode('Invalid');
+		// format_postcode('Invalid', 'UK');
 		// NULL
 
 ---

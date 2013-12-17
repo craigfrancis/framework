@@ -399,10 +399,12 @@
 	}
 
 //--------------------------------------------------
-// Format british postcode: AN NAA | ANN NAA |
-// AAN NAA | AANN NAA | ANA NAA | AANA NAA | BFPO NN
+// Format postcode
 
-	function format_british_postcode($postcode) {
+	function format_postcode($postcode, $country = 'UK') {
+
+		// UK: https://en.wikipedia.org/wiki/UK_postcodes
+		// A9 9AA | A99 9AA | AA9 9AA | AA99 9AA | A9A 9AA | AA9A 9AA | BFPO 99
 
 		$postcode = preg_replace('/[^A-Z0-9]/', '', strtoupper($postcode));
 

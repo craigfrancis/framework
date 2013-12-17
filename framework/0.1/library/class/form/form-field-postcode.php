@@ -5,6 +5,7 @@
 		//--------------------------------------------------
 		// Variables
 
+			protected $format_country;
 			protected $format_error_set;
 			protected $format_error_found;
 
@@ -22,6 +23,7 @@
 				// Additional field configuration
 
 					$this->max_length = 8; // Bypass required "max_length_set" call, and to set the <input maxlength="" />
+					$this->format_country = 'UK';
 					$this->format_error_set = false;
 					$this->format_error_found = false;
 					$this->type = 'postcode';
@@ -31,6 +33,10 @@
 		//--------------------------------------------------
 		// Errors
 
+			public function format_country_set($country) {
+				$this->format_country = $country;
+			}
+
 			public function format_error_set($error) {
 				$this->format_error_set_html(html($error));
 			}
@@ -38,7 +44,7 @@
 			public function format_error_set_html($error_html) {
 
 				if ($this->form_submitted && $this->value != '') {
-					$postcode_clean = format_british_postcode($this->value);
+					$postcode_clean = format_postcode($this->value, $this->format_country);
 					if ($postcode_clean === NULL) {
 
 						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
@@ -70,7 +76,7 @@
 		// Value
 
 			public function value_get() {
-				$value = format_british_postcode($this->value);
+				$value = format_postcode($this->value, $this->format_country);
 				return ($value === NULL ? '' : $value); // If the value is an empty string (or error), it should return an empty string, so changes can be detected with new_value !== old_value
 			}
 

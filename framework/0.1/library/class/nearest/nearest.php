@@ -213,7 +213,7 @@
 				// Country
 
 					if ($country == NULL || $country == 'uk') {
-						$country = 'gb';
+						$country = 'gb'; // Google Maps
 					}
 
 				//--------------------------------------------------
@@ -234,7 +234,7 @@
 					}
 
 					if ($country == 'gb') {
-						$postcode = format_british_postcode($search);
+						$postcode = format_postcode($search, 'UK');
 					} else {
 						$postcode = NULL;
 					}

@@ -236,7 +236,7 @@
 				'file_size_to_bytes',
 				'is_email',
 				'is_assoc',
-				'format_british_postcode',
+				'format_postcode',
 				'format_currency',
 			));
 
