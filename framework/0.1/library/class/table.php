@@ -1017,7 +1017,7 @@
 
 		public function cell_add_link($url, $text) {
 			if ($url) {
-				$this->cell_add_html('<a href="' . html($url) . '">' . html($text) . '</a>');
+				$this->cell_add_html('<a href="' . html($url) . '">' . nl2br(html($text)) . '</a>');
 			} else {
 				$this->cell_add($text);
 			}
