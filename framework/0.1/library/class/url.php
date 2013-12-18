@@ -157,7 +157,7 @@
 					foreach ($query as $name => $value) {
 						$pos = strpos($output, '/:' . $name . '/');
 						if ($pos !== false) {
-							$output = substr($output, 0, ($pos + 1)) . urlencode($value) . substr($output, $pos + strlen($name) + 2);
+							$output = substr($output, 0, ($pos + 1)) . urlencode($value) . ($value === NULL ? '' : '/') . substr($output, $pos + strlen($name) + 3);
 							unset($query[$name]);
 						}
 					}

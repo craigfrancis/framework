@@ -240,15 +240,20 @@
 		//--------------------------------------------------
 		// Login
 
-			public function login() {
+			public function login($identification = NULL, $password = NULL) {
 
 				//--------------------------------------------------
 				// Form reference + values
 
 					$form = $this->form_get();
 
-					$identification = $form->field_get('identification')->value_get();
-					$password = $form->field_get('password')->value_get();
+					if ($identification === NULL) {
+						$identification = $form->field_get('identification')->value_get();
+					}
+
+					if ($password === NULL) {
+						$password = $form->field_get('password')->value_get();
+					}
 
 				//--------------------------------------------------
 				// Validation
