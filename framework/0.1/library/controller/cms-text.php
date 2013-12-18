@@ -37,12 +37,17 @@
 				$config = array_merge($config, array(
 						'profile' => $profile,
 						'path' => request('path'),
+						'url' => request('url'), // Typically path with query string
 						'section' => request('section'),
 						'wrapper_tag' => request('wrapper_tag'),
 						'global' => request('global'),
 						'marker' => request('marker'),
 						'default' => request('default'),
 					));
+
+				if (!$config['url']) {
+					$config['url'] = $config['path'];
+				}
 
 			//--------------------------------------------------
 			// Quick validation
@@ -106,7 +111,7 @@
 				$form->form_button_set('Save');
 
 				$field_name = new form_field_info($form, 'Page');
-				$field_name->value_set_link($config['path'], $config['path']);
+				$field_name->value_set_link($config['url'], $config['path']);
 
 				$field_section = new form_field_info($form, 'Section');
 				$field_section->value_set($config['section']);
@@ -243,7 +248,7 @@
 							//--------------------------------------------------
 							// Next page
 
-								$form->dest_redirect(url($config['path']));
+								$form->dest_redirect(url($config['url']));
 
 						}
 

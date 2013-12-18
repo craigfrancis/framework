@@ -387,6 +387,7 @@
 						$admin_url = url($config['edit_url'], array(
 								'profile' => $this->config['profile'],
 								'path' => $config['path'],
+								'url' => url(),
 								'section' => $config['section'],
 								'wrapper_tag' => $config['wrapper_tag'],
 								'global' => ($config['global'] ? 'true' : 'false'),
