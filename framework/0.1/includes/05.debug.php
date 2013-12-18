@@ -507,9 +507,13 @@
 
 				$db->query('SHOW TABLES LIKE "' . $db->escape($table) . '"', false); // No debug
 				if ($db->num_rows() == 0) {
-					http_response_code(500);
-					mime_set('text/html');
-					exit('Missing table <strong>' . html($table) . '</strong>:<br /><br />' . nl2br(html(trim(str_replace('[TABLE]', $table, $sql)))));
+					if (php_sapi_name() == 'cli' || config::get('output.mime') == 'text/plain') {
+						exit('Missing table "' . $table . '":' . "\n\n" . str_replace('[TABLE]', $table, $sql) . "\n\n");
+					} else {
+						http_response_code(500);
+						mime_set('text/html');
+						exit('Missing table <strong>' . html($table) . '</strong>:<br /><br />' . nl2br(html(trim(str_replace('[TABLE]', $table, $sql)))));
+					}
 				}
 
 			}

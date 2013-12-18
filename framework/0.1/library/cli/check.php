@@ -30,7 +30,7 @@
 		// Config
 
 			// $config['db.setup'] = array(
-			// 		'table' => array(
+			// 		'image' => array(
 			// 				'engine' => 'MyISAM',
 			// 				'collation' => 'utf8_unicode_ci',
 			// 				'fields' => array(
@@ -97,33 +97,41 @@
 					//--------------------------------------------------
 					// Check fields
 
+						$update_field_sql = array();
+
 						foreach ($db->fetch_fields($table_sql) as $field_name => $field_info) {
+							if ($field_info['collation'] !== NULL) {
 
-							$field_collation = (isset($table_setup['fields'][$field_name]['collation']) ? $table_setup['fields'][$field_name]['collation'] : $table_setup['collation']);
+								$field_collation = (isset($table_setup['fields'][$field_name]['collation']) ? $table_setup['fields'][$field_name]['collation'] : $table_setup['collation']);
 
-							if ($field_info['collation'] !== NULL && $field_info['collation'] != $field_collation) {
+								if ($field_info['collation'] != $field_collation) {
 
-								$definition_sql = trim($field_info['definition']); // Really make sure we don't start with whitespace
-								$collate_sql = 'CHARACTER SET "' . check_character_set($field_collation) . '" COLLATE "' . $field_collation . '"';
+									$definition_sql = trim($field_info['definition']); // Really make sure we don't start with whitespace
+									$collate_sql = 'CHARACTER SET "' . check_character_set($field_collation) . '" COLLATE "' . $field_collation . '"';
 
-								if (($pos = strpos($definition_sql, '(')) !== false) {
-									$offset = strrpos($definition_sql, ')'); // From the end of an enum/set options
-								} else {
-									$offset = 0;
+									if (($pos = strpos($definition_sql, '(')) !== false) {
+										$offset = strrpos($definition_sql, ')'); // From the end of an enum/set options
+									} else {
+										$offset = 0;
+									}
+
+									if (($pos = strpos($definition_sql, ' ', $offset)) !== false) {
+										$definition_sql = substr($definition_sql, 0, $pos) . ' ' . $collate_sql . substr($definition_sql, $pos);
+									} else {
+										exit_with_error('Cannot add the CHARACTER SET to the field definition');
+									}
+
+									$notes_collation[] = $table . '.' . $field_name;
+
+									$update_field_sql[] = 'MODIFY ' . $db->escape_field($field_name) . ' ' . $definition_sql;
+
 								}
-
-								if (($pos = strpos($definition_sql, ' ', $offset)) !== false) {
-									$definition_sql = substr($definition_sql, 0, $pos) . ' ' . $collate_sql . substr($definition_sql, $pos);
-								} else {
-									exit_with_error('Cannot add the CHARACTER SET to the field definition');
-								}
-
-								$notes_collation[] = $table . '.' . $field_name;
-
-								$update_sql[] = 'ALTER TABLE ' . $table_sql . ' MODIFY ' . $db->escape_field($field_name) . ' ' . $definition_sql . ';';
 
 							}
+						}
 
+						if (count($update_field_sql)) {
+							$update_sql[] = 'ALTER TABLE ' . $table_sql . "\n    " . implode(",\n    ", $update_field_sql) . ';';
 						}
 
 				}

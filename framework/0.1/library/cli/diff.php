@@ -64,7 +64,9 @@
 				$details[$table] = array();
 
 				if (!isset($b[$table])) {
-					$details[$table][] = 'Table: Missing in current database.';
+					if (!prefix_match('zzz_', $table)) {
+						$details[$table][] = 'Table: Missing in current database.';
+					}
 					continue;
 				}
 
@@ -87,10 +89,30 @@
 							continue;
 						}
 
+						if ($a_info_name == 'definition') {
+							continue; // Duplication of field info, in SQL form.
+						}
+
 						$b_info_value = $b_field_info[$a_info_name];
 						if (is_array($a_info_value) && is_array($b_info_value)) { // Enum options
 							$a_info_value = '\'' . implode('\', \'', $a_info_value) . '\'';
 							$b_info_value = '\'' . implode('\', \'', $b_info_value) . '\'';
+						}
+
+						if ($a_info_name == 'default') {
+							if ($a_field_info['type'] == 'datetime') {
+								if ($a_info_value == '') $a_info_value = '0000-00-00 00:00:00';
+								if ($b_info_value == '') $b_info_value = '0000-00-00 00:00:00';
+							} else if ($a_field_info['type'] == 'date') {
+								if ($a_info_value == '') $a_info_value = '0000-00-00';
+								if ($b_info_value == '') $b_info_value = '0000-00-00';
+							} else if (in_array($a_field_info['type'], array('int', 'tinyint', 'smallint', 'mediumint', 'bigint', 'float'))) {
+								if ($a_info_value == '') $a_info_value = '0';
+								if ($b_info_value == '') $b_info_value = '0';
+							} else if ($a_field_info['type'] == 'enum') {
+								if ($a_info_value == '') $a_info_value = $b_info_value;
+								if ($b_info_value == '') $b_info_value = $a_info_value;
+							}
 						}
 
 						if ($a_info_value != $b_info_value) {
@@ -126,7 +148,7 @@
 				foreach ($a_table_info['keys'] as $a_key_name => $a_key_info) {
 
 					if (!isset($b[$table]['keys'][$a_key_name])) {
-						$details[$table][] = 'Key: missing "' . $a_key_name . '" in current database.';
+						$details[$table][] = 'Key: Missing "' . $a_key_name . '" in current database.';
 						continue;
 					}
 
@@ -186,7 +208,9 @@
 		foreach ($b as $table => $b_table_info) {
 
 			if (!isset($a[$table])) {
-				$details[$table][] = 'Table: Created in current database.';
+				if (!prefix_match('zzz_', $table)) {
+					$details[$table][] = 'Table: Created in current database.';
+				}
 				continue;
 			}
 
