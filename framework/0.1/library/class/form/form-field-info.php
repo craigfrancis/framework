@@ -79,7 +79,7 @@
 			public function html_label($label_html = NULL) {
 				if ($label_html === NULL) {
 					$label_html = parent::html_label();
-					$label_html = preg_replace('/^<label[^>]+>(.*)<\/label>$/', '$1', $label_html); // Ugly, but better than duplication
+					$label_html = preg_replace('/<label[^>]+>(.*)<\/label>/', '$1', $label_html); // Ugly, but better than duplication
 				}
 				return $label_html;
 			}
