@@ -64,16 +64,16 @@
 						// Extra variables
 
 							$this->_checkout_required_config($config, array(
-									'cancel_url',
-									'return_url',
+									'failure_url',
+									'success_url',
 								));
 
 						//--------------------------------------------------
 						// Details
 
 							$details['METHOD'] = 'SetExpressCheckout';
-							$details['CANCELURL'] = $config['cancel_url'];
-							$details['RETURNURL'] = $config['return_url'];
+							$details['CANCELURL'] = $config['failure_url'];
+							$details['RETURNURL'] = $config['success_url'];
 							$details['LOCALECODE'] = 'GB';
 							$details['NOSHIPPING'] = 1; // Cant show (or use their account profile on PayPal), as we need to calculate the shipping cost.
 							$details['ALLOWNOTE'] = 0; // We don't return or use it, so hide the field.

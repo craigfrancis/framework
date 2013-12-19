@@ -27,12 +27,6 @@ https://live.sagepay.com/gateway/service/vspform-register.vsp
 
 https://www.sagepay.com/help/faq/processes_to_go_live_how_to_start_accepting_payments_from_your_customers
 
-http://stackoverflow.com/questions/13360079/php-mcrypt-equivalent-for-sagepay-on-a-windows-server
-
-addPKCS5Padding
-http://sagepay.googlecode.com/svn/old/2.23/PHPFormKit/includes.php
-https://github.com/will-evans/PHP-SagePay-integration-class/blob/master/sagepay.php
-
 */
 
 				//--------------------------------------------------
@@ -42,9 +36,12 @@ https://github.com/will-evans/PHP-SagePay-integration-class/blob/master/sagepay.
 							'test' => false,
 							'debug' => false,
 						), array(
-							'cancel_url',
-							'return_url',
+							'key',
+							'failure_url',
+							'success_url',
 						));
+
+					$crypt = array();
 
 				//--------------------------------------------------
 				// SagePay variables
@@ -83,7 +80,7 @@ https://github.com/will-evans/PHP-SagePay-integration-class/blob/master/sagepay.
 						$order_id = NULL;
 						$order_items = array();
 						$order_totals = $config['order_totals'];
-						$order_currency = NULL;
+						$order_currency = 'GBP';
 						$order_values = NULL;
 
 					}
@@ -92,6 +89,49 @@ https://github.com/will-evans/PHP-SagePay-integration-class/blob/master/sagepay.
 					$total_tax = $order_totals['sum']['tax'];
 					$total_gross = $order_totals['sum']['gross'];
 
+					$crypt['VendorTxCode'] = 'W60001-' . time(); // Needs to be unique... otherwise you load first SagePay page, go back, edit basket, and re-submit.
+					$crypt['Currency'] = $order_currency;
+					$crypt['Description'] = 'Testing';
+					$crypt['BillingFirstnames'] = 'Craig&Amount=5';
+					$crypt['BillingCountry'] = 'GB';
+					$crypt['BillingSurname'] = 'Francis';
+					$crypt['BillingAddress1'] = '28B';
+					$crypt['BillingCity'] = 'Bristol';
+					$crypt['BillingPostCode'] = 'BS16 4RH';
+					$crypt['DeliveryCountry'] = 'GB'; // Required fields
+					$crypt['DeliveryFirstnames'] = 'Craig';
+					$crypt['DeliverySurname'] = 'Francis';
+					$crypt['DeliveryAddress1'] = '28B';
+					$crypt['DeliveryCity'] = 'Bristol';
+					$crypt['DeliveryPostCode'] = 'BS16 4RH';
+					$crypt['Amount'] = number_format($total_gross, 2, '.', '');
+					$crypt['SuccessURL'] = strval($config['success_url']);
+					$crypt['FailureURL'] = strval($config['failure_url']);
+
+				//--------------------------------------------------
+				// Crypt value
+
+					$crypt_output = array();
+					foreach ($crypt as $name => $value) {
+						$crypt_output[] = $name . '=' . $value;
+					}
+					$crypt = implode('&', $crypt_output); // Not http_build_query($crypt) ... not good where BillingFirstnames = "Craig@Amount=1"
+
+					$iv = $config['key']; // Not a random value?
+
+					$crypt = openssl_encrypt($crypt, 'aes-128-cbc', $config['key'], OPENSSL_RAW_DATA, $iv);
+					$crypt = '@' . bin2hex($crypt); // Not base64 encoding.
+
+				//--------------------------------------------------
+				// Fields
+
+					$fields = array(
+							'VPSProtocol' => '3.00',
+							'TxType' => 'PAYMENT',
+							'Vendor' => 'ThriveFTC',
+							'Crypt' => $crypt,
+						);
+
 				//--------------------------------------------------
 				// Return
 
@@ -99,6 +139,7 @@ https://github.com/will-evans/PHP-SagePay-integration-class/blob/master/sagepay.
 							'action' => $gateway_url,
 							'method' => 'post',
 							'total_gross' => $total_gross,
+							'fields' => $fields,
 						);
 
 			}
