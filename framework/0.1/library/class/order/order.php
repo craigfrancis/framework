@@ -774,7 +774,7 @@
 
 					$return = array(
 							'items' => array(),
-							'amount' => array(
+							'sum' => array(
 									'net' => 0,
 									'tax' => 0,
 									'gross' => 0,
@@ -809,7 +809,7 @@
 
 					}
 
-					$totals = $return['items']['item'];
+					$sum = $return['items']['item'];
 
 				//--------------------------------------------------
 				// Other items (e.g. delivery)
@@ -855,20 +855,20 @@
 						$return['items'][$row['type']]['gross'] += $total_gross;
 
 						if ($taxed) {
-							$totals['net'] += $total_net;
-							$totals['tax'] += $total_tax;
+							$sum['net'] += $total_net;
+							$sum['tax'] += $total_tax;
 						}
 
-						$totals['gross'] += $total_gross;
+						$sum['gross'] += $total_gross;
 
 					}
 
 				//--------------------------------------------------
 				// Round amounts
 
-					$return['amount']['net'] = round($totals['net'], 2);
-					$return['amount']['tax'] = round($totals['tax'], 2);
-					$return['amount']['gross'] = round($totals['gross'], 2);
+					$return['sum']['net'] = round($sum['net'], 2);
+					$return['sum']['tax'] = round($sum['tax'], 2);
+					$return['sum']['gross'] = round($sum['gross'], 2);
 
 				//--------------------------------------------------
 				// Return

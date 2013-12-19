@@ -292,13 +292,13 @@
 									$html .= '
 										<tr class="total net ' . ($k++ % 2 ? 'even' : 'odd') . '">
 											<td class="item" colspan="' . html($config['show_image'] ? 4 : 3) . '">Net:</td>
-											<td class="total">' . html(format_currency($this->order_totals['amount']['net'], $config['currency_char'])) . '</td>
+											<td class="total">' . html(format_currency($this->order_totals['sum']['net'], $config['currency_char'])) . '</td>
 										</tr>';
 
 									$html .= '
 										<tr class="total tax ' . ($k++ % 2 ? 'even' : 'odd') . '">
 											<td class="item" colspan="' . html($config['show_image'] ? 4 : 3) . '">VAT:</td>
-											<td class="total">' . html(format_currency($this->order_totals['amount']['tax'], $config['currency_char'])) . '</td>
+											<td class="total">' . html(format_currency($this->order_totals['sum']['tax'], $config['currency_char'])) . '</td>
 										</tr>';
 
 								}
@@ -324,7 +324,7 @@
 								$html .= '
 									<tr class="total gross ' . ($k++ % 2 ? 'even' : 'odd') . '">
 										<td class="item" colspan="' . html($config['show_image'] ? 4 : 3) . '">Total:</td>
-										<td class="total"><strong>' . html(format_currency($this->order_totals['amount']['gross'], $config['currency_char'])) . '</strong></td>
+										<td class="total"><strong>' . html(format_currency($this->order_totals['sum']['gross'], $config['currency_char'])) . '</strong></td>
 									</tr>';
 
 					}
@@ -402,8 +402,8 @@
 
 						if (count($this->order_totals['tax']['types']) > 0 && $this->order_totals['tax']['percent'] > 0) { // Don't bother showing if no items show tax
 
-							$text .= 'Net: ' . format_currency($this->order_totals['amount']['net'], $config['currency_char']) . "\n";
-							$text .= 'VAT: ' . format_currency($this->order_totals['amount']['tax'], $config['currency_char']) . "\n";
+							$text .= 'Net: ' . format_currency($this->order_totals['sum']['net'], $config['currency_char']) . "\n";
+							$text .= 'VAT: ' . format_currency($this->order_totals['sum']['tax'], $config['currency_char']) . "\n";
 
 						}
 
@@ -421,7 +421,7 @@
 					//--------------------------------------------------
 					// Total
 
-						$text .= 'Total: ' . format_currency($this->order_totals['amount']['gross'], $config['currency_char']) . "\n";
+						$text .= 'Total: ' . format_currency($this->order_totals['sum']['gross'], $config['currency_char']) . "\n";
 
 					//--------------------------------------------------
 					// End

@@ -123,8 +123,6 @@
 					// Items
 
 						$k = 0;
-						$total_item_net = 0;
-						$total_item_tax = 0;
 
 						foreach ($order_items as $item) {
 
@@ -141,11 +139,11 @@
 					// Totals
 
 						$total_delivery = $order_totals['items']['delivery']['net'];
-						$total_item = $order_totals['amount']['net'];
-						$total_tax = $order_totals['amount']['tax'];
-						$total_gross = $order_totals['amount']['gross'];
+						$total_net = $order_totals['sum']['net'];
+						$total_tax = $order_totals['sum']['tax'];
+						$total_gross = $order_totals['sum']['gross'];
 
-						$details['PAYMENTREQUEST_0_ITEMAMT'] = number_format($total_item, 2);
+						$details['PAYMENTREQUEST_0_ITEMAMT'] = number_format($total_net, 2);
 						$details['PAYMENTREQUEST_0_SHIPPINGAMT'] = number_format($total_delivery, 2);
 						$details['PAYMENTREQUEST_0_TAXAMT'] = number_format($total_tax, 2);
 						$details['PAYMENTREQUEST_0_AMT'] = number_format($total_gross, 2);

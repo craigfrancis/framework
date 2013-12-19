@@ -39,14 +39,49 @@ https://github.com/will-evans/PHP-SagePay-integration-class/blob/master/sagepay.
 				// Setup
 
 					$config = $this->_checkout_setup($config, array(
-							'sandbox' => false,
+							'test' => false,
 							'debug' => false,
 						), array(
-							'api_username',
-							'api_password',
-							'signature',
-							'mode',
+							'cancel_url',
+							'return_url',
 						));
+
+				//--------------------------------------------------
+				// SagePay variables
+
+					if ($config['test'] === true) {
+						$gateway_url = 'https://test.sagepay.com/gateway/service/vspform-register.vsp';
+					} else {
+						$gateway_url = 'https://live.sagepay.com/gateway/service/vspform-register.vsp';
+					}
+
+				//--------------------------------------------------
+				// Processing
+
+					if (isset($config['order'])) {
+
+						$order_items = $config['order']->items_get();
+						$order_totals = $config['order']->totals_get();
+
+					} else {
+
+						$order_items = array();
+						$order_totals = $config['order_totals'];
+
+					}
+
+					$total_net = $order_totals['sum']['net'];
+					$total_tax = $order_totals['sum']['tax'];
+					$total_gross = $order_totals['sum']['gross'];
+
+				//--------------------------------------------------
+				// Return
+
+					return array(
+							'action' => $gateway_url,
+							'method' => 'post',
+							'total_gross' => $total_gross,
+						);
 
 			}
 
