@@ -60,13 +60,31 @@ https://github.com/will-evans/PHP-SagePay-integration-class/blob/master/sagepay.
 
 					if (isset($config['order'])) {
 
+						$order_ref = $config['order']->ref_get();
+						$order_id = $config['order']->id_get();
 						$order_items = $config['order']->items_get();
 						$order_totals = $config['order']->totals_get();
+						$order_currency = $config['order']->currency_get();
+
+						$order_values = $config['order']->values_get(array(
+								'delivery_name',
+								'delivery_address_1',
+								'delivery_address_2',
+								'delivery_address_3',
+								'delivery_town_city',
+								'delivery_postcode',
+								'delivery_country',
+								'delivery_telephone',
+							));
 
 					} else {
 
+						$order_ref = NULL;
+						$order_id = NULL;
 						$order_items = array();
 						$order_totals = $config['order_totals'];
+						$order_currency = NULL;
+						$order_values = NULL;
 
 					}
 
