@@ -102,21 +102,30 @@
 					//--------------------------------------------------
 					// Details
 
-						$order_values = $config['order']->values_get(array(
-								'delivery_name',
-								'delivery_address_1',
-								'delivery_address_2',
-								'delivery_address_3',
-								'delivery_town_city',
-								'delivery_postcode',
-								'delivery_country',
-								'delivery_telephone',
-							));
+						if (isset($config['order'])) {
 
-						$order_items = $config['order']->items_get();
-						$order_totals = $config['order']->totals_get();
+							$config['order_ref'] = $config['order']->ref_get();
+							$config['order_id'] = $config['order']->id_get();
+							$config['order_items'] = $config['order']->items_get();
+							$config['order_totals'] = $config['order']->totals_get();
+							$config['order_currency'] = $config['order']->currency_get();
 
-						$tax_percent = $order_totals['tax']['percent'];
+							$config['order_values'] = $config['order']->values_get(array(
+									'delivery_name',
+									'delivery_address_1',
+									'delivery_address_2',
+									'delivery_address_3',
+									'delivery_town_city',
+									'delivery_postcode',
+									'delivery_country',
+									'delivery_telephone',
+								));
+
+						}
+
+						$order_values = $config['order_values'];
+
+						$tax_percent = $config['order_totals']['tax']['percent'];
 						$tax_ratio = (1 + ($tax_percent / 100));
 
 					//--------------------------------------------------
@@ -124,7 +133,7 @@
 
 						$k = 0;
 
-						foreach ($order_items as $item) {
+						foreach ($config['order_items'] as $item) {
 
 							$details['L_PAYMENTREQUEST_0_NAME' . $k] = $item['item_name'];
 							$details['L_PAYMENTREQUEST_0_AMT' . $k] = number_format($item['price_net'], 2);
@@ -138,17 +147,17 @@
 					//--------------------------------------------------
 					// Totals
 
-						$total_delivery = $order_totals['items']['delivery']['net'];
-						$total_net = $order_totals['sum']['net'];
-						$total_tax = $order_totals['sum']['tax'];
-						$total_gross = $order_totals['sum']['gross'];
+						$total_delivery = $config['order_totals']['items']['delivery']['net'];
+						$total_net = $config['order_totals']['sum']['net'];
+						$total_tax = $config['order_totals']['sum']['tax'];
+						$total_gross = $config['order_totals']['sum']['gross'];
 
 						$details['PAYMENTREQUEST_0_ITEMAMT'] = number_format($total_net, 2);
 						$details['PAYMENTREQUEST_0_SHIPPINGAMT'] = number_format($total_delivery, 2);
 						$details['PAYMENTREQUEST_0_TAXAMT'] = number_format($total_tax, 2);
 						$details['PAYMENTREQUEST_0_AMT'] = number_format($total_gross, 2);
-						$details['PAYMENTREQUEST_0_CURRENCYCODE'] = $config['order']->currency_get();
-						$details['PAYMENTREQUEST_0_INVNUM'] = $config['order']->ref_get();
+						$details['PAYMENTREQUEST_0_CURRENCYCODE'] = $config['order_currency'];
+						$details['PAYMENTREQUEST_0_INVNUM'] = $config['order_ref'];
 						$details['PAYMENTREQUEST_0_PAYMENTACTION'] = 'Sale';
 
 					//--------------------------------------------------
@@ -186,7 +195,7 @@
 					$db = $this->db_get();
 
 					$db->insert(DB_PREFIX . 'order_paypal_log_api', array(
-							'order_id' => $config['order']->id_get(),
+							'order_id' => $config['order_id'],
 							'request_method' => $details['METHOD'],
 							'request_data' => debug_dump($details),
 							'response_data' => debug_dump($response),
@@ -223,11 +232,15 @@
 						//--------------------------------------------------
 						// Store details
 
-							$config['order']->values_set(array(
-									'payment_provider' => $this->provider,
-									'payment_token' => $checkout_token,
-									'payment_tax' => $tax_percent,
-								));
+							if (isset($config['order'])) {
+
+								$config['order']->values_set(array(
+										'payment_provider' => $this->provider,
+										'payment_token' => $checkout_token,
+										'payment_tax' => $tax_percent,
+									));
+
+							}
 
 						//--------------------------------------------------
 						// Checkout URL
@@ -266,9 +279,13 @@
 						//--------------------------------------------------
 						// Mark as paid
 
-							$config['order']->payment_received(array(
-									'payment_transaction' => $transaction,
-								));
+							if (isset($config['order'])) {
+
+								$config['order']->payment_received(array(
+										'payment_transaction' => $transaction,
+									));
+
+							}
 
 					}
 
