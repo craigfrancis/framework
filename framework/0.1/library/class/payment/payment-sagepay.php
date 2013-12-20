@@ -50,8 +50,9 @@
 
 							if (isset($config['order'])) {
 
-								$config['order_ref'] = $config['order']->ref_get();
+								$config['order_type'] = '';
 								$config['order_id'] = $config['order']->id_get();
+								$config['order_ref'] = $config['order']->ref_get();
 								$config['order_items'] = $config['order']->items_get();
 								$config['order_totals'] = $config['order']->totals_get();
 								$config['order_currency'] = $config['order']->currency_get();
@@ -176,6 +177,7 @@
 
 							$db->insert(DB_PREFIX . 'order_sagepay_transaction', array(
 									'pass' => $request_pass,
+									'order_type' => $config['order_type'],
 									'order_id' => $config['order_id'],
 									'request_sent' => date('Y-m-d H:i:s'),
 									'request_type' => $config['type'],
@@ -273,6 +275,7 @@
 						ost.pass = "' . $db->escape($transaction_pass) . '"';
 
 					$sql = 'SELECT
+								ost.order_type,
 								ost.order_id,
 								ost.request_amount,
 								ost.response_received,
@@ -284,6 +287,7 @@
 
 					if ($row = $db->fetch_row($sql)) {
 
+						$return['order_type'] = $row['order_type'];
 						$return['order_id'] = $row['order_id'];
 
 						if ($row['request_amount'] != $info['Amount']) {
@@ -334,6 +338,12 @@
 						// Mark as paid
 
 							if (isset($config['order'])) {
+
+								$config['order_id'] = $config['order']->id_get();
+
+								if ($return['order_id'] != $config['order_id']) {
+									exit_with_error('Changed order id in transaction "' . $info['VendorTxCode'] . '" ("' . $return['order_id'] . '" != "' . $config['order_id'] . '")', $crypt);
+								}
 
 								$config['order']->payment_received(array(
 										'payment_transaction' => $info['VPSTxId'],

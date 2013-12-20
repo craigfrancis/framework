@@ -104,8 +104,9 @@
 
 						if (isset($config['order'])) {
 
-							$config['order_ref'] = $config['order']->ref_get();
+							$config['order_type'] = '';
 							$config['order_id'] = $config['order']->id_get();
+							$config['order_ref'] = $config['order']->ref_get();
 							$config['order_items'] = $config['order']->items_get();
 							$config['order_totals'] = $config['order']->totals_get();
 							$config['order_currency'] = $config['order']->currency_get();
@@ -195,6 +196,7 @@
 					$db = $this->db_get();
 
 					$db->insert(DB_PREFIX . 'order_paypal_log_api', array(
+							'order_type' => $config['order_type'],
 							'order_id' => $config['order_id'],
 							'request_method' => $details['METHOD'],
 							'request_data' => debug_dump($details),
