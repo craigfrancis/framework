@@ -56,7 +56,7 @@
 						);
 
 				//--------------------------------------------------
-				// Start
+				// Mode
 
 					if ($config['mode'] == 'start') {
 
@@ -78,7 +78,7 @@
 							$details['NOSHIPPING'] = 1; // Cant show (or use their account profile on PayPal), as we need to calculate the shipping cost.
 							$details['ALLOWNOTE'] = 0; // We don't return or use it, so hide the field.
 
-					} else if ($config['mode'] == 'complete') {
+					} else if ($config['mode'] == 'success') {
 
 						//--------------------------------------------------
 						// Details
@@ -236,7 +236,7 @@
 
 							redirect($checkout_url);
 
-					} else if ($config['mode'] == 'complete') {
+					} else if ($config['mode'] == 'success') {
 
 						//--------------------------------------------------
 						// Transaction
