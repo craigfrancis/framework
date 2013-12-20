@@ -50,14 +50,13 @@
 
 							if (isset($config['order'])) {
 
-								$order_ref = $config['order']->ref_get();
-								$order_id = $config['order']->id_get();
-								$order_items = $config['order']->items_get();
-								$order_totals = $config['order']->totals_get();
-								$order_currency = $config['order']->currency_get();
+								$config['order_ref'] = $config['order']->ref_get();
+								$config['order_id'] = $config['order']->id_get();
+								$config['order_items'] = $config['order']->items_get();
+								$config['order_totals'] = $config['order']->totals_get();
+								$config['order_currency'] = $config['order']->currency_get();
 
-								$order_values = $config['order']->values_get(array(
-
+								$config['order_values'] = $config['order']->values_get(array(
 										'payment_name',
 										'payment_address_1',
 										'payment_address_2',
@@ -66,7 +65,6 @@
 										'payment_postcode',
 										'payment_country',
 										'payment_telephone',
-
 										'delivery_name',
 										'delivery_address_1',
 										'delivery_address_2',
@@ -75,47 +73,99 @@
 										'delivery_postcode',
 										'delivery_country',
 										'delivery_telephone',
-
 									));
-
-							} else {
-
-								$order_ref = $config['order_ref'];
-								$order_id = $config['order_id'];
-								$order_items = array();
-								$order_totals = $config['order_totals'];
-								$order_currency = 'GBP';
-								$order_values = $config['order_values'];
 
 							}
 
-							$total_net = $order_totals['sum']['net'];
-							$total_tax = $order_totals['sum']['tax'];
-							$total_gross = $order_totals['sum']['gross'];
+							$order_values = $config['order_values'];
+
+							$total_net = $config['order_totals']['sum']['net'];
+							$total_tax = $config['order_totals']['sum']['tax'];
+							$total_gross = $config['order_totals']['sum']['gross'];
 
 						//--------------------------------------------------
 						// Values
 
-							$crypt = array(
-									'VendorTxCode' => '', // First in order, set later... also, put user supplied values at the end (not encoded)
-									'Currency' => $order_currency,
-									'Amount' => number_format($total_gross, 2, '.', ''),
-									'SuccessURL' => strval($config['success_url']),
-									'FailureURL' => strval($config['failure_url']),
-									'Description' => 'Order ' . $order_ref,
-									'BillingFirstnames' => 'Craig',
-									'BillingSurname' => 'Francis',
-									'BillingAddress1' => '28B',
-									'BillingCity' => 'Bristol',
-									'BillingPostCode' => 'BS16 4RH',
-									'BillingCountry' => 'GB',
-									'DeliveryFirstnames' => 'Craig',
-									'DeliverySurname' => 'Francis',
-									'DeliveryAddress1' => '28B',
-									'DeliveryCity' => 'Bristol',
-									'DeliveryPostCode' => 'BS16 4RH',
-									'DeliveryCountry' => 'GB',
-								);
+							//--------------------------------------------------
+							// Base
+
+								$values = array(
+										'VendorTxCode' => '', // First in order, set later... also, put user supplied values at the end (not encoded)
+										'Currency' => $config['order_currency'],
+										'Amount' => number_format($total_gross, 2, '.', ''),
+										'SuccessURL' => strval($config['success_url']),
+										'FailureURL' => strval($config['failure_url']),
+										'Description' => 'Order ' . $config['order_ref'],
+									);
+
+							//--------------------------------------------------
+							// Billing
+
+								if (isset($order_values['payment_name_last'])) {
+									$values['BillingFirstnames'] = $order_values['payment_name_first'];
+									$values['BillingSurname'] = $order_values['payment_name_last'];
+								} else {
+									if (preg_match('/^(.*?)\s([^\s]+)$/', $order_values['payment_name'], $matches)) { // Last name (singular)
+										$values['BillingFirstnames'] = $matches[1];
+										$values['BillingSurname'] = $matches[2];
+									} else {
+										$values['BillingFirstnames'] = $order_values['payment_name'];
+										$values['BillingSurname'] = '';
+									}
+								}
+
+								$values['BillingAddress1'] = $order_values['payment_address_1'];
+								$values['BillingAddress2'] = $order_values['payment_address_2'];
+								$values['BillingCity'] = $order_values['payment_town_city'];
+								$values['BillingPostCode'] = $order_values['payment_postcode'];
+								$values['BillingCountry'] = $order_values['payment_country']; // ISO code?
+								$values['BillingPhone'] = $order_values['payment_telephone'];
+
+								if (isset($order_values['payment_address_3']) && $order_values['payment_address_3'] !== '') {
+									$values['BillingAddress2'] .= ($values['BillingAddress2'] != '' ? ', ' : '') . $order_values['payment_address_3'];
+								}
+
+							//--------------------------------------------------
+							// Delivery
+
+								if (isset($order_values['delivery_address_1'])) {
+
+									if (isset($order_values['delivery_name_last'])) {
+										$values['DeliveryFirstnames'] = $order_values['delivery_name_first'];
+										$values['DeliverySurname'] = $order_values['delivery_name_last'];
+									} else {
+										if (preg_match('/^(.*?)\s([^\s]+)$/', $order_values['delivery_name'], $matches)) { // Last name (singular)
+											$values['DeliveryFirstnames'] = $matches[1];
+											$values['DeliverySurname'] = $matches[2];
+										} else {
+											$values['DeliveryFirstnames'] = $order_values['delivery_name'];
+											$values['DeliverySurname'] = '';
+										}
+									}
+
+									$values['DeliveryAddress1'] = $order_values['delivery_address_1'];
+									$values['DeliveryAddress2'] = $order_values['delivery_address_2'];
+									$values['DeliveryCity'] = $order_values['delivery_town_city'];
+									$values['DeliveryPostCode'] = $order_values['delivery_postcode'];
+									$values['DeliveryCountry'] = $order_values['delivery_country']; // ISO code?
+									$values['DeliveryPhone'] = $order_values['delivery_telephone'];
+
+									if (isset($order_values['delivery_address_3']) && $order_values['delivery_address_3'] !== '') {
+										$values['DeliveryAddress2'] .= ($values['DeliveryAddress2'] != '' ? ', ' : '') . $order_values['delivery_address_3'];
+									}
+
+								} else {
+
+									$values['DeliveryFirstnames'] = $values['BillingFirstnames'];
+									$values['DeliverySurname'] = $values['BillingSurname'];
+									$values['DeliveryAddress1'] = $values['BillingAddress1'];
+									$values['DeliveryAddress2'] = $values['BillingAddress2'];
+									$values['DeliveryCity'] = $values['BillingCity'];
+									$values['DeliveryPostCode'] = $values['BillingPostCode'];
+									$values['DeliveryCountry'] = $values['BillingCountry'];
+									$values['DeliveryPhone'] = $values['BillingPhone'];
+
+								}
 
 						//--------------------------------------------------
 						// Log
@@ -126,23 +176,23 @@
 
 							$db->insert(DB_PREFIX . 'order_sagepay_transaction', array(
 									'pass' => $request_pass,
-									'order_id' => $order_id,
+									'order_id' => $config['order_id'],
 									'request_sent' => date('Y-m-d H:i:s'),
 									'request_type' => $config['type'],
 									'request_amount' => $total_gross,
-									'request_data' => json_encode($crypt, JSON_PRETTY_PRINT),
+									'request_data' => json_encode($values, JSON_PRETTY_PRINT),
 								));
 
-							$crypt['VendorTxCode'] = $db->insert_id() . '-' . $request_pass;
+							$values['VendorTxCode'] = $db->insert_id() . '-' . $request_pass;
 
 						//--------------------------------------------------
 						// Crypt value
 
-							$crypt_output = array();
-							foreach ($crypt as $name => $value) {
-								$crypt_output[] = $name . '=' . $value;
+							$crypt = array();
+							foreach ($values as $name => $value) {
+								$crypt[] = $name . '=' . $value;
 							}
-							$crypt = implode('&', $crypt_output); // Not http_build_query($crypt) ... not good where BillingFirstnames = "Craig@Amount=1"
+							$crypt = implode('&', $crypt); // Not http_build_query($crypt) ... not good, e.g. BillingFirstnames = "Craig@Amount=1"
 
 							$iv = $config['key']; // Not a random value?
 
@@ -249,8 +299,6 @@
 							}
 						}
 
-						$order_id = $row['order_id'];
-
 					} else {
 
 						exit_with_error('Unrecognised VendorTxCode from SagePay', $crypt);
@@ -260,7 +308,7 @@
 				//--------------------------------------------------
 				// Record details
 
-					$values = array(
+					$response = array(
 							'response_received' => date('Y-m-d H:i:s'),
 							'response_status' => $info['Status'],
 							'response_transaction' => $info['VPSTxId'],
@@ -268,12 +316,12 @@
 							'response_raw' => $crypt, // Just incase parse_str() does not work
 						);
 
-					$db->update($table_sql, $values, $where_sql);
+					$db->update($table_sql, $response, $where_sql);
 
 				//--------------------------------------------------
 				// Result
 
-					if ($config['mode'] == 'success') {
+					if (($config['mode'] == 'success') || ($config['mode'] == 'complete' && $return['success'])) {
 
 						//--------------------------------------------------
 						// Double check
@@ -293,7 +341,10 @@
 
 							}
 
-					} else if ($config['mode'] != 'failure') {
+					} else if (($config['mode'] == 'failure') || ($config['mode'] == 'complete' && !$return['success'])) {
+
+
+					} else {
 
 						exit_with_error('Unknown payment mode "' . $config['mode'] . '"');
 
