@@ -236,12 +236,15 @@
 
 					parse_str($crypt, $info); // Can only hope they are encoding their values properly
 
+					$info_amount = str_replace(',', '', $info['Amount']);
+
 				//--------------------------------------------------
 				// Return data
 
 					$return = array(
 							'success' => in_array($info['Status'], array('OK', 'PENDING')),
 							'transaction' => $info['VPSTxId'],
+							'amount' => $info_amount,
 						);
 
 				//--------------------------------------------------
@@ -290,8 +293,8 @@
 						$return['order_type'] = $row['order_type'];
 						$return['order_id'] = $row['order_id'];
 
-						if ($row['request_amount'] != $info['Amount']) {
-							exit_with_error('Incorrect amount from SagePay (' . $row['request_amount'] . ' != ' . $info['Amount'] . ')', $crypt);
+						if ($row['request_amount'] != $info_amount) {
+							exit_with_error('Incorrect amount from SagePay (' . $row['request_amount'] . ' != ' . $info_amount . ')', $crypt);
 						}
 
 						if ($row['response_received'] != '0000-00-00 00:00:00') {
