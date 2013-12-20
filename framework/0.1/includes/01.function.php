@@ -329,6 +329,12 @@
 		}
 	}
 
+	if (!function_exists('hex2bin')) {
+		function hex2bin($hex) {
+			return pack('H*', $hex);
+		}
+	}
+
 	function cms_text_html($config) {
 		$cms_text = config::get('cms_text');
 		if (!$cms_text) {
