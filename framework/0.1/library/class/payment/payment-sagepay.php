@@ -377,6 +377,40 @@
 		// Settlements
 
 			public function settlements() {
+
+				//--------------------------------------------------
+				// Get transactions
+
+$gateway_url = 'https://test.sagepay.com/access/access.htm';
+//$gateway_url = 'https://live.sagepay.com/access/access.htm';
+debug($gateway_url);
+
+					$transactions = array();
+
+				//--------------------------------------------------
+				// Mark transactions as paid
+
+					foreach ($transactions as $transaction) {
+						if ($transaction['order_type'] == '') {
+
+							$order = new order();
+
+							if (!$order->select_by_id($transaction['order_id'])) {
+								exit_with_error('Cannot find order "' . $transaction['order_id'] . '"');
+							}
+
+							$order->payment_settled(array(
+									// Could pass though some additional details
+								));
+
+						}
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $transactions;
+
 			}
 
 	}
