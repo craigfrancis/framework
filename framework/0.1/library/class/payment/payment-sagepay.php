@@ -215,7 +215,7 @@
 
 					parse_str($crypt, $info); // Can only hope they are encoding their values properly
 
-					$info_amount = str_replace(',', '', $info['Amount']);
+					$info_amount = round(str_replace(',', '', $info['Amount']), 2);
 
 				//--------------------------------------------------
 				// Return data
@@ -272,7 +272,7 @@
 						$return['order_type'] = $row['order_type'];
 						$return['order_id'] = $row['order_id'];
 
-						if ($row['request_amount'] != $info_amount) {
+						if (round($row['request_amount'], 2) != $info_amount) {
 							exit_with_error('Incorrect amount from SagePay (' . $row['request_amount'] . ' != ' . $info_amount . ')', $crypt);
 						}
 
