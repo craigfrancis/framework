@@ -103,75 +103,47 @@
 										'Amount' => number_format($total_gross, 2, '.', ''),
 										'SuccessURL' => strval($config['success_url']),
 										'FailureURL' => strval($config['failure_url']),
-										'Description' => 'Order ' . $config['order_ref'],
 									);
 
-							//--------------------------------------------------
-							// Billing
-
-								if (isset($order_values['payment_name_last'])) {
-									$values['BillingFirstnames'] = $order_values['payment_name_first'];
-									$values['BillingSurname'] = $order_values['payment_name_last'];
+								if (isset($config['order_description'])) {
+									$values['Description'] = $config['order_description'];
 								} else {
-									if (preg_match('/^(.*?)\s([^\s]+)$/', $order_values['payment_name'], $matches)) { // Last name (singular)
-										$values['BillingFirstnames'] = $matches[1];
-										$values['BillingSurname'] = $matches[2];
-									} else {
-										$values['BillingFirstnames'] = $order_values['payment_name'];
-										$values['BillingSurname'] = '';
-									}
-								}
-
-								$values['BillingAddress1'] = $order_values['payment_address_1'];
-								$values['BillingAddress2'] = $order_values['payment_address_2'];
-								$values['BillingCity'] = $order_values['payment_town_city'];
-								$values['BillingPostCode'] = $order_values['payment_postcode'];
-								$values['BillingCountry'] = $order_values['payment_country']; // ISO code?
-								$values['BillingPhone'] = $order_values['payment_telephone'];
-
-								if (isset($order_values['payment_address_3']) && $order_values['payment_address_3'] !== '') {
-									$values['BillingAddress2'] .= ($values['BillingAddress2'] != '' ? ', ' : '') . $order_values['payment_address_3'];
+									$values['Description'] = 'Order ' . $config['order_ref'];
 								}
 
 							//--------------------------------------------------
-							// Delivery
+							// Billing and Delivery
 
-								if (isset($order_values['delivery_address_1'])) {
+								$fields = array(
+										'Billing' => 'payment_',
+										'Delivery' => 'delivery_',
+									);
 
-									if (isset($order_values['delivery_name_last'])) {
-										$values['DeliveryFirstnames'] = $order_values['delivery_name_first'];
-										$values['DeliverySurname'] = $order_values['delivery_name_last'];
+								foreach ($fields as $type => $prefix) {
+
+									if (isset($order_values[$prefix . 'name_last'])) {
+										$values[$type . 'Firstnames'] = $order_values[$prefix . 'name_first'];
+										$values[$type . 'Surname'] = $order_values[$prefix . 'name_last'];
 									} else {
-										if (preg_match('/^(.*?)\s([^\s]+)$/', $order_values['delivery_name'], $matches)) { // Last name (singular)
-											$values['DeliveryFirstnames'] = $matches[1];
-											$values['DeliverySurname'] = $matches[2];
+										if (preg_match('/^(.*?)\s([^\s]+)$/', $order_values[$prefix . 'name'], $matches)) { // Last name (singular)
+											$values[$type . 'Firstnames'] = $matches[1];
+											$values[$type . 'Surname'] = $matches[2];
 										} else {
-											$values['DeliveryFirstnames'] = $order_values['delivery_name'];
-											$values['DeliverySurname'] = '';
+											$values[$type . 'Firstnames'] = $order_values[$prefix . 'name'];
+											$values[$type . 'Surname'] = '';
 										}
 									}
 
-									$values['DeliveryAddress1'] = $order_values['delivery_address_1'];
-									$values['DeliveryAddress2'] = $order_values['delivery_address_2'];
-									$values['DeliveryCity'] = $order_values['delivery_town_city'];
-									$values['DeliveryPostCode'] = $order_values['delivery_postcode'];
-									$values['DeliveryCountry'] = $order_values['delivery_country']; // ISO code?
-									$values['DeliveryPhone'] = $order_values['delivery_telephone'];
+									$values[$type . 'Address1'] = $order_values[$prefix . 'address_1'];
+									$values[$type . 'Address2'] = $order_values[$prefix . 'address_2'];
+									$values[$type . 'City'] = $order_values[$prefix . 'town_city'];
+									$values[$type . 'PostCode'] = $order_values[$prefix . 'postcode'];
+									$values[$type . 'Country'] = $order_values[$prefix . 'country']; // ISO code?
+									$values[$type . 'Phone'] = $order_values[$prefix . 'telephone'];
 
-									if (isset($order_values['delivery_address_3']) && $order_values['delivery_address_3'] !== '') {
-										$values['DeliveryAddress2'] .= ($values['DeliveryAddress2'] != '' ? ', ' : '') . $order_values['delivery_address_3'];
+									if (isset($order_values[$prefix . 'address_3']) && $order_values[$prefix . 'address_3'] !== '') {
+										$values[$type . 'Address2'] .= ($values[$type . 'Address2'] != '' ? ', ' : '') . $order_values[$prefix . 'address_3'];
 									}
-
-								} else {
-
-									$values['DeliveryFirstnames'] = $values['BillingFirstnames'];
-									$values['DeliverySurname'] = $values['BillingSurname'];
-									$values['DeliveryAddress1'] = $values['BillingAddress1'];
-									$values['DeliveryAddress2'] = $values['BillingAddress2'];
-									$values['DeliveryCity'] = $values['BillingCity'];
-									$values['DeliveryPostCode'] = $values['BillingPostCode'];
-									$values['DeliveryCountry'] = $values['BillingCountry'];
-									$values['DeliveryPhone'] = $values['BillingPhone'];
 
 								}
 
@@ -389,13 +361,82 @@
 			public function settlements() {
 
 				//--------------------------------------------------
+				// Setup
+
+					$config = $this->_checkout_setup(array(), array(
+							'test' => false,
+							'debug' => false,
+						), array(
+							'vendor',
+							'username',
+							'password',
+						));
+
+				//--------------------------------------------------
 				// Get transactions
 
-$gateway_url = 'https://test.sagepay.com/access/access.htm';
-//$gateway_url = 'https://live.sagepay.com/access/access.htm';
-debug($gateway_url);
-
 					$transactions = array();
+
+mime_set('text/plain');
+
+					$row_current = 1;
+					$row_limit = 50;
+					$row_last = NULL;
+
+					while ($row_last === NULL || $row_current <= $row_last) {
+
+						$result = $this->gateway_command($config, 'getTransactionList', '
+							<startdate>' . xml(date('d/m/Y 00:00:00', strtotime('-3 days'))) . '</startdate>
+							<enddate>' . xml(date('d/m/Y 23:59:59', strtotime('-1 days'))) . '</enddate>
+							<systemsused>
+								<system>F</system>
+							</systemsused>
+							<txtypes>
+								<txtype>PAYMENT</txtype>
+							</txtypes>
+							<result>SUCCESS</result>
+							<sorttype>ByDate</sorttype>
+							<sortorder>ASC</sortorder>
+							<startrow>' . xml($row_current) . '</startrow>
+							<endrow>' . xml(($row_current - 1) + $row_limit) . '</endrow>');
+
+//	<released>YES</released>
+//print_r($result);
+						$result_total_rows = intval($result->transactions->totalrows);
+
+						if ($row_last === NULL) {
+							$row_last = $result_total_rows;
+						} else if ($row_last != $result_total_rows) {
+							exit_with_error('Number of total rows from SagePay has changed (' . $row_last . '/' . $result_total_rows . ')');
+						}
+
+						foreach ($result->transactions->transaction as $transaction) {
+
+							$row_number = intval($transaction->rownumber);
+
+							if ($row_current !== $row_number) {
+								exit_with_error('Returned row from SagePay are out of sequence (expecting "' . $row_current . '", received "' . $row_number . '")');
+							}
+
+							$transactions[$row_current] = array(
+									'id' => strval($transaction->vpstxid),
+									'code' => strval($transaction->vendortxcode),
+									'batch' => strval($transaction->batchid),
+									'vsp_auth' => strval($transaction->vspauthcode),
+									'bank_auth' => strval($transaction->bankauthcode),
+									'started' => strval($transaction->started),
+									'currency' => strval($transaction->currency),
+									'amount' => strval($transaction->amount),
+								);
+
+							$row_current++;
+
+						}
+
+					}
+
+print_r($transactions);
+exit();
 
 				//--------------------------------------------------
 				// Mark transactions as paid
@@ -420,6 +461,73 @@ debug($gateway_url);
 				// Return
 
 					return $transactions;
+
+			}
+
+		//--------------------------------------------------
+		// Gateway interaction
+
+			private function gateway_command($config, $command, $parameters) {
+
+				//--------------------------------------------------
+				// URL
+
+					if ($config['test'] === true) {
+						$gateway_url = 'https://test.sagepay.com/access/access.htm';
+					} else {
+						$gateway_url = 'https://live.sagepay.com/access/access.htm';
+					}
+
+				//--------------------------------------------------
+				// XML
+
+					$xml_body = '
+						<command>' . xml($command) . '</command>
+						<vendor>' . xml($config['vendor']) . '</vendor>
+						<user>' . xml($config['username']) . '</user>
+						' . $parameters;
+
+					$signature = md5($xml_body . '
+						<password>' . xml($config['password']) . '</password>');
+
+					$xml_body .= '
+						<signature>' . xml($signature) . '</signature>';
+
+					$xml = '<vspaccess>' . $xml_body . '</vspaccess>';
+
+				//--------------------------------------------------
+				// Send
+
+					$socket = new socket();
+					$socket->exit_on_error_set(false);
+
+					$result = $socket->post($gateway_url, array('XML' => $xml));
+
+				//--------------------------------------------------
+				// Result
+
+					if (!$result) {
+						exit_with_error('Invalid network response from SagePay (' . $command . ')', $socket->error_string_get());
+					}
+
+					$code = $socket->response_code_get();
+
+					if (!$code == 200) {
+						exit_with_error('Invalid response code (' . $code . ') from SagePay (' . $command . ')', $socket->response_full_get());
+					}
+
+				//--------------------------------------------------
+				// Parse
+
+					$xml = $socket->response_data_get();
+
+					$result = simplexml_load_string($xml);
+
+					if (strval($result->errorcode) != '0000') {
+						exit_with_error('Error response from SagePay (' . $command . ')', $socket->response_full_get());
+					}
+
+					return $result;
 
 			}
 
