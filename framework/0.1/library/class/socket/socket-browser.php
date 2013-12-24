@@ -465,8 +465,9 @@
 					if ($this->user_agent !== NULL) {
 						$this->socket->header_add('User-Agent', $this->user_agent);
 						$this->socket->header_add('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
-						$this->socket->header_add('Accept-Language', 'en-gb,en;q=0.5');
-						$this->socket->header_add('Accept-Charset', 'utf-8,ISO-8859-1;q=0.7,*;q=0.7');
+						$this->socket->header_add('Accept-Language', 'en-GB,en-US;q=0.8,en;q=0.6');
+						$this->socket->header_add('Cache-Control', 'no-cache');
+						$this->socket->header_add('Pragma', 'no-cache');
 					}
 
 				//--------------------------------------------------
