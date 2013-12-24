@@ -4,11 +4,12 @@
 // http://www.phpprime.com/doc/helpers/socket/
 //--------------------------------------------------
 
-	class socket_browser_base extends socket {
+	class socket_browser_base extends check {
 
 		//--------------------------------------------------
 		// Variables
 
+			protected $socket = NULL;
 			protected $debug = false;
 			protected $user_agent = NULL;
 			protected $current_data = NULL;
@@ -20,9 +21,13 @@
 		//--------------------------------------------------
 		// Setup
 
+			public function __construct() {
+				$this->setup();
+			}
+
 			protected function setup() {
-				parent::setup();
-				$this->exit_on_error_set(false);
+				$this->socket = new socket();
+				$this->socket->exit_on_error_set(false);
 			}
 
 			public function debug_set($debug) {
@@ -408,6 +413,43 @@
 			}
 
 		//--------------------------------------------------
+		// Expose socket ... we don't extend the socket
+		// class as we don't want access to get/post,
+		// value, cookies, etc methods
+
+			public function request_full_get() {
+				return $this->socket->request_full_get();
+			}
+
+			public function response_full_get() {
+				return $this->socket->response_full_get();
+			}
+
+			public function response_code_get() {
+				return $this->socket->response_code_get();
+			}
+
+			public function response_mime_get() {
+				return $this->socket->response_mime_get();
+			}
+
+			public function response_headers_get() {
+				return $this->socket->response_headers_get();
+			}
+
+			public function response_header_get($field) {
+				return $this->socket->response_header_get();
+			}
+
+			public function response_header_get_all($field) {
+				return $this->socket->response_header_get_all();
+			}
+
+			public function response_data_get() {
+				return $this->socket->response_data_get();
+			}
+
+		//--------------------------------------------------
 		// Support functions
 
 			private function _send($url, $data = '', $method = 'GET') {
@@ -421,10 +463,10 @@
 				// Base headers
 
 					if ($this->user_agent !== NULL) {
-						$this->header_add('User-Agent', $this->user_agent);
-						$this->header_add('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
-						$this->header_add('Accept-Language', 'en-gb,en;q=0.5');
-						$this->header_add('Accept-Charset', 'utf-8,ISO-8859-1;q=0.7,*;q=0.7');
+						$this->socket->header_add('User-Agent', $this->user_agent);
+						$this->socket->header_add('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+						$this->socket->header_add('Accept-Language', 'en-gb,en;q=0.5');
+						$this->socket->header_add('Accept-Charset', 'utf-8,ISO-8859-1;q=0.7,*;q=0.7');
 					}
 
 				//--------------------------------------------------
@@ -533,7 +575,7 @@
 								}
 							}
 
-							$this->cookies_set($cookies);
+							$this->socket->cookies_set($cookies);
 
 						//--------------------------------------------------
 						// Debug
@@ -547,11 +589,11 @@
 
 							if ($method == 'GET' || $method == '') {
 
-								$this->get($url, $data);
+								$this->socket->get($url, $data);
 
 							} else if ($method == 'POST') {
 
-								$this->post($url, $data);
+								$this->socket->post($url, $data);
 
 							} else {
 
@@ -560,10 +602,10 @@
 							}
 
 							$this->current_url = $url;
-							$this->current_data = $this->response_data_get();
-							$this->current_code = $this->response_code_get();
+							$this->current_data = $this->socket->response_data_get();
+							$this->current_code = $this->socket->response_code_get();
 
-							$this->header_add('Referer', $url);
+							$this->socket->header_add('Referer', $url);
 
 						//--------------------------------------------------
 						// Reset - incase we do a redirect
@@ -574,7 +616,7 @@
 						//--------------------------------------------------
 						// Cookies
 
-							foreach ($this->response_header_get_all('Set-Cookie') as $header_cookie) {
+							foreach ($this->socket->response_header_get_all('Set-Cookie') as $header_cookie) {
 								if (preg_match('/^([^=]+)=([^;\n]+)([^\n]*?path=([^;\n]+))?/i', $header_cookie, $matches)) {
 
 									$path = (isset($matches[4]) ? $matches[4] : '/');
@@ -588,7 +630,7 @@
 								ksort($this->cookies[$url_host]); // If there are two cookies with the same name, one for "/" and one for "/path/", the latter should take precedence.
 							}
 
-					} while (($url = $this->response_header_get('Location')) !== NULL);
+					} while (($url = $this->socket->response_header_get('Location')) !== NULL);
 
 				//--------------------------------------------------
 				// Success
