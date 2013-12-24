@@ -463,11 +463,14 @@
 				// Base headers
 
 					if ($this->user_agent !== NULL) {
-						$this->socket->header_add('User-Agent', $this->user_agent);
-						$this->socket->header_add('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
-						$this->socket->header_add('Accept-Language', 'en-GB,en-US;q=0.8,en;q=0.6');
-						$this->socket->header_add('Cache-Control', 'no-cache');
-						$this->socket->header_add('Pragma', 'no-cache');
+						// $this->socket->header_add('User-Agent', $this->user_agent);
+						// $this->socket->header_add('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+						// $this->socket->header_add('Accept-Language', 'en-GB,en-US;q=0.8,en;q=0.6');
+						// $this->socket->header_add('Cache-Control', 'no-cache');
+						// $this->socket->header_add('Pragma', 'no-cache');
+						$this->socket->header_add('User-Agent', 'Wget/1.12 (linux-gnu)');
+						$this->socket->header_add('Accept' ,'*/*');
+						$this->socket->header_add('Connection', 'Keep-Alive');
 					}
 
 				//--------------------------------------------------
