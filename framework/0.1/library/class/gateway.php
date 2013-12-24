@@ -205,7 +205,7 @@
 						} else {
 
 							if ($k == 1 && is_file($error_script)) {
-								$error_output = "\n\n" . shell_exec($error_script . ' ' . escapeshellarg($host_domain) . ' ' . escapeshellarg($host_port));
+								$error_output = "\n\n" . shell_exec(escapeshellcmd($error_script) . ' ' . escapeshellarg($host_domain) . ' ' . escapeshellarg($host_port));
 							} else {
 								$error_output = '';
 							}

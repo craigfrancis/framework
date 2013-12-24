@@ -250,6 +250,15 @@
 					set_time_limit(5); // Don't time out
 
 				//--------------------------------------------------
+				// Compression support
+
+					if ($this->config['image_type'] == 'jpg') {
+						$jpegtran_path = $this->_jpegtran_path();
+					} else {
+						$jpegtran_path = NULL;
+					}
+
+				//--------------------------------------------------
 				// Original image
 
 					$original_path = $this->image_path_get($id, 'original');
@@ -343,10 +352,19 @@
 								//--------------------------------------------------
 								// Load image, resize, and save
 
+									$image_path = $this->image_path_get($id, $size);
+
 									$image = new image($original_path); // Need a new copy of the image, so it does not get scaled down, then back up again
 									$image->resize($config);
-									$image->save($this->image_path_get($id, $size), $this->config['image_type'], $this->config['image_quality']);
+									$image->save($image_path, $this->config['image_type'], $this->config['image_quality']);
 									$image->destroy();
+
+								//--------------------------------------------------
+								// Optimise
+
+									if ($jpegtran_path) {
+										$output = shell_exec(escapeshellcmd($jpegtran_path) . ' -copy none -optimize -progressive -outfile ' . escapeshellarg($image_path) . ' ' . escapeshellarg($image_path));
+									}
 
 							}
 						}
@@ -401,6 +419,15 @@
 					exit_with_error('Cannot write to directory', $dir);
 				}
 
+			}
+
+			private function _jpegtran_path() {
+				foreach (array('/usr/bin/jpegtran', '/usr/local/bin/jpegtran') as $path) {
+					if (is_executable($path)) {
+						return $path;
+					}
+				}
+				return NULL;
 			}
 
 	}
