@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // Not on Live
 
-	if (SERVER == 'live' && (!defined('ADMIN_LOGGED_IN') || ADMIN_LOGGED_IN !== false)) {
+	if (SERVER == 'live' && (!defined('ADMIN_LOGGED_IN') || ADMIN_LOGGED_IN !== true)) {
 		exit('Disabled');
 	}
 
