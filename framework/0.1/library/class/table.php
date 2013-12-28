@@ -1015,11 +1015,11 @@
 				);
 		}
 
-		public function cell_add_link($url, $text) {
+		public function cell_add_link($url, $text, $class_name = '', $colspan = 1) {
 			if ($url) {
-				$this->cell_add_html('<a href="' . html($url) . '">' . nl2br(html($text)) . '</a>');
+				$this->cell_add_html('<a href="' . html($url) . '">' . nl2br(html($text)) . '</a>', $class_name, $colspan);
 			} else {
-				$this->cell_add($text);
+				$this->cell_add($text, $class_name, $colspan);
 			}
 		}
 
