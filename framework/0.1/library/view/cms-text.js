@@ -87,8 +87,9 @@
 				// tabbing between links), this will be disabled to
 				// help with tabbing between form elements.
 
-					area.tabIndex = -1;
-					link.tabIndex = -1;
+					area.setAttribute('tabindex', '0');
+					link.setAttribute('tabindex', '-1');
+					link.setAttribute('aria-hidden', 'true');
 
 			}
 
