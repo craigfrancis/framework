@@ -39,7 +39,7 @@
 				mime_set('application/javascript');
 			}
 
-			http_cache_headers((60*30), filemtime($file_path));
+			http_cache_headers((60*60*24), filemtime($file_path));
 
 		//--------------------------------------------------
 		// Content
