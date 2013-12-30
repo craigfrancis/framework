@@ -64,16 +64,16 @@
 		$db = db_get();
 
 		$values_update = array(
-			'blocked_uri'        => $report['blocked-uri'],
-			'violated_directive' => $report['violated-directive'],
-			'referrer'           => $report['referrer'],
-			'document_uri'       => $report['document-uri'],
-			'original_policy'    => $report['original-policy'],
-			'data_raw'           => $data_raw,
-			'ip'                 => config::get('request.ip'),
-			'browser'            => config::get('request.browser'),
-			'updated'            => date('Y-m-d H:i:s'),
-		);
+				'blocked_uri'        => $report['blocked-uri'],
+				'violated_directive' => $report['violated-directive'],
+				'referrer'           => $report['referrer'],
+				'document_uri'       => $report['document-uri'],
+				'original_policy'    => $report['original-policy'],
+				'data_raw'           => $data_raw,
+				'ip'                 => config::get('request.ip'),
+				'browser'            => config::get('request.browser'),
+				'updated'            => date('Y-m-d H:i:s'),
+			);
 
 		$values_insert = $values_update;
 		$values_insert['created'] = date('Y-m-d H:i:s');
