@@ -85,12 +85,28 @@
 //--------------------------------------------------
 // Content security policy
 
+	$config['output.csp_enabled'] = true;
 	$config['output.csp_enforced'] = true;
 
 	$config['output.csp_directives'] = array(
-			'default-src' => array('"self"'),
-			'script-src'  => array('"self"', 'https://ssl.google-analytics.com'),
-			'img-src'     => array('"self"', 'https://ssl.google-analytics.com', 'http://www.google-analytics.com', 'data:'),
+			// 'report-uri'  => NULL,
+			'default-src' => array("'none'"),
+			'img-src' => array(
+					"'self'",
+					'https://ssl.google-analytics.com',
+					// 'http://www.google-analytics.com',
+					// 'data:',
+				),
+			'script-src'  => array(
+					"'self'",
+					'https://ssl.google-analytics.com',
+				),
+			'style-src' => array(
+					"'self'",
+				),
+			'connect-src' => array(
+					"'self'",
+				),
 		);
 
 //--------------------------------------------------
