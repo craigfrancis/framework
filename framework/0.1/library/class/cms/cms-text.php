@@ -392,6 +392,7 @@
 								'wrapper_tag' => $config['wrapper_tag'],
 								'global' => ($config['global'] ? 'true' : 'false'),
 								'marker' => $config['marker'],
+								'variables' => implode(',', array_keys($config['variables'])),
 								'default' => $config['default'],
 							));
 

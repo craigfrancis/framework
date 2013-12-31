@@ -42,6 +42,7 @@
 						'wrapper_tag' => request('wrapper_tag'),
 						'global' => request('global'),
 						'marker' => request('marker'),
+						'variables' => request('variables'),
 						'default' => request('default'),
 					));
 
@@ -104,6 +105,19 @@
 				$config = $this->config_get();
 
 			//--------------------------------------------------
+			// Variables
+
+				$variables = array();
+
+				if ($config['variables']) {
+					foreach (explode(',', $config['variables']) as $variable) {
+						$variables[] = '[' . strtoupper($variable) . ']';
+					}
+				}
+
+				$variables = implode("\n", $variables);
+
+			//--------------------------------------------------
 			// Form setup
 
 				$form = new form();
@@ -115,6 +129,11 @@
 
 				$field_section = new form_field_info($form, 'Section');
 				$field_section->value_set($config['section']);
+
+				if ($variables) {
+					$field_variables = new form_field_info($form, 'Variables');
+					$field_variables->value_set($variables);
+				}
 
 				$fields = array();
 
@@ -305,6 +324,7 @@
 									'wrapper_tag' => $config['wrapper_tag'],
 									'global' => $config['global'],
 									'marker' => $config['marker'],
+									'variables' => $config['variables'],
 									'version' => $version_name,
 									'revision' => $row['revision'],
 								));
@@ -355,6 +375,7 @@
 						'wrapper_tag' => $config['wrapper_tag'],
 						'global' => $config['global'],
 						'marker' => $config['marker'],
+						'variables' => $config['variables'],
 					));
 
 			//--------------------------------------------------
