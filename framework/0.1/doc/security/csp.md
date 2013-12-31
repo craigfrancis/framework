@@ -5,14 +5,12 @@ Otherwise known as CSP, it allows your website to inform the browser which resou
 
 It is currently 'enabled' by default, and 'enforced' in [development mode](../../doc/setup/debug.md).
 
-Ideally a new website will just start with:
+Ideally a new website will start with:
 
 	$config['output.csp_enabled'] = true;
 	$config['output.csp_enforced'] = true;
 
-To debug, just look in the browser console.
-
-To customise the header, start with something like:
+To customise the directives, start with something like:
 
 	$config['output.csp_directives'] = array(
 			'default-src' => array(
@@ -35,15 +33,23 @@ To customise the header, start with something like:
 For additional resources (e.g. on a per-page basis) you can also call:
 
 	$response = response_get();
-	$response->csp_add_source('frame-src', array('https://www.example.com'));
+	$response->csp_add_source('frame-src', 'http://www.example.com');
+	$response->csp_add_source('img-src', array('http://www.example.com', 'http://www.example.org'));
+
+So for example, Google Maps might require:
+
+	$response = response_get();
+	$response->csp_add_source('style-src',  array('"unsafe-inline"'));
+	$response->csp_add_source('script-src', array('"unsafe-inline"', '"unsafe-eval"', 'https://*.googleapis.com', 'https://*.gstatic.com'));
+	$response->csp_add_source('img-src',    array('https://*.googleapis.com', 'https://*.gstatic.com'));
 
 ---
 
 ## Reporting
 
-By default you should have a `system_report_csp` table, which is populated by the browser posting data to /a/api/csp-report/
+By default you should have a `system_report_csp` table, which is populated when the browser posts data to /a/api/csp-report/
 
-If you want to record additional information in this table, you can set a config variable:
+If you want to record additional information in this table, you can either set the config variable:
 
 	/app/library/setup/setup.php
 
@@ -56,7 +62,7 @@ If you want to record additional information in this table, you can set a config
 
 	?>
 
-Alternatively you could create a function which is called from the API:
+Or you can create a function which is called from the API:
 
 	$config['output.csp_report_handle'] = 'csp_report';
 
@@ -65,5 +71,3 @@ Alternatively you could create a function which is called from the API:
 	}
 
 If this function returns an array, then it will work the same as `output.csp_report_extra`.
-
-
