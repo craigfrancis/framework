@@ -580,6 +580,16 @@
     },
     "tpl_system_report_csp": {
         "fields": {
+            "document_uri": {
+                "type": "varchar",
+                "length": "100",
+                "collation": "utf8_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "varchar(100) NOT NULL"
+            },
             "blocked_uri": {
                 "type": "varchar",
                 "length": "100",
@@ -601,16 +611,6 @@
                 "definition": "varchar(100) NOT NULL"
             },
             "referrer": {
-                "type": "tinytext",
-                "length": 255,
-                "collation": "utf8_unicode_ci",
-                "null": false,
-                "default": null,
-                "extra": "",
-                "options": null,
-                "definition": "tinytext NOT NULL"
-            },
-            "document_uri": {
                 "type": "tinytext",
                 "length": 255,
                 "collation": "utf8_unicode_ci",
@@ -685,7 +685,7 @@
             "PRIMARY": {
                 "1": {
                     "non_unique": "0",
-                    "column_name": "blocked_uri",
+                    "column_name": "document_uri",
                     "collation": "A",
                     "sub_part": null,
                     "packed": null,
@@ -695,6 +695,17 @@
                     "index_comment": ""
                 },
                 "2": {
+                    "non_unique": "0",
+                    "column_name": "blocked_uri",
+                    "collation": "A",
+                    "sub_part": null,
+                    "packed": null,
+                    "null": "",
+                    "index_type": "BTREE",
+                    "comment": "",
+                    "index_comment": ""
+                },
+                "3": {
                     "non_unique": "0",
                     "column_name": "violated_directive",
                     "collation": "A",

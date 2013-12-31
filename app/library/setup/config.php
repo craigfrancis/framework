@@ -89,15 +89,14 @@
 	$config['output.csp_enforced'] = true;
 
 	$config['output.csp_directives'] = array(
-			// 'report-uri'  => NULL,
-			'default-src' => array("'none'"),
+			'default-src' => array(
+					"'none'",
+				),
 			'img-src' => array(
 					"'self'",
 					'https://ssl.google-analytics.com',
-					// 'http://www.google-analytics.com',
-					// 'data:',
 				),
-			'script-src'  => array(
+			'script-src' => array(
 					"'self'",
 					'https://ssl.google-analytics.com',
 				),

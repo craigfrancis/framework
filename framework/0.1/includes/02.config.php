@@ -250,7 +250,7 @@
 		config::set_default('output.framing', 'DENY');
 		config::set_default('output.csp_enabled', true);
 		config::set_default('output.csp_enforced', (SERVER == 'stage'));
-		config::set_default('output.csp_directives', array('default-src' => array('"self"')));
+		config::set_default('output.csp_directives', array('default-src' => array("'self'")));
 		config::set_default('output.block_browsers', array(
 				'/MSIE [1-5]\./',
 				'/MSIE.*; Mac_PowerPC/',

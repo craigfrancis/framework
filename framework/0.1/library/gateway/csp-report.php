@@ -55,25 +55,27 @@
 
 	$handler = config::get('output.csp_report_handle');
 
-	if ($handler) {
+	if ($handler && function_exists($handler)) {
+		$return = call_user_func($handler, $report, $data_raw); // Either handles everything, or returns details in an array (e.g. 'user_id').
+	} else {
+		$return = array();
+	}
 
-		call_user_func($handler, $report, $data_raw);
-
-	} else if (config::get('db.host') !== NULL) {
+	if (is_array($return) && config::get('db.host') !== NULL) {
 
 		$db = db_get();
 
-		$values_update = array(
+		$values_update = array_merge(array(
+				'document_uri'       => $report['document-uri'],
 				'blocked_uri'        => $report['blocked-uri'],
 				'violated_directive' => $report['violated-directive'],
 				'referrer'           => $report['referrer'],
-				'document_uri'       => $report['document-uri'],
 				'original_policy'    => $report['original-policy'],
 				'data_raw'           => $data_raw,
 				'ip'                 => config::get('request.ip'),
 				'browser'            => config::get('request.browser'),
 				'updated'            => date('Y-m-d H:i:s'),
-			);
+			), config::get('output.csp_report_extra', array()), $return);
 
 		$values_insert = $values_update;
 		$values_insert['created'] = date('Y-m-d H:i:s');
