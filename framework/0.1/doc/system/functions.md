@@ -97,7 +97,7 @@ For other variables, you should probably use the [cookie](../../doc/system/cooki
 
 	report_add('My message');
 	report_add('My message', $type);
-		// Record in database, and if type is 'notice' (default) or 'error' an email is sent.
+		// Record in database, and send an email if type is 'notice' (default) or 'error'.
 
 	exit_with_error('Something has gone wrong');
 	exit_with_error('Something has gone wrong', 'Hidden information');
