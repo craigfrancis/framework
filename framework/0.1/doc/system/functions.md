@@ -82,9 +82,12 @@ For other variables, you should probably use the [cookie](../../doc/system/cooki
 
 ## Request handling
 
-	request_folder_get(0);
+	request_folder_get(1);
 		// http://www.example.com/admin/products/
-		// 'admin'
+		// 'products'
+
+	request_folder_match(array('member', 'login'));
+		// Returns true for /member/login/
 
 	message_set('Thank you for...');
 		// Message to be shown on next page, when the template uses $response->message_get_html();

@@ -994,6 +994,16 @@
 		return config::array_get('request.folders', $id);
 	}
 
+	function request_folder_match($match_folders) {
+		$request_folders = config::get('request.folders');
+		foreach ($match_folders as $id => $folder) {
+			if (!isset($request_folders[$id]) || $request_folders[$id] != $folder) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 //--------------------------------------------------
 // Recursively delete a directory
 
