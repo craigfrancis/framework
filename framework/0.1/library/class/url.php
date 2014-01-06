@@ -22,7 +22,7 @@
 
 			public function __construct() {
 
-				$k = 0;
+				$k = NULL;
 
 				foreach (func_get_args() as $k => $arg) {
 					if (is_array($arg)) {
@@ -32,7 +32,7 @@
 					}
 				}
 
-				if ($k == 0) {
+				if ($k === NULL) {
 					$this->_path_cache_update(); // No arguments, assume current url (path/query), where path_set() may be called next (keeping query string).
 				}
 
