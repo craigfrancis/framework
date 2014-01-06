@@ -22,12 +22,18 @@
 
 			public function __construct() {
 
+				$k = 0;
+
 				foreach (func_get_args() as $k => $arg) {
 					if (is_array($arg)) {
 						$this->param_set($arg);
 					} else if ($k == 0) {
 						$this->parse($arg); // First argument, if set and not an array of parameters.
 					}
+				}
+
+				if ($k == 0) {
+					$this->_path_cache_update(); // No arguments, assume current url (path/query), where path_set() may be called next (keeping query string).
 				}
 
 			}

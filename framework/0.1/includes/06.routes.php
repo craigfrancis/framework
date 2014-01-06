@@ -38,15 +38,17 @@
 	// was printed with underscores and an underline, it
 	// can cause issues, so be consistent, and use hyphens
 
-		if (strpos($route_path, '_') !== false) {
+		$new_path = strtolower(str_replace('_', '-', $route_path));
+
+		if ($new_path != $route_path) {
 
 			$new_url = new url();
 			$new_url->format_set('full');
-			$new_url->path_set(str_replace('_', '-', $new_url->path_get()));
+			$new_url->path_set($new_path);
 			$new_url = $new_url->get();
 
 			if (SERVER == 'stage') {
-				exit('<p>Underscore substitution: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
+				exit('<p>URL substitution: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
 			} else {
 				redirect($new_url, 301);
 			}
@@ -56,7 +58,7 @@
 	//--------------------------------------------------
 	// Robots
 
-		if (substr($route_path, 0, 11) == '/robots.txt') {
+		if ($route_path == '/robots.txt') {
 
 			$robots_path = VIEW_ROOT . '/robots.txt';
 
@@ -79,7 +81,7 @@
 	//--------------------------------------------------
 	// Favicon
 
-		if (substr($route_path, 0, 12) == '/favicon.ico') {
+		if ($route_path == '/favicon.ico') {
 
 			$favicon_path = config::get('output.favicon_path');
 
@@ -98,7 +100,7 @@
 	//--------------------------------------------------
 	// Site map
 
-		if (substr($route_path, 0, 12) == '/sitemap.xml') {
+		if ($route_path == '/sitemap.xml') {
 
 			config::set('output.mode', 'sitemap');
 
