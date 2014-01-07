@@ -166,8 +166,6 @@
 							//--------------------------------------------------
 							// Versions
 
-								$clear_cache = false;
-
 								foreach ($config['versions'] as $version_name => $version_values) {
 
 									//--------------------------------------------------
@@ -203,8 +201,6 @@
 											$live_exists = false;
 
 										}
-
-										$clear_cache = true;
 
 									//--------------------------------------------------
 									// Delete preview
@@ -260,9 +256,7 @@
 							//--------------------------------------------------
 							// Clear cache
 
-								if ($clear_cache) {
-									cms_text::cache_clear($config['global'] == 'true' ? NULL : $config['path']);
-								}
+								cms_text::cache_clear($config['global'] == 'true' ? NULL : $config['path']);
 
 							//--------------------------------------------------
 							// Next page
