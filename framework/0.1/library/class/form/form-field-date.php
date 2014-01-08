@@ -41,6 +41,13 @@
 					$this->setup_fields($form, $label, $name);
 
 				//--------------------------------------------------
+				// Guess correct year if only 2 digits provided
+
+					if ($this->value['Y'] > 0 && $this->value['Y'] < 100) {
+						$this->value['Y'] = DateTime::createFromFormat('y', $this->value['Y'])->format('Y');
+					}
+
+				//--------------------------------------------------
 				// Value provided
 
 					$this->value_provided = (is_array($this->value) && ($this->value['D'] != 0 || $this->value['M'] != 0 || $this->value['Y'] != 0));
@@ -165,9 +172,6 @@
 			public function value_time_stamp_get() {
 				if ($this->value['M'] == 0 && $this->value['D'] == 0 && $this->value['Y'] == 0) {
 					$timestamp = false;
-				} else if ($this->value['Y'] < 100) {
-					$timestamp = mktime(0, 0, 0, $this->value['M'], $this->value['D'], $this->value['Y'] + 100);
-					$timestamp = strtotime('-100 years', $timestamp); // mktime will auto convert two digit years to four.
 				} else {
 					$timestamp = mktime(0, 0, 0, $this->value['M'], $this->value['D'], $this->value['Y']);
 					if ($timestamp === -1) {
