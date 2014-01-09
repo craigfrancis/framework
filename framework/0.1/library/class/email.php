@@ -192,7 +192,12 @@
 		//--------------------------------------------------
 		// Content
 
-			public function body_text_add($content_text) {
+			public function body_add($content_text) {
+				$this->body_text .= $content_text;
+				$this->body_html .= nl2br(html($content_text));
+			}
+
+			public function body_text_add($content_text) { // NOTE: This should not be body_add_text, as the text and html parts of an email are separate.
 				$this->body_text .= $content_text;
 			}
 
