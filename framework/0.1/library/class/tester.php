@@ -137,8 +137,13 @@
 		// Shortcuts
 
 			protected function session_open() {
+
 				$this->webdriver = new webdriver('localhost', '4444');
-				$this->webdriver->connect('firefox');
+
+				if ($this->webdriver->connect('firefox') == false) {
+					exit_with_error('Cannot connect to selenium server.');
+				}
+
 			}
 
 			protected function session_close() {

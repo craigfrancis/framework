@@ -17,7 +17,7 @@
 			protected $rows = array();
 
 			protected $id_name = '';
-			protected $class_name = 'basic_table';
+			protected $class_name = '';
 			protected $current_url = NULL;
 			protected $no_records_html = 'No records found';
 			protected $data_inherit_heading_class = true;
@@ -378,7 +378,7 @@
 					$col_count = 0;
 
 					$output_html = '
-						<table' . ($this->id_name != '' ? ' id="' . html($this->id_name) . '"' : '') . ' class="' . html($this->class_name) . '">
+						<table' . ($this->id_name != '' ? ' id="' . html($this->id_name) . '"' : '') . ($this->class_name != '' ? ' class="' . html($this->class_name) . '"' : '') . '>
 							<thead>';
 
 					foreach ($this->headings as $row_id => $heading_row) {
