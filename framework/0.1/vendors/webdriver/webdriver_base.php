@@ -28,7 +28,7 @@ class WebDriverBase {
     function __construct($_seleniumUrl) {
         $this->requestURL = $_seleniumUrl;
     }
-
+    
     protected function &curlInit( $url ) {
         if( $this->_curl === null ) {
             $this->_curl = curl_init( $url );
@@ -72,7 +72,7 @@ class WebDriverBase {
     }
 
     protected function prepareGET( $session ) {
-
+        
         //curl_setopt($session, CURLOPT_GET, true);
     }
 
@@ -82,7 +82,7 @@ class WebDriverBase {
 
     /**
      * Execute GET request
-     * @param string $request URL REST request
+     * @param string $request URL REST request 
      * @return string $response Response from GET request
      */
     protected function execute_rest_request_GET($request) {
@@ -144,12 +144,12 @@ class WebDriverBase {
 23 	NoSuchWindow 	A request to switch to a different window could not be satisfied because the window could not be found.
 24 	InvalidCookieDomain 	An illegal attempt was made to set a cookie under a different domain than the current page.
 25 	UnableToSetCookie 	A request to set a cookie's value could not be satisfied.
-28 	Timeout 	A command did not complete before its timeout expired.
+28 	Timeout 	A command did not complete before its timeout expired. 
          */
     }
 
     /**
-     * Search for an element on the page, starting from the document root.
+     * Search for an element on the page, starting from the document root. 
      * @param string $locatorStrategy
      * @param string $value
      * @return WebElement found element
@@ -173,10 +173,10 @@ class WebDriverBase {
             return null;
         }*/
         return new WebElement($this, $element, null);
-    }
-
+    }    
+    
     /**
-     * Search for an element on the page, starting from the document root.
+     * Search for an element on the page, starting from the document root. 
      * @return WebElement found element
      */
     public function findActiveElement() {
@@ -190,14 +190,14 @@ class WebDriverBase {
         }
         $this->handleResponse($json_response);
         $element = $json_response->{'value'};
-
+        
         return new WebElement($this, $element, null);
     }
-
-
+    
+    
 
     /**
-     * 	Search for multiple elements on the page, starting from the document root.
+     * 	Search for multiple elements on the page, starting from the document root. 
      * @param string $locatorStrategy
      * @param string $value
      * @return array of WebElement
