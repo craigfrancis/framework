@@ -348,6 +348,9 @@
 
 				if (!isset($csp[$directive])) {
 					$csp[$directive] = (isset($csp['default-src']) ? $csp['default-src'] : array());
+					if (($none = array_search("'none'", $csp[$directive])) !== false) {
+						unset($csp[$directive][$none]);
+					}
 				}
 
 				$csp[$directive] = array_merge($csp[$directive], $sources);
