@@ -187,19 +187,18 @@
 		//--------------------------------------------------
 		// Clear APC cache
 
-echo 'APC: ' . (function_exists('apc_clear_cache') ? 'True' : 'False') . "\n";
-
 			if (function_exists('apc_clear_cache')) {
 
 				$domain = config::get('output.domain');
 
-				if ($domain == '') {
+				if ($domain != '') {
 					$apc_clear_url = gateway_url('apc-clear');
 					$apc_clear_url->format_set('full');
+					echo $domain . "\n";
 					echo $apc_clear_url . "\n";
 					echo file_get_contents($apc_clear_url) . "\n";
 				} else {
-					echo 'Cannot clear APC cache without "output.domain" config.';
+					echo 'Cannot clear APC cache without "output.domain" config.' . "\n";
 				}
 
 			}
