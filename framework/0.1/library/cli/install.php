@@ -197,14 +197,24 @@
 					$apc_clear_url->format_set('full');
 
 					$apc_clear_socket = new socket();
-					$apc_clear_socket->post($apc_clear_url, array('key' => sha1(ENCRYPTION_KEY)));
+					$apc_clear_socket->exit_on_error_set(false);
 
-					echo $domain . "\n";
-					echo $apc_clear_url . "\n";
-					echo $apc_clear_socket->response_data_get() . "\n";
+					if ($apc_clear_socket->post($apc_clear_url, array('key' => sha1(ENCRYPTION_KEY)))) {
+
+						$apc_clear_data = $apc_clear_socket->response_data_get();
+
+						echo $domain . "\n";
+						echo $apc_clear_url . "\n";
+						echo $apc_clear_data . "\n";
+
+					} else {
+
+					}
 
 				} else {
+
 					echo 'Cannot clear APC cache without "output.domain" config.' . "\n";
+
 				}
 
 			}
