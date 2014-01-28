@@ -10,6 +10,7 @@
 
 		echo 'Invalid key';
 		echo $request_key . '#';
+		echo ENCRYPTION_KEY . '#';
 		echo sha1(ENCRYPTION_KEY . date('Y-m-d')) . '#';
 
 	} else if (!function_exists('apc_clear_cache')) {
