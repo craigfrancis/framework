@@ -191,29 +191,35 @@
 
 				$domain = config::get('output.domain');
 
-				if ($domain != '') {
+				if ($domain == '') {
 
-					$apc_clear_url = gateway_url('apc-clear');
-					$apc_clear_url->format_set('full');
-
-					$apc_clear_socket = new socket();
-					$apc_clear_socket->exit_on_error_set(false);
-
-					if ($apc_clear_socket->post($apc_clear_url, array('key' => sha1(ENCRYPTION_KEY)))) {
-
-						$apc_clear_data = $apc_clear_socket->response_data_get();
-
-						echo $domain . "\n";
-						echo $apc_clear_url . "\n";
-						echo $apc_clear_data . "\n";
-
-					} else {
-
-					}
+					echo 'Cannot clear APC cache without "output.domain" config.' . "\n";
 
 				} else {
 
-					echo 'Cannot clear APC cache without "output.domain" config.' . "\n";
+					$apc_error = NULL;
+
+					$apc_url = gateway_url('apc-clear');
+					$apc_url->format_set('full');
+
+					$apc_socket = new socket();
+					$apc_socket->exit_on_error_set(false);
+
+					if ($apc_socket->post($apc_url, array('key' => sha1(ENCRYPTION_KEY . date('Y-m-d'))))) {
+						$apc_data = $apc_socket->response_data_get();
+						if ($apc_data !== 'Success') {
+							$apc_error = $apc_data;
+						}
+					} else {
+						$apc_error = $apc_socket->error_string_get();
+					}
+
+					if ($apc_error !== NULL) {
+						echo 'Clearing APC cache:' . "\n";
+						echo 'Domain: ' . $domain . "\n";
+						echo 'Full URL: ' . $apc_url . "\n";
+						echo 'Error: ' . $apc_error . "\n\n";
+					}
 
 				}
 
