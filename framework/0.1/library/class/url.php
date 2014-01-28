@@ -298,7 +298,7 @@
 									}
 
 									if ($scheme === '' || $scheme === NULL) {
-										$scheme = (config::get('request.https') ? 'https' : 'http');
+										$scheme = (https_only() || config::get('request.https') ? 'https' : 'http');
 									}
 
 								}
