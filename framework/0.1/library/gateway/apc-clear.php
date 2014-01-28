@@ -10,6 +10,8 @@
 
 		echo 'Invalid key (' . config::get('request.domain') . ')';
 
+		print_r($_SERVER);
+
 	} else if (!function_exists('apc_clear_cache')) {
 
 		echo 'APC not installed';
