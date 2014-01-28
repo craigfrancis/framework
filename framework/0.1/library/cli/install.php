@@ -216,9 +216,9 @@
 
 					if ($apc_error !== NULL) {
 						echo 'Clearing APC cache:' . "\n";
-						echo 'Domain: ' . $domain . "\n";
-						echo 'Full URL: ' . $apc_url . "\n";
-						echo 'Error: ' . $apc_error . "\n\n";
+						echo '  Domain: ' . $domain . "\n";
+						echo '  URL: ' . $apc_url . "\n";
+						echo '  Error: ' . $apc_error . "\n\n";
 					}
 
 				}
