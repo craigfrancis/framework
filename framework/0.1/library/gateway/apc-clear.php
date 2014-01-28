@@ -1,5 +1,5 @@
 <?php
 
-	echo '#' . config::get('request.ip');
+	echo '#' . request('key');
 
 ?>

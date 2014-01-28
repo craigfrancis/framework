@@ -192,11 +192,17 @@
 				$domain = config::get('output.domain');
 
 				if ($domain != '') {
+
 					$apc_clear_url = gateway_url('apc-clear');
 					$apc_clear_url->format_set('full');
+
+					$apc_clear_socket = new socket();
+					$apc_clear_socket->post($apc_clear_url, array('key' => sha1(ENCRYPTION_KEY)));
+
 					echo $domain . "\n";
 					echo $apc_clear_url . "\n";
-					echo file_get_contents($apc_clear_url) . "\n";
+					echo $socket->response_data_get() . "\n";
+
 				} else {
 					echo 'Cannot clear APC cache without "output.domain" config.' . "\n";
 				}
