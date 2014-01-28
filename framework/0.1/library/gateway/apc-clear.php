@@ -6,7 +6,7 @@
 		echo 'APC not installed';
 	} else {
 		apc_clear_cache();
-		echo 'Success2';
+		echo 'Success';
 	}
 
 ?>
