@@ -38,6 +38,7 @@
 		$config['request.folders'] = path_to_array($path);
 
 		if (defined('CLI_MODE')) {
+			$config['request.domain'] = ''; // Remove
 			$config['request.url'] = 'file://..' . $uri; // Don't expose ROOT, but show the relative path
 		} else {
 			$config['request.url'] = ($config['request.https'] ? 'https://' : 'http://') . $config['request.domain'] . $uri;
