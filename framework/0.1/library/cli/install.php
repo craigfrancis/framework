@@ -201,7 +201,7 @@
 
 					echo $domain . "\n";
 					echo $apc_clear_url . "\n";
-					echo $socket->response_data_get() . "\n";
+					echo $apc_clear_socket->response_data_get() . "\n";
 
 				} else {
 					echo 'Cannot clear APC cache without "output.domain" config.' . "\n";
