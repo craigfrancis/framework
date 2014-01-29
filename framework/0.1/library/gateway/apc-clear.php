@@ -1,6 +1,6 @@
 <?php
 
-	$request_key = request('key');
+	$request_key = request('key', 'POST');
 
 	if ($request_key == '') {
 

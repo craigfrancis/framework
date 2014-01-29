@@ -438,7 +438,7 @@
 			}
 
 			public function response_header_get($field) {
-				return $this->socket->response_header_get();
+				return $this->socket->response_header_get($field);
 			}
 
 			public function response_header_get_all($field) {
