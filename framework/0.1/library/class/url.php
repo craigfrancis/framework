@@ -298,7 +298,11 @@
 									}
 
 									if ($scheme === '' || $scheme === NULL) {
-										$scheme = (https_only() || config::get('request.https') ? 'https' : 'http');
+										if ($host == config::get('output.domain')) {
+											$scheme = (https_only() || config::get('request.https') ? 'https' : 'http');
+										} else {
+											$scheme = 'http';
+										}
 									}
 
 								}
