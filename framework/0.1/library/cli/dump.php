@@ -53,6 +53,10 @@
 
 	function dump_db() {
 
+		if (config::get('db.host') === NULL) {
+			return '';
+		}
+
 		$db = db_get();
 
 		$tables = array();

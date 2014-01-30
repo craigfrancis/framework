@@ -1118,7 +1118,7 @@
 
 				$html = '';
 				if (count($errors_flat_html) > 0) {
-					$html = '<ul' . (isset($config['id']) ? ' id="' . html($config['id']) . '"' : '') . ' class="' . html($config['class'] ? $config['class'] : 'error_list') . '">';
+					$html = '<ul role="alert"' . (isset($config['id']) ? ' id="' . html($config['id']) . '"' : '') . ' class="' . html($config['class'] ? $config['class'] : 'error_list') . '">';
 					foreach ($errors_flat_html as $err) $html .= '<li>' . $err . '</li>';
 					$html .= '</ul>';
 				}
