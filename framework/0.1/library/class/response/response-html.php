@@ -1261,6 +1261,7 @@
 
 							$js_code  = 'var _gaq = _gaq || [];' . "\n";
 							$js_code .= '_gaq.push(["_setAccount", "' . html($tracking_ga_code) . '"]);' . "\n";
+							$js_code .= '_gaq.push(["_setSiteSpeedSampleRate", 10]);' . "\n\n";
 							$js_code .= '_gaq.push(["_trackPageview"]);' . "\n\n";
 							$js_code .= '(function() {' . "\n";
 							$js_code .= '	var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true; ga.src = "https://ssl.google-analytics.com/ga.js";' . "\n";
