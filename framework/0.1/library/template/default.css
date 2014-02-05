@@ -394,12 +394,12 @@
 		width: 100%;
 	}
 
-	.basic_table tr.even {
-		background: #E0E0E0;
+	.basic_table thead .sort {
+		font-size: 0.75em;
 	}
 
-	.basic_table tr.highlight td.name {
-		font-weight: bold;
+	.basic_table thead .sort.inactive {
+		color: #CCC;
 	}
 
 	.basic_table th,
@@ -421,6 +421,14 @@
 	.basic_table td.no_results {
 		text-align: center;
 		padding: 2em;
+	}
+
+	.basic_table tr.even {
+		background: #E0E0E0;
+	}
+
+	.basic_table tr.highlight td.name {
+		font-weight: bold;
 	}
 
 	.basic_table td.action {
