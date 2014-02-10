@@ -686,7 +686,12 @@
 		mime_set('text/html');
 
 		if (substr($url, 0, 1) == '/') {
+
+			// Location must be an absoluteURI (rfc2616).
+			// Also covers the hack "?dest=//example.com"
+
 			$url = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain') . $url;
+
 		}
 
 		$next_html = '<p>Go to <a href="' . html($url) . '">next page</a>.</p>';

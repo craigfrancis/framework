@@ -266,7 +266,7 @@
 
 				$dest = $this->dest_url_get();
 
-				if (substr($dest, 0, 1) == '/') {
+				if (substr($dest, 0, 1) == '/') { // Scheme-relative URL "//example.com" won't work, the domain is prefixed.
 					redirect($dest);
 				} else {
 					redirect($default_url);
