@@ -51,9 +51,25 @@
 					$this->blank_name_error_set = false;
 
 				//--------------------------------------------------
-				// Files
+				// Newly uploaded files
 
 					$this->files = array();
+
+					if ($this->form_submitted && isset($_FILES[$this->name]['error']) && is_array($_FILES[$this->name]['error'])) {
+						foreach ($_FILES[$this->name]['error'] as $key => $error) {
+							$file_info = $this->file_store($this->name, $key);
+							if ($file_info) {
+
+								$file_info['preserve'] = ($file_info['hash'] !== NULL);
+
+								$this->files[] = $file_info;
+
+							}
+						}
+					}
+
+				//--------------------------------------------------
+				// Hidden files
 
 					if ($this->form_submitted) {
 						$hidden_files = $this->form->hidden_value_get($this->name);
@@ -72,19 +88,6 @@
 							if ($file_info) {
 
 								$file_info['preserve'] = true;
-
-								$this->files[] = $file_info;
-
-							}
-						}
-					}
-
-					if ($this->form_submitted && isset($_FILES[$this->name]['error']) && is_array($_FILES[$this->name]['error'])) {
-						foreach ($_FILES[$this->name]['error'] as $key => $error) {
-							$file_info = $this->file_store($this->name, $key);
-							if ($file_info) {
-
-								$file_info['preserve'] = ($file_info['hash'] !== NULL);
 
 								$this->files[] = $file_info;
 
@@ -615,7 +618,11 @@
 				if ($this->info_html == '') {
 					$file_names = $this->value_file_names_get();
 					if (count($file_names) > 0) {
-						$this->info_html = implode(', ', $file_names);
+						if ($this->multiple) {
+							$this->info_html = implode(', ', $file_names);
+						} else {
+							$this->info_html = array_shift($file_names);
+						}
 					}
 				}
 
