@@ -745,7 +745,7 @@
 				if ($type == 'js_head' || $type == 'js_foot' || $type == 'js') {
 
 					//--------------------------------------------------
-					// Custom JS
+					// Custom JS (first to provide data)
 
 						$position = ($type == 'js_head' ? 'head' : 'foot');
 
