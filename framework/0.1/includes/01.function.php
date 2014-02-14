@@ -78,12 +78,7 @@
 	}
 
 	function xml($text) {
-		$text = str_replace('&', '&amp;', $text);
-		$text = str_replace('"', '&quot;', $text);
-		$text = str_replace("'", '&apos;', $text);
-		$text = str_replace('>', '&gt;', $text);
-		$text = str_replace('<', '&lt;', $text);
-		return $text;
+		return str_replace(array('&', '"', "'", '<', '>', "\0"), array('&amp;', '&quot;', '&apos;', '&lt;', '&gt;', ''), $text);
 	}
 
 	function csv($text) {
@@ -91,7 +86,7 @@
 	}
 
 	function head($text) {
-		return preg_replace('/(\r|\n)/', '', $text);
+		return str_replace(array("\r", "\n", "\0"), '', $text);
 	}
 
 	function safe_file_name($name) {
