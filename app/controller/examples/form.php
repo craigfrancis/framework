@@ -60,6 +60,12 @@
 		public function action_example() {
 
 			//--------------------------------------------------
+			// Response
+
+				$response = response_get();
+				$response->template_set('blank');
+
+			//--------------------------------------------------
 			// Example type path
 
 				$type_name = request('type');
@@ -69,10 +75,30 @@
 					error_send('page-not-found');
 				}
 
+				$response->set('type_name', $type_name);
+
 			//--------------------------------------------------
 			// Use sessions (preserved values)
 
 				session::start();
+
+			//--------------------------------------------------
+			// Paginated
+
+				if ($type_name == 'paginated') {
+
+					require_once($type_path);
+
+					$response->set('code', file_get_contents($type_path));
+					$response->set('form', $form);
+
+					if (isset($output)) {
+						$response->set('output', $output);
+					}
+
+					return;
+
+				}
 
 			//--------------------------------------------------
 			// Preserved page
@@ -80,8 +106,6 @@
 				$preserved = (request('preserved') == 'true');
 
 				if ($preserved) {
-					$response = response_get('html');
-					$response->template_set('blank');
 					$response->view_set_html('<a href="' . html(url(array('preserved' => NULL))) . '">Return to form</a>');
 					$response->send();
 					exit();
@@ -214,10 +238,9 @@
 							//--------------------------------------------------
 							// Return value
 
-								$response = response_get('text');
-								$response->content_add(debug_dump($value));
-								$response->send();
-								exit();
+								$response->set('output', debug_dump($value));
+
+								return;
 
 						}
 
@@ -231,11 +254,7 @@
 				}
 
 			//--------------------------------------------------
-			// Response
-
-				$response = response_get();
-
-				$response->template_set('blank');
+			// Variables
 
 				$response->set('form', $form);
 				$response->set('database', $database);
