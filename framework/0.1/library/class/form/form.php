@@ -21,6 +21,9 @@
 			private $autocomplete = NULL;
 			private $disabled = false;
 			private $readonly = false;
+			private $print_page_setup = NULL; // Current page being setup in code.
+			private $print_page_submit = NULL; // Current page the user submitted.
+			private $print_page_valid = true;
 			private $print_group = NULL;
 			private $hidden_values = array();
 			private $fields = array();
@@ -213,6 +216,51 @@
 
 			public function readonly_get() {
 				return $this->readonly;
+			}
+
+			public function print_page_start($page) {
+
+				$page = intval($page);
+
+				if (($this->print_page_setup + 1) != $page) { // also blocks adding fields to page 1 after starting page 2.
+					exit_with_error('Missing call to form->print_page_start(' . ($this->print_page_setup + 1) . ') - must be sequential');
+				}
+
+				if ($this->print_page_valid !== true) {
+					exit_with_error('Cannot call form->print_page_start(' . ($page) . ') without first checking form->valid()');
+				}
+
+				if ($this->print_page_setup === NULL) {
+
+					if (count($this->fields) != 0) {
+						exit_with_error('You must call form->print_page_start(1) before adding any fields.');
+					}
+
+					$this->print_page_submit = intval($this->hidden_value_get('page'));
+					if ($this->print_page_submit == 0) {
+						$this->print_page_submit = 1;
+					}
+
+				} else {
+
+					foreach ($this->fields as $field) {
+						$field->print_hidden_set(true);
+					}
+
+				}
+
+				if ($page != 1 && !$this->submitted($page - 1)) {
+					exit_with_error('Cannot call form->print_page_start(' . ($page) . ') without first checking form->submitted(' . ($page - 1) . ')');
+				}
+
+				$this->hidden_value_set('page', $page);
+
+				$this->print_page_setup = $page;
+
+			}
+
+			public function print_page_get() {
+				return $this->print_page_setup;
 			}
 
 			public function print_group_start($print_group) {
@@ -528,8 +576,21 @@
 		//--------------------------------------------------
 		// Status
 
-			public function submitted() {
-				return ($this->form_submitted === true && $this->disabled === false && $this->readonly === false);
+			public function submitted($page = NULL) {
+				if ($this->form_submitted === true && $this->disabled === false && $this->readonly === false) {
+					if ($this->print_page_setup === NULL) {
+						if ($page !== NULL) {
+							exit_with_error('Cannot call form->submitted(' . ($page) . ') without form->print_page_start(X)');
+						}
+						return true;
+					} else {
+						if ($page === NULL) {
+							$page = $this->print_page_setup;
+						}
+						return ($page <= $this->print_page_submit);
+					}
+				}
+				return false;
 			}
 
 			private function _is_submitted() {
@@ -550,6 +611,8 @@
 					return false;
 
 				} else {
+
+					$this->print_page_valid = true;
 
 					return true;
 
@@ -679,6 +742,9 @@
 
 						if ($field_type == 'date') {
 							$value = $field->value_date_get();
+							if ($value == '0000-00-00') {
+								$value = ''; // Not provided
+							}
 						} else if ($field_type == 'file' || $field_type == 'image') {
 							if ($field->uploaded()) {
 								$value = $field->file_name_get() . ' (' . file_size_to_human($field->file_size_get()) . ')';
@@ -923,6 +989,7 @@
 					$this->field_count++;
 				}
 				$this->fields[$this->field_count] = $field_obj;
+				$this->print_page_valid = false;
 				return $this->field_count;
 			}
 
@@ -946,6 +1013,8 @@
 				}
 
 				$this->errors_html[$field_uid][] = $error_html;
+
+				$this->print_page_valid = false;
 
 			}
 

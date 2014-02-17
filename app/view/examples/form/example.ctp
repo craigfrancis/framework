@@ -7,11 +7,26 @@
 
 	<?php } else if ($type_name == 'paginated') { ?>
 
-		<p>Example form, split over multiple pages.</p>
+		<p>Example paginated form, if you don't want to use JavaScript to show/hide panels, or <a href="/doc/system/session/">Sessions</a> to preserve values between pages.</p>
 
-		<?= $form->html(); ?>
+		<?= $form->html_start(); ?>
+			<fieldset>
+
+				<?= $form->html_error_list(); ?>
+
+				<div class="row info">
+					<span class="label">Page:</span>
+					<span class="input"><?= html($form->print_page_get()) ?></span>
+				</div>
+
+				<?= $form->html_fields(); ?>
+				<?= $form->html_submit(); ?>
+
+			</fieldset>
+		<?= $form->html_end(); ?>
 
 		<br />
+
 		<fieldset>
 			<pre><?= html($code) ?></pre>
 		</fieldset>
