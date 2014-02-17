@@ -67,6 +67,11 @@
 			$config['email.error'] = array('craig@craigfrancis.co.uk');
 			$config['email.contact_us'] = array('craig@craigfrancis.co.uk');
 
+		//--------------------------------------------------
+		// General
+
+			$config['output.domain'] = 'www.phpprime.com';
+
 	}
 
 //--------------------------------------------------

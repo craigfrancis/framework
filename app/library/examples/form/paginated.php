@@ -24,6 +24,7 @@
 		$field_age->min_value_set('Your age must be more than or equal to XXX.', 10);
 		$field_age->max_value_set('Your age must be less than or equal to XXX.', 9999);
 		$field_age->step_value_set('Your age must be a whole number.');
+		$field_age->required_error_set('Your age is required.');
 
 		if ($form->submitted(1)) {
 
@@ -68,5 +69,10 @@
 		$output = debug_dump($form->data_array_get());
 
 	}
+
+//--------------------------------------------------
+// Variables
+
+	$page = $form->print_page_get();
 
 ?>

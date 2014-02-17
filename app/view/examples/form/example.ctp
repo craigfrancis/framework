@@ -16,7 +16,7 @@
 
 				<div class="row info">
 					<span class="label">Page:</span>
-					<span class="input"><?= html($form->print_page_get()) ?></span>
+					<span class="input"><?= html($page) ?></span>
 				</div>
 
 				<?= $form->html_fields(); ?>

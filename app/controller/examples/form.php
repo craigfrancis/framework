@@ -91,6 +91,7 @@
 
 					$response->set('code', file_get_contents($type_path));
 					$response->set('form', $form);
+					$response->set('page', $page);
 
 					if (isset($output)) {
 						$response->set('output', $output);
