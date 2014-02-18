@@ -18,19 +18,25 @@
 // Paths
 
 	if (($pos = strpos($name_file, '-')) !== false) {
-		$name_folder = substr($name_file, 0, $pos);
+		$folder = APP_ROOT . '/unit/' . safe_file_name(substr($name_file, 0, $pos));
 	} else {
-		$name_folder = $name_file;
-	}
-	$name_folder = safe_file_name($name_folder);
-
-	$folder = APP_ROOT . '/unit/';
-	if (is_dir($folder . $name_folder)) {
-		$folder .= $name_folder . '/';
+		$folder = APP_ROOT . '/unit/' . safe_file_name($name_file);
 	}
 
-	$path_php = $folder . safe_file_name($name_file) . '.php';
-	$path_ctp = $folder . safe_file_name($name_file) . '.ctp';
+	if (!is_dir($folder)) {
+		@mkdir($folder, 0755, true); // Writable for user only
+	}
+
+	if (!is_dir($folder)) {
+		echo 'Cannot create folder: ' . $folder . "\n\n";
+		return;
+	} else if (!is_writable($folder)) {
+		echo 'Cannot write to folder: ' . $folder . "\n\n";
+		return;
+	}
+
+	$path_php = $folder . '/' . safe_file_name($name_file) . '.php';
+	$path_ctp = $folder . '/' . safe_file_name($name_file) . '.ctp';
 
 	if (is_file($path_php) || is_file($path_ctp)) {
 		echo 'The "' . $name_file . '" unit already exists.' . "\n\n";

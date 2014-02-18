@@ -578,27 +578,22 @@
 		$unit_file_name = safe_file_name(str_replace('_', '-', $unit_name));
 
 		if (($pos = strpos($unit_file_name, '-')) !== false) {
-			$folder = substr($unit_file_name, 0, $pos);
+			$unit_file_path = APP_ROOT . '/unit/' . substr($unit_file_name, 0, $pos) . '/' . $unit_file_name . '.php';
 		} else {
-			$folder = $unit_file_name;
+			$unit_file_path = APP_ROOT . '/unit/' . $unit_file_name . '/' . $unit_file_name . '.php';
 		}
 
-		$object_paths = array(
-				APP_ROOT . '/unit/' . $unit_file_name . '.php',
-				APP_ROOT . '/unit/' . $folder . '/' . $unit_file_name . '.php',
-			);
+		if (is_file($unit_file_path)) {
 
-		foreach ($object_paths as $object_path) {
-			if (is_file($object_path)) {
+			require_once($unit_file_path);
 
-				require_once($object_path);
+			return new $unit_class_name($unit_file_path, $config);
 
-				return new $unit_class_name($object_path, $config);
+		} else {
 
-			}
+			return NULL;
+
 		}
-
-		return NULL;
 
 	}
 
