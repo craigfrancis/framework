@@ -39,3 +39,9 @@ Example setup
 			// }
 
 	}
+
+---
+
+## Notes
+
+Consider [Pop PHP](http://www.popphp.org/tutorials/advanced/using-the-auth-component) which has a central authorisation object, where permissions can be added... ignore the SHA1 / Password text file bits.
