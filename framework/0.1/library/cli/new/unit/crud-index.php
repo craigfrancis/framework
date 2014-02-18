@@ -10,7 +10,7 @@
 				$config = array_merge(array(
 
 						'add_url' => NULL,
-						'view_url' => NULL,
+						'edit_url' => NULL,
 						'delete_url' => NULL,
 
 						'paginate' => true,
@@ -46,7 +46,6 @@
 			// Table
 
 				$table = new table();
-				$table->class_set('basic_table full_width');
 				// $table->sort_default_set('tn.created', 'desc');
 				// $table->sort_preserve_set(true);
 				// $table->anchor_set('results');
@@ -142,10 +141,10 @@
 					//--------------------------------------------------
 					// Details
 
-						if ($config['view_url']) {
-							$view_url = $config['view_url']->get(array('id' => $row['id']));
+						if ($config['edit_url']) {
+							$edit_url = $config['edit_url']->get(array('id' => $row['id']));
 						} else {
-							$view_url = NULL;
+							$edit_url = NULL;
 						}
 
 					//--------------------------------------------------
@@ -153,7 +152,7 @@
 
 						$table_row = new table_row($table);
 
-						if (in_array('name',   $columns)) $table_row->cell_add_link($view_url, $row['name']);
+						if (in_array('name',   $columns)) $table_row->cell_add_link($edit_url, $row['name']);
 						if (in_array('delete', $columns)) $table_row->cell_add_link($config['delete_url']->get(array('id' => $row['id'])), 'Delete');
 
 				}
@@ -185,7 +184,7 @@
 
 	$unit = unit_add('[CLASS_NAME]', array(
 			'add_url' => url('/admin/item/edit/'),
-			'view_url' => url('/admin/item/edit/'),
+			'edit_url' => url('/admin/item/edit/'),
 			'delete_url' => url('/admin/item/delete/'),
 		));
 

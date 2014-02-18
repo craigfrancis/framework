@@ -11,7 +11,9 @@
 		<?= $paginator->html(); ?>
 	<?php } ?>
 
-	<?= $table->html(); ?>
+	<div class="basic_table full_width">
+		<?= $table->html(); ?>
+	</div>
 
 	<?php if ($paginator) { ?>
 		<?= $paginator->html(); ?>
