@@ -273,19 +273,6 @@
 
 	if ($action_method !== NULL) {
 
-		if (substr(config::get('route.path'), -1) != '/') { // reduce possibility of duplicate content issues, for a page that exists
-
-			$new_url = new url();
-			$new_url->path_set($new_url->path_get() . '/');
-
-			if (config::get('output.domain')) { // Ignore if not set/available.
-				$new_url->format_set('full');
-			}
-
-			redirect($new_url->get(), 301);
-
-		}
-
 		if ($action_method != 'action_index') {
 			array_push($action_route_stack_used, array_shift($action_route_stack_pending));
 		}

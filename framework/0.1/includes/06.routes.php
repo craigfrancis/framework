@@ -14,6 +14,7 @@
 		}
 
 		$route_path = str_replace('//', '/', $route_path);
+		$route_asset = prefix_match(ASSET_URL . '/', $route_path);
 
 		unset($url_prefix);
 
@@ -33,24 +34,37 @@
 		unset($title_folders, $folder);
 
 	//--------------------------------------------------
-	// Don't allow use underscores in urls... ideally,
-	// from an accessibility point of view, if a link
-	// was printed with underscores and an underline, it
-	// can cause issues, so be consistent, and use hyphens
+	// Don't allow:
+	// - missing slash at the end... to reduce the
+	//   possibility of duplicate content issues.
+	// - uppercase characters... as urls should ideally
+	//   be case-insensitive and easy to type.
+	// - underscores... from an accessibility point of
+	//   view, if a link was printed with underscores
+	//   and an underline, it can cause issues, so be
+	//   consistent, and use hyphens.
 
-		$new_path = strtolower(str_replace('_', '-', $route_path));
+		if (!$route_asset) {
 
-		if ($new_path != $route_path) {
+			$new_path = strtolower(str_replace('_', '-', $route_path));
 
-			$new_url = new url();
-			$new_url->format_set('full');
-			$new_url->path_set($new_path);
-			$new_url = $new_url->get();
+			if (substr($new_path, -1) != '/') {
+				$new_path .= '/';
+			}
 
-			if (SERVER == 'stage') {
-				exit('<p>URL substitution: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
-			} else {
-				redirect($new_url, 301);
+			if ($new_path != $route_path) {
+
+				$new_url = new url();
+				$new_url->format_set('full');
+				$new_url->path_set($new_path);
+				$new_url = $new_url->get();
+
+				if (SERVER == 'stage') {
+					exit('<p>URL substitution: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
+				} else {
+					redirect($new_url, 301);
+				}
+
 			}
 
 		}
@@ -155,7 +169,7 @@
 //--------------------------------------------------
 // Assets containing file modification time
 
-	if (prefix_match(ASSET_URL . '/', $route_path)) {
+	if ($route_asset) {
 
 		if (preg_match('/^(.*)\/([0-9]+)-{(.*)}.(js|css)$/', $route_path, $matches)) {
 
