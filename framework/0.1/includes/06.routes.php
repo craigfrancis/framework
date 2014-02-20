@@ -34,42 +34,6 @@
 		unset($title_folders, $folder);
 
 	//--------------------------------------------------
-	// Don't allow:
-	// - missing slash at the end... to reduce the
-	//   possibility of duplicate content issues.
-	// - uppercase characters... as urls should ideally
-	//   be case-insensitive and easy to type.
-	// - underscores... from an accessibility point of
-	//   view, if a link was printed with underscores
-	//   and an underline, it can cause issues, so be
-	//   consistent, and use hyphens.
-
-		if (!$route_asset) {
-
-			$new_path = strtolower(str_replace('_', '-', $route_path));
-
-			if (substr($new_path, -1) != '/') {
-				$new_path .= '/';
-			}
-
-			if ($new_path != $route_path) {
-
-				$new_url = new url();
-				$new_url->format_set('full');
-				$new_url->path_set($new_path);
-				$new_url = $new_url->get();
-
-				if (SERVER == 'stage') {
-					exit('<p>URL substitution: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
-				} else {
-					redirect($new_url, 301);
-				}
-
-			}
-
-		}
-
-	//--------------------------------------------------
 	// Robots
 
 		if ($route_path == '/robots.txt') {
@@ -129,6 +93,46 @@
 			script_run($sitemap_path);
 
 			exit();
+
+		}
+
+	//--------------------------------------------------
+	// Don't allow:
+	// - missing slash at the end... to reduce the
+	//   possibility of duplicate content issues.
+	// - uppercase characters... as urls should ideally
+	//   be case-insensitive and easy to type.
+	// - underscores... from an accessibility point of
+	//   view, if a link was printed with underscores
+	//   and an underline, it can cause issues, so be
+	//   consistent, and use hyphens.
+
+		if (!$route_asset) { // Don't worry about files like "jQuery.js"
+
+			$new_path = strtolower(str_replace('_', '-', $route_path));
+
+			if (substr($new_path, -1) != '/') {
+				$new_path .= '/';
+			}
+
+			if ($new_path != $route_path) {
+
+					// We don't know if the destination is valid, as while we could
+					// do the check when loading the controller, it wouldn't work
+					// for 'view' only urls, and would also add more processing time.
+
+				$new_url = new url();
+				$new_url->format_set('full');
+				$new_url->path_set($new_path);
+				$new_url = $new_url->get();
+
+				if (SERVER == 'stage') {
+					exit('<p>URL substitution: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
+				} else {
+					redirect($new_url, 301);
+				}
+
+			}
 
 		}
 
