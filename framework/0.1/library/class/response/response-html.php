@@ -1328,7 +1328,7 @@
 
 					//--------------------------------------------------
 					// Cache control - adding "no-transform" due to CSP,
-					// and because we have extenal CSS files for a reason!
+					// and because we have external CSS files for a reason!
 
 						foreach (headers_list() as $header) {
 							if (strtolower(substr($header, 0, 14)) == 'cache-control:') {
@@ -1342,6 +1342,12 @@
 					// Framing options
 
 						header('X-Frame-Options: ' . head(strtoupper(config::get('output.framing', 'DENY'))));
+
+					//--------------------------------------------------
+					// Extra XSS protection for IE (reflected)... not
+					// that there should be any XSS issues!
+
+						header('X-XSS-Protection: 1; mode=block');
 
 					//--------------------------------------------------
 					// Strict transport security
