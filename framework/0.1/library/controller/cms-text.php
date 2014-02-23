@@ -149,7 +149,7 @@
 				}
 
 			//--------------------------------------------------
-			// Form processing
+			// Form submitted
 
 				if ($form->submitted()) {
 
@@ -265,28 +265,30 @@
 
 						}
 
-				} else if (!$form->saved_values_available()) {
+				}
 
-					//--------------------------------------------------
-					// Defaults
+			//--------------------------------------------------
+			// Form default
 
-						foreach ($config['versions'] as $version_name => $version_values) {
+				if ($form->default()) {
 
-							$sql = 'SELECT
-										ct.content
-									FROM
-										' . DB_PREFIX . 'cms_text AS ct
-									WHERE
-										' . $config['version_where_sql'][$version_name] . ' AND
-										revision = "0"';
+					foreach ($config['versions'] as $version_name => $version_values) {
 
-							if ($row = $db->fetch_row($sql)) {
-								$fields[$version_name]->value_set($row['content']);
-							} else {
-								$fields[$version_name]->value_set($config['default']);
-							}
+						$sql = 'SELECT
+									ct.content
+								FROM
+									' . DB_PREFIX . 'cms_text AS ct
+								WHERE
+									' . $config['version_where_sql'][$version_name] . ' AND
+									revision = "0"';
 
+						if ($row = $db->fetch_row($sql)) {
+							$fields[$version_name]->value_set($row['content']);
+						} else {
+							$fields[$version_name]->value_set($config['default']);
 						}
+
+					}
 
 				}
 

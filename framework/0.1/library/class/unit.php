@@ -5,6 +5,8 @@
 		//--------------------------------------------------
 		// Variables
 
+			protected $config = NULL;
+
 			private $unit_path = NULL;
 			private $view_name = NULL;
 			private $view_variables = array();
@@ -13,8 +15,75 @@
 		// Setup
 
 			public function __construct($path, $config) {
+
 				$this->unit_path = $path;
+
+				if ($this->config !== NULL) {
+					$config = $this->config($config);
+				}
+
+				if ($this->authenticate($config) !== true) {
+					exit_with_error('Authentication failed for unit.', get_class($this));
+				}
+
 				$this->setup($config);
+
+			}
+
+			protected function config($config) {
+
+				$output = array();
+				$errors = array();
+
+				foreach ($config as $key => $setup) {
+					if (!isset($this->config[$key])) {
+						$errors[] = 'Unrecognised config: ' . $key;
+					}
+				}
+
+				foreach ($this->config as $key => $setup) {
+
+					if (isset($config[$key])) {
+						$value = $config[$key];
+					} else if (!is_array($setup)) {
+						$value = $setup;
+					} else if (array_key_exists('default', $setup)) {
+						$value = $setup['default'];
+					} else {
+						$errors[] = 'Missing config: ' . $key;
+						continue;
+					}
+
+					if (isset($setup['type'])) {
+						if ($setup['type'] == 'url' && (!is_object($value) || !is_a($value, 'url'))) {
+							if ($value === NULL) {
+								$value = url();
+							} else if (is_string($value)) {
+								$value = url($value);
+							} else {
+								$errors[] = 'Unrecognised url value for: ' . $key;
+							}
+						} else if ($setup['type'] == 'int') {
+							$value = intval($value);
+						} else if ($setup['type'] == 'str') {
+							$value = strval($value);
+						}
+					}
+
+					$output[$key] = $value;
+
+				}
+
+				if (count($errors) > 0) {
+					exit_with_error('Configuration problems for unit.', get_class($this) . "\n\n" . debug_dump($errors));
+				} else {
+					return $output;
+				}
+
+			}
+
+			protected function authenticate($config) {
+				return true;
 			}
 
 			protected function setup($config) {

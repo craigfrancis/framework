@@ -2,21 +2,25 @@
 
 	class [CLASS_NAME]_unit extends unit {
 
+		protected $config = array(
+
+				'add_url'    => array('type' => 'url'),
+				'edit_url'   => array('type' => 'url'),
+				'delete_url' => array('type' => 'url'),
+
+				'paginate'   => array('default' => true),
+				'search'     => array('default' => true),
+
+			);
+
+		// protected function authenticate($config) {
+		// 	return false;
+		// }
+
 		public function setup($config) {
 
 			//--------------------------------------------------
-			// Config
-
-				$config = array_merge(array(
-
-						'add_url' => NULL,
-						'edit_url' => NULL,
-						'delete_url' => NULL,
-
-						'paginate' => true,
-						'search' => true,
-
-					), $config);
+			// Resources
 
 				$db = db_get();
 

@@ -2,16 +2,20 @@
 
 	class [CLASS_NAME]_unit extends unit {
 
+		protected $config = array(
+				'id'        => array('type' => 'int'),
+				'index_url' => array('type' => 'url'),
+				'edit_url'  => array('type' => 'url'),
+			);
+
+		// protected function authenticate($config) {
+		// 	return false;
+		// }
+
 		public function setup($config) {
 
 			//--------------------------------------------------
-			// Config
-
-				$config = array_merge(array(
-						'id' => NULL,
-						'index_url' => NULL,
-						'edit_url' => NULL,
-					), $config);
+			// Resources
 
 				$item_id = intval($config['id']);
 
@@ -46,7 +50,7 @@
 				$form->form_button_set('Delete');
 
 			//--------------------------------------------------
-			// Form processing
+			// Form submitted
 
 				if ($form->submitted()) {
 

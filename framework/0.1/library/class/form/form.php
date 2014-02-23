@@ -597,6 +597,10 @@
 				$this->form_submitted = ($this->form_passive || (request('act') == $this->form_id && config::get('request.method') == $this->form_method));
 			}
 
+			public function default() {
+				return (!$this->submitted() && !$form->saved_values_available());
+			}
+
 			public function valid() {
 
 				$this->_post_validation();

@@ -2,14 +2,18 @@
 
 	class [CLASS_NAME]_unit extends unit {
 
-		public function setup($config) {
+		protected $config = array(
+				'name' => array('default' => 'Unknown'),
+			);
+
+		// protected function authenticate($config) {
+		// 	return false;
+		// }
+
+		protected function setup($config) {
 
 			//--------------------------------------------------
-			// Config
-
-				$config = array_merge(array(
-						'name' => 'Unknown',
-					), $config);
+			// Resources
 
 				// $db = db_get();
 

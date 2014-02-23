@@ -2,14 +2,18 @@
 
 	class [CLASS_NAME]_unit extends unit {
 
+		protected $config = array(
+				'next_url' => array('type' => 'url', 'default' => './thank-you/'),
+			);
+
+		// protected function authenticate($config) {
+		// 	return false;
+		// }
+
 		public function setup($config) {
 
 			//--------------------------------------------------
-			// Config
-
-				$config = array_merge(array(
-						'next_url' => url('./thank-you/'),
-					), $config);
+			// Resources
 
 				// $db = db_get();
 
@@ -24,7 +28,7 @@
 				//$form->db_where_set_sql($where_sql);
 
 			//--------------------------------------------------
-			// Form processing
+			// Form submitted
 
 				if ($form->submitted()) {
 
@@ -64,13 +68,12 @@
 
 						}
 
-				} else if (!$form->saved_values_available()) {
+				}
 
-					//--------------------------------------------------
-					// Defaults
+			//--------------------------------------------------
+			// Form default
 
-
-
+				if ($form->default()) {
 				}
 
 			//--------------------------------------------------
