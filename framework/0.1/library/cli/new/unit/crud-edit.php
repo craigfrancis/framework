@@ -105,7 +105,7 @@
 			//--------------------------------------------------
 			// Form default
 
-				if ($form->default()) {
+				if ($form->initial()) {
 
 					if ($action_edit) {
 					}

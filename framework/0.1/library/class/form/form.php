@@ -597,8 +597,8 @@
 				$this->form_submitted = ($this->form_passive || (request('act') == $this->form_id && config::get('request.method') == $this->form_method));
 			}
 
-			public function default() {
-				return (!$this->submitted() && !$form->saved_values_available());
+			public function initial() { // Because you cant have a function called "default", and "defaults" implies an array of default values.
+				return (!$this->submitted() && !$this->saved_values_available());
 			}
 
 			public function valid() {

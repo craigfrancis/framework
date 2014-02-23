@@ -270,7 +270,7 @@
 			//--------------------------------------------------
 			// Form default
 
-				if ($form->default()) {
+				if ($form->initial()) {
 
 					foreach ($config['versions'] as $version_name => $version_values) {
 
