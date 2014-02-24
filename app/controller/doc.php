@@ -46,7 +46,7 @@
 
 					if ($request_path == 'introduction' || $request_path == 'setup/units') {
 
-						$controller_example = file_get_contents(ROOT . '/app/unit/contact-form.php');
+						$controller_example = file_get_contents(ROOT . '/app/unit/contact/contact-form.php');
 						$controller_example = preg_replace('/^/m', "\t", $controller_example);
 						$controller_example = trim($controller_example);
 
@@ -75,10 +75,11 @@
 							'/app/view/contact.ctp' => '/app/view/<strong>contact</strong>.ctp',
 							'contact_controller' => '<strong>contact</strong>_controller',
 							'action_index' => 'action_<strong>index</strong>',
+							'\'contact_form\'' => '\'<strong>contact_form</strong>\'',
 							'new form(' => 'new <strong>form</strong>(',
 							'new email(' => 'new <strong>email</strong>(',
 						);
-					
+
 					} else if ($request_path == 'helpers/functions') {
 
 						$replace = array(

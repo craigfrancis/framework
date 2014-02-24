@@ -23,7 +23,11 @@
 				}
 
 				if ($this->authenticate($config) !== true) {
-					exit_with_error('Authentication failed for unit.', get_class($this));
+					if (SERVER != 'stage') {
+						report_add('Authentication failed for unit: ' . get_class($this)); // TODO: Remove
+					} else {
+						exit_with_error('Authentication failed for unit.', get_class($this));
+					}
 				}
 
 				$this->setup($config);
@@ -36,14 +40,14 @@
 				$errors = array();
 
 				foreach ($config as $key => $setup) {
-					if (!isset($this->config[$key])) {
+					if (!array_key_exists($key, $this->config)) {
 						$errors[] = 'Unrecognised config: ' . $key;
 					}
 				}
 
 				foreach ($this->config as $key => $setup) {
 
-					if (isset($config[$key])) {
+					if (array_key_exists($key, $config)) {
 						$value = $config[$key];
 					} else if (!is_array($setup)) {
 						$value = $setup;
@@ -75,7 +79,11 @@
 				}
 
 				if (count($errors) > 0) {
-					exit_with_error('Configuration problems for unit.', get_class($this) . "\n\n" . debug_dump($errors));
+					if (SERVER != 'stage') {
+						report_add('Configuration problems for unit: ' . get_class($this) . "\n\n" . debug_dump($errors)); // TODO: Remove
+					} else {
+						exit_with_error('Configuration problems for unit.', get_class($this) . "\n\n" . debug_dump($errors));
+					}
 				} else {
 					return $output;
 				}

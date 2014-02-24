@@ -28,7 +28,7 @@
 				$field_search->max_length_set('Your search cannot be longer than XXX characters.', 250);
 
 			//--------------------------------------------------
-			// Form processing
+			// Form submitted
 
 				if ($form->submitted()) {
 
@@ -82,13 +82,13 @@
 
 						}
 
-				} else {
+				}
 
-					//--------------------------------------------------
-					// Defaults
+			//--------------------------------------------------
+			// Form defaults
 
-						$field_search->value_set('Craig Francis');
-
+				if ($form->initial()) {
+					$field_search->value_set('Craig Francis');
 				}
 
 			//--------------------------------------------------

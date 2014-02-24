@@ -53,7 +53,7 @@ You could extend the above by creating a [controller](../doc/setup/controllers.m
 
 If you are running the website in [development mode](../doc/setup/debug.md), PHP Prime will add some notes to explain how it searches for the controller.
 
-In this example the controller just adds a [unit](../doc/setup/units.md):
+In this example, the controller could add a [unit](../doc/setup/units.md):
 
 	/app/controller/contact.php
 
@@ -62,7 +62,11 @@ In this example the controller just adds a [unit](../doc/setup/units.md):
 		class contact_controller extends controller {
 
 			public function action_index() {
-				unit_add('contact_form');
+
+				$unit = unit_add('contact_form', array(
+						'dest_url' => url('/contact/thank-you/'),
+					));
+
 			}
 
 		}
@@ -75,7 +79,7 @@ Where the unit's code is something like:
 
 	<?php [SEE EXAMPLE] ?>
 
-For reference, it uses the [form](../doc/helpers/form.md) and [email](../doc/helpers/email.md) helpers to send an email and keep a copy in the database. It should be noted that the database determines the fields maximum length.
+For reference, it uses the [form](../doc/helpers/form.md) and [email](../doc/helpers/email.md) helpers to send an email and keep a copy in the database. It should be noted that the database determines the fields maximum length (hence the XXX).
 
 The HTML for the unit can then be:
 

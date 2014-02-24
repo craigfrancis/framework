@@ -62,12 +62,18 @@
 		}
 
 //--------------------------------------------------
-// Form processing
+// Form submitted
 
 	if ($form->submitted() && $form->valid()) {
 
 		$output = debug_dump($form->data_array_get());
 
+	}
+
+//--------------------------------------------------
+// Form defaults
+
+	if ($form->initial()) {
 	}
 
 //--------------------------------------------------

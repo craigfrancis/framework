@@ -2,18 +2,19 @@
 
 	class contact_form_unit extends unit {
 
+		protected $config = array(
+				'dest_url' => array('type' => 'url'),
+			);
+
 		protected function setup($config) {
 
 			//--------------------------------------------------
-			// Setup
+			// Form setup
 
 				$form = new form();
 				$form->form_class_set('basic_form');
 				$form->form_button_set('Send');
 				$form->db_table_set_sql(DB_PREFIX . 'log_contact');
-
-			//--------------------------------------------------
-			// Fields
 
 				$field_name = new form_field_text($form, 'Name');
 				$field_name->db_field_set('name');
@@ -34,7 +35,7 @@
 				$field_message->rows_set(5);
 
 			//--------------------------------------------------
-			// Processing
+			// Form submitted
 
 				if ($form->submitted()) {
 
@@ -68,16 +69,18 @@
 							//--------------------------------------------------
 							// Next page
 
-								redirect(url('/contact/thank-you/', array('id' => $record_id)));
+								redirect($config['dest_url']->get(array('id' => $record_id)));
 
 						}
 
-				} else {
+				}
 
-					//--------------------------------------------------
-					// Defaults
+			//--------------------------------------------------
+			// Form defaults
 
-						// $field_name->value_set('My name');
+				if ($form->initial()) {
+
+					// $field_name->value_set('My name');
 
 				}
 

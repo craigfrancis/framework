@@ -48,7 +48,7 @@
 					$field_type->required_error_set('Your type is required.');
 
 				//--------------------------------------------------
-				// Form processing
+				// Form submitted
 
 					if ($form_edit->submitted()) {
 
@@ -81,13 +81,12 @@ exit('Updated?');
 
 							}
 
-					} else {
+					}
 
-						//--------------------------------------------------
-						// Defaults
+				//--------------------------------------------------
+				// Form defaults
 
-
-
+					if ($form->initial()) {
 					}
 
 			//--------------------------------------------------
@@ -244,7 +243,7 @@ exit('Updated?');
 					$field_postcode->required_error_set('Your postcode is required.');
 
 				//--------------------------------------------------
-				// Form processing
+				// Form submitted
 
 					if ($form->submitted()) {
 
@@ -291,13 +290,13 @@ exit();
 
 							}
 
-					} else {
+					}
 
-						//--------------------------------------------------
-						// Defaults
+				//--------------------------------------------------
+				// Form defaults
 
-							$field_name->value_set('My name');
-
+					if ($form->initial()) {
+						$field_name->value_set('My name');
 					}
 
 			//--------------------------------------------------
