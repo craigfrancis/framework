@@ -6,6 +6,15 @@
 				'name' => array('default' => 'Unknown'),
 			);
 
+		// protected $config = array(
+		// 		'id'   => array('type' => 'int'),
+		// 		'url'  => array('type' => 'url'),
+		// 		'url'  => array('type' => 'url', 'default' => './thank-you/'),
+		// 		'url'  => array('default' => NULL),
+		// 		'name' => array('default' => 'Unknown'),
+		// 		'list' => array('default' => array()),
+		// 	);
+
 		// protected function authenticate($config) {
 		// 	return false;
 		// }

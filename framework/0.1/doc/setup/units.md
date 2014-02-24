@@ -13,18 +13,18 @@ It is possible for a unit to also use units itself. For example you might want a
 
 ## Files
 
-To create a unit, simply add a 'php' and a 'ctp' file to the folder:
+To create a unit, simply add a 'php' and a 'ctp' file to a sub-folder of:
 
 	/app/unit/
 
-	/app/unit/search-form.php
-	/app/unit/search-form.ctp
+	/app/unit/search/search-form.php
+	/app/unit/search/search-form.ctp
 
 The 'php' file contains a class of the same name (with underscores and 'unit' suffix), and the 'ctp' file contains the HTML.
 
 If you are just going to use an object for the HTML output, and it provides a html() method (e.g. the form helper), then the 'ctp' file is optional.
 
-You can also create sub-folders to help group files, for example:
+The sub-folders are used to help group files, for example:
 
 	/app/unit/news/
 
@@ -46,11 +46,11 @@ During initialisation of the object, the 'setup' function is used, for example:
 
 		class news_admin_index_unit extends unit {
 
-			protected function setup($config) {
+			protected $config = array(
+					'add_url' => array('type' => 'url'),
+				);
 
-				$config = array_merge(array(
-						'add_url' => NULL,
-					), $config);
+			protected function setup($config) {
 
 				$table = new table();
 				$table->no_records_set('No articles found');
@@ -65,6 +65,42 @@ During initialisation of the object, the 'setup' function is used, for example:
 		}
 
 	?>
+
+---
+
+## Config
+
+You can add a `$config` array to the unit, which will parse/validate the incoming `$config` array before calling setup();
+
+	protected $config = array(
+			'id'   => array('type' => 'int'),
+			'url1' => array('type' => 'url'),
+			'url2' => array('type' => 'url', 'default' => './thank-you/'),
+			'url3' => array('default' => NULL),
+			'name' => array('default' => 'Unknown'),
+			'list' => array('default' => array()),
+		);
+
+Anything which does not have a 'default' value will be required, and a 'type' can be specified, which will convert the variable to that type (url, int, or str).
+
+As object properties in PHP cannot use objects themselves, a type of 'url' will take a default url string, and convert it to a url object.
+
+---
+
+## Authentication
+
+To verify the use of a unit (e.g. only admin can use this unit), then an 'authenticate' method can be added:
+
+	protected function authenticate($config) {
+		if (!defined('ADMIN_PAGE') || ADMIN_PAGE !== true) {
+			return false;
+		}
+		return true;
+	}
+
+Where you could add this to /app/library/class/unit.php (so all units needs to be on an admin page by default), and the constant can be defined in /controller/admin.php with:
+
+	define('ADMIN_PAGE', (!in_array(request_folder_get(1), array('login', 'logout'))));
 
 ---
 
@@ -143,7 +179,7 @@ This allows you to do something like:
 
 	}
 
-	/app/unit/example-a.ctp
+	/app/unit/example/example-a.ctp
 
 ---
 
@@ -151,13 +187,13 @@ This allows you to do something like:
 
 To create a self contained "contact us" form, first create the object:
 
-	/app/unit/contact-form.php
+	/app/unit/contact/contact-form.php
 
 	<?php [SEE EXAMPLE] ?>
 
 Add the HTML:
 
-	/app/unit/contact-form.ctp
+	/app/unit/contact/contact-form.ctp
 
 		<p>Use the form below to contact us:</p>
 
