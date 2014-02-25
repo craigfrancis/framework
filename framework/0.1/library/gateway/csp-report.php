@@ -23,6 +23,10 @@
 		$report['document-uri'] = request('document-url');
 		$report['violated-directive'] = request('violated-directive');
 
+	} else if ($data_raw == '' && count($_GET) == 0 && count($_POST) == 0) {
+
+		exit('Missing report data.'); // User loaded page?
+
 	} else {
 
 		$info  = '--------------------------------------------------' . "\n";
