@@ -20,7 +20,7 @@
 		public function setup($config) {
 
 			//--------------------------------------------------
-			// Resources
+			// Config
 
 				$db = db_get();
 

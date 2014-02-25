@@ -22,7 +22,7 @@
 		protected function setup($config) {
 
 			//--------------------------------------------------
-			// Resources
+			// Config
 
 				// $db = db_get();
 

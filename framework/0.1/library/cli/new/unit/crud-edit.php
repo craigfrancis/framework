@@ -15,7 +15,7 @@
 		public function setup($config) {
 
 			//--------------------------------------------------
-			// Resources
+			// Config
 
 				$item_id = intval($config['id']);
 
