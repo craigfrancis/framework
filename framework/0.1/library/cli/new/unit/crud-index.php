@@ -17,7 +17,7 @@
 		// 	return false;
 		// }
 
-		public function setup($config) {
+		protected function setup($config) {
 
 			//--------------------------------------------------
 			// Config

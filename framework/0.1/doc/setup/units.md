@@ -173,7 +173,7 @@ This allows you to do something like:
 
 	class example_unit extends unit {
 
-		public function setup($config) {
+		protected function setup($config) {
 			$this->view_name_set('a');
 		}
 
