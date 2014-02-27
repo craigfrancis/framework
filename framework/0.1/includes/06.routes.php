@@ -8,6 +8,10 @@
 
 		$route_path = urldecode(config::get('request.path'));
 
+		if (mb_check_encoding($route_path, 'UTF-8') !== true) {
+			redirect('/'); // Invalid encoding... probably an attack.
+		}
+
 		$url_prefix = config::get('url.prefix');
 		if ($url_prefix != '') {
 			$route_path = preg_replace('/^' . preg_quote($url_prefix, '/') . '/', '', $route_path);
