@@ -273,7 +273,7 @@
 
 			public function hidden_value($name) { // You should call form->hidden_value() first to initialise - get/set may not be called when form is submitted with errors.
 				if ($this->form_submitted) {
-					$value = request(($this->form_passive ? '' : 'h-') . $name);
+					$value = request('h-' . $name);
 					$value = ($value === NULL ? NULL : urldecode($value));
 				} else {
 					$value = '';
@@ -296,7 +296,7 @@
 					if ($this->saved_values_available()) {
 						$value = $this->saved_value_get('h-' . $name);
 					} else {
-						$value = request(($this->form_passive ? '' : 'h-') . $name);
+						$value = request('h-' . $name);
 					}
 					return ($value === NULL ? NULL : urldecode($value));
 				}
@@ -1161,7 +1161,7 @@
 					}
 
 					foreach ($this->hidden_values as $name => $value) {
-						$input_fields[($this->form_passive ? '' : 'h-') . $name] = urlencode($value); // URL encode allows newline characters to exist in hidden (one line) input fields.
+						$input_fields['h-' . $name] = urlencode($value); // URL encode allows newline characters to exist in hidden (one line) input fields.
 					}
 
 				//--------------------------------------------------
