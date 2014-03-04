@@ -37,7 +37,7 @@
 
 					if ($this->form_submitted || $this->form->saved_values_available()) {
 
-						$hidden_value = $this->form->hidden_value_get($this->name);
+						$hidden_value = $this->form->hidden_value_get('h-' . $this->name);
 
 						if ($hidden_value !== NULL) {
 

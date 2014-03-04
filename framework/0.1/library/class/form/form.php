@@ -273,7 +273,7 @@
 
 			public function hidden_value($name) { // You should call form->hidden_value() first to initialise - get/set may not be called when form is submitted with errors.
 				if ($this->form_submitted) {
-					$value = request('h-' . $name);
+					$value = request($name);
 					$value = ($value === NULL ? NULL : urldecode($value));
 				} else {
 					$value = '';
@@ -282,6 +282,9 @@
 			}
 
 			public function hidden_value_set($name, $value = NULL) {
+				if (prefix_match('h-', $name)) {
+					exit_with_error('Cannot set the hidden value "' . $name . '", as it begins with a "h-" (used by hidden fields).');
+				}
 				if ($value === NULL) {
 					unset($this->hidden_values[$name]);
 				} else {
@@ -294,9 +297,9 @@
 					return $this->hidden_values[$name];
 				} else {
 					if ($this->saved_values_available()) {
-						$value = $this->saved_value_get('h-' . $name);
+						$value = $this->saved_value_get($name);
 					} else {
-						$value = request('h-' . $name);
+						$value = request($name);
 					}
 					return ($value === NULL ? NULL : urldecode($value));
 				}
@@ -1129,7 +1132,7 @@
 
 						$field_value = $field->value_hidden_get(); // File field may always return a value, irrespective of $field->print_hidden
 						if ($field_value !== NULL) {
-							$this->hidden_values[$field_name] = $field_value;
+							$this->hidden_values['h-' . $field_name] = $field_value;
 						}
 
 					}
@@ -1161,7 +1164,11 @@
 					}
 
 					foreach ($this->hidden_values as $name => $value) {
-						$input_fields['h-' . $name] = urlencode($value); // URL encode allows newline characters to exist in hidden (one line) input fields.
+						if (!isset($input_fields[$name])) {
+							$input_fields[$name] = urlencode($value); // URL encode allows newline characters to exist in hidden (one line) input fields.
+						} else {
+							exit_with_error('The hidden field "' . $name . '" already exists.');
+						}
 					}
 
 				//--------------------------------------------------

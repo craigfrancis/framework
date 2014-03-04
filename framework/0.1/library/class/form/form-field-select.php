@@ -42,7 +42,7 @@
 						}
 
 						if ($this->values === NULL) {
-							$this->values = $this->form->hidden_value_get($this->name);
+							$this->values = $this->form->hidden_value_get('h-' . $this->name);
 							if ($this->values !== NULL) {
 								$this->values = json_decode($this->values, true); // associative array
 							}

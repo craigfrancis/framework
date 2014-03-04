@@ -175,75 +175,72 @@
 			//--------------------------------------------------
 			// Form submitted
 
-				if ($form->submitted() && $field_block->value_get() !== true) {
+				if ($form->submitted() && $form->valid() && $field_block->value_get() !== true) {
+
+						//--------------------------------------------------
+						// Slightly different setup to normal, as the valid()
+						// method should be called before checking 'block', as
+						// it triggers the _post_validation() on fields, which
+						// can filter invalid values (e.g. empty files).
+						//--------------------------------------------------
 
 					//--------------------------------------------------
-					// Validation
+					// Preserve value method
 
-
+						if ($field_preserve->value_get()) {
+							save_request_redirect(url(array('preserved' => 'true')));
+						}
 
 					//--------------------------------------------------
-					// Form valid
+					// Database
 
-						if ($form->valid()) {
+						if ($database && SERVER == 'stage') {
+							$form->db_save();
+						}
 
-							//--------------------------------------------------
-							// Preserve value method
+					//--------------------------------------------------
+					// Field value
 
-								if ($field_preserve->value_get()) {
-									save_request_redirect(url(array('preserved' => 'true')));
+						$field_type = $field->type_get();
+
+						if ($field_type == 'date') {
+
+							$value = $field->value_date_get();
+
+						} else if (($field_type == 'select' || $field_type == 'checkboxes') && $field->multiple_get()) {
+
+							$value = $field->values_get();
+
+						} else if ($field_type == 'file' || $field_type == 'image') {
+
+							if ($field->multiple_get()) {
+
+								$value = $field->files_get();
+
+								foreach ($value as $id => $info) {
+									$value[$id]['path'] = '/path/to/file';
 								}
 
-							//--------------------------------------------------
-							// Database
+							} else {
 
-								if ($database && SERVER == 'stage') {
-									$form->db_save();
-								}
-
-							//--------------------------------------------------
-							// Field value
-
-								$field_type = $field->type_get();
-
-								if ($field_type == 'date') {
-
-									$value = $field->value_date_get();
-
-								} else if (($field_type == 'select' || $field_type == 'checkboxes') && $field->multiple_get()) {
-
-									$value = $field->values_get();
-
-								} else if ($field_type == 'file' || $field_type == 'image') {
-
-									if ($field->multiple_get()) {
-
-										$value = $field->files_get();
-
-									} else {
-
-										if ($field->uploaded()) {
-											$value = $field->file_name_get();
-										} else {
-											$value = 'N/A';
-										}
-
-									}
-
+								if ($field->uploaded()) {
+									$value = $field->file_name_get();
 								} else {
-
-									$value = $field->value_get();
-
+									$value = 'N/A';
 								}
 
-							//--------------------------------------------------
-							// Return value
+							}
 
-								$response->set('output', debug_dump($value));
+						} else {
 
-								return;
+							$value = $field->value_get();
 
 						}
+
+					//--------------------------------------------------
+					// Return value
+
+						$response->set('output', debug_dump($value));
 
 				}
 

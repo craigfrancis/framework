@@ -42,7 +42,7 @@
 						}
 
 						if ($this->value === NULL) {
-							$this->value = $this->form->hidden_value_get($this->name);
+							$this->value = $this->form->hidden_value_get('h-' . $this->name);
 						}
 
 					}

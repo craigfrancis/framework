@@ -72,7 +72,7 @@
 				// Hidden files
 
 					if ($this->form_submitted) {
-						$hidden_files = $this->form->hidden_value_get($this->name);
+						$hidden_files = $this->form->hidden_value_get('h-' . $this->name);
 					} else if ($this->form->saved_values_available()) {
 						$hidden_files = $this->form->saved_value_get('h-' . $this->name); // Looks for hidden field, saved_values does not include $_FILES
 						if ($hidden_files !== NULL) {
