@@ -410,10 +410,23 @@
 
 			}
 
-			public function update_locations() {
+			public function update_init($limit = 30) {
+				$this->update_locations(0, $limit);
+			}
+
+			public function update_all() {
+				$this->update_locations(-1);
+			}
+
+			public function update_locations($min_accuracy = 3, $limit = NULL) {
 
 				//--------------------------------------------------
-				// For each record
+				// Config
+
+					$db = $this->db_get();
+
+				//--------------------------------------------------
+				// Fields
 
 					$fields = array(
 							$this->config['field_id_sql'],
@@ -428,15 +441,35 @@
 
 					$fields = array_merge($fields, $this->config['field_address_sql']);
 
-					$db = $this->db_get();
+				//--------------------------------------------------
+				// Where
 
-					$db->select($this->config['table_sql'], $fields, $this->config['where_sql']);
+					$where_sql = $this->config['where_sql'];
+
+					$where_sql .= ' AND
+						' . $db->escape_field($this->config['field_postcode_sql']) . ' != ""';
+
+					if ($min_accuracy == 0) {
+						$where_sql .= ' AND
+							' . $db->escape_field($this->config['field_latitude']) . ' = 0 AND
+							' . $db->escape_field($this->config['field_longitude']) . ' = 0';
+					}
+
+				//--------------------------------------------------
+				// Search
+
+					$options = array();
+					if ($limit !== NULL) {
+						$options['limit_sql'] = $limit;
+					}
+
+					$db->select($this->config['table_sql'], $fields, $where_sql, $options);
 					foreach ($db->fetch_all() as $row) {
 
-						$existing_accuracy_latitude = strlen($row[$this->config['field_latitude']]);
-						$existing_accuracy_longitude = strlen($row[$this->config['field_longitude']]);
+						$existing_accuracy_latitude  = strlen(substr(strrchr($row[$this->config['field_latitude']],  '.'), 1));
+						$existing_accuracy_longitude = strlen(substr(strrchr($row[$this->config['field_longitude']], '.'), 1));
 
-						if ($existing_accuracy_latitude <= 15 && $existing_accuracy_longitude <= 15) {
+						if (($min_accuracy == -1) || ($existing_accuracy_latitude <= $min_accuracy && $existing_accuracy_longitude <= $min_accuracy)) {
 
 							//--------------------------------------------------
 							// Country
