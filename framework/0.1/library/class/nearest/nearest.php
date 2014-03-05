@@ -313,9 +313,10 @@
 									'address' => $search_query,
 									'sensor' => 'false',
 									'region' => $country,
+									'key' => config::get('nearest.gm_key', NULL),
 								)));
 
-							usleep(500000); // Half a second
+							usleep(500000); // Half a second, to keep Google happy
 
 						//--------------------------------------------------
 						// Extract

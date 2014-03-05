@@ -22,6 +22,9 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 	$config['nearest.users.max_results'] = 0;
 	$config['nearest.users.max_km'] = 0;
 
+	$config['nearest.gm_key'] = 'XXX';
+		// https://code.google.com/apis/console/
+
 ---
 
 To initialise the lat/long values for a table with only a postcode field:
