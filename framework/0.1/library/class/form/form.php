@@ -1146,18 +1146,6 @@
 
 					$input_fields = array();
 
-					if ($this->form_method == 'GET') {
-						$form_action_query = @parse_url($this->form_action, PHP_URL_QUERY);
-						if ($form_action_query) {
-							parse_str($form_action_query, $form_action_query);
-							foreach ($form_action_query as $name => $value) {
-								if (!in_array($name, $field_names)) {
-									$input_fields[$name] = $value;
-								}
-							}
-						}
-					}
-
 					if (!$this->form_passive) {
 						$input_fields['act'] = $this->form_id;
 						$input_fields['csrf'] = $this->csrf_token;
@@ -1168,6 +1156,18 @@
 							$input_fields[$name] = urlencode($value); // URL encode allows newline characters to exist in hidden (one line) input fields.
 						} else {
 							exit_with_error('The hidden field "' . $name . '" already exists.');
+						}
+					}
+
+					if ($this->form_method == 'GET') {
+						$form_action_query = @parse_url($this->form_action, PHP_URL_QUERY);
+						if ($form_action_query) {
+							parse_str($form_action_query, $form_action_query);
+							foreach ($form_action_query as $name => $value) {
+								if (!isset($input_fields[$name]) && !in_array($name, $field_names)) {
+									$input_fields[$name] = $value;
+								}
+							}
 						}
 					}
 
