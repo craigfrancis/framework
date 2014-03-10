@@ -72,12 +72,6 @@
 			}
 
 		//--------------------------------------------------
-		// Will need to set the correct headers for all
-		// requests (including assets and gateway output)
-
-			header('X-Content-Type-Options: nosniff');
-
-		//--------------------------------------------------
 		// Routes
 
 			require_once(FRAMEWORK_ROOT . '/includes/06.routes.php');
