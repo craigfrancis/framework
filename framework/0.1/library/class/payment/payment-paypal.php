@@ -270,7 +270,7 @@
 								} else if ($ack == 'failure') {
 
 									report_add('Failure from PayPal' . "\n-----\n" . $debug_info);
-debug($details);
+
 									$checkout_url .= '&token=' . urlencode($details['TOKEN']);
 
 									redirect($checkout_url);
