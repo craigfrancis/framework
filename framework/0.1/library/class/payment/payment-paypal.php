@@ -46,8 +46,6 @@
 						$checkout_url = 'https://www.sandbox.paypal.com/webscr&cmd=_express-checkout';
 					}
 
-					$checkout_url .= '&useraction=commit'; // Use "Pay Now" button, not "Continue" with message about confirming the order on the merchant website.
-
 					$details = array(
 							'USER' => $config['api_username'],
 							'PWD' => $config['api_password'],
@@ -205,6 +203,8 @@
 							'created' => date('Y-m-d H:i:s'),
 						));
 
+					$debug_info = debug_dump($details) . "\n-----\n" . debug_dump($response) . "\n-----\n" . $socket->response_full_get() . "\n-----\n" . $socket->error_string_get();
+
 				//--------------------------------------------------
 				// Process request
 
@@ -228,7 +228,7 @@
 							}
 
 							if ($checkout_token === NULL) {
-								exit_with_error('Invalid response from PayPal.', debug_dump($details) . "\n-----\n" . debug_dump($response) . "\n-----\n" . $socket->response_full_get() . "\n-----\n" . $socket->error_string_get() . "\n-----");
+								exit_with_error('Invalid response from PayPal.', $debug_info);
 							}
 
 						//--------------------------------------------------
@@ -247,6 +247,7 @@
 						//--------------------------------------------------
 						// Checkout URL
 
+							$checkout_url .= '&useraction=commit'; // Use "Pay Now" button, not "Continue" with message about confirming the order on the merchant website.
 							$checkout_url .= '&token=' . urlencode($checkout_token); // Not a normally encoded url (missing question mark)
 
 							redirect($checkout_url);
@@ -258,13 +259,21 @@
 
 							$transaction = NULL;
 
-							if (isset($response['ACK']) && isset($response['PAYMENTINFO_0_TRANSACTIONID'])) {
+							if (isset($response['ACK'])) {
 
 								$ack = strtolower($response['ACK']);
 
-								if ($ack == 'success' || $ack == 'successwithwarning') {
+								if (($ack == 'success' || $ack == 'successwithwarning') && isset($response['PAYMENTINFO_0_TRANSACTIONID'])) {
 
 									$transaction = $response['PAYMENTINFO_0_TRANSACTIONID'];
+
+								} else if ($ack == 'failure') {
+
+									report_add('Failure from PayPal' . "\n-----\n" . $debug_info);
+debug($details);
+									$checkout_url .= '&token=' . urlencode($details['TOKEN']);
+
+									redirect($checkout_url);
 
 								}
 
@@ -274,7 +283,7 @@
 
 								// If it failed, check there isn't a multi-currency issue
 
-								exit_with_error('Invalid response from PayPal.', debug_dump($details) . "\n-----\n" . debug_dump($response) . "\n-----\n" . $socket->response_full_get() . "\n-----\n" . $socket->error_string_get() . "\n-----");
+								exit_with_error('Invalid response from PayPal.', $debug_info);
 
 							}
 

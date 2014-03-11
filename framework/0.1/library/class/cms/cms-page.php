@@ -1,6 +1,6 @@
 <?php
 
-	class cms_pages_base extends check {
+	class cms_page_base extends check {
 
 		//--------------------------------------------------
 		// Variables
