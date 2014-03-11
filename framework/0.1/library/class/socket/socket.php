@@ -133,7 +133,32 @@
 			}
 
 			public function response_data_get() {
+
+				if (strtolower(trim($this->response_header_get('Transfer-Encoding'))) == 'chunked') {
+
+					$output = '';
+					$chunked_str = $this->response_data;
+					$chunked_length = strlen($chunked_str);
+					$chunked_pos = 0;
+
+					do { // See comment at http://www.php.net/manual/en/function.http-chunked-decode.php
+
+						$pos_nl = strpos($chunked_str, "\n", ($chunked_pos + 1));
+						$hex_length = substr($chunked_str, $chunked_pos, ($pos_nl - $chunked_pos));
+						$chunked_pos = ($pos_nl + 1);
+
+						$chunk_length = hexdec(rtrim($hex_length, "\r\n"));
+						$output .= substr($chunked_str, $chunked_pos, $chunk_length);
+						$chunked_pos = (strpos($chunked_str, "\n", $chunked_pos + $chunk_length) + 1);
+
+					} while ($chunked_pos < $chunked_length);
+
+					return $output;
+
+				}
+
 				return $this->response_data;
+
 			}
 
 			public function error_string_get() {
@@ -220,8 +245,9 @@
 					// Header main
 
 						$headers = array();
-						$headers[] = $method . ' ' . $path . ' HTTP/1.0';
+						$headers[] = $method . ' ' . $path . ' HTTP/1.1';
 						$headers[] = 'Host: ' . $host;
+						$headers[] = 'Connection: Close';
 
 					//--------------------------------------------------
 					// User authorisation
