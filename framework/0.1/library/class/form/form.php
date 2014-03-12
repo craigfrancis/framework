@@ -645,12 +645,12 @@
 				$this->errors_html = array();
 			}
 
-			public function error_add($error) {
-				$this->error_add_html(html($error));
+			public function error_add($error, $hidden_info = NULL) {
+				$this->error_add_html(html($error), $hidden_info);
 			}
 
-			public function error_add_html($error_html) {
-				$this->_field_error_add_html(-1, $error_html); // -1 is for general errors, not really linked to a field
+			public function error_add_html($error_html, $hidden_info = NULL) {
+				$this->_field_error_add_html(-1, $error_html, $hidden_info); // -1 is for general errors, not really linked to a field
 			}
 
 			public function errors_html() {

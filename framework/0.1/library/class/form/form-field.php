@@ -398,12 +398,12 @@
 				$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 			}
 
-			public function error_add($error) {
-				$this->error_add_html(html($error));
+			public function error_add($error, $hidden_info = NULL) {
+				$this->error_add_html(html($error), $hidden_info);
 			}
 
-			public function error_add_html($error_html) {
-				$this->form->_field_error_add_html($this->form_field_uid, $error_html);
+			public function error_add_html($error_html, $hidden_info = NULL) {
+				$this->form->_field_error_add_html($this->form_field_uid, $error_html, $hidden_info);
 			}
 
 			public function error_count() {
