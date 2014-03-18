@@ -6,6 +6,7 @@
 		// Variables
 
 			protected $value_print_cache;
+			protected $options_disabled;
 			protected $options_info_html;
 
 		//--------------------------------------------------
@@ -24,6 +25,18 @@
 					$this->type = 'checkboxes';
 					$this->multiple = true; // So functions like value_get will return all items
 
+			}
+
+			public function options_disabled($options_disabled) {
+				$this->options_disabled = $options_disabled;
+			}
+
+			public function options_info_set($options_info) {
+				$this->options_info_set_html(array_map('html', $options_info));
+			}
+
+			public function options_info_set_html($options_info_html) {
+				$this->options_info_html = $options_info_html;
 			}
 
 		//--------------------------------------------------
@@ -134,23 +147,16 @@
 				$attributes['value'] = ($key === NULL ? '' : $key);
 				$attributes['required'] = NULL; // Can't set to required, as otherwise you have to tick all of them.
 
+				if (isset($this->options_disabled[$key]) && $this->options_disabled[$key] === true) {
+					$attributes['disabled'] = 'disabled';
+				}
+
 				if (in_array($attributes['value'], $this->value_print_cache)) {
 					$attributes['checked'] = 'checked';
 				}
 
 				return $attributes;
 
-			}
-
-		//--------------------------------------------------
-		// HTML info
-
-			public function options_info_set($options_info) {
-				$this->options_info_set_html(array_map('html', $options_info));
-			}
-
-			public function options_info_set_html($options_info_html) {
-				$this->options_info_html = $options_info_html;
 			}
 
 			public function html_info_by_key($key) {

@@ -6,7 +6,11 @@
 			if (is_numeric($time)) {
 				$time = '@' . $time; // Numbers are always timestamps (not '20080701')
 			}
-			parent::__construct($time, $timezone);
+			if ($timezone !== NULL) {
+				parent::__construct($time, $timezone);
+			} else {
+				parent::__construct($time); // PHP 5.3 support, does not like NULL
+			}
 		}
 
 		static function holidays_update() {
