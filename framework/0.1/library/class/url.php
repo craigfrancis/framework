@@ -337,7 +337,13 @@
 					//--------------------------------------------------
 					// Path
 
-						$path = (isset($this->path_data['path']) ? $this->path_data['path'] : $current_path);
+						if (isset($this->path_data['path'])) {
+							$path = $this->path_data['path'];
+						} else if (!isset($this->path_data['host'])) {
+							$path = $current_path;
+						} else {
+							$path = '/';
+						}
 
 						$path_new = path_to_array($path);
 
@@ -417,6 +423,7 @@
 		echo '&#xA0; ' . html(url('/news/', 'id', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('/folder/#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('/folder/', 'id', '/view/', 'detail')->get(array('id' => 54))) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('http://www.example.com')) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('http://user:pass@www.example.com:80/about/folder/?id=example#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(http_url('./thank-you/')) . '<br />' . "\n";
 		echo '&#xA0; ' . html(https_url()) . '<br />' . "\n";

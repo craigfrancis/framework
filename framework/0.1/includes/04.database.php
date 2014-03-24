@@ -75,6 +75,21 @@
 			return mysql_num_rows($result);
 		}
 
+		public function fetch($sql = NULL, $row = 0, $col = 0) {
+			if (is_string($sql)) {
+				$result = $this->query($sql);
+			} else if ($sql !== NULL) {
+				$result = $sql;
+			} else {
+				$result = $this->result;
+			}
+			if (mysql_num_rows($result) > $row) {
+				return mysql_result($result, $row, $col);
+			} else {
+				return NULL;
+			}
+		}
+
 		public function fetch_all($sql = NULL) {
 			if (is_string($sql)) {
 				$result = $this->query($sql);
@@ -101,13 +116,8 @@
 			return mysql_fetch_assoc($result);
 		}
 
-		public function fetch_result($row = 0, $col = 0, $result = NULL) {
-			if ($result === NULL) $result = $this->result;
-			if (mysql_num_rows($result) > $row) {
-				return mysql_result($result, $row, $col);
-			} else {
-				return NULL;
-			}
+		public function fetch_result($row = 0, $col = 0, $result = NULL) { // See $db->fetch();
+			return $this->fetch($result, $row, $col);
 		}
 
 		public function fetch_fields($table_sql, $field = NULL) {
