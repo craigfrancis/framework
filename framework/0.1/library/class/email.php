@@ -280,7 +280,11 @@
 		//--------------------------------------------------
 		// Send
 
-			public function send($recipients, $build = NULL) {
+			public function send($recipients) {
+				$this->_send($recipients);
+			}
+
+			private function _send($recipients, $build = NULL) {
 
 				//--------------------------------------------------
 				// Testing support
@@ -391,7 +395,7 @@
 						//--------------------------------------------------
 						// Send
 
-							$this->send($recipient, array(
+							$this->_send($recipient, array(
 									'headers' => $secure_headers,
 									'content' => $secure_content,
 								));
