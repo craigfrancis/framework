@@ -43,7 +43,7 @@
 			window.addEventListener('DOMContentLoaded', function() {
 
 				bodyRef = document.querySelector('body');
-				headingLink = document.querySelector('#page_title a');
+				headingLink = document.querySelector('#page_header a');
 				headingUrl = headingLink.getAttribute('href');
 				navigationRef = document.getElementById('page_navigation');
 

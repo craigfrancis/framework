@@ -1169,7 +1169,7 @@
 
 							ob_start();
 
-							script_run($view_path, $this->variables);
+							script_run($view_path, array_merge($this->variables, array('response' => $this)));
 
 							$this->view_add_html(ob_get_clean());
 
