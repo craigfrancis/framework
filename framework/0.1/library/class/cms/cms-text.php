@@ -50,6 +50,7 @@
 							'log_missing' => true,
 							'path' => config::get('request.path'),
 							'versions' => array(),
+							'variables' => array(),
 							'priority' => array(),
 							'edit_url' => '/admin/cms-text/edit/',
 						);
@@ -305,6 +306,8 @@
 					}
 
 					$config = array_merge($defaults, $config);
+
+					$config['variables'] = array_merge($this->config['variables'], $config['variables']);
 
 				//--------------------------------------------------
 				// Content
