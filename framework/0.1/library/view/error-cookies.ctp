@@ -1,5 +1,7 @@
+<?php
+	$response->set('title_html', '<h1>Your browser does not accept cookies!</h1>');
+?>
 
-	<h1>Your browser does not accept cookies!</h1>
 	<p>To enable cookies, follow the instructions below for the browser version you are using.</p>
 
 	<h3>Internet Explorer 6.0</h3>

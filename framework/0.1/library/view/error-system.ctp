@@ -1,5 +1,6 @@
-
-	<h1>System Error</h1>
+<?php
+	$response->set('title_html', '<h1>System Error</h1>');
+?>
 
 	<p><?= nl2br(html($message)) ?></p>
 
