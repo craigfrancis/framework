@@ -194,25 +194,25 @@
 
 	<div id="page_wrapper">
 
-		<div id="page_title">
+		<header id="page_header" role="banner">
 
 			<h1><?= html($response->title_get()) ?></h1>
 
 			<?= $top_nav->html(); ?>
 
-		</div>
+		</header>
 
 		<div id="page_container">
 
-			<div id="page_navigation">
+			<nav id="page_navigation" role="navigation">
 
 				<h2><?= html($section_title); ?></h2>
 
 				<?= $section_nav->html(); ?>
 
-			</div>
+			</nav>
 
-			<div id="page_content">
+			<main id="page_content" role="main">
 
 
 
@@ -223,6 +223,14 @@
 
 
 <!-- END OF PAGE TOP -->
+
+	<?php if (isset($title_html)) { ?>
+
+		<div id="page_title">
+			<?= $title_html ?>
+		</div>
+
+	<?php } ?>
 
 	<?= $response->view_get_html() ?>
 
@@ -236,18 +244,18 @@
 
 
 
-			</div>
+			</main>
 
 		</div>
 
-		<div id="page_footer">
+		<footer id="page_footer" role="contentinfo">
 			<h2>Footer</h2>
 			<ul>
 
 				<li class="copyright">© <?= html(config::get('output.site_name', 'Company Name')) ?> <?= html(date('Y')) ?></li>
 
 			</ul>
-		</div>
+		</footer>
 
 	</div>
 

@@ -102,7 +102,7 @@
 	/*--------------------------------------------------*/
 	/* Title                                            */
 
-		#page_title {
+		#page_header {
 			color: inherit;
 			background: #FAFAFA;
 			background-image: -moz-linear-gradient(top, #FFFFFF, #F2F2F2);
@@ -116,24 +116,24 @@
 			box-shadow: 0 1px 10px rgba(0, 0, 0, .1);
 		}
 
-		#page_title h1 {
+		#page_header h1 {
 			margin: 0;
 			padding: 10px 5px 20px 5px;
 			font-size: 1.5em;
 		}
 
-		#page_title h1 a {
+		#page_header h1 a {
 			color: #000;
 			text-decoration: none;
 		}
 
-		#page_title ul {
+		#page_header ul {
 			margin: 0;
 			overflow: auto;
 			width: 100%; /* IE5+6 Win: Trigger bug to contain floated elements */
 		}
 
-		#page_title ul li {
+		#page_header ul li {
 			float: left;
 			margin: 0 0 0 2px;
 			padding: 3px 10px;
@@ -154,19 +154,19 @@
 			background-repeat: repeat-x;
 		}
 
-		#page_title ul li.selected {
+		#page_header ul li.selected {
 			background-image: -moz-linear-gradient(top, #F2F2F2, #D4D4D4);
 			background-image: -webkit-linear-gradient(top, #F2F2F2, #D4D4D4);
 			background-image: -o-linear-gradient(top, #F2F2F2, #D4D4D4);
 			background-image: linear-gradient(to bottom, #F2F2F2, #D4D4D4);
 		}
 
-		#page_title ul li a {
+		#page_header ul li a {
 			color: #000;
 			text-decoration: none;
 		}
 
-		#page_title ul li strong a {
+		#page_header ul li strong a {
 			font-weight: normal;
 			text-decoration: underline;
 		}
