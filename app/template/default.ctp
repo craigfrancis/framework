@@ -227,7 +227,7 @@
 	<?php if (isset($title_html)) { ?>
 
 		<div id="page_title">
-			<?= $title_html ?>
+			<?= $title_html . "\n" ?>
 		</div>
 
 	<?php } ?>
