@@ -64,7 +64,7 @@
 //--------------------------------------------------
 // Form submitted
 
-	if ($form->submitted() && $form->valid()) {
+	if ($form->submitted(2) && $form->valid()) {
 
 		$output = debug_dump($form->data_array_get());
 
