@@ -524,7 +524,7 @@
 				// Skip if disabled debugging
 
 					if (config::get('debug.db') !== true) {
-						return mysql_query($query, $db->link_get());
+						return mysqli_query($db->link_get(), $query);
 					}
 
 				//--------------------------------------------------
@@ -579,9 +579,9 @@
 
 						$headers_printed = false;
 
-						$rst = @mysql_query('EXPLAIN ' . $query, $db->link_get());
+						$rst = @mysqli_query($db->link_get(), 'EXPLAIN ' . $query);
 						if ($rst) {
-							while ($row = mysql_fetch_assoc($rst)) {
+							while ($row = mysqli_fetch_assoc($rst)) {
 
 								if ($headers_printed == false) {
 									$headers_printed = true;
@@ -659,8 +659,8 @@
 
 							foreach (config::get('debug.db_required_fields') as $required_field) {
 
-								$rst = @mysql_query('SHOW COLUMNS FROM ' . $table[1] . ' LIKE "' . $required_field . '"', $db->link_get());
-								if ($rst && $row = mysql_fetch_assoc($rst)) {
+								$rst = @mysqli_query($db->link_get(), 'SHOW COLUMNS FROM ' . $table[1] . ' LIKE "' . $required_field . '"');
+								if ($rst && $row = mysqli_fetch_assoc($rst)) {
 
 									//--------------------------------------------------
 									// Found
@@ -737,7 +737,10 @@
 
 					$time_start = microtime(true);
 
-					$result = mysql_query($query, $db->link_get()) or $db->_error($query);
+					$result = mysqli_query($db->link_get(), $query);
+					if (!$result) {
+						$db->_error($query);
+					}
 
 					$time_check = round(($time_start - $time_init), 3);
 					$time_query = round((microtime(true) - $time_start), 3);

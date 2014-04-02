@@ -13,17 +13,8 @@
 		}
 
 		public function escape($val) {
-
 			$this->connect();
-
-			if (function_exists('mysql_real_escape_string')) {
-				return mysql_real_escape_string($val, $this->link);
-			} else if (function_exists('mysql_escape_string')) {
-				return mysql_escape_string($val);
-			} else {
-				return addslashes($val);
-			}
-
+			return mysqli_real_escape_string($this->link, $val);
 		}
 
 		public function escape_string($val) {
@@ -56,7 +47,7 @@
 			if ($run_debug && function_exists('debug_database')) {
 				$this->result = debug_database($this, $sql);
 			} else {
-				$this->result = mysql_query($sql, $this->link);
+				$this->result = mysqli_query($this->link, $sql);
 			}
 			if (!$this->result) {
 				$this->_error($sql);
@@ -72,7 +63,7 @@
 			} else {
 				$result = $this->result;
 			}
-			return mysql_num_rows($result);
+			return mysqli_num_rows($result);
 		}
 
 		public function fetch($sql = NULL, $row = 0, $col = 0) {
@@ -83,11 +74,14 @@
 			} else {
 				$result = $this->result;
 			}
-			if (mysql_num_rows($result) > $row) {
-				return mysql_result($result, $row, $col);
-			} else {
-				return NULL;
+			if (mysqli_num_rows($result) > $row) {
+				mysqli_data_seek($result, $row);
+				$data = mysqli_fetch_row($result);
+				if (isset($data[$col])) {
+					return $data[$col];
+				}
 			}
+			return NULL;
 		}
 
 		public function fetch_all($sql = NULL) {
@@ -99,7 +93,7 @@
 				$result = $this->result;
 			}
 			$data = array();
-			while ($row = mysql_fetch_assoc($result)) {
+			while ($row = mysqli_fetch_assoc($result)) {
 				$data[] = $row;
 			}
 			return $data;
@@ -113,7 +107,7 @@
 			} else {
 				$result = $this->result;
 			}
-			return mysql_fetch_assoc($result);
+			return mysqli_fetch_assoc($result);
 		}
 
 		public function fetch_result($row = 0, $col = 0, $result = NULL) { // See $db->fetch();
@@ -222,11 +216,11 @@
 		}
 
 		public function insert_id() {
-			return mysql_insert_id($this->link);
+			return mysqli_insert_id($this->link);
 		}
 
 		public function affected_rows() {
-			return mysql_affected_rows($this->link);
+			return mysqli_affected_rows($this->link);
 		}
 
 		public function enum_values($table_sql, $field) {
@@ -331,17 +325,13 @@
 				$pass = config::get('db.pass');
 				$host = config::get('db.host');
 
-				if (!function_exists('mysql_connect')) {
-					$this->_error('PHP does not have MySQL support - http://www.php.net/mysql_connect', true);
+				if (!function_exists('mysqli_connect')) {
+					$this->_error('PHP does not have MySQLi support - http://www.php.net/mysqli_connect', true);
 				}
 
-				$this->link = @mysql_connect($host, $user, $pass, true);
+				$this->link = @mysqli_connect($host, $user, $pass, $name);
 				if (!$this->link) {
-					$this->_error('A connection could not be established with the database - ' . mysql_error(), true);
-				}
-
-				if (!@mysql_select_db($name, $this->link)) {
-					$this->_error('Selecting the database failed (' . $name . ')', true);
+					$this->_error('Database connection error: ' . mysqli_connect_error() . ' (' . mysqli_connect_errno() . ')', true);
 				}
 
 				if (config::get('output.charset') == 'UTF-8') {
@@ -353,10 +343,8 @@
 				}
 
 				if ($charset !== NULL) {
-					if (function_exists('mysql_set_charset')) {
-						mysql_set_charset($charset, $this->link);
-					} else {
-						mysql_query('SET NAMES ' . $charset, $this->link);
+					if (!mysqli_set_charset($this->link, $charset)) {
+						$this->_error('Database charset error, when loading ' . $charset, true);
 					}
 				}
 
@@ -367,9 +355,7 @@
 		public function _error($query = 'N/A', $use_query_as_error = false) { // Public so debug script can call
 
 			if ($this->link) {
-				$extra = mysql_errno($this->link) . ': ' . mysql_error($this->link);
-			} else if (function_exists('mysql_errno') && mysql_errno() != 0) {
-				$extra = mysql_errno() . ': ' . mysql_error() . ' (no link)';
+				$extra = mysqli_errno($this->link) . ': ' . mysqli_error($this->link);
 			} else {
 				$extra = '';
 			}
