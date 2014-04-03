@@ -23,7 +23,6 @@
 			$route_path = preg_replace('/^' . preg_quote($url_prefix, '/') . '/', '', $route_path);
 		}
 
-		$route_path = str_replace('//', '/', $route_path);
 		$route_asset = prefix_match(ASSET_URL . '/', $route_path);
 
 		unset($url_prefix);
@@ -119,7 +118,9 @@
 
 		if (!$route_asset) { // Don't worry about files like "jQuery.js"
 
-			$new_path = strtolower(str_replace('_', '-', $route_path));
+			$new_path = strtolower($route_path);
+			$new_path = str_replace('_', '-', $route_path);
+			$new_path = preg_replace('/\/\/+/', '/', $new_path);
 
 			if (substr($new_path, -1) != '/') {
 				$new_path .= '/';
@@ -137,7 +138,7 @@
 				$new_url = $new_url->get();
 
 				if (SERVER == 'stage') {
-					exit('<p>URL substitution: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
+					exit('<p>URL Cleanup: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
 				} else {
 					redirect($new_url, 301);
 				}

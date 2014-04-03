@@ -16,6 +16,7 @@
 			private $fragment = NULL;
 			private $format = NULL;
 			private $scheme = NULL;
+			private $schemes = array('http', 'https');
 
 		//--------------------------------------------------
 		// Setup
@@ -26,9 +27,31 @@
 
 				foreach (func_get_args() as $k => $arg) {
 					if (is_array($arg)) {
+
 						$this->param_set($arg);
-					} else if ($k == 0) {
-						$this->parse($arg); // First argument, if set and not an array of parameters.
+
+					} else if ($k == 0) { // First argument set, and not an array of parameters.
+
+						$url = strval($arg); // Could also be a url object
+
+						if (substr($url, 0, 1) == '/') {
+							$url = config::get('url.prefix') . $url;
+						}
+
+						$this->path_data = @parse_url($url); // Avoid E_WARNING
+
+						if (isset($this->path_data['fragment'])) {
+							$this->fragment = $this->path_data['fragment'];
+							unset($this->path_data['fragment']);
+							if (count($this->path_data) == 0) {
+								$this->path_data = NULL;
+							}
+						}
+
+						if (isset($this->path_data['query'])) {
+							parse_str($this->path_data['query'], $this->parameters);
+						}
+
 					}
 				}
 
@@ -79,13 +102,7 @@
 				}
 
 				foreach ($parameters as $key => $value) { // Cannot use array_merge, as numerical based indexes will be appended.
-
-					if ($value === NULL) {
-						$value = ''; // Want to be available in an isset check
-					}
-
-					$this->parameters[$key] = strval($value); // Blank values will be removed later
-
+					$this->parameters[$key] = strval($value); // Blank values will be removed later, NULL needs to be a string (isset check)
 				}
 
 			}
@@ -95,45 +112,6 @@
 				$this->_path_cache_update();
 
 				return $this->parameters;
-
-			}
-
-		//--------------------------------------------------
-		// Parse
-
-			public function parse($url, $replace_parameters = true) {
-
-				$url = strval($url); // url object calls get(), and xml node is converted.
-
-				if (substr($url, 0, 1) == '/') {
-					$url = config::get('url.prefix') . $url;
-				}
-
-				$this->path_data = @parse_url($url); // Avoid E_WARNING
-
-				if (isset($this->path_data['fragment'])) {
-					$this->fragment = $this->path_data['fragment'];
-					unset($this->path_data['fragment']);
-					if (count($this->path_data) == 0) {
-						$this->path_data = NULL;
-					}
-				}
-
-				if (isset($this->path_data['query'])) {
-
-					parse_str($this->path_data['query'], $parameters);
-
-					// unset($parameters['url']); // CakePHP support
-
-					foreach ($parameters as $key => $value) {
-						if ($value != '' && ($replace_parameters || !isset($this->parameters[$key]))) {
-							$this->parameters[$key] = $value;
-						}
-					}
-
-				}
-
-				$this->path_cache = NULL;
 
 			}
 
@@ -225,14 +203,19 @@
 
 					if (!is_array($this->path_data)) {
 
-						$url = $current_path;
+						$this->path_data = array(
+								'path' => $current_path, // Don't use parse_url() as we don't want "//domain/path" being mis-interpreted.
+							);
 
 						$query_string = config::get('request.query');
 						if ($query_string !== '' && $query_string !== NULL) {
-							$url .= '?' . $query_string;
+							parse_str($query_string, $parameters);
+							foreach ($parameters as $key => $value) {
+								if (!isset($this->parameters[$key])) { // Already set parameters take priority (don't replace)
+									$this->parameters[$key] = $value;
+								}
+							}
 						}
-
-						$this->parse($url, false); // Already set parameters take priority (don't replace)
 
 					}
 
@@ -305,6 +288,10 @@
 										}
 									}
 
+								}
+
+								if (!in_array($scheme, $this->schemes)) { // Projection against "javascript:xxx" type links.
+									exit_with_error('Invalid scheme "' . $scheme . '"', 'Allowed schemes: ' . implode(', ', $this->schemes));
 								}
 
 								$output .= $scheme . '://';
@@ -419,7 +406,7 @@
 		echo '&#xA0; ' . html(url('/')) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('../news/')) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('/news/')) . '<br />' . "\n";
-		echo '&#xA0; ' . html(url(array('id' => 6))) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url(array('id' => 6, 'empty' => '', 'blank' => NULL))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('/news/', 'id', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('/folder/#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('/folder/', 'id', '/view/', 'detail')->get(array('id' => 54))) . '<br />' . "\n";
