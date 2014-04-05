@@ -6,7 +6,7 @@
 
 	config::set('session.id', NULL);
 	config::set_default('session.key', sha1(ENCRYPTION_KEY . '-' . SERVER));
-	config::set_default('session.name', config::get('cookie.prefix') . 'session');
+	config::set_default('session.name', config::get('cookie.prefix') . 's');
 
 	class session_base extends check {
 

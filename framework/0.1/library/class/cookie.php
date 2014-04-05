@@ -9,7 +9,7 @@
 		public static $salt = ROOT;
 
 		public static function init() {
-			self::set('cookie_check', 'true');
+			self::set('c', '1'); // cookie_check
 		}
 
 		public static function set($variable, $value, $expiration = NULL, $config = array()) {
@@ -42,7 +42,7 @@
 			//--------------------------------------------------
 			// Variable
 
-				if ($variable == 'cookie_check') {
+				if ($variable == 'c') { // cookie_check
 
 					if (isset($_COOKIE[$variable_full])) {
 						return true; // Don't re-call setcookie() when client is already sending this cookie
@@ -50,7 +50,7 @@
 
 				} else {
 
-					if (!isset($_COOKIE[config::get('cookie.prefix', '') . 'cookie_check'])) {
+					if (!isset($_COOKIE[config::get('cookie.prefix', '') . 'c'])) { // cookie_check
 						self::init();
 					}
 
@@ -119,7 +119,7 @@
 		}
 
 		public static function supported() {
-			return (self::get('cookie_check') == 'true');
+			return (self::get('c') == '1'); // cookie_check
 		}
 
 		public static function require_support() {

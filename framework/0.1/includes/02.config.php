@@ -292,7 +292,7 @@
 	// Cookie
 
 		config::set_default('cookie.protect', false); // Does increase header size, which probably isn't good for page speed
-		config::set_default('cookie.prefix', substr(sha1(ENCRYPTION_KEY), 0, 5) . '_');
+		config::set_default('cookie.prefix', substr(sha1(ENCRYPTION_KEY), 0, 3) . '_');
 
 	//--------------------------------------------------
 	// Email
