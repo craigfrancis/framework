@@ -63,12 +63,12 @@ And to print:
 
 To use the paginator to return some records in a table:
 
-	$db->query('SELECT
-					COUNT(id)
-				FROM
-					table');
+	$sql = 'SELECT
+				COUNT(id)
+			FROM
+				table';
 
-	$result_count = $db->fetch_result();
+	$result_count = $db->fetch($sql);
 
 	$paginator = new paginator($result_count);
 
@@ -114,9 +114,9 @@ Only do this if it's **actually** more efficient, many times it can be [much slo
 	foreach ($db->fetch_all($sql) as $row) {
 	}
 
-	$db->query('SELECT FOUND_ROWS();');
+	$sql = 'SELECT FOUND_ROWS()';
 
-	$paginator->item_count_set($db->fetch_result(), true);
+	$paginator->item_count_set($db->fetch($sql), true);
 
 Note that the '`true`' used to set the item count will trigger a redirect if the requested page number is too high (and would show no results).
 

@@ -74,14 +74,14 @@
 			} else {
 				$result = $this->result;
 			}
-			if (mysqli_num_rows($result) > $row) {
+			if ($row >= 0 && $row < mysqli_num_rows($result)) {
 				mysqli_data_seek($result, $row);
 				$data = mysqli_fetch_row($result);
 				if (isset($data[$col])) {
 					return $data[$col];
 				}
 			}
-			return NULL;
+			return false; // match old mysql_result behaviour, also a field could be NULL
 		}
 
 		public function fetch_all($sql = NULL) {

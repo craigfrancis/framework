@@ -9,6 +9,7 @@
 			private $browser_advanced = true;
 			private $message = NULL;
 			private $title = NULL;
+			private $description = NULL;
 			private $page_id = NULL;
 			private $error = false;
 			private $variables = array();
@@ -333,6 +334,13 @@
 
 				return $this->title;
 
+			}
+
+		//--------------------------------------------------
+		// Description
+
+			public function description_set($description) {
+				$this->description = $description;
 			}
 
 		//--------------------------------------------------
@@ -935,6 +943,13 @@
 				// Page title
 
 					$html .= "\n\n\t" . '<title>' . html($this->title_get()) . '</title>';
+
+				//--------------------------------------------------
+				// Page description
+
+					if ($this->description) {
+						$html .= "\n\n\t" . '<meta name="description" content="' . html($this->description) . '" />';
+					}
 
 				//--------------------------------------------------
 				// Favicon

@@ -104,14 +104,14 @@
 
 				if ($config['paginate']) {
 
-					$db->query('SELECT
-									COUNT(i.id)
-								FROM
-									' . $from_sql . '
-								WHERE
-									' . $where_sql);
+					$sql = 'SELECT
+								COUNT(i.id)
+							FROM
+								' . $from_sql . '
+							WHERE
+								' . $where_sql;
 
-					$result_count = $db->fetch_result();
+					$result_count = $db->fetch($sql);
 
 					$paginator = new paginator($result_count);
 
