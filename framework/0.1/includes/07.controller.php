@@ -326,6 +326,7 @@
 			$note_html .= '&#xA0; $response-><strong>title_folder_set</strong>(' . html($id) . ', \'new_value\'); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
 		}
 
+		$note_html .= '&#xA0; $response-><strong>description_set</strong>(\'Page description.\');<br />' . "\n";
 		$note_html .= '&#xA0; $response-><strong>js_add</strong>(\'/path/to/file.js\');<br />' . "\n";
 		$note_html .= '&#xA0; $response-><strong>js_code_add</strong>(\'var x = \' . json_encode($x) . \';\');<br />' . "\n";
 		$note_html .= '&#xA0; $response-><strong>css_auto</strong>();<br />' . "\n";

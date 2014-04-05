@@ -42,6 +42,10 @@ To set the page <title>:
 	$response->title_set('Custom page title.');
 	$response->title_full_set('Custom page title.');
 
+To set the page description:
+
+	$response->description_set('Page description');
+
 Additional [CSP sources](../../doc/security/csp.md):
 
 	$response->csp_add_source('script-src', array('https://www.example.com'));
