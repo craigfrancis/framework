@@ -110,10 +110,6 @@
 			return mysqli_fetch_assoc($result);
 		}
 
-		public function fetch_result($row = 0, $col = 0, $result = NULL) { // See $db->fetch();
-			return $this->fetch($result, $row, $col);
-		}
-
 		public function fetch_fields($table_sql, $field = NULL) {
 
 			if ($field) {
