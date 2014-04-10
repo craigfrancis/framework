@@ -795,9 +795,7 @@
 							$field_key = $field->db_field_key_get();
 							$field_type = $this->db_fields[$field_name]['type'];
 
-							if ($field_type == 'datetime' || $field_type == 'date') {
-								$values[$field_name] = $field->value_date_get();
-							} else if ($field_key == 'key') {
+							if ($field_key == 'key') {
 								$values[$field_name] = $field->value_key_get();
 							} else {
 								$values[$field_name] = $field->value_get();
@@ -1228,7 +1226,7 @@
 
 							$field_type = $field->type_get();
 							if ($field_type == 'date') {
-								$autofocus = ($field->value_date_get() == '0000-00-00');
+								$autofocus = ($field->value_get() == '0000-00-00');
 							} else if ($field_type == 'time') {
 								$autofocus = ($field->value_get() == '00:00:00');
 							} else if ($field_type != 'file' && $field_type != 'image') {

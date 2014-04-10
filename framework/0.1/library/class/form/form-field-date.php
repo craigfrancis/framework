@@ -161,7 +161,7 @@
 						return NULL;
 					}
 				} else {
-					exit_with_error('Cannot call value_get() without specifying a field (' . implode(' / ', $this->fields) . ')... or you could use value_date_get() or value_time_stamp_get()');
+					return $this->value_date_get();
 				}
 			}
 
