@@ -21,6 +21,7 @@
 			private $autocomplete = NULL;
 			private $disabled = false;
 			private $readonly = false;
+			private $autofocus = false;
 			private $print_page_setup = NULL; // Current page being setup in code.
 			private $print_page_submit = NULL; // Current page the user submitted.
 			private $print_page_valid = true;
@@ -29,7 +30,6 @@
 			private $fields = array();
 			private $field_refs = array();
 			private $field_count = 0;
-			private $field_autofocus = false;
 			private $required_mark_html = NULL;
 			private $required_mark_position = 'left';
 			private $label_suffix_html = ':';
@@ -216,6 +216,14 @@
 
 			public function readonly_get() {
 				return $this->readonly;
+			}
+
+			public function autofocus_set($autofocus) {
+				$this->autofocus = ($autofocus == true);
+			}
+
+			public function autofocus_get() {
+				return $this->autofocus;
 			}
 
 			public function print_page_start($page) {
@@ -987,10 +995,6 @@
 				return array_unique($field_groups);
 			}
 
-			public function field_autofocus_set($autofocus) {
-				$this->field_autofocus = ($autofocus == true);
-			}
-
 			public function _field_add($field_obj) { // Public for form_field to call
 				while (isset($this->fields[$this->field_count])) {
 					$this->field_count++;
@@ -1218,7 +1222,7 @@
 				//--------------------------------------------------
 				// Auto focus
 
-					if ($this->field_autofocus) {
+					if ($this->autofocus) {
 
 						foreach ($this->fields as $field_uid => $field) {
 
