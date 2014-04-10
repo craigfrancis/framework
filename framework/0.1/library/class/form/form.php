@@ -1225,6 +1225,8 @@
 							$field_type = $field->type_get();
 							if ($field_type == 'date') {
 								$autofocus = ($field->value_date_get() == '0000-00-00');
+							} else if ($field_type == 'time') {
+								$autofocus = ($field->value_get() == '00:00:00');
 							} else if ($field_type != 'file' && $field_type != 'image') {
 								$autofocus = ($field->value_get() == '');
 							} else {
