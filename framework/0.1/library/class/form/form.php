@@ -664,7 +664,7 @@
 			public function errors_get() {
 				$errors = array();
 				foreach ($this->errors_get_html() as $error_html) {
-					$errors[] = html_decode($error_html);
+					$errors[] = html_decode(strip_tags($error_html));
 				}
 				return $errors;
 			}
