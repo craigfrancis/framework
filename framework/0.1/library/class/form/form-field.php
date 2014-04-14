@@ -407,10 +407,10 @@
 			}
 
 			public function error_count() {
-				return count($this->errors_html());
+				return count($this->errors_get_html());
 			}
 
-			public function errors_html() {
+			public function errors_get_html() {
 				return $this->form->_field_errors_get_html($this->form_field_uid);
 			}
 

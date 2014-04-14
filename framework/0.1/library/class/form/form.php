@@ -661,7 +661,15 @@
 				$this->_field_error_add_html(-1, $error_html, $hidden_info); // -1 is for general errors, not really linked to a field
 			}
 
-			public function errors_html() {
+			public function errors_get() {
+				$errors = array();
+				foreach ($this->errors_get_html() as $error_html) {
+					$errors[] = html_decode($error_html);
+				}
+				return $errors;
+			}
+
+			public function errors_get_html() {
 				$this->_post_validation();
 				$errors_flat_html = array();
 				ksort($this->errors_html); // Match order of fields
@@ -1196,7 +1204,7 @@
 
 			public function html_error_list($config = NULL) {
 
-				$errors_flat_html = $this->errors_html();
+				$errors_flat_html = $this->errors_get_html();
 
 				$html = '';
 				if (count($errors_flat_html) > 0) {
