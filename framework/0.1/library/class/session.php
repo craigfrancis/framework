@@ -76,6 +76,9 @@
 
 			session_regenerate_id(true); // Also delete old session file
 
+			session_write_close(); // Bug fix to write session file and gain lock, so other requests wait for lock (https://bugs.php.net/bug.php?id=61470)
+			session_start();
+
 			// $result = session_regenerate_id(true);
 			// if (!$result) {
 			// 	$debug = array(config::get('session.id'), debug_dump($_SESSION), debug_dump($_COOKIE));

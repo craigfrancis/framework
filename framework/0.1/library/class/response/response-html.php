@@ -1032,7 +1032,7 @@
 					echo $buffer_output;
 
 				//--------------------------------------------------
-				// Mark as flahsed
+				// Mark as flushed
 
 					$this->head_flushed = true;
 
