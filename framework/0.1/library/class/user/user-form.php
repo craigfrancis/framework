@@ -8,18 +8,22 @@
 			$this->user_obj = $user;
 		}
 
-		protected function field_identification_get($name = NULL) {
+		protected function field_identification_get($config) {
+
+			$config = array_merge(array(
+					'name' => 'identification',
+				), $config);
 
 			if ($this->user_obj->identification_type_get() == 'username') {
 
-				$field_identification = new form_field_text($this, $this->user_obj->text_get('identification_label'), ($name === NULL ? 'identification' : $name));
+				$field_identification = new form_field_text($this, $this->user_obj->text_get('identification_label'), $config['name']);
 				$field_identification->min_length_set($this->user_obj->text_get('identification_min_len'), 1);
 				$field_identification->max_length_set($this->user_obj->text_get('identification_max_len'), 50);
 				return $field_identification;
 
 			} else {
 
-				$field_identification = new form_field_email($this, $this->user_obj->text_get('identification_label'), ($name === NULL ? 'identification' : $name));
+				$field_identification = new form_field_email($this, $this->user_obj->text_get('identification_label'), $config['name']);
 				$field_identification->format_error_set($this->user_obj->text_get('identification_format'));
 				$field_identification->min_length_set($this->user_obj->text_get('identification_min_len'), 1);
 				$field_identification->max_length_set($this->user_obj->text_get('identification_max_len'), 250);
@@ -29,18 +33,22 @@
 
 		}
 
-		protected function field_identification_new_get($name = NULL) {
+		protected function field_identification_new_get($config) {
+
+			$config = array_merge(array(
+					'name' => 'identification_new',
+				), $config);
 
 			if ($this->user_obj->identification_type_get() == 'username') {
 
-				$field_identification_new = new form_field_text($this, $this->user_obj->text_get('identification_new_label'), ($name === NULL ? 'identification_new' : $name));
+				$field_identification_new = new form_field_text($this, $this->user_obj->text_get('identification_new_label'), $config['name']);
 				$field_identification_new->min_length_set($this->user_obj->text_get('identification_new_min_len'), 1);
 				$field_identification_new->max_length_set($this->user_obj->text_get('identification_new_max_len'), 50);
 				return $field_identification_new;
 
 			} else {
 
-				$field_identification_new = new form_field_email($this, $this->user_obj->text_get('identification_new_label'), ($name === NULL ? 'identification_new' : $name));
+				$field_identification_new = new form_field_email($this, $this->user_obj->text_get('identification_new_label'), $config['name']);
 				$field_identification_new->format_error_set($this->user_obj->text_get('identification_new_format'));
 				$field_identification_new->min_length_set($this->user_obj->text_get('identification_new_min_len'), 1);
 				$field_identification_new->max_length_set($this->user_obj->text_get('identification_new_max_len'), 250);
@@ -50,11 +58,16 @@
 
 		}
 
-		protected function field_password_get($required = NULL, $name = NULL) {
+		protected function field_password_get($config) {
 
-			$field_password = new form_field_password($this, $this->user_obj->text_get('password_label'), ($name === NULL ? 'password' : $name));
+			$config = array_merge(array(
+					'name' => 'password',
+					'required' => true, // Default required (register page, or re-confirm on profile page)
+				), $config);
 
-			if ($required === NULL || $required === true) {  // Default required (register page, or re-confirm on profile page)
+			$field_password = new form_field_password($this, $this->user_obj->text_get('password_label'), $config['name']);
+
+			if ($config['required'] !== false) {
 				$field_password->min_length_set($this->user_obj->text_get('password_min_len'), 1);
 			}
 
@@ -64,11 +77,16 @@
 
 		}
 
-		protected function field_password_new_get($required = NULL, $name = NULL) {
+		protected function field_password_new_get($config) {
 
-			$field_password = new form_field_password($this, $this->user_obj->text_get('password_new_label'), ($name === NULL ? 'password_new' : $name));
+			$config = array_merge(array(
+					'name' => 'password_new',
+					'required' => false, // Default not required (profile page)
+				), $config);
 
-			if ($required === true) { // Default not required (profile page)
+			$field_password = new form_field_password($this, $this->user_obj->text_get('password_new_label'), $config['name']);
+
+			if ($config['required'] !== false) {
 				$field_password->min_length_set($this->user_obj->text_get('password_new_min_len'), 1);
 			}
 
@@ -79,19 +97,24 @@
 
 		}
 
-		protected function field_password_repeat_get($required = NULL, $name = NULL) {
+		protected function field_password_repeat_get($config) {
 
-			$field_password_repeat = new form_field_password($this, $this->user_obj->text_get('password_repeat_label'), ($name === NULL ? 'password_repeat' : $name));
+			$config = array_merge(array(
+					'name' => 'password_repeat',
+					'required' => NULL,
+				), $config);
 
-			if ($required === NULL) {
+			if ($config['required'] === NULL) {
 				if ($this->field_exists('password_new')) {
-					$required = false; // Profile page, with new password field (will be used to check re-entry)
+					$config['required'] = false; // Profile page, with new password field (will be used to check re-entry)
 				} else if ($this->field_exists('password')) {
-					$required = true; // Register page, asking to repeat password.
+					$config['required'] = true; // Register page, asking to repeat password.
 				}
 			}
 
-			if ($required === true) {
+			$field_password_repeat = new form_field_password($this, $this->user_obj->text_get('password_repeat_label'), $config['name']);
+
+			if ($config['required'] !== false) {
 				$field_password_repeat->min_length_set($this->user_obj->text_get('password_repeat_min_len'), 1);
 			}
 

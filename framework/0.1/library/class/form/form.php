@@ -940,7 +940,7 @@
 		//--------------------------------------------------
 		// Field support
 
-			public function field_get($ref, $config = NULL) {
+			public function field_get($ref, $config = array()) {
 
 				if (is_numeric($ref)) {
 
