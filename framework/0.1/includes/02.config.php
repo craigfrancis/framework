@@ -245,7 +245,7 @@
 		config::set_default('output.site_name', 'Company Name');
 		config::set_default('output.title_prefix', config::get('output.site_name'));
 		config::set_default('output.title_suffix', '');
-		config::set_default('output.title_divide', ' | ');
+		config::set_default('output.title_divide', ' : '); // Changed from "vertical bar" for screen readers (standards-schmandards.com/2004/title-text-separators)
 		config::set_default('output.title_error', 'An error has occurred');
 		config::set_default('output.page_id', 'route');
 		config::set_default('output.framing', 'DENY');
