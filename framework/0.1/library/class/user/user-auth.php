@@ -516,7 +516,7 @@
 
 				$db->insert($this->user_obj->db_table_main, array(
 						$this->db_table_fields['id'] => '',
-						$this->db_table_fields['identification'] => $identification,
+						$this->db_table_fields['identification'] => ($identification == '' ? NULL : $identification),
 						$this->db_table_fields['created'] => date('Y-m-d H:i:s'),
 						$this->db_table_fields['edited'] => date('Y-m-d H:i:s'),
 						$this->db_table_fields['deleted'] => '0000-00-00 00:00:00',

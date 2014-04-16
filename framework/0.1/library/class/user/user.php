@@ -739,9 +739,13 @@
 					//--------------------------------------------------
 					// Unique identification
 
-						$result = $this->auth->identification_unique($identification);
-						if (!$result) {
-							$form->field_get('identification')->error_add($this->text['register_duplicate_identification']);
+						if ($identification != '') { // Min length check should cover this (allowing admin to create users without an identification).
+
+							$result = $this->auth->identification_unique($identification);
+							if (!$result) {
+								$form->field_get('identification')->error_add($this->text['register_duplicate_identification']);
+							}
+
 						}
 
 					//--------------------------------------------------
@@ -808,10 +812,14 @@
 							$identification_new_ref = $form->field_get('identification_new');
 							$identification_new_value = $identification_new_ref->value_get();
 
-							$new_id = $this->auth->identification_id_get($identification_new_value);
+							if ($identification_new_value != '') { // Min length check should cover this (allowing admin to create users without an identification).
 
-							if ($new_id != $this->user_id && $new_id !== false) {
-								$identification_new_ref->error_add($this->text['save_details_invalid_new_identification']);
+								$new_id = $this->auth->identification_id_get($identification_new_value);
+
+								if ($new_id != $this->user_id && $new_id !== false) {
+									$identification_new_ref->error_add($this->text['save_details_invalid_new_identification']);
+								}
+
 							}
 
 						}
@@ -867,7 +875,12 @@
 
 						if ($form->field_exists('identification_new')) {
 
-							$values[$this->auth->db_table_field_get('identification')] = $form->field_get('identification_new')->value_get();
+							$identification_new_value = $form->field_get('identification_new')->value_get();
+							if ($identification_new_value == '') {
+								$identification_new_value = NULL;
+							}
+
+							$values[$this->auth->db_table_field_get('identification')] = $identification_new_value;
 
 						}
 
