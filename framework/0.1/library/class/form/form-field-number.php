@@ -61,7 +61,7 @@
 
 			public function format_error_set_html($error_html) {
 
-				if ($this->form_submitted && $this->value != '' && $this->value_clean === NULL) {
+				if ($this->form_submitted && $this->value !== '' && $this->value_clean === NULL) {
 
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 
@@ -151,7 +151,11 @@
 			}
 
 			public function value_get() {
-				return $this->value_clean;
+				if ($this->value === '') { // Allow caller to differentiate between '' and '0', so it can store no value as NULL in database.
+					return '';
+				} else {
+					return $this->value_clean;
+				}
 			}
 
 			protected function _value_print_get($decimal_places = 2) {
@@ -203,7 +207,7 @@
 					$attributes['step'] = $this->step_value;
 				}
 
-				if (isset($attributes['value']) && $attributes['value'] == '') {
+				if (isset($attributes['value']) && $attributes['value'] === '') {
 					unset($attributes['value']); // HTML5 validation requires a valid floating point number, so can't be an empty string
 				}
 

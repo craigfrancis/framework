@@ -223,6 +223,14 @@
 		$output_php .= '		exitWithError($message, $hidden_info);' . "\n";
 		$output_php .= '	}' . "\n";
 		$output_php .= "\n";
+		$output_php .= '	function tmp_folder($name) {' . "\n";
+		$output_php .= '		$tmp_folder = sys_get_temp_dir() . \'/php-upload/\';' . "\n";
+		$output_php .= '		if (!is_dir($tmp_folder)) {' . "\n";
+		$output_php .= '			mkdir($tmp_folder, 0777, true);' . "\n";
+		$output_php .= '		}' . "\n";
+		$output_php .= '		return $tmp_folder;' . "\n";
+		$output_php .= '	}' . "\n";
+		$output_php .= "\n";
 		$output_php .= '	// function html($text) {' . "\n";
 		$output_php .= '	// 	return htmlspecialchars($text, ENT_QUOTES, config::get(\'output.charset\')); // htmlentities does not work for HTML5+XML' . "\n";
 		$output_php .= '	// }' . "\n";
@@ -238,6 +246,8 @@
 				'is_assoc',
 				'format_postcode',
 				'format_currency',
+				'parse_number',
+				'prefix_match',
 			));
 
 	//--------------------------------------------------
@@ -246,7 +256,7 @@
 		$config_php = file_get_contents($path_config);
 
 		$config_start = strpos($config_php, '// Config object');
-		$config_end = strpos($config_php, '//--------------------------------------------------', ($config_start + 1));
+		$config_end = strpos($config_php, "\n//--------------------------------------------------", ($config_start + 1));
 
 		$config_php = substr($config_php, $config_start, ($config_end - $config_start));
 		$config_php = '//--------------------------------------------------' . "\n" . $config_php;
@@ -324,6 +334,7 @@
 	// End
 
 		$output_php .= "\n\n" . '?>';
+		$output_php = preg_replace('/^\s+$/m', '', $output_php);
 
 //--------------------------------------------------
 // Save
