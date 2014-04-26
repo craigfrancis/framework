@@ -111,7 +111,8 @@
 							$max = $quantity;
 						}
 
-						$html = '<select name="item_quantity_' . html($item['id']) . '">';
+						$html  = '<label for="item_quantity_' . html($item['id']) . '">Quantity for ' . html($item['item_name']) . '</label>';
+						$html .= '<select name="item_quantity_' . html($item['id']) . '" id="item_quantity_' . html($item['id']) . '">';
 						for ($k = 0; $k <= $max; $k++) {
 							$html .= '<option value="' . html($k) . '"' . ($k == $quantity ? ' selected="selected"' : '') . '>' . html($k == 0 ? $edit_config['delete_text'] : $k) . '</option>';
 						}
