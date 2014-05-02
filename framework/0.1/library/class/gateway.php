@@ -397,10 +397,21 @@
 				// Response
 
 					$html = '
-						<h2>Gateways</h2>
+						<h1>Gateways</h1>';
+
+					if (isset($gateway_urls['maintenance'])) {
+						$gateway_url = $gateway_urls['maintenance'];
+						$html .= '
+							<p><a href="' . html($gateway_url) . '">Maintenance</a></p>';
+					}
+
+					$html .= '
 						<ul>';
 
 					foreach ($gateway_urls as $gateway_name => $gateway_url) {
+						if ($gateway_name == 'maintenance') {
+							continue;
+						}
 						$html .= '
 								<li><a href="' . html($gateway_url) . '">' . html($gateway_name) . '</a></li>';
 					}
