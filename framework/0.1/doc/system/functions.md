@@ -110,6 +110,9 @@ For other variables, you should probably use the [cookie](../../doc/system/cooki
 	redirect($url, 301);
 		// Will also exit() for you, rather than just sending the Location header.
 
+	system_redirect($old_url, $new_url);
+		// Setup a redirect, used when calling error_send('page-not-found');
+
 	http_download_file($path, $mime, $name, $mode);
 		// http_download_file('/path/to/file.txt', 'text/plain');
 		// exit();
