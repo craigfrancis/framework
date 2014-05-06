@@ -343,6 +343,10 @@
 				$this->description = $description;
 			}
 
+			public function description_get() {
+				return $this->description;
+			}
+
 		//--------------------------------------------------
 		// CSP
 
