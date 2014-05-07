@@ -286,6 +286,10 @@
 
 								if (is_array($data)) {
 									foreach ($data as $name => $value) {
+										if (is_array($value)) { // Support duplicate field names
+											$name = $value[0];
+											$value = $value[1];
+										}
 										$data_encoded[] = urlencode($name) . '=' . urlencode($value);
 									}
 								}
