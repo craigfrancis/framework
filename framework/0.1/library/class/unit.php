@@ -61,7 +61,7 @@
 					if (isset($setup['type'])) {
 						if ($setup['type'] == 'url' && (!is_object($value) || !is_a($value, 'url'))) {
 							if ($value === NULL) {
-								$value = url();
+								$value = url(); // If you specify a 'type' it will always be that type.
 							} else if (is_string($value)) {
 								$value = url($value);
 							} else {
