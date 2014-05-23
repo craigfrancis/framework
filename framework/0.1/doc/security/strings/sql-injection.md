@@ -4,72 +4,64 @@
 Before continuing with this page, you need to understand SQL to the point that the following makes sense:
 
 	SELECT
-		`id`
+		`title`,
+		`body`
 	FROM
-		`user`
+		`news`
 	WHERE
-		`name` = "john" AND
-		`pass` = "123"
-
-Where this could be used on a login page... please don't though, not only is it stuck in finding the account for "john" (which probably isn't going to be that useful), it doesn't cover any of the security issues related to [logins and passwords](../../../doc/security/logins.md).
-
-So taking that the username and password is replaced with values that the user is currently trying to login with, the end result is still a single string, which is passed to the database, where it interprets it, and hopefully returns the users id.
+		`id` = "123"
 
 ---
 
 ## Usage in PHP
 
-One way to get this to work in PHP to to use the following (again, please don't do this):
+One way to get this to work in PHP to to use the following (don't do this):
 
-	$name = request('name'); // Gets the value from $_REQUEST
-	$pass = request('pass');
+	$id = request('id'); // Gets the value from $_REQUEST
 
 	$sql = 'SELECT
-				`id`
+				`title`,
+				`body`
 			FROM
-				`user`
+				`news`
 			WHERE
-				`name` = "' . $name . '" AND
-				`pass` = "' . $pass . '"';
+				`id` = "' . $id . '"';
 
-The resulting SQL string is then made up from 5 individual strings joined together.
-
-It begins with a string starting with SELECT, which is joined with the 'name' string that came from the browser, joined with a bit more SQL, the password (again from the browser), and finally another string, which is simply a double quote.
+The resulting $sql string is created by naively joining the 3 strings together.
 
 ---
 
 ## The problem
 
-But what happens if the someone tried to login in with the username:
+But what happens if the someone loaded the page with the ID:
 
-	test"ing
+	123"456
 
-It will result in the SQL string:
+It will result in the SQL:
 
 	SELECT
-		`id`
+		`title`,
+		`body`
 	FROM
-		`user`
+		`news`
 	WHERE
-		`name` = "test"ing" AND
-		`pass` = "123"
+		`id` = "123"456"
 
-Which isn't valid SQL, and would cause an error.
+Which isn't valid SQL, and would cause an error... so the remote user knows you have a problem, and can start trying to get more information.
 
-But not only that, if they are trying to break into your website, they now know that the double quote hasn't been escaped, so they could then try with the username:
-
-	admin"; --
+	0" UNION SELECT username, password FROM admin; --
 
 Which now creates the SQL:
 
 	SELECT
-		`id`
+		`title`,
+		`body`
 	FROM
-		`user`
+		`news`
 	WHERE
-		`name` = "admin"; -- the rest is ignored as a comment
+		`id` = "0" UNION SELECT username, password FROM admin; --"
 
-Now they have just logged in with the admin account.
+Where the "--" converts the rest into a comment, and they have just found the the username and password ([hopefully hashed](../../../doc/security/logins.md)) for an admin account.
 
 ---
 
@@ -78,14 +70,14 @@ Now they have just logged in with the admin account.
 To get around this problem for MySQL you basically add a backslash to escape the character e.g.
 
 	SELECT
-		`id`
+		`title`,
+		`body`
 	FROM
-		`user`
+		`news`
 	WHERE
-		`name` = "admin\"; --" AND
-		`pass` = "123"
+		`id` = "0\" UNION SELECT username, password FROM admin; --"
 
-A feature that was done automatically with [magic quotes](http://www.php.net/magic_quotes) before PHP 5.4, but has fortunately now been removed (it caused more problems than it solved).
+An automated feature that was attempted with [magic quotes](http://www.php.net/magic_quotes) before PHP 5.4, but has fortunately now been removed (it caused more problems than it solved).
 
 Below we can discuss a few different options.
 
@@ -93,27 +85,19 @@ Below we can discuss a few different options.
 
 ## PHP PDO
 
-[PDO](http://www.php.net/pdo) allows you to write raw SQL, but the variables are substituted by either replacing placeholders:
+[PDO](http://www.php.net/pdo) allows you to write raw SQL (aka prepared statements), where the variables are substituted either with positional placeholders:
 
 	$q = $db->prepare('SELECT id FROM user WHERE name = ? AND pass = ?');
 	$q->execute(array($name, $pass));
 
-This is fine, but you have the fun job of parameter counting, where if you're using 10 variables then its not going to be fun counting them off.
-
-It's basically the same reason I dislike the INSERT statement (for one record), and why I prefer to use:
-
-	$db->insert('table', array(
-			'field_1' => 'value'
-			'field_2' => 'value'
-			'field_3' => 'value'
-		));
+Where you have the fun job of parameter counting (not fun if you're using 10 or more variables), and is the same reason I dislike the standard INSERT statement.
 
 The alternative is to use named parameters:
 
 	$q = $db->prepare('SELECT id FROM user WHERE name = :name AND pass = :pass');
 	$q->execute(array(':name' => $name, ':pass' => $pass));
 
-But have you noticed the word "name" appears 4 times now? I find the amount of repetition is really annoying.
+But have you noticed the word "name" appears 4 times now? I find the amount of repetition annoying.
 
 And the main point of this is to stop inexperienced developers making a mistake with the variable escaping, but it doesn't, those same developers still do things like:
 
@@ -125,9 +109,11 @@ Please note I'm not a fan of double quotes, as the variables can be easily hidde
 
 ## Database abstractions
 
-There are several database abstractions available, where they will try to abstract everything, so you don't have to see the SQL being generated.
+There are several types of database abstractions available which try to hide the SQL being generated.
 
-Which some believe is a good thing, but you really need to check every query, as they often make bad assumptions, ridiculously inefficient queries (returning too much data), and can open security holes without you realising.
+Often these come in the form of ORM's (object-relational mapping), which try to represent the database records as objects (can more easily be used in code).
+
+Some believe this setup is always a good thing, but you should still check every query. They often make bad assumptions, ridiculously inefficient queries (e.g. returning too much data), and can open security holes without you realising (e.g. [not escaping identifiers](http://www.codeyellow.nl/identifier-sqli.html)).
 
 Then, with the case of [CakePHP](http://book.cakephp.org/2.0/en/models/retrieving-your-data.html), you start getting code like the following:
 
@@ -139,8 +125,8 @@ Then, with the case of [CakePHP](http://book.cakephp.org/2.0/en/models/retrievin
 						'user_id' => $author_id,
 						array(
 							'OR' => array(
-									array('moderation' => 'new'),
-									array('moderation' => 'pending'),
+									'moderation' => 'new',
+									'moderation' => 'pending',
 								),
 						)
 					),
@@ -148,11 +134,9 @@ Then, with the case of [CakePHP](http://book.cakephp.org/2.0/en/models/retrievin
 			),
 	));
 
-Which because its using arrays, you will find issues like a condition being silently ignored as two or more use the key 'OR'... for reference, you have to wrap them in another (indexed based) array.
+With a quick look over this query, its not particularly obvious it's broken, but there are technically two "moderation" keys in the "OR" array, so it will only find "pending" records for the current user - to fix, you have to wrap them in another array.
 
-Basically, you still need to understand the SQL, and you now need to understand the abstraction to get it to create the SQL you could have written yourself.
-
-And before you think your queries run efficiently enough when its on your local computer during development, you will have a nasty surprise when its Live and there is a sudden spike in traffic, and now you need to take your slow sql log and try to work out which bit of code created it.
+In summary, you still need to check the generated SQL, but you now need to understand the abstraction in detail as well.
 
 ---
 
@@ -172,24 +156,22 @@ This is still my preferred method, and yes, that does mean every variable has to
 
 I believe all developers should be educated about the issues, and taught how to overcome them.
 
-So for reference I use code like the following:
+So for reference, I use code like the following:
 
 	$sql = 'SELECT
 				`id`
 			FROM
-				`user`
+				`table`
 			WHERE
-				`name` = "' . $db->escape($name) . '" AND
-				`pass` = "' . $db->escape($pass) . '"';
+				`field` = "' . $db->escape($value) . '"';
 
 	if ($row = $db->fetch_row($sql)) {
 	}
 
-And if the query needs to be built up, then a [simple naming convention](../../../doc/security/strings.md) of using "_sql" suffix to any SQL variables.
+And if the query needs to be constructed in code, then I use a [simple naming convention](../../../doc/security/strings.md) of using "_sql" suffix to any SQL variables.
 
 	$where_sql = array(
 			'`id` = "' . $db->escape($id) . '"',
-			'`state` = "active"',
 		);
 
 	if (condition) {
@@ -198,7 +180,7 @@ And if the query needs to be built up, then a [simple naming convention](../../.
 
 	$where_sql = '(' . implode(') AND (', $where_sql) . ')';
 
-	$from_sql = '`user`'; // Could include a JOIN, and be passed to multiple queries.
+	$from_sql = '`user`'; // Could be extended to include a JOIN, and be passed to multiple queries.
 
 	$sql = 'SELECT
 				`id`
@@ -209,6 +191,6 @@ And if the query needs to be built up, then a [simple naming convention](../../.
 
 	$db->query($sql);
 
-As a side note, regarding the $db object, see the [database helper](../../../doc/system/database.md).
+See the notes about the [database helper](../../../doc/system/database.md) to find out about the $db object.
 
-And for now I will look forward to a day that either SQL is replaced, or there is a better way of handling variables in strings (or at least generating SQL).
+And I will continue to look forward to a day that either SQL is replaced, abstracted perfectly, or there is a better way of handling variables in strings.

@@ -18,6 +18,10 @@ You can get access to the database object though the helper function:
 
 ## Notes
 
+ORM: Black magic vs knowing how to actually write SQL and the issues that come with that.
+
+http://www.codeyellow.nl/identifier-sqli.html
+
 Consider [Nette](http://doc.nette.org/en/2.1/database-table), which caches the used columns, so will avoid "SELECT *", but will probably not handle multiple code paths (e.g. one for simple a HTML table, then additional fields for a CSV download).
 
 -
