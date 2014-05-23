@@ -61,7 +61,7 @@ Which now creates the SQL:
 	WHERE
 		`id` = "0" UNION SELECT username, password FROM admin; --"
 
-Where the "--" converts the rest into a comment, and they have just found the the username and password ([hopefully hashed](../../../doc/security/logins.md)) for an admin account.
+Where the "--" converts the rest into a comment, and they have just found the username and password ([hopefully hashed](../../../doc/security/logins.md)) for an admin account.
 
 ---
 
