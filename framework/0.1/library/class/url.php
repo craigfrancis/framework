@@ -102,7 +102,7 @@
 				}
 
 				foreach ($parameters as $key => $value) { // Cannot use array_merge, as numerical based indexes will be appended.
-					$this->parameters[$key] = strval($value); // Blank values will be removed later, NULL needs to be a string (isset check)
+					$this->parameters[$key] = $value; // Still allow NULL to be remembered, e.g. url('/path/:ref/', array('ref' => NULL))
 				}
 
 			}
@@ -211,7 +211,7 @@
 						if ($query_string !== '' && $query_string !== NULL) {
 							parse_str($query_string, $parameters);
 							foreach ($parameters as $key => $value) {
-								if (!isset($this->parameters[$key])) { // Already set parameters take priority (don't replace)
+								if (!array_key_exists($key, $this->parameters)) { // Already set parameters take priority (don't replace)
 									$this->parameters[$key] = $value;
 								}
 							}

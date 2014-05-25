@@ -59,18 +59,22 @@
 					}
 
 					if (isset($setup['type'])) {
-						if ($setup['type'] == 'url' && (!is_object($value) || !is_a($value, 'url'))) {
-							if ($value === NULL) {
-								$value = url(); // If you specify a 'type' it will always be that type.
-							} else if (is_string($value)) {
-								$value = url($value);
-							} else {
-								$errors[] = 'Unrecognised url value for: ' . $key;
+						if ($setup['type'] == 'url') {
+							if ((!is_object($value) || !is_a($value, 'url'))) {
+								if ($value === NULL) {
+									$value = url(); // If you specify a 'type' it will always be that type.
+								} else if (is_string($value)) {
+									$value = url($value);
+								} else {
+									$errors[] = 'Unrecognised url value for: ' . $key;
+								}
 							}
 						} else if ($setup['type'] == 'int') {
 							$value = intval($value);
 						} else if ($setup['type'] == 'str') {
 							$value = strval($value);
+						} else {
+							$errors[] = 'Unrecognised variable type "' . $setup['type'] . '" for: ' . $key;
 						}
 					}
 
