@@ -447,7 +447,7 @@
 				if ($error == '') {
 					if ($db_id > 0) {
 
-						if ($valid == $db_hash) {
+						if ($valid) {
 
 							if (password::needs_rehash($db_hash)) {
 

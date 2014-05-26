@@ -39,6 +39,7 @@
 
 			$config['gateway.maintenance'] = true;
 
+			// $config['debug.level'] = 0;
 			// $config['debug.db_required_fields'] = array('deleted', 'cancelled');
 
 	} else if (prefix_match('/www/demo/', ROOT)) {
@@ -52,8 +53,8 @@
 		// Database
 
 			// $config['db.host'] = 'localhost';
-			// $config['db.user'] = 'stage';
-			// $config['db.pass'] = 'st8ge';
+			// $config['db.user'] = 'demo';
+			// $config['db.pass'] = 'dem0';
 			// $config['db.name'] = 's-company-project';
 
 			$config['db.prefix'] = 'tpl_';
@@ -77,8 +78,8 @@
 		// Database
 
 			// $config['db.host'] = 'localhost';
-			// $config['db.user'] = 'stage';
-			// $config['db.pass'] = 'st8ge';
+			// $config['db.user'] = 'company';
+			// $config['db.pass'] = 'password';
 			// $config['db.name'] = 's-company-project';
 
 			$config['db.prefix'] = 'tpl_';
@@ -118,11 +119,11 @@
 	// 			),
 	// 		'img-src' => array(
 	// 				"'self'",
-	// 				'https://ssl.google-analytics.com',
+	// 				'https://www.google-analytics.com',
 	// 			),
 	// 		'script-src' => array(
 	// 				"'self'",
-	// 				'https://ssl.google-analytics.com',
+	// 				'https://www.google-analytics.com',
 	// 			),
 	// 		'style-src' => array(
 	// 				"'self'",
