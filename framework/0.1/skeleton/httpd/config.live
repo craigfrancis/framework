@@ -1,27 +1,38 @@
 
-	<virtualhost *:80>
+	<VirtualHost *:80>
 
-		ServerName www.domain.com
+		ServerName www.example.com
 		ServerAlias 111.111.111.111
 
-		RedirectMatch (.*) https://www.domain.com
+		Redirect 301 / https://www.example.com/
 
-	</virtualhost>
+	</VirtualHost>
 
-	<virtualhost 111.111.111.111:443>
+	<VirtualHost 111.111.111.111:443>
 
-		ServerName www.domain.com
+		ServerName www.example.com
 		DocumentRoot /www/live/company.project/app/public/
 
-		CustomLog /www/live/company.project/logs/access_log combined
+		LogFormat "%h %l %u [%{LOG_INFO}n] [%{%Y-%m-%d %H:%M:%S}t] \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" inc_info
+
+		CustomLog /www/live/company.project/logs/access_log inc_info
 		ErrorLog /www/live/company.project/logs/error_log
 
 		Alias "/a/files" "/www/live/company.project/files/"
 		Alias "/phpMyAdmin" "/www/admin/phpMyAdmin/"
 
 		SSLEngine on
-		SSLCertificateFile /etc/apache2/ssl/www.domain.com.crt
-		SSLCertificateKeyFile /etc/apache2/ssl/www.domain.com.key
+		SSLCertificateFile /etc/apache2/ssl/www.example.com.crt
+		SSLCertificateKeyFile /etc/apache2/ssl/www.example.com.key
+
+	</VirtualHost>
+
+	<VirtualHost *:80>
+
+		ServerName example.com
+		ServerAlias *.example.com
+
+		Redirect 301 / https://www.example.com/
 
 	</VirtualHost>
 
