@@ -277,6 +277,10 @@
 				config::array_set('output.title_folders', $id, $name);
 			}
 
+			public function title_folders_set($folders) {
+				config::set('output.title_folders', $folders);
+			}
+
 			public function title_folder_get($id = NULL) {
 				if ($id !== NULL) {
 					return config::array_get('output.title_folders', $id);
