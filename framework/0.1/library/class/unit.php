@@ -58,7 +58,7 @@
 						continue;
 					}
 
-					if (isset($setup['type'])) {
+					if (is_array($setup) && isset($setup['type'])) {
 						if ($setup['type'] == 'url') {
 							if ((!is_object($value) || !is_a($value, 'url'))) {
 								if ($value === NULL) {
