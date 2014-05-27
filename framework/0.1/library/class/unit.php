@@ -83,11 +83,7 @@
 				}
 
 				if (count($errors) > 0) {
-					if (SERVER != 'stage') {
-						report_add('Configuration problems for unit: ' . get_class($this) . "\n\n" . debug_dump($errors)); // TODO: Remove
-					} else {
-						exit_with_error('Configuration problems for unit.', get_class($this) . "\n\n" . debug_dump($errors));
-					}
+					exit_with_error('Configuration problems for unit.', get_class($this) . "\n\n" . debug_dump($errors));
 				} else {
 					return $output;
 				}
