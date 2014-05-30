@@ -52,11 +52,17 @@
 
 			}
 
-			public function allowed_schemes_set($error, $schemes) {
-				$this->allowed_schemes_set_html(html($error), $schemes);
+			public function scheme_default_set($scheme) {
+				if ($this->form_submitted && $this->value != '' && !preg_match('/^[a-z]+:/i', $this->value)) {
+					$this->value = $scheme . '://' . $this->value;
+				}
 			}
 
-			public function allowed_schemes_set_html($error_html, $schemes) {
+			public function scheme_allowed_set($error, $schemes) {
+				$this->scheme_allowed_set_html(html($error), $schemes);
+			}
+
+			public function scheme_allowed_set_html($error_html, $schemes) {
 
 				if ($this->form_submitted && $this->value != '') {
 					$url_parts = @parse_url($this->value);
