@@ -26,7 +26,7 @@ See the [config setup](../../doc/setup/config.md) for more details.
 
 To see if the current script is running in via the command line:
 
-	if (defined('CLI_MODE')) {
+	if (REQUEST_MODE == 'cli') {
 	}
 
 ---

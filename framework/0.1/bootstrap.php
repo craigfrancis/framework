@@ -17,6 +17,13 @@
 	}
 
 //--------------------------------------------------
+// Request mode
+
+	if (!defined('REQUEST_MODE')) {
+		define('REQUEST_MODE', 'http');
+	}
+
+//--------------------------------------------------
 // Default paths
 
 	if (!defined('ROOT')) {

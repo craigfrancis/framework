@@ -37,7 +37,7 @@
 		$config['request.path'] = $path;
 		$config['request.folders'] = path_to_array($path);
 
-		if (defined('CLI_MODE')) {
+		if (REQUEST_MODE == 'cli') {
 			$config['request.domain'] = ''; // Remove hostname default, set in git post-commit hook (ref APC clear cache)
 			$config['request.url'] = 'file://..' . $uri; // Don't expose ROOT, but show the relative path
 		} else {
@@ -197,7 +197,7 @@
 
 		if (!defined('ENCRYPTION_KEY')) {
 
-			if (defined('CLI_MODE') && !is_file(APP_ROOT . '/library/setup/config.php')) {
+			if (REQUEST_MODE == 'cli' && !is_file(APP_ROOT . '/library/setup/config.php')) {
 				define('ENCRYPTION_KEY', base64_encode(random_bytes(10))); // Temporary one off value (during install)
 			} else {
 				exit('Missing the ENCRYPTION_KEY constant in your config.' . "\n");
