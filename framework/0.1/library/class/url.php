@@ -143,6 +143,10 @@
 						if ($pos !== false) {
 							$output = substr($output, 0, ($pos + 1)) . urlencode($value) . ($value === NULL ? '' : '/') . substr($output, $pos + strlen($name) + 3);
 							unset($query[$name]);
+						} else if ($value === NULL) {
+							unset($query[$name]);
+						} else {
+							$query[$name] = strval($value); // Convert url objects to strings
 						}
 					}
 
