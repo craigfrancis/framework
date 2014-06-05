@@ -462,7 +462,7 @@
 									$scaled_width = round($canvas_height * ($this->image_width / $this->image_height));
 									$scaled_height = round($canvas_width * ($this->image_height / $this->image_width));
 
-									if ($scaled_height > $canvas_height) { // If scaled up height (matching canvas width) exceeds canvas, use it.
+									if ($scaled_height >= $canvas_height) { // If scaled up height (matching canvas width) exceeds canvas, use it... test "360x35" to "180" wide (">=" instead of just ">")
 										$dst_width = $canvas_width;
 										$dst_height = $scaled_height;
 									} else {
