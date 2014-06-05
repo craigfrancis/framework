@@ -225,12 +225,19 @@
 			public function image_html_get($id, $size = 'original', $alt = '', $img_id = NULL) {
 
 				$image_path = $this->image_path_get($id, $size);
+				$image_url = $this->image_url_get($id, $size);
+
+				if (!file_exists($image_path)) {
+					$image_path = PUBLIC_ROOT . $image_url; // Try to find placeholder, where image_path_get must always return saved location.
+				}
 
 				if (file_exists($image_path)) {
 					$image_info = getimagesize($image_path);
 					if ($image_info) {
-						return '<img src="' . html($this->image_url_get($id, $size)) . '" alt="' . html($alt) . '" width="' . html($image_info[0]) . '" height="' . html($image_info[1]) . '"' . ($img_id === NULL ? '' : ' id="' . html($img_id) . '"') . ' />';
+						return '<img src="' . html($image_url) . '" alt="' . html($alt) . '" width="' . html($image_info[0]) . '" height="' . html($image_info[1]) . '"' . ($img_id === NULL ? '' : ' id="' . html($img_id) . '"') . ' />';
 					}
+				} else if ($image_url) { // Has a placeholder, but probably behind a symlink
+					return '<img src="' . html($image_url) . '" alt="' . html($alt) . '"' . ($img_id === NULL ? '' : ' id="' . html($img_id) . '"') . ' />';
 				}
 
 				return NULL;
