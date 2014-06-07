@@ -27,13 +27,14 @@
 
 			protected $sort_enabled = false;
 			protected $sort_name = NULL;
-			protected $sort_request_field = NULL;
+			protected $sort_request_id = NULL;
 			protected $sort_request_order = NULL;
 			protected $sort_preserved_key = NULL;
-			protected $sort_preserved_field = NULL;
+			protected $sort_preserved_id = NULL;
 			protected $sort_preserved_order = NULL;
 			protected $sort_default_field = NULL;
 			protected $sort_default_order = NULL;
+			protected $sort_id = 0;
 			protected $sort_fields = array();
 			protected $sort_active_asc_prefix_html = '';
 			protected $sort_active_asc_suffix_html = '&#xA0;<span class="sort asc" title="Ascending">&#9650;</span>';
@@ -103,26 +104,23 @@
 				$this->sort_enabled = true;
 
 				if ($name == NULL) {
-					$name = 'table' . $this->table_id;
+					$name = 't' . $this->table_id;
 				}
 
 				$this->sort_name = $name;
 
-				$sort = request($this->sort_name . '_sort');
-				if (($pos = strpos($sort, '-')) !== false) {
-					$order = substr($sort, 0, $pos);
-					if ($order == 'asc' || $order == 'desc') {
-						$this->sort_request_field = substr($sort, ($pos + 1));
-						$this->sort_request_order = $order;
-					}
+				$sort = request($this->sort_name);
+				if (preg_match('/^([0-9]+)(A|D)$/', $sort, $matches)) {
+					$this->sort_request_id = $matches[1];
+					$this->sort_request_order = $matches[2];
 				}
 
 			}
 
-			public function sort_default_set($field, $order = 'asc') {
+			public function sort_default_set($field, $order = 'ASC') {
 				$this->sort_enabled = true;
 				$this->sort_default_field = $field;
-				$this->sort_default_order = $order;
+				$this->sort_default_order = strtoupper($order);
 			}
 
 			public function sort_preserve_set($preserve) {
@@ -132,13 +130,13 @@
 
 					$session = session::get($this->sort_preserved_key);
 					if ($session) {
-						list($this->sort_preserved_field, $this->sort_preserved_order) = $session;
+						list($this->sort_preserved_id, $this->sort_preserved_order) = $session;
 					}
 
 				} else {
 
 					$this->sort_preserved_key = NULL;
-					$this->sort_preserved_field = NULL;
+					$this->sort_preserved_id = NULL;
 					$this->sort_preserved_order = NULL;
 
 				}
@@ -152,15 +150,15 @@
 					$this->sort_name_set();
 				}
 
-				if (in_array($this->sort_request_field, $this->sort_fields)) { // Recognised value supplied by GPC
-					return $this->sort_request_field;
+				if (isset($this->sort_fields[$this->sort_request_id])) {
+					return $this->sort_fields[$this->sort_request_id];
 				}
 
-				if (in_array($this->sort_preserved_field, $this->sort_fields)) { // Has been set (not NULL), which came from GPC
-					return $this->sort_preserved_field;
+				if (isset($this->sort_fields[$this->sort_preserved_id])) {
+					return $this->sort_fields[$this->sort_preserved_id];
 				}
 
-				if ($this->sort_default_field !== NULL) { // Has been set (not NULL), but may not be in sort_fields
+				if ($this->sort_default_field) { // May not be in sort_fields
 					return $this->sort_default_field;
 				}
 
@@ -180,19 +178,19 @@
 					$this->sort_name_set();
 				}
 
-				if ($this->sort_request_order == 'desc' || $this->sort_request_order == 'asc') { // Recognised value supplied by GPC
-					return $this->sort_request_order;
+				if ($this->sort_request_order) {
+					return ($this->sort_request_order == 'A' ? 'ASC' : 'DESC');
 				}
 
-				if ($this->sort_preserved_order == 'desc' || $this->sort_preserved_order == 'asc') { // Has been set (not NULL), which came from GPC
-					return $this->sort_preserved_order;
+				if ($this->sort_preserved_order) {
+					return ($this->sort_preserved_order == 'A' ? 'ASC' : 'DESC');
 				}
 
-				if ($this->sort_default_order == 'desc' || $this->sort_default_order == 'asc') { // Has been set (not NULL)
+				if ($this->sort_default_order == 'ASC' || $this->sort_default_order == 'DESC') {
 					return $this->sort_default_order;
 				}
 
-				return 'asc';
+				return 'ASC';
 
 			}
 
@@ -204,7 +202,7 @@
 					$this->sort_name_set();
 				}
 
-				$params = array($this->sort_name . '_sort' => $order . '-' . $field);
+				$params = array($this->sort_name => $field . $order);
 
 				if ($this->current_url === NULL) {
 					return url($params);
@@ -286,17 +284,26 @@
 					$this->headings[$this->heading_id] = array();
 				}
 
+				if ($sort_name !== NULL && $sort_name !== '') {
+
+					$this->sort_enabled = true;
+					$this->sort_id++;
+					$this->sort_fields[$this->sort_id] = $sort_name;
+
+					$sort_id = $this->sort_id;
+
+				} else {
+
+					$sort_id = NULL;
+
+				}
+
 				$this->headings[$this->heading_id][] = array(
 						'html' => $heading_html,
-						'sort_name' => $sort_name,
+						'sort_id' => $sort_id,
 						'class_name' => $class_name,
 						'colspan' => $colspan,
 					);
-
-				if ($sort_name !== NULL && $sort_name !== '') {
-					$this->sort_enabled = true;
-					$this->sort_fields[] = $sort_name;
-				}
 
 			}
 
@@ -363,10 +370,10 @@
 					if ($this->sort_enabled) {
 
 						$sort_field = $this->sort_field_get();
-						$sort_asc = ($this->sort_order_get() == 'asc');
+						$sort_asc = ($this->sort_order_get() == 'ASC');
 
-						if ($this->sort_preserved_key && $this->sort_request_field && $this->sort_request_order) {
-							session::set($this->sort_preserved_key, array($this->sort_request_field, $this->sort_request_order));
+						if ($this->sort_preserved_key && $this->sort_request_id && $this->sort_request_order) {
+							session::set($this->sort_preserved_key, array($this->sort_request_id, $this->sort_request_order));
 						}
 
 					}
@@ -393,13 +400,13 @@
 							//--------------------------------------------------
 							// HTML content, url, and class
 
-								if ($this->sort_name === NULL || $heading_info['sort_name'] === NULL) {
+								if ($this->sort_name === NULL || $heading_info['sort_id'] === NULL) {
 
 									$heading_html = $heading_info['html'];
 
-								} else if ($sort_field == $heading_info['sort_name']) {
+								} else if ($sort_field == $this->sort_fields[$heading_info['sort_id']]) {
 
-									$url = $this->sort_url_get($heading_info['sort_name'], ($sort_asc ? 'desc' : 'asc'));
+									$url = $this->sort_url_get($heading_info['sort_id'], ($sort_asc ? 'D' : 'A'));
 
 									$heading_html = '<a href="' . html($url) . '">' . ($sort_asc ? $this->sort_active_asc_prefix_html : $this->sort_active_desc_prefix_html) . $heading_info['html'] . ($sort_asc ? $this->sort_active_asc_suffix_html : $this->sort_active_desc_suffix_html) . '</a>';
 
@@ -407,7 +414,7 @@
 
 								} else {
 
-									$url = $this->sort_url_get($heading_info['sort_name'], 'asc');
+									$url = $this->sort_url_get($heading_info['sort_id'], 'A');
 
 									$heading_html = '<a href="' . html($url) . '">' . $this->sort_inactive_prefix_html . $heading_info['html'] . $this->sort_inactive_suffix_html . '</a>';
 
