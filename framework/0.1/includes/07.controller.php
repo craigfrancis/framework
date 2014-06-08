@@ -18,6 +18,11 @@
 
 	}
 
+	$include_path = APP_ROOT . '/library/class/controller.php';
+	if (is_file($include_path)) {
+		script_run_once($include_path);
+	}
+
 	if (!class_exists('controller')) {
 		class controller extends controller_base {
 		}
