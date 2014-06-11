@@ -145,6 +145,8 @@
 							unset($query[$name]);
 						} else if ($value === NULL) {
 							unset($query[$name]);
+						} else if (is_array($value)) {
+							$query[$name] = $value; // Array usage: ./path/?a[]=1&a[]=2&a[]=3
 						} else {
 							$query[$name] = strval($value); // Convert url objects to strings
 						}
