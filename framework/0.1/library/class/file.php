@@ -38,12 +38,13 @@
 							'file_private' => false,
 							'file_root' => NULL,
 							'file_url' => NULL,
+							'file_timestamp_url' => false,
 							'file_ext' => NULL,
 							'file_folder_division' => NULL, // Set to something like "1000" so the folder structure can by divided into folders /files/008000/8192
 							'file_missing_url' => NULL,
 							'image_type' => 'jpg',
 							'image_quality' => NULL,
-							'image_url_prefix' => '',
+							'image_url_prefix' => '', // Could include the domain name (e.g. for email images).
 							'image_placeholder_url' => NULL, // If you want to show placeholder images, e.g. /a/img/place-holder/100x100.jpg
 							'image_missing_url' => NULL,
 							'image_background' => NULL, // If images should not be cropped, but have borders instead (e.g. '000000' for black)
@@ -136,21 +137,27 @@
 
 			public function file_url_get($id, $ext = NULL) {
 
+				if ($this->config['file_url'] === NULL) {
+					exit_with_error('There is no public url for private files.', $this->config['profile'] . ' - ' . $id);
+				}
+
 				$path = $this->file_path_get($id, $ext);
 
-				if ($this->config['file_url'] === NULL) {
+				if (is_file($path)) {
 
-					exit_with_error('There is no public url for private files.', $this->config['profile'] . ' - ' . $id);
+					$url = $this->config['file_url'] . substr($path, strlen($this->config['file_root']));
 
-				} else if (is_file($path)) {
-
-					return $this->config['file_url'] . substr($path, strlen($this->config['file_root']));
+					if ($this->config['file_timestamp_url']) {
+						$url = timestamp_url($url, filemtime($path));
+					}
 
 				} else {
 
-					return $this->config['file_missing_url'];
+					$url = $this->config['file_missing_url'];
 
 				}
+
+				return $url;
 
 			}
 
@@ -198,15 +205,19 @@
 
 			public function image_url_get($id, $size = 'original') {
 
+				if ($this->config['file_url'] === NULL) {
+					exit_with_error('There is no public url for private files.', $this->config['profile'] . ' - ' . $id);
+				}
+
 				$path = $this->image_path_get($id, $size);
 
-				if ($this->config['file_url'] === NULL) {
-
-					exit_with_error('There is no public url for private files.', $this->config['profile'] . ' - ' . $id);
-
-				} else if (is_file($path)) {
+				if (is_file($path)) {
 
 					$url = $this->config['file_url'] . substr($path, strlen($this->config['file_root']));
+
+					if ($this->config['file_timestamp_url']) {
+						$url = timestamp_url($url, filemtime($path));
+					}
 
 				} else if ($this->config['image_placeholder_url'] !== NULL) {
 

@@ -517,6 +517,17 @@
 	}
 
 //--------------------------------------------------
+// Timestamp URL
+
+	function timestamp_url($url, $timestamp) {
+		if (($p = strrpos($url, '/')) !== false) {
+			return substr($url, 0, ($p + 1)) . intval($timestamp) . '-' . substr($url, ($p + 1));
+		} else {
+			return $url;
+		}
+	}
+
+//--------------------------------------------------
 // Data URI
 
 	function data_uri($mime, $content) {
