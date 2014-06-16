@@ -163,4 +163,11 @@
 
 	}
 
+//--------------------------------------------------
+// Processing time
+
+	if (function_exists('apache_note')) {
+		apache_note('TIME_INFO', round((microtime(true) - FRAMEWORK_START), 4));
+	}
+
 ?>
