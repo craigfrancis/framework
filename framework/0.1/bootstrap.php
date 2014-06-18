@@ -167,7 +167,7 @@
 // Processing time
 
 	if (function_exists('apache_note')) {
-		apache_note('TIME_INFO', round((microtime(true) - FRAMEWORK_START), 4));
+		apache_note('TIME_INFO', number_format(round((microtime(true) - FRAMEWORK_START), 4), 4));
 	}
 
 ?>
