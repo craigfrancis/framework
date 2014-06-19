@@ -914,21 +914,27 @@
 
 					$canonical_url = config::get('output.canonical');
 
-					if ($canonical_url == 'auto') {
+					if ($canonical_url == 'auto' || $canonical_url == 'full') {
 
-						$canonical_url = new url();
-						$canonical_params = $canonical_url->params_get();
+						$url = new url();
+						$params = $url->params_get();
 
-						if (count($canonical_params) > 0) {
+						if ($canonical_url == 'full') {
+							$url->format_set('full');
+						}
+
+						if ($canonical_url == 'full' || count($params) > 0) {
 
 							$vars_used = config::get('request.vars_used', array());
 							$vars_ignore = array('js', 'style');
 
-							foreach ($canonical_params as $name => $value) {
+							foreach ($params as $name => $value) {
 								if (!isset($vars_used[$name]) || in_array($name, $vars_ignore)) {
-									$canonical_url->param_set($name, NULL);
+									$url->param_set($name, NULL);
 								}
 							}
+
+							$canonical_url = $url;
 
 						} else {
 
