@@ -225,7 +225,7 @@
 						}
 					}
 
-					return $this->url->get(array($this->config['variable'] => $page_number));
+					return $this->url->get(array($this->config['variable'] => ($page_number == 1 ? NULL : $page_number)));
 
 				} else {
 
