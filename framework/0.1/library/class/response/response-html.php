@@ -929,7 +929,7 @@
 							$vars_ignore = array('js', 'style');
 
 							foreach ($params as $name => $value) {
-								if (!isset($vars_used[$name]) || in_array($name, $vars_ignore)) {
+								if (!isset($vars_used[$name]) || in_array($name, $vars_ignore) || ($name == 'page' && $value == 1)) {
 									$url->param_set($name, NULL);
 								}
 							}
