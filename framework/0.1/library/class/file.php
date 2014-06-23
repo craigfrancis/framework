@@ -270,10 +270,15 @@
 				//--------------------------------------------------
 				// Compression support
 
+					$optimise_jpg_path = NULL;
+					$optimise_png_path = NULL;
+
 					if ($this->config['image_type'] == 'jpg') {
-						$jpegtran_path = $this->_jpegtran_path();
-					} else {
-						$jpegtran_path = NULL;
+						$optimise_jpg_path = $this->_optimise_jpg_path();
+					}
+
+					if ($this->config['image_type'] == 'png') {
+						$optimise_png_path = $this->_optimise_png_path();
 					}
 
 				//--------------------------------------------------
@@ -380,8 +385,14 @@
 								//--------------------------------------------------
 								// Optimise
 
-									if ($jpegtran_path) {
-										$output = shell_exec(escapeshellcmd($jpegtran_path) . ' -copy none -optimize -progressive -outfile ' . escapeshellarg($image_path) . ' ' . escapeshellarg($image_path));
+									if ($optimise_jpg_path) {
+
+										$output = shell_exec(escapeshellcmd($optimise_jpg_path) . ' -copy none -optimize -progressive -outfile ' . escapeshellarg($image_path) . ' ' . escapeshellarg($image_path));
+
+									} else if ($optimise_png_path) {
+
+										$output = shell_exec(escapeshellcmd($optimise_png_path) . ' ' . escapeshellarg($image_path));
+
 									}
 
 							}
@@ -439,8 +450,17 @@
 
 			}
 
-			private function _jpegtran_path() {
+			private function _optimise_jpg_path() {
 				foreach (array('/usr/bin/jpegtran', '/usr/local/bin/jpegtran') as $path) {
+					if (is_executable($path)) {
+						return $path;
+					}
+				}
+				return NULL;
+			}
+
+			private function _optimise_png_path() {
+				foreach (array('/usr/bin/optipng', '/usr/local/bin/optipng') as $path) {
 					if (is_executable($path)) {
 						return $path;
 					}
