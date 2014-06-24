@@ -186,24 +186,27 @@
 
 	if ($route_asset) {
 
-		if (preg_match('/^(.*)\/([0-9]+)-{(.*)}.(js|css)$/', $route_path, $matches)) {
+		if (preg_match('/^(.*)\/([0-9]+)-{(.*)}(\.min)?\.(js|css)$/', $route_path, $matches)) {
 
 			$route_dir = $matches[1];
 			$route_mtime = $matches[2];
 			$route_file = $matches[3];
-			$route_ext = $matches[4];
+			$route_min = ($matches[4] != '');
+			$route_ext = $matches[5];
 
 			$route_files = array();
 			foreach (explode(',', $route_file) as $path) {
 				$route_files[] = PUBLIC_ROOT . $route_dir . '/' . $path . '.' . $route_ext;
 			}
 
-		} else if (preg_match('/^(.*)\/([0-9]+)-([^\/]*).(js|css)$/', $route_path, $matches)) {
+		} else if (preg_match('/^(.*)\/([0-9]+)-([^\/]*?)(\.min)?\.(js|css)$/', $route_path, $matches)) {
 
 			$route_dir = $matches[1];
 			$route_mtime = $matches[2];
 			$route_file = $matches[3];
-			$route_ext = $matches[4];
+			$route_min = ($matches[4] != '');
+			$route_ext = $matches[5];
+
 			$route_files = array(PUBLIC_ROOT . $route_dir . '/' . $route_file . '.' . $route_ext);
 
 		} else {
@@ -271,11 +274,11 @@
 				//--------------------------------------------------
 				// JS Minify or CSS Tidy support (cached)
 
-					if ($route_ext == 'js' && config::get('output.js_min')) {
+					if ($route_min && $route_ext == 'js' && config::get('output.js_min')) {
 
 						$cache_folder = tmp_folder('js-min');
 
-					} else if ($route_ext == 'css' && config::get('output.css_min')) {
+					} else if ($route_min && $route_ext == 'css' && config::get('output.css_min')) {
 
 						$cache_folder = tmp_folder('css-min');
 
@@ -312,7 +315,7 @@
 								$files_contents = preg_replace('#/\*.*?\*/#s', '', $files_contents); // Remove comments
 								$files_contents = preg_replace('/[ \t]*([{}|:;,])[ \t]+/', '$1', $files_contents); // Remove whitespace (keeping newlines)
 								$files_contents = preg_replace('/^[ \t]+/m', '', $files_contents); // Remove whitespace at the start
-								$files_contents = str_replace(';}', '}', $files_contents); // Remove unnecesairy ;'s
+								$files_contents = str_replace(';}', '}', $files_contents); // Remove unnecessary ;'s
 
 							}
 
@@ -376,7 +379,7 @@
 
 					$new_url = new url();
 					$new_url->format_set('full');
-					$new_url->path_set($route_dir . '/' . $files_mtime . '-' . $route_file . '.' . $route_ext);
+					$new_url->path_set($route_dir . '/' . $files_mtime . '-' . $route_file . ($route_min ? '.min' : '') . '.' . $route_ext);
 
 					redirect($new_url->get(), 301);
 

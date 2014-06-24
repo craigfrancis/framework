@@ -474,12 +474,12 @@
 
 					foreach ($this->resources_get($position == 'head' ? 'js_head' : 'js_foot') as $file) {
 
-						$src = $file['path'];
+						$src = $file['url'];
 						if (substr($src, 0, 1) == '/') {
 							$src = $js_prefix . $src;
 						}
 
-						$js_files[$file['path']] = array_merge(array('src' => $src), $file['attributes']); // Unique path
+						$js_files[$file['url']] = array_merge(array('src' => $src), $file['attributes']); // Unique url
 
 					}
 
@@ -684,20 +684,20 @@
 
 					foreach ($this->resources_get('css') as $file) { // Cannot use array_unique, as some versions of php do not support multi-dimensional arrays
 
-						$path = $file['path'];
+						$url = $file['url'];
 
-						if (substr($path, 0, 1) == '/') {
-							$path = $css_prefix . $path;
+						if (substr($url, 0, 1) == '/') {
+							$url = $css_prefix . $url;
 						}
 
 						if ($css_query_string) {
-							$path = url($path, $css_query_string);
+							$url = url($url, $css_query_string);
 						}
 
 						if ($mode == 'html') {
-							$return .= "\n\t" . '<link rel="stylesheet" type="text/css" href="' . html($path) . '" media="' . html($file['media']) . '" />';
+							$return .= "\n\t" . '<link rel="stylesheet" type="text/css" href="' . html($url) . '" media="' . html($file['media']) . '" />';
 						} else if ($mode == 'xml') {
-							$return .= "\n" . '<?xml-stylesheet href="' . xml($path) . '" media="' . xml($file['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
+							$return .= "\n" . '<?xml-stylesheet href="' . xml($url) . '" media="' . xml($file['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
 						}
 
 					}
@@ -710,20 +710,20 @@
 
 						foreach ($files_alternate as $file) {
 
-							$path = $file['path'];
+							$url = $file['url'];
 
-							if (substr($path, 0, 1) == '/') {
-								$path = $css_prefix . $path;
+							if (substr($url, 0, 1) == '/') {
+								$url = $css_prefix . $url;
 							}
 
 							if ($css_query_string) {
-								$path = url($path, $css_query_string);
+								$url = url($url, $css_query_string);
 							}
 
 							if ($mode == 'html') {
-								$return .= "\n\t" . '<link rel="alternate stylesheet" type="text/css" href="' . html($path) . '" media="' . html($file['media']) . '" title="' . html($file['title']) . '" />';
+								$return .= "\n\t" . '<link rel="alternate stylesheet" type="text/css" href="' . html($url) . '" media="' . html($file['media']) . '" title="' . html($file['title']) . '" />';
 							} else if ($mode == 'xml') {
-								$return .= "\n" . '<?xml-stylesheet href="' . html($path) . '" alternate="yes" title="' . html($file['title']) . '" media="' . html($file['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
+								$return .= "\n" . '<?xml-stylesheet href="' . html($url) . '" alternate="yes" title="' . html($file['title']) . '" media="' . html($file['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
 							}
 
 						}
@@ -757,8 +757,14 @@
 				}
 
 				$version = config::get('output.version', true);
+				$minify = false;
 
 				if ($type == 'js_head' || $type == 'js_foot' || $type == 'js') {
+
+					//--------------------------------------------------
+					// Minify
+
+						$minify = config::get('output.js_min');
 
 					//--------------------------------------------------
 					// Custom JS (first to provide data)
@@ -772,7 +778,8 @@
 							$this->_js_code_save($this->js_code[$position]['data'], $position);
 
 							$files[] = array(
-									'path' => strval(gateway_url('js-code', $this->js_code_ref . '-' . $position . '.js')),
+									'path' => NULL,
+									'url' => strval(gateway_url('js-code', $this->js_code_ref . '-' . $position . '.js')),
 									'attributes' => ($this->js_code[$position]['mode'] == 'inline' ? array() : array($this->js_code[$position]['mode'])),
 								);
 
@@ -827,7 +834,8 @@
 									}
 
 									$files[] = array(
-											'path' => $prefix . $last_modified . '{' . implode(',', array_unique($paths)) . '}.js',
+											'path' => NULL,
+											'url' => $prefix . $last_modified . '{' . implode(',', array_unique($paths)) . '}' . ($minify ? '.min' : '') . '.js',
 											'attributes' => array(),
 										);
 
@@ -837,13 +845,34 @@
 
 						}
 
+				} else if ($type == 'css' || $type == 'css_alternate') {
+
+					//--------------------------------------------------
+					// Minify
+
+						$minify = config::get('output.css_min');
+
 				}
 
-				if ($version) {
-					foreach ($files as $id => $file) {
-						if (substr($file['path'], 0, 1) == '/' && is_file(PUBLIC_ROOT . $file['path'])) {
-							$files[$id]['path'] = version_path($file['path']);
+				foreach ($files as $id => $file) {
+					if (!isset($file['url'])) {
+
+						if ($version && substr($file['path'], 0, 1) == '/' && is_file(PUBLIC_ROOT . $file['path'])) {
+
+							$url = version_path($file['path']);
+
+							if ($minify && ($pos = strrpos($url, '.')) !== false) {
+								$url = substr($url, 0, $pos) . '.min' . substr($url, $pos);
+							}
+
+						} else {
+
+							$url = $file['path'];
+
 						}
+
+						$files[$id]['url'] = $url;
+
 					}
 				}
 
