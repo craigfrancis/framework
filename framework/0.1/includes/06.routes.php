@@ -343,7 +343,7 @@
 								$output .= file_get_contents($realpath);
 							}
 
-							preg_match_all('/@media *(?:only *)?(.*?)(?: +and +)(\((max|min)-width: *([0-9]+)' . preg_quote($viewport_width_unit, '/') . '\)) *{/', $output, $matches, PREG_SET_ORDER);
+							preg_match_all('/@media *(?:only *)?(.*?)(?: +and +)(\((max|min)-width: *([0-9]+)' . preg_quote($viewport_width_unit, '/') . '\))(.*){/', $output, $matches, PREG_SET_ORDER);
 							foreach ($matches as $match) {
 								if ($match[3] == 'min') {
 									$keep = ($match[4] <= $viewport_width_value);
@@ -351,9 +351,9 @@
 									$keep = ($match[4] >= $viewport_width_value);
 								}
 								if ($keep) {
-									$output = str_replace($match[0], '@media ' . $match[1] . ' { /* ' . $match[2] . ' */', $output);
+									$output = str_replace($match[0], '@media ' . $match[1] . $match[5] . '{ /* ' . $match[2] . ' */', $output);
 								} else {
-									$output = str_replace($match[0], '@media none { /* ' . $match[2] . ' */', $output);
+									$output = str_replace($match[0], '@media none' . $match[5] . '{ /* ' . $match[2] . ' */', $output);
 								}
 							}
 
