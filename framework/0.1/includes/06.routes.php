@@ -199,6 +199,8 @@
 				$route_files[] = PUBLIC_ROOT . $route_dir . '/' . $path . '.' . $route_ext;
 			}
 
+			$route_file = '{' . $route_file . '}';
+
 		} else if (preg_match('/^(.*)\/([0-9]+)-([^\/]*?)(\.min)?\.(js|css)$/', $route_path, $matches)) {
 
 			$route_dir = $matches[1];
