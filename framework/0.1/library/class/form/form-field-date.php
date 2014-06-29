@@ -199,21 +199,35 @@
 
 					if (!is_numeric($value)) {
 						if ($value == '0000-00-00' || $value == '0000-00-00 00:00:00') {
+
 							$value = NULL;
+
+						} else if (preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})/', $value, $matches)) { // Should also match "2001-01-00"
+
+							return array(
+									'D' => intval($matches[3]),
+									'M' => intval($matches[2]),
+									'Y' => intval($matches[1]),
+								);
+
 						} else {
+
 							$value = strtotime($value);
 							if ($value == 943920000) { // "1999-11-30 00:00:00", same as the database "0000-00-00 00:00:00"
 								$value = NULL;
 							}
+
 						}
 					}
 
 					if (is_numeric($value)) {
+
 						return array(
 								'D' => intval(date('j', $value)),
 								'M' => intval(date('n', $value)),
 								'Y' => intval(date('Y', $value)), // Don't render year as "0013"
 							);
+
 					}
 
 				} else {

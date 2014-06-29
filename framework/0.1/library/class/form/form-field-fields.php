@@ -374,87 +374,87 @@
 
 			}
 
-			public function html_input_field($field) {
+			public function html_input_field($field, $input_value = NULL) {
 
-				if (in_array($field, $this->fields)) {
+				if (!in_array($field, $this->fields)) {
+					return 'The input field is invalid (' . implode(' / ', $this->fields) . ')';
+				}
 
-					$input_config = $this->input_config[$field];
-					$input_value = $this->_value_print_get();
+				$input_config = $this->input_config[$field];
 
-					$attributes = array(
-							'name' => $this->name . '[' . $field . ']',
-							'id' => $this->id . '_' . $field,
-						);
+				if (!$input_value) {
+					$input_value = $this->_value_print_get(); // html_input() will pass in, but other code may not
+				}
 
-					if ($field != reset($this->fields)) {
-						$attributes['autofocus'] = NULL;
-					}
+				$attributes = array(
+						'name' => $this->name . '[' . $field . ']',
+						'id' => $this->id . '_' . $field,
+					);
 
-					if ($this->type == 'date' && $this->autocomplete === 'bday') {
-						$field_name = array('D' => 'day', 'M' => 'month', 'Y' => 'year');
-						$attributes['autocomplete'] = 'bday-' . $field_name[$field];
-					}
+				if ($field != reset($this->fields)) {
+					$attributes['autofocus'] = NULL;
+				}
 
-					if (isset($input_config['options'])) {
+				if ($this->type == 'date' && $this->autocomplete === 'bday') {
+					$field_name = array('D' => 'day', 'M' => 'month', 'Y' => 'year');
+					$attributes['autocomplete'] = 'bday-' . $field_name[$field];
+				}
 
-						$html = html_tag('select', array_merge($this->_input_attributes(), $attributes));
+				if (isset($input_config['options'])) {
 
-						$html .= '
-										<option value="">' . html($input_config['label']) . '</option>';
+					$html = html_tag('select', array_merge($this->_input_attributes(), $attributes));
 
-						foreach ($input_config['options'] as $option_value => $option_text) {
+					$html .= '
+									<option value="">' . html($input_config['label']) . '</option>';
 
-							$selected = ($input_value[$field] !== NULL && strval($input_value[$field]) === strval($option_value)); // Can't use intval as some fields use text keys, also difference between '' and '0'.
+					foreach ($input_config['options'] as $option_value => $option_text) {
 
-							if ($input_config['pad_length'] > 0) {
-								$option_text = str_pad($option_text, $input_config['pad_length'], $input_config['pad_char'], STR_PAD_LEFT);
-							}
-
-							$html .= '
-										<option value="' . html($option_value) . '"' . ($selected ? ' selected="selected"' : '') . '>' . html($option_text) . '</option>';
-
-						}
-
-						return $html . '
-									</select>';
-
-					} else {
-
-						$value = $input_value[$field];
+						$selected = ($input_value[$field] !== NULL && strval($input_value[$field]) === strval($option_value)); // Can't use intval as some fields use text keys, also difference between '' and '0'.
 
 						if ($input_config['pad_length'] > 0) {
-							if ($value !== NULL && $value !== '') {
-								$value = str_pad($value, $input_config['pad_length'], $input_config['pad_char'], STR_PAD_LEFT);
-							}
-						} else if ($value == 0) {
-							$value = '';
+							$option_text = str_pad($option_text, $input_config['pad_length'], $input_config['pad_char'], STR_PAD_LEFT);
 						}
 
-						$attributes['value'] = $value;
-						$attributes['type'] = 'text';
-
-						if ($input_config['size']) {
-							$attributes['maxlength'] = $input_config['size'];
-							$attributes['size'] = $input_config['size'];
-						}
-
-						return $this->_html_input($attributes);
+						$html .= '
+									<option value="' . html($option_value) . '"' . ($selected ? ' selected="selected"' : '') . '>' . html($option_text) . '</option>';
 
 					}
+
+					return $html . '
+								</select>';
 
 				} else {
 
-					return 'The input field is invalid (' . implode(' / ', $this->fields) . ')';
+					$value = $input_value[$field];
+
+					if ($input_config['pad_length'] > 0) {
+						if ($value !== NULL && $value !== '') {
+							$value = str_pad($value, $input_config['pad_length'], $input_config['pad_char'], STR_PAD_LEFT);
+						}
+					} else if ($value == 0) {
+						$value = '';
+					}
+
+					$attributes['value'] = $value;
+					$attributes['type'] = 'text';
+
+					if ($input_config['size']) {
+						$attributes['maxlength'] = $input_config['size'];
+						$attributes['size'] = $input_config['size'];
+					}
+
+					return $this->_html_input($attributes);
 
 				}
 
 			}
 
 			public function html_input() {
+				$input_value = $this->_value_print_get();
 				$input_html = array();
 				foreach ($this->input_order as $html) {
 					if (in_array($html, $this->fields)) {
-						$input_html[] = $this->html_input_field($html);
+						$input_html[] = $this->html_input_field($html, $input_value);
 					} else {
 						$input_html[] = $html;
 					}
