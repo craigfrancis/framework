@@ -337,6 +337,18 @@
 				//--------------------------------------------------
 				// Communication
 
+// TODO:
+// $contextOptions = array(
+// 	'ssl' => array(
+// 		'verify_peer' => true,
+// 		'cafile' => '/path/to/cafile.pem',
+// 		'CN_match' => 'example.com',
+// 		'ciphers' => 'HIGH:!SSLv2:!SSLv3',
+// 	),
+// );
+// $context = stream_context_create($contextOptions);
+// http://www.docnet.nu/tech-portal/2014/06/26/ssl-and-php-streams-part-1-you-are-doing-it-wrongtm/C0
+
 					$this->connection = @fsockopen($socket_host, $port, $errno, $errstr, 5);
 					if ($this->connection) {
 
