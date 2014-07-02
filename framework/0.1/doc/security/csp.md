@@ -9,6 +9,7 @@ Ideally a new website will start with:
 
 	$config['output.csp_enabled'] = true;
 	$config['output.csp_enforced'] = true;
+	$config['output.csp_report'] = false;
 
 To customise the directives, start with something like:
 

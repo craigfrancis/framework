@@ -1427,7 +1427,7 @@
 
 							$csp = config::get('output.csp_directives');
 
-							if (!array_key_exists('report-uri', $csp)) { // isset returns false for NULL
+							if (config::get('output.csp_report', false) && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
 								$csp['report-uri'] = gateway_url('csp-report');
 							}
 
