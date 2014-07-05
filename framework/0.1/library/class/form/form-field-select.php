@@ -383,7 +383,7 @@
 								}
 
 								$group_html .= '
-											<option value="' . html($key) . '"' . (in_array($key, $print_values, true) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
+											<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 							}
 
@@ -409,8 +409,10 @@
 					foreach ($this->option_values as $key => $value) {
 						if (!in_array($key, $used_keys)) {
 
+								// Cannot do strict check with in_array() as an ID from the db may be a string or int.
+
 							$html .= '
-										<option value="' . html($key) . '"' . (in_array($key, $print_values, true) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
+										<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 						}
 					}
