@@ -46,7 +46,7 @@
 				$attributes['id'] = $this->field_id_by_key_get($key);
 				$attributes['value'] = ($key === NULL ? '' : $key);
 
-				$checked = in_array($attributes['value'], $this->value_print_cache);
+				$checked = in_array($attributes['value'], $this->value_print_cache, true);
 
 				if ($key === NULL && count($this->value_print_cache) == 0) {
 					$checked = true;

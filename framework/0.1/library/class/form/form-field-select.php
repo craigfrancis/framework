@@ -383,7 +383,7 @@
 								}
 
 								$group_html .= '
-											<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
+											<option value="' . html($key) . '"' . (in_array($key, $print_values, true) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 							}
 
@@ -410,7 +410,7 @@
 						if (!in_array($key, $used_keys)) {
 
 							$html .= '
-										<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
+										<option value="' . html($key) . '"' . (in_array($key, $print_values, true) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 						}
 					}
