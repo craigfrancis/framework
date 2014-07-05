@@ -81,9 +81,9 @@ You can add a `$config` array to the unit, which will parse/validate the incomin
 			'list' => array('default' => array()),
 		);
 
-Anything which does not have a 'default' value will be required, and a 'type' can be specified, which will convert the variable to that type (url, int, or str).
+Anything which does not have a 'default' value is required.
 
-As object properties in PHP cannot use objects themselves, a type of 'url' will take a default url string, and convert it to a url object.
+If a 'type' is specified, it will convert any non NULL values to that type (url/int/str).
 
 ---
 

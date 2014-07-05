@@ -51,23 +51,19 @@
 						$value = $config[$key];
 					} else if (!is_array($setup)) {
 						$value = $setup;
-					} else if (array_key_exists('default', $setup)) {
+					} else if (array_key_exists('default', $setup)) { // No need for 'required', just set 'default' to NULL
 						$value = $setup['default'];
 					} else {
 						$errors[] = 'Missing config: ' . $key;
 						continue;
 					}
 
-					if (is_array($setup) && isset($setup['type'])) {
+					if (is_array($setup) && isset($setup['type']) && $value !== NULL) {
 						if ($setup['type'] == 'url') {
-							if ((!is_object($value) || !is_a($value, 'url'))) {
-								if ($value === NULL) {
-									$value = url(); // If you specify a 'type' it will always be that type.
-								} else if (is_string($value)) {
-									$value = url($value);
-								} else {
-									$errors[] = 'Unrecognised url value for: ' . $key;
-								}
+							if (is_string($value)) {
+								$value = url($value);
+							} else if ((!is_object($value) || !is_a($value, 'url'))) {
+								$errors[] = 'Unrecognised url value for: ' . $key;
 							}
 						} else if ($setup['type'] == 'int') {
 							$value = intval($value);
