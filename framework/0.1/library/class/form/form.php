@@ -1174,7 +1174,7 @@
 						if ($form_action_query) {
 							parse_str($form_action_query, $form_action_query);
 							foreach ($form_action_query as $name => $value) {
-								if (!isset($input_fields[$name]) && !in_array($name, $field_names)) {
+								if (!isset($input_fields[$name]) && !in_array($name, $field_names) && !is_array($value)) { // Currently does not support ./?a[]=1&a[]=2&a[]=3
 									$input_fields[$name] = $value;
 								}
 							}
