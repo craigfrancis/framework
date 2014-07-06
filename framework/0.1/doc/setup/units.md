@@ -76,8 +76,8 @@ You can add a `$config` array to the unit, which will parse/validate the incomin
 			'id'   => array('type' => 'int'),
 			'url1' => array('type' => 'url'),
 			'url2' => array('type' => 'url', 'default' => './thank-you/'),
-			'url3' => array('default' => NULL),
-			'name' => array('default' => 'Unknown'),
+			'url3' => array('type' => 'url', 'default' => NULL),
+			'name' => array('type' => 'str', 'default' => 'Unknown'),
 			'list' => array('default' => array()),
 		);
 

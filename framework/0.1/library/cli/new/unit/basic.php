@@ -3,15 +3,15 @@
 	class [CLASS_NAME]_unit extends unit {
 
 		protected $config = array(
-				'name' => array('default' => 'Unknown'),
+				'name' => array('type' => 'str', 'default' => 'Unknown'),
 			);
 
 		// protected $config = array(
 		// 		'id'   => array('type' => 'int'),
-		// 		'url'  => array('type' => 'url'),
-		// 		'url'  => array('type' => 'url', 'default' => './thank-you/'),
-		// 		'url'  => array('default' => NULL),
-		// 		'name' => array('default' => 'Unknown'),
+		// 		'url1' => array('type' => 'url'),
+		// 		'url2' => array('type' => 'url', 'default' => './thank-you/'),
+		// 		'url3' => array('type' => 'url', 'default' => NULL),
+		// 		'name' => array('type' => 'str', 'default' => 'Unknown'),
 		// 		'list' => array('default' => array()),
 		// 	);
 
