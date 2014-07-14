@@ -20,6 +20,7 @@ You can enable this by either setting the `SERVER` constant to 'stage', or the v
 	define('SERVER', 'stage');
 
 	$config['debug.level'] = 4;
+	$config['debug.show'] = true;
 
 When enabled all HTML pages should get a little bit of debug information at the bottom of the page.
 

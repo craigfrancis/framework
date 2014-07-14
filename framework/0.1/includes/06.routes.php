@@ -66,6 +66,18 @@
 		}
 
 	//--------------------------------------------------
+	// BrowserConfig - requested without cookies in IE,
+	// so a new session could be created.
+
+		if ($route_path == '/browserconfig.xml') { // https://groups.google.com/d/topic/cake-PHP/2mK_9rq16fY
+
+			header('Content-Type: application/xml; charset=' . head(config::get('output.charset')));
+
+			exit('<?xml version="1.0" encoding="utf-8"?><browserconfig></browserconfig>');
+
+		}
+
+	//--------------------------------------------------
 	// Favicon
 
 		if ($route_path == '/favicon.ico') {
