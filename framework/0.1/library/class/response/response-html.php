@@ -1143,7 +1143,7 @@
 					//--------------------------------------------------
 					// Redirect
 
-						if (!$view_exists && config::get('db.host') !== NULL && ($this->error === false || $this->error == 'page-not-found')) {
+						if ((($this->error === false && !$view_exists) || ($this->error == 'page-not-found')) && (config::get('db.host') !== NULL)) {
 
 							if (config::get('debug.level') > 0) {
 
