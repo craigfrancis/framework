@@ -1,5 +1,13 @@
 <?php
+
+// http://windows.microsoft.com/en-GB/windows-vista/block-or-allow-cookies
+// http://windows.microsoft.com/en-gb/windows7/how-to-manage-cookies-in-internet-explorer-9
+// https://support.mozilla.org/en-US/kb/enable-and-disable-cookies-website-preferences
+// https://support.google.com/accounts/answer/61416?hl=en
+// http://support.apple.com/kb/HT1677
+
 	$response->set('title_html', '<h1>Your browser does not accept cookies!</h1>');
+
 ?>
 
 	<p>To enable cookies, follow the instructions below for the browser version you are using.</p>
