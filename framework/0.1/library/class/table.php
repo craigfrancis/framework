@@ -400,6 +400,8 @@
 							//--------------------------------------------------
 							// HTML content, url, and class
 
+								$attributes_html = '';
+
 								if ($this->sort_name === NULL || $heading_info['sort_id'] === NULL) {
 
 									$heading_html = $heading_info['html'];
@@ -412,6 +414,8 @@
 
 									$heading_info['class_name'] .= ' sorted ' . ($sort_asc ? 'sorted_asc' : 'sorted_desc');
 
+									$attributes_html .= ' aria-sort="' . ($sort_asc ? 'ascending' : 'descending') . '"'; // http://www.w3.org/TR/wai-aria/states_and_properties#aria-sort
+
 								} else {
 
 									$url = $this->sort_url_get($heading_info['sort_id'], 'A');
@@ -423,7 +427,7 @@
 							//--------------------------------------------------
 							// Attributes - scope
 
-								$attributes_html = ' scope="col"';
+								$attributes_html .= ' scope="col"';
 
 							//--------------------------------------------------
 							// Attributes - col span

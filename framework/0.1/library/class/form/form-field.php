@@ -484,6 +484,10 @@
 					$attributes['readonly'] = 'readonly';
 				}
 
+				if (!$this->valid()) {
+					$attributes['aria-invalid'] = 'true';
+				}
+
 				return $attributes;
 
 			}
