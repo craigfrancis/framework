@@ -427,7 +427,7 @@
 							//--------------------------------------------------
 							// Attributes - scope
 
-								$attributes_html .= ' scope="col"';
+								$attributes_html = ' scope="col"' . $attributes_html;
 
 							//--------------------------------------------------
 							// Attributes - col span
