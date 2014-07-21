@@ -32,7 +32,7 @@
 							'base_url' => NULL,
 							'mode' => 'link', // or 'form'
 							'variable' => 'page',
-							'elements' => array('<p class="pagination">', 'hidden', 'first', 'back', 'links', 'next', 'last', 'extra', '</p>' . "\n"),
+							'elements' => array('<p class="pagination" role="list">', 'hidden', 'first', 'back', 'links', 'next', 'last', 'extra', '</p>' . "\n"),
 							'indent_html' => "\n\t\t\t\t",
 							'first_html' => NULL,
 							'back_html' => '[«]',
@@ -427,7 +427,7 @@
 
 						$link_html = $this->page_link_get_html(str_pad($start, $this->config['number_pad'], '0', STR_PAD_LEFT), $start);
 
-						$page_links_html[] = '<' . html($this->config['link_wrapper_element']) . ' class="pagination_page pagination_page_' . $i . ($c ? ' pagination_current' : '') . '">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
+						$page_links_html[] = '<' . html($this->config['link_wrapper_element']) . ' role="listitem" aria-setsize="' . html($this->page_count) . '" aria-posinset="' . html($start) . '" class="pagination_page pagination_page_' . html($i) . ($c ? ' pagination_current' : '') . '">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
 					}
 
