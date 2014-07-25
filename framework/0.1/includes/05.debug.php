@@ -623,12 +623,18 @@
 
 						$tables = array();
 
-						if (preg_match('/WHERE(.*)/ims', $query, $matches)) {
-							$where_sql = $matches[1];
-							$where_sql = preg_replace('/ORDER BY.*/ms', '', $where_sql);
-							$where_sql = preg_replace('/LIMIT\W+[0-9].*/ms', '', $where_sql);
-						} else {
-							$where_sql = '';
+						// if (preg_match('/WHERE(.*)/ims', $query, $matches)) {
+						// 	$where_sql = $matches[1];
+						// 	$where_sql = preg_replace('/ORDER BY.*/ms', '', $where_sql);
+						// 	$where_sql = preg_replace('/LIMIT\W+[0-9].*/ms', '', $where_sql);
+						// } else {
+						// 	$where_sql = '';
+						// }
+
+						$where_sql = '';
+						preg_match_all('/WHERE(.*?)(GROUP BY|ORDER BY|LIMIT\W+[0-9]|LEFT JOIN|$)/is', $query, $matches_sql, PREG_SET_ORDER);
+						foreach ($matches_sql as $match_sql) {
+							$where_sql .= $match_sql[1];
 						}
 
 						if (DB_PREFIX != '') {
