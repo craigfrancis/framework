@@ -384,16 +384,21 @@
 					$col_class = array();
 					$col_count = 0;
 
+						// Yes, the @roles are not really necessary, but still required
+						// to validate, and begrudgingly show screen readers we are
+						// not using the table for layout purposes.
+						// http://stackoverflow.com/questions/24863531
+
 					$output_html = '
-						<table' . ($this->id_name != '' ? ' id="' . html($this->id_name) . '"' : '') . ($this->class_name != '' ? ' class="' . html($this->class_name) . '"' : '') . '>
-							<thead>';
+						<table role="grid"' . ($this->id_name != '' ? ' id="' . html($this->id_name) . '"' : '') . ($this->class_name != '' ? ' class="' . html($this->class_name) . '"' : '') . '>
+							<thead role="rowgroup">';
 
 					foreach ($this->headings as $row_id => $heading_row) {
 
 						$col_id = 0;
 
 						$output_html .= '
-								<tr>';
+								<tr role="row">';
 
 						foreach ($heading_row as $heading_info) {
 
@@ -425,11 +430,6 @@
 								}
 
 							//--------------------------------------------------
-							// Attributes - scope
-
-								$attributes_html = ' scope="col"' . $attributes_html;
-
-							//--------------------------------------------------
 							// Attributes - col span
 
 								if ($heading_info['colspan'] > 1) {
@@ -459,7 +459,7 @@
 								}
 
 								$output_html .= '
-										<th' . $attributes_html . '>' . $heading_html . '</th>';
+										<th role="columnheader" scope="col"' . $attributes_html . '>' . $heading_html . '</th>';
 
 							//--------------------------------------------------
 							// Column ID
@@ -486,14 +486,14 @@
 					if (count($this->footers)) {
 
 						$output_html .= '
-							<tfoot>';
+							<tfoot role="rowgroup">';
 
 						foreach ($this->footers as $footer_row) {
 
 							$col_id = 0;
 
 							$output_html .= '
-								<tr>';
+								<tr role="row">';
 
 							foreach ($footer_row as $footer_info) {
 
@@ -528,7 +528,7 @@
 									}
 
 									$output_html .= '
-										<td' . $attributes_html . '>' . $footer_info['html'] . '</td>';
+										<td role="gridcell"' . $attributes_html . '>' . $footer_info['html'] . '</td>';
 
 								//--------------------------------------------------
 								// Column ID
@@ -551,7 +551,7 @@
 				// Data
 
 					$output_html .= '
-							<tbody>';
+							<tbody role="rowgroup">';
 
 					$row_count = 0;
 
@@ -561,7 +561,7 @@
 						$row_id = $this->rows[$row_key]['id_name'];
 
 						$output_html .= '
-								<tr';
+								<tr role="row"';
 
 						if ($row_id != '') {
 							$output_html .= ' id="' . html($row_id) . '"';
@@ -608,7 +608,7 @@
 								}
 
 								$output_html .= '
-									<td' . $attributes_html . '>' . $cell_info['html'] . '</td>';
+									<td role="gridcell"' . $attributes_html . '>' . $cell_info['html'] . '</td>';
 
 							//--------------------------------------------------
 							// Column ID
@@ -639,7 +639,7 @@
 							// HTML
 
 								$output_html .= '
-									<td' . $attributes_html . '>&#xA0;</td>';
+									<td role="gridcell"' . $attributes_html . '>&#xA0;</td>';
 
 							//--------------------------------------------------
 							// Column ID
@@ -660,7 +660,7 @@
 
 						$output_html .= '
 								<tr>
-									<td colspan="' . html($col_count) . '" class="no_results">' . $this->no_records_html . '</td>
+									<td role="gridcell" colspan="' . html($col_count) . '" class="no_results">' . $this->no_records_html . '</td>
 								</tr>';
 
 					}
