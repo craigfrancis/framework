@@ -120,6 +120,16 @@
 				return $field_payment_town_city;
 			}
 
+			public function field_payment_region_get() {
+				$field_payment_region = new form_field_text($this, 'County or state');
+				$field_payment_region->db_field_set('payment_region');
+				$field_payment_region->wrapper_class_add('payment required');
+				$field_payment_region->autocomplete_set('billing administrative-area');
+				$field_payment_region->min_length_set('Your payment county or state is required.');
+				$field_payment_region->max_length_set('Your payment county or state cannot be longer than XXX characters.');
+				return $field_payment_region;
+			}
+
 			public function field_payment_postcode_get() {
 				if ($this->postcode_format !== NULL) {
 					$field_payment_postcode = new form_field_postcode($this, 'Postcode');
@@ -238,6 +248,21 @@
 				}
 
 				return $field_delivery_town_city;
+			}
+
+			public function field_delivery_region_get() {
+
+				$field_delivery_region = new form_field_text($this, 'County or state');
+				$field_delivery_region->db_field_set('delivery_region');
+				$field_delivery_region->wrapper_class_add('delivery required');
+				$field_delivery_region->autocomplete_set('shipping administrative-area');
+				$field_delivery_region->max_length_set('Your delivery county or state cannot be longer than XXX characters.');
+
+				if (!$this->field_exists('delivery_different')) {
+					$field_delivery_region->min_length_set('Your delivery county or state is required.');
+				}
+
+				return $field_delivery_region;
 			}
 
 			public function field_delivery_postcode_get() {

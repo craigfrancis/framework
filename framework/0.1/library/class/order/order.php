@@ -59,6 +59,7 @@
 									payment_address_2 tinytext NOT NULL,
 									payment_address_3 tinytext NOT NULL,
 									payment_town_city tinytext NOT NULL,
+									payment_region tinytext NOT NULL,
 									payment_postcode tinytext NOT NULL,
 									payment_country tinytext NOT NULL,
 									payment_telephone tinytext NOT NULL,
@@ -68,6 +69,7 @@
 									delivery_address_2 tinytext NOT NULL,
 									delivery_address_3 tinytext NOT NULL,
 									delivery_town_city tinytext NOT NULL,
+									delivery_region tinytext NOT NULL,
 									delivery_postcode tinytext NOT NULL,
 									delivery_country tinytext NOT NULL,
 									delivery_telephone tinytext NOT NULL,
@@ -403,6 +405,10 @@
 
 						if ($form->field_exists('delivery_town_city') && $form->field_get('delivery_town_city')->value_get() == '') {
 							$form->field_get('delivery_town_city')->error_add('Your delivery town or city is required.');
+						}
+
+						if ($form->field_exists('delivery_region') && $form->field_get('delivery_region')->value_get() == '') {
+							$form->field_get('delivery_region')->error_add('Your delivery county or state is required.');
 						}
 
 						if ($form->field_exists('delivery_postcode') && $form->field_get('delivery_postcode')->value_get() == '') {

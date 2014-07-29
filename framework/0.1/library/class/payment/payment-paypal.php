@@ -115,6 +115,7 @@
 									'delivery_address_2',
 									'delivery_address_3',
 									'delivery_town_city',
+									'delivery_region',
 									'delivery_postcode',
 									'delivery_country',
 									'delivery_telephone',
@@ -174,6 +175,7 @@
 						$details['PAYMENTREQUEST_0_SHIPTOSTREET'] = $order_values['delivery_address_1'];
 						$details['PAYMENTREQUEST_0_SHIPTOSTREET2'] = $order_values['delivery_address_2'];
 						$details['PAYMENTREQUEST_0_SHIPTOCITY'] = $order_values['delivery_town_city'];
+						$details['PAYMENTREQUEST_0_SHIPTOSTATE'] = $order_values['delivery_region'];
 						$details['PAYMENTREQUEST_0_SHIPTOZIP'] = $order_values['delivery_postcode'];
 						$details['PAYMENTREQUEST_0_SHIPTOCOUNTRYCODE'] = $order_values['delivery_country'];
 						$details['PAYMENTREQUEST_0_SHIPTOPHONENUM'] = $order_values['delivery_telephone'];

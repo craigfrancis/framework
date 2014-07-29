@@ -107,6 +107,7 @@ Will probably also want to look at the [payment](../../doc/system/payment.md) he
 		$form->field_get('payment_address_2');
 		$form->field_get('payment_address_3');
 		$form->field_get('payment_town_city');
+		$form->field_get('payment_region');
 		$form->field_get('payment_postcode');
 		$form->field_get('payment_country');
 		$form->field_get('payment_telephone');
@@ -118,6 +119,7 @@ Will probably also want to look at the [payment](../../doc/system/payment.md) he
 		$form->field_get('delivery_address_2');
 		$form->field_get('delivery_address_3');
 		$form->field_get('delivery_town_city');
+		$form->field_get('delivery_region');
 		$form->field_get('delivery_postcode');
 		$form->field_get('delivery_country');
 		$form->field_get('delivery_telephone');
