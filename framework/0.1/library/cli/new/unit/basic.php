@@ -12,6 +12,7 @@
 		// 		'url2' => array('type' => 'url', 'default' => './thank-you/'),
 		// 		'url3' => array('type' => 'url', 'default' => NULL),
 		// 		'name' => array('type' => 'str', 'default' => 'Unknown'),
+		// 		'item' => array('type' => 'obj'),
 		// 		'list' => array('default' => array()),
 		// 	);
 

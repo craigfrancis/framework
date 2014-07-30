@@ -69,6 +69,10 @@
 							$value = intval($value);
 						} else if ($setup['type'] == 'str') {
 							$value = strval($value);
+						} else if ($setup['type'] == 'obj') {
+							if (!is_object($value)) {
+								$errors[] = 'Unrecognised object value for: ' . $key;
+							}
 						} else {
 							$errors[] = 'Unrecognised variable type "' . $setup['type'] . '" for: ' . $key;
 						}

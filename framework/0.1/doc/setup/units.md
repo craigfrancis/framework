@@ -78,12 +78,13 @@ You can add a `$config` array to the unit, which will parse/validate the incomin
 			'url2' => array('type' => 'url', 'default' => './thank-you/'),
 			'url3' => array('type' => 'url', 'default' => NULL),
 			'name' => array('type' => 'str', 'default' => 'Unknown'),
+			'item' => array('type' => 'obj'),
 			'list' => array('default' => array()),
 		);
 
 Anything which does not have a 'default' value is required.
 
-If a 'type' is specified, it will convert any non NULL values to that type (url/int/str).
+If a 'type' is specified, it will convert any non NULL values to that type (int/str/url), or throw error if is cannot be converted (url/obj).
 
 ---
 
