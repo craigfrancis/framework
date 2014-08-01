@@ -5,6 +5,16 @@
 
 	define('FRAMEWORK_START', microtime(true));
 
+	if (function_exists('apache_note')) {
+
+		function log_shutdown() {
+			apache_note('TIME_INFO', number_format(round((microtime(true) - FRAMEWORK_START), 4), 4));
+		}
+
+		register_shutdown_function('log_shutdown');
+
+	}
+
 //--------------------------------------------------
 // Version
 
@@ -161,13 +171,6 @@
 
 			unset($include_path);
 
-	}
-
-//--------------------------------------------------
-// Processing time
-
-	if (function_exists('apache_note')) {
-		apache_note('TIME_INFO', number_format(round((microtime(true) - FRAMEWORK_START), 4), 4));
 	}
 
 ?>
