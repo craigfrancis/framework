@@ -4,7 +4,8 @@
 		ServerName www.phpprime.com
 
 		DocumentRoot /www/live/craig.framework/app/public/
-		CustomLog /www/live/craig.framework/logs/access_log combined
+
+		CustomLog /www/live/craig.framework/logs/access_log inc_info
 		ErrorLog /www/live/craig.framework/logs/error_log
 
 		<IfModule php5_module>
