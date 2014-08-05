@@ -28,7 +28,15 @@
 
 	<Directory "/www/live/craig.framework/app/public/">
 
-		AllowOverride All
+		AllowOverride None
+
+		Options -Indexes
+
+		RewriteEngine On
+		RewriteCond %{REQUEST_FILENAME} !^/a/files/
+		RewriteCond %{REQUEST_FILENAME} !-d
+		RewriteCond %{REQUEST_FILENAME} !-f
+		RewriteRule ^(.*)$ /www/live/craig.framework/app/public/index.php [L]
 
 	</Directory>
 
