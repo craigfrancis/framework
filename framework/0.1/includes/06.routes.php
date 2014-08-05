@@ -28,21 +28,6 @@
 		unset($url_prefix);
 
 	//--------------------------------------------------
-	// Title folders
-
-		$title_folders = array();
-
-		foreach (path_to_array($route_path) as $folder) {
-			if ($folder != '') {
-				$title_folders[] = link_to_human($folder);
-			}
-		}
-
-		config::set('output.title_folders', $title_folders);
-
-		unset($title_folders, $folder);
-
-	//--------------------------------------------------
 	// Robots
 
 		if ($route_path == '/robots.txt') {
@@ -158,6 +143,21 @@
 			}
 
 		}
+
+	//--------------------------------------------------
+	// Title folders
+
+		$title_folders = array();
+
+		foreach (path_to_array($route_path) as $folder) {
+			if ($folder != '') {
+				$title_folders[] = link_to_human($folder);
+			}
+		}
+
+		config::set('output.title_folders', $title_folders);
+
+		unset($title_folders, $folder);
 
 	//--------------------------------------------------
 	// Gateway
