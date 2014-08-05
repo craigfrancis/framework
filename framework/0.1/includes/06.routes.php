@@ -115,9 +115,18 @@
 
 		if (!$route_asset) { // Don't worry about files like "jQuery.js"
 
-			$new_path = strtolower($route_path);
-			$new_path = str_replace('_', '-', $route_path);
-			$new_path = preg_replace('/\/\/+/', '/', $new_path);
+			$new_path = array();
+			foreach (path_to_array($route_path) as $folder) {
+				$new_path[] = safe_file_name($folder); // Avoid issues such as /~admin/ not calling the controller, but still loading /admin.ctp.
+			}
+			if (count($new_path) > 0) {
+				$new_path = '/' . implode('/', $new_path) . '/';
+			} else {
+				$new_path = '/';
+			}
+
+			$new_path = strtolower($new_path);
+			$new_path = str_replace('_', '-', $new_path);
 
 			if (substr($new_path, -1) != '/') {
 				$new_path .= '/';
