@@ -16,7 +16,7 @@
 			private $fragment = NULL;
 			private $format = NULL;
 			private $scheme = NULL;
-			private $schemes = array('http', 'https');
+			private $schemes = array('http', 'https', 'mailto');
 
 		//--------------------------------------------------
 		// Setup
@@ -154,6 +154,9 @@
 
 					if (count($query) > 0) {
 						$query = $this->_query_build($query);
+						if (substr($output, 0, 7) === 'mailto:') {
+							$query = str_replace('+', '%20', $query); // RFC1738 to RFC3986, not possible with http_build_query on PHP 5.3
+						}
 						if ($query != '') {
 							$output .= '?' . $query;
 						}
@@ -188,6 +191,30 @@
 
 					if ($this->path_cache !== NULL) {
 						return;
+					}
+
+				//--------------------------------------------------
+				// Scheme
+
+					if ($this->scheme !== NULL) {
+						$scheme = $this->scheme;
+					} else {
+						if (isset($this->path_data['scheme'])) {
+							$scheme = $this->path_data['scheme'];
+						} else {
+							$scheme = NULL;
+						}
+					}
+
+				//--------------------------------------------------
+				// Mail to support
+
+					if ($scheme === 'mailto') {
+
+						$this->path_cache = 'mailto:' . (isset($this->path_data['path']) ? urlencode($this->path_data['path']) : '');
+
+						return;
+
 					}
 
 				//--------------------------------------------------
@@ -270,28 +297,16 @@
 							//--------------------------------------------------
 							// Scheme
 
-								if ($this->scheme !== NULL) {
+								if ($scheme == 'https' && $host == config::get('output.domain') && !https_available()) {
 
-									$scheme = $this->scheme;
+									$scheme = 'http'; // Drop down to HTTP if HTTPS is not available.
 
-									if ($scheme == 'https' && $host == config::get('output.domain') && !https_available()) {
-										$scheme = 'http'; // Drop down to HTTP if HTTPS is not available.
-									}
+								} else if ($scheme === '' || $scheme === NULL) {
 
-								} else {
-
-									if (isset($this->path_data['scheme'])) {
-										$scheme = $this->path_data['scheme'];
+									if ($host == config::get('output.domain')) {
+										$scheme = (https_available() || config::get('request.https') ? 'https' : 'http'); // Go with HTTPS if possible
 									} else {
-										$scheme = NULL;
-									}
-
-									if ($scheme === '' || $scheme === NULL) {
-										if ($host == config::get('output.domain')) {
-											$scheme = (https_only() || config::get('request.https') ? 'https' : 'http');
-										} else {
-											$scheme = 'http';
-										}
+										$scheme = 'http'; // Safe default
 									}
 
 								}
@@ -420,6 +435,7 @@
 		echo '&#xA0; ' . html(url('http://user:pass@www.example.com:80/about/folder/?id=example#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(http_url('./thank-you/')) . '<br />' . "\n";
 		echo '&#xA0; ' . html(https_url()) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('mailto:user@example.com', array('subject' => 'My Subject'))) . '<br />' . "\n";
 
 		$example = new url('/news/?d=e#top', 'id', array('id' => 10, 'a' => 'b'));
 		echo "<br />\n";
