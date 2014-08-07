@@ -3,12 +3,19 @@
 //--------------------------------------------------
 // Config
 
-echo getcwd() . "\n";
-
 	define('ROOT', getcwd());
 	define('CLI_ROOT', dirname(__FILE__));
 	define('FRAMEWORK_INIT_ONLY', true);
 	define('REQUEST_MODE', 'cli');
+
+	if (substr(ROOT, -14) == '/upload/files/') {
+		$private_root = substr(ROOT, 0, -13) . '/private'; // We won't be uploading private files, and it may contain a "private app config" ini file.
+		if (is_dir($private_root)) {
+			define('PRIVATE_ROOT', $private_root);
+echo $private_root . "\n";
+		}
+		unset($private_root);
+	}
 
 	require_once(CLI_ROOT . '/../bootstrap.php');
 
