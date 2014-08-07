@@ -9,8 +9,8 @@
 	define('REQUEST_MODE', 'cli');
 
 echo '#1#' . ROOT . "\n";
-echo '#2#' . substr(ROOT, -14) . "\n";
-	if (substr(ROOT, -14) == '/upload/files/') {
+echo '#2#' . substr(ROOT, -13) . "\n";
+	if (substr(ROOT, -13) == '/upload/files') {
 		$private_root = substr(ROOT, 0, -13) . '/private'; // We won't be uploading private files, and it may contain a "private app config" ini file.
 		if (is_dir($private_root)) {
 			define('PRIVATE_ROOT', $private_root);
