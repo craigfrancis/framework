@@ -322,6 +322,17 @@
 		config::set_default('gateway.tester', false);
 
 //--------------------------------------------------
+// Private app config
+
+	$include_path = PRIVATE_ROOT . '/config.' . safe_file_name(SERVER) . '.ini';
+
+	if (is_file($include_path)) {
+		foreach (parse_ini_file($include_path) as $key => $value) {
+			config::set($key, $value);
+		}
+	}
+
+//--------------------------------------------------
 // Character set
 
 	mb_internal_encoding(config::get('output.charset'));
