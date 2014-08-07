@@ -3,6 +3,8 @@
 //--------------------------------------------------
 // Config
 
+echo getcwd() . "\n";
+
 	define('ROOT', getcwd());
 	define('CLI_ROOT', dirname(__FILE__));
 	define('FRAMEWORK_INIT_ONLY', true);
