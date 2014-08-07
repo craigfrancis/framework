@@ -325,7 +325,7 @@
 // Private app config
 
 	$include_path = PRIVATE_ROOT . '/config.' . safe_file_name(SERVER) . '.ini';
-
+echo $include_path . "\n";
 	if (is_file($include_path)) {
 		foreach (parse_ini_file($include_path) as $key => $value) {
 			config::set($key, $value);
