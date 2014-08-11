@@ -1177,12 +1177,12 @@
 
 							} else {
 
-								system_redirect($url, '', array(
-										'permanent' => false,
-										'enabled' => false,
-										'requested' => true,
-										'referrer' => config::get('request.referrer'),
-									));
+								// system_redirect($url, '', array(
+								// 		'permanent' => false,
+								// 		'enabled' => false,
+								// 		'requested' => true,
+								// 		'referrer' => config::get('request.referrer'),
+								// 	));
 
 							}
 
