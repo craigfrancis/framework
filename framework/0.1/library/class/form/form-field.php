@@ -292,6 +292,18 @@
 				$this->required_mark_html = $required_mark_html;
 			}
 
+			public function required_mark_get_html($required_mark_position = NULL) {
+				if ($this->required) {
+					if ($this->required_mark_html !== NULL) {
+						return $this->required_mark_html;
+					} else {
+						return $this->form->required_mark_get_html($required_mark_position);
+					}
+				} else {
+					return NULL;
+				}
+			}
+
 			public function required_mark_position_set($position) {
 				if ($position == 'left' || $position == 'right' || $position == 'none') {
 					$this->required_mark_position = $position;
@@ -498,30 +510,14 @@
 			public function html_label($label_html = NULL) {
 
 				//--------------------------------------------------
-				// Required mark position
+				// Required mark
 
 					$required_mark_position = $this->required_mark_position;
 					if ($required_mark_position === NULL) {
 						$required_mark_position = $this->form->required_mark_position_get();
 					}
 
-				//--------------------------------------------------
-				// If this field is required, try to get a required
-				// mark of some form
-
-					if ($this->required) {
-
-						$required_mark_html = $this->required_mark_html;
-
-						if ($required_mark_html === NULL) {
-							$required_mark_html = $this->form->required_mark_get_html($required_mark_position);
-						}
-
-					} else {
-
-						$required_mark_html = NULL;
-
-					}
+					$required_mark_html = $this->required_mark_get_html($required_mark_position);
 
 				//--------------------------------------------------
 				// Return the HTML for the label
