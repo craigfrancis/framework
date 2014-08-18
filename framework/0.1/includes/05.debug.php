@@ -205,7 +205,7 @@
 						$err_line = $called_from['line'];
 						$err_file = $called_from['file'];
 
-						$err_str .= ' (' . $called_from['args'][0] . ')';
+						$err_str .= ' (' . (isset($called_from['args'][0]) ? $called_from['args'][0] : 'NULL') . ')';
 
 					}
 
