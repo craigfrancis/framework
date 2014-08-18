@@ -22,6 +22,7 @@
 			private $response_data = '';
 			private $exit_on_error = true;
 			private $error_string = NULL;
+			private $error_data = NULL;
 			private $connection = NULL;
 
 		//--------------------------------------------------
@@ -165,6 +166,10 @@
 				return $this->error_string;
 			}
 
+			public function error_data_get() {
+				return $this->error_data;
+			}
+
 		//--------------------------------------------------
 		// Connection
 
@@ -174,6 +179,7 @@
 				// No error
 
 					$this->error_string = NULL;
+					$this->error_data = NULL;
 
 				//--------------------------------------------------
 				// Post data with GET request
@@ -413,9 +419,10 @@
 					} else {
 
 						$this->error_string = 'Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")';
+						$this->error_data = $response;
 
 						if ($this->exit_on_error) {
-							exit_with_error($this->error_string);
+							exit_with_error($this->error_string, $this->error_data);
 						} else {
 							return false;
 						}
