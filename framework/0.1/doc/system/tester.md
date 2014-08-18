@@ -5,13 +5,13 @@ You can view the helper source on [GitHub](https://github.com/craigfrancis/frame
 
 The helper uses [Selenium](http://seleniumhq.org/), where you can download the standalone server from:
 
-	http://code.google.com/p/selenium/downloads/list
+	http://selenium-release.storage.googleapis.com/index.html
 
 Run server with:
 
 	java -jar selenium-server-standalone-*.jar
 
-	java -jar /opt/selenium/server-standalone-2.28.0.jar
+	java -jar /opt/selenium/selenium-server-standalone-2.28.0.jar
 
 You may view the admin panel at:
 
