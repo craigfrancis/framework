@@ -33,18 +33,31 @@
 		if ($route_path == '/robots.txt') {
 
 			$robots_path = VIEW_ROOT . '/robots.txt';
+			$sitemap_url = NULL;
 
 			if (!is_file($robots_path)) {
+
 				if (SERVER == 'live') {
 					$robots_path = FRAMEWORK_ROOT . '/library/view/robots-allow.txt';
 				} else {
 					$robots_path = FRAMEWORK_ROOT . '/library/view/robots-disallow.txt';
 				}
+
+				$sitemap_path = APP_ROOT . '/library/setup/sitemap.php';
+				if (is_file($sitemap_path)) {
+					$sitemap_url = url('/sitemap.xml');
+					$sitemap_url->format_set('full');
+				}
+
 			}
 
 			header('Content-Type: text/plain; charset=' . head(config::get('output.charset')));
 
 			readfile($robots_path);
+
+			if ($sitemap_url) {
+				echo "\n\n" . 'Sitemap: ' . $sitemap_url;
+			}
 
 			exit();
 
