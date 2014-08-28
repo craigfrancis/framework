@@ -90,8 +90,8 @@
 				//--------------------------------------------------
 				// CSRF setup
 
-					$this->csrf_session = (class_exists('session', false) && session::open());
-					$this->csrf_token = ($this->csrf_session ? session::get('csrf') : cookie::get('csrf'));
+					$this->csrf_session = false; // Sessions expire after 24 minutes by default... (class_exists('session', false) && session::open())
+					$this->csrf_token = ($this->csrf_session ? session::get('csrf') : cookie::get('f'));
 
 					if ($this->csrf_token == '') {
 						$this->csrf_token = mt_rand(1000000, 9999999);
@@ -101,7 +101,7 @@
 						session::set('csrf', $this->csrf_token);
 						cookie::init(); // Send 'cookie_check'
 					} else {
-						cookie::set('csrf', $this->csrf_token);
+						cookie::set('f', $this->csrf_token); // Short cookie name
 					}
 
 				//--------------------------------------------------
