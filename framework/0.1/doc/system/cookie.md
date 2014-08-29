@@ -43,6 +43,8 @@ To prefix all cookie names with a specific string:
 
 	cookie.prefix = "A-"
 
-For the contents of the cookie to be protected with a salt, so the contents can be viewed, but not easily edited.
+To protect the cookies content, while still readable it is not easily edited:
 
 	cookie.protect = true
+
+If you need to protect the value properly, then use the [session helper](../../doc/system/session.md).
