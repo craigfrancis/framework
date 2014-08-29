@@ -1030,8 +1030,11 @@
 //--------------------------------------------------
 // Path processing
 
-	function version_path($path) {
-		return dirname($path) . '/' . filemtime(PUBLIC_ROOT . $path) . '-' . basename($path);
+	function version_path($path, $mtime = NULL) {
+		if ($mtime === NULL) {
+			$mtime = filemtime(PUBLIC_ROOT . $path);
+		}
+		return dirname($path) . '/' . intval($mtime) . '-' . basename($path);
 	}
 
 	function template_path($template) {
@@ -1086,9 +1089,61 @@
 	}
 
 //--------------------------------------------------
+// Random key, which is URL safe, using a base 62
+// value (base64url does exist by using dashes and
+// hyphens, but special characters can raise a
+// usability problem).
+
+	function random_key($length) {
+
+		// http://stackoverflow.com/questions/24515903/generating-random-characters-for-a-url-in-php
+
+		$key = '';
+
+		do {
+
+			$input = array(
+					getmypid(), // Process IDs are not unique, so a weak entropy source (not secure).
+					uniqid('', true), // Based on the current time in microseconds (not secure).
+					mt_rand(), // Mersenne Twister pseudorandom number generator (not secure).
+					config::get('request.ip'),
+					config::get('request.browser'),
+				);
+
+			if (function_exists('openssl_random_pseudo_bytes')) {
+				$input[] = openssl_random_pseudo_bytes($length); // Second argument shows if strong (or not).
+			}
+
+			if (function_exists('mcrypt_create_iv')) {
+				$input[] = mcrypt_create_iv($length); // Defaults to /dev/random, except on Windows before PHP 5.3.0
+			}
+
+			$input = implode('', $input); // Many different sources of entropy, the more the better (even if predictable or broken).
+			$input = hash('sha256', $input, true); // 256 bits of raw binary output, not in hexadecimal (a base 16 system, using [0-9a-f]).
+			$input = base64_encode($input); // Use printable characters, as a base64 system.
+			$input = str_replace(array('/', '+'), '', $input); // Make URL safe (base62), could use "." and "-", but really needs to look like a key.
+			$input = preg_replace('/[^a-zA-Z0-9]/', '', $input); // Make sure we don't have bad characters (e.g. "=").
+
+			$key .= $input;
+
+		} while (strlen($key) < $length);
+
+		$key = substr($key, 0, $length);
+
+		if (strlen($key) != $length) {
+			exit_with_error('Cannot create a key of ' . $length . ' characters (' . $key . ')');
+		} else if (preg_match('/[^a-zA-Z0-9]/', $key)) {
+			exit_with_error('Invalid characters detected in key "' . $key . '"');
+		}
+
+		return $key;
+
+	}
+
+//--------------------------------------------------
 // Random bytes - from Drupal/phpPass
 
-	function random_bytes($count)  {
+	function random_bytes($count) {
 
 		//--------------------------------------------------
 		// Preserved values
@@ -1116,7 +1171,8 @@
 				//--------------------------------------------------
 				// /dev/urandom is available on many *nix systems
 				// and is considered the best commonly available
-				// pseudo-random source.
+				// pseudo-random source (but output may contain
+				// less entropy than the blocking /dev/random).
 
 					if ($fh = @fopen('/dev/urandom', 'rb')) {
 

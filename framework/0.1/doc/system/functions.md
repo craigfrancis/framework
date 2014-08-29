@@ -212,4 +212,5 @@ While not really covered on this page, there are a range of useful [debug functi
 	strip_slashes_deep();
 	is_assoc();
 	mb_str_pad();
+	random_key();
 	random_bytes();
