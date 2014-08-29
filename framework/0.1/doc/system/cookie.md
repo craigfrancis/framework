@@ -43,7 +43,7 @@ To prefix all cookie names with a specific string:
 
 	cookie.prefix = "A-"
 
-To protect the cookies content, while still readable it is not easily edited:
+To protect the cookies content, while still readable, it is not easily edited:
 
 	cookie.protect = true
 
