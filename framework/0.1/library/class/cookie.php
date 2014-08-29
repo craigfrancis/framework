@@ -12,25 +12,28 @@
 			self::set('c', '1'); // cookie_check
 		}
 
-		public static function set($variable, $value, $expiration = NULL, $config = array()) {
+		public static function set($variable, $value, $config = array()) {
 
 			//--------------------------------------------------
 			// Config
 
 				$variable_full = config::get('cookie.prefix', '') . $variable;
 
-				if ($expiration === NULL) {
-					$expiration = 0; // Session cookie
-				} else if (is_string($expiration)) {
-					$expiration = strtotime($expiration);
+				if (!is_array($config)) {
+					$config = array('expires' => $config);
 				}
 
 				$config = array_merge(array(
+						'expires' => 0, // Session cookie
 						'path' => '/',
 						'domain' => NULL,
 						'secure' => https_only(),
 						'http_only' => true,
 					), $config);
+
+				if (is_string($config['expires'])) {
+					$config['expires'] = strtotime($config['expires']);
+				}
 
 			//--------------------------------------------------
 			// Value
@@ -73,9 +76,9 @@
 			// Set
 
 				if (version_compare(PHP_VERSION, '5.2.0', '>=')) {
-					return setcookie($variable_full, $value, $expiration, $config['path'], $config['domain'], $config['secure'], $config['http_only']);
+					return setcookie($variable_full, $value, $config['expires'], $config['path'], $config['domain'], $config['secure'], $config['http_only']);
 				} else {
-					return setcookie($variable_full, $value, $expiration, $config['path'], $config['domain'], $config['secure']);
+					return setcookie($variable_full, $value, $config['expires'], $config['path'], $config['domain'], $config['secure']);
 				}
 
 		}
