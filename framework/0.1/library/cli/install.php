@@ -101,7 +101,7 @@
 
 							if ($skeleton_file == '/app/library/setup/config.php') {
 
-								$content = str_replace('// define(\'ENCRYPTION_KEY\', \'\');', 'define(\'ENCRYPTION_KEY\', \'' . base64_encode(random_bytes(10)) . '\');', $content);
+								$content = str_replace('// define(\'ENCRYPTION_KEY\', \'\');', 'define(\'ENCRYPTION_KEY\', \'' . random_key(20) . '\');', $content);
 
 							} else if ($skeleton_file == '/app/public/index.php') {
 
