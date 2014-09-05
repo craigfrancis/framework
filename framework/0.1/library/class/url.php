@@ -115,6 +115,14 @@
 
 			}
 
+			public function fragment_get() {
+				return $this->fragment;
+			}
+
+			public function fragment_set($value) {
+				$this->fragment = $value;
+			}
+
 		//--------------------------------------------------
 		// Get
 
@@ -166,7 +174,7 @@
 				// Fragment
 
 					if ($this->fragment !== NULL) {
-						$output .= '#' . $this->fragment;
+						$output .= '#' . urlencode($this->fragment);
 					}
 
 				//--------------------------------------------------
