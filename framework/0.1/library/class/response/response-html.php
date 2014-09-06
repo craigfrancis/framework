@@ -1410,9 +1410,9 @@
 					//--------------------------------------------------
 					// Strict transport security
 
-						if (https_only()) {
-							// header('Strict-Transport-Security: max-age=31536000; includeSubDomains'); // HTTPS only (1 year)
-						}
+						// if (https_only()) {
+						// 	header('Strict-Transport-Security: max-age=31536000; includeSubDomains'); // HTTPS only (1 year)
+						// }
 
 					//--------------------------------------------------
 					// Content security policy

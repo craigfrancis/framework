@@ -81,6 +81,10 @@
 				}
 			}
 
+			public function config_set($key, $value) {
+				$this->config[$key] = $value;
+			}
+
 			public function folder_path_get() {
 				return $this->config['file_root'] . '/' . safe_file_name($this->config['profile']);
 			}
