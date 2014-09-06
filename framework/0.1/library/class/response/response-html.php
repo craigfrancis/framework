@@ -1399,19 +1399,19 @@
 					//--------------------------------------------------
 					// Framing options
 
-						header('X-Frame-Options: ' . head(strtoupper(config::get('output.framing', 'DENY'))));
+						// header('X-Frame-Options: ' . head(strtoupper(config::get('output.framing', 'DENY'))));
 
 					//--------------------------------------------------
 					// Extra XSS protection for IE (reflected)... not
 					// that there should be any XSS issues!
 
-						header('X-XSS-Protection: 1; mode=block');
+						// header('X-XSS-Protection: 1; mode=block');
 
 					//--------------------------------------------------
 					// Strict transport security
 
 						if (https_only()) {
-							header('Strict-Transport-Security: max-age=31536000; includeSubDomains'); // HTTPS only (1 year)
+							// header('Strict-Transport-Security: max-age=31536000; includeSubDomains'); // HTTPS only (1 year)
 						}
 
 					//--------------------------------------------------
