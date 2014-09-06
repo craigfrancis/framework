@@ -158,7 +158,7 @@
 				//--------------------------------------------------
 				// Lock already exists
 
-					if (file_exists($this->lock_path)) {
+					if (is_file($this->lock_path)) {
 
 						$fp = fopen($this->lock_path, 'r');
 
@@ -204,7 +204,7 @@
 					}
 
 					if (!$this->lock_fp) {
-						if (file_exists($this->lock_path)) {
+						if (is_file($this->lock_path)) {
 							return false; // Race condition, where the other thread created the file first
 						}
 						exit_with_error('Cannot create lock file', $this->lock_path);

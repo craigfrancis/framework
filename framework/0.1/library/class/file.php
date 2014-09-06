@@ -162,7 +162,7 @@
 			}
 
 			public function file_exists($id, $ext = NULL) {
-				return file_exists($this->file_path_get($id, $ext));
+				return is_file($this->file_path_get($id, $ext)); // file_exists returns true for directories.
 			}
 
 			public function file_save($id, $path, $ext = NULL) {
@@ -196,7 +196,7 @@
 		// Image support
 
 			public function image_exists($id, $size = 'original') {
-				return file_exists($this->image_path_get($id, $size));
+				return is_file($this->image_path_get($id, $size));
 			}
 
 			public function image_path_get($id, $size = 'original') {
@@ -235,23 +235,29 @@
 
 			public function image_html_get($id, $size = 'original', $alt = '', $img_id = NULL) {
 
-				$image_path = $this->image_path_get($id, $size);
 				$image_url = $this->image_url_get($id, $size);
 
-				if (!file_exists($image_path)) {
-					$image_path = PUBLIC_ROOT . $image_url; // Try to find placeholder, where image_path_get must always return saved location.
+				if (!$image_url) {
+					return NULL;
 				}
 
-				if (file_exists($image_path)) {
+				$image_path = $this->image_path_get($id, $size);
+				if (is_file($image_path)) {
 					$image_info = getimagesize($image_path);
-					if ($image_info) {
-						return '<img src="' . html($image_url) . '" alt="' . html($alt) . '" width="' . html($image_info[0]) . '" height="' . html($image_info[1]) . '"' . ($img_id === NULL ? '' : ' id="' . html($img_id) . '"') . ' />';
+				} else {
+					$image_path = PUBLIC_ROOT . $image_url; // Try to find placeholder, where image_path_get must always return saved location.
+					if (is_file($image_path)) {
+						$image_info = getimagesize($image_path);
+					} else {
+						$image_info = NULL;
 					}
-				} else if ($image_url) { // Has a placeholder, but probably behind a symlink
+				}
+
+				if ($image_info) {
+					return '<img src="' . html($image_url) . '" alt="' . html($alt) . '" width="' . html($image_info[0]) . '" height="' . html($image_info[1]) . '"' . ($img_id === NULL ? '' : ' id="' . html($img_id) . '"') . ' />';
+				} else {
 					return '<img src="' . html($image_url) . '" alt="' . html($alt) . '"' . ($img_id === NULL ? '' : ' id="' . html($img_id) . '"') . ' />';
 				}
-
-				return NULL;
 
 			}
 
