@@ -77,7 +77,7 @@
 			session_regenerate_id(true); // Also delete old session file
 
 			session_write_close(); // Bug fix to write session file and gain lock, so other requests wait for lock (https://bugs.php.net/bug.php?id=61470)
-			session_start();
+			session_start(); // Will send cookie more than once (https://bugs.php.net/bug.php?id=67736)
 
 			// $result = session_regenerate_id(true);
 			// if (!$result) {
