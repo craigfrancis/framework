@@ -4,7 +4,7 @@
 // We must set the correct mime type for all responses
 // including assets and gateway output.
 
-	header('X-Content-Type-Options: nosniff');
+	// header('X-Content-Type-Options: nosniff');
 
 //--------------------------------------------------
 // Route path
