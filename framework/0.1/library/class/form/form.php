@@ -858,7 +858,11 @@
 				//--------------------------------------------------
 				// Log changes
 
-					if ($this->db_log_table && $this->db_where_sql !== NULL) { // Logging enabled for a record edit (n/a on add)
+					if (count($values) == 0) { // No fields (maybe this users permission does not have fields for this table)
+
+						$changed = false;
+
+					} else if ($this->db_log_table && $this->db_where_sql !== NULL) { // Logging enabled for a record edit (n/a on add)
 
 						$changed = false;
 
@@ -868,6 +872,10 @@
 
 						foreach ($values as $field => $new_value) {
 							if (strval($new_value) !== strval($old_values[$field])) { // If the value changes from "123" to "0123", and ignore an INT field being set to NULL (NULL === 0)
+
+								if ($new_value === '' && $old_values[$field] === '0') {
+									continue; // Special case for select fields on an int field (value returned as string) and the "label_option"
+								}
 
 								$db->insert($this->db_log_table, array_merge($this->db_log_values, array(
 										'field' => $field,
