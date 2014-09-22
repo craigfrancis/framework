@@ -7,7 +7,7 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 
 ## Basic usage
 
-The timestamp helper is basically an extended version of the base PHP [DateTime](http://php.net/datetime) object:
+The timestamp helper is just an extended version of the base PHP [DateTime](http://php.net/datetime) object:
 
 	$timestamp = new timestamp('2014W04-2');
 	$timestamp = new timestamp('2014-09-22 17:43:21', 'Europe/London');
@@ -18,7 +18,7 @@ The timestamp helper is basically an extended version of the base PHP [DateTime]
 
 		Monday 22nd September 2014, 5:43:21pm
 
-You can also modify its value in the same way:
+So you can modify its value in the same way:
 
 	$timestamp->modify('+3 days');
 
@@ -46,7 +46,7 @@ When returning the value from the database, simply run:
 
 	$timestamp = new timestamp($row['field'], 'db');
 
-The timestamp helper will then parse the UTC value, and start using the "output.timezone".
+The timestamp helper will then parse the UTC value, and format with "output.timezone".
 
 ---
 
@@ -70,7 +70,7 @@ These dates are then used when calling:
 		Add 5 business days.
 
 	$timestamp->business_day_select();
-		Move forward to the next business day.
+		Move forward to the next business day (rarely used).
 
 	$timestamp->business_days_diff($end);
 		Calculate the number of business days between two timestamps.

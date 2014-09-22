@@ -129,6 +129,7 @@
 
 				$helpers_nav = new nav();
 				$helpers_nav->link_add('/doc/helpers/url/', 'URL');
+				$helpers_nav->link_add('/doc/helpers/timestamp/', 'Timestamp');
 				$helpers_nav->link_add('/doc/helpers/form/', 'Form'); // , array('child' => $form_nav)
 				$helpers_nav->link_add('/doc/helpers/email/', 'Email');
 				$helpers_nav->link_add('/doc/helpers/file/', 'File');
