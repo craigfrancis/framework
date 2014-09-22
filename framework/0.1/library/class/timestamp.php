@@ -1,16 +1,44 @@
 <?php
 
-	class timestamp extends datetime {
+	class timestamp_base extends datetime {
+
+		protected $formats = array(
+			);
 
 		public function __construct($time = 'now', $timezone = NULL) {
-			if (is_numeric($time)) {
-				$time = '@' . $time; // Numbers are always timestamps (not '20080701')
-			}
-			if ($timezone !== NULL) {
-				parent::__construct($time, $timezone);
+			if ($timezone == 'db') {
+				parent::__construct($time, new DateTimeZone('UTC'));
+				parent::setTimezone(new DateTimeZone(config::get('output.timezone')));
 			} else {
-				parent::__construct($time); // PHP 5.3 support, does not like NULL
+				if ($timezone === NULL) {
+					$timezone = config::get('output.timezone');
+				}
+				if (is_numeric($time)) {
+					parent::__construct('@' . $time); // Numbers are now always timestamps (not '20080701')
+					parent::setTimezone(new DateTimeZone($timezone)); // Timezone is ignored on construct.
+				} else {
+					parent::__construct($time, new DateTimeZone($timezone));
+				}
 			}
+		}
+
+		public function format($format) {
+			if ($format == 'db') {
+				$timezone = parent::getTimezone();
+				parent::setTimezone(new DateTimeZone('UTC'));
+				$output = parent::format('Y-m-d H:i:s');
+				parent::setTimezone($timezone);
+				return $output;
+			} else {
+				if (isset($this->formats[$format])) {
+					$format = $this->formats[$format];
+				}
+				return parent::format($format);
+			}
+		}
+
+		public function html($format) {
+			return '<time datetime="' . html($this->format('c')) . '">' . html($this->format($format)) . '</time>';
 		}
 
 		static function holidays_update() {
@@ -143,6 +171,43 @@
 			return $business_days;
 
 		}
+
+	}
+
+	if (true) {
+
+		class timestamp extends timestamp_base {
+
+			protected $formats = array(
+					'iso' => 'Y-m-d H:i:s',
+					'human' => 'l jS F Y, g:i:sa',
+				);
+
+		}
+
+		$timestamp = new timestamp();
+		debug($timestamp->format('human'));
+
+		$timestamp = new timestamp(time());
+		debug($timestamp->format('human'));
+
+		echo '<hr />';
+
+		$timestamp = new timestamp('2014W04-2');
+		debug($timestamp->format('human'));
+		$timestamp->modify('+3 days');
+		debug($timestamp->format('human'));
+		debug($timestamp->html('l jS F Y'));
+
+		echo '<hr />';
+
+		$timestamp = new timestamp('2014-09-22 16:37:15', 'db');
+		debug($timestamp->format('human'));
+		debug($timestamp->format('iso'));
+		debug($timestamp->format('db'));
+		debug($timestamp->html('human'));
+
+		exit();
 
 	}
 
