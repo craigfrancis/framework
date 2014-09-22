@@ -41,6 +41,53 @@
 			return '<time datetime="' . html($this->format('c')) . '">' . html($this->format($format)) . '</time>';
 		}
 
+		public function business_days_add($business_days) {
+			$business_days = intval($business_days); // Decrement does not work on strings
+			$holidays = timestamp::holidays_get();
+			while ($business_days > 0) {
+				$this->modify('+1 day');
+				if ($this->format('N') < 6 && !in_array($this->format('Y-m-d'), $holidays)) {
+					$business_days--;
+				}
+			}
+			return $this;
+		}
+
+		public function business_day_select() {
+			$holidays = timestamp::holidays_get();
+			while ($this->format('N') >= 6 || in_array($this->format('Y-m-d'), $holidays)) {
+				$this->modify('+1 day');
+			}
+			return $this;
+		}
+
+		public function business_days_diff($end) {
+
+			$end = new timestamp($end);
+
+			if ($this > $end) {
+				return 0;
+			}
+
+			$diff = $this->diff($end);
+			if ($diff->days > 365*15) {
+				exit_with_error('Max diff exceeded ("' . $this->format('Y-m-d') . '" to "' . $end->format('Y-m-d') . '")');
+			}
+
+			$business_days = 0;
+			$holidays = timestamp::holidays_get();
+
+			while ($this < $end) {
+				if ($this->format('N') < 6 && !in_array($this->format('Y-m-d'), $holidays)) {
+					$business_days++;
+				}
+				$this->modify('+1 day');
+			}
+
+			return $business_days;
+
+		}
+
 		static function holidays_update() {
 
 			//--------------------------------------------------
@@ -122,53 +169,6 @@
 			}
 
 			return $holidays;
-
-		}
-
-		public function business_days_add($business_days) {
-			$business_days = intval($business_days); // Decrement does not work on strings
-			$holidays = timestamp::holidays_get();
-			while ($business_days > 0) {
-				$this->modify('+1 day');
-				if ($this->format('N') < 6 && !in_array($this->format('Y-m-d'), $holidays)) {
-					$business_days--;
-				}
-			}
-			return $this;
-		}
-
-		public function business_day_select() {
-			$holidays = timestamp::holidays_get();
-			while ($this->format('N') >= 6 || in_array($this->format('Y-m-d'), $holidays)) {
-				$this->modify('+1 day');
-			}
-			return $this;
-		}
-
-		public function business_days_diff($end) {
-
-			$end = new timestamp($end);
-
-			if ($this > $end) {
-				return 0;
-			}
-
-			$diff = $this->diff($end);
-			if ($diff->days > 365*15) {
-				exit_with_error('Max diff exceeded ("' . $this->format('Y-m-d') . '" to "' . $end->format('Y-m-d') . '")');
-			}
-
-			$business_days = 0;
-			$holidays = timestamp::holidays_get();
-
-			while ($this < $end) {
-				if ($this->format('N') < 6 && !in_array($this->format('Y-m-d'), $holidays)) {
-					$business_days++;
-				}
-				$this->modify('+1 day');
-			}
-
-			return $business_days;
 
 		}
 
