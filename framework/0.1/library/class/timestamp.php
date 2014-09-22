@@ -63,7 +63,9 @@
 
 		public function business_days_diff($end) {
 
-			$end = new timestamp($end);
+			if (!is_object($end) || !is_a($end, 'timestamp')) {
+				$end = new timestamp($end);
+			}
 
 			if ($this > $end) {
 				return 0;
@@ -114,6 +116,8 @@
 			//--------------------------------------------------
 			// Current
 
+				timestamp::holidays_check_table();
+
 				$db = db_get();
 
 				$sql = 'SELECT
@@ -151,6 +155,8 @@
 
 			if ($holidays === NULL) {
 
+				timestamp::holidays_check_table();
+
 				$holidays = array();
 
 				$db = db_get();
@@ -172,9 +178,25 @@
 
 		}
 
+		static function holidays_check_table() {
+
+			if (config::get('debug.level') > 0) {
+
+				debug_require_db_table(DB_PREFIX . 'system_holiday', '
+						CREATE TABLE [TABLE] (
+							`country` enum("uk") NOT NULL,
+							`date` date NOT NULL,
+							`name` tinytext NOT NULL,
+							PRIMARY KEY (`country`, `date`)
+						);');
+
+			}
+
+		}
+
 	}
 
-	if (true) {
+	if (false) {
 
 		class timestamp extends timestamp_base {
 
