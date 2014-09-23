@@ -17,7 +17,7 @@
 
 	class password_base extends check {
 
-		static function hash($password, $record_id = 0) {
+		public static function hash($password, $record_id = 0) {
 
 			if (function_exists('password_hash')) {
 
@@ -60,7 +60,7 @@
 
 		}
 
-		static function verify($password, $hash, $record_id = 0) {
+		public static function verify($password, $hash, $record_id = 0) {
 
 			if (preg_match('/^([a-z0-9]{32})-([a-z]{10})$/i', $hash, $matches)) { // Old hashing method
 
@@ -97,7 +97,7 @@
 
 		}
 
-		static function needs_rehash($hash) {
+		public static function needs_rehash($hash) {
 
 			if (function_exists('password_needs_rehash')) {
 

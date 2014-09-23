@@ -2,7 +2,7 @@
 
 	class maintenance_api extends api {
 
-		function run() {
+		public function run() {
 
 			//--------------------------------------------------
 			// Modes

@@ -90,7 +90,7 @@
 
 		}
 
-		static function holidays_update() {
+		public static function holidays_update() {
 
 			//--------------------------------------------------
 			// New
@@ -149,7 +149,7 @@
 
 		}
 
-		static function holidays_get() {
+		public static function holidays_get() {
 
 			$holidays = config::get('cache.business_days');
 
@@ -178,7 +178,7 @@
 
 		}
 
-		static function holidays_check_table() {
+		protected static function holidays_check_table() {
 
 			if (config::get('debug.level') > 0) {
 
@@ -196,7 +196,7 @@
 
 	}
 
-	if (false) {
+	if (true) {
 
 		class timestamp extends timestamp_base {
 

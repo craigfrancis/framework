@@ -384,6 +384,68 @@
             }
         }
     },
+    "tpl_system_holiday": {
+        "fields": {
+            "country": {
+                "type": "enum",
+                "length": 1,
+                "collation": "utf8_general_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": [
+                    "uk"
+                ],
+                "definition": "enum('uk') NOT NULL"
+            },
+            "date": {
+                "type": "date",
+                "length": 10,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "date NOT NULL"
+            },
+            "name": {
+                "type": "tinytext",
+                "length": 255,
+                "collation": "utf8_general_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "tinytext NOT NULL"
+            }
+        },
+        "keys": {
+            "PRIMARY": {
+                "1": {
+                    "non_unique": "0",
+                    "column_name": "country",
+                    "collation": "A",
+                    "sub_part": null,
+                    "packed": null,
+                    "null": "",
+                    "index_type": "BTREE",
+                    "comment": "",
+                    "index_comment": ""
+                },
+                "2": {
+                    "non_unique": "0",
+                    "column_name": "date",
+                    "collation": "A",
+                    "sub_part": null,
+                    "packed": null,
+                    "null": "",
+                    "index_type": "BTREE",
+                    "comment": "",
+                    "index_comment": ""
+                }
+            }
+        }
+    },
     "tpl_system_redirect": {
         "fields": {
             "url_src": {

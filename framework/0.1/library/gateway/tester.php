@@ -2,7 +2,7 @@
 
 	class tester_api extends api {
 
-		function run() {
+		public function run() {
 
 			if (config::get('gateway.tester') !== true) {
 

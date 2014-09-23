@@ -247,7 +247,7 @@
 
 			}
 
-			static function cache_files($path = NULL) {
+			public static function cache_files($path = NULL) {
 
 				$files = array();
 				$path_encoded = base64_encode($path);
@@ -268,7 +268,7 @@
 
 			}
 
-			static function cache_clear($path = NULL) {
+			public static function cache_clear($path = NULL) {
 				foreach (cms_text::cache_files($path) as $cache_path) {
 					unlink($cache_path);
 				}

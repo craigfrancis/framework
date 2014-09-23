@@ -115,7 +115,7 @@
 		//--------------------------------------------------
 		// Storing files support
 
-			static function file_store($file_name, $file_offset = NULL) {
+			public static function file_store($file_name, $file_offset = NULL) {
 
 				//--------------------------------------------------
 				// Return details
@@ -206,7 +206,7 @@
 
 			}
 
-			static function file_info($file_hash) {
+			public static function file_info($file_hash) {
 
 				$info_path = form_field_file::_file_tmp_folder() . '/' . $file_hash . '.json';
 
@@ -218,7 +218,7 @@
 
 			}
 
-			static function _file_tmp_folder() {
+			public static function _file_tmp_folder() {
 
 				$tmp_folder = config::get('form.file_tmp_folder'); // Cached value, so old file check is only done once.
 

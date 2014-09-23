@@ -72,6 +72,7 @@
 			}
 
 			$field_password->max_length_set($this->user_obj->text_get('password_max_len'), 250);
+			// $field_password->autocomplete_set('current-password'); -- could also be "new-password" on register page... ref $this->user_obj->id_get() ... 0 for login, 0 for register.
 
 			return $field_password;
 
@@ -92,6 +93,7 @@
 
 			$field_password->max_length_set($this->user_obj->text_get('password_new_max_len'), 250);
 			$field_password->autocomplete_set(false); // Some browsers may try to auto fill this field with the current password.
+			// $field_password->autocomplete_set('new-password');
 
 			return $field_password;
 
@@ -120,6 +122,7 @@
 
 			$field_password_repeat->max_length_set($this->user_obj->text_get('password_repeat_max_len'), 250);
 			$field_password_repeat->autocomplete_set(false);
+			// $field_password_repeat->autocomplete_set('new-password');
 
 			return $field_password_repeat;
 

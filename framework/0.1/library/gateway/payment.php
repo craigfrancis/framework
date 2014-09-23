@@ -2,7 +2,7 @@
 
 	class payment_api extends api {
 
-		function run() {
+		public function run() {
 
 			//--------------------------------------------------
 			// Payment method
