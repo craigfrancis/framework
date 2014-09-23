@@ -196,7 +196,7 @@
 
 	}
 
-	if (true) {
+	if (false) {
 
 		class timestamp extends timestamp_base {
 
