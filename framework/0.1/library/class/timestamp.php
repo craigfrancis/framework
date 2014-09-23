@@ -14,7 +14,7 @@
 					$timezone = config::get('output.timezone');
 				}
 				if (is_numeric($time)) {
-					parent::__construct('@' . $time); // Numbers are now always timestamps (not '20080701')
+					parent::__construct('@' . $time); // Numbers should always be timestamps (ignore '20080701')
 					parent::setTimezone(new DateTimeZone($timezone)); // Timezone is ignored on construct.
 				} else {
 					parent::__construct($time, new DateTimeZone($timezone));
@@ -37,8 +37,8 @@
 			}
 		}
 
-		public function html($format) {
-			return '<time datetime="' . html($this->format('c')) . '">' . html($this->format($format)) . '</time>';
+		public function html($format_text, $format_attribute = 'c') {
+			return '<time datetime="' . html($this->format($format_attribute)) . '">' . html($this->format($format_text)) . '</time>';
 		}
 
 		public function business_days_add($business_days) {
