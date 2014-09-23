@@ -389,7 +389,7 @@
             "country": {
                 "type": "enum",
                 "length": 1,
-                "collation": "utf8_general_ci",
+                "collation": "utf8_unicode_ci",
                 "null": false,
                 "default": null,
                 "extra": "",
@@ -411,7 +411,7 @@
             "name": {
                 "type": "tinytext",
                 "length": 255,
-                "collation": "utf8_general_ci",
+                "collation": "utf8_unicode_ci",
                 "null": false,
                 "default": null,
                 "extra": "",
