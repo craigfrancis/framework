@@ -70,7 +70,7 @@
 					if ($this->config['lock_type'] !== NULL) {
 						$this->lock = new lock($this->config['lock_type'], $this->config['lock_ref']);
 					} else {
-						$this->lock = $config['lock'];
+						$this->lock = $this->config['lock'];
 					}
 
 				//--------------------------------------------------
