@@ -18,13 +18,12 @@ Example setup
 			'refresh_url'       => '/../',    // If you want the user to load a different url while waiting (e.g. add a new parameter).
 			'template_name'     => 'loading', // Customised loading page name (in /app/template/), see example below.
 			'template_path'     => '/../',    // Customised loading page path.
-			'lock_type'         => 'loading', // See lock example below.
-			'lock_ref'          => NULL,
+			'lock'              => $lock,     // See lock example below.
 		));
 
 ---
 
-## Basic setup
+## Basic example
 
 This uses the [session helper](../../doc/system/session.md) to store the loading state:
 
@@ -58,13 +57,14 @@ This uses the [session helper](../../doc/system/session.md) to store the loading
 
 ---
 
-## Lock file method
+## Lock example
 
 If you have a process that shouldn't allow multiple users to run it at the same time, we can use the [lock helper](../../doc/helpers/lock.md).
 
+	$lock = new lock('loading');
+
 	$loading = new loading(array(
-			'lock_type' => 'loading', // Set to use a lock, the name is passed directly to the lock helper.
-			'lock_ref'  => NULL,      // Optional lock ref (e.g. pass in an ID if you want to lock a specific item).
+			'lock' => $lock,
 		));
 
 	$loading->check();
@@ -100,7 +100,11 @@ If you have a process that shouldn't allow multiple users to run it at the same 
 
 	}
 
-Optional template
+---
+
+## Templates
+
+If you want to change the layout/content of the loading page, use these files:
 
 	/app/public/a/css/global/loading.css
 
@@ -127,3 +131,21 @@ Optional template
 			</div>
 		</body>
 		</html>
+
+The templates can use a few tags:
+
+	[MESSAGE]
+	[TIME_START]
+	[TIME_UPDATE]
+	[URL]
+
+You can include additional tags if you pass an array to the start/update methods:
+
+	$loading->update(array(
+			'message' => 'Updating progress',
+		));
+
+You can also test the template by running:
+
+	$loading->template_test();
+	exit();
