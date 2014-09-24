@@ -152,6 +152,21 @@
 
 			}
 
+			public function locked() {
+
+				if ($this->config['lock_type'] !== NULL) {
+
+					$lock = new lock($this->config['lock_type'], $this->config['lock_ref']);
+					return $lock->locked();
+
+				} else {
+
+					exit_with_error('Cannot check if the loading session is locked without a "lock_type"');
+
+				}
+
+			}
+
 			public function start($variables) {
 
 				$time = time(); // All the same
