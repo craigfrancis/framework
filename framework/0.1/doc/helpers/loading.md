@@ -57,24 +57,33 @@ Example with 'lock'
 
 	$loading->check();
 
-	// if ($loading->locked()) {
-	// 	Check to see if someone already has the lock
-	// }
+	if ($form->submitted()) {
 
-	if ($loading->start('Starting action')) {
+		if ($loading->locked()) {
+			Check to see if someone already has the lock
+		}
 
-		sleep(5);
+		if ($form->valid()) {
 
-		$loading->update('Updating progress');
+			if ($loading->start('Starting action')) {
 
-		sleep(5);
+				sleep(5);
 
-		$loading->done();
-		$loading->done('/../'); // Optional URL if you want to redirect users to a new page (e.g. a static thank you page)
+				$loading->update('Updating progress');
 
-	} else {
+				sleep(5);
 
-		// Could not open lock
+				// $loading->done();
+				$loading->done('/../'); // Specify a URL if you want to redirect to a different url.
+				exit();
+
+			} else {
+
+				// Could not open lock
+
+			}
+
+		}
 
 	}
 
