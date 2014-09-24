@@ -17,6 +17,10 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 			// Checks to see if we have the lock, but doesn't try to open if not
 		}
 
+		if ($lock->locked()) {
+			// Checks to see someone has the lock, but doesn't try to open if not
+		}
+
 		if ($lock->open()) {
 
 			$lock->data_set('name', 'Craig');

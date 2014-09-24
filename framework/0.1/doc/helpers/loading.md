@@ -60,6 +60,10 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 
 		$loading->check();
 
+		// if ($loading->locked()) {
+		// 	Check to see if someone already has the lock
+		// }
+
 		if ($loading->start('Starting action')) {
 
 			sleep(5);
