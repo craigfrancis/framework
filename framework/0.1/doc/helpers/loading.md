@@ -1,7 +1,7 @@
 
 # Loading helper
 
-To see some how the loading helper can be used, look at the [examples](/examples/loading/).
+To see some how the loading helper can be used, look at the [example](/examples/loading/).
 
 You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/loading.php).
 
@@ -22,7 +22,11 @@ Example setup
 			'lock_ref'          => NULL,
 		));
 
-Example usage
+---
+
+## Basic setup
+
+This uses the [session helper](../../doc/system/session.md) to store the loading state:
 
 	// $loading->template_test();
 
@@ -32,8 +36,11 @@ Example usage
 		if ($form->valid()) {
 
 			// $loading->refresh_url_set('/../');
+				// If you need to change the url (e.g. adding an id)
 
-			$loading->start('Starting action'); // String will replace [MESSAGE] in the template, or array for multiple tags.
+			$loading->start('Starting action');
+				// A string will replace [MESSAGE] in the template,
+				// or use an array for multiple tags.
 
 			sleep(5);
 
@@ -41,14 +48,19 @@ Example usage
 
 			sleep(5);
 
-			// $loading->done();
-			$loading->done('/../'); // Specify a URL if you want to redirect to a different url.
+			$loading->done('/../');
+				// If you specify a URL, it will perform a redirect.
+
 			exit();
 
 		}
 	}
 
-Example with 'lock'
+---
+
+## Lock file method
+
+If you have a process that shouldn't allow multiple users to run it at the same time, we can use the [lock helper](../../doc/helpers/lock.md).
 
 	$loading = new loading(array(
 			'lock_type' => 'loading', // Set to use a lock, the name is passed directly to the lock helper.
@@ -60,7 +72,7 @@ Example with 'lock'
 	if ($form->submitted()) {
 
 		if ($loading->locked()) {
-			Check to see if someone already has the lock
+			$form->error_add('Already processing');
 		}
 
 		if ($form->valid()) {
@@ -73,13 +85,14 @@ Example with 'lock'
 
 				sleep(5);
 
-				// $loading->done();
-				$loading->done('/../'); // Specify a URL if you want to redirect to a different url.
+				$loading->done('/../');
+					// If you specify a URL, it will perform a redirect.
+
 				exit();
 
 			} else {
 
-				// Could not open lock
+				$form->error_add('Could not open lock');
 
 			}
 
@@ -87,17 +100,17 @@ Example with 'lock'
 
 	}
 
-Optional template 'loading'
+Optional template
 
 	/app/public/a/css/global/loading.css
 
 		This file will be used with a template like
 		the one below, or you can create your own.
 
-	/app/template/example.ctp
+	/app/template/loading.ctp
 
 		This file will be used if 'template_name' is
-		set to 'example', the contents should be
+		set to 'loading', the contents should be
 		something like the following.
 
 		<!DOCTYPE html>

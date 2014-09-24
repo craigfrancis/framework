@@ -44,6 +44,7 @@
 							'template_name' => NULL,
 							'template_path' => NULL,
 							'session_prefix' => NULL,
+							'lock' => NULL,
 							'lock_type' => NULL,
 							'lock_ref' => NULL,
 						);
@@ -62,6 +63,15 @@
 					}
 
 					$this->config = array_merge($default_config, $config);
+
+				//--------------------------------------------------
+				// Lock
+
+					if ($this->config['lock_type'] !== NULL) {
+						$this->lock = new lock($this->config['lock_type'], $this->config['lock_ref']);
+					} else {
+						$this->lock = $config['lock'];
+					}
 
 				//--------------------------------------------------
 				// Session prefix
@@ -88,15 +98,13 @@
 
 					if (session::get($this->session_prefix . 'started') === true) {
 
-						if ($this->config['lock_type'] !== NULL) {
+						if ($this->lock) {
 
-							$lock = new lock($this->config['lock_type'], $this->config['lock_ref']);
+							// $this->lock->check() - Can't really test as the other thread has the lock.
 
-							// $lock->check() - Can't really test as the other thread has the lock.
-
-							$time_start  = $lock->data_get('time_start');
-							$time_update = $lock->data_get('time_update');
-							$variables   = $lock->data_get('variables');
+							$time_start  = $this->lock->data_get('time_start');
+							$time_update = $this->lock->data_get('time_update');
+							$variables   = $this->lock->data_get('variables');
 
 						} else {
 
@@ -154,14 +162,13 @@
 
 			public function locked() {
 
-				if ($this->config['lock_type'] !== NULL) {
+				if ($this->lock) {
 
-					$lock = new lock($this->config['lock_type'], $this->config['lock_ref']);
-					return $lock->locked();
+					return $this->lock->locked();
 
 				} else {
 
-					exit_with_error('Cannot check if the loading session is locked without a "lock_type"');
+					exit_with_error('Cannot check if the loading session is locked, when it does not use a lock.');
 
 				}
 
@@ -171,16 +178,13 @@
 
 				$time = time(); // All the same
 
-				if ($this->config['lock_type'] !== NULL) {
+				if ($this->lock) {
 
-					$lock = new lock($this->config['lock_type'], $this->config['lock_ref']);
-					$lock->time_out_set($this->config['time_out']);
+					$this->lock->time_out_set($this->config['time_out']);
 
-					if (!$lock->open()) {
+					if (!$this->lock->open()) {
 						return false;
 					}
-
-					$this->lock = $lock;
 
 					$this->lock->data_set(array(
 							'time_start' => $time,
