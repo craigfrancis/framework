@@ -99,11 +99,9 @@
 				),
 			'img-src' => array(
 					"'self'",
-					'https://ssl.google-analytics.com',
 				),
 			'script-src' => array(
 					"'self'",
-					'https://ssl.google-analytics.com',
 				),
 			'style-src' => array(
 					"'self'",
