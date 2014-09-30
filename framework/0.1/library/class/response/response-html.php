@@ -1355,7 +1355,7 @@
 									$this->js_code_add(newrelic_get_browser_timing_footer(false), 'async', 'foot');
 
 									$this->csp_add_source('img-src', array('*.newrelic.com'));
-									$this->csp_add_source('script-src', array('*.newrelic.com', '*.newrelic.com'));
+									$this->csp_add_source('script-src', array('*.newrelic.com'));
 
 								}
 
