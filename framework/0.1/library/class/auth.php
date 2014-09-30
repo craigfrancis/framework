@@ -7,6 +7,7 @@
 
 			protected $user_id = NULL;
 
+			protected $text = array();
 			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $identification_type = 'email';
 			protected $login_last_cookie = 'u'; // Or set to NULL to not remember.
@@ -22,8 +23,104 @@
 		// Setup
 
 			public function __construct() {
+				$this->setup();
+			}
 
+			protected function setup() {
 
+				//--------------------------------------------------
+				// Tables
+
+					if ($this->db_table_main    === NULL) $this->db_table_main = DB_PREFIX . 'user';
+					if ($this->db_table_session === NULL) $this->db_table_session = DB_PREFIX . 'user_session';
+					if ($this->db_table_reset   === NULL) $this->db_table_reset = DB_PREFIX . 'user_new_password';
+
+					if (config::get('debug.level') > 0) {
+
+						if ($this->identification_type == 'username') {
+							$login_field_name = 'username';
+							$login_field_length = 30;
+						} else {
+							$login_field_name = 'email';
+							$login_field_length = 100;
+						}
+
+						debug_require_db_table($this->db_table_main, '
+								CREATE TABLE [TABLE] (
+									id int(11) NOT NULL AUTO_INCREMENT,
+									' . $login_field_name . ' varchar(' . $login_field_length . ') NOT NULL,
+									pass tinytext NOT NULL,
+									created datetime NOT NULL,
+									edited datetime NOT NULL,
+									deleted datetime NOT NULL,
+									PRIMARY KEY (id),
+									UNIQUE KEY ' . $login_field_name . ' (' . $login_field_name . ')
+								);');
+
+						debug_require_db_table($this->db_table_session, '
+								CREATE TABLE [TABLE] (
+									id int(11) NOT NULL AUTO_INCREMENT,
+									pass tinytext NOT NULL,
+									user_id int(11) NOT NULL,
+									ip tinytext NOT NULL,
+									browser tinytext NOT NULL,
+									created datetime NOT NULL,
+									last_used datetime NOT NULL,
+									deleted datetime NOT NULL,
+									PRIMARY KEY (id),
+									KEY user_id (user_id)
+								);');
+
+						// Password reset feature not always used
+
+					}
+
+				//--------------------------------------------------
+				// Text
+
+					$this->text = array(
+							'identification_label' => 'Email address',
+							'identification_min_len' => 'Your email address is required.',
+							'identification_max_len' => 'Your email address cannot be longer than XXX characters.',
+							'identification_format' => 'Your email address does not appear to be correct.',
+							'identification_new_label' => 'Email address',
+							'identification_new_min_len' => 'Your email address is required.',
+							'identification_new_max_len' => 'Your email address cannot be longer than XXX characters.',
+							'identification_new_format' => 'Your email address does not appear to be correct.',
+							'password_label' => 'Password',
+							'password_min_len' => 'Your password is required.',
+							'password_max_len' => 'Your password cannot be longer than XXX characters.',
+							'password_new_label' => 'New password',
+							'password_new_min_len' => 'Your new password is required.',
+							'password_new_max_len' => 'Your new password cannot be longer than XXX characters.',
+							'password_repeat_label' => 'Repeat password',
+							'password_repeat_min_len' => 'Your password confirmation is required.',
+							'password_repeat_max_len' => 'Your password confirmation cannot be longer than XXX characters.',
+							'new_pass_invalid_identification' => 'Your email address has not been recognised.',
+							'new_pass_recently_changed' => 'Your account has already had its password changed recently.',
+							'new_pass_recently_requested' => 'You have recently requested a password reset.',
+							'new_pass_invalid_token' => 'The link to reset your password is incorrect or has expired.',
+							'login_invalid_identification' => 'Invalid log-in details.',
+							'login_invalid_password' => 'Invalid log-in details.',
+							'login_failure_repetition' => 'Too many failed logins.',
+							'save_details_invalid_password' => 'Your current password is incorrect.',
+							'save_details_invalid_new_password_repeat' => 'Your new passwords do not match.',
+							'save_details_invalid_new_identification' => 'The email address supplied is already in use.',
+							'register_duplicate_identification' => 'The email address supplied is already in use.',
+							'register_invalid_password_repeat' => 'Your passwords do not match.'
+						);
+
+					if ($this->identification_type == 'username') {
+						$this->text['identification_label'] = 'Username';
+						$this->text['identification_min_len'] = 'Your username is required.';
+						$this->text['identification_max_len'] = 'Your username cannot be longer than XXX characters.';
+						$this->text['identification_new_label'] = 'Username';
+						$this->text['identification_new_min_len'] = 'Your username is required.';
+						$this->text['identification_new_max_len'] = 'Your username cannot be longer than XXX characters.';
+						$this->text['new_pass_invalid_identification'] = 'Your username has not been recognised';
+						$this->text['save_details_invalid_new_identification'] = 'The username supplied is already in use';
+						$this->text['register_duplicate_identification'] = 'The username supplied is already in use';
+					}
 
 			}
 
