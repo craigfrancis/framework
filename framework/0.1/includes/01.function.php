@@ -1089,10 +1089,10 @@
 	}
 
 //--------------------------------------------------
-// Random key, which is URL safe, using a base 62
-// value (base64url does exist by using dashes and
+// Random key, which is URL safe, using a base 58
+// value (base64url does exist by using slashes and
 // hyphens, but special characters can raise a
-// usability problem).
+// usability problem, as well as mixing 0, O, I and l.
 
 	function random_key($length) {
 
@@ -1121,7 +1121,7 @@
 			$input = implode('', $input); // Many different sources of entropy, the more the better (even if predictable or broken).
 			$input = hash('sha256', $input, true); // 256 bits of raw binary output, not in hexadecimal (a base 16 system, using [0-9a-f]).
 			$input = base64_encode($input); // Use printable characters, as a base64 system.
-			$input = str_replace(array('/', '+'), '', $input); // Make URL safe (base62), could use "." and "-", but really needs to look like a key.
+			$input = str_replace(array('0', 'O', 'I', 'l', '/', '+'), '', $input); // Make URL safe (base58), and avoid similar looking characters.
 			$input = preg_replace('/[^a-zA-Z0-9]/', '', $input); // Make sure we don't have bad characters (e.g. "=").
 
 			$key .= $input;
