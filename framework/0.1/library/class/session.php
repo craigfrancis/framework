@@ -74,6 +74,10 @@
 
 		public static function regenerate() {
 
+			if (config::get('session.id') === NULL) {
+				exit_with_error('Cannot regenerate a session if not started');
+			}
+
 			session_regenerate_id(true); // Also delete old session file
 
 			session_write_close(); // Bug fix to write session file and gain lock, so other requests wait for lock (https://bugs.php.net/bug.php?id=61470)
