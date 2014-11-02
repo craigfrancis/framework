@@ -556,7 +556,7 @@
 
 					}
 
-					$query_html = trim(preg_replace('/^[ \t]*(?! |\t|SELECT|UPDATE|DELETE|INSERT|SHOW|FROM|LEFT|SET|WHERE|GROUP|ORDER|LIMIT)/m', '    ', $query_html));
+					$query_html = trim(preg_replace('/^[ \t]*(?! |\t|SELECT|UPDATE|DELETE|INSERT|SHOW|FROM|USING|LEFT|SET|WHERE|GROUP|ORDER|LIMIT)/m', '    ', $query_html));
 
 				//--------------------------------------------------
 				// Called from
@@ -639,7 +639,7 @@
 
 						if (DB_PREFIX != '') {
 
-							preg_match_all('/\b(' . preg_quote(DB_PREFIX, '/') .'[a-z0-9_]+)( AS ([a-z0-9]+))?/', $query, $matches, PREG_SET_ORDER);
+							preg_match_all('/\b(' . preg_quote(DB_PREFIX, '/') .'[a-z0-9_]+)`?( AS ([a-z0-9]+))?/', $query, $matches, PREG_SET_ORDER);
 
 						} else {
 
