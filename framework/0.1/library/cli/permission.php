@@ -67,7 +67,14 @@
 		//--------------------------------------------------
 		// Paths
 
-			foreach (config::get('cli.permission_reset_paths', array()) as $name => $info) {
+			$reset_paths = array(
+				'Temp folder' => array(
+						'path' => PRIVATE_ROOT . '/tmp',
+						'permission' => '777',
+					),
+			);
+
+			foreach (array_merge($reset_paths, config::get('cli.permission_reset_paths', array())) as $name => $info) {
 				if ($show_output) {
 					echo $name . "\n";
 				}
