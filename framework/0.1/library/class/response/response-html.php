@@ -17,6 +17,7 @@
 
 			private $head_html = '';
 			private $head_flushed = false;
+			private $foot_html = '';
 
 			private $view_folders = NULL;
 			private $view_path = '';
@@ -1084,6 +1085,10 @@
 		//--------------------------------------------------
 		// Foot HTML
 
+			public function foot_add_html($html) {
+				$this->foot_html .= $html;
+			}
+
 			public function foot_get_html() {
 
 				//--------------------------------------------------
@@ -1095,6 +1100,13 @@
 				// Javascript
 
 					$html .= $this->_js_get_html('foot');
+
+				//--------------------------------------------------
+				// Extra head HTML
+
+					if ($this->browser_advanced) {
+						$html .= $this->foot_html . "\n\n";
+					}
 
 				//--------------------------------------------------
 				// Return

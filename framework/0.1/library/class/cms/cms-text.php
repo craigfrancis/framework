@@ -235,6 +235,10 @@
 
 						$this->processor = new cms_tags();
 
+					} else if ($processor_name == 'html') {
+
+						$this->processor = new cms_html($processor_config);
+
 					} else {
 
 						exit_with_error('Unknown processor "' . $processor_name . '"');
