@@ -328,11 +328,7 @@
 
 										$k++;
 
-										$link_url    = $link_info['url'];
-										$link_name   = $link_info['name'];
-										$link_config = $link_info['config'];
-										$child_html  = $link_info['child_html'];
-
+										$link_config  = $link_info['config'];
 										$link_encoded = (isset($link_config['html']) && $link_config['html'] === true);
 
 									//--------------------------------------------------
@@ -356,7 +352,7 @@
 										if ($link_encoded) {
 											$class = ''; // Don't allow HTML version in class name
 										} else {
-											$class = human_to_ref($link_name);
+											$class = human_to_ref($link_info['name']);
 										}
 
 										if ($k % 2) $class .= ' odd';
@@ -364,8 +360,8 @@
 										if ($k == $links_count) $class .= ' last';
 										if ($selected) $class .= ' selected';
 										if ($link_info['child_selected']) $class .= ' selected_child';
-										if ($child_html != '') $class .= ' open';
-										if ($link_url === NULL) $class .= ' text';
+										if ($link_info['child_html'] != '') $class .= ' open';
+										if ($link_info['url'] === NULL) $class .= ' text';
 
 										if (isset($link_config['item_class']) && $link_config['item_class'] != '') {
 											$class .= ' ' . html($link_config['item_class']);
@@ -387,13 +383,13 @@
 									//--------------------------------------------------
 									// Build
 
-										$link_html = ($link_encoded ? $link_name : html($link_name));
+										$link_html = ($link_encoded ? $link_info['name'] : html($link_info['name']));
 
-										if ($link_url !== NULL) {
-											$link_html = '<a href="' . html($link_url) . '"' . $link_attributes_html . '>' . $link_html . '</a>';
+										if ($link_info['url'] !== NULL) {
+											$link_html = '<a href="' . html($link_info['url']) . '"' . $link_attributes_html . '>' . $link_html . '</a>';
 										}
 
-										$html .= $this->indent . ($this->include_white_space ? "\t" : '') . '<li' . ($class != '' ? ' class="' . trim($class) . '"' : '') . '><' . $wrapper_html . ' class="link_level' . html($level) . '">' . $link_html . '</' . $wrapper_html . '>' . $child_html . '</li>';
+										$html .= $this->indent . ($this->include_white_space ? "\t" : '') . '<li' . ($class != '' ? ' class="' . trim($class) . '"' : '') . '><' . $wrapper_html . ' class="link_level' . html($level) . '">' . $link_html . '</' . $wrapper_html . '>' . $link_info['child_html'] . '</li>';
 
 								}
 
