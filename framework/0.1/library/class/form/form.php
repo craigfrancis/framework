@@ -1315,7 +1315,7 @@
 									$k++;
 
 									if ($k == 1) {
-										$field->wrapper_class_add('first_child odd');
+										$field->wrapper_class_add('first odd');
 									} else if ($k % 2) {
 										$field->wrapper_class_add('odd');
 									} else {

@@ -237,6 +237,7 @@
 
 								$child_nav = (isset($link_info['config']['child']) ? $link_info['config']['child'] : NULL);
 								$child_open = (isset($link_info['config']['open']) ? $link_info['config']['open'] : NULL);
+								$child_selected = false;
 
 								if ($child_nav === NULL) {
 									$child_open = false;
@@ -277,7 +278,11 @@
 									// If a child has a selected link
 
 										if ($child_nav->selected_link_found == true) {
+
 											$this->selected_link_found = true; // Supports 2+ levels deep selection
+
+											$child_selected = true;
+
 										}
 
 								}
@@ -286,6 +291,7 @@
 							// Save the HTML
 
 								$this->navigation[$group_id]['links'][$link_id]['child_html'] = $child_html;
+								$this->navigation[$group_id]['links'][$link_id]['child_selected'] = $child_selected;
 
 						}
 					}
@@ -354,9 +360,10 @@
 										}
 
 										if ($k % 2) $class .= ' odd';
-										if ($k == 1) $class .= ' first_child';
-										if ($k == $links_count) $class .= ' last_child';
+										if ($k == 1) $class .= ' first';
+										if ($k == $links_count) $class .= ' last';
 										if ($selected) $class .= ' selected';
+										if ($link_info['child_selected']) $class .= ' selected_child';
 										if ($child_html != '') $class .= ' open';
 										if ($link_url === NULL) $class .= ' text';
 
