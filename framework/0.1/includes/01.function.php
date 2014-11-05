@@ -426,6 +426,35 @@
 	}
 
 //--------------------------------------------------
+// Format URL path
+
+	function format_url_path($src) {
+
+		$new = array();
+		foreach (path_to_array($src) as $folder) {
+			$folder = safe_file_name($folder);
+			if ($folder != '') {
+				$new[] = $folder;
+			}
+		}
+		if (count($new) > 0) {
+			$new = '/' . implode('/', $new) . '/';
+		} else {
+			$new = '/';
+		}
+
+		$new = strtolower($new);
+		$new = str_replace('_', '-', $new);
+
+		if (substr($new, -1) != '/') {
+			$new .= '/';
+		}
+
+		return $new;
+
+	}
+
+//--------------------------------------------------
 // Save request support functions - useful if the users
 // session has expired while filling out a long form
 

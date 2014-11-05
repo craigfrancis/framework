@@ -187,6 +187,10 @@ And the other conversion functions:
 		// format_currency(12);
 		// '£12.00'
 
+	format_url_path($url);
+		// format_url_path('/a_b@/');
+		// '/a-b/'
+
 	format_postcode($postcode, $country);
 		// format_postcode('A a1 11A A', 'UK');
 		// 'AA11 1AA'
