@@ -284,7 +284,7 @@
 						if ($server_max == 0 || $size <= $server_max) {
 							$this->max_size = intval($size);
 						} else {
-							exit_with_error('The maximum file size the server accepts is "' . file_size_to_human($server_max) . '" (' . $server_max . ')', 'upload_max_filesize = ' . ini_get('upload_max_filesize') . "\n" . 'post_max_size = ' . ini_get('post_max_size'));
+							exit_with_error('The maximum file size the server accepts is "' . file_size_to_human($server_max) . '" (' . $server_max . '), not "' . $size . '"', 'upload_max_filesize = ' . ini_get('upload_max_filesize') . "\n" . 'post_max_size = ' . ini_get('post_max_size'));
 						}
 					}
 
