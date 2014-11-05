@@ -46,6 +46,7 @@
 					$default_config = array(
 							'revision' => 0,
 							'processor' => 'markdown',
+							'cacheable' => true,
 							'editable' => false,
 							'log_missing' => true,
 							'path' => config::get('request.path'),
@@ -109,13 +110,21 @@
 				//--------------------------------------------------
 				// Content
 
-					$cache_name = intval($this->config['revision']) . '-' . base64_encode($this->config['path']);
-					$cache_path = tmp_folder('cms-text') . '/' . $cache_name;
+					$this->content = NULL;
 
-					if (is_file($cache_path)) {
-						$this->content = unserialize(file_get_contents($cache_path));
+					if ($this->config['cacheable']) {
+
+						$cache_name = intval($this->config['revision']) . '-' . base64_encode($this->config['path']);
+						$cache_path = tmp_folder('cms-text') . '/' . $cache_name;
+
+						if (is_file($cache_path)) {
+							$this->content = unserialize(file_get_contents($cache_path));
+						}
+
 					} else {
-						$this->content = NULL;
+
+						$cache_name = NULL;
+
 					}
 
 					if (!is_array($this->content) && strlen($cache_name) <= 255) { // Can't use cache (filename too long - assuming ext3), so don't work at all.
@@ -191,7 +200,9 @@
 						//--------------------------------------------------
 						// Store
 
-							file_put_contents($cache_path, serialize($this->content));
+							if ($cache_name) {
+								file_put_contents($cache_path, serialize($this->content));
+							}
 
 					}
 
