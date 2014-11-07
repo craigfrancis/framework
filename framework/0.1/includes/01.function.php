@@ -55,6 +55,29 @@
 	}
 
 //--------------------------------------------------
+// Get a request value
+
+	function csrf_token_get() {
+
+		$csrf_session = false; // Sessions expire after 24 minutes by default... (class_exists('session', false) && session::open())
+		$csrf_token = ($csrf_session ? session::get('csrf') : cookie::get('f'));
+
+		if ($csrf_token == '') {
+			$csrf_token = mt_rand(1000000, 9999999);
+		}
+
+		if ($csrf_session) {
+			session::set('csrf', $csrf_token);
+			cookie::init(); // Send 'cookie_check'
+		} else {
+			cookie::set('f', $csrf_token); // Short cookie name
+		}
+
+		return $csrf_token;
+
+	}
+
+//--------------------------------------------------
 // Quick functions used to convert text into a safe
 // form of HTML/XML/CSV without having to write the
 // full native function in the script.

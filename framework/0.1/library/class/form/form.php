@@ -47,7 +47,6 @@
 			private $db_fields = array();
 			private $db_values = array();
 			private $db_save_disabled = false;
-			private $csrf_session = false;
 			private $csrf_token = NULL;
 			private $csrf_error_html = 'The request did not appear to come from a trusted source, please try again.';
 			private $saved_values_data = NULL;
@@ -90,19 +89,7 @@
 				//--------------------------------------------------
 				// CSRF setup
 
-					$this->csrf_session = false; // Sessions expire after 24 minutes by default... (class_exists('session', false) && session::open())
-					$this->csrf_token = ($this->csrf_session ? session::get('csrf') : cookie::get('f'));
-
-					if ($this->csrf_token == '') {
-						$this->csrf_token = mt_rand(1000000, 9999999);
-					}
-
-					if ($this->csrf_session) {
-						session::set('csrf', $this->csrf_token);
-						cookie::init(); // Send 'cookie_check'
-					} else {
-						cookie::set('f', $this->csrf_token); // Short cookie name
-					}
+					$this->csrf_token = csrf_token_get();
 
 				//--------------------------------------------------
 				// Dest support
