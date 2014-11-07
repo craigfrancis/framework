@@ -283,7 +283,7 @@
 				//--------------------------------------------------
 				// Elements
 
-					$nav_links_html = $this->_nav_links_html();
+					$nav_links_html = $this->html_links_nav();
 
 				//--------------------------------------------------
 				// Extra HTML
@@ -299,7 +299,7 @@
 				//--------------------------------------------------
 				// Links
 
-					$links_array = $this->_page_links_html();
+					$links_array = $this->html_links_page();
 
 					$links_html = '';
 					foreach ($links_array as $link_html) {
@@ -355,7 +355,7 @@
 
 			}
 
-			private function _nav_links_html() {
+			protected function html_links_nav() {
 
 				//--------------------------------------------------
 				// Defaults
@@ -409,7 +409,7 @@
 
 			}
 
-			private function _page_links_html() {
+			protected function html_links_page() {
 
 				//--------------------------------------------------
 				// Range of page numbers
