@@ -9,7 +9,8 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $config = array();
+			protected $config = array();
+
 			private $url = NULL;
 			private $page_count = NULL;
 			private $page_number = NULL;
@@ -44,7 +45,7 @@
 							'extra_html' => NULL, // '<span class="pagination_extra">Page [PAGE_NUMBER] of [PAGE_COUNT]</span>'
 						);
 
-					$default_config = array_merge($default_config, config::get_all('paginator'));
+					$default_config = array_merge($default_config, $this->config, config::get_all('paginator'));
 
 				//--------------------------------------------------
 				// Set config

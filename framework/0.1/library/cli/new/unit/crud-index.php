@@ -50,7 +50,8 @@
 			// Table
 
 				$table = new table();
-				// $table->sort_default_set('tn.created', 'desc');
+				$table->no_records_set('No records found');
+				// $table->sort_default_set('i.created', 'desc');
 				// $table->sort_preserve_set(true);
 				// $table->anchor_set('results');
 
