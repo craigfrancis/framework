@@ -9,7 +9,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $config = array();
+			protected $config = array(); // Can be used when extending the paginator helper
 
 			private $url = NULL;
 			private $page_count = NULL;
