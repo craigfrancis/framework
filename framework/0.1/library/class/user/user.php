@@ -23,6 +23,7 @@
 			protected $cookie_login_last = 'user_last';
 			protected $remember_login = true;
 			protected $password_reset_url = NULL;
+			protected $password_reset_user_id = NULL;
 			protected $login_url = '/';
 
 			protected $db_link;
@@ -495,6 +496,7 @@
 				// Process
 
 					$this->password_reset_url = NULL;
+					$this->password_reset_user_id = NULL;
 
 					if ($form->valid()) {
 
@@ -515,6 +517,7 @@
 						} else {
 
 							$this->password_reset_url = $result;
+							$this->password_reset_user_id = $user_id;
 
 							return true;
 
@@ -531,6 +534,10 @@
 
 			public function password_reset_url() {
 				return $this->password_reset_url;
+			}
+
+			public function password_reset_user_id() {
+				return $this->password_reset_user_id;
 			}
 
 			public function password_reset_valid() {
