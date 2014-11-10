@@ -42,7 +42,7 @@
 
 					foreach ($this->files as $id => $file) {
 
-						$dimensions = getimagesize($file['path']);
+						$dimensions = ($file['path'] == '' ? false : getimagesize($file['path']));
 						if ($dimensions !== false) {
 							$this->files[$id]['image_width'] = $dimensions[0];
 							$this->files[$id]['image_height'] = $dimensions[1];
