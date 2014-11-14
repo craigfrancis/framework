@@ -63,13 +63,13 @@
 				$this->where_sql = $where_sql;
 			}
 
-			public function config_set($key, $value) {
-				if (key_exists($key, $this->config)) {
-					$this->config[$key] = $value;
-				} else {
-					exit_with_error('Unknown model config "' . $key . '"');
-				}
-			}
+			// public function config_set($key, $value) {
+			// 	if (key_exists($key, $this->config)) {
+			// 		$this->config[$key] = $value;
+			// 	} else {
+			// 		exit_with_error('Unknown model config "' . $key . '"');
+			// 	}
+			// }
 
 			// public function config_get($key) {
 			// 	if (key_exists($key, $this->config)) {
