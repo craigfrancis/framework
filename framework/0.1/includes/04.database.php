@@ -110,102 +110,223 @@
 			return mysqli_fetch_assoc($result);
 		}
 
-		public function fetch_fields($table_sql, $field = NULL) {
+		public function fetch_fields($item = NULL, $field = NULL) {
 
-			if ($field) {
-				if (isset($this->structure_table_cache[$table_sql][$field])) {
-					return $this->structure_table_cache[$table_sql][$field];
-				} else if (isset($this->structure_field_cache[$table_sql][$field])) {
-					return $this->structure_field_cache[$table_sql][$field];
-				}
-			} else {
-				if (isset($this->structure_table_cache[$table_sql])) {
-					return $this->structure_table_cache[$table_sql];
-				}
-			}
+			if ($item === NULL || !is_string($item)) { // Work with an existing query (do the best you can).
 
-			$sql = 'SHOW FULL COLUMNS FROM ' . $table_sql;
-
-			if ($field !== NULL) {
-				$sql .= ' LIKE "' . $this->escape_like($field) . '"';
-			}
-
-			$details = array();
-
-			foreach ($this->fetch_all($sql) as $row) {
-
-				$type = $row['Type'];
-
-				if (($pos = strpos($type, '(')) !== false) {
-					$info = substr($type, ($pos + 1), -1);
-					$type = substr($type, 0, $pos);
+				if ($item !== NULL) {
+					$result = $item;
 				} else {
-					$info = NULL;
+					$result = $this->result;
 				}
 
-				$null = ($row['Null'] == 'YES');
-				$options = NULL;
+				$details = array();
 
-				if ($type == 'int' || $type == 'tinyint' || $type == 'smallint' || $type == 'mediumint' || $type == 'bigint' || $type == 'char' || $type == 'binary' || $type == 'varchar' || $type == 'varbinary') {
-					$length = $info;
-				} else if ($type == 'decimal') {
-					$pos = strpos($info, ',');
-					$length = substr($info, 0, $pos); // e.g. decimal(10,2) = precision 10
-				} else if ($type == 'tinytext' || $type == 'tinyblob') {
-					$length = 255;
-				} else if ($type == 'text' || $type == 'blob') {
-					$length = 65535;
-				} else if ($type == 'mediumtext' || $type == 'mediumblob') {
-					$length = 16777215;
-				} else if ($type == 'longtext' || $type == 'longblob') {
-					$length = 4294967295;
-				} else if ($type == 'date') {
-					$length = 10;
-				} else if ($type == 'datetime') {
-					$length = 19;
-				} else if ($type == 'time') {
-					$length = 8;
-				} else if ($type == 'year') {
-					$length = 4;
-				} else if ($type == 'bool') {
-					$length = 1;
-				} else if ($type == 'float' || $type == 'double' || $type == 'timestamp') {
-					$length = NULL; // Not really applicable
-				} else if ($type == 'enum' || $type == 'set') {
-					$options = str_getcsv($info, ',', "'");
-					$length = count($options);
+				if ($field !== NULL) {
+					$results = array(mysqli_fetch_field_direct($result, $field)); // Index based offset
 				} else {
-					$this->_error('Unknown type "' . $row['Type'] . '" for field "' . $row['Field'] . '"', true);
+					$results = mysqli_fetch_fields($result);
 				}
 
-				$details[$row['Field']] = array(
-						'type' => $type,
-						'length' => $length,
-						'collation' => $row['Collation'],
-						'null' => $null,
-						'default' => $row['Default'],
-						'extra' => $row['Extra'],
-						'options' => $options,
-						'definition' => $row['Type'] . ($null ? ' NULL' : ' NOT NULL') . ($row['Default'] ? ' DEFAULT "' . $this->escape($row['Default']) . '"' : '') . ($row['Extra'] ? ' ' . $row['Extra'] : ''),
-					);
+				foreach ($results as $result) {
 
-			}
+					if ($result->charsetnr == 63) {
 
-			if ($field) {
+						$collation = NULL; // binary
+						$length = $result->length;
 
-				if (!isset($details[$field])) {
-					$this->_error('Cannot find field "' . $field . '" in table "' . $table_sql . '"', true);
+					} else if ($result->charsetnr == 33) {
+
+						$collation = 'utf8_unicode_ci';
+						$length = floor($result->length / 3);
+
+					} else {
+
+						exit_with_error('Unknown character-set (' . $result->charsetnr . ') found on the "' . $result->name . '" field.');
+
+					}
+
+					$type = NULL;
+					$binary = ($result->flags & MYSQLI_BINARY_FLAG);
+
+					if ($result->type == MYSQLI_TYPE_TINY) { // or MYSQLI_TYPE_CHAR, as both equal 1
+						if ($length == 1) {
+							$type = 'bool'; // not MYSQLI_TYPE_BIT - could still be a tinyint though
+						} else if ($result->flags & MYSQLI_NUM_FLAG) {
+							$type = 'tinyint';
+						}
+					} else if ($result->type == MYSQLI_TYPE_SHORT && $result->flags & MYSQLI_NUM_FLAG) {
+						$type = 'smallint';
+					} else if ($result->type == MYSQLI_TYPE_INT24 && $result->flags & MYSQLI_NUM_FLAG) {
+						$type = 'mediumint';
+					} else if ($result->type == MYSQLI_TYPE_LONG && $result->flags & MYSQLI_NUM_FLAG) {
+						$type = 'int';
+					} else if ($result->type == MYSQLI_TYPE_LONGLONG && $result->flags & MYSQLI_NUM_FLAG) {
+						$type = 'bigint';
+					} else if ($result->type == MYSQLI_TYPE_NEWDECIMAL) {
+						$type = 'decimal';
+						$length -= $result->decimals; // Ignore the decimals in length
+					} else if ($result->type == MYSQLI_TYPE_FLOAT) {
+						$type = 'float';
+					} else if ($result->type == MYSQLI_TYPE_DOUBLE) {
+						$type = 'double';
+					} else if ($result->type == MYSQLI_TYPE_DATE) { // not MYSQLI_TYPE_NEWDATE
+						$type = 'date';
+					} else if ($result->type == MYSQLI_TYPE_TIME) {
+						$type = 'time';
+						$length = 8;
+					} else if ($result->type == MYSQLI_TYPE_DATETIME) {
+						$type = 'datetime';
+					} else if ($result->type == MYSQLI_TYPE_YEAR) {
+						$type = 'year';
+					} else if ($result->type == MYSQLI_TYPE_TIMESTAMP) {
+						$type = 'timestamp';
+					} else if ($result->type == MYSQLI_TYPE_STRING) { // but not MYSQLI_TYPE_ENUM or MYSQLI_TYPE_SET, surprisingly
+						if ($result->flags & MYSQLI_ENUM_FLAG) {
+							$type = 'enum';
+						} else if ($result->flags & MYSQLI_SET_FLAG) {
+							$type = 'set';
+						} else {
+							$type = ($binary ? 'binary' : 'char');
+						}
+					} else if ($result->type == MYSQLI_TYPE_BLOB) {
+						if ($length <= 255) {
+							$type = ($binary ? 'tinyblob' : 'tinytext'); // not MYSQLI_TYPE_TINY_BLOB
+						} else if ($length <= 65535) {
+							$type = ($binary ? 'blob' : 'text'); // not MYSQLI_TYPE_TINY_BLOB
+						} else if ($length <= 16777215) {
+							$type = ($binary ? 'mediumblob' : 'mediumtext');
+						} else {
+							$type = ($binary ? 'longblob' : 'longtext'); // not MYSQLI_TYPE_TINY_BLOB
+						}
+					} else if ($result->type == MYSQLI_TYPE_VAR_STRING) {
+						$type = ($binary ? 'varbinary' : 'varchar');
+					}
+
+					if ($type === NULL) {
+						exit_with_error('Unknown type (' . $result->type . ') found on the "' . $result->name . '" field.');
+					}
+
+					$details[$result->name] = array(
+							'type' => $type,
+							'length' => $length,
+							'collation' => $collation,
+							'null' => !(MYSQLI_NOT_NULL_FLAG & $result->flags),
+							// 'default' => $result->def, // Currently an empty string for everything
+						);
+
+					// Not available: extra, options (enum/set values), definition
+
 				}
 
-				$this->structure_field_cache[$table_sql][$field] = $details[$field];
-
-				return $details[$field];
+				if ($field !== NULL) {
+					return array_pop($details);
+				} else {
+					return $details;
+				}
 
 			} else {
 
-				$this->structure_table_cache[$table_sql] = $details;
+				$table_sql = $item;
 
-				return $details;
+				if ($field !== NULL) {
+					if (isset($this->structure_table_cache[$table_sql][$field])) {
+						return $this->structure_table_cache[$table_sql][$field];
+					} else if (isset($this->structure_field_cache[$table_sql][$field])) {
+						return $this->structure_field_cache[$table_sql][$field];
+					}
+				} else {
+					if (isset($this->structure_table_cache[$table_sql])) {
+						return $this->structure_table_cache[$table_sql];
+					}
+				}
+
+				$sql = 'SHOW FULL COLUMNS FROM ' . $table_sql;
+
+				if ($field !== NULL) {
+					$sql .= ' LIKE "' . $this->escape_like($field) . '"';
+				}
+
+				$details = array();
+
+				foreach ($this->fetch_all($sql) as $row) {
+
+					$type = $row['Type'];
+
+					if (($pos = strpos($type, '(')) !== false) {
+						$info = substr($type, ($pos + 1), -1);
+						$type = substr($type, 0, $pos);
+					} else {
+						$info = NULL;
+					}
+
+					$null = ($row['Null'] == 'YES');
+					$options = NULL;
+
+					if ($type == 'int' || $type == 'tinyint' || $type == 'smallint' || $type == 'mediumint' || $type == 'bigint' || $type == 'char' || $type == 'binary' || $type == 'varchar' || $type == 'varbinary') {
+						$length = $info;
+					} else if ($type == 'decimal') {
+						$pos = strpos($info, ',');
+						$length = substr($info, 0, $pos); // e.g. decimal(10,2) = precision 10
+					} else if ($type == 'tinytext' || $type == 'tinyblob') {
+						$length = 255;
+					} else if ($type == 'text' || $type == 'blob') {
+						$length = 65535;
+					} else if ($type == 'mediumtext' || $type == 'mediumblob') {
+						$length = 16777215;
+					} else if ($type == 'longtext' || $type == 'longblob') {
+						$length = 4294967295;
+					} else if ($type == 'date') {
+						$length = 10;
+					} else if ($type == 'datetime') {
+						$length = 19;
+					} else if ($type == 'time') {
+						$length = 8;
+					} else if ($type == 'year') {
+						$length = 4;
+					} else if ($type == 'bool') {
+						$length = 1;
+					} else if ($type == 'timestamp') {
+						$length = 19;
+					} else if ($type == 'float' || $type == 'double') {
+						$length = NULL; // Not really applicable
+					} else if ($type == 'enum' || $type == 'set') {
+						$options = str_getcsv($info, ',', "'");
+						$length = count($options);
+					} else {
+						$this->_error('Unknown type "' . $row['Type'] . '" for field "' . $row['Field'] . '"', true);
+					}
+
+					$details[$row['Field']] = array(
+							'type' => $type,
+							'length' => $length,
+							'collation' => $row['Collation'],
+							'null' => $null,
+							'default' => $row['Default'],
+							'extra' => $row['Extra'],
+							'options' => $options,
+							'definition' => $row['Type'] . ($null ? ' NULL' : ' NOT NULL') . ($row['Default'] ? ' DEFAULT "' . $this->escape($row['Default']) . '"' : '') . ($row['Extra'] ? ' ' . $row['Extra'] : ''),
+						);
+
+				}
+
+				if ($field !== NULL) {
+
+					if (!isset($details[$field])) {
+						$this->_error('Cannot find field "' . $field . '" in table "' . $table_sql . '"', true);
+					}
+
+					$this->structure_field_cache[$table_sql][$field] = $details[$field];
+
+					return $details[$field];
+
+				} else {
+
+					$this->structure_table_cache[$table_sql] = $details;
+
+					return $details;
+
+				}
 
 			}
 
