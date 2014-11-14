@@ -130,7 +130,7 @@
 
 				foreach ($results as $result) {
 
-					if ($result->charsetnr == 63) {
+					if ($result->charsetnr == 63) { // See /usr/local/opt/mysql/share/mysql/charsets/Index.xml
 
 						$collation = NULL; // binary
 						$length = $result->length;
