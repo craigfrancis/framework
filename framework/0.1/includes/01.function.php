@@ -661,6 +661,34 @@
 	}
 
 //--------------------------------------------------
+// Model
+
+	function model_get($model_name, $config = array()) {
+
+		$model_class_name = $model_name . '_model';
+		$model_file_name = safe_file_name(str_replace('_', '-', $model_name));
+
+		if (!isset($config['table']) && !isset($config['table_sql'])) {
+			$config['table'] = DB_PREFIX . $model_name;
+		}
+
+		$model_file_path = APP_ROOT . '/library/model/' . $model_file_name . '.php';
+
+		if (is_file($model_file_path)) {
+
+			require_once($model_file_path);
+
+			return new $model_class_name($config);
+
+		} else {
+
+			return new model($config);
+
+		}
+
+	}
+
+//--------------------------------------------------
 // Database
 
 	function db_get($connection = 'default') {
