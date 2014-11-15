@@ -378,8 +378,8 @@
 
 			protected function _db_field_set($field_name, $field_key = 'value') {
 
-				if ($this->form->db_field_get($field_name) === false) {
-					exit('<p>Invalid db field "' . html($field_name) . '" set for field "' . $this->label_html . '"</p>');
+				if ($this->form->db_field_get($field_name) === NULL) {
+					exit_with_error('Invalid db field "' . html($field_name) . '" set for field "' . $this->label_html . '"');
 				}
 
 				$this->db_field_name = $field_name;
