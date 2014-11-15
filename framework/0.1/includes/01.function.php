@@ -678,11 +678,11 @@
 
 			require_once($model_file_path);
 
-			return new $model_class_name($config);
+			return new $model_class_name($model_name, $config);
 
 		} else {
 
-			return new model($config);
+			return new model($model_name, $config);
 
 		}
 

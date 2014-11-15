@@ -189,6 +189,323 @@
             }
         }
     },
+    "tpl_form_fields": {
+        "fields": {
+            "id": {
+                "type": "int",
+                "length": "11",
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "auto_increment",
+                "options": null,
+                "definition": "int(11) NOT NULL auto_increment"
+            },
+            "type_tinyint": {
+                "type": "tinyint",
+                "length": "4",
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "tinyint(4) NOT NULL"
+            },
+            "type_smallint": {
+                "type": "smallint",
+                "length": "6",
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "smallint(6) NOT NULL"
+            },
+            "type_mediumint": {
+                "type": "mediumint",
+                "length": "9",
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "mediumint(9) NOT NULL"
+            },
+            "type_int": {
+                "type": "int",
+                "length": "11",
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "int(11) NOT NULL"
+            },
+            "type_bigint": {
+                "type": "bigint",
+                "length": "20",
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "bigint(20) NOT NULL"
+            },
+            "type_char5": {
+                "type": "char",
+                "length": "5",
+                "collation": "utf8_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "char(5) NOT NULL"
+            },
+            "type_varchar5": {
+                "type": "varchar",
+                "length": "5",
+                "collation": "utf8_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "varchar(5) NOT NULL"
+            },
+            "type_binary5": {
+                "type": "binary",
+                "length": "5",
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "binary(5) NOT NULL"
+            },
+            "type_varbinary5": {
+                "type": "varbinary",
+                "length": "5",
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "varbinary(5) NOT NULL"
+            },
+            "type_decimal10_2": {
+                "type": "decimal",
+                "length": "10",
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "decimal(10,2) NOT NULL"
+            },
+            "type_tinytext": {
+                "type": "tinytext",
+                "length": 255,
+                "collation": "utf8_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "tinytext NOT NULL"
+            },
+            "type_tinyblob": {
+                "type": "tinyblob",
+                "length": 255,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "tinyblob NOT NULL"
+            },
+            "type_text": {
+                "type": "text",
+                "length": 65535,
+                "collation": "utf8_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "text NOT NULL"
+            },
+            "type_blob": {
+                "type": "blob",
+                "length": 65535,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "blob NOT NULL"
+            },
+            "type_mediumtext": {
+                "type": "mediumtext",
+                "length": 16777215,
+                "collation": "utf8_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "mediumtext NOT NULL"
+            },
+            "type_mediumblob": {
+                "type": "mediumblob",
+                "length": 16777215,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "mediumblob NOT NULL"
+            },
+            "type_longtext": {
+                "type": "longtext",
+                "length": 4294967295,
+                "collation": "utf8_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "longtext NOT NULL"
+            },
+            "type_longblob": {
+                "type": "longblob",
+                "length": 4294967295,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "longblob NOT NULL"
+            },
+            "type_date": {
+                "type": "date",
+                "length": 10,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "date NOT NULL"
+            },
+            "type_datetime": {
+                "type": "datetime",
+                "length": 19,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "datetime NOT NULL"
+            },
+            "type_time": {
+                "type": "time",
+                "length": 8,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "time NOT NULL"
+            },
+            "type_year": {
+                "type": "year",
+                "length": 4,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "year(4) NOT NULL"
+            },
+            "type_timestamp": {
+                "type": "timestamp",
+                "length": 19,
+                "collation": null,
+                "null": false,
+                "default": "CURRENT_TIMESTAMP",
+                "extra": "on update CURRENT_TIMESTAMP",
+                "options": null,
+                "definition": "timestamp NOT NULL DEFAULT \"CURRENT_TIMESTAMP\" on update CURRENT_TIMESTAMP"
+            },
+            "type_bool": {
+                "type": "tinyint",
+                "length": "1",
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "tinyint(1) NOT NULL"
+            },
+            "type_float": {
+                "type": "float",
+                "length": null,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "float NOT NULL"
+            },
+            "type_double": {
+                "type": "double",
+                "length": null,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "double NOT NULL"
+            },
+            "type_enum": {
+                "type": "enum",
+                "length": 3,
+                "collation": "utf8_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": [
+                    "a",
+                    "b",
+                    "c"
+                ],
+                "definition": "enum('a','b','c') NOT NULL"
+            },
+            "type_set": {
+                "type": "set",
+                "length": 3,
+                "collation": "utf8_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": [
+                    "a",
+                    "b",
+                    "c"
+                ],
+                "definition": "set('a','b','c') NOT NULL"
+            }
+        },
+        "keys": {
+            "PRIMARY": {
+                "1": {
+                    "non_unique": "0",
+                    "column_name": "id",
+                    "collation": "A",
+                    "sub_part": null,
+                    "packed": null,
+                    "null": "",
+                    "index_type": "BTREE",
+                    "comment": "",
+                    "index_comment": ""
+                }
+            }
+        }
+    },
     "tpl_log_contact": {
         "fields": {
             "id": {

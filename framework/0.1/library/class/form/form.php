@@ -38,13 +38,14 @@
 			private $error_override_function = NULL;
 			private $post_validation_done = false;
 			private $db_link = NULL;
+			private $db_model = NULL;
+			private $db_model_fields_set = false;
 			private $db_table_name_sql = NULL;
 			private $db_table_alias_sql = NULL;
 			private $db_where_sql = NULL;
 			private $db_log_table = NULL;
 			private $db_log_values = array();
-			private $db_select_values = NULL;
-			private $db_fields = array();
+			private $db_fields = NULL;
 			private $db_values = array();
 			private $db_save_disabled = false;
 			private $csrf_token = NULL;
@@ -342,7 +343,7 @@
 				if ($value == 'left' || $value == 'right' || $value == 'none') {
 					$this->required_mark_position = $value;
 				} else {
-					exit('<p>Invalid required mark position specified (left/right/none)');
+					exit_with_error('Invalid required mark position specified (left/right/none)');
 				}
 			}
 
@@ -389,29 +390,40 @@
 				return $this->db_link;
 			}
 
+			public function db_model_set($model) {
+				$this->db_model = $model;
+			}
+
+			public function db_model_get() {
+				if ($this->db_model === NULL) {
+					if ($this->db_table_name_sql !== NULL) {
+
+						if (DB_PREFIX != '' && prefix_match(DB_PREFIX, $this->db_table_name_sql)) {
+							$model_name = substr($this->db_table_name_sql, strlen(DB_PREFIX));
+						} else {
+							$model_name = $this->db_table_name_sql;
+						}
+
+						$this->db_model = model_get($model_name, array(
+								'table_sql' => $this->db_table_name_sql,
+								'table_alias' => $this->db_table_alias_sql,
+								'where_sql' => $this->db_where_sql,
+								'log_table' => $this->db_log_table,
+								'log_values' => $this->db_log_values,
+							));
+
+					} else {
+
+						$this->db_model = false;
+
+					}
+				}
+				return $this->db_model;
+			}
+
 			public function db_table_set_sql($table_sql, $alias_sql = NULL) {
-
-				//--------------------------------------------------
-				// Store
-
-					$db = $this->db_get();
-
-					$this->db_table_name_sql = $table_sql;
-					$this->db_table_alias_sql = $alias_sql;
-
-				//--------------------------------------------------
-				// Field details
-
-					$this->db_fields = $db->fetch_fields($this->db_table_name_sql);
-
-			}
-
-			public function db_table_name_get_sql() {
-				return $this->db_table_name_sql;
-			}
-
-			public function db_table_alias_get_sql() {
-				return $this->db_table_alias_sql;
+				$this->db_table_name_sql = $table_sql;
+				$this->db_table_alias_sql = $alias_sql;
 			}
 
 			public function db_where_set_sql($where_sql) {
@@ -424,6 +436,14 @@
 			}
 
 			public function db_field_get($field, $key = NULL) {
+				if ($this->db_fields === NULL) {
+					$model = $this->db_model_get();
+					if ($model) {
+						$this->db_fields = $model->fetch_fields();
+					} else {
+						$this->db_fields = false;
+					}
+				}
 				if ($key) {
 					if (isset($this->db_fields[$field][$key])) {
 						return $this->db_fields[$field][$key];
@@ -436,13 +456,10 @@
 				return NULL;
 			}
 
-			public function db_fields_get() {
-				return $this->db_fields;
-			}
-
 			public function db_field_options_get($field) {
-				if (isset($this->db_fields[$field]) && ($this->db_fields[$field]['type'] == 'enum' || $this->db_fields[$field]['type'] == 'set')) {
-					return $this->db_fields[$field]['options'];
+				$config = $this->db_field_get($field);
+				if ($config && ($config['type'] == 'enum' || $config['type'] == 'set')) {
+					return $config['options'];
 				} else {
 					return NULL;
 				}
@@ -452,70 +469,37 @@
 				$this->db_save_disabled = true;
 			}
 
-			public function db_select_fields() {
-				$fields = array();
-				foreach ($this->fields as $field) {
-					$field_name = $field->db_field_name_get();
-					if ($field_name !== NULL) {
-						$fields[] = $field_name;
+			private function _db_model_fields_set() {
+				if (!$this->db_model_fields_set) {
+
+					$fields = array();
+					foreach ($this->fields as $field) {
+						$field_name = $field->db_field_name_get();
+						if ($field_name !== NULL) {
+							$fields[] = $field_name;
+						}
 					}
+					if (count($fields) > 0) {
+						$model = $this->db_model_get();
+						$model->_fields_set($fields);
+					}
+
+					$this->db_model_fields_set = true;
+
 				}
-				return $fields;
 			}
 
 			public function db_select_value_get($field) {
 
-				//--------------------------------------------------
-				// Not used
+				$model = $this->db_model_get();
 
-					if ($this->db_where_sql === NULL || $field == '') {
-						return ''; // So the form_field_text->_value_print_get has the more appropriate empty string.
-					}
+				if ($model === false) {
+					exit_with_error('You need to call "db_model_set" or "db_table_set_sql" on the form object');
+				}
 
-				//--------------------------------------------------
-				// Get values
+				$this->_db_model_fields_set();
 
-					if ($this->db_select_values === NULL) {
-
-						if ($this->db_table_name_sql === NULL) exit('<p>You need to call "db_table_set_sql" on the form object</p>');
-						if ($this->db_where_sql === NULL) exit('<p>You need to call "db_where_set_sql" on the form object</p>');
-
-						$fields = $this->db_select_fields();
-
-						if (count($fields) > 0) {
-							$this->db_select_values = $this->_db_select_values_get($fields);
-						}
-
-						if (!$this->db_select_values) {
-							$this->db_select_values = array(); // Don't lookup again if select failed (false), or there were no fields (NULL).
-						}
-
-					}
-
-				//--------------------------------------------------
-				// Return
-
-					if (array_key_exists($field, $this->db_select_values)) {
-
-						return $this->db_select_values[$field];
-
-					} else {
-
-						exit('<p>Could not find field "' . html($field) . '" - have you called "db_table_set_sql" and "db_where_set_sql" on the form object?</p>');
-
-					}
-
-			}
-
-			private function _db_select_values_get($fields) {
-
-				$db = $this->db_get();
-
-				$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
-
-				$db->select($table_sql, $fields, $this->db_where_sql);
-
-				return $db->fetch_row();
+				return $model->fetch_value($field);
 
 			}
 
@@ -788,7 +772,7 @@
 						if ($field_name !== NULL && !$field->disabled_get() && !$field->readonly_get()) {
 
 							$field_key = $field->db_field_key_get();
-							$field_type = $this->db_fields[$field_name]['type'];
+							$field_config = $this->db_field_get($field_name);
 
 							if ($field_key == 'key') {
 								$values[$field_name] = $field->value_key_get();
@@ -796,8 +780,8 @@
 								$values[$field_name] = $field->value_get();
 							}
 
-							if ($this->db_fields[$field_name]['null']) {
-								if ($field_type == 'int' && $values[$field_name] === '') {
+							if ($field_config['null']) {
+								if ($field_config['type'] == 'int' && $values[$field_name] === '') {
 									$values[$field_name] = NULL; // e.g. number field setting an empty string (not 0).
 								}
 							} else {
@@ -823,92 +807,35 @@
 
 			}
 
+		//--------------------------------------------------
+		// Database saving
+
 			public function db_save() {
 
 				//--------------------------------------------------
 				// Validation
 
-					if ($this->disabled) exit_with_error('This form has been disabled, so you cannot call "db_save".');
+					if ($this->disabled) exit_with_error('This form is disabled, so you cannot call "db_save".');
 					if ($this->readonly) exit_with_error('This form is readonly, so you cannot call "db_save".');
-
-					if ($this->db_table_name_sql === NULL) exit('<p>You need to call "db_table_set_sql" on the form object</p>');
 
 					if ($this->db_save_disabled) {
 						exit_with_error('The "db_save" method has been disabled, you should probably be using an intermediate support object.');
 					}
 
 				//--------------------------------------------------
-				// Values
+				// Model mode
+
+					$model = $this->db_model_get();
+
+					if ($model === false) {
+						exit_with_error('You need to call "db_model_set" or "db_table_set_sql" on the form object');
+					}
+
+					$this->_db_model_fields_set();
 
 					$values = $this->data_db_get();
 
-				//--------------------------------------------------
-				// Log changes
-
-					if (count($values) == 0) { // No fields (maybe this users permission does not have fields for this table)
-
-						$changed = false;
-
-					} else if ($this->db_log_table && $this->db_where_sql !== NULL) { // Logging enabled for a record edit (n/a on add)
-
-						$changed = false;
-
-						$old_values = $this->_db_select_values_get(array_keys($values));
-
-						$db = $this->db_get();
-
-						foreach ($values as $field => $new_value) {
-							if (strval($new_value) !== strval($old_values[$field])) { // If the value changes from "123" to "0123", and ignore an INT field being set to NULL (NULL === 0)
-
-								if ($new_value === '' && $old_values[$field] === '0') {
-									continue; // Special case for select fields on an int field (value returned as string) and the "label_option"
-								}
-
-								$db->insert($this->db_log_table, array_merge($this->db_log_values, array(
-										'field' => $field,
-										'old_value' => strval($old_values[$field]),
-										'new_value' => strval($new_value),
-										'created' => date('Y-m-d H:i:s'),
-									)));
-
-								$changed = true;
-
-							}
-						}
-
-					} else {
-
-						$changed = true; // Assume it changed, legacy behaviour (and saves a lookup/compare)
-
-					}
-
-				//--------------------------------------------------
-				// When this happened
-
-					if (isset($this->db_fields['edited']) && $changed) {
-						$values['edited'] = date('Y-m-d H:i:s');
-					}
-
-					if (isset($this->db_fields['created']) && $this->db_where_sql === NULL) {
-						$values['created'] = date('Y-m-d H:i:s');
-					}
-
-				//--------------------------------------------------
-				// Save
-
-					$db = $this->db_get();
-
-					if ($this->db_where_sql === NULL) {
-
-						$db->insert($this->db_table_name_sql, $values);
-
-					} else if (count($values) > 0) {
-
-						$table_sql = $this->db_table_name_sql . ($this->db_table_alias_sql === NULL ? '' : ' AS ' . $this->db_table_alias_sql);
-
-						$db->update($table_sql, $values, $this->db_where_sql);
-
-					}
+					$model->save($values);
 
 			}
 
