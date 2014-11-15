@@ -503,7 +503,7 @@
 
 			}
 
-			public function db_value_set($name, $value) {
+			public function db_value_set($name, $value) { // TODO: Look at using $model->value_set();
 				$this->db_values[$name] = $value;
 			}
 
