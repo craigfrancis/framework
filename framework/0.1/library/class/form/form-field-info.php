@@ -71,8 +71,10 @@
 			public function html_input() {
 				if ($this->value_html !== NULL) {
 					return $this->value_html;
-				} else {
+				} else if ($this->db_field_name !== NULL) {
 					return nl2br(html($this->form->db_select_value_get($this->db_field_name)));
+				} else {
+					return '';
 				}
 			}
 

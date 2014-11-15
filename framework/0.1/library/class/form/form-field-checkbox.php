@@ -96,7 +96,12 @@
 
 			protected function _value_print_get() {
 				if ($this->value === NULL) {
-					return ($this->form->db_select_value_get($this->db_field_name) == ($this->text_value_true !== NULL ? $this->text_value_true : true));
+					if ($this->db_field_name !== NULL) {
+						$db_value = $this->form->db_select_value_get($this->db_field_name);
+					} else {
+						$db_value = '';
+					}
+					return (($db_value) == ($this->text_value_true !== NULL ? $this->text_value_true : true));
 				}
 				return $this->value;
 			}

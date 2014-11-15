@@ -217,7 +217,12 @@
 
 			protected function _value_print_get() {
 				if ($this->value === NULL) {
-					return $this->_value_parse($this->form->db_select_value_get($this->db_field_name));
+					if ($this->db_field_name !== NULL) {
+						$db_value = $this->form->db_select_value_get($this->db_field_name);
+					} else {
+						$db_value = '';
+					}
+					return $this->_value_parse($db_value);
 				}
 				return $this->value;
 			}
