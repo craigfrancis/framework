@@ -116,7 +116,6 @@ exit('Updated?');
 					$form->csrf_error_set_html('The request did not appear to come from a trusted source, please try again.');
 					$form->error_override_set_function(array($this, 'error_override')); // If you want to get the text translated
 					$form->db_table_set_sql(DB_PREFIX . 'log_contact');
-					$form->db_table_set_sql(DB_PREFIX . 'log_contact', 'c', $db); // Alias and db connection
 
 					$field_password = new form_field_password($form, 'Password');
 					$field_password->min_length_set('Your password is required.');
