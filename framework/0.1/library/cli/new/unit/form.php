@@ -17,6 +17,8 @@
 
 				// $db = db_get();
 
+				$model = model_get('item');
+
 			//--------------------------------------------------
 			// Form setup
 
@@ -24,8 +26,7 @@
 				$form->form_class_set('basic_form');
 				$form->form_button_set('Send');
 				//$form->form_action_set(https_url('#my-id'));
-				//$form->db_table_set_sql($table_sql);
-				//$form->db_where_set_sql($where_sql);
+				//$form->db_model_set($model);
 
 			//--------------------------------------------------
 			// Form submitted

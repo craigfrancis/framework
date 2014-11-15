@@ -24,20 +24,24 @@
 			//--------------------------------------------------
 			// Details
 
-				$table_sql = DB_PREFIX . 'item';
-				$where_sql = NULL;
+				$model = model_get('item', array(
+						'fields' => array(
+								'name',
+							),
+						'log_values' => array(
+								'item_id' => $item_id,
+							),
+					));
 
 				$action_edit = ($item_id > 0);
 
 				if ($action_edit) {
 
-					$where_sql = '
+					$model->where_set_sql('
 						id = "' . $db->escape($item_id) . '" AND
-						deleted = "0000-00-00 00:00:00"';
+						deleted = "0000-00-00 00:00:00"');
 
-					$db->select($table_sql, array('name'), $where_sql);
-
-					if ($row = $db->fetch_row()) {
+					if ($row = $model->fetch_values()) {
 
 						$this->set('item_name', $row['name']);
 
@@ -54,9 +58,7 @@
 
 				$form = new form();
 				$form->form_class_set('basic_form');
-				$form->db_table_set_sql($table_sql);
-				$form->db_where_set_sql($where_sql);
-				// $form->db_log_set(DB_PREFIX . 'system_log', array('item_type' => 'item', 'item_id' => $item_id, 'editor_id' => ADMIN_ID));
+				$form->db_model_set($model);
 
 
 
