@@ -79,7 +79,7 @@ And if your pushing the performance side of page loading, it is possible add the
 This will start sending your `<head>` to the browser so it can start downloading external resources (i.e. css). But be careful if your using `css_auto()`, as that should not be in the template file. Instead create your own response_html:
 
 	class response_html extends response_html_base {
-		public function setup() {
+		protected function setup() {
 			$response->css_auto();
 		}
 	}

@@ -20,7 +20,7 @@
 				$this->setup();
 			}
 
-			public function setup() {
+			protected function setup() {
 			}
 
 		//--------------------------------------------------
