@@ -36,9 +36,19 @@ And you can return a HTML version, with the `<time>` tag:
 
 ## Database usage
 
-When storing a datetime in the database, simply use the value from:
+When storing a `datetime` in the database, either use the value from:
 
 	$timestamp->format('db');
+
+Or simply pass the timestamp variable to the [database helper](../../doc/system/database.md):
+
+	$now = new timestamp();
+
+	$db->insert(DB_PREFIX . 'table', array(
+			'id'      => '',
+			'name'    => $name,
+			'created' => $now,
+		));
 
 This will use the ISO format "YYYY-MM-DD HH:MM:SS" in the UTC timezone.
 
@@ -46,7 +56,7 @@ When returning the value from the database, simply run:
 
 	$timestamp = new timestamp($row['field'], 'db');
 
-The timestamp helper will then parse the UTC value, and format with "output.timezone".
+The timestamp helper will then parse the UTC value, and output with "output.timezone".
 
 ---
 
