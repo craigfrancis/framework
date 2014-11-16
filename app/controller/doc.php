@@ -84,7 +84,7 @@
 
 						$replace = array(
 							'table helper' => '<a href="/doc/helpers/table/">table helper</a>',
-							'output.currency' => '<a href="/doc/setup/config/">output.currency</a>',
+							'output.currency_char' => '<a href="/doc/setup/config/">output.currency_char</a>',
 							'output.protocols' => '<a href="/doc/setup/config/">output.protocols</a>',
 							'email.check_domain' => '<a href="/doc/setup/config/">email.check_domain</a>',
 						);
