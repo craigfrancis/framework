@@ -183,7 +183,7 @@ And the other conversion functions:
 		// '3 minutes, and 55 seconds'
 
 	format_currency($value, $currency_char, $decimal_places);
-		// output.currency = '£'
+		// output.currency_char = '£'
 		// format_currency(12);
 		// '£12.00'
 

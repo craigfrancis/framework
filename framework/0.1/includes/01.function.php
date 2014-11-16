@@ -403,7 +403,7 @@
 	function format_currency($value, $currency_char = NULL, $decimal_places = 2, $zero_to_blank = false) {
 
 		if ($currency_char === NULL) {
-			$currency_char = config::get('output.currency');
+			$currency_char = config::get('output.currency_char', '£');
 		}
 
 		if ($value === NULL) {
