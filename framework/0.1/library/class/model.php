@@ -155,6 +155,10 @@
 
 						$this->values = $db->fetch_row($result);
 
+						if ($this->values === NULL) {
+							$this->values = false; // Did not find a row... don't keep trying.
+						}
+
 					} else {
 
 						$this->values = false;
