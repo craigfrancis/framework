@@ -22,15 +22,21 @@
 
 						'fields' => NULL,
 						'fields_sql' => NULL,
+
 						'table' => NULL,
 						'table_sql' => NULL,
 						'table_alias' => NULL,
+
 						'where' => NULL,
+						'where_id' => NULL,
 						'where_sql' => NULL,
+
 						'group' => NULL,
 						'group_sql' => NULL,
+
 						'order' => NULL,
 						'order_sql' => NULL,
+
 						'limit' => NULL,
 						'limit_sql' => NULL,
 
@@ -51,7 +57,11 @@
 				//--------------------------------------------------
 				// Where
 
-					if ($this->config['where_sql']) {
+					if ($this->config['where_id']) {
+
+						$this->where_set_id($this->config['where_id']);
+
+					} else if ($this->config['where_sql']) {
 
 						$this->where_set_sql($this->config['where_sql']);
 
@@ -97,6 +107,11 @@
 				$this->where_sql = $where_sql;
 				$this->fields = NULL;
 				$this->values = NULL;
+			}
+
+			public function where_set_id($id) {
+				$db = db_get();
+				$this->where_set_sql('id = "' . $db->escape($id) . '" AND deleted = "0000-00-00 00:00:00"');
 			}
 
 			// public function config_set($key, $value) {
