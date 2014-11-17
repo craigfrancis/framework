@@ -139,6 +139,8 @@
 				//--------------------------------------------------
 				// Get gateway details
 
+					$now = new timestamp();
+
 					$gateway_host = $this->_gateway_config($gateway_name, 'host');
 					$gateway_log = $this->_gateway_config($gateway_name, 'log');
 
@@ -173,7 +175,7 @@
 								'gateway'      => $gateway_name,
 								'request_url'  => $gateway_url,
 								'request_data' => debug_dump($data),
-								'request_date' => date('Y-m-d H:i:s'),
+								'request_date' => $now,
 							));
 
 						$log_id = $db->insert_id();
@@ -302,7 +304,7 @@
 										response_code = "' . $db->escape($this->response_code) . '",
 										response_mime = "' . $db->escape($this->response_mime) . '",
 										response_data = "' . $db->escape($this->response_data) . '",
-										response_date = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+										response_date = "' . $db->escape($now) . '"
 									WHERE
 										id = "' . $db->escape($log_id) . '"');
 
@@ -607,6 +609,8 @@
 					$pass = request('pass');
 					$client = request('client');
 
+					$now = new timestamp();
+
 				//--------------------------------------------------
 				// Check tables
 
@@ -653,7 +657,7 @@
 									'client'  => $client,
 									'pass'    => $db_pass,
 									'gateway' => $this->api,
-									'created' => date('Y-m-d H:i:s'),
+									'created' => $now,
 									'used'    => '0000-00-00 00:00:00',
 								));
 
@@ -671,7 +675,7 @@
 					$db->query('UPDATE
 									' . DB_PREFIX . 'gateway_pass
 								SET
-									used = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+									used = "' . $db->escape($now) . '"
 								WHERE
 									client = "' . $db->escape($client) . '" AND
 									pass = "' . $db->escape($pass) . '" AND

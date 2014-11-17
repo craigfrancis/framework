@@ -47,7 +47,7 @@
 
 				$db->insert(DB_PREFIX . 'system_report', array(
 						'type'     => $type,
-						'created'  => date('Y-m-d H:i:s'),
+						'created'  => new timestamp(),
 						'message'  => $message,
 						'request'  => config::get('request.url'),
 						'referrer' => config::get('request.referrer'),

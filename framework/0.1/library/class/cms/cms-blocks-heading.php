@@ -135,12 +135,14 @@
 
 				$db = db_get();
 
+				$now = new timestamp();
+
 				if ($info['values_save'] == 'update') {
 
 					$db->query('UPDATE
 									' . DB_PREFIX . 'cms_block_heading AS cbh
 								SET
-									cbh.deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+									cbh.deleted = "' . $db->escape($now) . '"
 								WHERE
 									cbh.block_id = "' . $db->escape($this->block_id) . '" AND
 									cbh.deleted = "0000-00-00 00:00:00"');
@@ -151,7 +153,7 @@
 						'block_id' => $this->block_id,
 						'level' => $info['values_new']['level'],
 						'text' => $info['values_new']['text'],
-						'created' => date('Y-m-d H:i:s'),
+						'created' => $now,
 						'deleted' => '0000-00-00 00:00:00',
 					));
 

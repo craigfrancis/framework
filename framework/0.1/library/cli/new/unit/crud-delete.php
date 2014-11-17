@@ -68,7 +68,7 @@
 							// Delete
 
 								$values = array(
-										'deleted' => date('Y-m-d H:i:s'),
+										'deleted' => new timestamp(),
 									);
 
 								$db->update($table_sql, $values, $where_sql);

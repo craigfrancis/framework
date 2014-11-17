@@ -386,10 +386,12 @@
 									//--------------------------------------------------
 									// Update the session - keep active
 
+										$now = new timestamp();
+
 										$db->query('UPDATE
 														' . $db->escape_table($this->db_table['session']) . ' AS s
 													SET
-														s.last_used = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+														s.last_used = "' . $db->escape($now) . '"
 													WHERE
 														s.id = "' . $db->escape($session_id) . '" AND
 														' . $this->db_where_sql['session']);
@@ -454,10 +456,12 @@
 
 						} else {
 
+							$now = new timestamp();
+
 							$db->query('UPDATE
 											' . $db->escape_table($this->db_table['session']) . ' AS s
 										SET
-											s.deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+											s.deleted = "' . $db->escape($now) . '"
 										WHERE
 											s.id = "' . $db->escape($this->session_info['id']) . '" AND
 											' . $this->db_where_sql['session']);
@@ -539,10 +543,12 @@
 
 						} else {
 
+							$now = new timestamp();
+
 							$db->query('UPDATE
 											' . $db->escape_table($this->db_table['session']) . ' AS s
 										SET
-											s.deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+											s.deleted = "' . $db->escape($now) . '"
 										WHERE
 											s.user_id = "' . $db->escape($user_id) . '" AND
 											' . $this->db_where_sql['session']);
@@ -585,13 +591,15 @@
 				//--------------------------------------------------
 				// Create a new session
 
+					$now = new timestamp();
+
 					$db->insert($this->db_table['session'], array(
-							'pass'      => sha1($session_pass), // Using CRYPT_BLOWFISH in password::hash(), makes page loading too slow!
+							'pass'      => sha1($session_pass), // Using CRYPT_BLOWFISH in password::hash(), would make page loading too slow!
 							'user_id'   => $user_id,
 							'ip'        => config::get('request.ip'),
 							'browser'   => config::get('request.browser'),
-							'created'   => date('Y-m-d H:i:s'),
-							'last_used' => date('Y-m-d H:i:s'),
+							'created'   => $now,
+							'last_used' => $now,
 							'deleted'   => '0000-00-00 00:00:00',
 						));
 
@@ -870,13 +878,15 @@
 
 					if (!in_array($request_ip, config::get('user.ip_whitelist', array()))) {
 
+						$now = new timestamp();
+
 						$db->insert($this->db_table['session'], array(
 								'pass' => '', // Will remain blank to record failure
 								'user_id' => $db_id,
 								'ip' => $request_ip,
 								'browser' => config::get('request.browser'),
-								'created' => date('Y-m-d H:i:s'),
-								'last_used' => date('Y-m-d H:i:s'),
+								'created' => $now,
+								'last_used' => $now,
 								'deleted' => '0000-00-00 00:00:00',
 							));
 

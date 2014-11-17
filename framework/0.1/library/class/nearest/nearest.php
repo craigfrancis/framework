@@ -379,17 +379,19 @@
 
 					if ($latitude !== NULL && $cached == false) {
 
+						$now = new timestamp();
+
 						$values_update = array(
 							'search'    => $search_query,
 							'country'   => $country,
 							'latitude'  => $latitude,
 							'longitude' => $longitude,
 							'accuracy'  => $accuracy,
-							'edited'    => date('Y-m-d H:i:s'),
+							'edited'    => $now,
 						);
 
 						$values_insert = $values_update;
-						$values_insert['created'] = date('Y-m-d H:i:s');
+						$values_insert['created'] = $now;
 
 						$db->insert(DB_PREFIX . 'system_nearest_cache', $values_insert, $values_update);
 

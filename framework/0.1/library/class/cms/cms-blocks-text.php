@@ -124,12 +124,14 @@
 
 				$db = db_get();
 
+				$now = new timestamp();
+
 				if ($info['values_save'] == 'update') {
 
 					$db->query('UPDATE
 									' . DB_PREFIX . 'cms_block_text AS cbt
 								SET
-									cbt.deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+									cbt.deleted = "' . $db->escape($now) . '"
 								WHERE
 									cbt.block_id = "' . $db->escape($this->block_id) . '" AND
 									cbt.deleted = "0000-00-00 00:00:00"');
@@ -139,7 +141,7 @@
 				$db->insert(DB_PREFIX . 'cms_block_text', array(
 						'block_id' => $this->block_id,
 						'text' => $info['values_new']['text'],
-						'created' => date('Y-m-d H:i:s'),
+						'created' => $now,
 						'deleted' => '0000-00-00 00:00:00',
 					));
 

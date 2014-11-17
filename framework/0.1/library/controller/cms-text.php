@@ -221,7 +221,7 @@
 													'section' => $config['section'],
 													'global' => strval($config['global']),
 													'marker' => strval($config['marker']),
-													'created' => date('Y-m-d H:i:s'),
+													'created' => new timestamp(),
 													'author_id' => $config['author_id'],
 													'revision' => ($live_exists ? '-1' : '0'),
 													'content' => $value,

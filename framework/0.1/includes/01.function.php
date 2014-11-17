@@ -822,6 +822,8 @@
 
 		if ($url_dst !== NULL) {
 
+			$now = new timestamp();
+
 			$values_update = array(
 					'url_src' => $url_src,
 					'url_dst' => $url_dst,
@@ -830,7 +832,7 @@
 				);
 
 			$values_insert = $values_update;
-			$values_insert['created'] = date('Y-m-d H:i:s');
+			$values_insert['created'] = $now;
 
 			$db->insert(DB_PREFIX . 'system_redirect', $values_insert, $values_update);
 
@@ -840,7 +842,7 @@
 								' . DB_PREFIX . 'system_redirect AS sr
 							SET
 								sr.url_dst = "' . $db->escape($url_dst) . '",
-								sr.edited = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+								sr.edited = "' . $db->escape($now) . '"
 							WHERE
 								sr.url_dst = "' . $db->escape($url_src) . '"'); // Update old redirects linking to this source.
 
@@ -848,7 +850,7 @@
 								' . DB_PREFIX . 'system_redirect AS sr
 							SET
 								sr.enabled = "false",
-								sr.edited = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+								sr.edited = "' . $db->escape($now) . '"
 							WHERE
 								sr.url_src = "' . $db->escape($url_dst) . '"'); // Disable redirect away from dest (should exist now).
 

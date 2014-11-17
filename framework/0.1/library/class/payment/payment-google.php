@@ -215,7 +215,7 @@
 					$db->insert(DB_PREFIX . 'order_transaction', array(
 							'id'      => '',
 							'xml'     => $xml,
-							'created' => date('Y-m-d H:i:s'),
+							'created' => new timestamp(),
 						));
 
 				//--------------------------------------------------

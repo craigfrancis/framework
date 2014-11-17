@@ -288,6 +288,8 @@
 
 					$db = db_get();
 
+					$now = new timestamp();
+
 					$form = $this->form;
 
 				//--------------------------------------------------
@@ -339,7 +341,7 @@
 												' . DB_PREFIX . 'cms_block AS cb
 											SET
 												cb.sort = "' . $db->escape($info['sort_new']) . '",
-												cb.edited = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+												cb.edited = "' . $db->escape($now) . '"
 											WHERE
 												cb.id = "' . $db->escape($id) . '" AND
 												cb.deleted = "0000-00-00 00:00:00"');
@@ -374,8 +376,8 @@
 								'parent_id' => $this->parent_id,
 								'sort' => $add_sort,
 								'type' => $add_type,
-								'created' => date('Y-m-d H:i:s'),
-								'edited' => date('Y-m-d H:i:s'),
+								'created' => $now,
+								'edited' => $now,
 								'deleted' => '0000-00-00 00:00:00',
 							));
 

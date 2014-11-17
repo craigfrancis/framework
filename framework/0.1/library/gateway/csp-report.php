@@ -69,6 +69,8 @@
 
 		$db = db_get();
 
+		$now = new timestamp();
+
 		$values_update = array_merge(array(
 				'document_uri'       => $report['document-uri'],
 				'blocked_uri'        => $report['blocked-uri'],
@@ -78,11 +80,11 @@
 				'data_raw'           => $data_raw,
 				'ip'                 => config::get('request.ip'),
 				'browser'            => config::get('request.browser'),
-				'updated'            => date('Y-m-d H:i:s'),
+				'updated'            => $now,
 			), config::get('output.csp_report_extra', array()), $return);
 
 		$values_insert = $values_update;
-		$values_insert['created'] = date('Y-m-d H:i:s');
+		$values_insert['created'] = $now;
 
 		$db->insert(DB_PREFIX . 'system_report_csp', $values_insert, $values_update);
 

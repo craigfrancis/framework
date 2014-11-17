@@ -230,11 +230,11 @@
 					$fields = $this->fetch_fields();
 
 					if (isset($fields['created']) && $inset_mode) {
-						$new_values['created'] = date('Y-m-d H:i:s');
+						$new_values['created'] = new timestamp();
 					}
 
 					if (isset($fields['edited']) && $changed) {
-						$new_values['edited'] = date('Y-m-d H:i:s');
+						$new_values['edited'] = new timestamp();
 					}
 
 				//--------------------------------------------------
@@ -262,7 +262,7 @@
 							'field' => $field,
 							'old_value' => strval($old_value),
 							'new_value' => strval($new_value),
-							'created' => date('Y-m-d H:i:s'),
+							'created' => new timestamp(),
 						));
 
 			}

@@ -152,6 +152,10 @@
 							$edit_url = NULL;
 						}
 
+						// $created = new timestamp($row['created'], 'db');
+						// $created->format('l jS F Y, g:i:sa');
+						// $created->html('l jS F Y, g:i:sa'); // Uses the HTML5 element: <time datetime=""></time>
+
 					//--------------------------------------------------
 					// Add row
 

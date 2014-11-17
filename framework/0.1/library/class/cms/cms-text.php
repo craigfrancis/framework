@@ -423,13 +423,15 @@
 
 						$db = $this->db_get();
 
+						$now = new timestamp();
+
 						$db->insert(DB_PREFIX . 'cms_text_debug', array(
 								'path' => $config['path'],
 								'section' => $config['section'],
 								'priority' => debug_dump($this->config['priority']),
-								'noticed' => date('Y-m-d H:i:s'),
+								'noticed' => $now,
 							), array(
-								'noticed' => date('Y-m-d H:i:s'),
+								'noticed' => $now,
 							));
 
 					}

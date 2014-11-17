@@ -202,7 +202,7 @@
 							'request_data' => debug_dump($details),
 							'response_data' => debug_dump($response),
 							'response_raw' => debug_dump($socket->response_full_get()),
-							'created' => date('Y-m-d H:i:s'),
+							'created' => new timestamp(),
 						));
 
 					$debug_info = debug_dump($details) . "\n-----\n" . debug_dump($response) . "\n-----\n" . $socket->response_full_get() . "\n-----\n" . $socket->error_string_get();
@@ -323,7 +323,7 @@
 							'request_url' => config::get('request.url'),
 							'request_ip' => config::get('request.ip'),
 							'request_data' => $data_raw,
-							'created' => date('Y-m-d H:i:s'),
+							'created' => new timestamp(),
 						));
 
 			}

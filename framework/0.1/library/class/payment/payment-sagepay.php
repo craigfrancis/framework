@@ -30,6 +30,8 @@
 							'mode',
 						));
 
+					$now = new timestamp();
+
 				//--------------------------------------------------
 				// SagePay variables
 
@@ -160,7 +162,7 @@
 									'pass' => $request_pass,
 									'order_type' => $config['order_type'],
 									'order_id' => $config['order_id'],
-									'request_sent' => date('Y-m-d H:i:s'),
+									'request_sent' => $now,
 									'request_type' => $config['type'],
 									'request_amount' => $total_gross,
 									'request_data' => json_encode($values, JSON_PRETTY_PRINT),
@@ -297,7 +299,7 @@
 				// Record details
 
 					$response = array(
-							'response_received' => date('Y-m-d H:i:s'),
+							'response_received' => $now,
 							'response_status' => $info['Status'],
 							'response_transaction' => $info['VPSTxId'],
 							'response_data' => json_encode($info, JSON_PRETTY_PRINT),

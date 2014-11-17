@@ -279,7 +279,7 @@
 
 					$db = $this->db_get();
 
-					$values['edited'] = date('Y-m-d H:i:s');
+					$values['edited'] = new timestamp();
 
 					$where_sql = '
 						id = "' . $db->escape($this->order_id) . '" AND
@@ -454,12 +454,14 @@
 
 					$db = $this->db_get();
 
+					$now = new timestamp();
+
 					$values = array_merge(array(
 							'quantity' => 1,
 						), $details, array(
 							'order_id' => $this->order_id,
 							'type' => 'item',
-							'created' => date('Y-m-d H:i:s'),
+							'created' => $now,
 							'deleted' => '0000-00-00 00:00:00',
 						));
 
@@ -564,6 +566,8 @@
 
 					$db = $this->db_get();
 
+					$now = new timestamp();
+
 					if ($quantity <= 0) {
 
 						//--------------------------------------------------
@@ -572,7 +576,7 @@
 							$db->query('UPDATE
 											' . $db->escape_table($this->db_table_item) . ' AS oi
 										SET
-											oi.deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+											oi.deleted = "' . $db->escape($now) . '"
 										WHERE
 											oi.id = "' . $db->escape($item_id) . '" AND
 											oi.order_id = "' . $db->escape($this->order_id) . '" AND
@@ -601,7 +605,7 @@
 								}
 
 								$row['id'] = '';
-								$row['deleted'] = date('Y-m-d H:i:s');
+								$row['deleted'] = $now;
 
 								$db->insert($this->db_table_item, $row);
 
@@ -908,7 +912,7 @@
 					}
 
 					$this->values_set(array_merge($values, array(
-							'payment_received' => date('Y-m-d H:i:s'),
+							'payment_received' => new timestamp(),
 						)));
 
 			}
@@ -935,7 +939,7 @@
 					}
 
 					$this->values_set(array_merge($values, array(
-							'payment_settled' => date('Y-m-d H:i:s'),
+							'payment_settled' => new timestamp(),
 						)));
 
 			}
@@ -962,7 +966,7 @@
 					}
 
 					$this->values_set(array_merge($values, array(
-							'processed' => date('Y-m-d H:i:s'),
+							'processed' => new timestamp(),
 						)));
 
 			}
@@ -1092,10 +1096,12 @@
 					//--------------------------------------------------
 					// Replace delivery record
 
+						$now = new timestamp();
+
 						$db->query('UPDATE
 										' . $db->escape_table($this->db_table_item) . ' AS oi
 									SET
-										oi.deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+										oi.deleted = "' . $db->escape($now) . '"
 									WHERE
 										oi.order_id = "' . $db->escape($this->order_id) . '" AND
 										oi.type = "delivery" AND
@@ -1106,7 +1112,7 @@
 								'type' => 'delivery',
 								'price' => $delivery_price,
 								'quantity' => 1,
-								'created' => date('Y-m-d H:i:s'),
+								'created' => $now,
 								'deleted' => '0000-00-00 00:00:00',
 							));
 

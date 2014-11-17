@@ -62,6 +62,8 @@
 
 					$db = db_get();
 
+					$now = new timestamp();
+
 				//--------------------------------------------------
 				// Make sure we have plenty of memory
 
@@ -153,7 +155,7 @@
 				//--------------------------------------------------
 				// Quick db check, incase lock file has been deleted
 
-					$db->query('SELECT 1 FROM ' . DB_PREFIX . 'system_maintenance WHERE run_end = "0000-00-00 00:00:00" OR run_end = "' . $db->escape(date('Y-m-d H:i:s')) . '"');
+					$db->query('SELECT 1 FROM ' . DB_PREFIX . 'system_maintenance WHERE run_end = "0000-00-00 00:00:00" OR run_end = "' . $db->escape($now) . '"');
 					if ($db->num_rows() > 0) {
 						if ($this->result_url) {
 
@@ -176,7 +178,7 @@
 
 					$db->insert(DB_PREFIX . 'system_maintenance', array(
 							'id'        => '',
-							'run_start' => date('Y-m-d H:i:s'),
+							'run_start' => $now,
 							'run_end'   => '0000-00-00 00:00:00',
 						));
 
@@ -235,7 +237,7 @@
 					$db->query('UPDATE
 									' . DB_PREFIX . 'system_maintenance
 								SET
-									run_end = "' . $db->escape(date('Y-m-d H:i:s')) . '"
+									run_end = "' . $db->escape($now) . '"
 								WHERE
 									run_end = "0000-00-00 00:00:00"
 								LIMIT
@@ -517,11 +519,13 @@
 
 						$db = db_get();
 
+						$now = new timestamp();
+
 						$db->insert(DB_PREFIX . 'system_maintenance_job', array(
 								'job'     => $this->job_name,
 								'run_id'  => $this->run_id,
 								'output'  => $job_output_html,
-								'created' => date('Y-m-d H:i:s'),
+								'created' => $now,
 							));
 
 					}
