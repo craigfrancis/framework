@@ -36,7 +36,7 @@ And you can return a HTML version, with the `<time>` tag:
 
 ## Database usage
 
-When storing a `datetime` in the database, either use the value from:
+When storing a 'datetime' value in the database, you can either use the value from:
 
 	$timestamp->format('db');
 
@@ -57,6 +57,26 @@ When returning the value from the database, simply run:
 	$timestamp = new timestamp($row['field'], 'db');
 
 The timestamp helper will then parse the UTC value, and output with "output.timezone".
+
+---
+
+## Null values
+
+If the timestamp helper is initialised with the values:
+
+	NULL
+	'0000-00-00'
+	'0000-00-00 00:00:00'
+
+Then it will always return NULL when you call the format() or html() functions.
+
+This might be helpful when a datetime is only recorded on completion:
+
+	$compleated = new timestamp($row['compleated'], 'db');
+	$compleated = $compleated->format('l jS F Y, g:ia');
+
+	if ($compleated) {
+	}
 
 ---
 
