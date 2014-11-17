@@ -1,3 +1,0 @@
-[submodule "framework/0.1/vendors/hmrc"]
-	path = framework/0.1/vendors/hmrc
-	url = https://github.com/craigfrancis/hmrc-rti.git
