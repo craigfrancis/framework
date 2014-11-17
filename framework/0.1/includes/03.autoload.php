@@ -44,6 +44,7 @@
 				if (!$base_mode) {
 					$paths[] = APP_ROOT . '/library/class/' . $class_file_name . '.php';
 					$paths[] = APP_ROOT . '/library/class/' . $folder . '/' . $class_file_name . '.php';
+					$paths[] = APP_ROOT . '/library/vendors/' . $folder . '/' . $class_file_name . '.php';
 				}
 
 				$paths[] = FRAMEWORK_ROOT . '/library/class/' . $class_file_name . '.php';
