@@ -61,6 +61,13 @@
 	function exit_with_error($message, $hidden_info = NULL) {
 
 		//--------------------------------------------------
+		// Clear output buffer
+
+			while (ob_get_level() > 0) {
+				ob_end_clean();
+			}
+
+		//--------------------------------------------------
 		// Called from
 
 			foreach (debug_backtrace() as $called_from) {
