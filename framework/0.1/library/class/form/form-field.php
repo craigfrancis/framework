@@ -591,6 +591,13 @@
 				return $html;
 			}
 
+		//--------------------------------------------------
+		// Shorter representation in debug_dump()
+
+			public function _debug_dump() {
+				return get_class($this) . ' = "' . $this->value . '"';
+			}
+
 	}
 
 ?>

@@ -1315,6 +1315,13 @@
 					' . $this->html_end() . "\n";
 			}
 
+		//--------------------------------------------------
+		// Shorter representation in debug_dump()
+
+			public function _debug_dump() {
+				return 'form()';
+			}
+
 	}
 
 ?>
