@@ -1019,18 +1019,19 @@
 						$defaults = array();
 					}
 
-					$date = date('Y-m-d H:i:s');
+					$now = new timestamp();
 
 					$values = array_merge(array(
 							'pass' => $order_pass,
 							'ip' => config::get('request.ip'),
-							'created' => $date,
+							'created' => $now,
 						), $defaults);
 
 				//--------------------------------------------------
 				// Insert
 
 					$db = $this->db_get();
+
 					$db->insert($this->db_table_main, $values);
 
 					$this->order_id = $db->insert_id();
@@ -1045,7 +1046,7 @@
 					}
 
 					$this->order_data['pass'] = $order_pass;
-					$this->order_data['created'] = $date;
+					$this->order_data['created'] = $now->format('db');
 					$this->order_data['payment_received'] = '0000-00-00 00:00:00';
 
 				//--------------------------------------------------
