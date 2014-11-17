@@ -211,7 +211,10 @@
 					unset($attributes['value']); // HTML5 validation requires a valid floating point number, so can't be an empty string
 				}
 
-				unset($attributes['size']); // Invalid HTML5 attributes
+				if ($this->input_type == 'number') {
+					unset($attributes['size']); // Invalid HTML5 attribute, but currency field is still text.
+				}
+
 				unset($attributes['maxlength']); // Invalid HTML5 attributes
 
 				return $attributes;
