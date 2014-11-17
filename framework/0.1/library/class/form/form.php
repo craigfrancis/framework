@@ -504,6 +504,9 @@
 			}
 
 			public function db_value_set($name, $value) { // TODO: Look at using $model->value_set();
+				if (is_object($value) && is_a($value, 'timestamp')) {
+					$value = $value->format('db');
+				}
 				$this->db_values[$name] = $value;
 			}
 
