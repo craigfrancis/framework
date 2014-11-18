@@ -231,7 +231,11 @@
 			}
 
 			public function last_login_get() {
-				return cookie::get($this->cookie_login_last);
+				if ($this->cookie_login_last) {
+					return cookie::get($this->cookie_login_last);
+				} else {
+					return '';
+				}
 			}
 
 			public function identification_id_get($identification) {
@@ -272,7 +276,7 @@
 
 						$this->user_id = $result;
 
-						if ($this->remember_login) {
+						if ($this->remember_login && $this->cookie_login_last) {
 							cookie::set($this->cookie_login_last, $identification, '+30 days');
 						}
 
@@ -306,7 +310,7 @@
 						$remember_login = $this->remember_login;
 					}
 
-					if ($remember_login) {
+					if ($remember_login && $this->cookie_login_last) {
 
 						$user_identification = $this->auth->identification_name_get($this->user_id);
 
