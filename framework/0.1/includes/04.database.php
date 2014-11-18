@@ -14,9 +14,6 @@
 
 		public function escape($val) {
 			$this->connect();
-			if (is_object($val) && is_a($val, 'timestamp')) {
-				$val = $val->format('db');
-			}
 			return mysqli_real_escape_string($this->link, $val);
 		}
 

@@ -1046,7 +1046,7 @@
 					}
 
 					$this->order_data['pass'] = $order_pass;
-					$this->order_data['created'] = $now->format('db');
+					$this->order_data['created'] = $now->format('db'); // Must be a string to match behaviour of $order->select_by_id()
 					$this->order_data['payment_received'] = '0000-00-00 00:00:00';
 
 				//--------------------------------------------------

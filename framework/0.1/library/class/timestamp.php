@@ -60,6 +60,14 @@
 				}
 			}
 
+			public function _debug_dump() {
+				return $this->format('db');
+			}
+
+			public function __toString() { // (PHP 5.2)
+				return $this->format('db');
+			}
+
 		//--------------------------------------------------
 		// Business days
 
