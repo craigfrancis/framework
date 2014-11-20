@@ -337,6 +337,7 @@
 // Character set
 
 	mb_internal_encoding(config::get('output.charset'));
+	// mb_http_output(config::get('output.charset'));
 
 	if (config::get('output.charset') == 'UTF-8') {
 		mb_detect_order(array('UTF-8', 'ASCII'));
