@@ -5,8 +5,9 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $value;
-			protected $value_provided;
+			protected $value = NULL;
+			protected $value_default = NULL;
+			protected $value_provided = NULL;
 
 			protected $fields = array();
 			protected $format_html = array('separator' => ' ');
@@ -199,8 +200,15 @@
 				$this->value = $this->_value_parse($value);
 			}
 
+			public function value_default_set($default) {
+				$this->value_default = $default; // Really used by date/time fields.
+			}
+
 			public function value_get($field = NULL) {
-				if (in_array($field, $this->fields)) {
+				if ($field !== NULL) {
+					if (!in_array($field, $this->fields)) {
+						exit_with_error('Invalid field specified "' . $field . '"');
+					}
 					if (isset($this->value[$field])) {
 						return $this->value[$field];
 					} else {
