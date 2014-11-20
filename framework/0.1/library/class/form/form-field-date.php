@@ -154,14 +154,19 @@
 			}
 
 			public function value_get($field = NULL) {
-				if (in_array($field, $this->fields)) {
+				if ($field !== NULL) {
+					if (!in_array($field, $this->fields)) {
+						exit_with_error('Invalid field specified "' . $field . '"');
+					}
 					if ($this->value_provided) {
 						return $this->value[$field];
 					} else {
 						return NULL;
 					}
-				} else {
+				} else if ($this->value_provided) {
 					return $this->value_date_get();
+				} else {
+					return $this->value_default;
 				}
 			}
 

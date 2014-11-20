@@ -214,12 +214,14 @@
 					} else {
 						return NULL;
 					}
-				} else {
+				} else if ($this->value_provided) {
 					$return = array();
 					foreach ($this->fields as $field) {
 						$return[$field] = (isset($this->value[$field]) ? $this->value[$field] : NULL);
 					}
 					return $return;
+				} else {
+					return $this->value_default;
 				}
 			}
 

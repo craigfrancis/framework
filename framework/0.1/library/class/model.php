@@ -271,8 +271,6 @@
 
 					}
 
-
-
 			}
 
 			protected function log_values_get($field, $old_value, $new_value) {

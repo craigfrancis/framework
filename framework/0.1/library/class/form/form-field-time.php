@@ -157,15 +157,24 @@
 			}
 
 			public function value_get($field = NULL) {
-				if (in_array($field, $this->fields)) {
+				if ($field !== NULL) {
+					if (!in_array($field, $this->fields)) {
+						exit_with_error('Invalid field specified "' . $field . '"');
+					}
 					if ($this->value_provided) {
 						return intval($this->value[$field]); // Time field (unlike date) does not intval() submitted data, so empty value can be different to 0.
 					} else {
 						return NULL;
 					}
+				} else if ($this->value_provided) {
+					return $this->value_time_get();
 				} else {
-					return $this->_value_string($this->value); // Still return 00:00:00 when !$this->value_provided to match date 0000-00-00
+					return $this->value_default;
 				}
+			}
+
+			public function value_time_get() {
+				return $this->_value_string($this->value);
 			}
 
 			protected function _value_string($value) {
