@@ -18,7 +18,7 @@
 		}
 
 		protected function clean_html($html) {
-			return str_replace('<br>', '<br />', $html);
+			return str_replace('<br>', '<br />', $html); // TODO: https://github.com/craigfrancis/html-filter
 		}
 
 	}
