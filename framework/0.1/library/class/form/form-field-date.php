@@ -151,6 +151,7 @@
 
 			public function value_set($value, $month = NULL, $year = NULL) {
 				$this->value = $this->_value_parse($value, $month, $year);
+				$this->value_provided = true;
 			}
 
 			public function value_get($field = NULL) {

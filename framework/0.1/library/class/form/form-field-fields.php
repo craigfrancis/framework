@@ -60,7 +60,7 @@
 
 					}
 
-					$this->value_provided = NULL; // Either known for date/time fields, or after input_add.
+					$this->value_provided = NULL; // Reset after initial value_set (calling again will then be 'provided')... but date/time fields might change (via setup_fields), or NULL will worked out during required_error_set_html (after input_add).
 
 				//--------------------------------------------------
 				// Default configuration
@@ -198,6 +198,7 @@
 
 			public function value_set($value) {
 				$this->value = $this->_value_parse($value);
+				$this->value_provided = true;
 			}
 
 			public function value_default_set($default) {

@@ -154,6 +154,7 @@
 
 			public function value_set($value, $minute = NULL, $second = NULL) {
 				$this->value = $this->_value_parse($value, $minute, $second);
+				$this->value_provided = true;
 			}
 
 			public function value_get($field = NULL) {
