@@ -122,7 +122,7 @@ If you want to change the layout/content of the loading page, use these files:
 		<head>
 			<meta charset="<?= html(config::get('output.charset')) ?>" />
 			<title>Loading</title>
-			<link rel="stylesheet" type="text/css" href="<?= html(version_path('/a/css/global/loading.css')) ?>" media="all" />
+			<link rel="stylesheet" type="text/css" href="<?= html(timestamp_url('/a/css/global/loading.css')) ?>" media="all" />
 		</head>
 		<body>
 			<div id="page_content" role="main">

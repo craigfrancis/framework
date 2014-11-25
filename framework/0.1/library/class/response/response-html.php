@@ -860,7 +860,7 @@
 
 						if ($version && substr($file['path'], 0, 1) == '/' && is_file(PUBLIC_ROOT . $file['path'])) {
 
-							$url = version_path($file['path']);
+							$url = timestamp_url($file['path']);
 
 							if ($minify && ($pos = strrpos($url, '.')) !== false) {
 								$url = substr($url, 0, $pos) . '.min' . substr($url, $pos);

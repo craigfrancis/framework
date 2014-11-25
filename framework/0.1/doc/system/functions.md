@@ -145,7 +145,7 @@ To delete a folder and its contents:
 
 To work with versioned files (see [resource versioning](../../doc/setup/resources.md)).
 
-	version_path($path);
+	timestamp_url($path);
 
 Create a temporary folder in /private/tmp/xxx/:
 

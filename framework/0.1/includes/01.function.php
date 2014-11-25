@@ -571,7 +571,10 @@
 //--------------------------------------------------
 // Timestamp URL
 
-	function timestamp_url($url, $timestamp) {
+	function timestamp_url($url, $timestamp = NULL) {
+		if ($timestamp === NULL) {
+			$timestamp = filemtime(PUBLIC_ROOT . $url);
+		}
 		if (($p = strrpos($url, '/')) !== false) {
 			return substr($url, 0, ($p + 1)) . intval($timestamp) . '-' . substr($url, ($p + 1));
 		} else {
@@ -1111,13 +1114,6 @@
 
 //--------------------------------------------------
 // Path processing
-
-	function version_path($path, $mtime = NULL) {
-		if ($mtime === NULL) {
-			$mtime = filemtime(PUBLIC_ROOT . $path);
-		}
-		return dirname($path) . '/' . intval($mtime) . '-' . basename($path);
-	}
 
 	function template_path($template) {
 		return APP_ROOT . '/template/' . safe_file_name($template) . '.ctp';
