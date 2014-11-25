@@ -38,7 +38,7 @@
 							'file_private' => false,
 							'file_root' => NULL,
 							'file_url' => NULL,
-							'file_timestamp_url' => false,
+							'file_timestamp_url' => config::get('output.timestamp_url', false),
 							'file_ext' => NULL,
 							'file_folder_division' => NULL, // Set to something like "1000" so the folder structure can by divided into folders /files/008000/8192
 							'file_missing_url' => NULL,

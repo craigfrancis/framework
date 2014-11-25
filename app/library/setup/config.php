@@ -80,6 +80,7 @@
 	$config['output.site_name'] = 'PHP Prime';
 	$config['output.js_min'] = (SERVER != 'stage');
 	$config['output.css_min'] = (SERVER != 'stage');
+	$config['output.timestamp_url'] = true;
 
 //--------------------------------------------------
 // Tracking

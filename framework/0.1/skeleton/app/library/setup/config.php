@@ -106,6 +106,7 @@
 	$config['output.site_name'] = 'Company Name';
 	$config['output.js_min'] = (SERVER != 'stage');
 	$config['output.css_min'] = (SERVER != 'stage');
+	$config['output.timestamp_url'] = true;
 
 //--------------------------------------------------
 // Content security policy

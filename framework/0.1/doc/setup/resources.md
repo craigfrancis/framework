@@ -31,9 +31,9 @@ For both the JavaScript and CSS, the paths are automatically changed to somethin
 
 Where the number is the UNIX timestamp of when the file was last modified... this means that the framework can also set a very aggressive [caching policy](http://developer.yahoo.com/performance/rules.html#expires), and as soon as the file is changed, the <link> and <script> tags change, and the old URL is 301 redirected to the new path.
 
-This can be disabled with the config options:
+This can be enabled with the config options:
 
-	$config['output.version'] = false;
+	$config['output.timestamp_url'] = true;
 
 ---
 

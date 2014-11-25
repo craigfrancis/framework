@@ -757,7 +757,7 @@
 					exit_with_error('Unrecognised path type "' . $type . '"');
 				}
 
-				$version = config::get('output.version', true);
+				$version = config::get('output.timestamp_url', false);
 				$minify = false;
 
 				if ($type == 'js_head' || $type == 'js_foot' || $type == 'js') {
