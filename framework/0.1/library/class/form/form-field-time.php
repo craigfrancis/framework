@@ -12,7 +12,6 @@
 
 					$this->fields = array('H', 'I', 'S');
 					$this->format_html = array_merge(array('separator' => ':', 'H' => 'HH', 'I' => 'MM', 'S' => 'SS'), config::get('form.time_format_html', array()));
-					$this->input_order = config::get('form.time_input_order', array('H', 'I')); // Could also be array('H', 'I', 'S')
 					$this->input_separator = "\n\t\t\t\t\t\t\t\t\t";
 					$this->input_config = array(
 							'H' => array(
@@ -38,6 +37,8 @@
 								));
 
 					$this->setup_fields($form, $label, $name);
+
+					$this->input_order_set(config::get('form.time_input_order', array('H', 'I'))); // Could also be array('H', 'I', 'S')
 
 				//--------------------------------------------------
 				// Value provided

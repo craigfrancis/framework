@@ -3,6 +3,11 @@
 	class form_field_date_base extends form_field_fields {
 
 		//--------------------------------------------------
+		// Variables
+
+			protected $input_day = NULL;
+
+		//--------------------------------------------------
 		// Setup
 
 			public function __construct($form, $label, $name = NULL) {
@@ -13,7 +18,6 @@
 					$this->type = 'date';
 					$this->fields = array('D', 'M', 'Y');
 					$this->format_html = array_merge(array('separator' => '/', 'D' => 'DD', 'M' => 'MM', 'Y' => 'YYYY'), config::get('form.date_format_html', array()));
-					$this->input_order = config::get('form.date_input_order', array('D', 'M', 'Y'));
 					$this->input_separator = "\n\t\t\t\t\t\t\t\t\t";
 					$this->input_config = array(
 							'D' => array(
@@ -40,6 +44,8 @@
 
 					$this->setup_fields($form, $label, $name);
 
+					$this->input_order_set(config::get('form.date_input_order', array('D', 'M', 'Y')));
+
 				//--------------------------------------------------
 				// Guess correct year if only 2 digits provided
 
@@ -59,6 +65,11 @@
 
 			}
 
+			public function input_order_set($order) {
+				parent::input_order_set($order);
+				$this->input_day = in_array('D', $this->input_order);
+			}
+
 		//--------------------------------------------------
 		// Errors
 
@@ -70,7 +81,7 @@
 
 					$value = $this->value_time_stamp_get(); // Check upper bound to time-stamp, 2037 on 32bit systems
 
-					if (!checkdate($this->value['M'], $this->value['D'], $this->value['Y']) || $value === false) {
+					if (!checkdate($this->value['M'], ($this->input_day ? $this->value['D'] : 1), $this->value['Y']) || $value === false) {
 						$valid = false;
 					}
 
@@ -179,7 +190,7 @@
 				if ($this->value['M'] == 0 && $this->value['D'] == 0 && $this->value['Y'] == 0) {
 					$timestamp = false;
 				} else {
-					$timestamp = mktime(0, 0, 0, $this->value['M'], $this->value['D'], $this->value['Y']);
+					$timestamp = mktime(0, 0, 0, $this->value['M'], ($this->input_day ? $this->value['D'] : 1), $this->value['Y']);
 					if ($timestamp === -1) {
 						$timestamp = false; // If the arguments are invalid, the function returns FALSE (before PHP 5.1 it returned -1).
 					}
@@ -188,7 +199,7 @@
 			}
 
 			protected function _value_string($value) {
-				return str_pad(intval($value['Y']), 4, '0', STR_PAD_LEFT) . '-' . str_pad(intval($value['M']), 2, '0', STR_PAD_LEFT) . '-' . str_pad(intval($value['D']), 2, '0', STR_PAD_LEFT);
+				return str_pad(intval($value['Y']), 4, '0', STR_PAD_LEFT) . '-' . str_pad(intval($value['M']), 2, '0', STR_PAD_LEFT) . '-' . str_pad(intval($this->input_day ? $value['D'] : 1), 2, '0', STR_PAD_LEFT);
 			}
 
 			protected function _value_parse($value, $month = NULL, $year = NULL) {
