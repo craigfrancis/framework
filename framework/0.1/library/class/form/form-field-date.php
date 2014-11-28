@@ -70,6 +70,17 @@
 				$this->input_day = in_array('D', $this->input_order);
 			}
 
+			public function input_options_text_set($field, $options, $label = '') {
+				if ($field == 'M' && !is_array($options)) {
+					$months = array();
+					for ($k = 1; $k <= 12; $k++) {
+						$months[$k] = date($options, mktime(0, 0, 0, $k));
+					}
+					$options = $months;
+				}
+				parent::input_options_text_set($field, $options, $label);
+			}
+
 		//--------------------------------------------------
 		// Errors
 

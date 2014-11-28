@@ -27,6 +27,7 @@
 						'textarea',
 						'date',
 						'date-select',
+						'date-month',
 						'date-order',
 						'time',
 						'time-select',
