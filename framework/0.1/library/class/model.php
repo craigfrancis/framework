@@ -133,7 +133,7 @@
 		//--------------------------------------------------
 		// Returning
 
-			public function fetch_fields() {
+			public function fields_get() {
 				if ($this->fields === NULL) {
 
 					$db = db_get();
@@ -145,7 +145,7 @@
 			}
 
 			public function fetch_field($field) {
-				$fields = $this->fetch_fields();
+				$fields = $this->fields_get();
 				if (array_key_exists($field, $fields)) { // Local returned value is ever so slightly faster than class properties.
 					return $fields[$field];
 				} else {
@@ -153,7 +153,7 @@
 				}
 			}
 
-			public function fetch_values() {
+			public function values_get() {
 				if ($this->values === NULL) {
 					if ($this->where_sql !== NULL) {
 
@@ -184,7 +184,7 @@
 			}
 
 			public function fetch_value($field) {
-				$values = $this->fetch_values();
+				$values = $this->values_get();
 				if ($values !== false) {
 					if (array_key_exists($field, $values)) { // Value from db might be NULL
 						return $values[$field];
@@ -217,7 +217,7 @@
 
 					} else {
 
-						$old_values = $this->fetch_values();
+						$old_values = $this->values_get();
 
 						$changed = false;
 
@@ -246,7 +246,7 @@
 				//--------------------------------------------------
 				// When this happened
 
-					$fields = $this->fetch_fields();
+					$fields = $this->fields_get();
 
 					if (isset($fields['created']) && $inset_mode) {
 						$new_values['created'] = new timestamp();

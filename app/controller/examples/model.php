@@ -48,10 +48,10 @@
 				));
 
 
-			debug($model->fetch_fields());
-			debug($model->fetch_field('type_tinyint'));
-			debug($model->fetch_values());
-			debug($model->fetch_value('type_tinyint'));
+			debug($model->fields_get());
+			debug($model->field_get('type_tinyint'));
+			debug($model->values_get());
+			debug($model->value_get('type_tinyint'));
 
 			$db = db_get();
 			$old = array();
@@ -64,7 +64,7 @@
 			}
 
 			$changes = array();
-			foreach ($model->fetch_fields() as $field_name => $field_info) {
+			foreach ($model->fields_get() as $field_name => $field_info) {
 				foreach ($field_info as $info_name => $info_value) {
 					if ($old[$field_name][$info_name] != $info_value) {
 						$changes[$field_name][$info_name] = array($old[$field_name][$info_name], $info_value);

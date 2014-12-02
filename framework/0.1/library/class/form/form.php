@@ -439,7 +439,7 @@
 				if ($this->db_fields === NULL) {
 					$model = $this->db_model_get();
 					if ($model) {
-						$this->db_fields = $model->fetch_fields();
+						$this->db_fields = $model->fields_get();
 					} else {
 						$this->db_fields = false;
 					}

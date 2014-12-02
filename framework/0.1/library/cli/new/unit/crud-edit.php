@@ -41,7 +41,7 @@
 						id = "' . $db->escape($item_id) . '" AND
 						deleted = "0000-00-00 00:00:00"');
 
-					if ($row = $model->fetch_values()) {
+					if ($row = $model->values_get()) {
 
 						$this->set('item_name', $row['name']);
 
