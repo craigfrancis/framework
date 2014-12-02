@@ -183,7 +183,7 @@
 				return $this->values;
 			}
 
-			public function fetch_value($field) {
+			public function value_get($field) {
 				$values = $this->values_get();
 				if ($values !== false) {
 					if (array_key_exists($field, $values)) { // Value from db might be NULL
@@ -206,12 +206,12 @@
 
 					$db = db_get();
 
-					$inset_mode = ($this->where_sql === NULL);
+					$insert_mode = ($this->where_sql === NULL);
 
 				//--------------------------------------------------
 				// Changes
 
-					if ($inset_mode) {
+					if ($insert_mode) {
 
 						$changed = true; // New record
 
@@ -248,7 +248,7 @@
 
 					$fields = $this->fields_get();
 
-					if (isset($fields['created']) && $inset_mode) {
+					if (isset($fields['created']) && $insert_mode) {
 						$new_values['created'] = new timestamp();
 					}
 
@@ -259,7 +259,7 @@
 				//--------------------------------------------------
 				// Save
 
-					if ($inset_mode) {
+					if ($insert_mode) {
 
 						$db->insert($this->table_sql, $new_values);
 

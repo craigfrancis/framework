@@ -499,7 +499,7 @@
 
 				$this->_db_model_fields_set();
 
-				return $model->fetch_value($field);
+				return $model->value_get($field);
 
 			}
 
