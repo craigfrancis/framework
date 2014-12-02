@@ -5,14 +5,14 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $values;
-			protected $multiple;
-			protected $label_option;
-			protected $option_values;
-			protected $option_groups;
-			protected $select_size;
-			protected $required_error_set;
-			protected $invalid_error_set;
+			protected $values = NULL;
+			protected $multiple = false;
+			protected $label_option = NULL;
+			protected $option_values = array();
+			protected $option_groups = NULL;
+			protected $select_size = 1;
+			protected $required_error_set = false;
+			protected $invalid_error_set = false;
 
 		//--------------------------------------------------
 		// Setup
@@ -67,13 +67,6 @@
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->multiple = false;
-					$this->label_option = NULL;
-					$this->option_values = array();
-					$this->option_groups = NULL;
-					$this->select_size = 1;
-					$this->required_error_set = false;
-					$this->invalid_error_set = false;
 					$this->type = 'select';
 
 			}
