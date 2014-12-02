@@ -45,6 +45,8 @@
 							$this->values = $this->form->hidden_value_get('h-' . $this->name);
 							if ($this->values !== NULL) {
 								$this->values = json_decode($this->values, true); // associative array
+							} else if ($this->form_submitted) {
+								$this->values = array(); // Form submitted, but no checkboxes ticked, so REQUEST data is NULL.
 							}
 						}
 
