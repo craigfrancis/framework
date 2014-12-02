@@ -13,6 +13,8 @@
 			private $fields = NULL;
 			private $values = NULL;
 
+			private $new_values = array();
+
 		//--------------------------------------------------
 		// Setup
 
@@ -196,10 +198,21 @@
 				}
 			}
 
+			public function value_set($field, $value) {
+				$this->new_values[$field] = $value;
+				// if ($this->values !== NULL) {
+				// 	$this->values[$field] = $value; // Does not work with log_table
+				// }
+			}
+
+			public function values_set($values) {
+				$this->new_values = array_merge($this->new_values, $values);
+			}
+
 		//--------------------------------------------------
 		// Update
 
-			public function save($new_values) {
+			public function save($new_values = array()) {
 
 				//--------------------------------------------------
 				// Config
@@ -207,6 +220,11 @@
 					$db = db_get();
 
 					$insert_mode = ($this->where_sql === NULL);
+
+				//--------------------------------------------------
+				// Merge new values
+
+					$new_values = array_merge($this->new_values, $new_values);
 
 				//--------------------------------------------------
 				// Changes
@@ -270,6 +288,17 @@
 						$db->update($table_sql, $new_values, $this->where_sql);
 
 					}
+
+				//--------------------------------------------------
+				// Update local
+
+					if (!is_array($this->values)) { // NULL or FALSE
+						$this->values = array();
+					}
+
+					$this->values = array_merge($this->values, $new_values);
+
+					$this->new_values = array();
 
 			}
 
