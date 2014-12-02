@@ -212,9 +212,9 @@
 				return $this->page_count;
 			}
 
-			public function page_url_get($page_number) {
+			public function page_url_get($page_number = NULL) {
 
-				if ($page_number >= 1 && $page_number <= $this->page_count) {
+				if (!is_numeric($page_number) || ($page_number >= 1 && $page_number <= $this->page_count)) {
 
 					if ($this->url === NULL) {
 						if (is_object($this->config['base_url']) && is_a($this->config['base_url'], 'url')) {
@@ -226,7 +226,11 @@
 						}
 					}
 
-					return $this->url->get(array($this->config['variable'] => ($page_number == 1 ? NULL : $page_number)));
+					if ($page_number === NULL) {
+						return $this->url;
+					} else {
+						return $this->url->get(array($this->config['variable'] => ($page_number == 1 ? NULL : $page_number)));
+					}
 
 				} else {
 
