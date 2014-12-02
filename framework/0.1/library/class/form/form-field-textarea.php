@@ -5,8 +5,8 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $textarea_rows;
-			protected $textarea_cols;
+			protected $textarea_rows = 5;
+			protected $textarea_cols = 40;
 
 		//--------------------------------------------------
 		// Setup
@@ -21,8 +21,6 @@
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->textarea_rows = 5;
-					$this->textarea_cols = 40;
 					$this->type = 'textarea';
 
 			}

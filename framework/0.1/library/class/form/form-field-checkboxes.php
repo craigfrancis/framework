@@ -5,9 +5,9 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $value_print_cache;
-			protected $options_disabled;
-			protected $options_info_html;
+			protected $value_print_cache = NULL;
+			protected $options_disabled = NULL;
+			protected $options_info_html = NULL;
 
 		//--------------------------------------------------
 		// Setup

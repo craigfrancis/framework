@@ -5,8 +5,8 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $format_error_set;
-			protected $format_error_found;
+			protected $format_error_set = false;
+			protected $format_error_found = false;
 
 		//--------------------------------------------------
 		// Setup
@@ -21,8 +21,6 @@
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->format_error_set = false;
-					$this->format_error_found = false;
 					$this->type = 'url';
 					$this->input_type = 'text'; // Not "url", as it requires a "https?://" prefix, which most people don't bother with.
 

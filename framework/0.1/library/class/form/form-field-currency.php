@@ -5,7 +5,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $currency_char;
+			protected $currency_char = '£';
 
 		//--------------------------------------------------
 		// Setup
@@ -20,7 +20,6 @@
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->currency_char = '£';
 					$this->step_value = NULL;
 					$this->type = 'currency';
 					$this->input_type = 'text'; // Not type="number", from number field

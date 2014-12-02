@@ -6,13 +6,14 @@
 		// Variables
 
 			protected $value;
-			protected $min_length;
-			protected $max_length;
-			protected $placeholder;
-			protected $input_type;
-			protected $input_size;
-			protected $input_list_id;
-			protected $input_list_options;
+
+			protected $min_length = NULL;
+			protected $max_length = NULL;
+			protected $placeholder = NULL;
+			protected $input_type = 'text';
+			protected $input_size = NULL;
+			protected $input_list_id = NULL;
+			protected $input_list_options = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -48,16 +49,10 @@
 					}
 
 				//--------------------------------------------------
-				// Default configuration
+				// Additional field configuration
 
-					$this->min_length = NULL;
-					$this->max_length = NULL;
-					$this->placeholder = NULL;
 					$this->type = 'text';
 					$this->input_type = 'text';
-					$this->input_size = NULL;
-					$this->input_list_id = NULL;
-					$this->input_list_options = NULL;
 
 			}
 

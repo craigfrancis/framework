@@ -5,8 +5,8 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $value;
-			protected $value_html;
+			protected $value = NULL;
+			protected $value_html = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -21,12 +21,6 @@
 				// Perform the standard field setup
 
 					$this->setup($form, $label, $name);
-
-				//--------------------------------------------------
-				// Value
-
-					$this->value = NULL;
-					$this->value_html = NULL;
 
 				//--------------------------------------------------
 				// Additional field configuration

@@ -5,16 +5,16 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $multiple;
-			protected $max_size;
+			protected $multiple = false;
+			protected $max_size = 0;
 
-			protected $empty_file_error_set;
-			protected $partial_file_error_set;
-			protected $blank_name_error_set;
+			protected $empty_file_error_set = false;
+			protected $partial_file_error_set = false;
+			protected $blank_name_error_set = false;
 
-			protected $files;
-			protected $file_current;
-			protected $uploaded;
+			protected $files = array();
+			protected $file_current = NULL;
+			protected $uploaded = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -39,16 +39,6 @@
 				// Additional field configuration
 
 					$this->type = 'file';
-
-				//--------------------------------------------------
-				// Default validation configuration
-
-					$this->multiple = false;
-					$this->max_size = 0;
-
-					$this->empty_file_error_set = false;
-					$this->partial_file_error_set = false;
-					$this->blank_name_error_set = false;
 
 				//--------------------------------------------------
 				// Newly uploaded files

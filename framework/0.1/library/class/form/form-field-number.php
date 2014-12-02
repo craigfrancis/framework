@@ -5,13 +5,14 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $value_clean;
-			protected $format_error_set;
-			protected $format_error_found;
-			protected $zero_to_blank;
-			protected $min_value;
-			protected $max_value;
-			protected $step_value;
+			protected $value_clean = NULL;
+
+			protected $format_error_set = false;
+			protected $format_error_found = false;
+			protected $zero_to_blank = false;
+			protected $min_value = NULL;
+			protected $max_value = NULL;
+			protected $step_value = 'any';
 
 		//--------------------------------------------------
 		// Setup
@@ -37,12 +38,6 @@
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->format_error_set = false;
-					$this->format_error_found = false;
-					$this->zero_to_blank = false;
-					$this->min_value = NULL;
-					$this->max_value = NULL;
-					$this->step_value = 'any';
 					$this->type = 'number';
 					$this->input_type = 'number';
 

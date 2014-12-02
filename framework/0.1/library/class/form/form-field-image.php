@@ -5,12 +5,12 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $min_width_size;
-			protected $max_width_size;
-			protected $min_height_size;
-			protected $max_height_size;
+			protected $min_width_size = 0;
+			protected $max_width_size = 0;
+			protected $min_height_size = 0;
+			protected $max_height_size = 0;
 
-			protected $file_type_error_set;
+			protected $file_type_error_set = false;
 
 		//--------------------------------------------------
 		// Setup
@@ -26,16 +26,6 @@
 				// Additional field configuration
 
 					$this->type = 'image';
-
-				//--------------------------------------------------
-				// Default validation configuration
-
-					$this->min_width_size = 0;
-					$this->max_width_size = 0;
-					$this->min_height_size = 0;
-					$this->max_height_size = 0;
-
-					$this->file_type_error_set = false;
 
 				//--------------------------------------------------
 				// File values
