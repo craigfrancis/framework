@@ -1,13 +1,4 @@
 
-	<VirtualHost *:80>
-
-		ServerName www.example.com
-		ServerAlias 111.111.111.111
-
-		Redirect 301 / https://www.example.com/
-
-	</VirtualHost>
-
 	<VirtualHost 111.111.111.111:443>
 
 		ServerName www.example.com
@@ -27,7 +18,8 @@
 		# RewriteCond %{HTTP_HOST} !^www\.example\.com$
 		# RewriteRule ^(.*) https://www.example.com$1 [R=301,L]
 
-		# RewriteRule ^/phpMyAdmin/(.*) /opt/server/web_apache/phpMyAdmin/$1 [S=2]
+		# RewriteRule ^/phpMyAdmin/(.*) /opt/server/web_apache/phpMyAdmin/$1 [L]
+
 		RewriteRule ^/a/files/(.*) /www/live/thrive.corporate/files/$1 [S=1]
 		RewriteRule ^(.*)$ %{DOCUMENT_ROOT}$1
 
@@ -47,12 +39,6 @@
 		AddDefaultCharset UTF-8
 		AddCharset UTF-8 .css
 		AddCharset UTF-8 .js
-
-		RewriteEngine On
-		RewriteCond %{REQUEST_FILENAME} !^/a/files/
-		RewriteCond %{REQUEST_FILENAME} !-d
-		RewriteCond %{REQUEST_FILENAME} !-f
-		RewriteRule ^(.*)$ /www/live/company.project/app/public/index.php [L]
 
 		ExpiresActive On
 		ExpiresByType image/gif "access plus 12 months"
