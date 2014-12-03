@@ -409,9 +409,17 @@
 		// JavaScript
 
 			public function js_add($path, $attributes = array(), $position = 'foot') { // Could be $this->js_add('/path.js', 'async');
+				if (!isset($this->js_files[$position])) {
+					exit_with_error('Invalid js_add position "' . $position . '" - try head or foot');
+				}
+				foreach ($this->js_files[$position] as $file) {
+					if ($file['path'] == $path) {
+						return; // Already exists (e.g. jQuery)
+					}
+				}
 				if (is_string($attributes)) {
 					$attributes = array($attributes);
-				} else if (!is_array($attributes)) { // NULL
+				} else if (!is_array($attributes)) { // e.g. NULL
 					$attributes = array();
 				}
 				$this->js_files[$position][] = array(
@@ -487,6 +495,9 @@
 					if (count($js_files) > 0) {
 						$html .= "\n";
 						foreach ($js_files as $attributes) {
+							if (($key = array_search('separate', $attributes)) !== false) {
+								unset($attributes[$key]);
+							}
 							$html .= "\n\t" . html_tag('script', $attributes) . '</script>';
 						}
 					}
@@ -778,11 +789,11 @@
 
 							$this->_js_code_save($this->js_code[$position]['data'], $position);
 
-							$files[] = array(
+							array_unshift($files, array( // Should be first, so static JS files can access variables.
 									'path' => NULL,
 									'url' => strval(gateway_url('js-code', $this->js_code_ref . '-' . $position . '.js')),
 									'attributes' => ($this->js_code[$position]['mode'] != 'inline' ? array($this->js_code[$position]['mode']) : array()),
-								);
+								));
 
 						}
 
@@ -815,7 +826,6 @@
 								if ($length > 0 && substr($prefix, -1) == '/') {
 
 									if ($version) {
-										$version = false; // Don't run second check
 										$last_modified = 0;
 										foreach ($grouped_files as $path) {
 											$file_modified = filemtime(PUBLIC_ROOT . $path);
