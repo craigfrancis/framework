@@ -781,7 +781,7 @@
 							$files[] = array(
 									'path' => NULL,
 									'url' => strval(gateway_url('js-code', $this->js_code_ref . '-' . $position . '.js')),
-									'attributes' => ($this->js_code[$position]['mode'] == 'inline' ? array() : array($this->js_code[$position]['mode'])),
+									'attributes' => ($this->js_code[$position]['mode'] != 'inline' ? array($this->js_code[$position]['mode']) : array()),
 								);
 
 						}
