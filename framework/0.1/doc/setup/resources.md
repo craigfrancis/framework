@@ -61,6 +61,10 @@ This means that all the local files will be presented to the browser with a sing
 
 And the framework will automatically parse this and return the individual files as one.
 
+If you wan't a file to not be combined (e.g. jQuery), then instead call:
+
+	$response->js_add('/path/to/file.js', 'separate');
+
 ---
 
 ## JavaScript minified
