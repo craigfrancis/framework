@@ -34,27 +34,39 @@ And you can return a HTML version, with the `<time>` tag:
 
 ---
 
+## Create from format
+
+Like the PHP object, you can also do:
+
+	$timestamp = timestamp::createFromFormat('d/m/y H:i:s', '23/06/08 09:47:47');
+
+---
+
 ## Database usage
 
-When storing a 'datetime' value in the database, you can either use the value from:
-
-	$timestamp->format('db');
-
-Or simply pass the timestamp variable to the [database helper](../../doc/system/database.md):
+When storing a 'datetime' value in the database, you can simply use the variable:
 
 	$now = new timestamp();
 
+	debug($now);
+	echo $now;
+
 	$db->insert(DB_PREFIX . 'table', array(
-			'id'      => '',
 			'name'    => $name,
 			'created' => $now,
 		));
 
-This will use the ISO format "YYYY-MM-DD HH:MM:SS" in the UTC timezone.
+Or you can use the 'db' format:
 
-When returning the value from the database, simply run:
+	$timestamp->format('db');
+
+Both of these methods use the ISO format "YYYY-MM-DD HH:MM:SS" in UTC.
+
+When returning the value from the database, just use:
 
 	$timestamp = new timestamp($row['field'], 'db');
+
+	echo $timestamp->format('l jS F Y, g:i:sa');
 
 The timestamp helper will then parse the UTC value, and output with "output.timezone".
 

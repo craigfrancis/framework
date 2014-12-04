@@ -69,6 +69,22 @@
 			}
 
 		//--------------------------------------------------
+		// Create from format
+
+			static function createFromFormat($format, $time, $timezone = NULL) {
+				if ($timezone === NULL) {
+					$timezone = config::get('output.timezone');
+				}
+				$parsed = parent::createFromFormat($format, $time, new DateTimeZone($timezone));
+				if ($parsed) {
+					$parsed->setTimezone(new DateTimeZone('UTC'));
+					return new timestamp($parsed->format('Y-m-d H:i:s'), 'db');
+				} else {
+					return false;
+				}
+			}
+
+		//--------------------------------------------------
 		// Business days
 
 			public function business_days_add($business_days) {
