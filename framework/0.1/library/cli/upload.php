@@ -74,11 +74,18 @@
 
 					if (SERVER == 'stage') {
 
+						if ($config_dst['update']) {
+							$update = ($config_dst['update'] ? 'true' : 'false');
+						} else {
+							$update = 'false';
+						}
+
 						upload_exec('process-scm', array(
 								ROOT,
 								$config_dst['source'],
 								$config_dst['location_host'],
 								$config_dst['location_path'],
+								$update,
 							));
 
 					}

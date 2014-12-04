@@ -147,6 +147,7 @@
 
 	// $config['upload.demo.source'] = 'git';
 	// $config['upload.demo.location'] = 'demo:/www/demo/company.project';
+	// $config['upload.demo.update'] = false;
 
 	// $config['upload.live.source'] = 'demo';
 	// $config['upload.live.location'] = 'live:/www/live/company.project';

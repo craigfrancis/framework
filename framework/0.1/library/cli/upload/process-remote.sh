@@ -27,7 +27,7 @@
 	echo;
 	echo "Connecting to ${DST_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${DST_HOST}";
-	echo ' Done';
+	echo '  Done';
 
 	function remote_cmd {
 		ssh -t -o 'LogLevel=QUIET' -S "${SSH_CONTROL}" "${DST_HOST}" $@;
@@ -102,7 +102,7 @@
 	remote_scp "${FRAMEWORK_ROOT}/library/cli/upload/publish-run.sh" "${DST_PATH}/upload/publish-run.sh";
 	remote_cmd "chmod 755 ${DST_PATH}/upload/publish-{prep,run}.sh";
 
-	echo ' Done';
+	echo '  Done';
 
 #--------------------------------------------------
 # Execute prep script
@@ -131,7 +131,7 @@
 
 	fi
 
-	echo ' Done';
+	echo '  Done';
 
 #--------------------------------------------------
 # Execute run script

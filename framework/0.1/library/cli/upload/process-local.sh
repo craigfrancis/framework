@@ -80,7 +80,7 @@
 	rsync -a --exclude=.svn "${SRC_PATH}/httpd/"           "${DST_PATH}/upload/files/httpd/";
 	rsync -a --exclude=.svn "`dirname ${FRAMEWORK_ROOT}`/" "${DST_PATH}/upload/files/framework/";
 
-	echo ' Done';
+	echo '  Done';
 
 #--------------------------------------------------
 # Execute run script

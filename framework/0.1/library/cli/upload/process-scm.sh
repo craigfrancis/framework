@@ -10,6 +10,7 @@
 	DST_SOURCE="${2}";
 	DST_HOST="${3}";
 	DST_PATH="${4}";
+	UPDATE="${5}";
 
 	if [[ -z "${ROOT}" ]] || [[ -z "${DST_SOURCE}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo 'Missing parameters';
@@ -37,7 +38,7 @@
 	echo;
 	echo "Connecting to ${DST_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${DST_HOST}";
-	echo ' Done';
+	echo '  Done';
 
 	function remote_cmd {
 		ssh -t -o 'LogLevel=QUIET' -S "${SSH_CONTROL}" "${DST_HOST}" $@;
@@ -59,6 +60,28 @@
 		echo;
 		remote_close;
 		exit 0;
+	fi
+
+#--------------------------------------------------
+# Run update
+#--------------------------------------------------
+
+	if [[ "${UPDATE}" == "true" ]]; then
+
+		echo;
+		echo "Update project:";
+
+		if [[ "${DST_SOURCE}" == 'git' ]]; then
+			remote_cmd "cd ${DST_PATH} && git pull" | awk '{ print "  " $0;}';
+		else
+			remote_cmd "cd ${DST_PATH} && svn update" | awk '{ print "  " $0;}';
+		fi
+
+		echo;
+		echo "Update framework:";
+
+		remote_cmd 'cd `/www/demo/futura.demo/cli --config=FRAMEWORK_ROOT` && git pull' | awk '{ print "  " $0;}';
+
 	fi
 
 #--------------------------------------------------
