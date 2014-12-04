@@ -74,7 +74,7 @@
 
 					if (SERVER == 'stage') {
 
-						if ($config_dst['update']) {
+						if (isset($config_dst['update'])) {
 							$update = ($config_dst['update'] ? 'true' : 'false');
 						} else {
 							$update = 'false';
