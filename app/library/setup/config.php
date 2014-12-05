@@ -96,7 +96,7 @@
 
 	$config['output.csp_directives'] = array(
 			'default-src'  => array("'none'"),
-			'plugin-types' => array("'none'"),
+			'plugin-types' => array(),
 			'connect-src'  => array("'self'"),
 			'form-action'  => array("'self'"),
 			'style-src'    => array("'self'"),
