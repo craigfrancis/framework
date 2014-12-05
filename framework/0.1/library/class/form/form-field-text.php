@@ -205,6 +205,10 @@
 					$attributes['list'] = $this->input_list_id;
 				}
 
+				if ($this->min_length !== NULL && $this->min_length > 1) { // Value of 1 (default) is basically required
+					$attributes['minlength'] = intval($this->min_length);
+				}
+
 				if ($this->max_length !== NULL && $this->max_length > 0) {
 					$attributes['maxlength'] = intval($this->max_length);
 				}

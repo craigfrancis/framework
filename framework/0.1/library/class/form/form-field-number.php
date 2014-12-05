@@ -210,7 +210,8 @@
 					unset($attributes['size']); // Invalid HTML5 attribute, but currency field is still text.
 				}
 
-				unset($attributes['maxlength']); // Invalid HTML5 attributes
+				unset($attributes['minlength']); // Invalid HTML5 attributes
+				unset($attributes['maxlength']);
 
 				return $attributes;
 
