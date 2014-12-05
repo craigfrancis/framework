@@ -111,7 +111,7 @@
 //--------------------------------------------------
 // Security
 
-	$config['output.framing'] = 'DENY'; // or SAMEORIGIN
+	$config['output.framing'] = 'DENY'; // SAMEORIGIN or ALLOW
 	$config['output.xss_reflected'] = 'block';
 
 	$config['output.csp_enabled'] = true;
