@@ -1421,16 +1421,27 @@
 					//--------------------------------------------------
 					// Framing options
 
-						// header('X-Frame-Options: ' . head(strtoupper(config::get('output.framing', 'DENY'))));
+						$output_framing = strtoupper(config::get('output.framing', 'DENY'));
+
+						if ($output_framing && $output_framing != 'ALLOW') {
+							header('X-Frame-Options: ' . head($output_framing));
+						}
 
 					//--------------------------------------------------
 					// Extra XSS protection for IE (reflected)... not
 					// that there should be any XSS issues!
 
-						// header('X-XSS-Protection: 1; mode=block');
+						$output_xss_reflected = strtolower(config::get('output.xss_reflected', 'block'));
+
+						if ($output_xss_reflected == 'block') {
+							header('X-XSS-Protection: 1; mode=block');
+						} else if ($output_xss_reflected == 'filter') {
+							header('X-XSS-Protection: 1');
+						}
 
 					//--------------------------------------------------
-					// Strict transport security
+					// Strict transport security... should be set in
+					// web server, for other resources (e.g. images).
 
 						// if (https_only()) {
 						// 	header('Strict-Transport-Security: max-age=31536000; includeSubDomains'); // HTTPS only (1 year)
@@ -1448,6 +1459,16 @@
 							}
 
 							$csp = config::get('output.csp_directives');
+
+							if ($output_framing == 'DENY') {
+								$csp['frame-ancestors'] = "'none'";
+							} else if ($output_framing == 'SAMEORIGIN') {
+								$csp['frame-ancestors'] = "'self'";
+							}
+
+							if ($output_xss_reflected == 'block' || $output_xss_reflected == 'filter') {
+								$csp['reflected-xss'] = $output_xss_reflected; // Not quoted
+							}
 
 							if (config::get('output.csp_report', false) && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
 								$csp['report-uri'] = gateway_url('csp-report');

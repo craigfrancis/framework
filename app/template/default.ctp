@@ -47,6 +47,7 @@
 				$security_nav = new nav();
 				$security_nav->link_add('/doc/security/strings/', 'Strings', array('child' => $security_string_nav));
 				$security_nav->link_add('/doc/security/csrf/', 'Cross site request forgery');
+				$security_nav->link_add('/doc/security/xss/', 'Cross site scripting');
 				$security_nav->link_add('/doc/security/framing/', 'Site framing'); // X-Frame-Options header
 				$security_nav->link_add('/doc/security/transport/', 'Strict transport security');
 				$security_nav->link_add('/doc/security/csp/', 'Content security policy');

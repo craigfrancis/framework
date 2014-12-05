@@ -95,21 +95,13 @@
 	$config['output.csp_enforced'] = true;
 
 	$config['output.csp_directives'] = array(
-			'default-src' => array(
-					"'none'",
-				),
-			'img-src' => array(
-					"'self'",
-				),
-			'script-src' => array(
-					"'self'",
-				),
-			'style-src' => array(
-					"'self'",
-				),
-			'connect-src' => array(
-					"'self'",
-				),
+			'default-src'  => array("'none'"),
+			'plugin-types' => array("'none'"),
+			'connect-src'  => array("'self'"),
+			'form-action'  => array("'self'"),
+			'style-src'    => array("'self'"),
+			'img-src'      => array("'self'"),
+			'script-src'   => array("'self'"),
 		);
 
 //--------------------------------------------------

@@ -4,6 +4,7 @@ Once you have a good understanding of [strings](../doc/security/strings.md), the
 
 * [Strings](../doc/security/strings.md) - yes, its really important.
 * [Cross site request forgery](../doc/security/csrf.md) - aka CSRF.
+* [Cross site scripting](../doc/security/xss.md) - aka XSS.
 * [Site framing](../doc/security/framing.md) - used in click jacking.
 * [Strict transport security](../doc/security/transport.md) - to avoid "man in the middle" attacks.
 * [Content security policy](../doc/security/csp.md) - for added protection against XSS.
