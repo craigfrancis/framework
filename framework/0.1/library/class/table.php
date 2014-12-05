@@ -390,15 +390,15 @@
 						// http://stackoverflow.com/questions/24863531
 
 					$output_html = '
-						<table role="grid"' . ($this->id_name != '' ? ' id="' . html($this->id_name) . '"' : '') . ($this->class_name != '' ? ' class="' . html($this->class_name) . '"' : '') . '>
-							<thead role="rowgroup">';
+						<table' . ($this->id_name != '' ? ' id="' . html($this->id_name) . '"' : '') . ($this->class_name != '' ? ' class="' . html($this->class_name) . '"' : '') . '>
+							<thead>';
 
 					foreach ($this->headings as $row_id => $heading_row) {
 
 						$col_id = 0;
 
 						$output_html .= '
-								<tr role="row">';
+								<tr>';
 
 						foreach ($heading_row as $heading_info) {
 
@@ -459,7 +459,7 @@
 								}
 
 								$output_html .= '
-										<th role="columnheader" scope="col"' . $attributes_html . '>' . $heading_html . '</th>';
+										<th scope="col"' . $attributes_html . '>' . $heading_html . '</th>';
 
 							//--------------------------------------------------
 							// Column ID
@@ -486,14 +486,14 @@
 					if (count($this->footers)) {
 
 						$output_html .= '
-							<tfoot role="rowgroup">';
+							<tfoot>';
 
 						foreach ($this->footers as $footer_row) {
 
 							$col_id = 0;
 
 							$output_html .= '
-								<tr role="row">';
+								<tr>';
 
 							foreach ($footer_row as $footer_info) {
 
@@ -528,7 +528,7 @@
 									}
 
 									$output_html .= '
-										<td role="gridcell"' . $attributes_html . '>' . $footer_info['html'] . '</td>';
+										<td' . $attributes_html . '>' . $footer_info['html'] . '</td>';
 
 								//--------------------------------------------------
 								// Column ID
@@ -551,7 +551,7 @@
 				// Data
 
 					$output_html .= '
-							<tbody role="rowgroup">';
+							<tbody>';
 
 					$row_count = 0;
 
@@ -561,7 +561,7 @@
 						$row_id = $this->rows[$row_key]['id_name'];
 
 						$output_html .= '
-								<tr role="row"';
+								<tr';
 
 						if ($row_id != '') {
 							$output_html .= ' id="' . html($row_id) . '"';
@@ -608,7 +608,7 @@
 								}
 
 								$output_html .= '
-									<td role="gridcell"' . $attributes_html . '>' . $cell_info['html'] . '</td>';
+									<td' . $attributes_html . '>' . $cell_info['html'] . '</td>';
 
 							//--------------------------------------------------
 							// Column ID
@@ -639,7 +639,7 @@
 							// HTML
 
 								$output_html .= '
-									<td role="gridcell"' . $attributes_html . '>&#xA0;</td>';
+									<td' . $attributes_html . '>&#xA0;</td>';
 
 							//--------------------------------------------------
 							// Column ID
@@ -660,7 +660,7 @@
 
 						$output_html .= '
 								<tr>
-									<td role="gridcell" colspan="' . html($col_count) . '" class="no_results">' . $this->no_records_html . '</td>
+									<td colspan="' . html($col_count) . '" class="no_results">' . $this->no_records_html . '</td>
 								</tr>';
 
 					}
