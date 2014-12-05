@@ -109,11 +109,13 @@
 	$config['output.timestamp_url'] = true;
 
 //--------------------------------------------------
-// Content security policy
+// Security
+
+	// $config['output.framing'] = 'DENY'; // or SAMEORIGIN
+	// $config['output.xss_reflected'] = 'block';
 
 	// $config['output.csp_enabled'] = true;
 	// $config['output.csp_enforced'] = true;
-	//
 	// $config['output.csp_directives'] = array(
 	// 		'default-src'     => array("'none'"),
 	// 		'plugin-types'    => array("'none'"),
