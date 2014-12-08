@@ -25,15 +25,15 @@ To customise the directives, start with something like:
 For additional resources (e.g. on a per-page basis) you can also call:
 
 	$response = response_get();
-	$response->csp_add_source('frame-src', 'http://www.example.com');
-	$response->csp_add_source('img-src', array('http://www.example.com', 'http://www.example.org'));
+	$response->csp_source_add('frame-src', 'http://www.example.com');
+	$response->csp_source_add('img-src', array('http://www.example.com', 'http://www.example.org'));
 
 So for example, Google Maps might require:
 
 	$response = response_get();
-	$response->csp_add_source('style-src',  array('"unsafe-inline"'));
-	$response->csp_add_source('script-src', array('"unsafe-inline"', '"unsafe-eval"', 'https://*.googleapis.com', 'https://*.gstatic.com'));
-	$response->csp_add_source('img-src',    array('https://*.googleapis.com', 'https://*.gstatic.com'));
+	$response->csp_source_add('style-src',  array('"unsafe-inline"'));
+	$response->csp_source_add('script-src', array('"unsafe-inline"', '"unsafe-eval"', 'https://*.googleapis.com', 'https://*.gstatic.com'));
+	$response->csp_source_add('img-src',    array('https://*.googleapis.com', 'https://*.gstatic.com'));
 
 ---
 

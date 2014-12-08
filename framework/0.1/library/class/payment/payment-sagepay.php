@@ -195,6 +195,19 @@
 								);
 
 						//--------------------------------------------------
+						// CSP
+
+							$response = response_get();
+
+							if ($response->csp_sources_get('form-action') !== NULL) { // If not set, it isn't used by the browser (does not default back to 'default-src', due to CSP v1 comparability)
+
+								$gateway_url_parsed = parse_url($gateway_url); // Older browsers do not accept a path, and the POST url will change (redirect to "cardselection" page)... which Chrome 41 blocks.
+
+								$response->csp_source_add('form-action', 'https://' . $gateway_url_parsed['host']);
+
+							}
+
+						//--------------------------------------------------
 						// Return
 
 							return array(

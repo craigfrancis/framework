@@ -48,7 +48,7 @@ To set the page description:
 
 Additional [CSP sources](../../doc/security/csp.md):
 
-	$response->csp_add_source('script-src', array('https://www.example.com'));
+	$response->csp_source_add('script-src', array('https://www.example.com'));
 
 To add some JavaScript or CSS ([details](../../doc/setup/resources.md)):
 

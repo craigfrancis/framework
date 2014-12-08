@@ -355,7 +355,7 @@
 		//--------------------------------------------------
 		// CSP
 
-			public function csp_add_source($directive, $sources) {
+			public function csp_source_add($directive, $sources) {
 
 				if (!is_array($sources)) {
 					$sources = array($sources);
@@ -373,6 +373,18 @@
 				$csp[$directive] = array_merge($csp[$directive], $sources);
 
 				config::set('output.csp_directives', $csp);
+
+			}
+
+			public function csp_sources_get($directive) {
+
+				$csp = config::get('output.csp_directives');
+
+				if (isset($csp[$directive])) {
+					return $csp[$directive];
+				} else {
+					return NULL;
+				}
 
 			}
 
@@ -1350,8 +1362,8 @@
 
 							$this->js_code_add($js_code, 'async');
 
-							$this->csp_add_source('script-src', array('https://ssl.google-analytics.com'));
-							$this->csp_add_source('img-src', array('https://ssl.google-analytics.com', 'http://www.google-analytics.com'));
+							$this->csp_source_add('script-src', array('https://ssl.google-analytics.com'));
+							$this->csp_source_add('img-src', array('https://ssl.google-analytics.com', 'http://www.google-analytics.com'));
 
 						}
 
@@ -1376,8 +1388,8 @@
 
 									$this->js_code_add(newrelic_get_browser_timing_footer(false), 'async', 'foot');
 
-									$this->csp_add_source('img-src', array('*.newrelic.com'));
-									$this->csp_add_source('script-src', array('*.newrelic.com'));
+									$this->csp_source_add('img-src', array('*.newrelic.com'));
+									$this->csp_source_add('script-src', array('*.newrelic.com'));
 
 								}
 
