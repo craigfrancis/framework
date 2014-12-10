@@ -497,11 +497,7 @@
 		$session_used = session::get('save_request_used');
 		if ($session_used === true || ($session_user != '' && $session_user != $current_user)) {
 
-			session::delete('save_request_user');
-			session::delete('save_request_url');
-			session::delete('save_request_created');
-			session::delete('save_request_used');
-			session::delete('save_request_data');
+			save_request_reset();
 
 		} else if ($session_used === false) {
 
@@ -509,12 +505,20 @@
 
 			if (session::get('save_request_created') > (time() - (60*5))) {
 				$next_url = session::get('save_request_url');
-				if (substr($next_url, 0, 1) == '/') { // Shouldn't be an issue, but make sure we stay on this website
+				if (substr($next_url, 0, 1) == '/') { // Shouldn't be an issue, but make sure we stay on this website (and scheme-relative URLs "//example.com" won't work, as the domain is prefixed).
 					redirect($next_url);
 				}
 			}
 
 		}
+	}
+
+	function save_request_reset() {
+		session::delete('save_request_user');
+		session::delete('save_request_url');
+		session::delete('save_request_created');
+		session::delete('save_request_used');
+		session::delete('save_request_data');
 	}
 
 //--------------------------------------------------
