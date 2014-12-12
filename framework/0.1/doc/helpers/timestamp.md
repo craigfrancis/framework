@@ -87,8 +87,7 @@ This might be helpful when a datetime is only recorded on completion:
 	$compleated = new timestamp($row['compleated'], 'db');
 	$compleated = $compleated->format('l jS F Y, g:ia');
 
-	if ($compleated) {
-	}
+	echo html($compleated ? $compleated : 'N/A');
 
 ---
 
