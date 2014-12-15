@@ -1,5 +1,9 @@
 <?php
 
+	// http://support.worldpay.com/support/kb/bg/testandgolive/tgl5103.html
+	// Visa Debit: 4462030000000000
+	// Mastercard: 5555555555554444
+
 //--------------------------------------------------
 // Main authentication handlers
 
