@@ -430,7 +430,13 @@
 		}
 
 		public function link_get() {
+			$this->connect();
 			return $this->link;
+		}
+
+		public function version_get() {
+			$this->connect();
+			return $this->link->server_info;
 		}
 
 		private function connect() {

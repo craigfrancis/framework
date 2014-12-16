@@ -43,7 +43,7 @@
 
 			if (config::get('db.host') !== NULL) {
 
-				$db = new db();
+				$db = db_get();
 
 				$db->insert(DB_PREFIX . 'system_report', array(
 						'type'     => $type,
@@ -508,9 +508,29 @@
 		//--------------------------------------------------
 		// Database debug
 
+			if (config::get('db.host') !== NULL) {
+
+				$db = db_get();
+
+				if (version_compare($db->version_get(), '5.7.5', '>=')) { // 5.6 does not detect functional dependencies (used everywhere) - http://mysqlserverteam.com/mysql-5-7-only_full_group_by-improved-recognizing-functional-dependencies-enabled-by-default/
+
+					$db->query('SET sql_mode := CONCAT("ONLY_FULL_GROUP_BY,", @@sql_mode)');
+
+					//--------------------------------------------------
+					// Before disabling, read:
+					//   http://rpbouman.blogspot.co.uk/2007/05/debunking-group-by-myths.html
+					//
+					// You can always use:
+					//   ANY_VALUE()
+					//--------------------------------------------------
+
+				}
+
+			}
+
 			function debug_require_db_table($table, $sql) {
 
-				$db = new db();
+				$db = db_get();
 
 				$db->query('SHOW TABLES LIKE "' . $db->escape($table) . '"', false); // No debug
 				if ($db->num_rows() == 0) {
