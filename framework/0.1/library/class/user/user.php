@@ -205,13 +205,21 @@
 			}
 
 			public function require_by_id($user_id) {
+				$result = $this->select_by_id($user_id);
+				if ($result === NULL) {
+					exit_with_error('Cannot find user id "' . $user_id . '"');
+				}
+				return $result;
+			}
+
+			public function select_by_id($user_id) {
 				$user_identification = $this->auth->identification_name_get($user_id);
 				if ($user_identification !== false) {
 					$this->user_id = $user_id;
+					return $user_identification;
 				} else {
-					exit_with_error('Cannot find user id "' . $user_id . '"');
+					return NULL;
 				}
-				return $user_identification;
 			}
 
 			public function id_get() {
