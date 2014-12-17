@@ -111,7 +111,7 @@
 			//--------------------------------------------------
 			// Session pass
 
-				$session_pass = uniqid(mt_rand(), true);
+				$session_pass = random_key(40); // Same length as SHA1 hash
 
 			//--------------------------------------------------
 			// Create a new session
