@@ -336,6 +336,36 @@
 	 	return (is_array($value) ? array_map('strip_slashes_deep', $value) : stripslashes($value));
 	}
 
+	function array_key_sort(&$array, $key, $type = 'numerical') { // Sort an array by one of its keys
+		$array_key_sort = new array_key_sort($key);
+		uasort($array, array($array_key_sort, $type));
+	}
+
+		class array_key_sort {
+			private $key = NULL;
+			public function __construct($key) {
+				$this->key = $key;
+			}
+			public function numerical($a, $b) { // String comparison
+				if ($a[$this->key] == $b[$this->key]) {
+					return 0;
+				}
+				return ($a[$this->key] < $b[$this->key] ? -1 : 1);
+			}
+			public function strcmp($a, $b) { // String comparison
+				return strcmp($a[$this->key], $b[$this->key]);
+			}
+			public function strcasecmp($a, $b) { // Case-insensitive string comparison
+				return strcasecmp($a[$this->key], $b[$this->key]);
+			}
+			public function strnatcmp($a, $b) { // String comparisons using a "natural order" algorithm
+				return strnatcmp($a[$this->key], $b[$this->key]);
+			}
+			public function strnatcasecmp($a, $b) { // Case insensitive string comparisons using a "natural order" algorithm
+				return strnatcasecmp($a[$this->key], $b[$this->key]);
+			}
+		}
+
 	function is_assoc($array) {
 		return (count(array_filter(array_keys($array), 'is_string')) > 0); // http://stackoverflow.com/questions/173400
 	}

@@ -213,8 +213,9 @@ While not really covered on this page, there are a range of useful [debug functi
 
 # Misc functions
 
-	strip_slashes_deep();
-	is_assoc();
+	strip_slashes_deep($array);
+	array_key_sort($array, 'name', 'strcmp');
+	is_assoc($array);
 	mb_str_pad();
 	random_key();
 	random_bytes();
