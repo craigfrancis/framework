@@ -45,7 +45,7 @@
 			'h' => 'help',
 			'd::' => 'debug::', // Optional value
 			'c::' => 'config::', // Optional value
-			'g:' => 'gateway:', // Requires value
+			'g::' => 'gateway::',
 			'm' => 'maintenance',
 			'i' => 'install',
 			'p' => 'permissions',
@@ -139,10 +139,20 @@
 					config::set('output.mode', 'gateway');
 
 					$gateway = new gateway();
-					$success = $gateway->run($option_value);
 
-					if (!$success) {
-						exit('Invalid gateway "' . $option_value . '"' . "\n");
+					if ($option_value) {
+
+						$success = $gateway->run($option_value);
+						if (!$success) {
+							exit('Invalid gateway "' . $option_value . '"' . "\n");
+						}
+
+					} else {
+
+						foreach ($gateway->get_all() as $name => $url) {
+							echo $name . "\n";
+						}
+
 					}
 
 					break;

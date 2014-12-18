@@ -62,6 +62,34 @@
 				return $this->response_error;
 			}
 
+			function get_all() {
+
+				$gateway_urls = array();
+				$gateway_dirs = array(
+						'framework' => FRAMEWORK_ROOT . '/library/gateway/',
+						'app' => APP_ROOT . '/gateway/',
+					);
+
+				$gateway_hide = array('framework-file', 'js-code', 'js-newrelic', 'payment');
+
+				foreach ($gateway_dirs as $gateway_source => $gateway_dir) {
+					if ($handle = opendir($gateway_dir)) {
+						while (false !== ($file = readdir($handle))) {
+							if (is_file($gateway_dir . $file) && preg_match('/^([a-zA-Z0-9_\-]+)\.php$/', $file, $matches) && ($gateway_source == 'app' || !in_array($matches[1], $gateway_hide))) {
+
+								$gateway_urls[$matches[1]] = gateway_url($matches[1]);
+
+							}
+						}
+					}
+				}
+
+				asort($gateway_urls);
+
+				return $gateway_urls;
+
+			}
+
 			function connection_test($gateway_name) {
 				$this->_client_get($gateway_name, NULL, true);
 			}
@@ -365,27 +393,7 @@
 				//--------------------------------------------------
 				// Gateways
 
-					$gateway_urls = array();
-					$gateway_dirs = array(
-							'framework' => FRAMEWORK_ROOT . '/library/gateway/',
-							'app' => APP_ROOT . '/gateway/',
-						);
-
-					$gateway_hide = array('framework-file', 'js-code', 'js-newrelic', 'payment');
-
-					foreach ($gateway_dirs as $gateway_source => $gateway_dir) {
-						if ($handle = opendir($gateway_dir)) {
-							while (false !== ($file = readdir($handle))) {
-								if (is_file($gateway_dir . $file) && preg_match('/^([a-zA-Z0-9_\-]+)\.php$/', $file, $matches) && ($gateway_source == 'app' || !in_array($matches[1], $gateway_hide))) {
-
-									$gateway_urls[$matches[1]] = gateway_url($matches[1]);
-
-								}
-							}
-						}
-					}
-
-					asort($gateway_urls);
+					$gateway_urls = $this->get_all();
 
 				//--------------------------------------------------
 				// Run setup
