@@ -346,7 +346,7 @@
 			public function __construct($key) {
 				$this->key = $key;
 			}
-			public function numerical($a, $b) { // String comparison
+			public function numerical($a, $b) {
 				if ($a[$this->key] == $b[$this->key]) {
 					return 0;
 				}
