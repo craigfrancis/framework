@@ -8,8 +8,8 @@
  -c[=name]
  --config[=name]   Show configuration.
 
- -g=name
- --gateway=name    Call the gateway "name".
+ -g[=name]
+ --gateway[=name]  Call the gateway "name", or list the gateways.
 
  -m
  --maintenance     Run the maintenance scripts.
