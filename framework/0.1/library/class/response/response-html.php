@@ -1464,10 +1464,12 @@
 
 						if (config::get('output.csp_enabled') === true) {
 
-							if (!config::get('output.csp_enforced', false)) {
-								$header = 'Content-Security-Policy-Report-Only';
-							} else {
+							$enforced = config::get('output.csp_enforced', false);
+
+							if ($enforced) {
 								$header = 'Content-Security-Policy';
+							} else {
+								$header = 'Content-Security-Policy-Report-Only';
 							}
 
 							$csp = config::get('output.csp_directives');
@@ -1482,7 +1484,7 @@
 								$csp['reflected-xss'] = $output_xss_reflected; // Not quoted
 							}
 
-							if (config::get('output.csp_report', false) && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
+							if ((config::get('output.csp_report', false) || !$enforced) && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
 								$csp['report-uri'] = gateway_url('csp-report');
 							}
 
