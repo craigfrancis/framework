@@ -23,12 +23,12 @@ Inc notes on `save_request_restore/save_request_redirect()` functions.
 	//--------------------------------------------------
 	// Example setup
 
-		$model = model_get('table');
+		$record = record_get('table');
 
 		$form = new form();
 		$form->form_class_set('basic_form');
 		$form->form_button_set('Save');
-		$form->db_model_set($model);
+		$form->db_record_set($record);
 
 		$field_name = new form_field_text($form, 'Name');
 		$field_name->db_field_set('name');

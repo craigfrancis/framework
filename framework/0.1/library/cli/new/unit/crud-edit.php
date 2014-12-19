@@ -24,24 +24,15 @@
 			//--------------------------------------------------
 			// Details
 
-				$model = model_get('item', array(
-						'fields' => array(
-								'name',
-							),
-						'log_values' => array(
-								'item_id' => $item_id,
-							),
-					));
+				$action_edit = ($item_id != 0);
 
-				$action_edit = ($item_id > 0);
+				$record = record_get('item', $item_id, array(
+						'name',
+					));
 
 				if ($action_edit) {
 
-					$model->where_set_sql('
-						id = "' . $db->escape($item_id) . '" AND
-						deleted = "0000-00-00 00:00:00"');
-
-					if ($row = $model->values_get()) {
+					if ($row = $record->values_get()) {
 
 						$this->set('item_name', $row['name']);
 
@@ -58,7 +49,7 @@
 
 				$form = new form();
 				$form->form_class_set('basic_form');
-				$form->db_model_set($model);
+				$form->db_record_set($record);
 
 
 

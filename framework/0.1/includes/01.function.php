@@ -293,6 +293,15 @@
 		return (strncmp($string, $prefix, strlen($prefix)) == 0);
 	}
 
+	function prefix_replace($prefix, $string) {
+		$prefix_length = strlen($prefix);
+		if (strncmp($string, $prefix, $prefix_length) == 0) { // 0 = strings are equal
+			return substr($string, $prefix_length);
+		} else {
+			return $string;
+		}
+	}
+
 	function path_to_array($path) {
 		$path = str_replace('\\', '/', $path); // Windows
 		$output = array();
@@ -698,32 +707,56 @@
 	}
 
 //--------------------------------------------------
-// Model
+// Record
 
-	function model_get($model_name, $config = array()) {
+	function record_get($table_name, $config = array(), $fields = NULL, $log_values = array()) {
 
-		$model_class_name = $model_name . '_model';
-		$model_file_name = safe_file_name(str_replace('_', '-', $model_name));
+		if (!is_array($config)) {
+
+			$config = array(
+					'where_id' => $config,
+					'fields' => $fields,
+					'deleted' => array('type' => ref_to_human($table_name)), // Best guess
+					'log_values' => $log_values,
+				);
+
+		}
 
 		if (!isset($config['table']) && !isset($config['table_sql'])) {
-			$config['table'] = DB_PREFIX . $model_name;
+			$config['table'] = DB_PREFIX . $table_name;
 		}
 
-		$model_file_path = APP_ROOT . '/library/model/' . $model_file_name . '.php';
-
-		if (is_file($model_file_path)) {
-
-			require_once($model_file_path);
-
-			return new $model_class_name($model_name, $config);
-
-		} else {
-
-			return new model($model_name, $config);
-
-		}
+		return new record($config);
 
 	}
+
+//--------------------------------------------------
+// Model
+
+	// function model_get($model_name, $config = array()) {
+	//
+	// 	$model_class_name = $model_name . '_model';
+	// 	$model_file_name = safe_file_name(str_replace('_', '-', $model_name));
+	//
+	// 	if (!isset($config['table']) && !isset($config['table_sql'])) {
+	// 		$config['table'] = DB_PREFIX . $model_name;
+	// 	}
+	//
+	// 	$model_file_path = APP_ROOT . '/library/model/' . $model_file_name . '.php';
+	//
+	// 	if (is_file($model_file_path)) {
+	//
+	// 		require_once($model_file_path);
+	//
+	// 		return new $model_class_name($model_name, $config);
+	//
+	// 	} else {
+	//
+	// 		return new model($model_name, $config);
+	//
+	// 	}
+	//
+	// }
 
 //--------------------------------------------------
 // Database

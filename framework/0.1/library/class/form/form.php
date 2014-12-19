@@ -38,8 +38,8 @@
 			private $error_override_function = NULL;
 			private $post_validation_done = false;
 			private $db_link = NULL;
-			private $db_model = NULL;
-			private $db_model_fields_set = false;
+			private $db_record = NULL;
+			private $db_record_fields_set = false;
 			private $db_table_name_sql = NULL;
 			private $db_table_alias_sql = NULL;
 			private $db_where_sql = NULL;
@@ -390,21 +390,21 @@
 				return $this->db_link;
 			}
 
-			public function db_model_set($model) {
-				$this->db_model = $model;
+			public function db_record_set($record) {
+				$this->db_record = $record;
 			}
 
-			public function db_model_get() {
-				if ($this->db_model === NULL) {
+			public function db_record_get() {
+				if ($this->db_record === NULL) {
 					if ($this->db_table_name_sql !== NULL) {
 
 						if (DB_PREFIX != '' && prefix_match(DB_PREFIX, $this->db_table_name_sql)) {
-							$model_name = substr($this->db_table_name_sql, strlen(DB_PREFIX));
+							$record_name = substr($this->db_table_name_sql, strlen(DB_PREFIX));
 						} else {
-							$model_name = $this->db_table_name_sql;
+							$record_name = $this->db_table_name_sql;
 						}
 
-						$this->db_model = model_get($model_name, array(
+						$this->db_record = record_get($record_name, array(
 								'table_sql' => $this->db_table_name_sql,
 								'table_alias' => $this->db_table_alias_sql,
 								'where_sql' => $this->db_where_sql,
@@ -414,11 +414,11 @@
 
 					} else {
 
-						$this->db_model = false;
+						$this->db_record = false;
 
 					}
 				}
-				return $this->db_model;
+				return $this->db_record;
 			}
 
 			public function db_table_set_sql($table_sql, $alias_sql = NULL) {
@@ -437,9 +437,9 @@
 
 			public function db_field_get($field, $key = NULL) {
 				if ($this->db_fields === NULL) {
-					$model = $this->db_model_get();
-					if ($model) {
-						$this->db_fields = $model->fields_get();
+					$record = $this->db_record_get();
+					if ($record) {
+						$this->db_fields = $record->fields_get();
 					} else {
 						$this->db_fields = false;
 					}
@@ -469,8 +469,8 @@
 				$this->db_save_disabled = true;
 			}
 
-			private function _db_model_fields_set() {
-				if (!$this->db_model_fields_set) {
+			private function _db_record_fields_set() {
+				if (!$this->db_record_fields_set) {
 
 					$fields = array();
 					foreach ($this->fields as $field) {
@@ -480,30 +480,30 @@
 						}
 					}
 					if (count($fields) > 0) {
-						$model = $this->db_model_get();
-						$model->_fields_set($fields);
+						$record = $this->db_record_get();
+						$record->_fields_set($fields);
 					}
 
-					$this->db_model_fields_set = true;
+					$this->db_record_fields_set = true;
 
 				}
 			}
 
 			public function db_select_value_get($field) {
 
-				$model = $this->db_model_get();
+				$record = $this->db_record_get();
 
-				if ($model === false) {
-					exit_with_error('You need to call "db_model_set" or "db_table_set_sql" on the form object');
+				if ($record === false) {
+					exit_with_error('You need to call "db_record_set" or "db_table_set_sql" on the form object');
 				}
 
-				$this->_db_model_fields_set();
+				$this->_db_record_fields_set();
 
-				return $model->value_get($field);
+				return $record->value_get($field);
 
 			}
 
-			public function db_value_set($name, $value) { // TODO: Look at using $model->value_set();
+			public function db_value_set($name, $value) { // TODO: Look at using $record->value_set();
 				$this->db_values[$name] = $value;
 			}
 
@@ -825,17 +825,17 @@
 				//--------------------------------------------------
 				// Model mode
 
-					$model = $this->db_model_get();
+					$record = $this->db_record_get();
 
-					if ($model === false) {
-						exit_with_error('You need to call "db_model_set" or "db_table_set_sql" on the form object');
+					if ($record === false) {
+						exit_with_error('You need to call "db_record_set" or "db_table_set_sql" on the form object');
 					}
 
-					$this->_db_model_fields_set();
+					$this->_db_record_fields_set();
 
 					$values = $this->data_db_get();
 
-					$model->save($values);
+					$record->save($values);
 
 			}
 

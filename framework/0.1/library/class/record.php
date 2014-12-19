@@ -1,6 +1,6 @@
 <?php
 
-	class model_base extends check {
+	class record_base extends check {
 
 		//--------------------------------------------------
 		// Variables
@@ -18,38 +18,31 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($model_name, $config) {
+			public function __construct($config) {
 
-				$this->setup($model_name, array_merge(array(
+				$this->setup(array_merge(array(
 
 						'fields' => NULL,
-						'fields_sql' => NULL,
+						'fields_sql' => NULL, // Currently not available
 
 						'table' => NULL,
 						'table_sql' => NULL,
 						'table_alias' => NULL,
 
-						'where' => NULL,
+						'where' => NULL, // Currently not available
 						'where_id' => NULL,
 						'where_sql' => NULL,
 
-						'group' => NULL,
-						'group_sql' => NULL,
-
-						'order' => NULL,
-						'order_sql' => NULL,
-
-						'limit' => NULL,
-						'limit_sql' => NULL,
-
 						'log_table' => NULL,
 						'log_values' => array(),
+
+						'deleted' => NULL,
 
 					), $config));
 
 			}
 
-			protected function setup($model_name, $config) {
+			protected function setup($config) {
 
 				//--------------------------------------------------
 				// Config
@@ -69,7 +62,7 @@
 
 					} else if ($this->config['where']) {
 
-						exit_with_error('The "where" config is currently not supported on models, use "where_sql"');
+						exit_with_error('The "where" config is currently not supported on records, use "where_sql"');
 
 					}
 
@@ -90,7 +83,7 @@
 
 			}
 
-			public function _fields_set($fields) { // DO NOT USE, only for the form helper till all projects use models.
+			public function _fields_set($fields) { // DO NOT USE, only for the form helper till all projects use records.
 				$this->config['fields'] = $fields;
 			}
 
@@ -113,14 +106,18 @@
 
 			public function where_set_id($id) {
 				$db = db_get();
-				$this->where_set_sql('id = "' . $db->escape($id) . '" AND deleted = "0000-00-00 00:00:00"');
+				if ($this->config['deleted']) {
+					$this->where_set_sql('id = "' . $db->escape($id) . '" AND deleted = deleted');
+				} else {
+					$this->where_set_sql('id = "' . $db->escape($id) . '" AND deleted = "0000-00-00 00:00:00"');
+				}
 			}
 
 			// public function config_set($key, $value) {
 			// 	if (key_exists($key, $this->config)) {
 			// 		$this->config[$key] = $value;
 			// 	} else {
-			// 		exit_with_error('Unknown model config "' . $key . '"');
+			// 		exit_with_error('Unknown record config "' . $key . '"');
 			// 	}
 			// }
 
@@ -128,7 +125,7 @@
 			// 	if (key_exists($key, $this->config)) {
 			// 		return $this->config[$key];
 			// 	} else {
-			// 		exit_with_error('Unknown model config "' . $key . '"');
+			// 		exit_with_error('Unknown record config "' . $key . '"');
 			// 	}
 			// }
 
@@ -146,7 +143,7 @@
 				return $this->fields;
 			}
 
-			public function fetch_field($field) {
+			public function field_get($field) {
 				$fields = $this->fields_get();
 				if (array_key_exists($field, $fields)) { // Local returned value is ever so slightly faster than class properties.
 					return $fields[$field];
@@ -157,28 +154,42 @@
 
 			public function values_get() {
 				if ($this->values === NULL) {
-					if ($this->where_sql !== NULL) {
+					if ($this->where_sql === NULL) {
+
+						$this->values = false; // Lock... where clause not specified in time.
+
+					} else {
 
 						$db = db_get();
 
 						$table_sql = $this->table_sql . ($this->config['table_alias'] === NULL ? '' : ' AS ' . $this->config['table_alias']);
+
+						$fields = $this->config['fields'];
+						if ($this->config['deleted'] && !in_array('deleted', $fields)) {
+							$fields[] = 'deleted';
+						}
 
 						$options = array();
 						if (isset($this->config['group_sql'])) $options['group_sql'] = $this->config['group_sql'];
 						if (isset($this->config['order_sql'])) $options['order_sql'] = $this->config['order_sql'];
 						if (isset($this->config['limit_sql'])) $options['limit_sql'] = $this->config['limit_sql'];
 
-						$result = $db->select($table_sql, $this->config['fields'], $this->where_sql, $options);
+						$result = $db->select($table_sql, $fields, $this->where_sql, $options);
 
 						$this->values = $db->fetch_row($result);
 
 						if ($this->values === NULL) {
-							$this->values = false; // Did not find a row... don't keep trying.
+
+							$this->values = false; // Didn't find a row... and don't keep trying.
+
+						} else if ($this->config['deleted'] && $this->values['deleted'] != '0000-00-00 00:00:00') {
+
+							error_send('deleted', array_merge(array(
+									'record' => (array('config' => $this->config, 'values' => $this->values)),
+									'timestamp' => strtotime($this->values['deleted']),
+								), $this->config['deleted']));
+
 						}
-
-					} else {
-
-						$this->values = false;
 
 					}
 				}
