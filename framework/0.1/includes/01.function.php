@@ -361,10 +361,14 @@
 				break;
 		}
 		uasort($array, array($array_key_sort, $type));
-		if ($sort_order == SORT_DESC) { // Sort type and order cannot be merged (ASC == 4 and NATURAL == 4)
+		if ($sort_order == SORT_DESC) { // Sort type and order cannot be merged
 			$array = array_reverse($array);
 		}
 	}
+
+		if (!defined('SORT_NATURAL')) {
+			define('SORT_NATURAL', 6);
+		}
 
 		class array_key_sort {
 			private $key = NULL;
