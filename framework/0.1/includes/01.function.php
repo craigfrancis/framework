@@ -366,9 +366,8 @@
 		}
 	}
 
-		if (!defined('SORT_NATURAL')) {
-			define('SORT_NATURAL', 6);
-		}
+		if (!defined('SORT_NATURAL')) define('SORT_NATURAL', 6); // Added in PHP 5.4
+		if (!defined('SORT_FLAG_CASE')) define('SORT_FLAG_CASE', 8);
 
 		class array_key_sort {
 			private $key = NULL;
