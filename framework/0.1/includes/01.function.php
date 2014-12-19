@@ -709,21 +709,19 @@
 //--------------------------------------------------
 // Record
 
-	function record_get($table_name, $config = array(), $fields = NULL, $log_values = array()) {
+	function record_get($config = array(), $where_id = NULL, $fields = NULL) {
 
 		if (!is_array($config)) {
 
+			$table_name = DB_PREFIX . $config;
+
 			$config = array(
-					'where_id' => $config,
+					'table' => $table_name,
+					'where_id' => $where_id,
 					'fields' => $fields,
-					'deleted' => array('type' => ref_to_human($table_name)), // Best guess
-					'log_values' => $log_values,
+					'deleted' => array('type' => strtolower(ref_to_human($config))), // Best guess
 				);
 
-		}
-
-		if (!isset($config['table']) && !isset($config['table_sql'])) {
-			$config['table'] = DB_PREFIX . $table_name;
 		}
 
 		return new record($config);

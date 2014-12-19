@@ -398,13 +398,7 @@
 				if ($this->db_record === NULL) {
 					if ($this->db_table_name_sql !== NULL) {
 
-						if (DB_PREFIX != '' && prefix_match(DB_PREFIX, $this->db_table_name_sql)) {
-							$record_name = substr($this->db_table_name_sql, strlen(DB_PREFIX));
-						} else {
-							$record_name = $this->db_table_name_sql;
-						}
-
-						$this->db_record = record_get($record_name, array(
+						$this->db_record = record_get(array(
 								'table_sql' => $this->db_table_name_sql,
 								'table_alias' => $this->db_table_alias_sql,
 								'where_sql' => $this->db_where_sql,

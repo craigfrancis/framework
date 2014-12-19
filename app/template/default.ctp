@@ -70,9 +70,9 @@
 				$setup_nav->link_add('/doc/setup/units/', 'Units');
 				$setup_nav->link_add('/doc/setup/views/', 'Views');
 				$setup_nav->link_add('/doc/setup/templates/', 'Templates');
-				$setup_nav->link_add('/doc/setup/resources/', 'Resources');
 				$setup_nav->link_add('/doc/setup/gateways/', 'Gateways');
 				$setup_nav->link_add('/doc/setup/jobs/', 'Jobs');
+				$setup_nav->link_add('/doc/setup/resources/', 'Resources');
 				$setup_nav->link_add('/doc/setup/favicon/', 'Favicon');
 				$setup_nav->link_add('/doc/setup/robots/', 'Robots (txt)');
 				$setup_nav->link_add('/doc/setup/sitemap/', 'Sitemap (xml)');
@@ -129,6 +129,7 @@
 				$form_nav->link_add('/doc/helpers/form/fields/', 'Fields', array('child' => $form_fields_nav));
 
 				$helpers_nav = new nav();
+				$helpers_nav->link_add('/doc/helpers/record/', 'Record');
 				$helpers_nav->link_add('/doc/helpers/url/', 'URL');
 				$helpers_nav->link_add('/doc/helpers/timestamp/', 'Timestamp');
 				$helpers_nav->link_add('/doc/helpers/form/', 'Form'); // , array('child' => $form_nav)

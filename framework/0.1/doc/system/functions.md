@@ -59,13 +59,17 @@ For other variables, you should probably use the [cookie](../../doc/system/cooki
 		// prefix_match('/prefix/', '/prefix/match/');
 		// true
 
+	prefix_replace($prefix, $string);
+		// prefix_replace('aaa_', 'aaa_bbb');
+		// 'bbb'
+
 	is_email($email);
 		// email.check_domain = true;
 		// is_email('noreply@invalid-domain.com');
 		// false
 
 	path_to_array($path)
-		// path_to_array('/path/to/./folder/');
+		// path_to_array('/path/ignore/../to/./folder/');
 		// [0] => "path"
 		// [1] => "to"
 		// [2] => "folder"

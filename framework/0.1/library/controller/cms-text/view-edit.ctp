@@ -13,7 +13,7 @@
 				<?php foreach ($version_history as $entry) { ?>
 					<li>
 
-						<a href="<?= html($entry['url']) ?>"><?= html(date('D jS M Y, g:ia', strtotime($entry['edited']))) ?></a>
+						<a href="<?= html($entry['url']) ?>"><?= html($entry['edited']->format('D jS M Y, g:ia')) ?></a>
 
 						<?php if (isset($entry['notes'])) { ?>
 

@@ -7,7 +7,7 @@
 		$message = 'This ' . (isset($type) ? $type : 'item');
 
 		if (isset($timestamp)) {
-			$message .= ' was deleted on the ' . date('jS F Y, \a\t g:ia', $timestamp) . '.';
+			$message .= ' was deleted on the ' . $timestamp->format('jS F Y, \a\t g:ia') . '.';
 		} else {
 			$message .= ' has been deleted.';
 		}

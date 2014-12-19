@@ -327,8 +327,8 @@
 
 							$history[$version_name][$row['revision']] = array(
 									'url' => $admin_url,
-									'edited' => $row['created'],
 									'author_id' => $row['author_id'],
+									'edited' => new timestamp($row['created'], 'db'),
 								);
 
 						}
@@ -394,7 +394,7 @@
 							ct.revision = "' . $db->escape($revision) . '"';
 
 				if ($row = $db->fetch_row($sql)) {
-					$text_created = $row['created'];
+					$text_created = new timestamp($row['created'], 'db');
 					$text_content = $row['content'];
 				} else {
 					exit_with_error('Cannot find history content for version "' . $version_name . '", revision "' . $revision . '"');
@@ -414,7 +414,7 @@
 				$field_section->value_set($config['section']);
 
 				$field_created = new form_field_info($form, 'Created');
-				$field_created->value_set(date('D jS M Y, g:ia', strtotime($text_created)));
+				$field_created->value_set($text_created->format('D jS M Y, g:ia'));
 
 				$field_content = new form_field_info($form, 'Content');
 				$field_content->value_set($text_content);
