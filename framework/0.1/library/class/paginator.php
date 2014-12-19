@@ -432,7 +432,7 @@
 
 						$link_html = $this->page_link_get_html(str_pad($start, $this->config['number_pad'], '0', STR_PAD_LEFT), $start);
 
-						$page_links_html[] = '<' . html($this->config['link_wrapper_element']) . ' role="listitem" aria-setsize="' . html($this->page_count) . '" aria-posinset="' . html($start) . '" class="pagination_page pagination_page_' . html($i) . ($c ? ' pagination_current' : '') . '">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
+						$page_links_html[$start] = '<' . html($this->config['link_wrapper_element']) . ' class="pagination_page pagination_page_' . html($i) . ($c ? ' pagination_current' : '') . '" role="listitem" aria-setsize="' . html($this->page_count) . '" aria-posinset="' . html($start) . '">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
 					}
 
