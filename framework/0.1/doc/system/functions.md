@@ -218,7 +218,7 @@ While not really covered on this page, there are a range of useful [debug functi
 # Misc functions
 
 	strip_slashes_deep($array);
-	array_key_sort($array, 'name', 'strcmp');
+	array_key_sort($array, 'name', SORT_STRING, SORT_DESC);
 	is_assoc($array);
 	mb_str_pad();
 	random_key();

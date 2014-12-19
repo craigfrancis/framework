@@ -345,21 +345,31 @@
 	 	return (is_array($value) ? array_map('strip_slashes_deep', $value) : stripslashes($value));
 	}
 
-	function array_key_sort(&$array, $key, $type = 'numerical') { // Sort an array by one of its keys
+	function array_key_sort(&$array, $key, $sort_flags = SORT_STRING, $sort_order = SORT_ASC) { // Sort an array by a key
 		$array_key_sort = new array_key_sort($key);
+		switch ($sort_flags & ~SORT_FLAG_CASE) { // ref https://github.com/php/php-src/blob/master/ext/standard/array.c#L144
+			case SORT_NUMERIC:
+				$type = 'numeric';
+				break;
+			case SORT_NATURAL:
+				$type = ($sort_flags & SORT_FLAG_CASE ? 'strnatcasecmp' : 'strnatcmp');
+				break;
+			case SORT_STRING:
+			case SORT_REGULAR:
+			default:
+				$type = ($sort_flags & SORT_FLAG_CASE ? 'strcasecmp' : 'strcmp');
+				break;
+		}
 		uasort($array, array($array_key_sort, $type));
+		if ($sort_order == SORT_DESC) { // Sort type and order cannot be merged (ASC == 4 and NATURAL == 4)
+			$array = array_reverse($array);
+		}
 	}
 
 		class array_key_sort {
 			private $key = NULL;
 			public function __construct($key) {
 				$this->key = $key;
-			}
-			public function numerical($a, $b) {
-				if ($a[$this->key] == $b[$this->key]) {
-					return 0;
-				}
-				return ($a[$this->key] < $b[$this->key] ? -1 : 1);
 			}
 			public function strcmp($a, $b) { // String comparison
 				return strcmp($a[$this->key], $b[$this->key]);
@@ -372,6 +382,12 @@
 			}
 			public function strnatcasecmp($a, $b) { // Case insensitive string comparisons using a "natural order" algorithm
 				return strnatcasecmp($a[$this->key], $b[$this->key]);
+			}
+			public function numeric($a, $b) {
+				if ($a[$this->key] == $b[$this->key]) {
+					return 0;
+				}
+				return ($a[$this->key] < $b[$this->key] ? -1 : 1);
 			}
 		}
 
