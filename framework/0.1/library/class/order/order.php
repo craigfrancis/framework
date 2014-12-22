@@ -427,8 +427,6 @@
 
 			}
 
-
-
 		//--------------------------------------------------
 		// Items
 
@@ -491,7 +489,7 @@
 
 			}
 
-			public function items_update() {
+			public function items_update() { // Typically used on the basket page
 
 				//--------------------------------------------------
 				// Order not selected
@@ -536,6 +534,36 @@
 
 			}
 
+			public function item_edit($item_id, $values) { // Not advisable... you normally only need item_quantity_set() to edit the quantity, or remove an item.
+
+				//--------------------------------------------------
+				// Order not selected
+
+					if ($this->order_id === NULL) {
+						exit_with_error('An order needs to be selected', 'item_edit');
+					}
+
+				//--------------------------------------------------
+				// Update
+
+					if (isset($values['quantity'])) {
+						$quantity = $values['quantity'];
+						unset($values['quantity']);
+					} else {
+						$quantity = NULL;
+					}
+
+					$changed = $this->_item_quantity_set($item_id, $quantity, $values);
+
+				//--------------------------------------------------
+				// Order update
+
+					if ($changed) {
+						$this->order_update();
+					}
+
+			}
+
 			public function item_quantity_set($item_id, $quantity) {
 
 				//--------------------------------------------------
@@ -559,74 +587,82 @@
 
 			}
 
-			protected function _item_quantity_set($item_id, $quantity) {
+			protected function _item_quantity_set($item_id, $quantity, $info = array()) {
 
 				//--------------------------------------------------
-				// Update
+				// Config
 
 					$db = $this->db_get();
 
 					$now = new timestamp();
 
-					if ($quantity <= 0) {
+				//--------------------------------------------------
+				// Has changed
 
-						//--------------------------------------------------
-						// Simple delete
+					$edit = (($quantity > 0) || ($quantity === NULL && count($info) > 0));
 
-							$db->query('UPDATE
-											' . $db->escape_table($this->db_table_item) . ' AS oi
-										SET
-											oi.deleted = "' . $db->escape($now) . '"
-										WHERE
-											oi.id = "' . $db->escape($item_id) . '" AND
-											oi.order_id = "' . $db->escape($this->order_id) . '" AND
-											oi.type = "item" AND
-											oi.deleted = "0000-00-00 00:00:00"');
+					if ($edit) {
 
-					} else {
+						$sql = 'SELECT
+									*
+								FROM
+									' . $db->escape_table($this->db_table_item) . ' AS oi
+								WHERE
+									oi.id = "' . $db->escape($item_id) . '" AND
+									oi.order_id = "' . $db->escape($this->order_id) . '" AND
+									oi.type = "item" AND
+									oi.deleted = "0000-00-00 00:00:00"';
 
-						//--------------------------------------------------
-						// Deleted backup (with new ID)
+						if ($row = $db->fetch_row($sql)) {
 
-							$sql = 'SELECT
-										*
-									FROM
-										' . $db->escape_table($this->db_table_item) . ' AS oi
-									WHERE
-										oi.id = "' . $db->escape($item_id) . '" AND
-										oi.order_id = "' . $db->escape($this->order_id) . '" AND
-										oi.type = "item" AND
-										oi.deleted = "0000-00-00 00:00:00"';
-
-							if ($row = $db->fetch_row($sql)) {
-
-								if ($row['quantity'] == $quantity) {
-									return false; // No change
-								}
-
-								$row['id'] = '';
-								$row['deleted'] = $now;
-
-								$db->insert($this->db_table_item, $row);
-
-							} else {
-
-								exit_with_error('Cannot find item "' . $item_id . '" in the order "' . $this->order_id . '"');
-
+							if ($quantity === NULL) {
+								$quantity = $row['quantity'];
 							}
 
-						//--------------------------------------------------
-						// Update the quantity
+							if ($quantity == $row['quantity']) {
+								$changed = false;
+								foreach ($info as $field => $value) {
+									if ($row[$field] != $value) {
+										$changed = true;
+										break;
+									}
+								}
+								if (!$changed) {
+									return false; // No change
+								}
+							}
 
-							$db->query('UPDATE
-											' . $db->escape_table($this->db_table_item) . ' AS oi
-										SET
-											oi.quantity = "' . $db->escape($quantity) . '"
-										WHERE
-											oi.id = "' . $db->escape($item_id) . '" AND
-											oi.type = "item" AND
-											oi.order_id = "' . $db->escape($this->order_id) . '" AND
-											oi.deleted = "0000-00-00 00:00:00"');
+						} else {
+
+							exit_with_error('Cannot find item "' . $item_id . '" in the order "' . $this->order_id . '"');
+
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Delete old record
+
+					$where_sql = '
+						id = "' . $db->escape($item_id) . '" AND
+						order_id = "' . $db->escape($this->order_id) . '" AND
+						type = "item" AND
+						deleted = "0000-00-00 00:00:00"';
+
+					$db->update($this->db_table_item, array('deleted' => $now), $where_sql);
+
+				//--------------------------------------------------
+				// New record
+
+					if ($edit) {
+
+						$db->insert($this->db_table_item, array_merge($row, $info, array( // Following values must be merged last, do not trust $info array.
+								'id' => '',
+								'order_id' => $this->order_id,
+								'type' => 'item',
+								'quantity' => $quantity,
+								'created' => $now,
+							)));
 
 					}
 
