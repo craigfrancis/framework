@@ -451,7 +451,7 @@
 						$value = '';
 					}
 
-					$attributes['value'] = $value;
+					$attributes['value'] = strval($value); // Ensure the attribute is still present for NULL values - e.g. for JS query input[value!=""]
 					$attributes['type'] = 'text';
 
 					if ($input_config['size']) {
