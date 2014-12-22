@@ -660,8 +660,7 @@
 								'id' => '',
 								'order_id' => $this->order_id,
 								'type' => 'item',
-								'quantity' => $quantity,
-								'created' => $now,
+								'quantity' => $quantity, // Do not change the 'created' date, as the item order on the review page will change.
 							)));
 
 					}
@@ -720,7 +719,9 @@
 							WHERE
 								oi.order_id = "' . $db->escape($this->order_id) . '" AND
 								oi.type = "item" AND
-								oi.deleted = "0000-00-00 00:00:00"';
+								oi.deleted = "0000-00-00 00:00:00"
+							ORDER BY
+								oi.created';
 
 					foreach ($db->fetch_all($sql) as $row) {
 
