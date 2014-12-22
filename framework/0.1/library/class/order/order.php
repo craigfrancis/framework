@@ -576,7 +576,7 @@
 				//--------------------------------------------------
 				// Update
 
-					$changed = $this->_item_quantity_set($item['id'], $quantity);
+					$changed = $this->_item_quantity_set($item_id, $quantity);
 
 				//--------------------------------------------------
 				// Order update
