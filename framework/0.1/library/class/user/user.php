@@ -206,7 +206,7 @@
 
 			public function require_by_id($user_id) {
 				$result = $this->select_by_id($user_id);
-				if ($result === NULL) {
+				if ($result === false) {
 					exit_with_error('Cannot find user id "' . $user_id . '"');
 				}
 				return $result;
@@ -218,7 +218,7 @@
 					$this->user_id = $user_id;
 					return $user_identification;
 				} else {
-					return NULL;
+					return false; // The identification field value (e.g. email) could be NULL
 				}
 			}
 
