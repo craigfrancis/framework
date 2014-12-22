@@ -7,6 +7,7 @@
 
 			protected $value = NULL;
 			protected $value_html = NULL;
+			protected $label_custom_html = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -60,6 +61,13 @@
 			}
 
 		//--------------------------------------------------
+		// Label
+
+			public function label_set_html($html) {
+				$this->label_custom_html = $html;
+			}
+
+		//--------------------------------------------------
 		// HTML
 
 			public function html_input() {
@@ -74,8 +82,12 @@
 
 			public function html_label($label_html = NULL) {
 				if ($label_html === NULL) {
-					$label_html = parent::html_label();
-					$label_html = preg_replace('/<label[^>]+>(.*)<\/label>/', '$1', $label_html); // Ugly, but better than duplication
+					if ($this->label_custom_html !== NULL) {
+						$label_html = $this->label_custom_html;
+					} else {
+						$label_html = parent::html_label();
+						$label_html = preg_replace('/<label[^>]+>(.*)<\/label>/', '$1', $label_html); // Ugly, but better than duplication
+					}
 				}
 				return $label_html;
 			}
