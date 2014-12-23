@@ -349,11 +349,11 @@
 // Debug run time
 
 	function debug_time_elapsed() {
-		return round((microtime(true) - FRAMEWORK_START), 4);
+		return round((microtime(true) - FRAMEWORK_START), 3);
 	}
 
 	function debug_time_format($time) {
-		return ($time == 0 ? '0.0000' : str_pad($time, 6, '0'));
+		return ($time == 0 ? '0.000' : str_pad($time, 5, '0'));
 	}
 
 //--------------------------------------------------
