@@ -118,6 +118,16 @@
 						}
 						$html .= '</select>';
 
+					} else if ($edit_config['type'] == 'text') {
+
+						$max = $edit_config['max'];
+						if ($quantity > $max) {
+							$max = $quantity;
+						}
+
+						$html  = '<label for="item_quantity_' . html($item['id']) . '">Quantity for ' . html($item['item_name']) . '</label>';
+						$html .= '<input name="item_quantity_' . html($item['id']) . '" id="item_quantity_' . html($item['id']) . '" type="number" min="0" max="' . html($max) . '" step="1" value="' . html($quantity) . '" />';
+
 					} else if ($edit_config['type'] == 'link') {
 
 						$url = $edit_config['url'];
