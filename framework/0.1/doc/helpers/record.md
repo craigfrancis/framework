@@ -112,7 +112,7 @@ Or extend the record class, for every record edited via this helper:
 
 	?>
 
-Then assuming the 'log_table' exists, using a structure such as:
+Then create the 'log_table', such as:
 
 	CREATE TABLE prefix_log (
 			item_id int(11) NOT NULL,
@@ -125,7 +125,7 @@ Then assuming the 'log_table' exists, using a structure such as:
 			KEY item_id (item_id,item_type,field)
 		) ;
 
-Both approaches will insert a record for every field that is changed.
+A record will be added to this table every time a field is changed.
 
 ---
 
