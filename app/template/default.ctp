@@ -129,6 +129,7 @@
 				$form_nav->link_add('/doc/helpers/form/fields/', 'Fields', array('child' => $form_fields_nav));
 
 				$helpers_nav = new nav();
+				$helpers_nav->link_add('/doc/helpers/query/', 'Query');
 				$helpers_nav->link_add('/doc/helpers/record/', 'Record');
 				$helpers_nav->link_add('/doc/helpers/url/', 'URL');
 				$helpers_nav->link_add('/doc/helpers/timestamp/', 'Timestamp');

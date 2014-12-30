@@ -1,7 +1,7 @@
 
 # Record
 
-When dealing with a **single** database record, stored in a table with a structure such as:
+When dealing with a **single** database record, stored in a table such as:
 
 	CREATE TABLE prefix_table_name (
 			id int(11) NOT NULL AUTO_INCREMENT,
@@ -12,13 +12,13 @@ When dealing with a **single** database record, stored in a table with a structu
 			PRIMARY KEY (id)
 		);
 
-Then you can either get the record helper like this:
+The record helper can be loaded with the function call:
 
 	$record = record_get('table_name', $item_id, array(
 			'name',
 		));
 
-Or specify the config as an array:
+Or with a config array:
 
 	$record = record_get(array(
 			'table' => DB_PREFIX . 'table_name',
@@ -33,13 +33,15 @@ Or specify the config as an array:
 			// 	),
 		));
 
-You can then return the values (or field information) with:
+You can then return the record values (or field information) with:
 
 	debug($record->values_get());
 	debug($record->value_get('ref'));
 
 	debug($record->fields_get());
 	debug($record->field_get('ref'));
+
+This setup works really well with the form helper (described below).
 
 ---
 
@@ -49,7 +51,7 @@ The record helper assumes that the table will have a `deleted` DATETIME field.
 
 As NULL represents a missing record, this should default to "0000-00-00 00:00:00".
 
-Then if the deleted field has been set to a particular date/time, the user is shown a 'deleted' page instead - this is done with the `error_send()` function.
+Then if set to a particular date/time, the user is shown a 'deleted' page instead - this is done with the `error_send()` function.
 
 This 'deleted' page can be customised by creating:
 
@@ -136,7 +138,7 @@ It plays well with the [form helper](../../doc/helpers/form.md), such as:
 		$action_edit = ($item_id != 0);
 
 		$record = record_get('table_name', $item_id, array(
-				'name', // Specify all fields the form will use.
+				'name',
 			));
 
 		if ($action_edit) {
