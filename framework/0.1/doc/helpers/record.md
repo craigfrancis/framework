@@ -71,6 +71,7 @@ This 'deleted' page can be customised by creating:
 If you want to record every edit that is made (e.g. for auditing purposes), then you can either specify the table and extra values every time:
 
 	$record = record_get(array(
+			// ...
 			'log_table' => DB_PREFIX . 'log',
 			'log_values' => array(
 					'item_type' => 'record',
