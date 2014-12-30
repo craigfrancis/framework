@@ -732,10 +732,8 @@
 
 		if (!is_array($config)) {
 
-			$table_name = DB_PREFIX . $config;
-
 			$config = array(
-					'table' => $table_name,
+					'table' => DB_PREFIX . $config,
 					'where_id' => $where_id,
 					'fields' => $fields,
 					'deleted' => array('type' => strtolower(ref_to_human($config))), // Best guess
@@ -748,32 +746,28 @@
 	}
 
 //--------------------------------------------------
-// Model
+// Query
 
-	// function model_get($model_name, $config = array()) {
-	//
-	// 	$model_class_name = $model_name . '_model';
-	// 	$model_file_name = safe_file_name(str_replace('_', '-', $model_name));
-	//
-	// 	if (!isset($config['table']) && !isset($config['table_sql'])) {
-	// 		$config['table'] = DB_PREFIX . $model_name;
-	// 	}
-	//
-	// 	$model_file_path = APP_ROOT . '/library/model/' . $model_file_name . '.php';
-	//
-	// 	if (is_file($model_file_path)) {
-	//
-	// 		require_once($model_file_path);
-	//
-	// 		return new $model_class_name($model_name, $config);
-	//
-	// 	} else {
-	//
-	// 		return new model($model_name, $config);
-	//
-	// 	}
-	//
-	// }
+	function query_get($query_name, $config = array()) {
+
+		$query_class_name = $query_name . '_query';
+		$query_file_name = safe_file_name(str_replace('_', '-', $query_name));
+
+		$query_file_path = APP_ROOT . '/library/query/' . $query_file_name . '.php';
+
+		if (is_file($query_file_path)) {
+
+			require_once($query_file_path);
+
+			if (class_exists($query_class_name, false)) { // Do not autoload, it should be in the /library/query/ folder.
+				return new $query_class_name($query_name, $config);
+			}
+
+		}
+
+		exit_with_error('Cannot find the query object "' . $query_class_name . '"', str_replace(ROOT, '', $query_file_path));
+
+	}
 
 //--------------------------------------------------
 // Database
@@ -1073,7 +1067,7 @@
 // Set http response code
 
 	if (!function_exists('http_response_code')) {
-		function http_response_code($code = NULL) {
+		function http_response_code($code = NULL) { // Pre PHP 5.4
 
 			if ($code !== NULL) {
 

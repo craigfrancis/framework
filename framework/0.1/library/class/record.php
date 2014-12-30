@@ -88,6 +88,7 @@
 			}
 
 			// public function where_set($where) {
+			//
 			// 	Could pass in an array...
 			// 		array(
 			// 				'OR' => array(
@@ -96,6 +97,16 @@
 			// 					),
 			// 				'deleted !=' => '0000-00-00 00:00:00' // Why does the key contain more than the field name?
 			// 			);
+			//
+			// If we did do arrays, how would easily show the following
+			// in an easy to write/read way:
+			//
+			// 		((a = "1" OR b > NOW()) OR (a = "2" OR b = "0000-00-00"))
+			//
+			// What about 'deleted = deleted', for those cases where we want
+			// to show we have considered the deleted records, but we still
+			// want to return all records.
+			//
 			// }
 
 			public function where_set_sql($where_sql) { // Can be an array (AND)

@@ -817,7 +817,7 @@
 					}
 
 				//--------------------------------------------------
-				// Model mode
+				// Record get
 
 					$record = $this->db_record_get();
 
@@ -826,6 +826,9 @@
 					}
 
 					$this->_db_record_fields_set();
+
+				//--------------------------------------------------
+				// Record save
 
 					$values = $this->data_db_get();
 

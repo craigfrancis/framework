@@ -1,7 +1,7 @@
 
 # Record
 
-When dealing with a single database record, stored in a table with a structure such as:
+When dealing with a **single** database record, stored in a table with a structure such as:
 
 	CREATE TABLE prefix_table_name (
 			id int(11) NOT NULL AUTO_INCREMENT,
@@ -12,13 +12,13 @@ When dealing with a single database record, stored in a table with a structure s
 			PRIMARY KEY (id)
 		);
 
-Then you can get the record helper like this:
+Then you can either get the record helper like this:
 
 	$record = record_get('table_name', $item_id, array(
 			'name',
 		));
 
-Or perhaps specify the config as an array:
+Or specify the config as an array:
 
 	$record = record_get(array(
 			'table' => DB_PREFIX . 'table_name',
@@ -33,7 +33,7 @@ Or perhaps specify the config as an array:
 			// 	),
 		));
 
-Then return the values, or field information, with:
+You can then return the values (or field information) with:
 
 	debug($record->values_get());
 	debug($record->value_get('ref'));
@@ -47,9 +47,9 @@ Then return the values, or field information, with:
 
 The record helper assumes that the table will have a `deleted` DATETIME field.
 
-As NULL represents a missing record, this should be set to "0000-00-00 00:00:00".
+As NULL represents a missing record, this should default to "0000-00-00 00:00:00".
 
-If the deleted field has been set to a particular date/time, then the user is a 'deleted' page instead - this is done with the `error_send()` function.
+Then if the deleted field has been set to a particular date/time, the user is shown a 'deleted' page instead - this is done with the `error_send()` function.
 
 This 'deleted' page can be customised by creating:
 
