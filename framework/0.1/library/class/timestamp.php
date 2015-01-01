@@ -61,7 +61,7 @@
 			}
 
 			public function _debug_dump() {
-				return $this->format('db');
+				return $this->format('Y-m-d H:i:s e');
 			}
 
 			public function __toString() { // (PHP 5.2)
