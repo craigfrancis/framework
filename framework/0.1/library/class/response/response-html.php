@@ -1477,7 +1477,12 @@
 								}
 
 								if (config::get('output.pkp_report', false) || !$enforced) {
-									$pkp_pins[] = 'report-uri="' . gateway_url('pkp-report') . '"';
+
+									$report_uri = gateway_url('pkp-report');
+									$report_uri->scheme_set('https');
+
+									$pkp_pins[] = 'report-uri="' . $report_uri . '"';
+
 								}
 
 								header($header . ': ' . head(implode('; ', $pkp_pins)));
