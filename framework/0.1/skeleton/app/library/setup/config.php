@@ -115,7 +115,7 @@
 	$config['output.xss_reflected'] = 'block';
 
 	// $config['output.pkp_enforced'] = false;
-	// $config['output.pkp_report'] = false;
+	// $config['output.pkp_report'] = true;
 	// $config['output.pkp_pins'] = array(
 	// 		'pin-sha256="XXX"',
 	// 		'pin-sha256="XXX"',

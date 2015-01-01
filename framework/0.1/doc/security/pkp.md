@@ -27,7 +27,7 @@ Now find the SPKI fingerprint for both your current certificates key, and your n
 Then the following config can be used (remember to substitute the fingerprints):
 
 	$config['output.pkp_enforced'] = false;
-	$config['output.pkp_report'] = false;
+	$config['output.pkp_report'] = true;
 	$config['output.pkp_pins'] = array(
 			'pin-sha256="bRmMf0OkJ8ArV9VPmDsSFeK253UBjMBVo5t8VmdY4Lw="',
 			'pin-sha256="7fPFjIXIMozawdIR/Ue7AjOusulKX6Q+4hqdhazjr9E="',
