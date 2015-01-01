@@ -114,6 +114,15 @@
 	$config['output.framing'] = 'DENY'; // SAMEORIGIN or ALLOW
 	$config['output.xss_reflected'] = 'block';
 
+	// $config['output.pkp_enforced'] = false;
+	// $config['output.pkp_report'] = false;
+	// $config['output.pkp_pins'] = array(
+	// 		'pin-sha256="XXX"',
+	// 		'pin-sha256="XXX"',
+	// 		'max-age=2592000',
+	// 		'includeSubDomains',
+	// 	);
+
 	$config['output.csp_enabled'] = true;
 	$config['output.csp_enforced'] = true;
 	$config['output.csp_directives'] = array(

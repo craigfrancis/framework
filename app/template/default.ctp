@@ -50,6 +50,7 @@
 				$security_nav->link_add('/doc/security/xss/', 'Cross site scripting');
 				$security_nav->link_add('/doc/security/framing/', 'Site framing'); // X-Frame-Options header
 				$security_nav->link_add('/doc/security/transport/', 'Strict transport security');
+				$security_nav->link_add('/doc/security/pkp/', 'Public key pinning');
 				$security_nav->link_add('/doc/security/csp/', 'Content security policy');
 				$security_nav->link_add('/doc/security/logins/', 'Login and passwords'); // Identification/verification, multiple sessions, failed logins, password hashing (slow), lost passwords
 				$security_nav->link_add('/doc/security/files/', 'File uploads'); // Uploading a php file to a public location, or images containing exploits.

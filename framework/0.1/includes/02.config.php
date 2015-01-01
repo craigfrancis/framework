@@ -251,6 +251,9 @@
 		config::set_default('output.page_id', 'route');
 		config::set_default('output.framing', 'DENY');
 		config::set_default('output.xss_reflected', 'block');
+		config::set_default('output.pkp_pins', array());
+		config::set_default('output.pkp_enforced', false);
+		config::set_default('output.pkp_report', false);
 		config::set_default('output.csp_enabled', true);
 		config::set_default('output.csp_enforced', (SERVER == 'stage'));
 		config::set_default('output.csp_report', false);
