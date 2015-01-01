@@ -443,10 +443,15 @@
 
 			if (!$this->link) {
 
-				$name = config::get('db.name');
-				$user = config::get('db.user');
-				$pass = config::get('db.pass');
-				$host = config::get('db.host');
+				$prefix = 'db.';
+				if ($this->connection != 'default') {
+					$prefix .= $this->connection . '.';
+				}
+
+				$name = config::get($prefix . 'name');
+				$user = config::get($prefix . 'user');
+				$pass = config::get($prefix . 'pass');
+				$host = config::get($prefix . 'host');
 
 				if (!function_exists('mysqli_connect')) {
 					$this->_error('PHP does not have MySQLi support - http://www.php.net/mysqli_connect', true);
