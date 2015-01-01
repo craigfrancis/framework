@@ -1480,7 +1480,7 @@
 									$pkp_pins[] = 'report-uri="' . gateway_url('pkp-report') . '"';
 								}
 
-								exit($header . ': ' . head(implode('; ', $pkp_pins)));
+								header($header . ': ' . head(implode('; ', $pkp_pins)));
 
 							}
 
