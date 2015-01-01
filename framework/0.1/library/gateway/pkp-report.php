@@ -16,25 +16,6 @@
 		);
 
 	$data_raw = file_get_contents('php://input');
-
-$data_raw = '{
-    "date-time": "2014-12-26T11:52:10Z",
-    "hostname": "www.example.org",
-    "port": 443,
-    "effective-expiration-date": "2014-12-31T12:59:59",
-    "include-subdomains": true,
-    "served-certificate-chain": [
-        "-----BEGINCERTIFICATE-----\nMIIAuyg[...]tqU0CkVDNx\n-----ENDCERTIFICATE-----"
-    ],
-    "validated-certificate-chain": [
-        "-----BEGINCERTIFICATE-----\nEBDCCygAwIBA[...]PX4WecNx\n-----ENDCERTIFICATE-----"
-    ],
-    "known-pins": [
-        "pin-sha256=\"dUezRu9zOECb901Md727xWltNsj0e6qzGk\"",
-        "pin-sha256=\"E9CqVKB9+xZ9INDbd+2eRQozqbQ2yXLYc\""
-    ]
-}';
-
 	$data_array = json_decode($data_raw, true);
 	$data_match = false;
 
