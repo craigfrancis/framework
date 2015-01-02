@@ -35,9 +35,9 @@
 		//--------------------------------------------------
 		// Output
 
-			public function format($format) {
+			public function format($format, $null_value = NULL) {
 				if ($this->null) {
-					return NULL;
+					return $null_value;
 				} else if ($format == 'db') {
 					$timezone = parent::getTimezone();
 					parent::setTimezone(new DateTimeZone('UTC'));
@@ -52,16 +52,16 @@
 				}
 			}
 
-			public function html($format_text, $format_attribute = 'c') {
+			public function html($format_text, $format_attribute = 'c', $null_html = NULL) {
 				if ($this->null) {
-					return NULL;
+					return $null_html;
 				} else {
 					return '<time datetime="' . html($this->format($format_attribute)) . '">' . html($this->format($format_text)) . '</time>';
 				}
 			}
 
 			public function _debug_dump() {
-				return $this->format('Y-m-d H:i:s e');
+				return $this->format('Y-m-d H:i:s (e)');
 			}
 
 			public function __toString() { // (PHP 5.2)

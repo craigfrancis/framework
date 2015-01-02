@@ -80,14 +80,12 @@ If the timestamp helper is initialised with the values:
 	'0000-00-00'
 	'0000-00-00 00:00:00'
 
-Then it will always return NULL when you call the format() or html() functions.
+Then it will typically return NULL when you call the format() or html() functions, unless you provide a value to use instead:
 
-This might be helpful when a datetime is only recorded on completion:
+	$timestamp = new timestamp('0000-00-00 00:00:00', 'db');
 
-	$compleated = new timestamp($row['compleated'], 'db');
-	$compleated = $compleated->format('l jS F Y, g:ia');
-
-	echo html($compleated ? $compleated : 'N/A');
+	echo $timestamp->format('jS F Y', 'N/A');
+	echo $timestamp->html('jS F Y', 'c', 'N/A');
 
 ---
 

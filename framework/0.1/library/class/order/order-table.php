@@ -227,7 +227,7 @@
 						// Items
 
 							$k = 0;
-
+debug($this->order_items);
 							foreach ($this->order_items as $item) {
 
 								if ($config['show_item_url']) {
