@@ -61,11 +61,19 @@
 			}
 
 			public function _debug_dump() {
-				return $this->format('Y-m-d H:i:s (e)');
+				if ($this->null) {
+					return 'NULL';
+				} else {
+					return $this->format('Y-m-d H:i:s (e)');
+				}
 			}
 
 			public function __toString() { // (PHP 5.2)
-				return $this->format('db');
+				if ($this->null) {
+					return '0000-00-00 00:00:00'; // NULL is for when a record is missing
+				} else {
+					return $this->format('db');
+				}
 			}
 
 		//--------------------------------------------------
