@@ -18,7 +18,15 @@ The timestamp helper is just an extended version of the base PHP [DateTime](http
 
 		Monday 22nd September 2014, 5:43:21pm
 
-So you can modify its value in the same way:
+	debug($now);
+
+		2014-09-22 17:43:21 (Europe/London)
+
+	echo $now; // In UTC, typically for the datababse (see below)
+
+		2014-09-22 16:43:21
+
+You can modify its value as normal:
 
 	$timestamp->modify('+3 days');
 
@@ -26,7 +34,7 @@ So you can modify its value in the same way:
 
 		Thursday 25th September 2014, 5:43:21pm
 
-And you can return a HTML version, with the `<time>` tag:
+And you can return a HTML version, with the HTML5 `<time>` tag:
 
 	debug($timestamp->html('l jS F Y, g:ia'));
 
@@ -44,12 +52,21 @@ Like the PHP object, you can also do:
 
 ## Database usage
 
+When using the value from the database:
+
+	$timestamp = new timestamp($row['field'], 'db');
+
+	echo $timestamp->format('l jS F Y, g:i:sa');
+
+The timestamp helper will parse the UTC value (due to the 'db' timezone), and the formatted output will then use "output.timezone".
+
+---
+
+## Database storage
+
 When storing a 'datetime' value in the database, you can simply use the variable:
 
 	$now = new timestamp();
-
-	debug($now);
-	echo $now;
 
 	$db->insert(DB_PREFIX . 'table', array(
 			'name'    => $name,
@@ -62,13 +79,7 @@ Or you can use the 'db' format:
 
 Both of these methods use the ISO format "YYYY-MM-DD HH:MM:SS" in UTC.
 
-When returning the value from the database, just use:
-
-	$timestamp = new timestamp($row['field'], 'db');
-
-	echo $timestamp->format('l jS F Y, g:i:sa');
-
-The timestamp helper will then parse the UTC value, and output with "output.timezone".
+But if you want to actually store NULL in the database (not "0000-00-00"), then you will need to use the format('db') method.
 
 ---
 
