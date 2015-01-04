@@ -15,7 +15,7 @@
 
 			public function __construct($time = 'now', $timezone = NULL) {
 				if ($time === NULL || $time === '0000-00-00 00:00:00' || $time === '0000-00-00') {
-					$this->null = true;
+					$this->null = ($time === NULL ? true : $time);
 				} else if ($timezone == 'db') {
 					parent::__construct($time, new DateTimeZone('UTC'));
 					parent::setTimezone(new DateTimeZone(config::get('output.timezone')));
@@ -70,7 +70,7 @@
 
 			public function __toString() { // (PHP 5.2)
 				if ($this->null) {
-					return '0000-00-00 00:00:00'; // NULL is for when a record is missing
+					return ($this->null === true ? '0000-00-00 00:00:00' : $this->null); // Cannot return NULL, but try to return the original NULL-ish value (e.g. "0000-00-00")
 				} else {
 					return $this->format('db');
 				}
