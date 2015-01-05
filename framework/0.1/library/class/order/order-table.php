@@ -84,19 +84,10 @@
 			public function item_info_html($item, $item_url) {
 
 				if ($item_url) {
-					$html = '
-							<h3><a href="' . html($item_url) . '">' . html($item['item_name']) . '</a></h3>';
+					return '<a href="' . html($item_url) . '">' . html($item['item_name']) . '</a>';
 				} else {
-					$html = '
-							<h3>' . html($item['item_name']) . '</h3>';
+					return html($item['item_name']);
 				}
-
-				if (isset($item['item_code']) && $item['item_code'] != '') {
-					$html .= '
-						<p>' . html($item['item_code']) . '</p>';
-				}
-
-				return $html;
 
 			}
 
