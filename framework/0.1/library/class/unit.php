@@ -123,7 +123,7 @@
 		//--------------------------------------------------
 		// HTML
 
-			public function html() {
+			public function html($variables = array()) {
 
 				if ($this->view_name !== NULL) {
 					$view_path = substr($this->unit_path, 0, -4) . '-' . safe_file_name($this->view_name) . '.ctp';
@@ -134,11 +134,13 @@
 					}
 				}
 
+				$variables = array_merge($variables, $this->view_variables); // Unit variables take precedence (the view might consider these, but don't allow the calling code to mess with them).
+
 				if ($view_path !== NULL) {
 
 					ob_start();
 
-					script_run($view_path, $this->view_variables);
+					script_run($view_path, $variables);
 
 					$view_html = ob_get_clean();
 
@@ -146,7 +148,7 @@
 
 					$view_html = '';
 
-					foreach ($this->view_variables as $variable => $value) {
+					foreach ($variables as $variable => $value) {
 						if (is_object($value)) {
 							if (method_exists($value, 'html')) {
 								$view_html .= $value->html();
