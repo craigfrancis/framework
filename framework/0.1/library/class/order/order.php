@@ -21,7 +21,6 @@
 			protected $object_payment = 'payment';
 
 			private $db_link = NULL;
-			private $table = NULL;
 			private $form = NULL;
 
 			private $order_items = NULL; // Cache
@@ -120,13 +119,10 @@
 				return $this->db_link;
 			}
 
-			protected function table_get() {
-				if ($this->table === NULL) {
-					$this->table = new $this->object_table();
-					$this->table->order_ref_set($this);
-					$this->table->init();
-				}
-				return $this->table;
+			protected function table_get($config = array()) {
+				$table = new $this->object_table($this, $config);
+				$table->init();
+				return $table;
 			}
 
 			public function form_get() {
@@ -1011,17 +1007,17 @@
 		//--------------------------------------------------
 		// Tables
 
-			public function table_get_html($config = NULL) {
+			public function table_get_html($config = array()) {
 
-				$table = $this->table_get();
+				$table = $this->table_get($config);
 
-				return $table->table_get_html($config);
+				return $table->table_get_html();
 
 			}
 
-			public function table_get_text() {
+			public function table_get_text($config = array()) {
 
-				$table = $this->table_get();
+				$table = $this->table_get($config);
 
 				return $table->table_get_text();
 
@@ -1187,14 +1183,12 @@
 				//--------------------------------------------------
 				// Order table
 
-					$config = array(
+					$table = $this->table_get(array(
 							'email_mode' => true,
-						);
+						));
 
-					$table = $this->table_get();
-
-					$email->template_value_set_text('TABLE', $table->table_get_text($config));
-					$email->template_value_set_html('TABLE', $table->table_get_html($config));
+					$email->template_value_set_text('TABLE', $table->table_get_text());
+					$email->template_value_set_html('TABLE', $table->table_get_html());
 
 				//--------------------------------------------------
 				// Testing
