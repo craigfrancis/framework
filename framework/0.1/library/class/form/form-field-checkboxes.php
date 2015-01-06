@@ -63,11 +63,16 @@
 		// HTML label
 
 			public function html_label($label_html = NULL) {
+
 				if ($label_html === NULL) {
 					$label_html = parent::html_label();
 					$label_html = preg_replace('/<label[^>]+>(.*)<\/label>/', '$1', $label_html); // Ugly, but better than duplication
 				}
-				return $label_html;
+
+				$this->input_described_by[] = ($tag_id = $this->form->_field_tag_id_get()); // For "aria-describedby"
+
+				return '<span id="' . html($tag_id) . '">' . $label_html . '</span>';
+
 			}
 
 			public function html_label_by_value($value, $label_html = NULL) {
