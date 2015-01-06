@@ -567,7 +567,7 @@
 
 			public function html() {
 
-				$info_html = $this->html_info(8); // Sets the info_id, so the input field can include "aria-describedby"
+				$info_html = $this->html_info(8); // Adds to input_described_by, so the input field can include "aria-describedby"
 				$format_html = $this->html_format(8);
 
 				if (method_exists($this, 'html_input_by_key')) {
