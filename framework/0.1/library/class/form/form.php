@@ -30,6 +30,7 @@
 			private $fields = array();
 			private $field_refs = array();
 			private $field_count = 0;
+			private $field_tag_id = 0;
 			private $required_mark_html = NULL;
 			private $required_mark_position = 'left';
 			private $label_suffix_html = ':';
@@ -927,6 +928,10 @@
 				$this->fields[$this->field_count] = $field_obj;
 				$this->print_page_valid = false;
 				return $this->field_count;
+			}
+
+			public function _field_tag_id_get() { // Public for form_field to call
+				return $this->form_id . '_tag_' . ++$this->field_tag_id;
 			}
 
 			public function _field_error_add_html($field_uid, $error_html, $hidden_info = NULL) {

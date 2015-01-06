@@ -25,6 +25,7 @@
 			protected $input_data;
 			protected $input_wrapper_tag;
 			protected $input_wrapper_class;
+			protected $input_described_by;
 			protected $format_class;
 			protected $format_tag;
 			protected $info_html;
@@ -500,6 +501,10 @@
 					$attributes['aria-invalid'] = 'true';
 				}
 
+				if (count($this->input_described_by) > 0) {
+					$attributes['aria-describedby'] = implode(' ', $this->input_described_by);
+				}
+
 				return $attributes;
 
 			}
@@ -555,11 +560,16 @@
 				if ($this->info_html == '') {
 					return '';
 				} else {
-					return ($indent > 0 ? "\n" : '') . str_repeat("\t", $indent) . '<' . html($this->info_tag) . ' class="' . html($this->info_class) . '">' . $this->info_html . '</' . html($this->info_tag) . '>';
+					$this->input_described_by[] = ($tag_id = $this->form->_field_tag_id_get());
+					return ($indent > 0 ? "\n" : '') . str_repeat("\t", $indent) . '<' . html($this->info_tag) . ' class="' . html($this->info_class) . '" id="' . html($tag_id) . '">' . $this->info_html . '</' . html($this->info_tag) . '>';
 				}
 			}
 
 			public function html() {
+
+				$info_html = $this->html_info(8); // Sets the info_id, so the input field can include "aria-describedby"
+				$format_html = $this->html_format(8);
+
 				if (method_exists($this, 'html_input_by_key')) {
 					$html = '
 							<' . html($this->wrapper_tag) . ' class="' . html($this->wrapper_class_get()) . '"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
@@ -571,24 +581,25 @@
 									' . $this->html_label_by_key($key) . $this->html_info_by_key($key) . '
 								</' . html($this->input_wrapper_tag) . '>';
 					}
-					$html .= $this->html_format(8) . $this->html_info(8) . '
+					$html .= $format_html . $info_html . '
 							</' . html($this->wrapper_tag) . '>' . "\n";
 				} else {
 					if ($this->input_first) {
 						$html = '
 							<' . html($this->wrapper_tag) . ' class="' . html($this->wrapper_class_get()) . ' input_first"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
 								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>
-								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . '</' . html($this->label_wrapper_tag) . '>' . $this->html_format(8) . $this->html_info(8) . '
+								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . '</' . html($this->label_wrapper_tag) . '>' . $format_html . $info_html . '
 							</' . html($this->wrapper_tag) . '>' . "\n";
 					} else {
 						$html = '
 							<' . html($this->wrapper_tag) . ' class="' . html($this->wrapper_class_get()) . '"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
 								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . '</' . html($this->label_wrapper_tag) . '>
-								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>' . $this->html_format(8) . $this->html_info(8) . '
+								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>' . $format_html . $info_html . '
 							</' . html($this->wrapper_tag) . '>' . "\n";
 					}
 				}
 				return $html;
+
 			}
 
 		//--------------------------------------------------
