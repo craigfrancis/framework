@@ -52,11 +52,15 @@
 				}
 			}
 
-			public function html($format_text, $format_attribute = 'c', $null_html = NULL) {
+			public function html($format_text, $null_html = NULL) {
 				if ($this->null) {
 					return $null_html;
 				} else {
-					return '<time datetime="' . html($this->format($format_attribute)) . '">' . html($this->format($format_text)) . '</time>';
+					$attribute_value = $this->format('c');
+					if (($pos = strpos($attribute_value, 'T00:00:00')) !== false) {
+						$attribute_value = substr($attribute_value, 0, $pos);
+					}
+					return '<time datetime="' . html($attribute_value) . '">' . html($this->format($format_text)) . '</time>';
 				}
 			}
 

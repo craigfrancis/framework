@@ -96,7 +96,7 @@ Then it will typically return NULL when you call the format() or html() function
 	$timestamp = new timestamp('0000-00-00 00:00:00', 'db');
 
 	echo $timestamp->format('jS F Y', 'N/A');
-	echo $timestamp->html('jS F Y', 'c', 'N/A');
+	echo $timestamp->html('jS F Y', 'N/A');
 
 ---
 
