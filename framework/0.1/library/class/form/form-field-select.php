@@ -368,18 +368,16 @@
 							}
 
 							foreach (array_keys($this->option_groups, $opt_group) as $key) {
-
-								$used_keys[] = $key;
-
 								if (isset($this->option_values[$key])) {
-									$value = $this->option_values[$key];
-								} else {
-									$value = '?';
-								}
 
-								$group_html .= '
+									$used_keys[] = $key;
+
+									$value = $this->option_values[$key];
+
+									$group_html .= '
 											<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
+								}
 							}
 
 							if ($opt_group !== NULL) {
