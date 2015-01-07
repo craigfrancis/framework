@@ -92,7 +92,7 @@
 							if (note.time !== null) {
 								note_time = document.createElement('div');
 								note_time.className = 'note_time';
-								note_time.appendChild(document.createTextNode('Time Elapsed: ' + note.time));
+								note_time.appendChild(document.createTextNode('Time: ' + note.time));
 								note_wrapper.appendChild(note_time);
 							}
 

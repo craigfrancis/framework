@@ -585,6 +585,8 @@
 
 					$query_html = trim(preg_replace('/^[ \t]*(?! |\t|SELECT|UPDATE|DELETE|INSERT|SHOW|FROM|USING|LEFT|SET|WHERE|GROUP|ORDER|LIMIT)/m', '    ', $query_html));
 
+					$select_query = preg_match('/^\W*\(?\W*SELECT.*FROM/is', $query); // Don't debug queries without a table, e.g. SELECT FOUND_ROWS();
+
 				//--------------------------------------------------
 				// Called from
 
@@ -599,7 +601,7 @@
 
 					$explain_html = '';
 
-					if (preg_match('/^\W*\(?\W*SELECT.*FROM/is', $query)) { // Don't debug queries without a table, e.g. SELECT FOUND_ROWS();
+					if ($select_query) {
 
 						$explain_html .= '
 							<table>';
@@ -778,6 +780,12 @@
 					$time_check = round(($time_start - $time_init), 3);
 					$time_query = round((microtime(true) - $time_start), 3);
 
+					if ($select_query) {
+						$results_html = '<div class="note_rows">Rows: ' . html(mysqli_num_rows($result)) . '</div>';
+					} else {
+						$results_html = '';
+					}
+
 					config::set('debug.time_query', (config::get('debug.time_query') + $time_query));
 					config::set('debug.time_check', (config::get('debug.time_check') + $time_check));
 
@@ -794,7 +802,7 @@
 							'colour' => '#CCF',
 							'time' => debug_time_format($time_query),
 							'html' => $html,
-							'extra_html' => $explain_html . $text_html,
+							'extra_html' => $results_html . $explain_html . $text_html,
 						));
 
 				//--------------------------------------------------
@@ -877,7 +885,7 @@
 								$output_text .= trim(html_decode(strip_tags($note['html']))) . "\n\n";
 
 								if ($note['time'] !== NULL) {
-									$output_text .= 'Time Elapsed:  ' . $note['time'] . "\n\n";
+									$output_text .= 'Time:  ' . $note['time'] . "\n\n";
 								}
 
 							}
