@@ -34,7 +34,7 @@
 		SSLEngine on
 		SSLCertificateFile /etc/apache2/ssl/www.example.com.crt
 		SSLCertificateKeyFile /etc/apache2/ssl/www.example.com.key
-		SSLCertificateChainFile /etc/apache2/ssl/intermediate.crt
+		SSLCertificateChainFile /etc/apache2/ssl/www.example.com.chn
 
 		AddDefaultCharset UTF-8
 		AddCharset UTF-8 .css
