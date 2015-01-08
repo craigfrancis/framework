@@ -20,7 +20,7 @@
 
 		# RewriteRule ^/phpMyAdmin/(.*) /opt/server/web_apache/phpMyAdmin/$1 [L]
 
-		RewriteRule ^/a/files/(.*) /www/live/thrive.corporate/files/$1 [S=1]
+		RewriteRule ^/a/files/(.*) /www/live/company.project/files/$1 [S=1]
 		RewriteRule ^(.*)$ %{DOCUMENT_ROOT}$1
 
 		RewriteCond $1/$2 -f

@@ -17,7 +17,7 @@
 
 		RewriteEngine on
 
-		RewriteRule ^/a/files/(.*) /www/live/thrive.corporate/files/$1 [S=1]
+		RewriteRule ^/a/files/(.*) /www/live/craig.framework/files/$1 [S=1]
 		RewriteRule ^(.*)$ %{DOCUMENT_ROOT}$1
 
 		RewriteCond $1/$2 -f
