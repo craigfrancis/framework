@@ -5,8 +5,41 @@
 
 		DocumentRoot /www/live/craig.framework/app/public/
 
+		LogFormat "%h %l %u [%{LOG_INFO}n] [%{%Y-%m-%d %H:%M:%S}t] \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" inc_info
+
 		CustomLog /www/live/craig.framework/logs/access_log inc_info
 		ErrorLog /www/live/craig.framework/logs/error_log
+
+		# Header always set X-Frame-Options: DENY
+		# Header always set X-XSS-Protection: "1; mode=block"
+		Header always set X-Content-Type-Options: nosniff
+		Header always set Strict-Transport-Security: "max-age=31536000; includeSubDomains"
+
+		RewriteEngine on
+
+		RewriteRule ^/a/files/(.*) /www/live/thrive.corporate/files/$1 [S=1]
+		RewriteRule ^(.*)$ %{DOCUMENT_ROOT}$1
+
+		RewriteCond $1/$2 -f
+		RewriteRule ^(.*)/[0-9]+-([^/]+)$ $1/$2 [L]
+
+		RewriteCond %{REQUEST_FILENAME} !^/a/files/
+		RewriteCond %{REQUEST_FILENAME} !-d
+		RewriteCond %{REQUEST_FILENAME} !-f
+		RewriteRule ^(.*)$ %{DOCUMENT_ROOT}/index.php [L]
+
+		AddDefaultCharset UTF-8
+		AddCharset UTF-8 .css
+		AddCharset UTF-8 .js
+
+		ExpiresActive On
+		ExpiresByType image/gif "access plus 12 months"
+		ExpiresByType image/jpeg "access plus 12 months"
+		ExpiresByType image/png "access plus 12 months"
+		ExpiresByType image/x-icon "access plus 12 months"
+		ExpiresByType text/css "access plus 12 months"
+		ExpiresByType application/javascript "access plus 12 months"
+		ExpiresByType application/font-woff "access plus 12 months"
 
 		<IfModule php5_module>
 			php_value newrelic.appname "Craig: Framework"
@@ -21,22 +54,15 @@
 		ServerAlias primeframework.com
 		ServerAlias *.primeframework.com
 
-		RewriteEngine on
-		RewriteRule  ^/(.*)  http://www.phpprime.com/$1  [R=301,L]
+		Redirect 301 / https://www.phpprime.com/
 
 	</VirtualHost>
 
-	<Directory "/www/live/craig.framework/app/public/">
+	<Directory "/www/live/craig.framework/">
 
 		AllowOverride None
 
 		Options -Indexes
-
-		RewriteEngine On
-		RewriteCond %{REQUEST_FILENAME} !^/a/files/
-		RewriteCond %{REQUEST_FILENAME} !-d
-		RewriteCond %{REQUEST_FILENAME} !-f
-		RewriteRule ^(.*)$ /www/live/craig.framework/app/public/index.php [L]
 
 	</Directory>
 
