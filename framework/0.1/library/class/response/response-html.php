@@ -15,6 +15,7 @@
 			private $variables = array();
 			private $units = array();
 
+			private $headers_sent = false;
 			private $head_html = '';
 			private $head_flushed = false;
 			private $foot_html = '';
@@ -356,6 +357,10 @@
 		// CSP
 
 			public function csp_source_add($directive, $sources) {
+
+				if ($this->headers_sent) {
+					exit_with_error('Cannot add to the "' . $directive . '" CSP directive (header already sent).');
+				}
 
 				if (!is_array($sources)) {
 					$sources = array($sources);
@@ -1574,6 +1579,11 @@
 							}
 
 						}
+
+					//--------------------------------------------------
+					// Sent
+
+						$this->headers_sent = true;
 
 				//--------------------------------------------------
 				// Debug
