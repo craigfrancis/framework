@@ -7,6 +7,7 @@
 
 			protected $value_print_cache = NULL;
 			protected $options_disabled = NULL;
+			protected $options_info_id = array();
 			protected $options_info_html = NULL;
 
 		//--------------------------------------------------
@@ -135,7 +136,13 @@
 					return 'Unknown key "' . html($key) . '"';
 				}
 
-				return html_tag('input', $this->_input_by_key_attributes($key));
+				$attributes = $this->_input_by_key_attributes($key);
+
+				if (isset($this->options_info_id[$key])) {
+					$attributes['aria-describedby'] .= ' ' . $this->options_info_id[$key]; // Should already be set, so append is ok.
+				}
+
+				return html_tag('input', $attributes);
 
 			}
 
@@ -166,8 +173,9 @@
 
 			public function html_info_by_key($key) {
 				if (isset($this->options_info_html[$key])) {
+					$this->options_info_id[$key] = ($id = $this->form->_field_tag_id_get());
 					return '
-									<span class="info">' . $this->options_info_html[$key] . '</span>';
+									<span class="info" id="' . html($id) . '">' . $this->options_info_html[$key] . '</span>';
 				} else {
 					return '';
 				}
