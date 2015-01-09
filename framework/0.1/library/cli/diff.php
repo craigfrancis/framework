@@ -94,10 +94,9 @@
 						}
 
 						$b_info_value = $b_field_info[$a_info_name];
-						if (is_array($a_info_value) && is_array($b_info_value)) { // Enum options
-							$a_info_value = '\'' . implode('\', \'', $a_info_value) . '\'';
-							$b_info_value = '\'' . implode('\', \'', $b_info_value) . '\'';
-						}
+
+						if (is_array($a_info_value)) $a_info_value = '\'' . implode('\', \'', $a_info_value) . '\''; // Enum options
+						if (is_array($b_info_value)) $b_info_value = '\'' . implode('\', \'', $b_info_value) . '\'';
 
 						if ($a_info_name == 'default') {
 							if ($a_field_info['type'] == 'datetime') {
