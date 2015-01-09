@@ -261,6 +261,10 @@
 		//--------------------------------------------------
 		// Values
 
+			public function value_set($field, $value) {
+				$this->values_set(array($field => $value));
+			}
+
 			public function values_set($values) {
 
 				//--------------------------------------------------
