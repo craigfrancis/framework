@@ -927,7 +927,7 @@
 		//--------------------------------------------------
 		// Events
 
-			public function payment_received($values) {
+			public function payment_received($values = NULL) {
 
 				//--------------------------------------------------
 				// Details
