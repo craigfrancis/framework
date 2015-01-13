@@ -75,7 +75,10 @@
 					if (SERVER == 'stage') {
 
 						if (isset($config_dst['update'])) {
-							$update = ($config_dst['update'] ? 'true' : 'false');
+							if (!is_array($config_dst['update'])) {
+								$config_dst['update'] = ($config_dst['update'] === true ? array('project', 'framework') : array());
+							}
+							$update = implode(' ', $config_dst['update']);
 						} else {
 							$update = 'false';
 						}

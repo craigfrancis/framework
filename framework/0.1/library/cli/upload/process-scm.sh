@@ -66,7 +66,7 @@
 # Run update
 #--------------------------------------------------
 
-	if [[ "${UPDATE}" == "true" ]]; then
+	if [[ "${UPDATE}" =~ "project" ]]; then
 
 		echo;
 		echo "Update project:";
@@ -76,6 +76,10 @@
 		else
 			remote_cmd "cd ${DST_PATH} && svn update" | awk '{ print "  " $0;}';
 		fi
+
+	fi
+
+	if [[ "${UPDATE}" =~ "framework" ]]; then
 
 		echo;
 		echo "Update framework:";

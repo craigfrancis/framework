@@ -150,7 +150,7 @@
 
 	// $config['upload.demo.source'] = 'git';
 	// $config['upload.demo.location'] = 'demo:/www/demo/company.project';
-	// $config['upload.demo.update'] = false;
+	// $config['upload.demo.update'] = false; // or true, or array('project', 'framework')
 
 	// $config['upload.live.source'] = 'demo';
 	// $config['upload.live.location'] = 'live:/www/live/company.project';
