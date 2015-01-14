@@ -112,6 +112,27 @@
 
 			}
 
+			public function load_from_string($data) {
+
+				$image = imagecreatefromstring($data);
+
+				if ($image) {
+
+					$this->image_ref = $image;
+					$this->image_width = imagesx($image);
+					$this->image_height = imagesy($image);
+					$this->image_type = NULL; // Unknown
+
+					return IMAGE_LOAD_SUCCESS;
+
+				} else {
+
+					return IMAGE_LOAD_ERR_READ;
+
+				}
+
+			}
+
 			private function _load_image($image) {
 
 				//--------------------------------------------------
