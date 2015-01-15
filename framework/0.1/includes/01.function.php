@@ -732,11 +732,14 @@
 
 		if (!is_array($config)) {
 
+			$short_name = prefix_replace(DB_PREFIX, $config);
+			$short_name = strtolower(ref_to_human($short_name)); // Best guess
+
 			$config = array(
 					'table' => $config,
 					'where_id' => $where_id,
 					'fields' => $fields,
-					'deleted' => array('type' => strtolower(ref_to_human($config))), // Best guess
+					'deleted' => array('type' => $short_name),
 				);
 
 		}
