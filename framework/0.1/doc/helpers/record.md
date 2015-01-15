@@ -14,7 +14,7 @@ When dealing with a **single** database record, stored in a table such as:
 
 The record helper can be loaded with the function call:
 
-	$record = record_get('table_name', $item_id, array(
+	$record = record_get(DB_PREFIX . 'table_name', $item_id, array(
 			'name',
 		));
 
@@ -138,7 +138,7 @@ It plays well with the [form helper](../../doc/helpers/form.md), such as:
 
 		$action_edit = ($item_id != 0);
 
-		$record = record_get('table_name', $item_id, array(
+		$record = record_get(DB_PREFIX . 'table_name', $item_id, array(
 				'name',
 			));
 

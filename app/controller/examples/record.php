@@ -11,7 +11,7 @@
 			config::set('debug.show', false);
 			mime_set('text/plain');
 
-			$record = record_get('form_fields', 1, array(
+			$record = record_get(DB_PREFIX . 'form_fields', 1, array(
 					'id',
 					'type_tinyint',
 					'type_smallint',

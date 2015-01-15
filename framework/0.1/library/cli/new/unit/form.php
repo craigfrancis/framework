@@ -17,7 +17,7 @@
 
 				// $db = db_get();
 
-				$record = record_get('item');
+				$record = record_get(DB_PREFIX . 'item');
 
 			//--------------------------------------------------
 			// Form setup

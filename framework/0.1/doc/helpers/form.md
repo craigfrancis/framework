@@ -21,7 +21,7 @@ Site config:
 
 Simple example:
 
-	$record = record_get('table');
+	$record = record_get(DB_PREFIX . 'table');
 
 	$form = new form();
 	$form->form_class_set('basic_form');

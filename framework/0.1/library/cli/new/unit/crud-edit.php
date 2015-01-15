@@ -26,7 +26,7 @@
 
 				$action_edit = ($item_id != 0);
 
-				$record = record_get('item', $item_id, array(
+				$record = record_get(DB_PREFIX . 'item', $item_id, array(
 						'name',
 					));
 

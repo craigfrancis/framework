@@ -733,7 +733,7 @@
 		if (!is_array($config)) {
 
 			$config = array(
-					'table' => DB_PREFIX . $config,
+					'table' => $config,
 					'where_id' => $where_id,
 					'fields' => $fields,
 					'deleted' => array('type' => strtolower(ref_to_human($config))), // Best guess
