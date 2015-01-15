@@ -7,7 +7,7 @@
 
 	<?php } else if ($type_name == 'paginated') { ?>
 
-		<p>Example paginated form, if you don't want to use JavaScript to show/hide panels, or <a href="/doc/system/session/">Sessions</a> to preserve values between pages.</p>
+		<p>Example paginated form, if you don't want to use JavaScript to show/hide panels, or <a href="/doc/helpers/session/">Sessions</a> to preserve values between pages.</p>
 
 		<?= $form->html_start(); ?>
 			<fieldset>

@@ -3,7 +3,7 @@
 
 You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/order/order.php).
 
-Will probably also want to look at the [payment](../../doc/system/payment.md) helper.
+Will probably also want to look at the [payment](../../doc/helpers/payment.md) helper.
 
 	//--------------------------------------------------
 	// Example setup

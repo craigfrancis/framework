@@ -11,7 +11,7 @@ Which is done via the `$config` array, for example:
 
 This allows you to include this file via other systems, without providing the `config` object.
 
-After this file has been processed, you should use the [config helper](../../doc/system/config.md) to set/get values.
+After this file has been processed, you should use the [config helper](../../doc/helpers/config.md) to set/get values.
 
 ---
 

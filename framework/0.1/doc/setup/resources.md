@@ -16,9 +16,9 @@ In the [template](../../doc/setup/templates.md) file itself, the CSS is then add
 
 For reference, please see these other pages which also relate to resources:
 
-* [Favicon](../../doc/setup/favicon.md)
-* [Robots.txt](../../doc/setup/robots.md)
-* [Sitemap.xml](../../doc/setup/sitemap.md)
+* [Favicon](../../doc/setup/resources/favicon.md)
+* [Robots.txt](../../doc/setup/resources/robots.md)
+* [Sitemap.xml](../../doc/setup/resources/sitemap.md)
 
 ---
 

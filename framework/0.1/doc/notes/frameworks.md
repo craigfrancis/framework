@@ -117,9 +117,9 @@ This is where I believe frameworks need to do more by default, for example:
 
 - [CSP](../../doc/security/csp.md) headers.
 - Built in [CSRF](../../doc/security/csrf.md) checks.
-- [Sessions](../../doc/system/session.md) that avoid [fixation](../../doc/security/sessions.md) problems.
+- [Sessions](../../doc/helpers/session.md) that avoid [fixation](../../doc/security/sessions.md) problems.
 - Building a [table](../../doc/helpers/table.md) for HTML and CSV download.
 - Including [CSS files](../../doc/setup/resources.md) based on view path, browser cache handling, and tidy.
 - Adding "inline" [JavaScript](../../doc/setup/resources.md), where the browser actually loads an external file.
 - [Forms](../../doc/helpers/form.md) remembering values when the users session expires.
-- [User accounts](../../doc/system/user.md) with registration, login, profile, and forgotten password support.
+- [User accounts](../../doc/helpers/user.md) with registration, login, profile, and forgotten password support.

@@ -61,22 +61,25 @@
 			//--------------------------------------------------
 			// Setup
 
+				$resources_nav = new nav();
+				$resources_nav->link_add('/doc/setup/resources/favicon/', 'Favicon');
+				$resources_nav->link_add('/doc/setup/resources/robots/', 'Robots (txt)');
+				$resources_nav->link_add('/doc/setup/resources/sitemap/', 'Sitemap (xml)');
+
 				$setup_nav = new nav();
 				$setup_nav->link_add('/doc/setup/structure/', 'Structure');
 				$setup_nav->link_add('/doc/setup/bootstrap/', 'Bootstrap');
 				$setup_nav->link_add('/doc/setup/config/', 'Config');
 				$setup_nav->link_add('/doc/setup/constants/', 'Constants');
 				$setup_nav->link_add('/doc/setup/debug/', 'Debug');
+				$setup_nav->link_add('/doc/setup/routes/', 'Routes');
 				$setup_nav->link_add('/doc/setup/controllers/', 'Controllers');
 				$setup_nav->link_add('/doc/setup/units/', 'Units');
 				$setup_nav->link_add('/doc/setup/views/', 'Views');
 				$setup_nav->link_add('/doc/setup/templates/', 'Templates');
+				$setup_nav->link_add('/doc/setup/resources/', 'Resources', array('child' => $resources_nav));
 				$setup_nav->link_add('/doc/setup/gateways/', 'Gateways');
 				$setup_nav->link_add('/doc/setup/jobs/', 'Jobs');
-				$setup_nav->link_add('/doc/setup/resources/', 'Resources');
-				$setup_nav->link_add('/doc/setup/favicon/', 'Favicon');
-				$setup_nav->link_add('/doc/setup/robots/', 'Robots (txt)');
-				$setup_nav->link_add('/doc/setup/sitemap/', 'Sitemap (xml)');
 				$setup_nav->link_add('/doc/setup/cli/', 'CLI');
 
 				$section_nav->link_add('/doc/setup/', 'Setup', array('child' => $setup_nav));
@@ -85,16 +88,10 @@
 			// System
 
 				$system_nav = new nav();
-				$system_nav->link_add('/doc/system/config/', 'Config');
-				$system_nav->link_add('/doc/system/session/', 'Session');
-				$system_nav->link_add('/doc/system/cookie/', 'Cookie');
 				$system_nav->link_add('/doc/system/response/', 'Response');
 				$system_nav->link_add('/doc/system/functions/', 'Functions');
 				$system_nav->link_add('/doc/system/database/', 'Database');
 				$system_nav->link_add('/doc/system/tester/', 'Tester');
-				$system_nav->link_add('/doc/system/user/', 'User');
-				$system_nav->link_add('/doc/system/order/', 'Order');
-				$system_nav->link_add('/doc/system/payment/', 'Payment');
 
 				$section_nav->link_add('/doc/system/', 'System', array('child' => $system_nav));
 
@@ -130,6 +127,9 @@
 				$form_nav->link_add('/doc/helpers/form/fields/', 'Fields', array('child' => $form_fields_nav));
 
 				$helpers_nav = new nav();
+				$helpers_nav->link_add('/doc/helpers/config/', 'Config');
+				$helpers_nav->link_add('/doc/helpers/session/', 'Session');
+				$helpers_nav->link_add('/doc/helpers/cookie/', 'Cookie');
 				$helpers_nav->link_add('/doc/helpers/query/', 'Query');
 				$helpers_nav->link_add('/doc/helpers/record/', 'Record');
 				$helpers_nav->link_add('/doc/helpers/url/', 'URL');
@@ -138,6 +138,9 @@
 				$helpers_nav->link_add('/doc/helpers/email/', 'Email');
 				$helpers_nav->link_add('/doc/helpers/file/', 'File');
 				$helpers_nav->link_add('/doc/helpers/image/', 'Image');
+				$helpers_nav->link_add('/doc/helpers/user/', 'User');
+				$helpers_nav->link_add('/doc/helpers/order/', 'Order');
+				$helpers_nav->link_add('/doc/helpers/payment/', 'Payment');
 				$helpers_nav->link_add('/doc/helpers/nav/', 'Navigation');
 				$helpers_nav->link_add('/doc/helpers/table/', 'Table');
 				$helpers_nav->link_add('/doc/helpers/paginator/', 'Paginator');

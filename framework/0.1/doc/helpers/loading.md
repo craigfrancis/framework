@@ -25,7 +25,7 @@ Example setup
 
 ## Basic example
 
-This uses the [session helper](../../doc/system/session.md) to store the loading state:
+This uses the [session helper](../../doc/helpers/session.md) to store the loading state:
 
 	// $loading->template_test();
 

@@ -47,4 +47,4 @@ To protect the cookies content, while still readable, it is not easily edited:
 
 	cookie.protect = true
 
-If you need to protect the value properly, then use the [session helper](../../doc/system/session.md).
+If you need to protect the value properly, then use the [session helper](../../doc/helpers/session.md).

@@ -136,7 +136,7 @@ However these files are not exposed to the internet.
 
 This is also where the /private/tmp/ folder exists.
 
-And if your using something like GPG, you will probably want to store the server specific keys in here.
+And if your using something like [GPG](../../doc/helpers/gpg.md), you will probably want to store the server specific keys in here.
 
 ---
 

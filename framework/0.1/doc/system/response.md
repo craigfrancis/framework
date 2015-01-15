@@ -1,6 +1,6 @@
-# Response helper
+# Response object
 
-The response helpers are just a way of collecting all the content that will be sent back to the browser, or whatever made the request.
+The response objects are just a way of collecting all the content that will be sent back to the browser, or whatever made the request.
 
 This is nearly always going to be the **HTML response**, which builds its content using a [view](../../doc/setup/views.md) and [template](../../doc/setup/templates.md).
 
@@ -10,7 +10,7 @@ If you are not responding with some HTML (e.g. an image), then you will probably
 	http_download_file();
 	http_download_content();
 
-However, for completeness, there are **file** and **text** response helpers (see below).
+However, for completeness, there are **file** and **text** response objects (see below).
 
 This is kind of like the [Symfony Response](http://symfony.com/doc/current/components/http_foundation/introduction.html#response).
 
