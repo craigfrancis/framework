@@ -6,6 +6,10 @@
 				'dest_url' => array('type' => 'url'),
 			);
 
+		protected function authenticate($config) {
+			return true;
+		}
+
 		protected function setup($config) {
 
 			//--------------------------------------------------
@@ -79,9 +83,7 @@
 			// Form defaults
 
 				if ($form->initial()) {
-
 					// $field_name->value_set('My name');
-
 				}
 
 			//--------------------------------------------------

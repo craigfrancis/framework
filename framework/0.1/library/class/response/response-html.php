@@ -323,7 +323,7 @@
 						$title_default = '';
 						$title_divide = config::get('output.title_divide');
 
-						foreach (config::get('output.title_folders') as $folder) {
+						foreach (config::get('output.title_folders', array()) as $folder) {
 							if ($folder != '') {
 								if ($k++ > 0) {
 									$title_default .= $title_divide;

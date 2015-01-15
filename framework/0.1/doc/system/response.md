@@ -84,6 +84,11 @@ This will start sending your `<head>` to the browser so it can start downloading
 		}
 	}
 
+Also see:
+
+	output.canonical
+	output.links
+
 ---
 
 ## File Response

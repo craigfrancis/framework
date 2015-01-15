@@ -22,18 +22,23 @@ See the [config setup](../../doc/setup/config.md) for more details.
 
 ---
 
-## CLI mode
+## Request mode
 
-To see if the current script is running in via the command line:
+To see if the current script is running in via the [command line](../../doc/setup/cli.md):
 
 	if (REQUEST_MODE == 'cli') {
+	}
+
+Or is a normal HTTP request (the default):
+
+	if (REQUEST_MODE == 'http') {
 	}
 
 ---
 
 ## Initialise framework only
 
-If you want to include the [bootstrap file](../../doc/setup/bootstrap.md) to get the framework functionality, but without it actually processing a request, try setting:
+If you want to include the [bootstrap file](../../doc/setup/bootstrap.md) to get the framework functionality, but without it actually processing a request, you can set:
 
 	define('FRAMEWORK_INIT_ONLY', true);
 

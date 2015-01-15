@@ -3,74 +3,83 @@
 
 A unit allows you to package up something like a [form](../../doc/helpers/form.md) or [table](../../doc/helpers/form.md) into something that will appear on a webpage (potentially many times).
 
-It usually comprises of the PHP code (as an object), and the HTML that needs to be added to the [response](../../doc/system/response.md).
+It usually comprises of the PHP (in a self contained object), and its own HTML output.
 
-This setup allows you to do your unit testing - perhaps using the [tester helper](../../doc/system/tester.md).
-
-It is possible for a unit to also use units itself. For example you might want a generic search form (e.g. a single text field and submit button), which can be used in other units that list news articles, customers, etc.
+It is possible for a unit to also use units itself. For example you might want a generic search form (e.g. a single text field and submit button), which can be used in other units that list articles, customers, etc.
 
 ---
 
 ## Files
 
-To create a unit, simply add a 'php' and a 'ctp' file to a sub-folder of:
+To create a unit, you can either use the [CLI](../../doc/setup/cli.md):
 
-	/app/unit/
+	./cli --new
+
+Or simply add a 'php' and a 'ctp' file to the appropriate folder:
 
 	/app/unit/search/search-form.php
 	/app/unit/search/search-form.ctp
 
-The 'php' file contains a class of the same name (with underscores and 'unit' suffix), and the 'ctp' file contains the HTML.
+The php file contains a class of the same name (with underscores and 'unit' suffix).
 
-If you are just going to use an object for the HTML output, and it provides a html() method (e.g. the form helper), then the 'ctp' file is optional.
-
-The sub-folders are used to help group files, for example:
-
-	/app/unit/news/
-
-	/app/unit/news/news-admin-index.php
-	/app/unit/news/news-admin-index.ctp
-
-	/app/unit/news/news-admin-edit.php
-	/app/unit/news/news-admin-edit.ctp
+The ctp file contains the HTML, and is optional if you have provided a html() method.
 
 ---
 
-## Setup
+## Example setup
 
-During initialisation of the object, the 'setup' function is used, for example:
+To create a self contained "contact us" form, first create the PHP:
 
-	/app/unit/news/news-admin-index.php
+	/app/unit/contact/contact-form.php
 
-	<?php
+	<?php [SEE EXAMPLE] ?>
 
-		class news_admin_index_unit extends unit {
+And the HTML:
 
-			protected $config = array(
-					'add_url' => array('type' => 'url'),
-				);
+	/app/unit/contact/contact-form.ctp
 
-			protected function setup($config) {
+		<p>Use the form below to contact us:</p>
 
-				$table = new table();
-				$table->no_records_set('No articles found');
+		<?= $form->html(); ?>
 
-				// Add search form, query database, add rows to table, etc
+---
 
-				$this->set('table', $table);
-				$this->set('add_url', $config['add_url']);
+## Example usage
 
-			}
+Any time you need the unit, you can either call:
 
-		}
+	$unit = unit_add('contact_form', array(
+			'dest_url' => url('/contact/thank-you/'),
+		));
 
-	?>
+Where it will be printed automatically if you don't have a related [view file](../../doc/setup/views.md) in /app/view/.
+
+Or you can use the `unit_get()` function instead:
+
+	$unit = unit_get('contact_form', array(
+			'dest_url' => url('/contact/thank-you/'),
+		));
+
+	$response = response_get();
+	$response->set('unit', $unit);
+
+Where it can be printed with:
+
+	<?= $unit->html(); ?>
+
+The reference to the unit also allows you to call custom methods on it, and retrieve variables that have been set, e.g.
+
+	$unit->search_get();
+
+	$name = $unit->get('name');
 
 ---
 
 ## Config
 
-You can add a `$config` array to the unit, which will parse/validate the incoming `$config` array before calling setup();
+The protected $config array allows you to define which configuration variables can be passed in (typically from the controller).
+
+Some other examples include:
 
 	protected $config = array(
 			'id'   => array('type' => 'int'),
@@ -84,24 +93,27 @@ You can add a `$config` array to the unit, which will parse/validate the incomin
 
 Anything which does not have a 'default' value is required.
 
-If a 'type' is specified, it will convert any non NULL values to that type (int/str/url), or throw error if is cannot be converted (url/obj).
+If a 'type' is specified, it will convert any non NULL values to that type (int/str/url), or throw an error if is cannot be converted (url/obj).
 
 ---
 
 ## Authentication
 
-To verify the use of a unit (e.g. only admin can use this unit), then an 'authenticate' method can be added:
+Typically user permissions are checked in the [controller](../../doc/setup/controllers.md).
 
-	protected function authenticate($config) {
-		if (!defined('ADMIN_PAGE') || ADMIN_PAGE !== true) {
+However the authenticate() method allows you to double check this.
+
+By returning false, the unit will simply call [`exit_with_error()`](../../doc/system/functions.md), alerting you to the problem.
+
+It is probably a good idea to setup a default authenticate() method to ensure you always set this:
+
+	/app/library/class/unit.php
+
+	class unit extends unit_base {
+		protected function authenticate($config) {
 			return false;
 		}
-		return true;
 	}
-
-Where you could add this to /app/library/class/unit.php (so all units needs to be on an admin page by default), and the constant can be defined in /controller/admin.php with:
-
-	define('ADMIN_PAGE', (!in_array(request_folder_get(1), array('login', 'logout'))));
 
 ---
 
@@ -109,68 +121,49 @@ Where you could add this to /app/library/class/unit.php (so all units needs to b
 
 You can pass variables to the HTML by calling:
 
-	$this->set('name', 'Craig');
+	$this->set('name', 'value');
 
 Which can be accessed as local variables in the HTML:
 
 	<?= html($name); ?>
 
-These variables are not available to the main view (a unit should be self contained).
+These variables are not available to the main [view file](../../doc/setup/views.md) (a unit should be self contained).
 
-But if you need to pass things to the response (e.g. javascript), you can still call:
-
-	$response = response_get();
-
----
-
-## Controller usage
-
-In the controller you typically just call:
-
-	unit_add('contact_form', $config);
-
-Which is just a shortcut for:
+But if you need to access the [response object](../../doc/system/response.md), you can still call:
 
 	$response = response_get();
-	$response->unit_add('contact_form', $config);
 
-The `$config` variable is optional, but allows you to pass in an an array to configure the unit. For example:
-
-	unit_add('news_admin_edit', array(
-			'id' => $article_id,
-			'delete_url' => url('/admin/news/delete/', array('id' => $article_id)),
-		));
+	$response->js_add('/path/to/file.js');
+	$response->set('name', 'value');
 
 ---
 
 ## Sub-unit usage
 
-If you have a unit that in turn needs to use another unit (e.g. a table starting with a search form), then call:
+If you have a unit that in turn needs to use another unit (e.g. a table starting with a search form), then you don't need to do anything different:
 
 	$search_form = unit_get('search_form');
 
-This will return the unit object, and allow you to call methods on it:
+This will still return the unit object, and allow you to call methods on it:
 
 	$search_form->get('search');
-	$search_form->value_get(); // Custom method
+	$search_form->search_text_get(); // Custom method
 
-You can then pass it to the current units HTML:
+And like any other variable, it can be sent to the ctp file with:
 
 	$this->set('search_form', $search_form);
 
-Then if your using a "ctp" file, print its HTML with:
+And printed with:
 
 	<?= $search_form->html(); ?>
 
 ---
 
-## Multiple view files
+## Multiple ctp files
 
-If the unit will show multiple (separate) views, you can use:
+If the unit has many different types of output (HTML), rather than using one large ctp file, you can specify alternatives with:
 
-	$this->view_name_set('name');
-
-This allows you to do something like:
+	/app/unit/example/example.php
 
 	class example_unit extends unit {
 
@@ -180,30 +173,6 @@ This allows you to do something like:
 
 	}
 
+Which will then use the ctp file:
+
 	/app/unit/example/example-a.ctp
-
----
-
-## Example
-
-To create a self contained "contact us" form, first create the object:
-
-	/app/unit/contact/contact-form.php
-
-	<?php [SEE EXAMPLE] ?>
-
-Add the HTML:
-
-	/app/unit/contact/contact-form.ctp
-
-		<p>Use the form below to contact us:</p>
-
-		<?= $form->html(); ?>
-
-Then any time you need it, call the following in the controller:
-
-	unit_add('contact_form');
-
-And if your using a view, print it with:
-
-	<?= $contact_form->html(); ?>
