@@ -79,9 +79,17 @@ Which controllers were loaded, and how they were used, is listed in the [debug i
 
 ## Route method
 
-A controller can control the routing of the request.
+A controller can control the routing of the request by returning an array:
 
-So for example, the admin controller may use:
+	class example_controller extends controller {
+
+		public function route() {
+			// TBC
+		}
+
+	}
+
+Or you can use this method to perform authentication checks, e.g.
 
 	class admin_controller extends controller {
 
