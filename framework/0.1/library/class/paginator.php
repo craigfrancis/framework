@@ -68,7 +68,7 @@
 					if ($this->config['item_count'] !== NULL) {
 						$this->item_count_update();
 					} else {
-						$this->page_number = intval(request($this->config['variable'])); // Assume valid, for limit_get_sql()
+						$this->page_number = intval(request($this->config['variable'])); // Assume the requested page number is valid, to be used later with limit_get_sql()
 						if ($this->page_number < 1) {
 							$this->page_number = 1;
 						}
@@ -118,32 +118,43 @@
 				//--------------------------------------------------
 				// Page number
 
-					$page_number = intval(request($this->config['variable']));
-					$page_rel = request($this->config['variable'] . '_rel');
+					$page_number = request($this->config['variable']);
 
-					if ($this->config['mode'] == 'form' && $page_rel !== NULL) {
+					if ($page_number == 'last') {
+						$page_number = $this->page_count;
+					} else {
+						$page_number = intval($page_number);
+					}
 
-						$page_relative = html($page_rel);
+					if ($this->config['mode'] == 'form') {
 
-						if ($page_relative == $this->config['first_html']) {
+						$page_relative = request($this->config['variable'] . '_rel');
 
-							$page_number = 1;
+						if ($page_relative !== NULL) {
 
-						} else if ($page_relative == $this->config['last_html']) {
+							$page_relative_html = html($page_relative);
 
-							$page_number = $this->page_count;
+							if ($page_relative_html == $this->config['first_html']) {
 
-						} else if ($page_relative == $this->config['back_html']) {
+								$page_number = 1;
 
-							$page_number -= 1;
+							} else if ($page_relative_html == $this->config['last_html']) {
 
-						} else if ($page_relative == $this->config['next_html']) {
+								$page_number = $this->page_count;
 
-							$page_number += 1;
+							} else if ($page_relative_html == $this->config['back_html']) {
 
-						} else {
+								$page_number -= 1;
 
-							$page_number = $page_relative;
+							} else if ($page_relative_html == $this->config['next_html']) {
+
+								$page_number += 1;
+
+							} else {
+
+								$page_number = $page_relative_html;
+
+							}
 
 						}
 
