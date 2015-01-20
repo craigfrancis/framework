@@ -53,7 +53,7 @@ And if you need to close a session (typically PHP does this for you, but you may
 
 	session::close();
 
-And if your done with the session, and want to delete all its values:
+And if you are done with the session, and want to delete all its values:
 
 	session::destroy();
 

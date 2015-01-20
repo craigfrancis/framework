@@ -36,10 +36,10 @@ Or with a config array:
 You can then return the record values (or field information) with:
 
 	debug($record->values_get());
-	debug($record->value_get('ref'));
+	debug($record->value_get('name'));
 
 	debug($record->fields_get());
-	debug($record->field_get('ref'));
+	debug($record->field_get('name'));
 
 This setup works really well with the form helper (described below).
 
@@ -51,7 +51,7 @@ The record helper assumes that the table will have a `deleted` DATETIME field.
 
 As NULL represent a missing record, this should default to "0000-00-00 00:00:00".
 
-Then if set to a particular date/time, the user is shown a 'deleted' page instead - this is done with the `error_send()` function.
+Then if set to a particular date/time, the user is automatically shown a 'deleted' page instead - this is done with the `error_send()` function.
 
 This 'deleted' page can be customised by creating:
 

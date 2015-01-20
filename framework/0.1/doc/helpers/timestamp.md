@@ -10,6 +10,7 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 The timestamp helper is just an extended version of the base PHP [DateTime](http://php.net/datetime) object:
 
 	$timestamp = new timestamp('2014W04-2');
+	$timestamp = new timestamp('2014-09-22 17:43:21', 'db');
 	$timestamp = new timestamp('2014-09-22 17:43:21', 'Europe/London');
 	$timestamp = new timestamp();
 	$timestamp = new timestamp(time());
@@ -52,7 +53,7 @@ Like the PHP object, you can also do:
 
 ## Database usage
 
-When using the value from the database:
+When using a value from the database:
 
 	$timestamp = new timestamp($row['field'], 'db');
 
@@ -104,7 +105,8 @@ Then it will typically return NULL when you call the format() or html() function
 
 	output.timezone
 
-		The timezone to format the dates (e.g. "Europe/London")
+		The timezone to format the dates (e.g. "Europe/London"),
+		Defaults to the PHP date_default_timezone_get() function.
 
 ---
 
@@ -139,7 +141,7 @@ For example:
 
 		Monday 29th September 2014
 
-	$end = new timestamp('2014-10-07'); // or just '2014-10-07'
+	$end = new timestamp('2014-10-07'); // or just the string '2014-10-07'
 
 	debug($timestamp->business_days_diff($end));
 

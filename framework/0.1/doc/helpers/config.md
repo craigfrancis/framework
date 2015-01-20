@@ -61,4 +61,4 @@ While rarely used, as a config variable may be an array, there are a few functio
 	debug(config::array_get('name', 'key', 'default'));
 	debug(config::get('name'));
 
-But its probably best to use a local variable, and do a single `set()` at the end.
+But it is probably best to use a local variable, and do a single `set()` at the end.

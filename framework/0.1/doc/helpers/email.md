@@ -34,7 +34,7 @@ If you want all emails to be re-directed to a different address (good for testin
 
 	$config['email.testing'] = 'admin@example.com';
 
-And while not strictly related, when you call the [is_email](../../doc/system/functions.md)() function, the domain is checked by default. This can be changed with:
+And while not strictly related, if you call the [is_email](../../doc/system/functions.md)() function, the domain is checked by default. This can be changed with:
 
 	$config['email.check_domain'] = false;
 
@@ -96,7 +96,7 @@ Example with table of values and attachment:
 	$email->attachment_add($path, $mime);
 	$email->attachment_add($path, $mime, $name);
 
-And if your using the [form helper](../../doc/helpers/form.md), you can pass an uploaded file via:
+And if you are using the [form helper](../../doc/helpers/form.md), you can pass an uploaded file via:
 
 	$email->attachment_file_add($field);
 

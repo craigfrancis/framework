@@ -23,7 +23,7 @@ This should be considered private, and involves you typing in some random keys:
 
 The intention of this constant is simply for encrypting information.
 
-Its also used to ensure sessions are valid for this websites... so avoiding session fixation, and sessions being created on other websites hosted on the same box ([notes](http://www.sitepoint.com/notes-on-php-session-security/)).
+It's also used to ensure sessions are valid for this websites... so avoiding session fixation, and sessions being created on other websites hosted on the same box ([notes](http://www.sitepoint.com/notes-on-php-session-security/)).
 
 ---
 
@@ -59,7 +59,7 @@ And the default is to assume we are running on **live**.
 
 With the configuration setup like this, you can do different things in the different environments.
 
-For example, its a good place to setup the [database connection](../../doc/system/database.md) details.
+For example, it's a good place to setup the [database connection](../../doc/system/database.md) details.
 
 If your using the [email helper](../../doc/helpers/email.md), it might be worth setting the following on **stage**:
 

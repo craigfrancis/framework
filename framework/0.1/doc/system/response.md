@@ -71,7 +71,7 @@ But if you have an error, you can use the global [error_send](../../doc/system/f
 	$response->error_send($ref);
 	exit();
 
-And if your pushing the performance side of page loading, it is possible add the following to your controller:
+And if you are pushing the performance side of page loading, it is possible add the following to your controller:
 
 	$response->head_flush();
 	sleep(1); // Testing

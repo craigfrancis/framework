@@ -149,11 +149,11 @@ To delete a folder and its contents:
 
 To work with versioned files (see [resource versioning](../../doc/setup/resources.md)).
 
-	timestamp_url($path);
+	$file_url = timestamp_url('/a/img/logo.png');
 
 Create a temporary folder in /private/tmp/xxx/:
 
-	tmp_folder('xxx');
+	$folder_path = tmp_folder('xxx');
 
 ---
 
@@ -221,5 +221,5 @@ While not really covered on this page, there are a range of useful [debug functi
 	array_key_sort($array, 'name', SORT_STRING, SORT_DESC);
 	is_assoc($array);
 	mb_str_pad();
-	random_key();
-	random_bytes();
+	random_key($length); // base 58 string, e.g. good for URL's
+	random_bytes($length);

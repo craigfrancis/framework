@@ -2,7 +2,7 @@ The main security problem with all websites is how [strings of characters](../do
 
 Once you have a good understanding of [strings](../doc/security/strings.md), then you can cover some of the finer points of web security:
 
-* [Strings](../doc/security/strings.md) - yes, its really important.
+* [Strings](../doc/security/strings.md) - yes, it is really important.
 * [Cross site request forgery](../doc/security/csrf.md) - aka CSRF.
 * [Cross site scripting](../doc/security/xss.md) - aka XSS.
 * [Site framing](../doc/security/framing.md) - used in click jacking.

@@ -58,3 +58,5 @@ The available methods include:
 - exact
 - regexp
 - preg
+
+You might want to try using the 'url.prefix' config variable for the [url helper](../../doc/helpers/url.md).

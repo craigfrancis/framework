@@ -2,12 +2,25 @@
 
 You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/nearest/nearest.php).
 
-	$nearest = new nearest('profile');
+To initialise with a profile:
+
+	$nearest = new nearest('users');
+
+Or to create with a config array:
 
 	$nearest = new nearest(array(
-			'table_sql' => 'stores',
 			'max_results' => 10,
 		));
+
+---
+
+## Usage
+
+To then find the records closest to a particular location, just call:
+
+	$results = $nearest->locations_nearest($postcode);
+
+By default this will use the Google Geocode service.
 
 ---
 
@@ -19,8 +32,8 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 	$config['nearest.users.field_latitude_sql'] = 'location_latitude';
 	$config['nearest.users.field_longitude_sql'] = 'location_longitude';
 	$config['nearest.users.extra_fields_sql'] = array();
-	$config['nearest.users.max_results'] = 0;
-	$config['nearest.users.max_km'] = 0;
+	$config['nearest.users.max_results'] = 10;
+	$config['nearest.users.max_km'] = 0; // Unlimited
 
 	$config['nearest.gm_key'] = 'XXX';
 		// https://code.google.com/apis/console/
@@ -32,4 +45,6 @@ To initialise the lat/long values for a table with only a postcode field:
 	$nearest = new nearest('users');
 	$nearest->update_init(30);
 
-This could go in as a temporary [gateway script](../../doc/setup/gateways.md), and will process 30 users at a time.
+Note that this will only update 30 records at a time, as the external API will probably be rate limited.
+
+This could go in as a temporary [maintenance job](../../doc/setup/jobs.md), to be removed when all records have been updated.

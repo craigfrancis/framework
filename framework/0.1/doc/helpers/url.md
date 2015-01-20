@@ -89,7 +89,7 @@ Likewise the different component parts can be set/retrieved with:
 
 		Prefixed onto any absolute urls, for example:
 
-			config::set('url.prefix', '/website');
-			echo url('/contact/');
+			config::set('url.prefix', '/en');
+			echo url('/about/');
 
-				/website/contact/
+				/en/about/
