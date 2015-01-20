@@ -58,14 +58,7 @@
 
 	}
 
-	function exit_with_error($message, $hidden_info = NULL) {
-
-		//--------------------------------------------------
-		// Clear output buffer
-
-			while (ob_get_level() > 0) {
-				ob_end_clean();
-			}
+	function exit_with_error($message, $hidden_info = '') {
 
 		//--------------------------------------------------
 		// Called from
@@ -73,9 +66,7 @@
 			foreach (debug_backtrace() as $called_from) {
 				if (isset($called_from['file']) && !prefix_match(FRAMEWORK_ROOT, $called_from['file'])) {
 
-					if ($hidden_info === NULL) {
-						$hidden_info = '';
-					} else {
+					if ($hidden_info != '') {
 						$hidden_info .= "\n\n";
 					}
 
@@ -87,11 +78,27 @@
 			}
 
 		//--------------------------------------------------
+		// Clear output buffer
+
+			$output = '';
+
+			while (ob_get_level() > 0) {
+				$output = ob_get_clean() . $output;
+			}
+
+			if ($output != '') {
+				if ($hidden_info != '') {
+					$hidden_info .= "\n\n";
+				}
+				$hidden_info .= $output;
+			}
+
+		//--------------------------------------------------
 		// Report the error
 
 			$error_report = $message;
 
-			if ($hidden_info !== NULL) {
+			if ($hidden_info != '') {
 				$error_report .= "\n\n--------------------------------------------------\n\n";
 				$error_report .= $hidden_info;
 			}
@@ -111,7 +118,7 @@
 		// Tell the user
 
 			if ($contact_email != '' || config::get('debug.level') == 0) {
-				$hidden_info = NULL; // If there is an email address, don't show the hidden info (e.g. on live).
+				$hidden_info = ''; // If there is an email address, don't show the hidden info (e.g. on live).
 			}
 
 			if (php_sapi_name() == 'cli' || config::get('output.mime') == 'text/plain') {
@@ -120,7 +127,7 @@
 				echo 'System Error:' . "\n\n";
 				echo $message . "\n\n";
 
-				if ($hidden_info !== NULL) {
+				if ($hidden_info != '') {
 					echo $hidden_info . "\n\n";
 				}
 
@@ -164,7 +171,7 @@
 							<h1>System Error</h1>
 							<p>' . nl2br(html($message)) . '</p>';
 
-					if ($hidden_info !== NULL) {
+					if ($hidden_info != '') {
 						echo '
 							<hr />
 							<div>' . nl2br(html($hidden_info)) . '</div>'; // Don't use <pre>, SQL can have very long lines.
