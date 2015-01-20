@@ -103,7 +103,7 @@ Typically user permissions are checked in the [controller](../../doc/setup/contr
 
 However the authenticate() method allows you to double check this.
 
-By returning false, the unit will simply call [`exit_with_error()`](../../doc/system/functions.md), alerting you to the problem.
+By returning false, the unit will simply call [`exit_with_error`](../../doc/system/functions.md)(), alerting you to the problem.
 
 It is probably a good idea to setup a default authenticate() method to ensure you always set this:
 

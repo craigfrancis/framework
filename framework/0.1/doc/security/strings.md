@@ -1,12 +1,10 @@
 # Strings overview
 
-The great thing about **strings** is that they are very simple, as they are just a set of characters. This makes them a fantastic way to transfer data from one system to another.
+The great thing about **strings** is that they are very simple (just a set of characters). This makes them a fantastic way to transfer data from one system to another.
 
-Now when we have a customers name, it's seen by the computer as a **string** of characters.
+But depending on what we're doing with these **strings**, they will probably need to be processed (aka escaped) in some way. So that whatever receives them, won't misunderstand what they mean.
 
-But depending on what we're doing with these **strings**, they will probably need to be processed in some way, so that whatever receives them, won't misunderstand what they mean.
-
-For example, the apostrophe (or the single quote character) in "O'briain", if that was sent to a database via SQL, it could be seen as the special character which says that the name has finished, and what happens afterwards is code to be executed.
+As an example, take the apostrophe (or the single quote character) in "O'briain". If that was sent to a database via SQL, it could be seen as the special character which says that the name has finished:
 
 	UPDATE
 		users
@@ -31,7 +29,7 @@ And it's this handling of **strings** which EVERY programmer needs to understand
 
 ---
 
-# Naming conventions
+## Naming conventions
 
 I personally believe that with an understanding of the above issues, and how you should escape variables, a simple naming convention will resolve most issues.
 
@@ -45,7 +43,7 @@ For example, how about a search term that needs to be passed to the download pag
 
 	echo $download_html;
 
-Now this is an example that doesn't use any [helpers](../../doc/helpers.md), to show how it can work in any PHP code.
+Now this example does not use any [helpers](../../doc/helpers.md), to show how it can work with any PHP code.
 
 So to help track how the values are being escaped, we can use these suffixes for variables and function names:
 

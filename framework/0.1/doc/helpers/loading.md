@@ -5,7 +5,9 @@ To see some how the loading helper can be used, look at the [example](/examples/
 
 You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/loading.php).
 
-Example setup
+---
+
+## Example setup
 
 	$loading = new loading();
 

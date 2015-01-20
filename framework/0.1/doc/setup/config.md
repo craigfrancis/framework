@@ -29,7 +29,7 @@ It's also used to ensure sessions are valid for this websites... so avoiding ses
 
 ## Servers
 
-In your config.php file, you will probably want to set the 'SERVER' constant. This will allow your scripts to determine if they are running on a development server (stage), demo or live.
+In your config.php file, you should set the 'SERVER' constant. This will allow your scripts to determine if they are running on a development server (stage), demo or live.
 
 There are many ways to detect which server your running on, but my preferred method is to use the path:
 
@@ -47,22 +47,38 @@ There are many ways to detect which server your running on, but my preferred met
 
 	}
 
-You will notice the first one uses a simple regexp... as on OSX most developers end up running it in the /Library/ folder, or on a second (case-sensitive) volume.
+Detection for **stage** is a simple regexp (as most OSX developers either use the /Library/ folder, or a case-sensitive volume). Then **demo** uses the [prefix_match](../../doc/system/functions.md)() function, and the default is to assume we are running on **live**.
 
-The second one uses the [prefix_match](../../doc/system/functions.md)() function for **demo**.
+This allows you to setup the [database connection](../../doc/system/database.md) details (probably different).
 
-And the default is to assume we are running on **live**.
-
----
-
-## Server differences
-
-With the configuration setup like this, you can do different things in the different environments.
-
-For example, it's a good place to setup the [database connection](../../doc/system/database.md) details.
-
-If your using the [email helper](../../doc/helpers/email.md), it might be worth setting the following on **stage**:
+And if you are using the [email helper](../../doc/helpers/email.md), it might be worth setting the following on **stage**:
 
 	$config['email.testing'] = 'admin@example.com';
 
-And when you are on **stage**, [development mode](../../doc/setup/debug.md) is enabled by default.
+It should also be noted that on **stage**, [development mode](../../doc/setup/debug.md) is enabled by default.
+
+---
+
+## Output
+
+Hopefully most of these are self explanatory, and shown in the [development mode](../../doc/setup/debug.md) notes.
+
+Some special cases though:
+
+- **`output.protocols`**: Ideally set to array('https') on live (for only https connections).
+
+- **`output.mime`**: Set to "application/xhtml+xml" on **stage**, to ensure good markup.
+
+- **`output.framing`**: For basic [Framing protection](../../doc/security/framing.md).
+
+- **`output.xss_reflected`**: For basic [XSS protection](../../doc/security/xss.md).
+
+- **`output.pkp_*`**: For [PKP setup](../../doc/security/pkp.md).
+
+- **`output.csp_*`**: For [CSP setup](../../doc/security/csp.md).
+
+- **`output.js_*`**: For [JavaScript setup](../../doc/setup/resources.md).
+
+- **`output.css_*`**: For [CSS setup](../../doc/setup/resources.md).
+
+- **`output.timestamp_url`**: For [resource](../../doc/setup/resources.md) and [file](../../doc/helpers/file.md) URLs to include a timestamp.

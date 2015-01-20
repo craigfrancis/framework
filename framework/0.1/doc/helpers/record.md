@@ -1,5 +1,5 @@
 
-# Record
+# Record helper
 
 When dealing with a **single** database record, stored in a table such as:
 

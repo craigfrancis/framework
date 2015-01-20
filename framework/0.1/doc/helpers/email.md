@@ -1,7 +1,7 @@
 
 # Email helper
 
-While the PHP provided [mail](http://www.php.net/mail)() function works well for a quick email, it quickly becomes more of an issue when sending multi-part mime mail (e.g. HTML and Text). This helper tries to make it a bit easier, while still using the [mail](http://www.php.net/mail)() function.
+While the PHP provided [mail](https://php.net/mail)() function works well for a quick email, it quickly becomes more of an issue when sending multi-part mime mail (e.g. HTML and Text). This helper tries to make it a bit easier, while still using the [mail](https://php.net/mail)() function.
 
 For example:
 

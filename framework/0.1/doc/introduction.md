@@ -25,8 +25,6 @@ Instead code is broken down into multiple components:
 
 # Next steps
 
-From here I urge you to at least scan over the notes on [security](../doc/security.md), which applies to all websites/frameworks.
+At least scan over the notes on [security](../doc/security.md), which applies to all websites/frameworks.
 
-You will also notice that when you are in [development mode](../doc/setup/debug.md), not only do you get the helper notes, the page loads with the XML header to ensure your HTML remains strict, and the [CSP header](../doc/security/csp.md) is enabled and enforced.
-
-Now you're free to [start using the framework](../doc/setup.md).
+Then [setup](../doc/setup.md) your project.

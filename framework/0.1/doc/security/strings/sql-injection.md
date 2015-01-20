@@ -1,5 +1,5 @@
 
-# Introduction
+# SQL Injection
 
 Before continuing with this page, you need to understand SQL to the point that the following makes sense:
 
@@ -77,7 +77,7 @@ To get around this problem for MySQL you basically add a backslash to escape the
 	WHERE
 		`id` = "0\" UNION SELECT username, password FROM admin; --"
 
-An automated feature that was attempted with [magic quotes](http://www.php.net/magic_quotes) before PHP 5.4, but has fortunately now been removed (it caused more problems than it solved).
+An automated feature that was attempted with [magic quotes](https://php.net/magic_quotes) before PHP 5.4, but has fortunately now been removed (it caused more problems than it solved).
 
 Below we can discuss a few different options.
 
@@ -85,7 +85,7 @@ Below we can discuss a few different options.
 
 ## PHP PDO
 
-[PDO](http://www.php.net/pdo) allows you to write raw SQL (aka prepared statements), where the variables are substituted either with positional placeholders:
+[PDO](https://php.net/pdo) allows you to write raw SQL (aka prepared statements), where the variables are substituted either with positional placeholders:
 
 	$q = $db->prepare('SELECT id FROM user WHERE name = ? AND pass = ?');
 	$q->execute(array($name, $pass));

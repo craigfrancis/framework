@@ -1,5 +1,5 @@
 
-# Query
+# Query helper
 
 Rather than using MVC "Models", we use **Query** and **Record** helpers.
 

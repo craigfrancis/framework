@@ -15,7 +15,6 @@ To customise the directives, start with something like:
 
 	$config['output.csp_directives'] = array(
 			'default-src'  => array("'none'"), // Ideal default
-			'plugin-types' => array(),
 			'form-action'  => array("'self'"),
 			'style-src'    => array("'self'"),
 			'img-src'      => array("'self'"),

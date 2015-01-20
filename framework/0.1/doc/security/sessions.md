@@ -7,7 +7,7 @@ PHP provides a pretty good session handler, however due to its simplicity, it ca
 
 ---
 
-So we have a common understanding, a typical website works by a browser making a request (e.g. a page), and the server responds, and the connection is lost.
+So we have a common understanding, a typical website works by a browser making a request (e.g. a page), and the server responds, and the connection is closed.
 
 As you navigate around a website this happens many times, and as such, the server doesn't really keep track of the person... this is because HTTP is known as a "stateless" protocol.
 

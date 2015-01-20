@@ -6,25 +6,25 @@ Kind of like [Symfony Forms](http://symfony.com/doc/2.0/book/forms.html), howeve
 
 The form helper probably does take on too many responsibilities, as it has been developed over many years, and used in hundreds of projects.
 
-However most frameworks will:
+So for reference, most frameworks will put:
 
-1. Put the validation into a model, where most websites will only be editing those fields in 1 or 2 places, often with different set of validation requirements (e.g. admin view).
+1. Validation into a model, where most websites will only be editing those fields in 1 or 2 places, often with a different set of validation requirements (e.g. admin view).
 
-2. Validation error messages into separate language files, which is difficult when the text often depends on the user ("The users name is required" vs "Your name is required").
+2. Error messages into language specific files, which is difficult when the text often depends on the user ("The users name is required" vs "Your name is required").
 
 3. Basic flow control in the controller, which should require the repeating of fields in the view (aka a white-list), to avoid security issues.
 
-4. Selecting the fields in the view, which often does not enforce a hard link to field in the model, so a typo might mean that validation is not applied, or values aren't stored.
+4. Field setup in the view, which often does not enforce a hard link to field in the model, so a typo might mean that validation is not applied, or values aren't stored.
 
-In comparison, some functionality this form helper includes:
+In comparison, functionality this form helper includes:
 
 - Security checks, such as [CSRF](../../doc/security/csrf.md).
 - Only working with defined fields (avoiding the [Mass Assignment](https://en.wikipedia.org/wiki/Mass_assignment_vulnerability) problem).
 - Detecting which form has been submitted (can have more than one on a page).
 - Handling hidden variables.
 - Working with a [record](../../doc/helpers/record.md) in the database (add/edit).
-- Quickly printing a forms fields, for those typical admin pages.
-- Checking database field exists, and setting the maxlength validation and attribute.
+- Quickly printing forms fields, for those typical admin pages.
+- Checking database fields exist, and setting the maxlength validation and attribute.
 - Automatically using valid HTML (labels, aria-describedby, autofocus, etc).
 - Marking fields as required (HTML5 attribute, and a visual marker in the label).
 - Supporting a read-only mode (can be set globally, e.g. for a backup server).
@@ -95,6 +95,10 @@ The main PHP code to go into the [unit](../../doc/setup/units.md):
 
 	}
 
+	if ($form->initial()) {
+		// Default values
+	}
+
 	$this->set('form', $form);
 	// $this->set('field_name', $field_name);
 
@@ -110,11 +114,13 @@ Or if you want full control:
 			<?= $form->html_error_list(); ?>
 
 			<?= $form->html_fields(); ?>
-			-- OR --
+			<!-- OR -->
 			<?= $field_name->html(); ?>
-			-- OR --
-			<?= $field_name->html_label(); ?>
-			<?= $field_name->html_input(); ?>
+			<!-- OR -->
+			<div>
+				<?= $field_name->html_label(); ?>
+				<?= $field_name->html_input(); ?>
+			</div>
 
 			<?= $form->html_submit(); ?>
 
@@ -125,7 +131,7 @@ Or if you want full control:
 
 ## Example search form
 
-This code could go into a "search_form" [unit](../../doc/setup/units.md), to be re-used though out the website.
+This could go into a "search_form" [unit](../../doc/setup/units.md), to be re-used though out the website.
 
 	$form = new form();
 	$form->form_passive_set(true, 'GET');

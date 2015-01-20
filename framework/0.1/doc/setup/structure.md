@@ -9,6 +9,7 @@ For a quick overview, the folder structure is basically:
 		/library/
 			/class/
 			/controller/
+			/query/
 			/setup/
 		/public/
 		/template/
@@ -19,6 +20,8 @@ For a quick overview, the folder structure is basically:
 	/httpd/
 	/logs/
 	/private/
+		/files/
+		/tmp/
 	/resources/
 
 ---
@@ -41,48 +44,16 @@ Any [job scripts](../../doc/setup/jobs.md) go here, otherwise known as maintenan
 
 ### Library
 
-Typically broken into sub-folders, it stores any extra functionality.
+The sub-folders contain:
 
-The /class/ sub-folder, allows you define generic classes that can be included as required. Just save one class per file, and name the file after the class.
-
-The /controller/ sub-folder allows you to create controllers where the normal controllers can extend their functionality.
-
-For example you may have a website that has a common profile page, which is accessible from multiple locations depending on the user. Now the profile form may be wrapped up in a class, but you may want additional common functionality to be shared as well:
-
-	/app/controller/accounts/profile.php
-		<?php
-			class accounts_profile_controller extends controller_profile {
-			}
-		?>
-
-	/app/library/controller/profile.php
-		<?php
-			class controller_profile extends controller {
-				function action_index() {
-					$form = new profile_form();
-					// ...
-				}
-			}
-		?>
-
-	/app/library/class/profile_form.php
-		<?php
-			class profile_form {
-				// ...
-			}
-		?>
+- **class**: generic classes that can be included as required.
+- **controller**: re-usable [controllers](../../doc/setup/controllers.md), which normal controllers can extend.
+- **query**: classes for the [query helper](../../doc/helpers/query.md).
+- **setup**: setup files (e.g. [configuration](../../doc/setup/config.md), and [cli dump](../../doc/setup/cli.md) files).
 
 ### Public
 
-Where the web root is set, so any files in here are exposed to the internet.
-
-Typically this contains an `index.php` file (which in turn runs the [bootstrap](../../doc/setup/bootstrap.md)), and any other files (such as images, CSS, JavaScript) which the web server can expose without PHP Prime getting involved.
-
-Obviously don't save anything in here you don't want to appear on the internet.
-
-### Setup
-
-Contains the main [config file](../../doc/setup/config.md), and other files related to the setup of the website.
+For the web root, so any files are exposed to the internet (e.g. images, CSS, JavaScript).
 
 ### Template
 

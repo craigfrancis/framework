@@ -246,6 +246,10 @@
 		}
 
 		#page_content h3 {
+			font-size: 1.1em;
+		}
+
+		#page_content h4 {
 			font-size: 1em;
 		}
 
