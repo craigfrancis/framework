@@ -30,6 +30,34 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 
 ---
 
+## Add row
+
+Start by creating the main object
+
+	$table_row = new table_row($table);
+
+Then to add the cells, you can just simply call:
+
+	$table_row->cell_add($content, $class_name, $colspan);
+	$table_row->cell_add_html($content_html, $class_name, $colspan);
+	$table_row->cell_add_link($url, $text, $class_name, $colspan);
+
+For example:
+
+	$table_row->cell_add('Hello');
+
+While the colspan will default to 1, it can be changed (e.g. 3), or set to -1, to match the tables column count:
+
+	$table_row = new table_row($table);
+	$table_row->cell_add('Col 1');
+	$table_row->cell_add('Col 2');
+	$table_row->cell_add('Col 3');
+
+	$table_row = new table_row($table);
+	$table_row->cell_add('Spans 3 columns', NULL, -1);
+
+---
+
 ## Site config
 
 	$config['table.active_asc_suffix_html']  = ' <span class="sort asc" title="Ascending">&#9650;</span>';

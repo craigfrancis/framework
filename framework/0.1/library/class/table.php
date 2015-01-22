@@ -580,6 +580,10 @@
 							//--------------------------------------------------
 							// Attributes - col span
 
+								if ($cell_info['colspan'] <= 0) { // Try to use -1, as that looks different enough (but still a number) to be understood.
+									$cell_info['colspan'] = $col_count;
+								}
+
 								if ($cell_info['colspan'] > 1) {
 									$attributes_html = ' colspan="' . html($cell_info['colspan']) . '"';
 								} else {
