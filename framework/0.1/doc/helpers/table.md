@@ -32,11 +32,11 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 
 ## Add row
 
-Start by creating the main object
+Start by creating the table_row object:
 
 	$table_row = new table_row($table);
 
-Then to add the cells, you can just simply call:
+Then to add the cells, call:
 
 	$table_row->cell_add($content, $class_name, $colspan);
 	$table_row->cell_add_html($content_html, $class_name, $colspan);
@@ -46,7 +46,7 @@ For example:
 
 	$table_row->cell_add('Hello');
 
-While the colspan will default to 1, it can be changed (e.g. 3), or set to -1, to match the tables column count:
+While the colspan will default to 1, it can be changed (e.g. 3), or set to -1 (to match the tables column count):
 
 	$table_row = new table_row($table);
 	$table_row->cell_add('Col 1');
