@@ -728,19 +728,19 @@
 //--------------------------------------------------
 // Record
 
-	function record_get($config = array(), $where_id = NULL, $fields = NULL) {
+	function record_get($config = array(), $where_id = NULL, $fields = NULL, $config_extra = array()) {
 
 		if (!is_array($config)) {
 
 			$short_name = prefix_replace(DB_PREFIX, $config);
 			$short_name = strtolower(ref_to_human($short_name)); // Best guess
 
-			$config = array(
+			$config = array_merge(array(
 					'table' => $config,
 					'where_id' => $where_id,
 					'fields' => $fields,
 					'deleted' => array('type' => $short_name),
-				);
+				), $config_extra);
 
 		}
 
