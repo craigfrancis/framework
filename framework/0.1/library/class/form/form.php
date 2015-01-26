@@ -419,6 +419,10 @@
 			public function db_table_set_sql($table_sql, $alias_sql = NULL) {
 				$this->db_table_name_sql = $table_sql;
 				$this->db_table_alias_sql = $alias_sql;
+					// To deprecate:
+					//   grep -r "db_table_set_sql(" */app/
+					//   grep -r "db_where_set_sql(" */app/
+					//   function db_field_set { grep "db_field_set" $1 | sed -E "s/.*\('([^']+)'.*/'\1',/"; }
 			}
 
 			public function db_where_set_sql($where_sql) {
