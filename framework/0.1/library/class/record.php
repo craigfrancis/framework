@@ -324,6 +324,29 @@
 
 			}
 
+			public function delete() {
+
+				//--------------------------------------------------
+				// Config
+
+					$db = db_get();
+
+					$table_sql = $this->table_sql . ($this->config['table_alias'] === NULL ? '' : ' AS ' . $this->config['table_alias']);
+
+					$values = array(
+							'deleted' => new timestamp(),
+						);
+
+				//--------------------------------------------------
+				// Save
+
+					$db->update($table_sql, $values, $this->where_sql);
+
+			}
+
+		//--------------------------------------------------
+		// Log
+
 			protected function log_values_get($field, $old_value, $new_value) {
 
 				return array_merge($this->config['log_values'], array(
