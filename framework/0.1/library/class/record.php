@@ -333,12 +333,16 @@
 
 					$table_sql = $this->table_sql . ($this->config['table_alias'] === NULL ? '' : ' AS ' . $this->config['table_alias']);
 
-					$values = array(
-							'deleted' => new timestamp(),
-						);
+					if ($this->where_sql === NULL) {
+						exit_with_error('Cannot delete record without specifying which record.');
+					}
 
 				//--------------------------------------------------
 				// Save
+
+					$values = array(
+							'deleted' => new timestamp(),
+						);
 
 					$db->update($table_sql, $values, $this->where_sql);
 
