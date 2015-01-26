@@ -171,6 +171,16 @@
                 "extra": "",
                 "options": null,
                 "definition": "datetime NOT NULL"
+            },
+            "deleted": {
+                "type": "datetime",
+                "length": 19,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "datetime NOT NULL"
             }
         },
         "keys": {

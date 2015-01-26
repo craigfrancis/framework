@@ -18,13 +18,15 @@
 
 				$auth = new auth();
 
+				$record = record_get($auth->db_table_get());
+
 			//--------------------------------------------------
 			// Form setup
 
 				$form = new form();
 				$form->form_class_set('basic_form');
 				$form->form_button_set('Register');
-				$form->db_table_set_sql($auth->db_table_get());
+				$form->db_record_set($record);
 
 				$field_name = new form_field_text($form, 'Name');
 				$field_name->db_field_set('name');

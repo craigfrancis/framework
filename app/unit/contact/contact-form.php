@@ -13,12 +13,17 @@
 		protected function setup($config) {
 
 			//--------------------------------------------------
+			// Config
+
+				$record = record_get(DB_PREFIX . 'log_contact');
+
+			//--------------------------------------------------
 			// Form setup
 
 				$form = new form();
 				$form->form_class_set('basic_form');
 				$form->form_button_set('Send');
-				$form->db_table_set_sql(DB_PREFIX . 'log_contact');
+				$form->db_record_set($record);
 
 				$field_name = new form_field_text($form, 'Name');
 				$field_name->db_field_set('name');

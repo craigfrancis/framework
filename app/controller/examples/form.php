@@ -129,8 +129,27 @@
 					$database = (request('database') == 'true');
 
 					if ($database) {
-						$form->db_table_set_sql(DB_PREFIX . 'form_example');
-						$form->db_where_set_sql('id = 1');
+
+						$record = record_get(DB_PREFIX . 'form_example', 1, array(
+								'id',
+								'name',
+								'email',
+								'message',
+								'url',
+								'password',
+								'check',
+								'items',
+								'selection',
+								'date',
+								'time',
+								'number',
+								'amount',
+								'postcode',
+								'ip',
+							));
+
+						$form->db_record_set($record);
+
 					}
 
 				//--------------------------------------------------

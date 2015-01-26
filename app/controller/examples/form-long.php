@@ -1,6 +1,6 @@
 <?php
 
-	class contact_controller extends controller {
+	class examples_form_long_controller extends controller {
 
 		public function label_override($error_html, $form, $field) {
 			return '#' . $error_html;
@@ -13,9 +13,15 @@
 		public function action_index() {
 
 			//--------------------------------------------------
-			// Resources
+			// Config
 
 				$response = response_get();
+
+				$record = record_get(DB_PREFIX . 'user', 1, array(
+						'name',
+						'email',
+						'type',
+					));
 
 			//--------------------------------------------------
 			// Edit user form
@@ -23,23 +29,22 @@
 				//--------------------------------------------------
 				// Form setup
 
-					$form_edit = new form();
-					$form_edit->form_class_set('basic_form');
-					$form_edit->db_table_set_sql(DB_PREFIX . 'user');
-					$form_edit->db_where_set_sql('id = 1');
+					$form = new form();
+					$form->form_class_set('basic_form');
+					$form->db_record_set($record);
 
-					$field_name = new form_field_text($form_edit, 'Name');
+					$field_name = new form_field_text($form, 'Name');
 					$field_name->db_field_set('name');
 					$field_name->max_length_set('Your name cannot be longer than XXX characters.');
 					$field_name->print_hidden_set(true);
 
-					$field_email = new form_field_email($form_edit, 'Email');
+					$field_email = new form_field_email($form, 'Email');
 					$field_email->db_field_set('email');
 					$field_email->format_error_set('Your email does not appear to be correct.');
 					$field_email->min_length_set('Your email is required.');
 					$field_email->max_length_set('Your email cannot be longer than XXX characters.');
 
-					$field_type = new form_field_select($form_edit, 'Type');
+					$field_type = new form_field_select($form, 'Type');
 					// $field_type->print_hidden_set(true);
 					$field_type->db_field_set('type');
 					// $field_type->db_field_set('type', 'key');
@@ -50,7 +55,7 @@
 				//--------------------------------------------------
 				// Form submitted
 
-					if ($form_edit->submitted()) {
+					if ($form->submitted()) {
 
 						//--------------------------------------------------
 						// Validation
@@ -60,14 +65,14 @@
 						//--------------------------------------------------
 						// Form valid
 
-							if ($form_edit->valid()) {
+							if ($form->valid()) {
 
 								//--------------------------------------------------
 								// Store
 //exit('#' . $field_name->value_get());
 exit('#' . $field_type->value_get());
 exit('Updated?');
-									$form_edit->db_save();
+									$form->db_save();
 
 								//--------------------------------------------------
 								// Thank you message
@@ -115,7 +120,6 @@ exit('Updated?');
 					$form->csrf_error_set('The request did not appear to come from a trusted source, please try again.');
 					$form->csrf_error_set_html('The request did not appear to come from a trusted source, please try again.');
 					$form->error_override_set_function(array($this, 'error_override')); // If you want to get the text translated
-					$form->db_table_set_sql(DB_PREFIX . 'log_contact');
 
 					$field_password = new form_field_password($form, 'Password');
 					$field_password->min_length_set('Your password is required.');
@@ -125,18 +129,15 @@ exit('Updated?');
 					$field_name->db_field_set('name');
 					$field_name->max_length_set('Your name cannot be longer than XXX characters.');
 					// $field_name->name_set('name');
-					$field_name->id_set('field_custom_id');
+					$field_name->wrapper_id_set('field_custom_id');
 					$field_name->label_set_html('Your <strong>name</strong>');
 					$field_name->label_suffix_set('::');
-					$field_name->size_set(10);
+					$field_name->input_size_set(10);
 					$field_name->info_set(' - Extra details');
-					$field_name->class_row_set('my_class_row');
-					$field_name->class_label_set('my_class_label');
-					$field_name->class_label_span_set('label my_class_label_span');
-					$field_name->class_input_set('my_class_input');
-					$field_name->class_input_span_set('input my_class_input_span');
-					$field_name->class_info_set('my_class_info');
-					$field_name->print_show_set(true);
+					$field_name->wrapper_class_set('my_class_row');
+					$field_name->label_class_set('my_class_label');
+					$field_name->input_class_set('my_class_input');
+					$field_name->print_include_set(true);
 					// $field_name->print_group_set('address');
 					// $field_name->required_mark_set_html(NULL);
 					// $field_name->required_mark_position_set(NULL);
@@ -146,9 +147,11 @@ exit('Updated?');
 
 					$field_name_2 = new form_field_text($form, 'Your name');
 					$field_name_2->info_set('Duplicate name test');
+					$field_name_2->max_length_set('Your name cannot be longer than XXX characters.', 100);
 
 					$field_name_3 = new form_field_text($form, 'Your name');
 					$field_name_3->info_set('Duplicate name test');
+					$field_name_3->max_length_set('Your name cannot be longer than XXX characters.', 100);
 
 					$field_email = new form_field_email($form, 'Email');
 					$field_email->db_field_set('email');
@@ -302,7 +305,7 @@ exit();
 			//--------------------------------------------------
 			// Variables
 
-				$response->set('form_edit', $form_edit);
+				$response->set('form_edit', $form);
 
 				$response->set('form', $form);
 				$response->set('field_name', $field_name);
