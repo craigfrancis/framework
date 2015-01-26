@@ -42,7 +42,7 @@
 					$timezone = parent::getTimezone();
 					parent::setTimezone(new DateTimeZone('UTC'));
 					$output = parent::format('Y-m-d H:i:s');
-					parent::setTimezone($timezone);
+					@parent::setTimezone($timezone); // Avoid PHP 5.3 bug 45543 (can not set timezones without ID)
 					return $output;
 				} else {
 					if (isset($this->formats[$format])) {
