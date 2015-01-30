@@ -145,6 +145,7 @@
 					$fields[$version_name]->max_length_set('The content cannot be longer than XXX characters.', 65000);
 					$fields[$version_name]->cols_set(80);
 					$fields[$version_name]->rows_set($row_count);
+					$fields[$version_name]->wrapper_class_add('cms-text');
 
 				}
 
