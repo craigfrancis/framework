@@ -158,7 +158,7 @@
 	echo;
 	echo 'Check database...';
 
-	./cli --diff;
+	./cli --diff | awk '{ print "    " $0;}';
 
 	echo '  Done';
 
