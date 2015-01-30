@@ -192,127 +192,6 @@
 			}
 
 		//--------------------------------------------------
-		// Login
-
-			public function login_field_identification_get($form, $config = array()) {
-
-				$config = array_merge(array(
-						'label' => $this->text['identification_label'],
-						'name' => 'identification',
-						'max_length' => $this->identification_max_length,
-					), $config);
-
-				$field = new form_field_text($form, $config['label'], $config['name']);
-				$field->min_length_set($this->text['identification_min_len']);
-				$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
-				$field->autocomplete_set('username');
-
-				if ($form->initial()) {
-					$field->value_set($this->login_last_get());
-				}
-
-				return $this->login_field_identification = $field;
-
-			}
-
-			public function login_field_password_get($form, $config = array()) {
-
-				$config = array_merge(array(
-						'label' => $this->text['password_label'],
-						'name' => 'password',
-						'max_length' => 250,
-					), $config);
-
-				$field = new form_field_password($form, $config['label'], $config['name']);
-				$field->min_length_set($this->text['password_min_len']);
-				$field->max_length_set($this->text['password_max_len'], $config['max_length']);
-				$field->autocomplete_set('current-password');
-
-				return $this->login_field_password = $field;
-
-			}
-
-			public function login_validate() {
-
-				//--------------------------------------------------
-				// Config
-
-					$form = $this->login_field_identification->form_get();
-
-					$identification = $this->login_field_identification->value_get();
-					$password = $this->login_field_password->value_get();
-
-					$this->login_details = NULL; // Make sure (if called more than once)
-
-				//--------------------------------------------------
-				// Validate
-
-					if ($form->valid()) { // Basic checks such as required fields, and CSRF
-
-						$result = $this->validate_login($identification, $password);
-
-						if ($result === 'failure_identification') {
-
-							$form->error_add($this->text['failure_login_identification']);
-
-						} else if ($result === 'failure_password') {
-
-							$form->error_add($this->text['failure_login_password']);
-
-						} else if ($result === 'failure_repetition') {
-
-							$form->error_add($this->text['failure_login_repetition']);
-
-						} else if (is_int($result)) {
-
-							$this->login_details = array(
-									'id' => $result,
-									'identification' => $identification,
-									'form' => $form,
-								);
-
-						} else {
-
-							exit_with_error('Unknown response from validate_login(),', $result);
-
-						}
-
-					}
-
-			}
-
-			public function login_complete() {
-
-				//--------------------------------------------------
-				// Config
-
-					if (!$this->login_details) {
-						exit_with_error('You need to call the auth login_validate() method first.');
-					}
-
-					if (!$this->login_details['form']->valid()) {
-						exit_with_error('The form is not valid, so why has login_complete() been called?');
-					}
-
-				//--------------------------------------------------
-				// Remember identification
-
-					if ($this->login_remember) {
-						cookie::set($this->login_last_cookie, $this->login_details['identification'], '+30 days');
-					}
-
-				//--------------------------------------------------
-				// Start session
-
-					$this->_session_start($this->login_details['id']);
-
-			}
-
-			public function login_last_get() {
-				return cookie::get($this->login_last_cookie);
-			}
-
-		//--------------------------------------------------
 		// Session
 
 			public function session_get($config = array()) {
@@ -623,6 +502,127 @@
 
 					}
 
+			}
+
+		//--------------------------------------------------
+		// Login
+
+			public function login_field_identification_get($form, $config = array()) {
+
+				$config = array_merge(array(
+						'label' => $this->text['identification_label'],
+						'name' => 'identification',
+						'max_length' => $this->identification_max_length,
+					), $config);
+
+				$field = new form_field_text($form, $config['label'], $config['name']);
+				$field->min_length_set($this->text['identification_min_len']);
+				$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
+				$field->autocomplete_set('username');
+
+				if ($form->initial()) {
+					$field->value_set($this->login_last_get());
+				}
+
+				return $this->login_field_identification = $field;
+
+			}
+
+			public function login_field_password_get($form, $config = array()) {
+
+				$config = array_merge(array(
+						'label' => $this->text['password_label'],
+						'name' => 'password',
+						'max_length' => 250,
+					), $config);
+
+				$field = new form_field_password($form, $config['label'], $config['name']);
+				$field->min_length_set($this->text['password_min_len']);
+				$field->max_length_set($this->text['password_max_len'], $config['max_length']);
+				$field->autocomplete_set('current-password');
+
+				return $this->login_field_password = $field;
+
+			}
+
+			public function login_validate() {
+
+				//--------------------------------------------------
+				// Config
+
+					$form = $this->login_field_identification->form_get();
+
+					$identification = $this->login_field_identification->value_get();
+					$password = $this->login_field_password->value_get();
+
+					$this->login_details = NULL; // Make sure (if called more than once)
+
+				//--------------------------------------------------
+				// Validate
+
+					if ($form->valid()) { // Basic checks such as required fields, and CSRF
+
+						$result = $this->validate_login($identification, $password);
+
+						if ($result === 'failure_identification') {
+
+							$form->error_add($this->text['failure_login_identification']);
+
+						} else if ($result === 'failure_password') {
+
+							$form->error_add($this->text['failure_login_password']);
+
+						} else if ($result === 'failure_repetition') {
+
+							$form->error_add($this->text['failure_login_repetition']);
+
+						} else if (is_int($result)) {
+
+							$this->login_details = array(
+									'id' => $result,
+									'identification' => $identification,
+									'form' => $form,
+								);
+
+						} else {
+
+							exit_with_error('Unknown response from validate_login(),', $result);
+
+						}
+
+					}
+
+			}
+
+			public function login_complete() {
+
+				//--------------------------------------------------
+				// Config
+
+					if (!$this->login_details) {
+						exit_with_error('You need to call the auth login_validate() method first.');
+					}
+
+					if (!$this->login_details['form']->valid()) {
+						exit_with_error('The form is not valid, so why has login_complete() been called?');
+					}
+
+				//--------------------------------------------------
+				// Remember identification
+
+					if ($this->login_remember) {
+						cookie::set($this->login_last_cookie, $this->login_details['identification'], '+30 days');
+					}
+
+				//--------------------------------------------------
+				// Start session
+
+					$this->_session_start($this->login_details['id']);
+
+			}
+
+			public function login_last_get() {
+				return cookie::get($this->login_last_cookie);
 			}
 
 		//--------------------------------------------------
