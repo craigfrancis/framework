@@ -314,7 +314,8 @@
 
 					if ($cache_folder) {
 
-						$cache_file_base = $cache_folder . '/' . sha1($route_dir . $route_file . $route_ext);
+						$cache_file_hash = hash('sha256', ($route_dir . $route_file . $route_ext));
+						$cache_file_base = $cache_folder . '/' . safe_file_name($cache_file_hash);
 						$cache_file_time = $cache_file_base . '-' . $route_mtime;
 
 						if (!is_file($cache_file_time)) {

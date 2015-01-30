@@ -5,10 +5,12 @@
 		//--------------------------------------------------
 		// Variables
 
+			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $session_info = NULL;
+			protected $session_pass = NULL;
+			protected $session_hash = 'sha256'; // Using CRYPT_BLOWFISH would make page loading too slow (good for login though)
 
 			protected $text = array();
-			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $identification_type = 'email';
 			protected $identification_max_length = NULL;
 			protected $login_last_cookie = 'u'; // Or set to NULL to not remember.
@@ -260,7 +262,7 @@
 
 								$ip_test = ($this->session_ip_lock == false || config::get('request.ip') == $row['ip']);
 
-								if ($ip_test && $row['pass'] != '' && sha1($session_pass) == $row['pass']) {
+								if ($ip_test && $row['pass'] != '' && hash($this->session_hash, $session_pass) == $row['pass']) {
 
 									//--------------------------------------------------
 									// Update the session - keep active
@@ -293,9 +295,10 @@
 										$row['id'] = $session_id;
 
 										unset($row['ip']);
-										unset($row['pass']);
+										unset($row['pass']); // The hashed version
 
 										$this->session_info = $row;
+										$this->session_pass = $session_pass;
 
 								}
 
@@ -361,23 +364,22 @@
 						session::delete($this->session_name . '_pass');
 					}
 
-
 			}
 
 			public function session_token_get() {
-
-				list($session_id, $session_pass) = $this->_session_details_get();
-
-				if ($session_id > 0) {
-					return $session_id . '-' . $session_pass;
+				if ($this->session_info !== NULL) {
+					return $this->session_info['id'] . '-' . $this->session_pass;
 				} else {
 					return NULL;
 				}
-
 			}
 
 			public function session_id_get() {
-				return $this->session_info['id'];
+				if ($this->session_info !== NULL) {
+					return $this->session_info['id'];
+				} else {
+					return NULL;
+				}
 			}
 
 			private function _session_details_get() {
@@ -465,7 +467,7 @@
 				//--------------------------------------------------
 				// Session pass
 
-					$session_pass = random_key(40); // Same length as SHA1 hash
+					$session_pass = random_key(40);
 
 				//--------------------------------------------------
 				// Create a new session
@@ -473,7 +475,7 @@
 					$now = new timestamp();
 
 					$db->insert($this->db_table['session'], array(
-							'pass'      => sha1($session_pass), // Using CRYPT_BLOWFISH in password::hash(), would make page loading too slow!
+							'pass'      => hash($this->session_hash, $session_pass),
 							'user_id'   => $user_id,
 							'ip'        => config::get('request.ip'),
 							'browser'   => config::get('request.browser'),
@@ -507,189 +509,207 @@
 		//--------------------------------------------------
 		// Login
 
-			public function login_field_identification_get($form, $config = array()) {
+			//--------------------------------------------------
+			// Fields
 
-				$config = array_merge(array(
-						'label' => $this->text['identification_label'],
-						'name' => 'identification',
-						'max_length' => $this->identification_max_length,
-					), $config);
+				public function login_field_identification_get($form, $config = array()) {
 
-				$field = new form_field_text($form, $config['label'], $config['name']);
-				$field->min_length_set($this->text['identification_min_len']);
-				$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
-				$field->autocomplete_set('username');
+					$config = array_merge(array(
+							'label' => $this->text['identification_label'],
+							'name' => 'identification',
+							'max_length' => $this->identification_max_length,
+						), $config);
 
-				if ($form->initial()) {
-					$field->value_set($this->login_last_get());
+					$field = new form_field_text($form, $config['label'], $config['name']);
+					$field->min_length_set($this->text['identification_min_len']);
+					$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
+					$field->autocomplete_set('username');
+
+					if ($form->initial()) {
+						$field->value_set($this->login_last_get());
+					}
+
+					return $this->login_field_identification = $field;
+
 				}
 
-				return $this->login_field_identification = $field;
+				public function login_field_password_get($form, $config = array()) {
 
-			}
+					$config = array_merge(array(
+							'label' => $this->text['password_label'],
+							'name' => 'password',
+							'max_length' => 250,
+						), $config);
 
-			public function login_field_password_get($form, $config = array()) {
+					$field = new form_field_password($form, $config['label'], $config['name']);
+					$field->min_length_set($this->text['password_min_len']);
+					$field->max_length_set($this->text['password_max_len'], $config['max_length']);
+					$field->autocomplete_set('current-password');
 
-				$config = array_merge(array(
-						'label' => $this->text['password_label'],
-						'name' => 'password',
-						'max_length' => 250,
-					), $config);
+					return $this->login_field_password = $field;
 
-				$field = new form_field_password($form, $config['label'], $config['name']);
-				$field->min_length_set($this->text['password_min_len']);
-				$field->max_length_set($this->text['password_max_len'], $config['max_length']);
-				$field->autocomplete_set('current-password');
+				}
 
-				return $this->login_field_password = $field;
+			//--------------------------------------------------
+			// Request
 
-			}
+				public function login_validate() {
 
-			public function login_validate() {
+					//--------------------------------------------------
+					// Config
 
-				//--------------------------------------------------
-				// Config
+						$form = $this->login_field_identification->form_get();
 
-					$form = $this->login_field_identification->form_get();
+						$identification = $this->login_field_identification->value_get();
+						$password = $this->login_field_password->value_get();
 
-					$identification = $this->login_field_identification->value_get();
-					$password = $this->login_field_password->value_get();
+						$this->login_details = NULL; // Make sure (if called more than once)
 
-					$this->login_details = NULL; // Make sure (if called more than once)
+					//--------------------------------------------------
+					// Validate
 
-				//--------------------------------------------------
-				// Validate
+						if ($form->valid()) { // Basic checks such as required fields, and CSRF
 
-					if ($form->valid()) { // Basic checks such as required fields, and CSRF
+							$result = $this->validate_login($identification, $password);
 
-						$result = $this->validate_login($identification, $password);
+							if ($result === 'failure_identification') {
 
-						if ($result === 'failure_identification') {
+								$form->error_add($this->text['failure_login_identification']);
 
-							$form->error_add($this->text['failure_login_identification']);
+							} else if ($result === 'failure_password') {
 
-						} else if ($result === 'failure_password') {
+								$form->error_add($this->text['failure_login_password']);
 
-							$form->error_add($this->text['failure_login_password']);
+							} else if ($result === 'failure_repetition') {
 
-						} else if ($result === 'failure_repetition') {
+								$form->error_add($this->text['failure_login_repetition']);
 
-							$form->error_add($this->text['failure_login_repetition']);
+							} else if (is_int($result)) {
 
-						} else if (is_int($result)) {
+								$this->login_details = array(
+										'id' => $result,
+										'identification' => $identification,
+										'form' => $form,
+									);
 
-							$this->login_details = array(
-									'id' => $result,
-									'identification' => $identification,
-									'form' => $form,
-								);
+							} else {
 
-						} else {
+								exit_with_error('Unknown response from validate_login(),', $result);
 
-							exit_with_error('Unknown response from validate_login(),', $result);
+							}
 
 						}
 
-					}
+				}
 
-			}
+				public function login_complete() {
 
-			public function login_complete() {
+					//--------------------------------------------------
+					// Config
 
-				//--------------------------------------------------
-				// Config
+						if (!$this->login_details) {
+							exit_with_error('You need to call the auth login_validate() method first.');
+						}
 
-					if (!$this->login_details) {
-						exit_with_error('You need to call the auth login_validate() method first.');
-					}
+						if (!$this->login_details['form']->valid()) {
+							exit_with_error('The form is not valid, so why has login_complete() been called?');
+						}
 
-					if (!$this->login_details['form']->valid()) {
-						exit_with_error('The form is not valid, so why has login_complete() been called?');
-					}
+					//--------------------------------------------------
+					// Remember identification
 
-				//--------------------------------------------------
-				// Remember identification
+						if ($this->login_remember) {
+							cookie::set($this->login_last_cookie, $this->login_details['identification'], '+30 days');
+						}
 
-					if ($this->login_remember) {
-						cookie::set($this->login_last_cookie, $this->login_details['identification'], '+30 days');
-					}
+					//--------------------------------------------------
+					// Start session
 
-				//--------------------------------------------------
-				// Start session
+						$this->_session_start($this->login_details['id']);
 
-					$this->_session_start($this->login_details['id']);
+				}
 
-			}
-
-			public function login_last_get() {
-				return cookie::get($this->login_last_cookie);
-			}
+				public function login_last_get() {
+					return cookie::get($this->login_last_cookie);
+				}
 
 		//--------------------------------------------------
 		// Register
 
-			public function register_field_identification_get($form, $label = 'Username') {
-			}
+			//--------------------------------------------------
+			// Fields
 
-			public function register_field_password_1_get($form, $label = 'Password') {
-			}
-
-			public function register_field_password_2_get($form, $label = 'Repeat Password') {
-			}
-
-			public function register_validate() {
-				$this->validate_username();
-				$this->validate_password();
-				// Repeat password is the same
-			}
-
-			public function register_complete($config = array()) {
-
-				$config = array_merge(array(
-						'login' => true,
-					), $config);
-
-				$form->db_value_set('username', 1);
-				$form->db_value_set('password', 1);
-				$form->db_save();
-
-				if ($config['login']) {
-					$this->_session_start();
+				public function register_field_identification_get($form, $label = 'Username') {
 				}
 
-				// Should we INSERT or accept the user ID?
-				// Set the login_last cookie.
+				public function register_field_password_1_get($form, $label = 'Password') {
+				}
 
-			}
+				public function register_field_password_2_get($form, $label = 'Repeat Password') {
+				}
+
+			//--------------------------------------------------
+			// Request
+
+				public function register_validate() {
+					$this->validate_username();
+					$this->validate_password();
+					// Repeat password is the same
+				}
+
+				public function register_complete($config = array()) {
+
+					$config = array_merge(array(
+							'login' => true,
+						), $config);
+
+					$form->db_value_set('username', 1);
+					$form->db_value_set('password', 1);
+					$form->db_save();
+
+					if ($config['login']) {
+						$this->_session_start();
+					}
+
+					// Should we INSERT or accept the user ID?
+					// Set the login_last cookie.
+
+				}
 
 		//--------------------------------------------------
 		// Update
 
-			public function update_field_password_old_get($form, $label = 'Current Password') {
-				// Optional?
-			}
+			//--------------------------------------------------
+			// Fields
 
-			public function update_field_password_new_1_get($form, $label = 'New Password') {
+				public function update_field_password_old_get($form, $label = 'Current Password') {
+					// Optional?
+				}
 
-				$config = array_merge(array(
-						'name' => 'password',
-						'required' => true, // Default required (register page, or re-confirm on profile page)
-					), $config);
+				public function update_field_password_new_1_get($form, $label = 'New Password') {
 
-				// Required?
+					$config = array_merge(array(
+							'name' => 'password',
+							'required' => true, // Default required (register page, or re-confirm on profile page)
+						), $config);
 
-			}
+					// Required?
 
-			public function update_field_password_new_2_get($form, $label = 'Repeat Password') {
-			}
+				}
 
-			public function update_validate() {
-				$this->validate_password();
-				// Repeat password is the same
-			}
+				public function update_field_password_new_2_get($form, $label = 'Repeat Password') {
+				}
 
-			public function update_complete() {
-			}
+			//--------------------------------------------------
+			// Request
+
+				public function update_validate() {
+					$this->validate_password();
+					// Repeat password is the same
+				}
+
+				public function update_complete() {
+				}
 
 		//--------------------------------------------------
 		// Reset (forgotten password)

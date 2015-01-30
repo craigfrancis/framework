@@ -170,7 +170,7 @@
 							exit_with_error('Only "uploaded" files can be processed with form_field_file', 'Path: ' . $file_info['tmp_name']);
 						}
 
-						$file_hash = sha1_file($file_info['tmp_name']);
+						$file_hash = hash('sha256', $file_info['tmp_name']);
 						$file_path = form_field_file::_file_tmp_folder() . '/' . $file_hash;
 
 						move_uploaded_file($file_info['tmp_name'], $file_path);

@@ -207,7 +207,9 @@
 					$apc_socket = new socket();
 					$apc_socket->exit_on_error_set(false);
 
-					if ($apc_socket->post($apc_url, array('key' => sha1(ENCRYPTION_KEY . date('Y-m-d'))))) {
+					$apc_key = hash('sha256', (ENCRYPTION_KEY . date('Y-m-d')));
+
+					if ($apc_socket->post($apc_url, array('key' => $apc_key))) {
 						$apc_data = $apc_socket->response_data_get();
 						if ($apc_data !== 'Success') {
 							$apc_error = $apc_data;
