@@ -212,12 +212,18 @@
 
 						if ($config['auth_token'] === NULL) {
 
-							list($session_id, $session_pass) = $this->_session_details_get();
+							if ($this->session_cookies) {
+								$session_id = cookie::get($this->session_name . '_id');
+								$session_pass = cookie::get($this->session_name . '_pass');
+							} else {
+								$session_id = session::get($this->session_name . '_id');
+								$session_pass = session::get($this->session_name . '_pass');
+							}
 
 						} else {
 
 							if (preg_match('/^([0-9]+)-(.+)$/', $config['auth_token'], $matches)) {
-								$session_id = intval($matches[1]);
+								$session_id = $matches[1];
 								$session_pass = $matches[2];
 							} else {
 								$session_id = 0;
@@ -225,6 +231,8 @@
 							}
 
 						}
+
+						$session_id = intval($session_id);
 
 					//--------------------------------------------------
 					// If set, test
@@ -380,28 +388,6 @@
 				} else {
 					return NULL;
 				}
-			}
-
-			private function _session_details_get() {
-
-				//--------------------------------------------------
-				// Get session details
-
-					if ($this->session_cookies) {
-						$session_id = cookie::get($this->session_name . '_id');
-						$session_pass = cookie::get($this->session_name . '_pass');
-					} else {
-						$session_id = session::get($this->session_name . '_id');
-						$session_pass = session::get($this->session_name . '_pass');
-					}
-
-					$session_id = intval($session_id);
-
-				//--------------------------------------------------
-				// Return
-
-					return array($session_id, $session_pass);
-
 			}
 
 			private function _session_start($user_id) {
@@ -663,7 +649,7 @@
 							'login' => true,
 						), $config);
 
-					$form->db_value_set('username', 1);
+					$form->db_value_set('username', 1); // or email?
 					$form->db_value_set('password', 1);
 					$form->db_save();
 
@@ -797,7 +783,7 @@
 
 					if ($row = $db->fetch_row($sql)) {
 						$db_id = $row['id'];
-						$db_hash = $row['password']; // Blank password (disabled account) excluded in query (above)
+						$db_hash = $row['password']; // A blank password (disabled account) is excluded in the query.
 					} else {
 						$db_id = 0;
 						$db_hash = '';
@@ -900,7 +886,7 @@
 
 					$request_ip = config::get('request.ip');
 
-					if (!in_array($request_ip, config::get('user.ip_whitelist', array()))) {
+					if (!in_array($request_ip, config::get('auth.ip_whitelist', array()))) {
 
 						$now = new timestamp();
 
