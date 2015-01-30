@@ -4,7 +4,7 @@
 		define('OPENSSL_RAW_DATA', 1); // PHP 5.3 support
 	}
 
-	class cipher extends check {
+	class cipher_base extends check {
 
 		private $key;
 		private $method;
