@@ -242,8 +242,8 @@
 							$db = $this->db_get();
 
 							$where_sql = '
-								s.pass != "" AND
 								s.id = "' . $db->escape($session_id) . '" AND
+								s.pass != "" AND
 								' . $this->db_where_sql['session'] . ' AND
 								' . $this->db_where_sql['main'];
 
