@@ -31,7 +31,9 @@
 						'http_only' => true,
 					), $config);
 
-				if (is_string($config['expires'])) {
+				if (is_object($config['expires']) && is_a($config['expires'], 'timestamp')) {
+					$config['expires'] = $config['expires']->format('U'); // or getTimestamp() in PHP 5.3
+				} else if (is_string($config['expires'])) {
 					$config['expires'] = strtotime($config['expires']);
 				}
 
