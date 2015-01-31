@@ -625,13 +625,34 @@
 			//--------------------------------------------------
 			// Fields
 
-				public function register_field_identification_get($form, $label = 'Username') {
+				public function register_field_identification_get($form, $config = array()) {
+
+					// $config = array_merge(array(
+					// 		'label' => $this->text['identification_label'], - Username
+					// 		'name' => 'identification',
+					// 		'max_length' => $this->identification_max_length,
+					// 	), $config);
+
 				}
 
-				public function register_field_password_1_get($form, $label = 'Password') {
+				public function register_field_password_1_get($form, $config = array()) {
+
+					// $config = array_merge(array(
+					// 		'label' => $this->text['password_label'], - Password
+					// 		'name' => 'password',
+					// 		'max_length' => 250,
+					// 	), $config);
+
 				}
 
-				public function register_field_password_2_get($form, $label = 'Repeat Password') {
+				public function register_field_password_2_get($form, $config = array()) {
+
+					// $config = array_merge(array(
+					// 		'label' => $this->text['password_label'], - Repeat Password
+					// 		'name' => 'password',
+					// 		'max_length' => 250,
+					// 	), $config);
+
 				}
 
 			//--------------------------------------------------
@@ -668,11 +689,25 @@
 			//--------------------------------------------------
 			// Fields
 
-				public function update_field_password_old_get($form, $label = 'Current Password') {
+				public function update_field_password_old_get($form, $config = array()) {
+
+					// $config = array_merge(array(
+					// 		'label' => $this->text['password_label'], - Current Password
+					// 		'name' => 'password',
+					// 		'max_length' => 250,
+					// 	), $config);
+
 					// Optional?
+
 				}
 
-				public function update_field_password_new_1_get($form, $label = 'New Password') {
+				public function update_field_password_new_1_get($form, $config = array()) {
+
+					// $config = array_merge(array(
+					// 		'label' => $this->text['password_label'], - New Password
+					// 		'name' => 'password',
+					// 		'max_length' => 250,
+					// 	), $config);
 
 					$config = array_merge(array(
 							'name' => 'password',
@@ -683,7 +718,14 @@
 
 				}
 
-				public function update_field_password_new_2_get($form, $label = 'Repeat Password') {
+				public function update_field_password_new_2_get($form, $config = array()) {
+
+					// $config = array_merge(array(
+					// 		'label' => $this->text['password_label'], - Repeat Password
+					// 		'name' => 'password',
+					// 		'max_length' => 250,
+					// 	), $config);
+
 				}
 
 			//--------------------------------------------------
@@ -703,16 +745,39 @@
 			//--------------------------------------------------
 			// Fields
 
-				public function reset_field_identification_get($form, $label = 'Username') {
+				public function reset_field_identification_get($form, $config = array()) {
+
+					// $config = array_merge(array(
+					// 		'label' => $this->text['identification_label'], - Username
+					// 		'name' => 'identification',
+					// 		'max_length' => $this->identification_max_length,
+					// 	), $config);
+
 					// Select based on supplied email or username?
 					// If using usernames, and query is done on email, what happens if there is more than one account?
+
 				}
 
-				public function reset_field_password_new_1_get($form, $label = 'New Password') {
+				public function reset_field_password_new_1_get($form, $config = array()) {
+
+					// $config = array_merge(array(
+					// 		'label' => $this->text['password_label'], - New Password
+					// 		'name' => 'password',
+					// 		'max_length' => 250,
+					// 	), $config);
+
 					// Required?
+
 				}
 
-				public function reset_field_password_new_2_get($form, $label = 'Repeat Password') {
+				public function reset_field_password_new_2_get($form, $config = array()) {
+
+					// $config = array_merge(array(
+					// 		'label' => $this->text['password_label'], - Repeat Password
+					// 		'name' => 'password',
+					// 		'max_length' => 250,
+					// 	), $config);
+
 				}
 
 			//--------------------------------------------------
