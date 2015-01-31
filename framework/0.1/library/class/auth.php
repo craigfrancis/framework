@@ -5,35 +5,37 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
-			protected $session_info = NULL;
-			protected $session_pass = NULL;
-			protected $session_hash = 'sha256'; // Using CRYPT_BLOWFISH would make page loading too slow (good for login though)
-
-			protected $text = array();
-			protected $identification_type = 'email';
-			protected $identification_max_length = NULL;
-			protected $login_last_cookie = 'u'; // Or set to NULL to not remember.
-
-			protected $login_field_identification = NULL;
-			protected $login_field_password = NULL;
-			protected $login_details = NULL;
-			protected $login_remember = true;
-
 			protected $lockout_attempts = 10;
 			protected $lockout_timeout = 1800; // 30 minutes
 			protected $lockout_mode = NULL;
 
+			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
+			protected $session_info = NULL;
+			protected $session_pass = NULL;
+			protected $session_hash = 'sha256'; // Using CRYPT_BLOWFISH would make page loading too slow (good for login though)
 			protected $session_length = 1800; // 30 minutes, or set to 0 for indefinite length
 			protected $session_ip_lock = false; // By default this is disabled (AOL users)
 			protected $session_concurrent = false; // Close previous sessions on new session start
-			protected $session_cookies = false; // Use sessions by default
+			protected $session_cookies = true; // Use sessions by default
 			protected $session_history = 2592000; // Keep session data for 30 days, 0 to delete once expired, -1 to keep data indefinitely
+
+			protected $identification_type = 'email';
+			protected $identification_max_length = NULL;
+			protected $text = array();
 
 			protected $db_link = NULL;
 			protected $db_table = array();
 			protected $db_fields = array();
 			protected $db_where_sql = array();
+
+			protected $login_field_identification = NULL;
+			protected $login_field_password = NULL;
+			protected $login_last_cookie = 'u'; // Or set to NULL to not remember.
+			protected $login_details = NULL;
+
+			protected $register_field_identification = NULL;
+			protected $register_field_password_1 = NULL;
+			protected $register_field_password_2 = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -56,12 +58,12 @@
 
 					$this->text = array(
 
-							'identification_label'           => 'Email address',
+							'identification_label'           => 'Email',
 							'identification_min_len'         => 'Your email address is required.',
 							'identification_max_len'         => 'Your email address cannot be longer than XXX characters.',
 							'identification_format'          => 'Your email address does not appear to be correct.',
 
-							'identification_new_label'       => 'Email address',
+							'identification_new_label'       => 'Email',
 							'identification_new_min_len'     => 'Your email address is required.',
 							'identification_new_max_len'     => 'Your email address cannot be longer than XXX characters.',
 							'identification_new_format'      => 'Your email address does not appear to be correct.',
@@ -248,7 +250,8 @@
 								' . $this->db_where_sql['main'];
 
 							if ($this->session_length > 0) {
-								$where_sql .= ' AND' . "\n\t\t\t\t\t\t\t\t\t" . 's.last_used > "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->session_length))) . '"';
+								$last_used = new timestamp((0 - $this->session_length) . ' seconds');
+								$where_sql .= ' AND' . "\n\t\t\t\t\t\t\t\t\t" . 's.last_used > "' . $db->escape($last_used) . '"';
 							}
 
 							$fields_sql = array('s.user_id', 's.pass', 's.ip');
@@ -290,7 +293,7 @@
 
 										if ($config['auth_token'] === NULL && $this->session_cookies && config::get('output.mode') === NULL) { // Not a gateway/maintenance/asset script
 
-											$cookie_age = (time() + $this->session_length); // Update cookie expiry date/time on client
+											$cookie_age = new timestamp($this->session_length . ' seconds');
 
 											cookie::set($this->session_name . '_id', $session_id, $cookie_age);
 											cookie::set($this->session_name . '_pass', $session_pass, $cookie_age);
@@ -393,9 +396,14 @@
 			private function _session_start($user_id) {
 
 				//--------------------------------------------------
-				// Process previous sessions
+				// Config
 
 					$db = $this->db_get();
+
+					$now = new timestamp();
+
+				//--------------------------------------------------
+				// Process previous sessions
 
 					if ($this->session_concurrent !== true) {
 						if ($this->session_history == 0) {
@@ -409,8 +417,6 @@
 											' . $this->db_where_sql['session']);
 
 						} else {
-
-							$now = new timestamp();
 
 							$db->query('UPDATE
 											' . $db->escape_table($this->db_table['session']) . ' AS s
@@ -428,22 +434,26 @@
 
 					if ($this->session_history >= 0) { // TODO: Check usage (inc session start and logout)
 
+						$deleted_before = new timestamp((0 - $this->session_history) . ' seconds');
+
 						$db->query('DELETE FROM
 										s
 									USING
 										' . $db->escape_table($this->db_table['session']) . ' AS s
 									WHERE
 										s.deleted != "0000-00-00 00:00:00" AND
-										s.deleted < "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->session_history))) . '"');
+										s.deleted < "' . $db->escape($deleted_before) . '"');
 
 						if ($this->session_length > 0) {
+
+							$last_used = new timestamp((0 - $this->session_length - $this->session_history) . ' seconds');
 
 							$db->query('DELETE FROM
 											s
 										USING
 											' . $db->escape_table($this->db_table['session']) . ' AS s
 										WHERE
-											s.last_used < "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->session_length - $this->session_history))) . '" AND
+											s.last_used < "' . $db->escape($last_used) . '" AND
 											' . $this->db_where_sql['session']);
 
 						}
@@ -457,8 +467,6 @@
 
 				//--------------------------------------------------
 				// Create a new session
-
-					$now = new timestamp();
 
 					$db->insert($this->db_table['session'], array(
 							'pass'      => hash($this->session_hash, $session_pass),
@@ -477,7 +485,7 @@
 
 					if ($this->session_cookies) {
 
-						$cookie_age = (time() + $this->session_length);
+						$cookie_age = new timestamp($this->session_length . ' seconds');
 
 						cookie::set($this->session_name . '_id', $session_id, $cookie_age);
 						cookie::set($this->session_name . '_pass', $session_pass, $cookie_age);
@@ -506,7 +514,13 @@
 							'max_length' => $this->identification_max_length,
 						), $config);
 
-					$field = new form_field_text($form, $config['label'], $config['name']);
+					if ($this->identification_type == 'username') {
+						$field = new form_field_text($form, $config['label'], $config['name']);
+					} else {
+						$field = new form_field_email($form, $config['label'], $config['name']);
+						$field->format_error_set($this->text['identification_format']);
+					}
+
 					$field->min_length_set($this->text['identification_min_len']);
 					$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
 					$field->autocomplete_set('username');
@@ -604,7 +618,7 @@
 					//--------------------------------------------------
 					// Remember identification
 
-						if ($this->login_remember) {
+						if ($this->login_last_cookie !== NULL) {
 							cookie::set($this->login_last_cookie, $this->login_details['identification'], '+30 days');
 						}
 
@@ -616,7 +630,11 @@
 				}
 
 				public function login_last_get() {
-					return cookie::get($this->login_last_cookie);
+					if ($this->login_last_cookie !== NULL) {
+						return cookie::get($this->login_last_cookie);
+					} else {
+						return NULL;
+					}
 				}
 
 		//--------------------------------------------------
@@ -627,31 +645,58 @@
 
 				public function register_field_identification_get($form, $config = array()) {
 
-					// $config = array_merge(array(
-					// 		'label' => $this->text['identification_label'], - Username
-					// 		'name' => 'identification',
-					// 		'max_length' => $this->identification_max_length,
-					// 	), $config);
+					$config = array_merge(array(
+							'label' => $this->text['identification_label'], // Not identification_new_label as that is for the update (profile) pages... i.e. when changing.
+							'name' => 'identification',
+							'max_length' => $this->identification_max_length,
+						), $config);
+
+					if ($this->identification_type == 'username') {
+						$field = new form_field_text($form, $config['label'], $config['name']);
+					} else {
+						$field = new form_field_email($form, $config['label'], $config['name']);
+						$field->format_error_set($this->text['identification_format']);
+					}
+
+					$field->min_length_set($this->text['identification_min_len']);
+					$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
+					$field->autocomplete_set('username');
+
+					return $this->register_field_identification = $field;
 
 				}
 
 				public function register_field_password_1_get($form, $config = array()) {
 
-					// $config = array_merge(array(
-					// 		'label' => $this->text['password_label'], - Password
-					// 		'name' => 'password',
-					// 		'max_length' => 250,
-					// 	), $config);
+					$config = array_merge(array(
+							'label' => $this->text['password_label'],
+							'name' => 'password',
+							'max_length' => 250,
+						), $config);
+
+					$field = new form_field_password($form, $config['label'], $config['name']);
+					$field->min_length_set($this->text['password_min_len']);
+					$field->max_length_set($this->text['password_max_len'], $config['max_length']);
+					$field->autocomplete_set('new-password');
+
+					return $this->register_field_password_1 = $field;
 
 				}
 
 				public function register_field_password_2_get($form, $config = array()) {
 
-					// $config = array_merge(array(
-					// 		'label' => $this->text['password_label'], - Repeat Password
-					// 		'name' => 'password',
-					// 		'max_length' => 250,
-					// 	), $config);
+					$config = array_merge(array(
+							'label' => $this->text['password_repeat_label'],
+							'name' => 'password',
+							'max_length' => 250,
+						), $config);
+
+					$field = new form_field_password($form, $config['label'], $config['name']);
+					$field->min_length_set($this->text['password_min_len']);
+					$field->max_length_set($this->text['password_max_len'], $config['max_length']);
+					$field->autocomplete_set('new-password');
+
+					return $this->register_field_password_2 = $field;
 
 				}
 
@@ -823,9 +868,14 @@
 			protected function validate_login($identification, $password) {
 
 				//--------------------------------------------------
-				// Account details
+				// Config
 
 					$db = $this->db_get();
+
+					$now = new timestamp();
+
+				//--------------------------------------------------
+				// Account details
 
 					if ($identification === NULL) {
 						$where_sql = 'm.' . $db->escape_field($this->db_fields['main']['id']) . ' = "' . $db->escape($this->id_get()) . '"';
@@ -870,6 +920,8 @@
 							exit_with_error('Unknown logout mode (' . $this->lockout_mode . ')');
 						}
 
+						$created_after = new timestamp((0 - $this->lockout_timeout) . ' seconds');
+
 						$db->query('SELECT
 										1
 									FROM
@@ -879,7 +931,7 @@
 											' . implode(' OR ', $where_sql) . '
 										) AND
 										s.pass = "" AND
-										s.created > "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->lockout_timeout))) . '" AND
+										s.created > "' . $db->escape($created_after) . '" AND
 										' . $this->db_where_sql['session']);
 
 						if ($db->num_rows() >= $this->lockout_attempts) { // Once every 30 seconds, for the 30 minutes
@@ -952,8 +1004,6 @@
 					$request_ip = config::get('request.ip');
 
 					if (!in_array($request_ip, config::get('auth.ip_whitelist', array()))) {
-
-						$now = new timestamp();
 
 						$db->insert($this->db_table['session'], array(
 								'pass' => '', // Will remain blank to record failure
