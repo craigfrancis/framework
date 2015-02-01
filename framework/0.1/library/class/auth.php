@@ -21,6 +21,7 @@
 
 			protected $identification_type = 'email';
 			protected $identification_max_length = NULL;
+			protected $password_min_length = 6;
 			protected $text = array();
 
 			protected $db_link = NULL;
@@ -37,6 +38,12 @@
 			protected $register_field_password_1 = NULL;
 			protected $register_field_password_2 = NULL;
 			protected $register_details = NULL;
+
+			protected $update_field_identification = NULL;
+			protected $update_field_password_old = NULL;
+			protected $update_field_password_new_1 = NULL;
+			protected $update_field_password_new_2 = NULL;
+			protected $update_details = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -64,18 +71,11 @@
 							'identification_max_len'         => 'Your email address cannot be longer than XXX characters.',
 							'identification_format'          => 'Your email address does not appear to be correct.',
 
-							'identification_new_label'       => 'Email', // Used on profile/update page (not registration)
-							'identification_new_min_len'     => 'Your email address is required.',
-							'identification_new_max_len'     => 'Your email address cannot be longer than XXX characters.',
-							'identification_new_format'      => 'Your email address does not appear to be correct.',
-
 							'password_label'                 => 'Password',
-							'password_min_len'               => 'Your password is required.',
-							'password_max_len'               => 'Your password cannot be longer than XXX characters.',
-
+							'password_old_label'             => 'Current password',
 							'password_new_label'             => 'New password',
-							'password_new_min_len'           => 'Your new password is required.',
-							'password_new_max_len'           => 'Your new password cannot be longer than XXX characters.',
+							'password_min_len'               => 'Your password must be at least XXX characters.',
+							'password_max_len'               => 'Your password cannot be longer than XXX characters.',
 
 							'password_repeat_label'          => 'Repeat password',
 							'password_repeat_min_len'        => 'Your password confirmation is required.',
@@ -99,10 +99,6 @@
 						$this->text['identification_label'] = 'Username';
 						$this->text['identification_min_len'] = 'Your username is required.';
 						$this->text['identification_max_len'] = 'Your username cannot be longer than XXX characters.';
-
-						$this->text['identification_new_label'] = 'Username';
-						$this->text['identification_new_min_len'] = 'Your username is required.';
-						$this->text['identification_new_max_len'] = 'Your username cannot be longer than XXX characters.';
 
 						$this->text['failure_identification_current'] = 'The username supplied is already in use.';
 						$this->text['failure_reset_identification'] = 'Your username has not been recognised.';
@@ -323,64 +319,14 @@
 			}
 
 			public function session_required($login_url) {
-				$session_info = $this->session_get();
-				if (!$session_info) {
-					save_request_redirect($login_url, $this->login_last_get()); // TODO: Test
+				if ($this->session_info === NULL) {
+					save_request_redirect($login_url, $this->login_last_get());
 				}
 			}
 
-			public function session_logout() {
-
-				//--------------------------------------------------
-				// Delete the current session
-
-					if ($this->session_info) { // TODO: Test
-
-						$db = $this->db_get();
-
-						if ($this->session_history == 0) {
-
-							$db->query('DELETE FROM
-											s
-										USING
-											' . $db->escape_table($this->db_table['session']) . ' AS s
-										WHERE
-											s.id = "' . $db->escape($this->session_info['id']) . '" AND
-											' . $this->db_where_sql['session']);
-
-						} else {
-
-							$now = new timestamp();
-
-							$db->query('UPDATE
-											' . $db->escape_table($this->db_table['session']) . ' AS s
-										SET
-											s.deleted = "' . $db->escape($now) . '"
-										WHERE
-											s.id = "' . $db->escape($this->session_info['id']) . '" AND
-											' . $this->db_where_sql['session']);
-
-						}
-
-					}
-
-				//--------------------------------------------------
-				// Be nice, and cleanup - not necessary
-
-					if ($this->session_cookies) {
-						cookie::delete($this->session_name . '_id');
-						cookie::delete($this->session_name . '_pass');
-					} else {
-						session::regenerate(); // State change, new session id
-						session::delete($this->session_name . '_id');
-						session::delete($this->session_name . '_pass');
-					}
-
-			}
-
-			public function session_token_get() {
+			public function session_user_id_get() {
 				if ($this->session_info !== NULL) {
-					return $this->session_info['id'] . '-' . $this->session_pass;
+					return $this->session_info['user_id'];
 				} else {
 					return NULL;
 				}
@@ -394,7 +340,15 @@
 				}
 			}
 
-			protected function session_start($user_id) {
+			public function session_token_get() {
+				if ($this->session_info !== NULL) {
+					return $this->session_info['id'] . '-' . $this->session_pass;
+				} else {
+					return NULL;
+				}
+			}
+
+			protected function session_start($user_id) { // See the login_* or register_* functions (don't call directly)
 
 				//--------------------------------------------------
 				// Config
@@ -501,6 +455,55 @@
 
 			}
 
+			public function session_logout() {
+
+				//--------------------------------------------------
+				// Delete the current session
+
+					if ($this->session_info) { // TODO: Test
+
+						$db = $this->db_get();
+
+						if ($this->session_history == 0) {
+
+							$db->query('DELETE FROM
+											s
+										USING
+											' . $db->escape_table($this->db_table['session']) . ' AS s
+										WHERE
+											s.id = "' . $db->escape($this->session_info['id']) . '" AND
+											' . $this->db_where_sql['session']);
+
+						} else {
+
+							$now = new timestamp();
+
+							$db->query('UPDATE
+											' . $db->escape_table($this->db_table['session']) . ' AS s
+										SET
+											s.deleted = "' . $db->escape($now) . '"
+										WHERE
+											s.id = "' . $db->escape($this->session_info['id']) . '" AND
+											' . $this->db_where_sql['session']);
+
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Be nice, and cleanup - not necessary
+
+					if ($this->session_cookies) {
+						cookie::delete($this->session_name . '_id');
+						cookie::delete($this->session_name . '_pass');
+					} else {
+						session::regenerate(); // State change, new session id
+						session::delete($this->session_name . '_id');
+						session::delete($this->session_name . '_pass');
+					}
+
+			}
+
 		//--------------------------------------------------
 		// Login
 
@@ -539,11 +542,12 @@
 					$config = array_merge(array(
 							'label' => $this->text['password_label'],
 							'name' => 'password',
+							'min_length' => $this->password_min_length,
 							'max_length' => 250,
 						), $config);
 
 					$field = new form_field_password($form, $config['label'], $config['name']);
-					$field->min_length_set($this->text['password_min_len']);
+					$field->min_length_set($this->text['password_min_len'], $config['min_length']);
 					$field->max_length_set($this->text['password_max_len'], $config['max_length']);
 					$field->autocomplete_set('current-password');
 
@@ -638,6 +642,11 @@
 						$this->session_start($this->login_details['id']);
 
 					//--------------------------------------------------
+					// Try to restore session
+
+						save_request_restore($this->login_details['identification']);
+
+					//--------------------------------------------------
 					// Return
 
 						return $this->login_details['id'];
@@ -692,11 +701,12 @@
 					$config = array_merge(array(
 							'label' => $this->text['password_label'],
 							'name' => 'password',
+							'min_length' => $this->password_min_length,
 							'max_length' => 250,
 						), $config);
 
 					$field = new form_field_password($form, $config['label'], $config['name']);
-					$field->min_length_set($this->text['password_min_len']);
+					$field->min_length_set($this->text['password_min_len'], $config['min_length']);
 					$field->max_length_set($this->text['password_max_len'], $config['max_length']);
 					$field->autocomplete_set('new-password');
 
@@ -708,13 +718,14 @@
 
 					$config = array_merge(array(
 							'label' => $this->text['password_repeat_label'],
-							'name' => 'password',
+							'name' => 'password_repeat',
+							'min_length' => $this->password_min_length,
 							'max_length' => 250,
 						), $config);
 
 					$field = new form_field_password($form, $config['label'], $config['name']);
-					$field->min_length_set($this->text['password_min_len']);
-					$field->max_length_set($this->text['password_max_len'], $config['max_length']);
+					$field->min_length_set($this->text['password_repeat_min_len'], $config['min_length']);
+					$field->max_length_set($this->text['password_repeat_max_len'], $config['max_length']);
 					$field->autocomplete_set('new-password');
 
 					return $this->register_field_password_2 = $field;
@@ -865,30 +876,68 @@
 			//--------------------------------------------------
 			// Fields
 
-				public function update_field_password_old_get($form, $config = array()) {
+				public function update_field_identification_get($form, $config = array()) {
 
-					// $config = array_merge(array(
-					// 		'label' => $this->text['password_label'], - Current Password
-					// 		'name' => 'password',
-					// 		'max_length' => 250,
-					// 	), $config);
+					$config = array_merge(array(
+							'label' => $this->text['identification_label'],
+							'name' => 'identification',
+							'max_length' => $this->identification_max_length,
+						), $config);
 
-					// Optional?
+					if ($this->identification_type == 'username') {
+						$field = new form_field_text($form, $config['label'], $config['name']);
+					} else {
+						$field = new form_field_email($form, $config['label'], $config['name']);
+						$field->format_error_set($this->text['identification_format']);
+					}
+
+					$field->min_length_set($this->text['identification_min_len']);
+					$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
+					$field->autocomplete_set('username');
+
+					$field->db_field_set($this->db_fields['main']['identification']);
+
+					return $this->update_field_identification = $field;
+
+				}
+
+				public function update_field_password_old_get($form, $config = array()) { // Optional
+
+					$config = array_merge(array(
+							'label' => $this->text['password_old_label'],
+							'name' => 'password_old',
+							'min_length' => $this->password_min_length,
+							'max_length' => 250,
+						), $config);
+
+					$field = new form_field_password($form, $config['label'], $config['name']);
+					$field->min_length_set($this->text['password_min_len'], $config['min_length']);
+					$field->max_length_set($this->text['password_max_len'], $config['max_length']);
+					$field->autocomplete_set('current-password');
+
+					return $this->update_field_password_old = $field;
 
 				}
 
 				public function update_field_password_new_1_get($form, $config = array()) {
 
-					// $config = array_merge(array(
-					// 		'label' => $this->text['password_label'], - New Password
-					// 		'name' => 'password',
-					// 		'max_length' => 250,
-					// 	), $config);
-
 					$config = array_merge(array(
+							'label' => $this->text['password_new_label'],
 							'name' => 'password',
-							'required' => true, // Default required (register page, or re-confirm on profile page)
+							'required' => false,
+							'min_length' => $this->password_min_length,
+							'max_length' => 250,
 						), $config);
+
+					$field = new form_field_password($form, $config['label'], $config['name']);
+					$field->max_length_set($this->text['password_max_len'], $config['max_length']);
+					$field->autocomplete_set('new-password');
+
+					if ($config['required']) {
+						$field->min_length_set($this->text['password_min_len'], $config['min_length']);
+					}
+
+					return $this->update_field_password_new_1 = $field;
 
 					// Required?
 
@@ -908,6 +957,14 @@
 			// Request
 
 				public function update_validate() {
+
+					if ($this->update_field_password_old) {
+						// Might not be needed.
+					}
+
+
+					// Identification and password_old optional?
+
 					// $this->validate_login(NULL, $password); // Check the old password
 					// $this->validate_password(); // A good new password
 					// Repeat password is the same
@@ -922,11 +979,11 @@
 			//--------------------------------------------------
 			// Fields
 
-				public function reset_field_identification_get($form, $config = array()) {
+				public function reset_field_email_get($form, $config = array()) {
 
 					// $config = array_merge(array(
-					// 		'label' => $this->text['identification_label'], - Username
-					// 		'name' => 'identification',
+					// 		'label' => $this->text['xxx_label'], // Must be email, username will be known and can be used to spam.
+					// 		'name' => 'email',
 					// 		'max_length' => $this->identification_max_length,
 					// 	), $config);
 
@@ -1023,19 +1080,7 @@
 			}
 
 			protected function validate_password($password) {
-
-				//--------------------------------------------------
-				// Basic requirements (min length, complexity, etc)
-
-					if (strlen($password) <= 6) {
-						return 'Your password should be at least 6 characters long.';
-					}
-
-				//--------------------------------------------------
-				// Valid
-
-					return true;
-
+				return true; // Could set additional complexity requirements (making the password harder to remember)
 			}
 
 			protected function validate_login($identification, $password) {
