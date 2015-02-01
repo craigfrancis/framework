@@ -36,6 +36,7 @@
 			protected $register_field_identification = NULL;
 			protected $register_field_password_1 = NULL;
 			protected $register_field_password_2 = NULL;
+			protected $register_details = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -63,7 +64,7 @@
 							'identification_max_len'         => 'Your email address cannot be longer than XXX characters.',
 							'identification_format'          => 'Your email address does not appear to be correct.',
 
-							'identification_new_label'       => 'Email',
+							'identification_new_label'       => 'Email', // Used on profile/update page (not registration)
 							'identification_new_min_len'     => 'Your email address is required.',
 							'identification_new_max_len'     => 'Your email address cannot be longer than XXX characters.',
 							'identification_new_format'      => 'Your email address does not appear to be correct.',
@@ -333,7 +334,7 @@
 				//--------------------------------------------------
 				// Delete the current session
 
-					if ($this->session_info) {
+					if ($this->session_info) { // TODO: Test
 
 						$db = $this->db_get();
 
@@ -393,7 +394,7 @@
 				}
 			}
 
-			private function _session_start($user_id) {
+			protected function session_start($user_id) {
 
 				//--------------------------------------------------
 				// Config
@@ -574,7 +575,7 @@
 
 							if ($result === 'failure_identification') {
 
-								$form->error_add($this->text['failure_login_identification']);
+								$form->error_add($this->text['failure_login_identification']); // Do NOT attach to specific input field (identifies which value is wrong).
 
 							} else if ($result === 'failure_password') {
 
@@ -584,7 +585,15 @@
 
 								$form->error_add($this->text['failure_login_repetition']);
 
-							} else if (is_int($result)) {
+							} else if (is_string($result)) {
+
+								$form->error_add($result); // Custom (project specific) error message.
+
+							} else if (!is_int($result)) {
+
+								exit_with_error('Unknown response from validate_login()', $result);
+
+							} else {
 
 								$this->login_details = array(
 										'id' => $result,
@@ -592,13 +601,16 @@
 										'form' => $form,
 									);
 
-							} else {
-
-								exit_with_error('Unknown response from validate_login(),', $result);
+								return $result; // Success (return user_id, which is true-ish)
 
 							}
 
 						}
+
+					//--------------------------------------------------
+					// Failure
+
+						return false;
 
 				}
 
@@ -618,14 +630,17 @@
 					//--------------------------------------------------
 					// Remember identification
 
-						if ($this->login_last_cookie !== NULL) {
-							cookie::set($this->login_last_cookie, $this->login_details['identification'], '+30 days');
-						}
+						$this->login_last_set($this->login_details['identification']);
 
 					//--------------------------------------------------
 					// Start session
 
-						$this->_session_start($this->login_details['id']);
+						$this->session_start($this->login_details['id']);
+
+					//--------------------------------------------------
+					// Return
+
+						return $this->login_details['id'];
 
 				}
 
@@ -634,6 +649,12 @@
 						return cookie::get($this->login_last_cookie);
 					} else {
 						return NULL;
+					}
+				}
+
+				protected function login_last_set($identification) {
+					if ($this->login_last_cookie !== NULL) {
+						cookie::set($this->login_last_cookie, $identification, '+30 days');
 					}
 				}
 
@@ -646,7 +667,7 @@
 				public function register_field_identification_get($form, $config = array()) {
 
 					$config = array_merge(array(
-							'label' => $this->text['identification_label'], // Not identification_new_label as that is for the update (profile) pages... i.e. when changing.
+							'label' => $this->text['identification_label'],
 							'name' => 'identification',
 							'max_length' => $this->identification_max_length,
 						), $config);
@@ -704,27 +725,137 @@
 			// Request
 
 				public function register_validate() {
-					$this->validate_username();
-					$this->validate_password();
-					// Repeat password is the same
+
+					//--------------------------------------------------
+					// Config
+
+						$form = $this->register_field_identification->form_get();
+
+						$identification = $this->register_field_identification->value_get();
+						$password_1 = $this->register_field_password_1->value_get();
+						$password_2 = $this->register_field_password_2->value_get();
+
+						$this->register_details = NULL; // Make sure (if called more than once)
+
+					//--------------------------------------------------
+					// Validate identification
+
+						$result = $this->validate_identification($identification, NULL);
+
+						if ($result === 'failure_current') {
+
+							$this->register_field_identification->error_add($this->text['failure_identification_current']);
+
+						} else if (is_string($result)) {
+
+							$form->error_add($result); // Custom (project specific) error message
+
+						} else if ($result !== true) {
+
+							exit_with_error('Unknown response from validate_identification()', $result);
+
+						}
+
+					//--------------------------------------------------
+					// Validate password
+
+						$result = $this->validate_password($password_1);
+
+						if (is_string($result)) {
+
+							$this->register_field_password_1->error_add($result); // Custom (project specific) error message
+
+						} else if ($result !== true) {
+
+							exit_with_error('Unknown response from validate_password()', $result);
+
+						} else if ($password_1 != $password_2) {
+
+							$this->register_field_password_2->error_add($this->text['failure_password_repeat']);
+
+						}
+
+					//--------------------------------------------------
+					// Return
+
+						if ($form->valid()) { // Basic checks such as required fields, and CSRF
+
+							$this->register_details = array(
+									'identification' => $identification,
+									'password' => $password_1,
+									'form' => $form,
+								);
+
+							return true;
+
+						} else {
+
+							return false;
+
+						}
+
 				}
 
 				public function register_complete($config = array()) {
 
-					$config = array_merge(array(
-							'login' => true,
-						), $config);
+					//--------------------------------------------------
+					// Config
 
-					$form->db_value_set('username', 1); // or email?
-					$form->db_value_set('password', 1);
-					$form->db_save();
+						$config = array_merge(array(
+								'login' => true,
+							), $config);
 
-					if ($config['login']) {
-						$this->_session_start();
-					}
+						if (!$this->register_details) {
+							exit_with_error('You need to call the auth register_validate() method first.');
+						}
 
-					// Should we INSERT or accept the user ID?
-					// Set the login_last cookie.
+						if (!$this->register_details['form']->valid()) {
+							exit_with_error('The form is not valid, so why has register_complete() been called?');
+						}
+
+						$form = $this->register_details['form'];
+
+						$db = $this->db_get();
+
+					//--------------------------------------------------
+					// Register
+
+						$form->db_value_set($this->db_fields['main']['identification'], $this->register_details['identification']);
+
+						$user_id = $form->db_insert();
+
+					//--------------------------------------------------
+					// Password
+
+						$password_hash = password::hash($this->register_details['password'], $user_id);
+
+						$db->query('UPDATE
+										' . $db->escape_table($this->db_table['main']) . ' AS m
+									SET
+										m.' . $db->escape_field($this->db_fields['main']['password']) . ' = "' . $db->escape($password_hash) . '"
+									WHERE
+										m.' . $db->escape_field($this->db_fields['main']['id']) . ' = "' . $db->escape($user_id) . '" AND
+										m.' . $db->escape_field($this->db_fields['main']['deleted']) . ' = "0000-00-00 00:00:00" AND
+										' . $this->db_where_sql['main'] . '
+									LIMIT
+										1');
+
+					//--------------------------------------------------
+					// Remember identification
+
+						$this->login_last_set($this->register_details['identification']);
+
+					//--------------------------------------------------
+					// Start session
+
+						if ($config['login']) {
+							$this->session_start($user_id);
+						}
+
+					//--------------------------------------------------
+					// Return
+
+						return $user_id;
 
 				}
 
@@ -777,7 +908,8 @@
 			// Request
 
 				public function update_validate() {
-					$this->validate_password();
+					// $this->validate_login(NULL, $password); // Check the old password
+					// $this->validate_password(); // A good new password
 					// Repeat password is the same
 				}
 
@@ -857,12 +989,53 @@
 		//--------------------------------------------------
 		// Support functions
 
-			protected function validate_username($username) {
-				return true; // Unique identification
+			protected function validate_identification($identification, $user_id) {
+
+				//--------------------------------------------------
+				// Config
+
+					$db = $this->db_get();
+
+				//--------------------------------------------------
+				// Account details
+
+					$sql = 'SELECT
+								1
+							FROM
+								' . $db->escape_table($this->db_table['main']) . ' AS m
+							WHERE
+								m.' . $db->escape_field($this->db_fields['main']['identification']) . ' = "' . $db->escape($identification) . '" AND
+								m.' . $db->escape_field($this->db_fields['main']['id']) . ' != "' . $db->escape($user_id) . '" AND
+								m.' . $db->escape_field($this->db_fields['main']['deleted'])  . ' = "0000-00-00 00:00:00" AND
+								' . $this->db_where_sql['main'] . '
+							LIMIT
+								1';
+
+					if ($row = $db->fetch_row($sql)) {
+						return 'failure_current';
+					}
+
+				//--------------------------------------------------
+				// Valid
+
+					return true;
+
 			}
 
 			protected function validate_password($password) {
-				return true; // Min length, complexity, etc
+
+				//--------------------------------------------------
+				// Basic requirements (min length, complexity, etc)
+
+					if (strlen($password) <= 6) {
+						return 'Your password should be at least 6 characters long.';
+					}
+
+				//--------------------------------------------------
+				// Valid
+
+					return true;
+
 			}
 
 			protected function validate_login($identification, $password) {
@@ -975,9 +1148,9 @@
 												SET
 													m.' . $db->escape_field($this->db_fields['main']['password']) . ' = "' . $db->escape($new_hash) . '"
 												WHERE
-													' . $this->db_where_sql['main'] . ' AND
 													m.' . $db->escape_field($this->db_fields['main']['id']) . ' = "' . $db->escape($db_id) . '" AND
-													m.' . $db->escape_field($this->db_fields['main']['deleted']) . ' = "0000-00-00 00:00:00"
+													m.' . $db->escape_field($this->db_fields['main']['deleted']) . ' = "0000-00-00 00:00:00" AND
+													' . $this->db_where_sql['main'] . '
 												LIMIT
 													1');
 
