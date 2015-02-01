@@ -22,6 +22,7 @@
 			protected $identification_type = 'email';
 			protected $identification_max_length = NULL;
 			protected $password_min_length = 6;
+			protected $password_max_length = 250;
 			protected $text = array();
 
 			protected $db_link = NULL;
@@ -512,22 +513,11 @@
 
 				public function login_field_identification_get($form, $config = array()) {
 
-					$config = array_merge(array(
+					$field = $this->field_identification_get($form, array_merge(array(
 							'label' => $this->text['identification_label'],
 							'name' => 'identification',
 							'max_length' => $this->identification_max_length,
-						), $config);
-
-					if ($this->identification_type == 'username') {
-						$field = new form_field_text($form, $config['label'], $config['name']);
-					} else {
-						$field = new form_field_email($form, $config['label'], $config['name']);
-						$field->format_error_set($this->text['identification_format']);
-					}
-
-					$field->min_length_set($this->text['identification_min_len']);
-					$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
-					$field->autocomplete_set('username');
+						), $config));
 
 					if ($form->initial()) {
 						$field->value_set($this->login_last_get());
@@ -539,17 +529,15 @@
 
 				public function login_field_password_get($form, $config = array()) {
 
-					$config = array_merge(array(
+					$field = $this->field_password_1_get($form, array_merge(array(
 							'label' => $this->text['password_label'],
 							'name' => 'password',
 							'min_length' => $this->password_min_length,
-							'max_length' => 250,
-						), $config);
-
-					$field = new form_field_password($form, $config['label'], $config['name']);
-					$field->min_length_set($this->text['password_min_len'], $config['min_length']);
-					$field->max_length_set($this->text['password_max_len'], $config['max_length']);
-					$field->autocomplete_set('current-password');
+							'max_length' => $this->password_max_length,
+						), $config, array(
+							'required' => true,
+							'autocomplete' => 'current-password',
+						)));
 
 					return $this->login_field_password = $field;
 
@@ -675,22 +663,11 @@
 
 				public function register_field_identification_get($form, $config = array()) {
 
-					$config = array_merge(array(
+					$field = $this->field_identification_get($form, array_merge(array(
 							'label' => $this->text['identification_label'],
 							'name' => 'identification',
 							'max_length' => $this->identification_max_length,
-						), $config);
-
-					if ($this->identification_type == 'username') {
-						$field = new form_field_text($form, $config['label'], $config['name']);
-					} else {
-						$field = new form_field_email($form, $config['label'], $config['name']);
-						$field->format_error_set($this->text['identification_format']);
-					}
-
-					$field->min_length_set($this->text['identification_min_len']);
-					$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
-					$field->autocomplete_set('username');
+						), $config));
 
 					return $this->register_field_identification = $field;
 
@@ -698,17 +675,15 @@
 
 				public function register_field_password_1_get($form, $config = array()) {
 
-					$config = array_merge(array(
+					$field = $this->field_password_1_get($form, array_merge(array(
 							'label' => $this->text['password_label'],
 							'name' => 'password',
 							'min_length' => $this->password_min_length,
-							'max_length' => 250,
-						), $config);
-
-					$field = new form_field_password($form, $config['label'], $config['name']);
-					$field->min_length_set($this->text['password_min_len'], $config['min_length']);
-					$field->max_length_set($this->text['password_max_len'], $config['max_length']);
-					$field->autocomplete_set('new-password');
+							'max_length' => $this->password_max_length,
+						), $config, array(
+							'required' => true,
+							'autocomplete' => 'new-password',
+						)));
 
 					return $this->register_field_password_1 = $field;
 
@@ -716,17 +691,14 @@
 
 				public function register_field_password_2_get($form, $config = array()) {
 
-					$config = array_merge(array(
+					$field = $this->field_password_2_get($form, array_merge(array(
 							'label' => $this->text['password_repeat_label'],
 							'name' => 'password_repeat',
 							'min_length' => $this->password_min_length,
-							'max_length' => 250,
-						), $config);
-
-					$field = new form_field_password($form, $config['label'], $config['name']);
-					$field->min_length_set($this->text['password_repeat_min_len'], $config['min_length']);
-					$field->max_length_set($this->text['password_repeat_max_len'], $config['max_length']);
-					$field->autocomplete_set('new-password');
+							'max_length' => $this->password_max_length,
+						), $config, array(
+							'required' => true,
+						)));
 
 					return $this->register_field_password_2 = $field;
 
@@ -878,22 +850,11 @@
 
 				public function update_field_identification_get($form, $config = array()) {
 
-					$config = array_merge(array(
+					$field = $this->field_identification_get($form, array_merge(array(
 							'label' => $this->text['identification_label'],
 							'name' => 'identification',
 							'max_length' => $this->identification_max_length,
-						), $config);
-
-					if ($this->identification_type == 'username') {
-						$field = new form_field_text($form, $config['label'], $config['name']);
-					} else {
-						$field = new form_field_email($form, $config['label'], $config['name']);
-						$field->format_error_set($this->text['identification_format']);
-					}
-
-					$field->min_length_set($this->text['identification_min_len']);
-					$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
-					$field->autocomplete_set('username');
+						), $config));
 
 					$field->db_field_set($this->db_fields['main']['identification']);
 
@@ -903,17 +864,15 @@
 
 				public function update_field_password_old_get($form, $config = array()) { // Optional
 
-					$config = array_merge(array(
+					$field = $this->field_password_1_get($form, array_merge(array(
 							'label' => $this->text['password_old_label'],
-							'name' => 'password_old',
+							'name' => 'password',
 							'min_length' => $this->password_min_length,
-							'max_length' => 250,
-						), $config);
-
-					$field = new form_field_password($form, $config['label'], $config['name']);
-					$field->min_length_set($this->text['password_min_len'], $config['min_length']);
-					$field->max_length_set($this->text['password_max_len'], $config['max_length']);
-					$field->autocomplete_set('current-password');
+							'max_length' => $this->password_max_length,
+						), $config, array(
+							'required' => true,
+							'autocomplete' => 'current-password',
+						)));
 
 					return $this->update_field_password_old = $field;
 
@@ -921,35 +880,31 @@
 
 				public function update_field_password_new_1_get($form, $config = array()) {
 
-					$config = array_merge(array(
+					$field = $this->field_password_1_get($form, array_merge(array(
 							'label' => $this->text['password_new_label'],
-							'name' => 'password',
+							'name' => 'password_new',
 							'required' => false,
 							'min_length' => $this->password_min_length,
-							'max_length' => 250,
-						), $config);
-
-					$field = new form_field_password($form, $config['label'], $config['name']);
-					$field->max_length_set($this->text['password_max_len'], $config['max_length']);
-					$field->autocomplete_set('new-password');
-
-					if ($config['required']) {
-						$field->min_length_set($this->text['password_min_len'], $config['min_length']);
-					}
+							'max_length' => $this->password_max_length,
+						), $config, array(
+							'autocomplete' => 'new-password',
+						)));
 
 					return $this->update_field_password_new_1 = $field;
-
-					// Required?
 
 				}
 
 				public function update_field_password_new_2_get($form, $config = array()) {
 
-					// $config = array_merge(array(
-					// 		'label' => $this->text['password_label'], - Repeat Password
-					// 		'name' => 'password',
-					// 		'max_length' => 250,
-					// 	), $config);
+					$field = $this->field_password_2_get($form, array_merge(array(
+							'label' => $this->text['password_repeat_label'],
+							'name' => 'password_repeat',
+							'required' => false,
+							'min_length' => $this->password_min_length,
+							'max_length' => $this->password_max_length,
+						), $config));
+
+					return $this->update_field_password_new_2 = $field;
 
 				}
 
@@ -1239,6 +1194,54 @@
 				// Return error
 
 					return $error;
+
+			}
+
+		//--------------------------------------------------
+		// Fields
+
+			protected function field_identification_get($form, $config) {
+
+				if ($this->identification_type == 'username') {
+					$field = new form_field_text($form, $config['label'], $config['name']);
+				} else {
+					$field = new form_field_email($form, $config['label'], $config['name']);
+					$field->format_error_set($this->text['identification_format']);
+				}
+
+				$field->min_length_set($this->text['identification_min_len']);
+				$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
+				$field->autocomplete_set('username');
+
+				return $field;
+
+			}
+
+			public function field_password_1_get($form, $config) {
+
+				$field = new form_field_password($form, $config['label'], $config['name']);
+				$field->max_length_set($this->text['password_max_len'], $config['max_length']);
+				$field->autocomplete_set($config['autocomplete']);
+
+				if ($config['required']) {
+					$field->min_length_set($this->text['password_min_len'], $config['min_length']);
+				}
+
+				return $field;
+
+			}
+
+			public function field_password_2_get($form, $config) {
+
+				$field = new form_field_password($form, $config['label'], $config['name']);
+				$field->max_length_set($this->text['password_repeat_max_len'], $config['max_length']);
+				$field->autocomplete_set('new-password');
+
+				if ($config['required']) {
+					$field->min_length_set($this->text['password_repeat_min_len'], $config['min_length']);
+				}
+
+				return $field;
 
 			}
 
