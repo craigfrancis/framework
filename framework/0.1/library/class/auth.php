@@ -52,6 +52,9 @@
 			protected $update_details = NULL;
 
 			protected $reset_field_email = NULL;
+			protected $reset_field_password_1 = NULL;
+			protected $reset_field_password_2 = NULL;
+			protected $reset_details = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -862,7 +865,7 @@
 			//--------------------------------------------------
 			// Fields
 
-				public function update_field_identification_get($form, $config = array()) { // Optional
+				public function update_field_identification_get($form, $config = array()) {
 
 					$field = $this->field_identification_get($form, array_merge(array(
 							'label' => $this->text['identification_label'],
@@ -876,7 +879,7 @@
 
 				}
 
-				public function update_field_password_old_get($form, $config = array()) { // Optional
+				public function update_field_password_old_get($form, $config = array()) {
 
 					$field = $this->field_password_1_get($form, array_merge(array(
 							'label' => $this->text['password_old_label'],
@@ -944,7 +947,7 @@
 						$this->update_details = NULL; // Make sure (if called more than once)
 
 					//--------------------------------------------------
-					// Identification
+					// Validate identification
 
 						if ($this->update_field_identification !== NULL) {
 
@@ -970,7 +973,7 @@
 						}
 
 					//--------------------------------------------------
-					// Old password
+					// Validate old password
 
 						if ($this->update_field_password_old !== NULL) {
 
@@ -1004,7 +1007,7 @@
 						}
 
 					//--------------------------------------------------
-					// New password
+					// Validate new password
 
 						if ($this->update_field_password_new_1 !== NULL) {
 
@@ -1142,7 +1145,7 @@
 					// 		'max_length' => 250,
 					// 	), $config);
 
-					// Required?
+					// Required
 
 				}
 
