@@ -597,7 +597,7 @@
 
 							} else if (!is_int($result)) {
 
-								exit_with_error('Unknown response from validate_login()', $result);
+								exit_with_error('Unknown response from auth::validate_login()', $result);
 
 							} else {
 
@@ -626,11 +626,11 @@
 					// Config
 
 						if (!$this->login_details) {
-							exit_with_error('You need to call the auth login_validate() method first.');
+							exit_with_error('You must call auth::login_validate() before auth::login_complete().');
 						}
 
 						if (!$this->login_details['form']->valid()) {
-							exit_with_error('The form is not valid, so why has login_complete() been called?');
+							exit_with_error('The form is not valid, so why has auth::login_complete() been called?');
 						}
 
 					//--------------------------------------------------
@@ -745,11 +745,11 @@
 
 						} else if (is_string($result)) {
 
-							$form->error_add($result); // Custom (project specific) error message
+							$this->register_field_identification->error_add($result); // Custom (project specific) error message
 
 						} else if ($result !== true) {
 
-							exit_with_error('Unknown response from validate_identification()', $result);
+							exit_with_error('Unknown response from auth::validate_identification()', $result);
 
 						}
 
@@ -764,7 +764,7 @@
 
 						} else if ($result !== true) {
 
-							exit_with_error('Unknown response from validate_password()', $result);
+							exit_with_error('Unknown response from auth::validate_password()', $result);
 
 						} else if ($password_1 != $password_2) {
 
@@ -775,7 +775,7 @@
 					//--------------------------------------------------
 					// Return
 
-						if ($form->valid()) { // Basic checks such as required fields, and CSRF
+						if ($form->valid()) {
 
 							$this->register_details = array(
 									'identification' => $identification,
@@ -803,11 +803,11 @@
 							), $config);
 
 						if (!$this->register_details) {
-							exit_with_error('You need to call the auth register_validate() method first.');
+							exit_with_error('You must call auth::register_validate() before auth::register_complete().');
 						}
 
 						if (!$this->register_details['form']->valid()) {
-							exit_with_error('The form is not valid, so why has register_complete() been called?');
+							exit_with_error('The form is not valid, so why has auth::register_complete() been called?');
 						}
 
 						$form = $this->register_details['form'];
@@ -862,7 +862,7 @@
 			//--------------------------------------------------
 			// Fields
 
-				public function update_field_identification_get($form, $config = array()) {
+				public function update_field_identification_get($form, $config = array()) { // Optional
 
 					$field = $this->field_identification_get($form, array_merge(array(
 							'label' => $this->text['identification_label'],
@@ -930,19 +930,182 @@
 
 				public function update_validate() {
 
-					if ($this->update_field_password_old) {
-						// Might not be needed.
-					}
+					//--------------------------------------------------
+					// Config
 
+						if ($this->session_info === NULL) {
+							exit_with_error('Cannot call auth::update_validate() when the user is not logged in.');
+						}
 
-					// Identification and password_old optional?
+						$form = NULL;
+						$new_identification = NULL;
+						$new_password = NULL;
 
-					// $this->validate_login(NULL, $password); // Check the old password
-					// $this->validate_password(); // A good new password
-					// Repeat password is the same
+						$this->update_details = NULL; // Make sure (if called more than once)
+
+					//--------------------------------------------------
+					// Identification
+
+						if ($this->update_field_identification !== NULL) {
+
+							$form = $this->update_field_identification->form_get();
+							$new_identification = $this->update_field_identification->value_get();
+
+							$result = $this->validate_identification($new_identification, $this->session_user_id_get());
+
+							if ($result === 'failure_current') {
+
+								$this->update_field_identification->error_add($this->text['failure_identification_current']);
+
+							} else if (is_string($result)) {
+
+								$this->update_field_identification->error_add($result); // Custom (project specific) error message
+
+							} else if ($result !== true) {
+
+								exit_with_error('Unknown response from auth::validate_identification()', $result);
+
+							}
+
+						}
+
+					//--------------------------------------------------
+					// Old password
+
+						if ($this->update_field_password_old !== NULL) {
+
+							$form = $this->update_field_password_old->form_get();
+							$old_password = $this->update_field_password_old->value_get();
+
+							$result = $this->validate_login(NULL, $old_password);
+
+							if ($result === 'failure_identification') {
+
+								exit_with_error('Could not return details about user id "' . $this->session_user_id_get() . '"');
+
+							} else if ($result === 'failure_password') {
+
+								$this->update_field_password_old->error_add($this->text['failure_login_password']);
+
+							} else if ($result === 'failure_repetition') {
+
+								$this->update_field_password_old->error_add($this->text['failure_login_repetition']);
+
+							} else if (is_string($result)) {
+
+								$this->update_field_password_old->error_add($result); // Custom (project specific) error message.
+
+							} else if (!is_int($result)) {
+
+								exit_with_error('Unknown response from auth::validate_login()', $result);
+
+							}
+
+						}
+
+					//--------------------------------------------------
+					// New password
+
+						if ($this->update_field_password_new_1 !== NULL) {
+
+							if ($this->update_field_password_new_2 === NULL) {
+								exit_with_error('Cannot call auth::update_validate() with new password 1, but not 2.');
+							}
+
+							$form = $this->update_field_password_new_1->form_get();
+							$password_1 = $this->update_field_password_new_1->value_get();
+							$password_2 = $this->update_field_password_new_2->value_get();
+
+							$result = $this->validate_password($password_1);
+
+							if (is_string($result)) {
+
+								$this->update_field_password_new_1->error_add($result); // Custom (project specific) error message
+
+							} else if ($result !== true) {
+
+								exit_with_error('Unknown response from auth::validate_password()', $result);
+
+							} else if ($password_1 != $password_2) {
+
+								$this->update_field_password_new_2->error_add($this->text['failure_password_repeat']);
+
+							} else {
+
+								$new_password = $password_1;
+
+							}
+
+						}
+
+					//--------------------------------------------------
+					// Return
+
+						if ($form === NULL) {
+							exit_with_error('Cannot call auth::update_validate() without using one of the update fields.');
+						}
+
+						if ($form->valid()) {
+
+							$this->update_details = array(
+									'identification' => $new_identification,
+									'password' => $new_password,
+									'form' => $form,
+								);
+
+							return true;
+
+						} else {
+
+							return false;
+
+						}
+
 				}
 
 				public function update_complete() {
+
+					//--------------------------------------------------
+					// Config
+
+						if (!$this->update_details) {
+							exit_with_error('You must call auth::update_validate() before auth::update_complete().');
+						}
+
+						if (!$this->update_details['form']->valid()) {
+							exit_with_error('The form is not valid, so why has auth::update_complete() been called?');
+						}
+
+						$form = $this->update_details['form'];
+
+						$db = $this->db_get();
+
+					//--------------------------------------------------
+					// Update
+
+						if ($this->update_details['identification']	) {
+
+							$form->db_value_set($this->db_fields['main']['identification'], $this->update_details['identification']);
+
+							$this->login_last_set($this->update_details['identification']);
+
+						}
+
+						if ($this->update_details['password']) { // could be NULL or blank (if not required)
+
+							$password_hash = password::hash($this->update_details['password'], $this->session_user_id_get());
+
+							$form->db_value_set($this->db_fields['main']['password'], $password_hash);
+
+						}
+
+						$form->db_save();
+
+					//--------------------------------------------------
+					// Return
+
+						return true;
+
 				}
 
 		//--------------------------------------------------
@@ -1078,7 +1241,7 @@
 				// Account details
 
 					if ($identification === NULL) {
-						$where_sql = 'm.' . $db->escape_field($this->db_fields['main']['id']) . ' = "' . $db->escape($this->id_get()) . '"';
+						$where_sql = 'm.' . $db->escape_field($this->db_fields['main']['id']) . ' = "' . $db->escape($this->session_user_id_get()) . '"';
 					} else {
 						$where_sql = 'm.' . $db->escape_field($this->db_fields['main']['identification']) . ' = "' . $db->escape($identification) . '"';
 					}
@@ -1117,7 +1280,7 @@
 						if ($this->lockout_mode === NULL || $this->lockout_mode == 'ip')   $where_sql[] = 's.ip = "' . $db->escape(config::get('request.ip')) . '"';
 
 						if (count($where_sql) == 0) {
-							exit_with_error('Unknown logout mode (' . $this->lockout_mode . ')');
+							exit_with_error('Unknown lockout mode (' . $this->lockout_mode . ')');
 						}
 
 						$created_after = new timestamp((0 - $this->lockout_timeout) . ' seconds');
