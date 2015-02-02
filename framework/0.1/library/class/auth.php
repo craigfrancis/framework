@@ -19,10 +19,14 @@
 			protected $session_cookies = true; // Use sessions by default
 			protected $session_history = 2592000; // Keep session data for 30 days, 0 to delete once expired, -1 to keep data indefinitely
 
-			protected $identification_type = 'email';
+			protected $identification_type = 'email'; // Or 'username'
 			protected $identification_max_length = NULL;
+
+			protected $username_max_length = 30;
+			protected $email_max_length = 100;
 			protected $password_min_length = 6;
 			protected $password_max_length = 250;
+
 			protected $text = array();
 
 			protected $db_link = NULL;
@@ -42,9 +46,12 @@
 
 			protected $update_field_identification = NULL;
 			protected $update_field_password_old = NULL;
+			protected $update_field_password_new_required = false;
 			protected $update_field_password_new_1 = NULL;
 			protected $update_field_password_new_2 = NULL;
 			protected $update_details = NULL;
+
+			protected $reset_field_email = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -65,7 +72,7 @@
 				//--------------------------------------------------
 				// Text
 
-					$this->text = array(
+					$default_text = array(
 
 							'identification_label'           => 'Email',
 							'identification_min_len'         => 'Your email address is required.',
@@ -95,16 +102,23 @@
 
 						);
 
+					$default_text['email_label'] = $default_text['identification_label']; // For the password reset page
+					$default_text['email_min_len'] = $default_text['identification_min_len'];
+					$default_text['email_max_len'] = $default_text['identification_max_len'];
+					$default_text['email_format'] = $default_text['identification_format'];
+
 					if ($this->identification_type == 'username') {
 
-						$this->text['identification_label'] = 'Username';
-						$this->text['identification_min_len'] = 'Your username is required.';
-						$this->text['identification_max_len'] = 'Your username cannot be longer than XXX characters.';
+						$default_text['identification_label'] = 'Username';
+						$default_text['identification_min_len'] = 'Your username is required.';
+						$default_text['identification_max_len'] = 'Your username cannot be longer than XXX characters.';
 
-						$this->text['failure_identification_current'] = 'The username supplied is already in use.';
-						$this->text['failure_reset_identification'] = 'Your username has not been recognised.';
+						$default_text['failure_identification_current'] = 'The username supplied is already in use.';
+						$default_text['failure_reset_identification'] = 'Your username has not been recognised.';
 
 					}
+
+					$this->text = array_merge($default_text, $this->text);
 
 				//--------------------------------------------------
 				// Tables
@@ -136,11 +150,11 @@
 
 						$this->db_fields['main']['identification'] = 'username';
 
-						$this->identification_max_length = 30;
+						$this->identification_max_length = $this->username_max_length;
 
 					} else {
 
-						$this->identification_max_length = 100;
+						$this->identification_max_length = $this->email_max_length;
 
 					}
 
@@ -880,13 +894,15 @@
 
 				public function update_field_password_new_1_get($form, $config = array()) {
 
+					$this->update_field_password_new_required = (isset($config['required']) ? $config['required'] : false);
+
 					$field = $this->field_password_1_get($form, array_merge(array(
 							'label' => $this->text['password_new_label'],
 							'name' => 'password_new',
-							'required' => false,
 							'min_length' => $this->password_min_length,
 							'max_length' => $this->password_max_length,
 						), $config, array(
+							'required' => $this->update_field_password_new_required,
 							'autocomplete' => 'new-password',
 						)));
 
@@ -899,10 +915,11 @@
 					$field = $this->field_password_2_get($form, array_merge(array(
 							'label' => $this->text['password_repeat_label'],
 							'name' => 'password_repeat',
-							'required' => false,
 							'min_length' => $this->password_min_length,
 							'max_length' => $this->password_max_length,
-						), $config));
+						), $config, array(
+							'required' => $this->update_field_password_new_required,
+						)));
 
 					return $this->update_field_password_new_2 = $field;
 
@@ -934,16 +951,23 @@
 			//--------------------------------------------------
 			// Fields
 
-				public function reset_field_email_get($form, $config = array()) {
+				public function reset_field_email_get($form, $config = array()) { // Must be email, username will be known and can be used to spam.
 
-					// $config = array_merge(array(
-					// 		'label' => $this->text['xxx_label'], // Must be email, username will be known and can be used to spam.
-					// 		'name' => 'email',
-					// 		'max_length' => $this->identification_max_length,
-					// 	), $config);
+					$config = array_merge(array(
+							'label' => $this->text['email_label'],
+							'name' => 'email',
+							'max_length' => $this->email_max_length,
+						), $config);
 
-					// Select based on supplied email or username?
-					// If using usernames, and query is done on email, what happens if there is more than one account?
+					$field = new form_field_email($form, $config['label'], $config['name']);
+					$field->format_error_set($this->text['email_format']);
+					$field->min_length_set($this->text['email_min_len']);
+					$field->max_length_set($this->text['email_max_len'], $config['max_length']);
+					$field->autocomplete_set('email');
+
+					// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
+
+					return $this->reset_field_email = $field;
 
 				}
 
@@ -973,7 +997,10 @@
 			// Request
 
 				public function reset_request_validate() {
-					// Too many attempts
+
+					// Too many attempts?
+					// What happens if there is more than one account?
+
 				}
 
 				public function reset_request_complete($change_url = NULL) {
@@ -1213,11 +1240,13 @@
 				$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
 				$field->autocomplete_set('username');
 
+				// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
+
 				return $field;
 
 			}
 
-			public function field_password_1_get($form, $config) {
+			public function field_password_1_get($form, $config) { // Used in login, register, update (x2), reset.
 
 				$field = new form_field_password($form, $config['label'], $config['name']);
 				$field->max_length_set($this->text['password_max_len'], $config['max_length']);
@@ -1227,11 +1256,13 @@
 					$field->min_length_set($this->text['password_min_len'], $config['min_length']);
 				}
 
+				// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
+
 				return $field;
 
 			}
 
-			public function field_password_2_get($form, $config) {
+			public function field_password_2_get($form, $config) { // Used in register, update, reset.
 
 				$field = new form_field_password($form, $config['label'], $config['name']);
 				$field->max_length_set($this->text['password_repeat_max_len'], $config['max_length']);
@@ -1240,6 +1271,8 @@
 				if ($config['required']) {
 					$field->min_length_set($this->text['password_repeat_min_len'], $config['min_length']);
 				}
+
+				// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
 
 				return $field;
 
