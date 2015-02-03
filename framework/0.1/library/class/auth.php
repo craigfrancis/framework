@@ -1,5 +1,7 @@
 <?php
 
+		// http://www.troyhunt.com/2015/01/introducing-secure-account-management.html
+
 	class auth_base extends check {
 
 		//--------------------------------------------------
