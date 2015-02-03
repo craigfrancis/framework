@@ -56,10 +56,33 @@
 	CLI_EXISTS=`remote_cmd "if [[ -h '${CLI_PATH}' ]]; then echo -n 'link'; else echo -n 'not'; fi"`;
 
 	if [[ "${CLI_EXISTS}" != 'link' ]]; then
-		echo "Cannot find CLI script on server '${DST_HOST}', path '${CLI_PATH}' - '${CLI_EXISTS}'";
+
 		echo;
+		echo "Cannot find CLI script on:";
+		echo;
+		echo "  Server: ${DST_HOST}";
+		echo "  Path: ${CLI_PATH}";
+		echo;
+		echo 'Please run:';
+		echo;
+		echo "  ssh ${DST_HOST};";
+		if [[ "${DST_SOURCE}" == 'git' ]]; then
+			echo "  git checkout XXX '${DST_PATH}';";
+		else
+			echo "  svn checkout XXX '${DST_PATH}';";
+		fi
+		echo;
+		echo 'Possibly checkout the framework project, followed by:';
+		echo;
+		echo "  cd ${DST_PATH}";
+		echo "  ln -s ../path/to/framework/0.1/cli/run.sh cli";
+		echo "  ./cli -i";
+		echo "  ./cli -p";
+		echo;
+
 		remote_close;
 		exit 0;
+
 	fi
 
 #--------------------------------------------------
