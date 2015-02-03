@@ -84,7 +84,7 @@
 		echo;
 		echo "Update framework:";
 
-		remote_cmd 'cd `/www/demo/futura.demo/cli --config=FRAMEWORK_ROOT` && git pull' | awk '{ print "  " $0;}';
+		remote_cmd "cd \`${CLI_PATH} --config=FRAMEWORK_ROOT\` && git pull" | awk '{ print "  " $0;}';
 
 	fi
 
