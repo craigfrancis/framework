@@ -268,7 +268,7 @@
 		$output_php .= '	config::set(\'request.uri\', $GLOBALS[\'tplPageUrl\']);' . "\n";
 		$output_php .= '	config::set(\'request.url\', $GLOBALS[\'tplHttpsUrl\']);' . "\n";
 		$output_php .= '	config::set(\'request.method\', (isset($_SERVER[\'REQUEST_METHOD\']) ? strtoupper($_SERVER[\'REQUEST_METHOD\']) : \'GET\'));' . "\n";
-		$output_php .= '	config::set(\'request.referrer\', (isset($_SERVER[\'HTTP_REFERER\']) ? $_SERVER[\'HTTP_REFERER\'] : \'\'));';
+		$output_php .= '	config::set(\'request.referrer\', str_replace($GLOBALS[\'webDomainSSL\'], \'\', (isset($_SERVER[\'HTTP_REFERER\']) ? $_SERVER[\'HTTP_REFERER\'] : \'\')));';
 
 	//--------------------------------------------------
 	// Database
