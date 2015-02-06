@@ -267,16 +267,12 @@
 		padding: 1em 0 0 1em;
 	}
 
-	.basic_form fieldset h2:first-child {
+	.basic_form fieldset > h2:first-child {
 		padding-top: 0;
 	}
 
-	.basic_form fieldset p {
-		padding: 0 1em;
-	}
-
-	.basic_form fieldset p:last-child {
-		margin-bottom: 0;
+	.basic_form fieldset > h2 + p {
+		margin-top: 1em;
 	}
 
 	.basic_form .error_list,
@@ -291,12 +287,6 @@
 		clear: both;
 	}
 
-		@media only screen and (min-width: 40em) {
-			.basic_form .row {
-				padding-left: 11.5em;
-			}
-		}
-
 	.basic_form .row .label {
 		display: block;
 		font-weight: normal;
@@ -306,36 +296,66 @@
 		border: 0;
 	}
 
+	.basic_form .row .input sub {
+		font-size: 0.8em;
+	}
+
 	.basic_form .row.info .input,
 	.basic_form .row.radio .input,
 	.basic_form .row.check .input {
 		display: block;
-		padding: 4px 0 1em 1.5em;
+		padding: 0 0 1em 1.5em;
 	}
 
-		@media only screen and (min-width: 40em) {
-			.basic_form .row .label,
-			.basic_form .row.input_first .input {
-				float: left;
-				width: 11em;
-				margin: 4px 0 0 -11.5em;
-				text-align: right;
-			}
-			.basic_form .info .input {
-				margin-bottom: 0;
-				margin-left: 0;
-			}
-			.basic_form .row.input_first .label {
-				width: auto;
-				margin: 0;
-			}
-			.basic_form .row.info .input,
-			.basic_form .row.radio .input,
-			.basic_form .row.check .input {
-				display: block;
-				padding: 4px 0 0 0;
-			}
+	.basic_form .row.check.input_first .input {
+		padding: 0;
+		display: inline;
+	}
+
+	.basic_form .row.check.input_first .label {
+		display: inline;
+	}
+
+	@media only screen and (min-width: 40em) {
+		.basic_form .row {
+			padding-left: 11.5em;
 		}
+		.basic_form .row .label,
+		.basic_form .row.input_first .input {
+			float: left;
+			width: 11em;
+			margin: 0 0 0 -11.5em;
+			text-align: right;
+		}
+		.basic_form .row.text .label,
+		.basic_form .row.date .label,
+		.basic_form .row.email .label,
+		.basic_form .row.password .label,
+		.basic_form .row.postcode .label,
+		.basic_form .row.textarea .label,
+		.basic_form .row.number .label {
+			margin-top: 2px;
+		}
+		.basic_form .row.info .input {
+			margin-bottom: 0;
+			margin-left: 0;
+		}
+		.basic_form .row.input_first .label {
+			float: none;
+			display: inline;
+			width: auto;
+			margin-left: 0;
+			text-align: left;
+		}
+		.basic_form .row.info .input,
+		.basic_form .row.radio .input,
+		.basic_form .row.check .input,
+		.basic_form .row.checkboxes .input:nth-child(2),
+		.basic_form .row.radios .input:nth-child(2) {
+			display: block;
+			padding: 0;
+		}
+	}
 
 	.basic_form .row.date input {
 		text-align: center;
