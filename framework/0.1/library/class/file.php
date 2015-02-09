@@ -44,7 +44,7 @@
 							'file_missing_url' => NULL,
 							'image_type' => 'jpg',
 							'image_quality' => NULL,
-							'image_unsafe_preserve' => false,
+							'image_preserve_unsafe' => false,
 							'image_url_prefix' => '', // Could include the domain name (e.g. for email images).
 							'image_placeholder_url' => NULL, // If you want to show placeholder images, e.g. /a/img/place-holder/100x100.jpg
 							'image_missing_url' => NULL,
