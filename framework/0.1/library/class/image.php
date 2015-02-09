@@ -18,6 +18,7 @@
 			private $image_width = NULL;
 			private $image_height = NULL;
 			private $image_type = NULL;
+			private $image_source = NULL;
 
 			public $alpha_blend = false; // Don't blend by default, and expose value (public) for when this image is being added to another image
 			public $alpha_save = true;
@@ -65,6 +66,7 @@
 					$this->image_width = $width;
 					$this->image_height = $height;
 					$this->image_type = NULL; // Unknown
+					$this->image_source = NULL;
 
 				//--------------------------------------------------
 				// Background
@@ -86,8 +88,9 @@
 				$this->image_width = $return['width'];
 				$this->image_height = $return['height'];
 				$this->image_type = $return['type'];
+				$this->image_source = ($return['source'] == 'file' ? $file_path : NULL);
 
-				if (is_object($file_path) && (get_class($file_path) == 'image' || is_subclass_of($file_path, 'image'))) {
+				if ($return['source'] == 'object') {
 					$this->alpha_blend = $file_path->alpha_blend;
 					$this->alpha_save = $file_path->alpha_save;
 				}
@@ -122,6 +125,7 @@
 					$this->image_width = imagesx($image);
 					$this->image_height = imagesy($image);
 					$this->image_type = NULL; // Unknown
+					$this->image_source = NULL;
 
 					return IMAGE_LOAD_SUCCESS;
 
@@ -153,6 +157,7 @@
 						$return['width'] = $image->image_width;
 						$return['height'] = $image->image_height;
 						$return['type'] = $image->image_type;
+						$return['source'] = 'object';
 
 						return $return;
 
@@ -167,6 +172,7 @@
 						$return['width'] = imagesx($image);
 						$return['height'] = imagesy($image);
 						$return['type'] = NULL; // Unknown
+						$return['source'] = 'gd';
 
 						return $return;
 
@@ -186,7 +192,7 @@
 					if ($dimensions !== false) {
 						$return['width'] = $dimensions[0];
 						$return['height'] = $dimensions[1];
-						$return['type'] = $dimensions[2];
+						$return['source'] = 'file';
 					} else {
 						return IMAGE_LOAD_ERR_SIZE;
 					}
@@ -194,17 +200,20 @@
 				//--------------------------------------------------
 				// Reference
 
-					if ($return['type'] == IMAGETYPE_JPEG) {
+					if ($dimensions[2] == IMAGETYPE_JPEG) {
 
 						$return['ref'] = imagecreatefromjpeg($image);
+						$return['type'] = 'jpg';
 
-					} else if ($return['type'] == IMAGETYPE_GIF) {
+					} else if ($dimensions[2] == IMAGETYPE_GIF) {
 
 						$return['ref'] = imagecreatefromgif($image);
+						$return['type'] = 'gif';
 
-					} else if ($return['type'] == IMAGETYPE_PNG) {
+					} else if ($dimensions[2] == IMAGETYPE_PNG) {
 
 						$return['ref'] = imagecreatefrompng($image);
+						$return['type'] = 'png';
 
 					} else {
 
@@ -555,6 +564,7 @@
 						$this->image_ref = $new_image;
 						$this->image_width = $canvas_width;
 						$this->image_height = $canvas_height;
+						$this->image_source = NULL;
 
 				}
 			}
@@ -591,6 +601,7 @@
 						$this->image_ref = $new_image;
 						$this->image_width = imagesx($this->image_ref);
 						$this->image_height = imagesy($this->image_ref);
+						$this->image_source = NULL;
 
 				}
 			}
@@ -641,8 +652,10 @@
 		//--------------------------------------------------
 		// Save image
 
-			public function save($file_path, $file_type = 'jpg', $quality = NULL) {
-				if ($file_type == 'jpg') {
+			public function save($file_path, $file_type = 'jpg', $quality = NULL, $preserve = false) {
+				if ($preserve === true && $this->image_source !== NULL && $file_type == $this->image_type) {
+					copy($this->image_source, $file_path);
+				} else if ($file_type == 'jpg') {
 					$this->save_jpg($file_path, $quality);
 				} else if ($file_type == 'png') {
 					$this->save_png($file_path, $quality);
@@ -784,6 +797,7 @@
 					$this->image_width = NULL;
 					$this->image_height = NULL;
 					$this->image_type = NULL;
+					$this->image_source = NULL;
 				}
 			}
 
@@ -794,6 +808,7 @@
 				$new_image = $this->_create_canvas($this->image_width, $this->image_height);
 				imagecopyresampled($new_image, $this->image_ref, 0, 0, 0, 0, $this->image_width, $this->image_height, $this->image_width, $this->image_height);
 				$this->image_ref = $new_image;
+				$this->image_source = NULL;
 			}
 
 	}
