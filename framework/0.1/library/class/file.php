@@ -193,7 +193,7 @@
 				$this->_writable_check(dirname($dest_path));
 
 				$image = new image($path); // The image needs to be re-saved, ensures no hacked files are uploaded and exposed on the website
-				$image->save($dest_path, $ext, $this->config['image_quality'], $this->config['image_unsafe_preserve']);
+				$image->save($dest_path, $ext, $this->config['image_quality'], $this->config['image_preserve_unsafe']);
 
 			}
 
@@ -306,7 +306,7 @@
 						$this->_writable_check(dirname($original_path));
 
 						$source_image = new image($path); // The image needs to be re-saved, ensures no hacked files are uploaded and exposed on the website
-						$source_image->save($original_path, $this->config['image_type'], $this->config['image_quality'], $this->config['image_unsafe_preserve']);
+						$source_image->save($original_path, $this->config['image_type'], $this->config['image_quality'], $this->config['image_preserve_unsafe']);
 						$source_image->destroy();
 
 					}
@@ -390,7 +390,7 @@
 
 									$image = new image($original_path); // Need a new copy of the image, so it does not get scaled down, then back up again
 									$image->resize($config);
-									$image->save($image_path, $this->config['image_type'], $this->config['image_quality'], $this->config['image_unsafe_preserve']);
+									$image->save($image_path, $this->config['image_type'], $this->config['image_quality'], $this->config['image_preserve_unsafe']);
 									$image->destroy();
 
 								//--------------------------------------------------
