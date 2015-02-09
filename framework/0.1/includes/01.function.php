@@ -730,19 +730,58 @@
 
 	function record_get($config = array(), $where_id = NULL, $fields = NULL, $config_extra = array()) {
 
+		// if (is_array($config)) {
+		//
+		// 	if (isset($config['table'])) {
+		//
+		// 		$record_name = $config['table'];
+		//
+		// 	} else if (isset($config['table_sql'])) {
+		//
+		// 		$record_name = ltrim($config['table_sql']);
+		//
+		// 		if (substr($record_name, 0, 1) == '`') {
+		// 			if (($end = strpos($record_name, '`', 1)) !== false) {
+		// 				$record_name = substr($record_name, 1, ($end - 1));
+		// 			}
+		// 		} else if (($end = strpos($record_name, ' ', 1)) !== false) {
+		// 			$record_name = substr($record_name, 0, $end);
+		// 		}
+		//
+		// 	}
+		//
+		// } else {
+		// }
+
 		if (!is_array($config)) {
 
-			$short_name = prefix_replace(DB_PREFIX, $config);
-			$short_name = strtolower(ref_to_human($short_name)); // Best guess
+			$record_name = $config;
+			$record_name = prefix_replace(DB_PREFIX, $record_name);
+			$record_name = human_to_ref($record_name);
 
 			$config = array_merge(array(
 					'table' => $config,
 					'where_id' => $where_id,
 					'fields' => $fields,
-					'deleted' => array('type' => $short_name),
+					'deleted' => array('type' => ref_to_human($record_name)),
 				), $config_extra);
 
 		}
+
+		// $record_class_name = $record_name . '_record';
+		// $record_file_name = safe_file_name(str_replace('_', '-', $record_name));
+		//
+		// $record_file_path = APP_ROOT . '/library/record/' . $record_file_name . '.php';
+		//
+		// if (is_file($record_file_path)) {
+		//
+		// 	require_once($record_file_path);
+		//
+		// 	if (class_exists($record_class_name, false)) { // Do not autoload, it should be in the /library/record/ folder.
+		// 		return new $record_class_name($config);
+		// 	}
+		//
+		// }
 
 		return new record($config);
 
@@ -763,7 +802,7 @@
 			require_once($query_file_path);
 
 			if (class_exists($query_class_name, false)) { // Do not autoload, it should be in the /library/query/ folder.
-				return new $query_class_name($query_name, $config);
+				return new $query_class_name($config);
 			}
 
 		}
