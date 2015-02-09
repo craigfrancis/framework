@@ -447,6 +447,10 @@
 		background: #E0E0E0;
 	}
 
+	.basic_table tr:hover {
+		background-color: #FFD;
+	}
+
 	.basic_table tr.highlight td.name {
 		font-weight: bold;
 	}
