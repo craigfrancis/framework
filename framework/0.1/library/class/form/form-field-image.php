@@ -41,6 +41,8 @@
 								$image_type = 'gif';
 							} else if ($dimensions[2] == IMAGETYPE_PNG) {
 								$image_type = 'png';
+							} else {
+								$image_type = NULL;
 							}
 
 							$this->files[$id]['image_width'] = $dimensions[0];
