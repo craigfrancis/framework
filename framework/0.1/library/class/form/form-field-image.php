@@ -34,13 +34,25 @@
 
 						$dimensions = ($file['path'] == '' ? false : getimagesize($file['path']));
 						if ($dimensions !== false) {
+
+							if ($dimensions[2] == IMAGETYPE_JPEG) {
+								$image_type = 'jpg';
+							} else if ($dimensions[2] == IMAGETYPE_GIF) {
+								$image_type = 'gif';
+							} else if ($dimensions[2] == IMAGETYPE_PNG) {
+								$image_type = 'png';
+							}
+
 							$this->files[$id]['image_width'] = $dimensions[0];
 							$this->files[$id]['image_height'] = $dimensions[1];
-							$this->files[$id]['image_type'] = $dimensions[2];
+							$this->files[$id]['image_type'] = $image_type;
+
 						} else {
+
 							$this->files[$id]['image_width'] = NULL;
 							$this->files[$id]['image_height'] = NULL;
 							$this->files[$id]['image_type'] = NULL;
+
 						}
 
 					}
@@ -248,12 +260,7 @@
 
 							} else {
 
-								$valid = false;
-								if (in_array('gif', $types) && $file['image_type'] == IMAGETYPE_GIF) $valid = true;
-								if (in_array('jpg', $types) && $file['image_type'] == IMAGETYPE_JPEG) $valid = true;
-								if (in_array('png', $types) && $file['image_type'] == IMAGETYPE_PNG) $valid = true;
-
-								if (!$valid) {
+								if (!in_array($file['image_type'], $types)) {
 									$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $file['image_type'], $error_html), 'ERROR: Non valid type (' . implode(', ', $types) . ')');
 								}
 
