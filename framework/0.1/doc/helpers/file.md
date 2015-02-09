@@ -128,6 +128,9 @@ Then when using the image functions (above), these additional options can be use
 	image_quality
 		Instructs GD on the image quality - jpg default is 75, and 6 for png.
 
+	image_unsafe_preserve
+		If no re-sizing is required from origional image, keep that file (see warning below).
+
 	image_url_prefix
 		Adds a prefix (e.g. domain name) to the url, useful when using image_html_get()
 
@@ -139,3 +142,5 @@ Then when using the image functions (above), these additional options can be use
 
 	image_background
 		Background colour (e.g. '000000') if images should not be cropped.
+
+The `image_unsafe_preserve` is "unsafe" as [file uploads](../../doc/security/files.md) cannot be trusted.
