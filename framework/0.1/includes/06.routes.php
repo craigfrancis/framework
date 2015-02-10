@@ -135,20 +135,46 @@
 
 			if ($new_path != $route_path) {
 
-					// We don't know if the destination is valid, as while we could
-					// do the check when loading the controller, it wouldn't work
-					// for 'view' only urls, and would also add more processing time.
+				//--------------------------------------------------
+				// Redirect table
 
-				$new_url = new url();
-				$new_url->format_set('full');
-				$new_url->path_set($new_path);
-				$new_url = $new_url->get();
+					if (config::get('db.host') !== NULL) {
 
-				if (SERVER == 'stage') {
-					exit('<p>URL Cleanup: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
-				} else {
-					redirect($new_url, 301);
-				}
+						$db = db_get();
+
+						$sql = 'SELECT
+									url_dst,
+									permanent
+								FROM
+									' . DB_PREFIX . 'system_redirect
+								WHERE
+									url_src = "' . $db->escape($route_path) . '" AND
+									enabled = "true"';
+
+						if ($row = $db->fetch_row($sql)) {
+							redirect($row['url_dst'], ($row['permanent'] == 'true' ? 301 : 302));
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Simple
+
+						// Note: We don't know if the destination is valid,
+						// as while we could do the check when loading the
+						// controller, it wouldn't work for 'view' only urls,
+						// and would also add more processing time.
+
+					$new_url = new url();
+					$new_url->format_set('full');
+					$new_url->path_set($new_path);
+					$new_url = $new_url->get();
+
+					if (SERVER == 'stage') {
+						exit('<p>URL Cleanup: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
+					} else {
+						redirect($new_url, 301);
+					}
 
 			}
 
