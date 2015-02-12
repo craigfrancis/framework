@@ -506,9 +506,9 @@
 				//--------------------------------------------------
 				// Delete link
 
-					$delete_id = request('item_delete');
-					if ($delete_id !== NULL) {
-						if ($this->_item_quantity_set($delete_id, 0)) {
+					$remove_id = request('item_remove');
+					if ($remove_id !== NULL) {
+						if ($this->_item_quantity_set($remove_id, 0)) {
 							$changed = true;
 						}
 					}
@@ -517,12 +517,25 @@
 				// Select fields
 
 					foreach ($this->items_get() as $item) {
-						$quantity = request('item_quantity_' . $item['id']);
-						if ($quantity !== NULL) {
-							if ($this->_item_quantity_set($item['id'], $quantity)) {
+
+						$remove = request('item_remove_' . $item['id']);
+						if ($remove !== NULL) {
+
+							if ($this->_item_quantity_set($item['id'], 0)) {
 								$changed = true;
 							}
+
+						} else {
+
+							$quantity = request('item_quantity_' . $item['id']);
+							if ($quantity !== NULL) {
+								if ($this->_item_quantity_set($item['id'], $quantity)) {
+									$changed = true;
+								}
+							}
+
 						}
+
 					}
 
 				//--------------------------------------------------
@@ -531,6 +544,11 @@
 					if ($changed) {
 						$this->order_update();
 					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $changed;
 
 			}
 

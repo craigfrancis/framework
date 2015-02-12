@@ -25,15 +25,15 @@ Add an item
 			'price' => $price,
 		));
 
-Edit basket with 'delete' links (CSRF issue)
+Edit basket with 'remove' links (CSRF issue)
 
 	$order->items_update();
 
 	$table_html = $order->table_get_html(array(
-			'quantity_edit' => 'link',
+			'quantity_edit' => array('type' => 'link'),
 		));
 
-Edit basket with 'quantity' select fields
+Edit basket with 'quantity' select or input fields
 
 	//--------------------------------------------------
 	// Controller
@@ -53,7 +53,7 @@ Edit basket with 'quantity' select fields
 		}
 
 		$table_html = $order->table_get_html(array(
-				'quantity_edit' => array('type' => 'select'),
+				'quantity_edit' => array('type' => 'select'), // or 'input'
 			));
 
 		$response->set('form', $form);

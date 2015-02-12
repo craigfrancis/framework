@@ -33,6 +33,8 @@
 							'url_prefix' => '',
 							'email_mode' => false,
 							'currency_char' => $this->order_obj->currency_char_get(),
+							'quantity_remove' => array(),
+							'quantity_edit' => array(),
 							'show_image_info' => $show_image_info,
 							'show_image_html' => $show_image_html,
 							'show_image' => ($show_image_info || $show_image_html),
@@ -102,31 +104,56 @@
 
 			}
 
-			public function item_quantity_html($item, $quantity) {
+			public function item_remove_html($item, $remove_config = array()) {
 
 				//--------------------------------------------------
 				// Config
 
-					if (isset($this->config['quantity_edit'])) {
+					$remove_config = array_merge(array(
+							'type' => NULL,
+							'text' => 'Remove',
+							'url' => NULL,
+						), $this->config['quantity_remove'], $remove_config);
 
-						$edit_config = $this->config['quantity_edit'];
+				//--------------------------------------------------
+				// Types
 
-						if (!is_array($edit_config)) {
-							$edit_config = array('type' => $edit_config);
+					if ($remove_config['type'] == 'submit') {
+
+						$html = '<input type="submit" name="item_remove_' . html($item['id']) . '" id="item_remove_' . html($item['id']) . '" value="' . html($remove_config['text']) . '" />';
+
+					} else if ($remove_config['type'] == 'link') {
+
+						$url = $remove_config['url'];
+						if ($url === NULL) {
+							$url = new url();
 						}
 
-						$edit_config = array_merge(array(
-								'type' => 'select',
-								'max' => 10,
-								'delete_text' => 'Remove',
-								'url' => NULL,
-							), $edit_config);
+						$html = '<a href="' . $url->get(array('item_remove' => $item['id'])) . '">' . html($remove_config['text']) . '</a>';
 
 					} else {
 
-						$edit_config = array('type' => NULL);
+						$html = ''; // No type set, so not needed.
 
 					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $html;
+
+			}
+
+			public function item_quantity_html($item, $quantity, $edit_config = array()) {
+
+				//--------------------------------------------------
+				// Config
+
+					$edit_config = array_merge(array(
+							'type' => NULL,
+							'max' => 10,
+							'remove_text' => 'Remove',
+						), $this->config['quantity_edit'], $edit_config);
 
 				//--------------------------------------------------
 				// Types
@@ -141,11 +168,11 @@
 						$html  = '<label for="item_quantity_' . html($item['id']) . '">Quantity for ' . html($item['item_name']) . '</label>';
 						$html .= '<select name="item_quantity_' . html($item['id']) . '" id="item_quantity_' . html($item['id']) . '">';
 						for ($k = 0; $k <= $max; $k++) {
-							$html .= '<option value="' . html($k) . '"' . ($k == $quantity ? ' selected="selected"' : '') . '>' . html($k == 0 ? $edit_config['delete_text'] : $k) . '</option>';
+							$html .= '<option value="' . html($k) . '"' . ($k == $quantity ? ' selected="selected"' : '') . '>' . html($k == 0 ? $edit_config['remove_text'] : $k) . '</option>';
 						}
 						$html .= '</select>';
 
-					} else if ($edit_config['type'] == 'text') {
+					} else if ($edit_config['type'] == 'input') {
 
 						$max = $edit_config['max'];
 						if ($quantity > $max) {
@@ -157,12 +184,10 @@
 
 					} else if ($edit_config['type'] == 'link') {
 
-						$url = $edit_config['url'];
-						if ($url === NULL) {
-							$url = new url();
-						}
-
-						$html = html($quantity) . ' <br /><a href="' . $url->get(array('item_delete' => $item['id'])) . '">' . html($edit_config['delete_text']) . '</a>';
+						$html = html($quantity) . ' <br />' . $this->item_remove_html($item, array(
+								'type' => 'link',
+								'text' => $edit_config['remove_text'],
+							));
 
 					} else {
 
