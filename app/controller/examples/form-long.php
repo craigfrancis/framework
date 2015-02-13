@@ -21,10 +21,11 @@
 						'name',
 						'email',
 						'type',
+						'items',
 					));
 
 			//--------------------------------------------------
-			// Edit user form
+			// Form 1
 
 				//--------------------------------------------------
 				// Form setup
@@ -94,8 +95,34 @@ exit('Updated?');
 					if ($form->initial()) {
 					}
 
+				//--------------------------------------------------
+				// Variables
+
+					$response->set('form1', $form);
+
 			//--------------------------------------------------
-			// Contact us form
+			// Form 2
+
+				//--------------------------------------------------
+				// Record
+
+					$record = record_get(DB_PREFIX . 'form_example', 1, array(
+							'id',
+							'name',
+							'email',
+							'message',
+							'url',
+							'password',
+							'check',
+							'items',
+							'selection',
+							'date',
+							'time',
+							'number',
+							'amount',
+							'postcode',
+							'ip',
+						));
 
 				//--------------------------------------------------
 				// Form options
@@ -120,6 +147,7 @@ exit('Updated?');
 					$form->csrf_error_set('The request did not appear to come from a trusted source, please try again.');
 					$form->csrf_error_set_html('The request did not appear to come from a trusted source, please try again.');
 					$form->error_override_set_function(array($this, 'error_override')); // If you want to get the text translated
+					$form->db_record_set($record);
 
 					$field_password = new form_field_password($form, 'Password');
 					$field_password->min_length_set('Your password is required.');
@@ -160,15 +188,14 @@ exit('Updated?');
 					$field_email->max_length_set('Your email cannot be longer than XXX characters.');
 
 					$field_message = new form_field_textarea($form, 'Message');
-					$field_message->db_field_set('message');
 					$field_message->min_length_set('Your message is required.');
-					$field_message->max_length_set('Your message cannot be longer than XXX characters.');
+					$field_message->max_length_set('Your message cannot be longer than XXX characters.', 100);
 					$field_message->placeholder_set('Your message');
 					$field_message->cols_set(40);
 					$field_message->rows_set(5);
 
 					$field_homepage = new form_field_url($form, 'Homepage');
-					$field_homepage->db_field_set('homepage');
+					$field_homepage->db_field_set('url');
 					$field_homepage->scheme_default_set('http');
 					$field_homepage->scheme_allowed_set('Your homepage has an invalid scheme.', array('http', 'https'));
 					$field_homepage->format_error_set('Your homepage does not appear to be correct.');
@@ -196,16 +223,17 @@ exit('Updated?');
 
 					$field_hear = new form_field_select($form, 'Where did you hear about us');
 					$field_hear->print_hidden_set(true);
-					$field_hear->db_field_set('where');
+					// $field_hear->db_field_set('where');
 					$field_hear->options_set(array('Internet search', 'Friend', 'Advertising'));
 					// $field_hear->value_set('Friend');
 					// $field_hear->label_option_set('');
 					$field_hear->required_error_set('Where you heard about us is required.');
 
 					$field_accept_terms = new form_field_checkbox($form, 'Accept terms');
-					$field_accept_terms->db_field_set('accept_terms');
+					$field_accept_terms->db_field_set('check');
 					$field_accept_terms->text_values_set('true', 'false');
 					$field_accept_terms->required_error_set('You need to accept the terms and conditions.');
+					$field_accept_terms->input_first_set(true);
 
 					$field_items = new form_field_checkboxes($form, 'Items');
 					$field_items->db_field_set('items');
@@ -302,15 +330,13 @@ exit();
 						$field_name->value_set('My name');
 					}
 
+				//--------------------------------------------------
+				// Variables
+
+					$response->set('form2', $form);
+
 			//--------------------------------------------------
 			// Variables
-
-				$response->set('form_edit', $form);
-
-				$response->set('form', $form);
-				$response->set('field_name', $field_name);
-				$response->set('field_email', $field_email);
-				$response->set('field_message', $field_message);
 
 				$response->set('home_url', url('/'));
 

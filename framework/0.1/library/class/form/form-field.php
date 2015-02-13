@@ -15,6 +15,7 @@
 			protected $wrapper_tag;
 			protected $wrapper_id;
 			protected $wrapper_class;
+			protected $wrapper_data;
 			protected $label_html;
 			protected $label_suffix_html;
 			protected $label_class;
@@ -99,6 +100,7 @@
 					$this->wrapper_tag = 'div';
 					$this->wrapper_id = NULL;
 					$this->wrapper_class = '';
+					$this->wrapper_data = array();
 					$this->label_html = $label_html;
 					$this->label_suffix_html = $form->label_suffix_get_html();
 					$this->label_class = NULL;
@@ -172,6 +174,10 @@
 
 				return trim($class);
 
+			}
+
+			public function wrapper_data_set($field, $value) {
+				$this->wrapper_data[$field] = $value;
 			}
 
 			public function label_set($label) {
@@ -572,7 +578,6 @@
 
 				if (method_exists($this, 'html_input_by_key')) {
 					$html = '
-							<' . html($this->wrapper_tag) . ' class="' . html($this->wrapper_class_get()) . '"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
 								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . '</' . html($this->label_wrapper_tag) . '>';
 					foreach ($this->option_values as $key => $value) {
 						$option_info_html = $this->html_info_by_key($key); // Allow the ID to be added to "aria-describedby"
@@ -582,24 +587,31 @@
 									' . $this->html_label_by_key($key) . $option_info_html . '
 								</' . html($this->input_wrapper_tag) . '>';
 					}
-					$html .= $format_html . $info_html . '
-							</' . html($this->wrapper_tag) . '>' . "\n";
+					$html .= $format_html . $info_html;
 				} else {
 					if ($this->input_first) {
 						$html = '
-							<' . html($this->wrapper_tag) . ' class="' . html($this->wrapper_class_get()) . ' input_first"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
 								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>
-								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . '</' . html($this->label_wrapper_tag) . '>' . $format_html . $info_html . '
-							</' . html($this->wrapper_tag) . '>' . "\n";
+								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . '</' . html($this->label_wrapper_tag) . '>' . $format_html . $info_html;
 					} else {
 						$html = '
-							<' . html($this->wrapper_tag) . ' class="' . html($this->wrapper_class_get()) . '"' . ($this->wrapper_id === NULL ? '' : ' id="' . html($this->wrapper_id) . '"') . '>
 								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . '</' . html($this->label_wrapper_tag) . '>
-								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>' . $format_html . $info_html . '
-							</' . html($this->wrapper_tag) . '>' . "\n";
+								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>' . $format_html . $info_html;
 					}
 				}
-				return $html;
+
+				$wrapper_attributes = array(
+						'id' => $this->wrapper_id,
+						'class' => $this->wrapper_class_get() . ($this->input_first ? ' input_first' : ''),
+					);
+
+				foreach ($this->wrapper_data as $field => $value) {
+					$wrapper_attributes['data-' . $field] = $value;
+				}
+
+				return '
+							' . html_tag($this->wrapper_tag, $wrapper_attributes) . $html . '
+							</' . html($this->wrapper_tag) . '>' . "\n";
 
 			}
 
