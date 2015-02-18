@@ -25,7 +25,7 @@
 	if [[ "${DST_SOURCE}" == 'git' ]]; then
 
 		cd "${ROOT}";
-		git push origin master;
+		git push;
 
 	fi
 
