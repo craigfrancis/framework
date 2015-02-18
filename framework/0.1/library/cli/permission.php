@@ -103,7 +103,7 @@
 
 			foreach ($shell_scripts as $shell_script) {
 				if (is_file($shell_script)) {
-					command_run('chmod 755 ' . escapeshellarg($shell_script) . ' 2>&1', $show_output);
+					command_run('chmod ' . escapeshellarg($group ? '775' : '775') . ' ' . escapeshellarg($shell_script) . ' 2>&1', $show_output);
 				}
 			}
 
