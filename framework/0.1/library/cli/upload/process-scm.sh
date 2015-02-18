@@ -89,15 +89,22 @@
 # Run update
 #--------------------------------------------------
 
+		# - The "-C" option isn't available in
+		#   git 1.7, as used in Debian stable.
+		# - For some reason the spaces are collapsed
+		#   in awk when running remotely.
+		# - Cannot run awk locally, as the pull may
+		#   require an ssh passphrase.
+
 	if [[ "${UPDATE}" =~ "project" ]]; then
 
 		echo;
 		echo "Update project:";
 
 		if [[ "${DST_SOURCE}" == 'git' ]]; then
-			remote_cmd "cd ${DST_PATH} && git pull" | awk '{ print "  " $0;}';
+			remote_cmd "cd ${DST_PATH} && git pull | awk '{ print \" \" \" \" \$0;}'";
 		else
-			remote_cmd "cd ${DST_PATH} && svn update" | awk '{ print "  " $0;}';
+			remote_cmd "svn update ${DST_PATH} | awk '{ print \" \" \" \" \$0;}'";
 		fi
 
 	fi
@@ -107,7 +114,7 @@
 		echo;
 		echo "Update framework:";
 
-		remote_cmd "cd \`${CLI_PATH} --config=FRAMEWORK_ROOT\` && git pull" | awk '{ print "  " $0;}';
+		remote_cmd "cd \`${CLI_PATH} --config=FRAMEWORK_ROOT\` && git pull | awk '{ print \" \" \" \" \$0;}'";
 
 	fi
 
