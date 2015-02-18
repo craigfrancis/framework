@@ -167,6 +167,11 @@
 					$attributes['checked'] = 'checked';
 				}
 
+				reset($this->option_values);
+				if (key($this->option_values) != $key) {
+					unset($attributes['autofocus']);
+				}
+
 				return $attributes;
 
 			}
