@@ -8,26 +8,28 @@
 		//--------------------------------------------------
 		// Folders
 
+			$group = config::get('cli.permission_reset_group', false);
+
 			$reset_folders = array(
 				'App folders' => array(
 						'path' => APP_ROOT,
 						'type' => 'd',
-						'permission' => '755',
+						'permission' => ($group ? '775' : '755'),
 					),
 				'App files' => array(
 						'path' => APP_ROOT,
 						'type' => 'f',
-						'permission' => '644',
+						'permission' => ($group ? '664' : '644'),
 					),
 				'Framework folders' => array(
 						'path' => FRAMEWORK_ROOT,
 						'type' => 'd',
-						'permission' => '755',
+						'permission' => ($group ? '775' : '755'),
 					),
 				'Framework files' => array(
 						'path' => FRAMEWORK_ROOT,
 						'type' => 'f',
-						'permission' => '644',
+						'permission' => ($group ? '664' : '644'),
 					),
 				'Public file folders' => array(
 						'path' => FILE_ROOT,
