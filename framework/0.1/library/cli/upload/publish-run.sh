@@ -67,6 +67,8 @@
 
 			fi
 
+			break;
+
 		done
 
 	done
