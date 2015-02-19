@@ -147,7 +147,7 @@
 		$exec_script = $exec_dir . '/' . safe_file_name($script) . '.sh';
 		$exec_command = escapeshellcmd($exec_script) . ' ' . $exec_params;
 
-		passthru($exec_command);
+		// passthru($exec_command);
 
 		$descriptor = array( // - Was used
 				0 => array('file', 'php://stdin', 'r'),
