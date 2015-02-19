@@ -49,6 +49,8 @@
 
 				echo;
 
+				sleep 0.1;
+
 			elif [[ "${RUN}" == 'Database' ]]; then
 
 				./cli --diff;
