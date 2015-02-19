@@ -149,11 +149,11 @@
 
 		passthru($exec_command);
 
-		// $descriptor = array( // - Was used
-		// 		0 => array('file', 'php://stdin', 'r'),
-		// 		1 => array('file', 'php://stdout', 'r'),
-		// 		2 => array('file', 'php://stderr', 'r'),
-		// 	);
+		$descriptor = array( // - Was used
+				0 => array('file', 'php://stdin', 'r'),
+				1 => array('file', 'php://stdout', 'r'),
+				2 => array('file', 'php://stderr', 'r'),
+			);
 
 		// $descriptor = array( - might also work
 		// 		0 => array('file', '/dev/tty', 'r'),
@@ -167,7 +167,7 @@
 		// 		2 => array('pty')
 		// 	);
 
-		// $process = proc_open($exec_command, $descriptor, $pipes, $exec_dir);
+		$process = proc_open($exec_command, $descriptor, $pipes, $exec_dir);
 
 	}
 
