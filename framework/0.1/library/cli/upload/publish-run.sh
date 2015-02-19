@@ -49,8 +49,6 @@
 
 				echo;
 
-				sleep 0.1;
-
 			elif [[ "${RUN}" == 'Database' ]]; then
 
 				./cli --diff;
@@ -69,7 +67,9 @@
 
 			fi
 
-			break;
+			sleep 0.1; # Allow output from echo (stdout) to be sent before next 'select'.
+
+			break; # Don't run 'select' normally (we need to re-print options - both for unrecognised input, and diff/database actions).
 
 		done
 
