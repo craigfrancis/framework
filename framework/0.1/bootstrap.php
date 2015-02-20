@@ -16,6 +16,11 @@
 	}
 
 //--------------------------------------------------
+// Error reporting
+
+	error_reporting(E_ALL); // Don't you dare change this (instead you should learn to program properly).
+
+//--------------------------------------------------
 // Version
 
 	if (defined('FRAMEWORK_VERSION')) {
