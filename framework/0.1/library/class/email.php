@@ -284,7 +284,7 @@
 				$this->_send($recipients);
 			}
 
-			private function _send($recipients, $build = NULL) {
+			protected function _send($recipients, $build = NULL) {
 
 				//--------------------------------------------------
 				// Testing support
@@ -315,19 +315,9 @@
 					$headers = $this->_build_headers($build['headers']);
 
 				//--------------------------------------------------
-				// Additional parameters
+				// Subject
 
-					$additional_parameters = '';
-
-					if ($this->return_path != NULL) {
-
-						$additional_parameters = '-f "' . addslashes($this->return_path) . '"';
-
-					} else if ($this->from_email != NULL) {
-
-						$additional_parameters = '-f "' . addslashes($this->from_email) . '"';
-
-					}
+					$subject = $this->subject_get();
 
 				//--------------------------------------------------
 				// Send
@@ -337,7 +327,7 @@
 					}
 
 					foreach ($recipients as $recipient) {
-						mail($recipient, $this->subject_get(), $build['content'], $headers, $additional_parameters);
+						$this->_send_mail($recipient, $subject, $build['content'], $headers);
 					}
 
 			}
@@ -404,10 +394,28 @@
 
 			}
 
+			protected function _send_mail($recipient, $subject, $content, $headers) {
+
+				$additional_parameters = '';
+
+				if ($this->return_path != NULL) {
+
+					$additional_parameters = '-f "' . addslashes($this->return_path) . '"';
+
+				} else if ($this->from_email != NULL) {
+
+					$additional_parameters = '-f "' . addslashes($this->from_email) . '"';
+
+				}
+
+				mail($recipient, $subject, $content, $headers, $additional_parameters);
+
+			}
+
 		//--------------------------------------------------
 		// Build
 
-			private function _build() {
+			protected function _build() {
 
 				//--------------------------------------------------
 				// Setup
@@ -591,7 +599,7 @@
 
 			}
 
-			private function _build_headers($headers) {
+			protected function _build_headers($headers) {
 				$headers_text = '';
 				foreach (array_merge($headers, $this->headers) as $header => $value) {
 					$headers_text .= head($header) . ': ' . head($value) . "\n";
