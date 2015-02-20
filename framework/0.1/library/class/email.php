@@ -284,54 +284,6 @@
 				$this->_send($recipients);
 			}
 
-			protected function _send($recipients, $build = NULL) {
-
-				//--------------------------------------------------
-				// Testing support
-
-					$email_testing = config::get('email.testing');
-
-					if ($email_testing !== NULL) {
-
-						$recipients = $email_testing;
-
-						foreach ($this->cc_emails as $cc_id => $cc_info) {
-							$this->cc_emails[$cc_id]['email'] = $email_testing;
-						}
-
-						foreach ($this->bcc_emails as $bcc_id => $bcc_info) {
-							$this->bcc_emails[$bcc_id]['email'] = $email_testing;
-						}
-
-					}
-
-				//--------------------------------------------------
-				// Build
-
-					if ($build === NULL) {
-						$build = $this->_build();
-					}
-
-					$headers = $this->_build_headers($build['headers']);
-
-				//--------------------------------------------------
-				// Subject
-
-					$subject = $this->subject_get();
-
-				//--------------------------------------------------
-				// Send
-
-					if (!is_array($recipients)) {
-						$recipients = array($recipients);
-					}
-
-					foreach ($recipients as $recipient) {
-						$this->_send_mail($recipient, $subject, $build['content'], $headers);
-					}
-
-			}
-
 			public function send_encrypted($recipients) {
 
 				//--------------------------------------------------
@@ -390,6 +342,54 @@
 									'content' => $secure_content,
 								));
 
+					}
+
+			}
+
+			protected function _send($recipients, $build = NULL) {
+
+				//--------------------------------------------------
+				// Testing support
+
+					$email_testing = config::get('email.testing');
+
+					if ($email_testing !== NULL) {
+
+						$recipients = $email_testing;
+
+						foreach ($this->cc_emails as $cc_id => $cc_info) {
+							$this->cc_emails[$cc_id]['email'] = $email_testing;
+						}
+
+						foreach ($this->bcc_emails as $bcc_id => $bcc_info) {
+							$this->bcc_emails[$bcc_id]['email'] = $email_testing;
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Build
+
+					if ($build === NULL) {
+						$build = $this->_build();
+					}
+
+					$headers = $this->_build_headers($build['headers']);
+
+				//--------------------------------------------------
+				// Subject
+
+					$subject = $this->subject_get();
+
+				//--------------------------------------------------
+				// Send
+
+					if (!is_array($recipients)) {
+						$recipients = array($recipients);
+					}
+
+					foreach ($recipients as $recipient) {
+						$this->_send_mail($recipient, $subject, $build['content'], $headers);
 					}
 
 			}
