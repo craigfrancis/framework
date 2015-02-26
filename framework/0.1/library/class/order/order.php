@@ -810,13 +810,13 @@
 			}
 
 			public function tax_types_get() {
-				return config::get('order.tax_types', array(
+				return config::get('order.tax_types', array( // More of a yes/no for the different types (e.g. item/voucher/discount/delivery)
 						'item',
 					));
 			}
 
 			public function tax_included_get() {
-				return config::get('order.tax_included', array(
+				return config::get('order.tax_included', array( // If taxed, then do we add Tax to get Gross, or remove to get Net
 						'item',
 					));
 			}
