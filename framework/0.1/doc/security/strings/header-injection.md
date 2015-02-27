@@ -10,4 +10,4 @@ Just allowing a newline character can allow an attacker to send their own header
 
 	redirect($location);
 
-This has been [fixed](https://php.net/releases/5_1_2.php) in PHP 5.1.2, but can still be a problem elsewhere (e.g. if setting headers with the PHP [mail](http://php.net/mail) function, rather than using the [email helper](../../../doc/helpers/email.md)).
+This has been [fixed](https://php.net/releases/5_1_2.php) in PHP 5.1.2, but can still be a problem elsewhere (e.g. if setting headers with the PHP [mail](https://php.net/mail) function, rather than using the [email helper](../../../doc/helpers/email.md)).

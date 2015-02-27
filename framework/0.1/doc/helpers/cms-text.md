@@ -109,9 +109,9 @@ This will return/clear all cache files, or you can pass in a path for a particul
 
 Explain about `cms_tags/cms_markdown`.
 
-http://www.w3.org/International/articles/composite-messages/Overview
+https://www.w3.org/International/articles/composite-messages/Overview
 
-http://www.localeapp.com/
+https://www.localeapp.com/
 
 And the cms_text controller for the admin.
 

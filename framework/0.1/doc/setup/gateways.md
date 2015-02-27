@@ -43,7 +43,7 @@ Discussion with 2-legged auth in 2.0 (not good):
 
 An idea of how to implement in 2.0:
 
-	http://stackoverflow.com/questions/14250383/how-does-2-legged-oauth-work-in-oauth-2-0
+	https://stackoverflow.com/q/14250383/how-does-2-legged-oauth-work-in-oauth-2-0
 
 Overview of 1.0 and 2.0, with a possible solution:
 

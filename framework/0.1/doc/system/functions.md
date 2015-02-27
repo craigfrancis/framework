@@ -43,7 +43,7 @@ When you want to get a value from GET/POST/REQUEST, then simply use:
 	request('name', 'GET');
 	request('name', 'POST');
 
-	http://www.example.com/?name=Craig
+	https://www.example.com/?name=Craig
 		echo '<p>Hi ' . html(request('name')) . '</p>';
 		echo '<p>Hi Craig</p>';
 
@@ -87,7 +87,7 @@ For other variables, you should probably use the [cookie](../../doc/helpers/cook
 ## Request handling
 
 	request_folder_get(1);
-		// http://www.example.com/admin/products/
+		// https://www.example.com/admin/products/
 		// 'products'
 
 	request_folder_match(array('member', 'login'));

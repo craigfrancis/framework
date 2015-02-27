@@ -18,10 +18,10 @@ Setup:
 
 Requesting a resource:
 
-	$socket->get('http://www.example.com');
-	// $socket->post('http://www.example.com');
-	// $socket->put('http://www.example.com');
-	// $socket->delete('http://www.example.com');
+	$socket->get('https://www.example.com');
+	// $socket->post('https://www.example.com');
+	// $socket->put('https://www.example.com');
+	// $socket->delete('https://www.example.com');
 
 Returning the response:
 
@@ -42,7 +42,7 @@ To handle errors yourself, do something like:
 	$socket = new socket();
 	$socket->exit_on_error_set(false);
 
-	if ($socket->get('http://www.example.com') && $socket->response_code_get() == 200) {
+	if ($socket->get('https://www.example.com') && $socket->response_code_get() == 200) {
 		$response = $socket->response_data_get();
 	} else {
 		exit($socket->error_string_get());
@@ -50,7 +50,7 @@ To handle errors yourself, do something like:
 
 Or perhaps:
 
-	$result = $socket->get('http://www.example.com');
+	$result = $socket->get('https://www.example.com');
 
 	if ($result) {
 		// Success
@@ -73,13 +73,13 @@ Imitate a basic browser
 	//--------------------------------------------------
 	// Pre-load url and data (testing)
 
-		// $browser->url_set('http://www.example.com');
+		// $browser->url_set('https://www.example.com');
 		// $browser->data_set(file_get_contents('/folder/file.html'));
 
 	//--------------------------------------------------
 	// Get first page
 
-		$browser->get('http://www.example.com');
+		$browser->get('https://www.example.com');
 
 		// debug($browser->url_get());
 		// debug($browser->data_get());

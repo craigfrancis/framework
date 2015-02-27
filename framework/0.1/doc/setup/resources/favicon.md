@@ -1,7 +1,7 @@
 
 # Favicon
 
-All websites need a favicon, if only to stop the browser having to download a [404 page](http://developer.yahoo.com/performance/rules.html#favicon).
+All websites need a favicon, if only to stop the browser having to download a [404 page](https://developer.yahoo.com/performance/rules.html#favicon).
 
 I would suggest saving it in:
 
@@ -18,4 +18,4 @@ The following link tag will be automatically added to the [html response](../../
 
 And if the browser ignores it, the file will also be served from:
 
-	http://www.example.com/favicon.ico
+	https://www.example.com/favicon.ico

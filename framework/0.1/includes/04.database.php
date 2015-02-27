@@ -454,7 +454,7 @@
 				$host = config::get($prefix . 'host');
 
 				if (!function_exists('mysqli_connect')) {
-					$this->_error('PHP does not have MySQLi support - http://www.php.net/mysqli_connect', true);
+					$this->_error('PHP does not have MySQLi support - https://php.net/mysqli_connect', true);
 				}
 
 				$this->link = @mysqli_connect($host, $user, $pass, $name);

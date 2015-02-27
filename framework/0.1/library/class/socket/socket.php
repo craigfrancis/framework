@@ -142,7 +142,7 @@
 					$chunked_length = strlen($chunked_str);
 					$chunked_pos = 0;
 
-					do { // See comment at http://www.php.net/manual/en/function.http-chunked-decode.php
+					do { // See comment at https://php.net/manual/en/function.http-chunked-decode.php
 
 						$pos_nl = strpos($chunked_str, "\n", ($chunked_pos + 1));
 						$hex_length = substr($chunked_str, $chunked_pos, ($pos_nl - $chunked_pos));
@@ -396,7 +396,7 @@
 				//--------------------------------------------------
 				// Receive
 
-					$error_reporting = error_reporting(0); // Dam IIS forgetting close_notify indicator - http://php.net/file
+					$error_reporting = error_reporting(0); // Dam IIS forgetting close_notify indicator - https://php.net/file
 
 					$response = '';
 					while (!feof($this->connection)) {

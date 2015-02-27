@@ -21,10 +21,10 @@ There are 3 shortcut functions which you can use:
 	https_url();
 
 		echo http_url('/about/');
-			http://www.example.com/about/
+			https://www.example.com/about/
 
 		echo https_url('/about/');
-			http://www.example.com/about/ - output.protocols = array('http');
+			https://www.example.com/about/ - output.protocols = array('http');
 			https://www.example.com/about/ - output.protocols = array('http', 'https');
 
 You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/url.php).

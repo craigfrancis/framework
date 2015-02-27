@@ -110,7 +110,7 @@
 
 			protected function _checkout_xml($config) {
 
-					// http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API.html#urls_for_posting
+					// https://code.google.com/apis/checkout/developer/Google_Checkout_XML_API.html#urls_for_posting
 
 				$currency = $config['order']->currency_get();
 				$items = $config['order']->items_get();

@@ -7,7 +7,7 @@
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+  https://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ class WebDriver extends WebDriverBase {
      * Connects to Selenium server.
      * @param $browserName The name of the browser being used; should be one of {chrome|firefox|htmlunit|internet explorer|iphone}. 
      * @param $version 	The browser version, or the empty string if unknown. 
-     * @param $caps  array with capabilities see: http://code.google.com/p/selenium/wiki/JsonWireProtocol#/session
+     * @param $caps  array with capabilities see: https://code.google.com/p/selenium/wiki/JsonWireProtocol#/session
     */
     public function connect($browserName="firefox", $version="", $caps=array()) {
         $request = $this->requestURL . "/session";

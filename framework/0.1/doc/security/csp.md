@@ -24,8 +24,8 @@ To customise the directives, start with something like:
 For additional resources (e.g. on a per-page basis) you can also call:
 
 	$response = response_get();
-	$response->csp_source_add('frame-src', 'http://www.example.com');
-	$response->csp_source_add('img-src', array('http://www.example.com', 'http://www.example.org'));
+	$response->csp_source_add('frame-src', 'https://www.example.com');
+	$response->csp_source_add('img-src', array('https://www.example.com', 'https://www.example.org'));
 
 So for example, Google Maps might require:
 

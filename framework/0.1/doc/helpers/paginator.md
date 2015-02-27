@@ -97,7 +97,7 @@ This works well with the [table helper](../../doc/helpers/table.md).
 
 ## Usage with SQL Found Rows
 
-Only do this if it's **actually** more efficient, many times it can be [much slower](http://stackoverflow.com/q/186588) than two separate queries (see above).
+Only do this if it's **actually** more efficient, many times it can be [much slower](https://stackoverflow.com/q/186588) than two separate queries (see above).
 
 	$paginator = new paginator();
 

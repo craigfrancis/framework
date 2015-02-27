@@ -361,7 +361,7 @@
 
 							} else {
 
-								// http://stackoverflow.com/a/1379487/6632
+								// https://stackoverflow.com/a/1379487/6632
 
 								$files_contents = preg_replace('#/\*.*?\*/#s', '', $files_contents); // Remove comments
 								$files_contents = preg_replace('/[ \t]*([{}|:;,])[ \t]+/', '$1', $files_contents); // Remove whitespace (keeping newlines)

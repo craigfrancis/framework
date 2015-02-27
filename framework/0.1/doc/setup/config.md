@@ -23,7 +23,7 @@ This should be considered private, and involves you typing in some random keys:
 
 The intention of this constant is simply for encrypting information.
 
-It's also used to ensure sessions are valid for this websites... so avoiding session fixation, and sessions being created on other websites hosted on the same box ([notes](http://www.sitepoint.com/notes-on-php-session-security/)).
+It's also used to ensure sessions are valid for this websites... so avoiding session fixation, and sessions being created on other websites hosted on the same box ([notes](https://www.sitepoint.com/notes-on-php-session-security/)).
 
 ---
 

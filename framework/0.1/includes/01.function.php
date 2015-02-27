@@ -395,11 +395,11 @@
 		}
 
 	function is_assoc($array) {
-		return (count(array_filter(array_keys($array), 'is_string')) > 0); // http://stackoverflow.com/questions/173400
+		return (count(array_filter(array_keys($array), 'is_string')) > 0); // https://stackoverflow.com/q/173400
 	}
 
 	if (!function_exists('mb_str_pad')) {
-		function mb_str_pad($input, $pad_length, $pad_string=' ', $pad_type = STR_PAD_RIGHT) { // from http://php.net/manual/en/function.str-pad.php
+		function mb_str_pad($input, $pad_length, $pad_string=' ', $pad_type = STR_PAD_RIGHT) { // from https://php.net/manual/en/function.str-pad.php
 			$diff = strlen($input) - mb_strlen($input);
 			return str_pad($input, $pad_length+$diff, $pad_string, $pad_type);
 		}
@@ -1036,7 +1036,7 @@
 		header('Content-Disposition: ' . head($mode) . '; filename="' . head($name) . '"');
 		header('Content-Length: ' . head(filesize($path)));
 
-		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (http://support.microsoft.com/kb/316431)
+		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (https://support.microsoft.com/kb/316431)
 		header('Pragma:');
 
 		readfile($path);
@@ -1052,7 +1052,7 @@
 		header('Content-Disposition: ' . head($mode) . '; filename="' . head($name) . '"');
 		header('Content-Length: ' . head(strlen($content)));
 
-		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (http://support.microsoft.com/kb/316431)
+		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (https://support.microsoft.com/kb/316431)
 		header('Pragma:');
 
 		echo $content;
@@ -1069,9 +1069,9 @@
 			$pragma = (session::open() ? 'private' : 'public');
 
 			header('Pragma: ' . head($pragma)); // For HTTP/1.0 compatibility
-			header('Cache-Control: ' . head($pragma) . ', max-age=' . head($expires)); // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
+			header('Cache-Control: ' . head($pragma) . ', max-age=' . head($expires)); // https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
 			header('Expires: ' . head(gmdate('D, d M Y H:i:s', time() + $expires)) . ' GMT');
-			header('Vary: User-Agent'); // http://blogs.msdn.com/b/ieinternals/archive/2009/06/17/vary-header-prevents-caching-in-ie.aspx
+			header('Vary: User-Agent'); // https://blogs.msdn.com/b/ieinternals/archive/2009/06/17/vary-header-prevents-caching-in-ie.aspx
 
 			if ($last_modified !== NULL) {
 
@@ -1294,7 +1294,7 @@
 
 	function random_key($length) {
 
-		// http://stackoverflow.com/questions/24515903/generating-random-characters-for-a-url-in-php
+		// https://stackoverflow.com/q/24515903/generating-random-characters-for-a-url-in-php
 
 		$key = '';
 

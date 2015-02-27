@@ -12,7 +12,7 @@ A typical [HTML response](../../doc/system/response.md) will add JavaScript and 
 	$response->css_alternate_add('/path/to/file.css', 'print');
 	$response->css_alternate_add('/path/to/file.css', 'all', 'Title');
 
-In the [template](../../doc/setup/templates.md) file itself, the CSS is then added to the page <[head](http://developer.yahoo.com/performance/rules.html#css_top)> via `head_get_html()`, and the JavaScript at the [bottom](http://developer.yahoo.com/performance/rules.html#js_bottom) of the page with `foot_get_html()`.
+In the [template](../../doc/setup/templates.md) file itself, the CSS is then added to the page <[head](https://developer.yahoo.com/performance/rules.html#css_top)> via `head_get_html()`, and the JavaScript at the [bottom](https://developer.yahoo.com/performance/rules.html#js_bottom) of the page with `foot_get_html()`.
 
 For reference, please see these other pages which also relate to resources:
 
@@ -29,7 +29,7 @@ For both the JavaScript and CSS, the paths are automatically changed to somethin
 	/a/js/file.js
 	/a/js/946684800-file.js
 
-Where the number is the UNIX timestamp of when the file was last modified... this means that the framework can also set a very aggressive [caching policy](http://developer.yahoo.com/performance/rules.html#expires), and as soon as the file is changed, the <link> and <script> tags change, and the old URL is 301 redirected to the new path.
+Where the number is the UNIX timestamp of when the file was last modified... this means that the framework can also set a very aggressive [caching policy](https://developer.yahoo.com/performance/rules.html#expires), and as soon as the file is changed, the <link> and <script> tags change, and the old URL is 301 redirected to the new path.
 
 This can be enabled with the config options:
 
@@ -51,7 +51,7 @@ And the JavaScript code will be provided to the browser as though it was a separ
 
 ## JavaScript combined
 
-Along with the versioning, the JS files can also be [combined](http://developer.yahoo.com/performance/rules.html#num_http) to a single file if you set the config:
+Along with the versioning, the JS files can also be [combined](https://developer.yahoo.com/performance/rules.html#num_http) to a single file if you set the config:
 
 	$config['output.js_combine'] = true;
 
@@ -69,7 +69,7 @@ If you wan't a file to not be combined (e.g. jQuery), then instead call:
 
 ## JavaScript minified
 
-To [minify](http://developer.yahoo.com/performance/rules.html#minify) the JavaScript with [jsmin-php](https://github.com/rgrove/jsmin-php/), set:
+To [minify](https://developer.yahoo.com/performance/rules.html#minify) the JavaScript with [jsmin-php](https://github.com/rgrove/jsmin-php/), set:
 
 	$config['output.js_min'] = true;
 
@@ -109,7 +109,7 @@ Then depending on the URL being loaded, additional files can be included.
 
 For example:
 
-	http://www.example.com/admin/products/
+	https://www.example.com/admin/products/
 
 		/a/css/global/core.css
 		/a/css/admin/core.css

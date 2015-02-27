@@ -7,7 +7,7 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 
 ## Basic usage
 
-The timestamp helper is just an extended version of the base PHP [DateTime](http://php.net/datetime) object:
+The timestamp helper is just an extended version of the base PHP [DateTime](https://php.net/datetime) object:
 
 	$timestamp = new timestamp('2014W04-2');
 	$timestamp = new timestamp('2014-09-22 17:43:21', 'db');

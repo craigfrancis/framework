@@ -9,7 +9,7 @@
 		see the end of this script for the full details.
 		It was originally created by Craig Francis in 2006.
 
-		http://www.craigfrancis.co.uk/features/code/phpCmsText/
+		https://www.craigfrancis.co.uk/features/code/phpCmsText/
 
 	//--------------------------------------------------
 	// Example setup

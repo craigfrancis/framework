@@ -1,10 +1,10 @@
 <?php
 
 // http://windows.microsoft.com/en-GB/windows-vista/block-or-allow-cookies
-// http://windows.microsoft.com/en-gb/windows7/how-to-manage-cookies-in-internet-explorer-9
+// http://windows.microsoft.com/en-gb/windows7/How-to-manage-cookies-in-Internet-Explorer-9
 // https://support.mozilla.org/en-US/kb/enable-and-disable-cookies-website-preferences
 // https://support.google.com/accounts/answer/61416?hl=en
-// http://support.apple.com/kb/HT1677
+// https://support.apple.com/kb/HT1677
 
 	$response->set('title_html', '<h1>Your browser does not accept cookies!</h1>');
 
@@ -36,7 +36,7 @@
 		<li>Click &quot;OK&quot;.</li>
 	</ul>
 
-	<h3>Firefox 1.5 (<a href="http://www.getfirefox.com/">download</a>)</h3>
+	<h3>Firefox 1.5 (<a href="https://www.getfirefox.com/">download</a>)</h3>
 	<ul>
 		<li>Select &quot;Options&quot; from the &quot;Tools&quot; menu.</li>
 		<li>Select the &quot;Privacy&quot; icon in the top panel.</li>

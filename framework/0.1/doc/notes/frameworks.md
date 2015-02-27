@@ -8,7 +8,7 @@ As discussed in the [history](../../doc/notes/history.md), PHP Prime kind of sta
 * [CodeIgniter](http://ellislab.com/codeigniter)
 * [FuelPHP](http://fuelphp.com/)
 * [CakePHP](http://www.cakephp.org)
-* [Drupal](http://drupal.org)
+* [Drupal](https://www.drupal.org)
 * [Zend](http://framework.zend.com)
 
 These frameworks have a much larger community behind them, and I would recommend using them (order dependent on the situation). HOWEVER, they are far from perfect, where I find that they often do not provide me with the functionality I have come to expect when programming.
@@ -37,7 +37,7 @@ This is why PHP Prime has [extensive debug output](../../doc/setup/debug.md), wh
 
 In CakePHP I did finally get the required [debug output](https://github.com/craigfrancis/framework/blob/master/resources/alternatives/cakePHP/dbo_mysql_custom.php), and found that due to how the Models are created (with the relationships being setup site wide), it was often returning information that the current query did not need. So you have to use things like [unbindModel()](http://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#creating-and-destroying-associations-on-the-fly), and remember that these may only work for the next query.
 
-Likewise other things happen by "default", and without actually thinking/tracing it though, you end up with issues such as the [Mass Assignment Vulnerability](http://stackoverflow.com/questions/10458468/), a name for which [I didn't know about](https://groups.google.com/d/topic/cake-php/yvl-x88hl6E/discussion) at the time.
+Likewise other things happen by "default", and without actually thinking/tracing it though, you end up with issues such as the [Mass Assignment Vulnerability](https://stackoverflow.com/q/10458468/), a name for which [I didn't know about](https://groups.google.com/d/topic/cake-php/yvl-x88hl6E/discussion) at the time.
 
 Or a simple validation rule that can be skipped as the key in the model is accidentally named "post_code", but in the database "postcode".
 
@@ -59,7 +59,7 @@ For example on one Flash based website I was working on, the Flash animation on 
 
 ## Custom HTML
 
-Some Frameworks like [Drupal](http://drupal.org) are [well known](http://drupal.org/node/1324382) for their auto generated HTML, and that it is [possible to edit this](http://api.drupal.org/api/drupal/includes%21module.inc/group/hooks/7), but can become very difficult.
+Some Frameworks like [Drupal](https://www.drupal.org) are [well known](https://www.drupal.org/node/1324382) for their auto generated HTML, and that it is [possible to edit this](http://api.drupal.org/api/drupal/includes%21module.inc/group/hooks/7), but can become very difficult.
 
 For example Zend uses [decorators](http://framework.zend.com/manual/1.12/en/zend.form.decorators.html) to customise the output of form fields, however I have no idea how to explain editing this to someone with HTML experience - it took me long enough to add a simple <div> wrapper.
 

@@ -387,7 +387,7 @@
 						// Yes, the @roles are not really necessary, but still required
 						// to validate, and begrudgingly show screen readers we are
 						// not using the table for layout purposes.
-						// http://stackoverflow.com/questions/24863531
+						// https://stackoverflow.com/q/24863531
 
 					$output_html = '
 						<table' . ($this->id_name != '' ? ' id="' . html($this->id_name) . '"' : '') . ($this->class_name != '' ? ' class="' . html($this->class_name) . '"' : '') . '>
@@ -419,7 +419,7 @@
 
 									$heading_info['class_name'] .= ' sorted ' . ($sort_asc ? 'sorted_asc' : 'sorted_desc');
 
-									$attributes_html .= ' aria-sort="' . ($sort_asc ? 'ascending' : 'descending') . '"'; // http://www.w3.org/TR/wai-aria/states_and_properties#aria-sort
+									$attributes_html .= ' aria-sort="' . ($sort_asc ? 'ascending' : 'descending') . '"'; // https://www.w3.org/TR/wai-aria/states_and_properties#aria-sort
 
 								} else {
 

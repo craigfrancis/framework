@@ -69,7 +69,7 @@
 		// Payment fields
 
 				//--------------------------------------------------
-				// Ref: http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#attr-fe-autocomplete-street-address
+				// Ref: https://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#attr-fe-autocomplete-street-address
 				//--------------------------------------------------
 
 			public function field_payment_name_get() {

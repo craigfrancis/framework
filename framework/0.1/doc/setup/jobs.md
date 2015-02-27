@@ -41,7 +41,7 @@ Normally all of the 'jobs' can be run via the cli:
 
 Or via the framework provided gateway (if enabled):
 
-	http://www.example.com/a/api/maintenance/
+	https://www.example.com/a/api/maintenance/
 
 It is possible to run the maintenance scripts via your own code (not really needed):
 

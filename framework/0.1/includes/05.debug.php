@@ -231,7 +231,7 @@
 		//--------------------------------------------------
 		// Error type
 
-			switch ($err_no) { // From "Johan 'Josso' Jensen" on http://www.php.net/set_error_handler
+			switch ($err_no) { // From "Johan 'Josso' Jensen" on https://php.net/set_error_handler
 				case E_NOTICE:
 				case E_USER_NOTICE:
 					$error_type = 'Notice';
@@ -525,7 +525,7 @@
 
 					//--------------------------------------------------
 					// Before disabling, read:
-					//   http://rpbouman.blogspot.co.uk/2007/05/debunking-group-by-myths.html
+					//   https://rpbouman.blogspot.co.uk/2007/05/debunking-group-by-myths.html
 					//
 					// You can always use:
 					//   ANY_VALUE()
@@ -635,7 +635,7 @@
 									<tr>';
 								foreach ($row as $key => $value) {
 									$explain_html .= '
-										<td>' . ($key == 'type' ? '<a href="http://dev.mysql.com/doc/refman/5.0/en/explain-output.html#jointype_' . html($value) . '">' : '') . ($value == '' ? '&#xA0;' : html($value)) . ($key == 'type' ? '</a>' : '') . '</td>';
+										<td>' . ($key == 'type' ? '<a href="https://dev.mysql.com/doc/refman/5.0/en/explain-output.html#jointype_' . html($value) . '">' : '') . ($value == '' ? '&#xA0;' : html($value)) . ($key == 'type' ? '</a>' : '') . '</td>';
 								}
 								$explain_html .= '
 									</tr>';

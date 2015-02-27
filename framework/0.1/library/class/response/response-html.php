@@ -832,7 +832,7 @@
 								$prefix = reset($grouped_files);
 								$length = strlen($prefix);
 
-								foreach ($grouped_files as $path) { // @Gumbo - http://stackoverflow.com/questions/1336207/finding-common-prefix-of-array-of-strings
+								foreach ($grouped_files as $path) { // @Gumbo - https://stackoverflow.com/q/1336207/finding-common-prefix-of-array-of-strings
 									while ($length && substr($path, 0, $length) !== $prefix) {
 										$length--;
 										$prefix = substr($prefix, 0, -1);

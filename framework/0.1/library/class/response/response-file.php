@@ -118,7 +118,7 @@
 					header('Content-Disposition: ' . head($mode) . '; filename="' . head($this->name_get()) . '"');
 					header('Content-Length: ' . head($length));
 
-					header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (http://support.microsoft.com/kb/316431)
+					header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (https://support.microsoft.com/kb/316431)
 					header('Pragma:');
 
 					if ($this->path !== NULL) {

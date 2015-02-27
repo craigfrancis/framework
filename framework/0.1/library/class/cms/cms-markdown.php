@@ -26,7 +26,7 @@ PHP Markdown (1.0.1o)
 
 Original Markdown
 	Copyright (c) 2004-2006 John Gruber
-	<http://daringfireball.net/projects/markdown/>
+	<https://daringfireball.net/projects/markdown/>
 
 ***************************************************/
 
@@ -496,7 +496,7 @@ class cms_markdown_base extends check {
 		"doImages"            =>  10,
 		"doAnchors"           =>  20,
 
-		# Make links out of things like `<http://example.com/>`
+		# Make links out of things like `<https://www.example.com/>`
 		# Must come after doAnchors, because you can use < and >
 		# delimiters in inline links like [this](<url>).
 		"doAutoLinks"         =>  30,
@@ -1553,7 +1553,7 @@ HTML tags (like <div> and <table> as well).
 
 For more information about Markdown's syntax, see:
 
-<http://daringfireball.net/projects/markdown/>
+<https://daringfireball.net/projects/markdown/>
 
 
 Bugs
@@ -1583,7 +1583,7 @@ All rights reserved.
 
 Based on Markdown
 Copyright (c) 2003-2006 John Gruber
-<http://daringfireball.net/>
+<https://daringfireball.net/>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

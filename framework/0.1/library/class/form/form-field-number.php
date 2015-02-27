@@ -123,7 +123,7 @@
 						$value += $this->min_value; // HTML step starts at the min value
 					}
 
-					if (abs((round($value / $step) * $step) - $value) > 0.00001) { // ref 'epsilon' on http://php.net/manual/en/language.types.float.php
+					if (abs((round($value / $step) * $step) - $value) > 0.00001) { // ref 'epsilon' on https://php.net/manual/en/language.types.float.php
 						$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $step, $error_html));
 					}
 

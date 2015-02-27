@@ -309,7 +309,7 @@
 						//--------------------------------------------------
 						// Ask
 
-							$contents = file_get_contents(url('http://maps.google.com/maps/api/geocode/xml', array(
+							$contents = file_get_contents(url('https://maps.google.com/maps/api/geocode/xml', array(
 									'address' => $search_query,
 									'sensor' => 'false',
 									'region' => $country,
