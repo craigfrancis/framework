@@ -16,7 +16,6 @@
 					'/app/controller/',
 					'/app/library/',
 					'/app/library/class/',
-					'/app/library/controller/',
 					'/app/library/setup/',
 					'/app/public/',
 					'/app/template/',
