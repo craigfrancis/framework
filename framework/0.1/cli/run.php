@@ -13,14 +13,6 @@
 	define('FRAMEWORK_INIT_ONLY', true);
 	define('REQUEST_MODE', 'cli');
 
-	// if (substr(ROOT, -13) == '/upload/files') {
-	// 	$private_root = substr(ROOT, 0, -13) . '/private'; // We won't be uploading private files, and it may contain a "private app config" ini file.
-	// 	if (is_dir($private_root)) {
-	// 		define('PRIVATE_ROOT', $private_root);
-	// 	}
-	// 	unset($private_root);
-	// }
-
 	require_once(CLI_ROOT . '/../bootstrap.php');
 
 //--------------------------------------------------
