@@ -3,15 +3,14 @@
 //--------------------------------------------------
 // Config
 
-	$cwd = getcwd();
-	if (substr($cwd, -13) == '/upload/files') {
-		$cwd = substr($cwd, 0, -13);
-	}
-
-	define('ROOT', $cwd);
+	define('ROOT', getcwd());
 	define('CLI_ROOT', dirname(__FILE__));
 	define('FRAMEWORK_INIT_ONLY', true);
 	define('REQUEST_MODE', 'cli');
+
+	if (substr(ROOT, -13) == '/upload/files') {
+		define('UPLOAD_ROOT', substr(ROOT, 0, -13));
+	}
 
 	require_once(CLI_ROOT . '/../bootstrap.php');
 
@@ -115,8 +114,8 @@
 				case 'c':
 				case 'config':
 
-					if (in_array($option_value, array('SERVER', 'ROOT', 'FRAMEWORK_ROOT', 'APP_ROOT', 'FILE_ROOT', 'PRIVATE_ROOT'))) {
-						echo constant($option_value) . "\n";
+					if (in_array($option_value, array('SERVER', 'ROOT', 'FRAMEWORK_ROOT', 'APP_ROOT', 'FILE_ROOT', 'PRIVATE_ROOT', 'UPLOAD_ROOT'))) {
+						echo (defined($option_value) ? constant($option_value) : '') . "\n";
 					} else if ($option_value) {
 						echo config::get($option_value) . "\n";
 					} else {
