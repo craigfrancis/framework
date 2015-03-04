@@ -453,6 +453,15 @@
 				$pass = config::get($prefix . 'pass');
 				$host = config::get($prefix . 'host');
 
+				if ($pass === NULL) {
+					$password_path = (defined('UPLOAD_ROOT') ? UPLOAD_ROOT : ROOT) . '/private/passwords/database.txt';
+					if (is_file($password_path)) {
+						$pass = trim(file_get_contents($password_path));
+					} else {
+						exit('Cannot find database password' . "\n");
+					}
+				}
+
 				if (!function_exists('mysqli_connect')) {
 					$this->_error('PHP does not have MySQLi support - https://php.net/mysqli_connect', true);
 				}
