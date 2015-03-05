@@ -17,7 +17,7 @@
 
 			if (!$mode || $mode == 'db') {
 
-				if ($upload === true) {
+				if ($upload === true && !defined('UPLOAD_ROOT')) {
 					$setup_path = ROOT . '/upload/files/app/library/setup/database.txt';
 echo "\n" . $setup_path . "\n";
 				} else {
