@@ -218,6 +218,7 @@
 					}
 
 					if ($opcache_error !== NULL) {
+						echo "\n";
 						echo 'Clearing OpCache:' . "\n";
 						echo '  Domain: ' . $domain . "\n";
 						echo '  URL: ' . $opcache_url . "\n";
