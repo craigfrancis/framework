@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // Diff
 
-	function diff_run($mode = NULL) {
+	function diff_run($mode = NULL, $upload = false) {
 
 		//--------------------------------------------------
 		// Files
@@ -17,28 +17,61 @@
 
 			if (!$mode || $mode == 'db') {
 
-				$setup_path = APP_ROOT . '/library/setup/database.txt';
+				if ($upload === true) {
+					$setup_path = ROOT . '/upload/app/library/setup/database.txt';
+echo "\n" . $setup_path . "\n";
+				} else {
+					$setup_path = APP_ROOT . '/library/setup/database.txt';
+				}
 
 				if (config::get('db.host') !== NULL && is_file($setup_path)) {
 
-					$stored_db = json_decode(file_get_contents($setup_path), true); // Assoc array
+					if (REQUEST_MODE == 'cli' && config::get('db.pass') === NULL) {
 
-					if ($stored_db !== NULL) {
+						$diff_url = gateway_url('cli-diff-db');
+						$diff_url->format_set('full');
 
-						$output = '';
+						$diff_socket = new socket();
+						$diff_socket->exit_on_error_set(false);
 
-						foreach (diff_db($stored_db, dump_db()) as $table_name => $table_details) {
-							if (count($table_details) > 0) {
-								$output .= $table_name . "\n";
-								foreach ($table_details as $table_detail) {
-									$output .= '  ' . $table_detail . "\n";
-								}
-								$output .= "\n";
-							}
+						$diff_time = new timestamp();
+						$diff_key = hash('sha256', (ENCRYPTION_KEY . $diff_time->format('Y-m-d H:i:s')));
+
+						if ($diff_socket->post($diff_url, array('key' => $diff_key))) {
+
+							echo $diff_socket->response_data_get();
+
+						} else {
+
+							echo "\n";
+							echo 'Checking DB Diff:' . "\n";
+							echo '  URL: ' . $diff_url . "\n";
+							echo '  Error: ' . $diff_socket->error_string_get() . "\n\n";
+
 						}
 
-						if ($output != '') {
-							echo "\n" . $output;
+					} else {
+
+						$stored_db = json_decode(file_get_contents($setup_path), true); // Assoc array
+
+						if ($stored_db !== NULL) {
+
+							$output = '';
+
+							foreach (diff_db($stored_db, dump_db()) as $table_name => $table_details) {
+								if (count($table_details) > 0) {
+									$output .= $table_name . "\n";
+									foreach ($table_details as $table_detail) {
+										$output .= '  ' . $table_detail . "\n";
+									}
+									$output .= "\n";
+								}
+							}
+
+							if ($output != '') {
+								echo "\n" . $output;
+							}
+
 						}
 
 					}
