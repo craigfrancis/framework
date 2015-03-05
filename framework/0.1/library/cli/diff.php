@@ -23,12 +23,10 @@
 					$setup_path = APP_ROOT . '/library/setup/database.txt';
 				}
 
-echo "\n" . $setup_path . "\n";
-
 				if (config::get('db.host') !== NULL && is_file($setup_path)) {
-echo 'Is file' . "\n";
+
 					if (REQUEST_MODE == 'cli' && config::get('db.pass') === NULL) {
-echo 'CLI over HTTP mode' . "\n";
+
 						$diff_url = gateway_url('cli-diff-db');
 						$diff_url->format_set('full');
 
@@ -37,7 +35,7 @@ echo 'CLI over HTTP mode' . "\n";
 
 						$diff_time = new timestamp();
 						$diff_key = hash('sha256', (ENCRYPTION_KEY . $diff_time->format('Y-m-d H:i:s')));
-echo $diff_url . "\n";
+
 						if ($diff_socket->post($diff_url, array('key' => $diff_key, 'upload' => ($upload ? 'true' : 'false')))) {
 
 							echo $diff_socket->response_data_get();
