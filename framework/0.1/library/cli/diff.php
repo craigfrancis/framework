@@ -19,15 +19,16 @@
 
 				if ($upload === true && !defined('UPLOAD_ROOT')) {
 					$setup_path = ROOT . '/upload/files/app/library/setup/database.txt';
-echo "\n" . $setup_path . "\n";
 				} else {
 					$setup_path = APP_ROOT . '/library/setup/database.txt';
 				}
 
+echo "\n" . $setup_path . "\n";
+
 				if (config::get('db.host') !== NULL && is_file($setup_path)) {
-
+echo 'Is file' . "\n";
 					if (REQUEST_MODE == 'cli' && config::get('db.pass') === NULL) {
-
+echo 'CLI over HTTP mode' . "\n";
 						$diff_url = gateway_url('cli-diff-db');
 						$diff_url->format_set('full');
 
