@@ -24,7 +24,7 @@
 
 		require_once(FRAMEWORK_ROOT . '/library/cli/diff.php');
 		require_once(FRAMEWORK_ROOT . '/library/cli/dump.php');
-
+echo request('upload') . "\n";
 		diff_run('db', (request('upload') == 'true'));
 
 	}

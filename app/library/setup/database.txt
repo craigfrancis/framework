@@ -172,7 +172,7 @@
                 "options": null,
                 "definition": "datetime NOT NULL"
             },
-            "deleted2": {
+            "deleted": {
                 "type": "datetime",
                 "length": 19,
                 "collation": null,
