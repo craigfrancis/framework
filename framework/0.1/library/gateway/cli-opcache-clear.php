@@ -4,25 +4,25 @@
 	$key_request = request('key', 'POST');
 	$key_time = new timestamp();
 
-	if ($key_request == '') {
+	for ($k = 0; $k <= 3; $k++) {
+		if (hash('sha256', (ENCRYPTION_KEY . $key_time->format('Y-m-d H:i:s'))) == $key_request) {
+			$key_valid = true;
+			break;
+		}
+		$key_time->modify('-1 second');
+	}
 
-		echo 'Missing key';
+	if (!$key_valid) {
+
+		if ($key_request == '') {
+			echo 'Missing key' . "\n";
+		} else {
+			echo 'Invalid key (' . config::get('request.domain') . ')' . "\n";
+		}
 
 	} else {
 
-		for ($k = 0; $k <= 3; $k++) {
-			if (hash('sha256', (ENCRYPTION_KEY . $key_time->format('Y-m-d H:i:s'))) == $key_request) {
-				$key_valid = true;
-				break;
-			}
-			$key_time->modify('-1 second');
-		}
-
-		if (!$key_valid) {
-
-			echo 'Invalid key (' . config::get('request.domain') . ')';
-
-		} else if (function_exists('opcache_reset')) {
+		if (function_exists('opcache_reset')) {
 
 			opcache_reset();
 
