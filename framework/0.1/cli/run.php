@@ -229,7 +229,7 @@
 					require_once(FRAMEWORK_ROOT . '/library/cli/diff.php');
 					require_once(FRAMEWORK_ROOT . '/library/cli/dump.php');
 
-					diff_run($option_value);
+					diff_run($option_value, (defined('UPLOAD_ROOT') ? true : false));
 					break;
 
 				case 'upload':
