@@ -455,10 +455,14 @@
 
 				if ($pass === NULL) {
 					$password_path = (defined('UPLOAD_ROOT') ? UPLOAD_ROOT : ROOT) . '/private/passwords/database.txt';
-					if (is_file($password_path)) {
+					if (is_readable($password_path)) {
 						$pass = trim(file_get_contents($password_path));
 					} else {
-						exit('Cannot find database password' . "\n");
+						if (is_file($password_path)) {
+							$this->_error('Cannot read database password');
+						} else {
+							$this->_error('Cannot find database password');
+						}
 					}
 				}
 
@@ -500,9 +504,11 @@
 			if (function_exists('exit_with_error') && config::get('db.error_thrown') !== true) {
 				config::set('db.error_thrown', true);
 				exit_with_error('An error has occurred with the database.', $query . "\n\n" . $extra);
+			} else if (REQUEST_MODE == 'cli') {
+				exit('I have a problem: ' . ($use_query_as_error ? $query : $extra) . "\n");
 			} else {
 				http_response_code(500);
-				exit('<p>I have an error: <br />' . htmlentities($use_query_as_error ? $query : $extra) . '</p>');
+				exit('<p>I have a problem: <br />' . htmlentities($use_query_as_error ? $query : $extra) . '</p>');
 			}
 
 		}
