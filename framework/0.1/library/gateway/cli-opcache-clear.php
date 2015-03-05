@@ -26,13 +26,13 @@
 
 			opcache_reset();
 
-			echo 'Success (opcache_reset)';
+			echo 'Success';
 
 		} else if (function_exists('apc_clear_cache')) {
 
 			apc_clear_cache();
 
-			echo 'Success (apc_clear_cache)';
+			echo 'Success';
 
 		} else {
 
