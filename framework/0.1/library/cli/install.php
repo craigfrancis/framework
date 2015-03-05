@@ -186,42 +186,42 @@
 			}
 
 		//--------------------------------------------------
-		// Clear APC cache
+		// Clear OpCache
 
-			if (function_exists('apc_clear_cache')) {
+			if (function_exists('opcache_reset') || function_exists('apc_clear_cache')) {
 
 				$domain = config::get('output.domain');
 
 				if ($domain == '') {
 
-					echo 'Cannot clear APC cache without "output.domain" config.' . "\n";
+					echo 'Cannot clear OpCache without "output.domain" config.' . "\n";
 
 				} else {
 
-					$apc_error = NULL;
+					$opcache_error = NULL;
 
-					$apc_url = gateway_url('apc-clear');
-					$apc_url->format_set('full');
+					$opcache_url = gateway_url('cli-opcache-clear');
+					$opcache_url->format_set('full');
 
-					$apc_socket = new socket();
-					$apc_socket->exit_on_error_set(false);
+					$opcache_socket = new socket();
+					$opcache_socket->exit_on_error_set(false);
 
-					$apc_key = hash('sha256', (ENCRYPTION_KEY . date('Y-m-d')));
+					$opcache_key = hash('sha256', (ENCRYPTION_KEY . date('Y-m-d')));
 
-					if ($apc_socket->post($apc_url, array('key' => $apc_key))) {
-						$apc_data = $apc_socket->response_data_get();
-						if ($apc_data !== 'Success') {
-							$apc_error = $apc_data;
+					if ($opcache_socket->post($opcache_url, array('key' => $opcache_key))) {
+						$opcache_data = $opcache_socket->response_data_get();
+						if ($opcache_data !== 'Success') {
+							$opcache_error = $opcache_data;
 						}
 					} else {
-						$apc_error = $apc_socket->error_string_get();
+						$opcache_error = $opcache_socket->error_string_get();
 					}
 
-					if ($apc_error !== NULL) {
-						echo 'Clearing APC cache:' . "\n";
+					if ($opcache_error !== NULL) {
+						echo 'Clearing OpCache:' . "\n";
 						echo '  Domain: ' . $domain . "\n";
-						echo '  URL: ' . $apc_url . "\n";
-						echo '  Error: ' . $apc_error . "\n\n";
+						echo '  URL: ' . $opcache_url . "\n";
+						echo '  Error: ' . $opcache_error . "\n\n";
 					}
 
 				}

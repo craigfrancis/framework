@@ -38,7 +38,7 @@
 		$config['request.folders'] = path_to_array($path);
 
 		if (REQUEST_MODE == 'cli') {
-			$config['request.domain'] = ''; // Remove hostname default, set in git post-commit hook (ref APC clear cache)
+			$config['request.domain'] = ''; // Remove hostname default, set in git post-commit hook (ref clear OpCache)
 			$config['request.url'] = 'file://..' . $uri; // Don't expose ROOT, but show the relative path
 		} else {
 			$config['request.url'] = ($config['request.https'] ? 'https://' : 'http://') . $config['request.domain'] . $uri;
