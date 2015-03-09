@@ -201,8 +201,16 @@
 				$this->body_text .= $content_text;
 			}
 
+			public function body_text_set($content_text) { // Only used to replace the body (rarley used)
+				$this->body_text = $content_text;
+			}
+
 			public function body_html_add($content_html) {
 				$this->body_html .= $content_html;
+			}
+
+			public function body_html_set($content_html) {
+				$this->body_html = $content_html;
 			}
 
 			public function request_table_add($values) {
@@ -354,6 +362,8 @@
 					$email_testing = config::get('email.testing');
 
 					if ($email_testing !== NULL) {
+
+						$this->header_set('X-Recipients', json_encode($recipients));
 
 						$recipients = $email_testing;
 
