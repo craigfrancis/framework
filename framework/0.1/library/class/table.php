@@ -10,6 +10,8 @@
 		// Variables
 
 			protected $table_id = NULL;
+			protected $caption_text = NULL;
+			protected $caption_html = NULL;
 			protected $headings = array();
 			protected $heading_id = 0;
 			protected $footers = array();
@@ -84,6 +86,36 @@
 
 			public function id_set($id) {
 				$this->id_name = $id;
+			}
+
+			public function caption_set($caption) {
+				$this->caption_text = $caption;
+				$this->caption_html = NULL;
+			}
+
+			public function caption_set_html($caption_html) {
+				$this->caption_text = NULL;
+				$this->caption_html = $caption_html;
+			}
+
+			public function caption_get() {
+				if ($this->caption_text !== NULL) {
+					return $this->caption_text;
+				} else if ($this->caption_html !== NULL) {
+					return html_decode(strip_tags($this->caption_html));
+				} else {
+					return NULL;
+				}
+			}
+
+			public function caption_get_html() {
+				if ($this->caption_text !== NULL) {
+					return html($this->caption_text);
+				} else if ($this->caption_html !== NULL) {
+					return $this->caption_html;
+				} else {
+					return NULL;
+				}
 			}
 
 			public function anchor_set($id) {
@@ -390,7 +422,17 @@
 						// https://stackoverflow.com/q/24863531
 
 					$output_html = '
-						<table' . ($this->id_name != '' ? ' id="' . html($this->id_name) . '"' : '') . ($this->class_name != '' ? ' class="' . html($this->class_name) . '"' : '') . '>
+						<table' . ($this->id_name != '' ? ' id="' . html($this->id_name) . '"' : '') . ($this->class_name != '' ? ' class="' . html($this->class_name) . '"' : '') . '>';
+
+					if ($this->caption_text) {
+						$output_html .= '
+							<caption>' . html($this->caption_text) . '</caption>';
+					} else if ($this->caption_html) {
+						$output_html .= '
+							<caption>' . $this->caption_html . '</caption>';
+					}
+
+					$output_html .= '
 							<thead>';
 
 					foreach ($this->headings as $row_id => $heading_row) {

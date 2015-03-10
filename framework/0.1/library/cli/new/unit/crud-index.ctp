@@ -11,7 +11,7 @@
 		<?= $paginator->html(); ?>
 	<?php } ?>
 
-	<div class="basic_table full_width">
+	<div class="basic_table full_width duplicate_caption">
 		<?= $table->html(); ?>
 	</div>
 

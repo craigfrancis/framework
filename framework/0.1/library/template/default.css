@@ -414,6 +414,10 @@
 		width: 100%;
 	}
 
+	.basic_table.duplicate_caption caption {
+		display: none;
+	}
+
 	.basic_table thead .sort {
 		font-size: 0.75em;
 	}

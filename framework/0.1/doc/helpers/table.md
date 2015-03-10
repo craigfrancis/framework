@@ -11,6 +11,7 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 
 	$table = new table();
 	$table->class_set('basic_table');
+	$table->caption_set('Table caption');
 	$table->no_records_set('No records found');
 
 	$table->heading_add('Heading 1');
