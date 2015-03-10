@@ -763,7 +763,7 @@
 					'table' => $config,
 					'where_id' => $where_id,
 					'fields' => $fields,
-					'deleted' => array('type' => ref_to_human($record_name)),
+					'deleted' => array('type' => strtolower(ref_to_human($record_name))),
 				), $config_extra);
 
 		}
