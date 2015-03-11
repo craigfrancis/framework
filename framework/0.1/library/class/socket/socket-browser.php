@@ -547,6 +547,10 @@
 										$url_parts['scheme'] = 'http';
 									}
 
+									if (!isset($url_parts['host'])) {
+										return $this->_error('Unknown host in new url "' . $url . '", or current url "' . $this->current_url . '"');
+									}
+
 								//--------------------------------------------------
 								// Process relative paths
 
