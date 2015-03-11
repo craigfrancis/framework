@@ -35,6 +35,28 @@
 			protected function setup() {
 			}
 
+			public function reset() {
+
+				$this->values = array();
+				$this->headers = array();
+				$this->cookies = array();
+				$this->login_username = '';
+				$this->login_password = '';
+
+				$this->request_full = '';
+				$this->request_host = '';
+				$this->request_path = '';
+				$this->response_full = '';
+				$this->response_headers = '';
+				$this->response_data = '';
+
+				$this->error_string = NULL;
+				$this->error_data = NULL;
+
+				$this->connection = NULL;
+
+			}
+
 			public function value_add($name, $value) {
 				$this->values[$name] = $value;
 			}

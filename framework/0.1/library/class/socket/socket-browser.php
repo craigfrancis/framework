@@ -33,6 +33,21 @@
 				$this->socket->exit_on_error_set(false);
 			}
 
+			public function reset() {
+
+				$this->current_data = NULL;
+				$this->current_code = NULL;
+				$this->current_url = NULL;
+				$this->cookies = array();
+				$this->form = NULL;
+
+				$this->error_message = NULL;
+				$this->error_info = NULL;
+
+				$this->socket->reset();
+
+			}
+
 			public function debug_set($debug) {
 				$this->debug = $debug;
 			}
