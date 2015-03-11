@@ -521,6 +521,10 @@
 						//--------------------------------------------------
 						// Check it is a full url
 
+							if (substr($url, 0, 2) == '//') {
+								$url = 'https:' . $url; // before PHP 5.4.7, this a mising scheme returned the host as a path.
+							}
+
 							$url_parts = @parse_url($url);
 
 							if ($url_parts === false) {
