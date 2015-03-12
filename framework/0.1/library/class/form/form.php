@@ -908,8 +908,18 @@
 				return (isset($this->fields[$ref]) || isset($this->field_refs[$ref]));
 			}
 
-			public function fields_get() {
-				return $this->fields;
+			public function fields_get($group = NULL) {
+				if ($group === NULL) {
+					return $this->fields;
+				} else {
+					$fields = array();
+					foreach ($this->fields as $field) {
+						if ($field->print_include_get() && !$field->print_hidden_get() && $field->print_group_get() == $group) {
+							$fields[] = $field;
+						}
+					}
+					return $fields;
+				}
 			}
 
 			public function field_groups_get() {
