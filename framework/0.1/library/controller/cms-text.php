@@ -12,7 +12,12 @@
 			//--------------------------------------------------
 			// View path
 
-				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-text/view-index.ctp');
+				$view_path = APP_ROOT . '/unit/cms/cms-text-index.ctp';
+				if (!is_file($view_path)) {
+					$view_path = FRAMEWORK_ROOT . '/library/controller/cms-text/view-index.ctp';
+				}
+
+				$response->view_path_set($view_path);
 
 		}
 
@@ -347,7 +352,12 @@
 			//--------------------------------------------------
 			// View path
 
-				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-text/view-edit.ctp');
+				$view_path = APP_ROOT . '/unit/cms/cms-text-edit.ctp';
+				if (!is_file($view_path)) {
+					$view_path = FRAMEWORK_ROOT . '/library/controller/cms-text/view-edit.ctp';
+				}
+
+				$response->view_path_set($view_path);
 
 		}
 
@@ -428,7 +438,12 @@
 			//--------------------------------------------------
 			// View path
 
-				$response->view_path_set(FRAMEWORK_ROOT . '/library/controller/cms-text/view-history.ctp');
+				$view_path = APP_ROOT . '/unit/cms/cms-text-history.ctp';
+				if (!is_file($view_path)) {
+					$view_path = FRAMEWORK_ROOT . '/library/controller/cms-text/view-history.ctp';
+				}
+
+				$response->view_path_set($view_path);
 
 		}
 
