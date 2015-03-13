@@ -889,8 +889,12 @@
 
 							$url = timestamp_url($file['path']);
 
-							if ($minify && substr($url, -3) == '.js' && substr($url, -7) != '.min.js') {
-								$url = substr($url, 0, -3) . '.min.js';
+							if ($minify) {
+								if (substr($url, -4) == '.css' && substr($url, -8) != '.min.css') {
+									$url = substr($url, 0, -4) . '.min.css';
+								} else if (substr($url, -3) == '.js' && substr($url, -7) != '.min.js') {
+									$url = substr($url, 0, -3) . '.min.js';
+								}
 							}
 
 						} else {
