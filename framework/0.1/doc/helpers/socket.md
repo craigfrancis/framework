@@ -102,3 +102,15 @@ Imitate a basic browser
 		// $browser->form_field_set('password', '123');
 
 		$browser->form_submit();
+
+	//--------------------------------------------------
+	// GZip encoding
+
+		$browser = new socket_browser();
+		$browser->header_add('User-Agent', 'RSS Reader');
+		$browser->header_add('Accept', 'application/rss+xml');
+		$browser->encoding_accept_set('gzip', true);
+
+		$browser->get($source_url);
+
+		$rss_data = $browser->data_get();

@@ -12,6 +12,8 @@
 			protected $socket = NULL;
 			protected $debug = false;
 			protected $user_agent = NULL;
+			protected $encoding_accept_type = NULL;
+			protected $encoding_accept_decode = false;
 			protected $current_data = NULL;
 			protected $current_code = NULL;
 			protected $current_url = NULL;
@@ -60,8 +62,17 @@
 				$this->user_agent = $user_agent;
 			}
 
+			public function encoding_accept_set($type, $decode = false) { // Currently supports gzip... maybe later deflate?
+				$this->encoding_accept_type = $type;
+				$this->encoding_accept_decode = $decode;
+			}
+
 			public function cookie_set($name, $value, $domain = NULL, $path = '/') {
 				$this->cookies[$domain][$path][$name] = $value;
+			}
+
+			public function header_add($name, $value) {
+				$this->socket->header_add($name, $value);
 			}
 
 		//--------------------------------------------------
@@ -513,6 +524,10 @@
 						$this->socket->header_add('Pragma', 'no-cache');
 					}
 
+					if ($this->encoding_accept_type !== NULL) {
+						$this->socket->header_add('Accept-Encoding', $this->encoding_accept_type);
+					}
+
 				//--------------------------------------------------
 				// Get page
 
@@ -660,10 +675,16 @@
 							$this->socket->header_add('Referer', $url);
 
 						//--------------------------------------------------
-						// Reset - incase we do a redirect
+						// Accept encoding
 
-							$method = 'GET';
-							$data = '';
+							if ($this->encoding_accept_type == 'gzip' && $this->encoding_accept_decode === true) {
+
+								$encoding = strtolower(trim($this->socket->response_header_get('Content-Encoding')));
+								if ($encoding == 'gzip') {
+									$this->current_data = gzdecode($this->current_data);
+								}
+
+							}
 
 						//--------------------------------------------------
 						// Cookies
@@ -681,6 +702,12 @@
 							if (isset($this->cookies[$url_host])) {
 								ksort($this->cookies[$url_host]); // If there are two cookies with the same name, one for "/" and one for "/path/", the latter should take precedence.
 							}
+
+						//--------------------------------------------------
+						// Reset - incase we do a redirect
+
+							$method = 'GET';
+							$data = '';
 
 					} while (($url = $this->socket->response_header_get('Location')) !== NULL);
 
