@@ -224,7 +224,7 @@
 				}
 
 				if ($this->print_page_valid !== true) {
-					exit_with_error('Cannot call form->print_page_start(' . ($page) . ') without first checking form->valid()');
+					exit_with_error('Cannot call form->print_page_start(' . $page . ') without first checking form->valid()');
 				}
 
 				if ($this->print_page_setup === NULL) {
@@ -247,12 +247,26 @@
 				}
 
 				if ($page != 1 && !$this->submitted($page - 1)) {
-					exit_with_error('Cannot call form->print_page_start(' . ($page) . ') without first checking form->submitted(' . ($page - 1) . ')');
+					exit_with_error('Cannot call form->print_page_start(' . $page . ') without first checking form->submitted(' . ($page - 1) . ')');
 				}
 
 				$this->hidden_value_set('page', $page);
 
 				$this->print_page_setup = $page;
+
+			}
+
+			public function print_page_skip($page) { // If there is an optional page, this implys that it has been submitted, before calling the next print_page_start()
+
+				if ($this->print_page_submit >= $page) {
+					return; // Has already been submitted.
+				}
+
+				if (($this->print_page_submit + 1) != $page) {
+					exit_with_error('You must call form->print_page_skip(' . ($this->print_page_submit + 1) . ') before you can skip to page "' . $page . '"');
+				}
+
+				$this->print_page_submit = $page;
 
 			}
 
@@ -561,7 +575,7 @@
 				if ($this->form_submitted === true && $this->disabled === false && $this->readonly === false) {
 					if ($this->print_page_setup === NULL) {
 						if ($page !== NULL) {
-							exit_with_error('Cannot call form->submitted(' . ($page) . ') without form->print_page_start(X)');
+							exit_with_error('Cannot call form->submitted(' . $page . ') without form->print_page_start(X)');
 						}
 						return true;
 					} else {
