@@ -681,7 +681,11 @@
 
 								$encoding = strtolower(trim($this->socket->response_header_get('Content-Encoding')));
 								if ($encoding == 'gzip') {
-									$this->current_data = gzdecode($this->current_data);
+									if (function_exists('gzdecode')) {
+										$this->current_data = gzdecode($this->current_data);
+									} else {
+										$this->current_data = gzinflate(substr($this->current_data, 10, -8));
+									}
 								}
 
 							}
