@@ -675,6 +675,14 @@
 							$this->socket->header_add('Referer', $url);
 
 						//--------------------------------------------------
+						// Error
+
+							$socket_error = $this->socket->error_string_get();
+							if ($socket_error !== NULL) {
+								$this->_error($socket_error, $this->socket->error_data_get());
+							}
+
+						//--------------------------------------------------
 						// Accept encoding
 
 							if ($this->encoding_accept_type == 'gzip' && $this->encoding_accept_decode === true) {
