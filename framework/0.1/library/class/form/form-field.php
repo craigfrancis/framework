@@ -315,7 +315,7 @@
 				if ($position == 'left' || $position == 'right' || $position == 'none') {
 					$this->required_mark_position = $position;
 				} else {
-					exit('<p>Invalid required mark position specified (left/right/none)');
+					exit_with_error('Invalid required mark position specified (left/right/none)');
 				}
 			}
 

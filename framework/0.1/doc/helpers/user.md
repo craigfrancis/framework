@@ -15,7 +15,7 @@ Example setup
 			//
 			// 	$this->db_table_main = DB_PREFIX . 'user';
 			// 	$this->db_table_session = DB_PREFIX . 'user_session';
-			// 	$this->db_table_reset = DB_PREFIX . 'user_new_password';
+			// 	$this->db_table_reset = DB_PREFIX . 'user_password';
 			//
 			// 	$this->setup();
 			//

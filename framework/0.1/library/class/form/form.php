@@ -22,7 +22,7 @@
 			private $disabled = false;
 			private $readonly = false;
 			private $autofocus = false;
-			private $autofocus_submit = true;
+			private $autofocus_submit = false;
 			private $print_page_setup = NULL; // Current page being setup in code.
 			private $print_page_submit = NULL; // Current page the user submitted.
 			private $print_page_valid = true;

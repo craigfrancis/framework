@@ -129,15 +129,15 @@
 				// Tables
 
 					$this->db_table = array(
-							'main'    => DB_PREFIX . 'user',
-							'session' => DB_PREFIX . 'user_session',
-							'reset'   => DB_PREFIX . 'user_new_password',
+							'main'     => DB_PREFIX . 'user',
+							'session'  => DB_PREFIX . 'user_session',
+							'password' => DB_PREFIX . 'user_password',
 						);
 
 					$this->db_where_sql = array(
-							'main'    => 'm.deleted = "0000-00-00 00:00:00"',
-							'session' => 's.deleted = "0000-00-00 00:00:00"',
-							'reset'   => 'true',
+							'main'     => 'm.deleted = "0000-00-00 00:00:00"',
+							'session'  => 's.deleted = "0000-00-00 00:00:00"',
+							'password' => 'true',
 						);
 
 					$this->db_fields = array(
@@ -1176,6 +1176,8 @@
 					//   false = invalid_user
 					//   $change_url = url($request_url, array('t' => $request_id . '-' . $request_pass));
 					//   $change_url->format_set('full');
+					//
+					// Store users email address in user_password
 				}
 
 			//--------------------------------------------------
