@@ -86,7 +86,7 @@
 			//--------------------------------------------------
 			// Paginated
 
-				if ($type_name == 'paginated') {
+				if (prefix_match('paginated', $type_name)) {
 
 					require_once($type_path);
 

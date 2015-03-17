@@ -22,6 +22,10 @@
 		</tbody>
 	</table>
 
-	<p><a href="/examples/form/example/?type=paginated">Pagination</a> example, without JavaScript or Sessions.</p>
+	<p>Pagination examples:</p>
+	<ul>
+		<li><a href="/examples/form/example/?type=paginated">Without JavaScript or Sessions</a>.</li>
+		<li><a href="/examples/form/example/?type=paginated-2">Where page 2 can be skipped</a>.</li>
+	</ul>
 
 	<p><a href="<?= html(gateway_url('form-export')) ?>">Download</a> stand alone version of the forms class.</p>

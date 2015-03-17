@@ -50,6 +50,7 @@
 			$field_postcode = new form_field_postcode($form, 'Postcode');
 			$field_postcode->format_error_set('Your postcode does not appear to be correct.');
 			$field_postcode->required_error_set('Your postcode is required.');
+			$field_postcode->info_set('- UK Format, for example "AA11 1AA"');
 
 			if ($form->submitted(2)) {
 
@@ -61,14 +62,14 @@
 
 		}
 
-//--------------------------------------------------
-// Form submitted
+	//--------------------------------------------------
+	// Form submitted
 
-	if ($form->submitted(2) && $form->valid()) {
+		if ($form->submitted(2) && $form->valid()) {
 
-		$output = debug_dump($form->data_array_get());
+			$output = debug_dump($form->data_array_get());
 
-	}
+		}
 
 //--------------------------------------------------
 // Form defaults
