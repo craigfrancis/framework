@@ -260,8 +260,12 @@
 
 			public function print_page_skip($page) { // If there is an optional page, this implys that it has been submitted, before calling the next print_page_start()
 
+				if ($page == 1) {
+					$this->form_submitted = true;
+				}
+
 				if ($this->print_page_submit >= $page) {
-					return; // Has already been submitted.
+					return; // Already on or after this page.
 				}
 
 				if (($this->print_page_submit + 1) != $page) {
