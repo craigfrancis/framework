@@ -22,6 +22,7 @@
 			private $disabled = false;
 			private $readonly = false;
 			private $autofocus = false;
+			private $autofocus_submit = true;
 			private $print_page_setup = NULL; // Current page being setup in code.
 			private $print_page_submit = NULL; // Current page the user submitted.
 			private $print_page_valid = true;
@@ -209,6 +210,7 @@
 
 			public function autofocus_set($autofocus) {
 				$this->autofocus = ($autofocus == true);
+				$this->autofocus_submit = $this->autofocus;
 			}
 
 			public function autofocus_get() {
@@ -1200,6 +1202,7 @@
 							}
 
 							if ($autofocus) {
+								$this->autofocus_submit = false;
 								$field->autofocus_set(true);
 								break;
 							}
@@ -1301,10 +1304,16 @@
 					$html = '
 							<div class="row submit">';
 
+					$k = 0;
+
 					foreach ($buttons as $attributes) {
+
+						$k++;
+
 						if (!is_array($attributes)) {
 							$attributes = array('value' => $attributes);
 						}
+
 						if (isset($attributes['html'])) {
 							$html .= '
 								' . $attributes['html'];
@@ -1312,9 +1321,13 @@
 							if (!isset($attributes['value'])) {
 								$attributes['value'] = 'Save';
 							}
+							if ($this->autofocus_submit && $k == 1) {
+								$attributes['autofocus'] = 'autofocus';
+							}
 							$html .= '
 								' . html_tag('input', array_merge(array('type' => 'submit', 'name' => $this->form_button_name), $attributes));
 						}
+
 					}
 
 					return $html . '
