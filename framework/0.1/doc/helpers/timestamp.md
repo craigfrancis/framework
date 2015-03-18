@@ -84,7 +84,7 @@ But if you want to actually store NULL in the database (not "0000-00-00"), then 
 
 ---
 
-## Null values
+## NULL values
 
 If the timestamp helper is initialised with the values:
 
@@ -98,6 +98,12 @@ Then it will typically return NULL when you call the format() or html() function
 
 	echo $timestamp->format('jS F Y', 'N/A');
 	echo $timestamp->html('jS F Y', 'N/A');
+
+If you just want to test if the value is NULL:
+
+	debug($timestamp->null());
+
+This returns `false` if not NULL, or a truthy value if NULL (e.g. '0000-00-00').
 
 ---
 

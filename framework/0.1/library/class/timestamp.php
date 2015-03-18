@@ -35,6 +35,10 @@
 		//--------------------------------------------------
 		// Output
 
+			public function null() {
+				return $this->null; // Can be false, true, or the value that caused it to be NULL (e.g. 0000-00-00)
+			}
+
 			public function format($format, $null_value = NULL) {
 				if ($this->null) {
 					return $null_value;
