@@ -384,7 +384,7 @@
 
 					report_add($error, 'error');
 
-					if (config::get('output.mime') == 'text/plain' || REQUEST_MODE == 'cli') {
+					if (REQUEST_MODE == 'cli' || config::get('debug.level') > 0) {
 						echo ucfirst($this->job_name) . ' - Fatal Error:' . "\n";
 						echo ' ' . $error . "\n\n";
 					}
@@ -398,7 +398,7 @@
 
 					report_add($error, 'error');
 
-					if (config::get('output.mime') == 'text/plain' || REQUEST_MODE == 'cli') {
+					if (REQUEST_MODE == 'cli' || config::get('debug.level') > 0) {
 						echo ucfirst($this->job_name) . ' - Harmless Error:' . "\n";
 						echo ' ' . $error . "\n\n";
 					}
