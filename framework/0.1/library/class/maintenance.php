@@ -533,17 +533,23 @@
 				//--------------------------------------------------
 				// Send
 
-					if ($this->run_id !== NULL && $this->halt_maintenance_run === false && $job_output_html != '') {
+					if ($this->run_id !== NULL && $job_output_html != '') {
+						if ($this->halt_maintenance_run === false) {
 
-						if (isset($email_addresses[SERVER])) {
-							$email_addresses = $email_addresses[SERVER];
+							if (isset($email_addresses[SERVER])) {
+								$email_addresses = $email_addresses[SERVER];
+							}
+
+							$email = new email();
+							$email->subject_set($email_title);
+							$email->body_html_add($job_output_html); // Assume HTML
+							$email->send($email_addresses);
+
+						} else if (REQUEST_MODE == 'cli' || config::get('debug.level') > 0) {
+
+							echo $job_output_html;
+
 						}
-
-						$email = new email();
-						$email->subject_set($email_title);
-						$email->body_html_add($job_output_html); // Assume HTML
-						$email->send($email_addresses);
-
 					}
 
 				//--------------------------------------------------
