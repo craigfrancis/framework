@@ -103,7 +103,7 @@
 
 					} else {
 
-						$dest = request('dest');
+						$dest = request('dest'); // Can be GET or POST
 
 						if ($dest == 'referrer') {
 							$referrer = config::get('request.referrer');
@@ -290,7 +290,7 @@
 
 			public function hidden_value($name) { // You should call form->hidden_value() first to initialise - get/set may not be called when form is submitted with errors.
 				if ($this->form_submitted) {
-					$value = request($name);
+					$value = request($name, $this->form_method);
 					$value = ($value === NULL ? NULL : urldecode($value));
 				} else {
 					$value = '';
@@ -316,7 +316,7 @@
 					if ($this->saved_values_available()) {
 						$value = $this->saved_value_get($name);
 					} else {
-						$value = request($name);
+						$value = request($name, $this->form_method);
 					}
 					return ($value === NULL ? NULL : urldecode($value));
 				}
@@ -595,7 +595,7 @@
 			}
 
 			private function _is_submitted() {
-				$this->form_submitted = ($this->form_passive || (request('act') == $this->form_id && config::get('request.method') == $this->form_method));
+				$this->form_submitted = ($this->form_passive || (request('act', $this->form_method) == $this->form_id && config::get('request.method') == $this->form_method));
 			}
 
 			public function initial() { // Because you cant have a function called "default", and "defaults" implies an array of default values.
