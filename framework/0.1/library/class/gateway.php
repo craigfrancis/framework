@@ -299,11 +299,11 @@
 					} else {
 
 						foreach (config::get('gateway.default_values', array()) as $name => $value) {
-							$socket->value_add($name, $value);
+							$socket->value_set($name, $value);
 						}
 
 						foreach ($data as $key => $value) {
-							$socket->value_add($key, $value);
+							$socket->value_set($key, $value);
 						}
 
 						$socket->post($gateway_url_pass);

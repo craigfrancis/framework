@@ -12,9 +12,9 @@ Kind of like [Symfony BrowserKit](https://github.com/symfony/BrowserKit).
 Setup:
 
 	$socket = new socket();
-	// $socket->value_add('key', $value);
-	// $socket->header_add('name', 'value');
-	// $socket->cookie_add('name', 'value');
+	// $socket->value_set('key', $value);
+	// $socket->header_set('name', 'value');
+	// $socket->cookie_set('name', 'value');
 
 Requesting a resource:
 
@@ -107,8 +107,8 @@ Imitate a basic browser
 	// GZip encoding
 
 		$browser = new socket_browser();
-		$browser->header_add('User-Agent', 'RSS Reader');
-		$browser->header_add('Accept', 'application/rss+xml');
+		$browser->header_set('User-Agent', 'RSS Reader');
+		$browser->header_set('Accept', 'application/rss+xml');
 		$browser->encoding_accept_set('gzip', true);
 
 		$browser->get($source_url);

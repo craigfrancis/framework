@@ -71,8 +71,8 @@
 				$this->cookies[$domain][$path][$name] = $value;
 			}
 
-			public function header_add($name, $value) {
-				$this->socket->header_add($name, $value);
+			public function header_set($name, $value) {
+				$this->socket->header_set($name, $value);
 			}
 
 		//--------------------------------------------------
@@ -517,15 +517,15 @@
 				// Base headers
 
 					if ($this->user_agent !== NULL) {
-						$this->socket->header_add('User-Agent', $this->user_agent);
-						$this->socket->header_add('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
-						$this->socket->header_add('Accept-Language', 'en-GB,en-US;q=0.8,en;q=0.6');
-						$this->socket->header_add('Cache-Control', 'no-cache');
-						$this->socket->header_add('Pragma', 'no-cache');
+						$this->socket->header_set('User-Agent', $this->user_agent);
+						$this->socket->header_set('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+						$this->socket->header_set('Accept-Language', 'en-GB,en-US;q=0.8,en;q=0.6');
+						$this->socket->header_set('Cache-Control', 'no-cache');
+						$this->socket->header_set('Pragma', 'no-cache');
 					}
 
 					if ($this->encoding_accept_type !== NULL) {
-						$this->socket->header_add('Accept-Encoding', $this->encoding_accept_type);
+						$this->socket->header_set('Accept-Encoding', $this->encoding_accept_type);
 					}
 
 				//--------------------------------------------------
@@ -674,7 +674,7 @@
 							$this->current_data = $this->socket->response_data_get();
 							$this->current_code = $this->socket->response_code_get();
 
-							$this->socket->header_add('Referer', $url);
+							$this->socket->header_set('Referer', $url);
 
 						//--------------------------------------------------
 						// Error

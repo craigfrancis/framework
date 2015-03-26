@@ -57,15 +57,15 @@
 
 			}
 
-			public function value_add($name, $value) {
+			public function value_set($name, $value) {
 				$this->values[$name] = $value;
 			}
 
-			public function header_add($name, $value) {
+			public function header_set($name, $value) {
 				$this->headers[$name] = $value;
 			}
 
-			public function cookie_add($name, $value) {
+			public function cookie_set($name, $value) {
 				$this->cookies[$name] = $value;
 			}
 
