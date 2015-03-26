@@ -215,7 +215,7 @@
 							$opcache_error = $opcache_data;
 						}
 					} else {
-						$opcache_error = $opcache_socket->error_string_get();
+						$opcache_error = $opcache_socket->error_message_get();
 					}
 
 					if ($opcache_error !== NULL) {

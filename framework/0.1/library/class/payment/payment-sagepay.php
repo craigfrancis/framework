@@ -524,7 +524,7 @@ exit();
 				// Result
 
 					if (!$result) {
-						exit_with_error('Invalid network response from SagePay (' . $command . ')', $socket->error_string_get());
+						exit_with_error('Invalid network response from SagePay (' . $command . ')', $socket->error_message_get());
 					}
 
 					$code = $socket->response_code_get();

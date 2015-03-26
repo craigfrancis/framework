@@ -21,7 +21,7 @@
 			protected $form = NULL;
 			protected $exit_on_error = true;
 			protected $error_message = NULL;
-			protected $error_info = NULL;
+			protected $error_data = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -44,7 +44,7 @@
 				$this->form = NULL;
 
 				$this->error_message = NULL;
-				$this->error_info = NULL;
+				$this->error_data = NULL;
 
 				$this->socket->reset();
 
@@ -86,16 +86,16 @@
 				return $this->error_message;
 			}
 
-			public function error_info_get() {
-				return $this->error_info;
+			public function error_data_get() {
+				return $this->error_data;
 			}
 
-			protected function _error($message, $hidden_info = NULL) {
+			protected function _error($message, $data = NULL) {
 				if ($this->exit_on_error) {
-					exit_with_error($message, $hidden_info);
+					exit_with_error($message, $data);
 				} else {
 					$this->error_message = $message;
-					$this->error_info = $hidden_info;
+					$this->error_data = $data;
 				}
 				return false;
 			}
@@ -679,7 +679,7 @@
 						//--------------------------------------------------
 						// Error
 
-							$socket_error = $this->socket->error_string_get();
+							$socket_error = $this->socket->error_message_get();
 							if ($socket_error !== NULL) {
 								$this->_error($socket_error, $this->socket->error_data_get());
 							}

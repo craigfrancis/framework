@@ -45,7 +45,7 @@
 							echo "\n";
 							echo 'Checking DB Diff:' . "\n";
 							echo '  URL: ' . $diff_url . "\n";
-							echo '  Error: ' . $diff_socket->error_string_get() . "\n\n";
+							echo '  Error: ' . $diff_socket->error_message_get() . "\n\n";
 
 						}
 

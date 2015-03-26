@@ -21,7 +21,7 @@
 			private $response_headers = '';
 			private $response_data = '';
 			private $exit_on_error = true;
-			private $error_string = NULL;
+			private $error_message = NULL;
 			private $error_data = NULL;
 			private $connection = NULL;
 
@@ -50,7 +50,7 @@
 				$this->response_headers = '';
 				$this->response_data = '';
 
-				$this->error_string = NULL;
+				$this->error_message = NULL;
 				$this->error_data = NULL;
 
 				$this->connection = NULL;
@@ -184,8 +184,8 @@
 
 			}
 
-			public function error_string_get() {
-				return $this->error_string;
+			public function error_message_get() {
+				return $this->error_message;
 			}
 
 			public function error_data_get() {
@@ -200,7 +200,7 @@
 				//--------------------------------------------------
 				// No error
 
-					$this->error_string = NULL;
+					$this->error_message = NULL;
 					$this->error_data = NULL;
 
 				//--------------------------------------------------
@@ -386,16 +386,16 @@
 							return true;
 						}
 
-						$this->error_string = 'Connection lost to "' . $socket_host . ':' . $port . '"';
+						$this->error_message = 'Connection lost to "' . $socket_host . ':' . $port . '"';
 
 					} else {
 
-						$this->error_string = 'Failed connection to "' . $socket_host . ':' . $port . '" (' . $errno . ': ' . $errstr . ')';
+						$this->error_message = 'Failed connection to "' . $socket_host . ':' . $port . '" (' . $errno . ': ' . $errstr . ')';
 
 					}
 
 					if ($this->exit_on_error) {
-						exit_with_error($this->error_string);
+						exit_with_error($this->error_message);
 					} else {
 						return false;
 					}
@@ -440,11 +440,11 @@
 
 					} else {
 
-						$this->error_string = 'Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")';
+						$this->error_message = 'Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")';
 						$this->error_data = $response;
 
 						if ($this->exit_on_error) {
-							exit_with_error($this->error_string, $this->error_data);
+							exit_with_error($this->error_message, $this->error_data);
 						} else {
 							return false;
 						}

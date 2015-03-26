@@ -45,7 +45,7 @@ To handle errors yourself, do something like:
 	if ($socket->get('https://www.example.com') && $socket->response_code_get() == 200) {
 		$response = $socket->response_data_get();
 	} else {
-		exit($socket->error_string_get());
+		exit($socket->error_message_get());
 	}
 
 Or perhaps:
@@ -55,7 +55,7 @@ Or perhaps:
 	if ($result) {
 		// Success
 	} else {
-		exit($socket->error_string_get());
+		exit($socket->error_message_get());
 	}
 
 ---

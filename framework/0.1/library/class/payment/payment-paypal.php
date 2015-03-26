@@ -205,7 +205,7 @@
 							'created' => new timestamp(),
 						));
 
-					$debug_info = debug_dump($details) . "\n-----\n" . debug_dump($response) . "\n-----\n" . $socket->response_full_get() . "\n-----\n" . $socket->error_string_get();
+					$debug_info = debug_dump($details) . "\n-----\n" . debug_dump($response) . "\n-----\n" . $socket->response_full_get() . "\n-----\n" . $socket->error_message_get();
 
 				//--------------------------------------------------
 				// Process request
