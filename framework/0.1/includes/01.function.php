@@ -597,41 +597,29 @@
 	}
 
 //--------------------------------------------------
-// Shortcut for url object - to avoid saying 'new'
+// URL shortcuts - to avoid saying 'new'
 
-	if (version_compare(PHP_VERSION, '5.2.0', '<')) {
+	function url() {
+		$obj = new ReflectionClass('url');
+		return $obj->newInstanceArgs(func_get_args());
+	}
 
-		function url() {
-			$obj = new ReflectionClass('url');
-			$url = $obj->newInstanceArgs(func_get_args());
-			return $url->get();
-		}
+	function http_url() {
+		$obj = new ReflectionClass('url');
+		$url = $obj->newInstanceArgs(func_get_args());
+		$url->scheme_set('http');
+		return $url;
+	}
 
-	} else {
-
-		function url() {
-			$obj = new ReflectionClass('url');
-			return $obj->newInstanceArgs(func_get_args());
-		}
-
-		function http_url() {
-			$obj = new ReflectionClass('url');
-			$url = $obj->newInstanceArgs(func_get_args());
-			$url->scheme_set('http');
-			return $url;
-		}
-
-		function https_url() {
-			$obj = new ReflectionClass('url');
-			$url = $obj->newInstanceArgs(func_get_args());
-			$url->scheme_set('https');
-			return $url;
-		}
-
+	function https_url() {
+		$obj = new ReflectionClass('url');
+		$url = $obj->newInstanceArgs(func_get_args());
+		$url->scheme_set('https');
+		return $url;
 	}
 
 //--------------------------------------------------
-// Timestamp object - to avoid saying 'new' (avoid)
+// Timestamp shortcut - to avoid saying 'new' (avoid)
 
 	function timestamp($time = 'now', $timezone = NULL) {
 		return new timestamp($time, $timezone);

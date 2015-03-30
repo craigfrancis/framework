@@ -55,11 +55,7 @@
 			'upload:',
 		);
 
-	if (version_compare(PHP_VERSION, '5.3.0', '<')) {
-		$options = getopt(implode('', array_keys($main_parameters)));
-	} else {
-		$options = getopt(implode('', array_keys($main_parameters)), array_merge($main_parameters, $extra_parameters));
-	}
+	$options = getopt(implode('', array_keys($main_parameters)), array_merge($main_parameters, $extra_parameters));
 
 //--------------------------------------------------
 // Debug
