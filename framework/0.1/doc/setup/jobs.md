@@ -12,7 +12,7 @@ The script itself should really contain a class, such as:
 	class xyz_job extends job {
 
 		public function should_run() {
-			return ($this->last_run === NULL || $this->last_run < strtotime(date('Y-m-d 00:00:00'))); // Once a day
+			return ($this->last_run === NULL || $this->last_run < timestamp('00:00:00', 'db')); // Once a day
 		}
 
 		public function email_addresses_get() {

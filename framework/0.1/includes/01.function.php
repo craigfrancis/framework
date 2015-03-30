@@ -631,7 +631,7 @@
 	}
 
 //--------------------------------------------------
-// Timestamp object - to avoid saying 'new'
+// Timestamp object - to avoid saying 'new' (avoid)
 
 	function timestamp($time = 'now', $timezone = NULL) {
 		return new timestamp($time, $timezone);
