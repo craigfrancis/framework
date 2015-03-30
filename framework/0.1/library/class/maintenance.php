@@ -342,7 +342,7 @@
 										1');
 
 						if ($row = $db->fetch_row()) {
-							$this->last_run = new timestamp($row['created']);
+							$this->last_run = new timestamp($row['created'], 'db');
 						}
 
 					}

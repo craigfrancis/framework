@@ -7,6 +7,8 @@
 
 			private $config = array(); // Not protected - As we can't use constants (such as DB_PREFIX), it is of limited use when extending... use the setup method instead.
 
+			private $db_link = NULL;
+
 			private $table_sql = NULL;
 			private $where_sql = NULL;
 
@@ -42,6 +44,17 @@
 
 			}
 
+			public function db_set($db) {
+				$this->db_link = $db;
+			}
+
+			public function db_get() {
+				if ($this->db_link === NULL) {
+					$this->db_link = db_get();
+				}
+				return $this->db_link;
+			}
+
 			protected function setup($config) {
 
 				//--------------------------------------------------
@@ -71,7 +84,7 @@
 
 					if ($this->config['table']) {
 
-						$db = db_get();
+						$db = $this->db_get();
 
 						$this->table_sql = $db->escape_table($this->config['table']);
 
@@ -116,7 +129,7 @@
 			}
 
 			public function where_set_id($id) {
-				$db = db_get();
+				$db = $this->db_get();
 				if ($this->config['deleted']) {
 					$this->where_set_sql('id = "' . $db->escape($id) . '" AND deleted = deleted');
 				} else {
@@ -146,7 +159,7 @@
 			public function fields_get() {
 				if ($this->fields === NULL) {
 
-					$db = db_get();
+					$db = $this->db_get();
 
 					$this->fields = $db->fetch_fields($this->table_sql); // Cannot use SELECT result as it does not return enum/set options, nor work when adding a record.
 
@@ -171,7 +184,7 @@
 
 					} else {
 
-						$db = db_get();
+						$db = $this->db_get();
 
 						$table_sql = $this->table_sql . ($this->config['table_alias'] === NULL ? '' : ' AS ' . $this->config['table_alias']);
 
@@ -239,7 +252,7 @@
 				//--------------------------------------------------
 				// Config
 
-					$db = db_get();
+					$db = $this->db_get();
 
 					$insert_mode = ($this->where_sql === NULL);
 
@@ -329,7 +342,7 @@
 				//--------------------------------------------------
 				// Config
 
-					$db = db_get();
+					$db = $this->db_get();
 
 					$table_sql = $this->table_sql . ($this->config['table_alias'] === NULL ? '' : ' AS ' . $this->config['table_alias']);
 
@@ -366,7 +379,7 @@
 
 				if ($this->config['log_table']) {
 
-					$db = db_get();
+					$db = $this->db_get();
 
 					$log_table_sql = $db->escape_table($this->config['log_table']);
 
