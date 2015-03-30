@@ -80,7 +80,7 @@
 				//--------------------------------------------------
 				// Cleanup
 
-					$archive_date = date('Y-m-d H:i:s', strtotime('-2 months')); // Some jobs only run once a month, so needs some overlap
+					$archive_date = new timestamp('-2 months'); // Some jobs only run once a month, so needs some overlap
 
 					$db->query('DELETE FROM
 									' . DB_PREFIX . 'system_maintenance
@@ -96,6 +96,8 @@
 				//--------------------------------------------------
 				// Clear old (but still open) run records
 
+					$clear_date = new timestamp('-2 hours');
+
 					$db->query('SELECT
 									id,
 									run_start
@@ -103,7 +105,7 @@
 									' . DB_PREFIX . 'system_maintenance
 								WHERE
 									run_end = "0000-00-00 00:00:00" AND
-									run_start < "' . $db->escape(date('Y-m-d H:i:s', strtotime('-2 hours'))) . '"');
+									run_start < "' . $db->escape($clear_date) . '"');
 
 					if ($row = $db->fetch_row()) {
 
@@ -340,7 +342,7 @@
 										1');
 
 						if ($row = $db->fetch_row()) {
-							$this->last_run = strtotime($row['created']);
+							$this->last_run = new timestamp($row['created']);
 						}
 
 					}
@@ -360,7 +362,8 @@
 			}
 
 			public function email_title_get() {
-				return ref_to_human($this->job_name) . ' @ ' . date('Y-m-d H:i:s');
+				$now = new timestamp();
+				return ref_to_human($this->job_name) . ' @ ' . $now->format('Y-m-d H:i:s');
 			}
 
 			public function should_run() {

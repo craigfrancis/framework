@@ -631,6 +631,13 @@
 	}
 
 //--------------------------------------------------
+// Timestamp object - to avoid saying 'new'
+
+	function timestamp($time = 'now', $timezone = NULL) {
+		return new timestamp($time, $timezone);
+	}
+
+//--------------------------------------------------
 // Timestamp URL
 
 	function timestamp_url($url, $timestamp = NULL) {
