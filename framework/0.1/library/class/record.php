@@ -40,6 +40,8 @@
 
 						'deleted' => NULL,
 
+						'db' => NULL,
+
 					), $config));
 
 			}
@@ -61,6 +63,13 @@
 				// Config
 
 					$this->config = $config;
+
+				//--------------------------------------------------
+				// Where
+
+					if ($this->config['db']) { // Should come before the where clause is escaped.
+						$this->db_set($this->config['db']);
+					}
 
 				//--------------------------------------------------
 				// Where
