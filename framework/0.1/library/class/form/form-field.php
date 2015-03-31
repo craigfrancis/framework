@@ -579,15 +579,7 @@
 				if (method_exists($this, 'html_input_by_key')) {
 					$html = '
 								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . '</' . html($this->label_wrapper_tag) . '>';
-					foreach ($this->option_values as $key => $value) {
-						$option_info_html = $this->html_info_by_key($key); // Allow the ID to be added to "aria-describedby"
-						$html .= '
-								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . ' ' . html('key_' . human_to_ref($key)) . ' ' . html('value_' . human_to_ref($value)) . '">
-									' . $this->html_input_by_key($key) . '
-									' . $this->html_label_by_key($key) . $option_info_html . '
-								</' . html($this->input_wrapper_tag) . '>';
-					}
-					$html .= $format_html . $info_html;
+					$html .= $this->html_input() . $format_html . $info_html;
 				} else {
 					if ($this->input_first) {
 						$html = '
