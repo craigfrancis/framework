@@ -149,7 +149,7 @@
 
 		</div>
 
-		<footer id="page_footer" role="contentinfo">
+		<footer id="page_footer">
 			<h2>Footer</h2>
 			<ul>
 
