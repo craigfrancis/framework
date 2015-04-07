@@ -576,19 +576,24 @@
 				$info_html = $this->html_info(8); // Adds to input_described_by, so the input field can include "aria-describedby"
 				$format_html = $this->html_format(8);
 
+				$label_html = $this->html_label();
+				if ($label_html != '') { // Info fields might not specify a label
+					$label_html = '<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $label_html . '</' . html($this->label_wrapper_tag) . '>';
+				}
+
 				if (method_exists($this, 'html_input_by_key')) {
 					$html = '
-								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . '</' . html($this->label_wrapper_tag) . '>';
-					$html .= $this->html_input() . $format_html . $info_html;
+								' . $label_html . $this->html_input() . $format_html . $info_html;
 				} else {
+					$input_html = '<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>';
 					if ($this->input_first) {
 						$html = '
-								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>
-								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . '</' . html($this->label_wrapper_tag) . '>' . $format_html . $info_html;
+								' . $input_html . '
+								' . $label_html . $format_html . $info_html;
 					} else {
 						$html = '
-								<' . html($this->label_wrapper_tag) . ' class="' . html($this->label_wrapper_class) . '">' . $this->html_label() . '</' . html($this->label_wrapper_tag) . '>
-								<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>' . $format_html . $info_html;
+								' . $label_html . '
+								' . $input_html . $format_html . $info_html;
 					}
 				}
 
