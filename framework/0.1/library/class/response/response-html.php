@@ -497,7 +497,7 @@
 
 					$js_files = array();
 					$js_prefix = config::get('output.js_path_prefix', ''); // e.g. '.' or '../..'
-					$js_default_defer = ($position == 'foot' && config::get('output.js_default_defer', false));
+					$js_defer = ($position == 'foot' && config::get('output.js_defer', false));
 					foreach ($this->resources_get($position == 'head' ? 'js_head' : 'js_foot') as $file) {
 
 						$src = $file['url'];
@@ -515,7 +515,7 @@
 							if (($key = array_search('separate', $attributes)) !== false) {
 								unset($attributes[$key]);
 							}
-							if ($js_default_defer && count($attributes) == 1 && isset($attributes['src'])) {
+							if ($js_defer && count($attributes) == 1 && isset($attributes['src'])) {
 								$attributes[] = 'defer';
 							}
 							$html .= "\n\t" . html_tag('script', $attributes) . '</script>';
