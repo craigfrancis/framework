@@ -87,9 +87,15 @@
 			}
 
 			public function template_set($name) {
+
 				$path = '/a/email/' . safe_file_name($name);
+
+				$url = url($path);
+				$url->format_set('full');
+
 				$this->template_path_set(PUBLIC_ROOT . $path);
-				$this->template_url_set(config::get('url.prefix') . $path);
+				$this->template_url_set($url);
+
 			}
 
 			public function template_path_set($path) {

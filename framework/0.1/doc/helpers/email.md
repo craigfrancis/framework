@@ -109,10 +109,19 @@ And if you are using the [form helper](../../doc/helpers/form.md), you can pass 
 	$email->template_value_set_text('NAME', 'Name');
 	$email->template_value_set_html('NAME', 'Name');
 
-Example, with multiple recipients
+Example, where the template files are:
+
+	/app/public/a/email/my-template/index.html
+	/app/public/a/email/my-template/index.txt
+
+These files can contain a [BODY] tag for body_(html|text)_add();
+
+And use a [URL] tag for images also stored in this folder.
+
+Then to send with multiple recipients:
 
 	$email = new email();
-	$email->template_set('my_template'); // File in /app/public/a/email/x/index.(html|txt) which could contain [BODY] tag for body_(html|text)_add();
+	$email->template_set('my-template');
 
 	$recipients = array(
 			array('name' => 'AAA', 'email' => 'noreply@example.com'),
