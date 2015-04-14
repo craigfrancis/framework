@@ -210,8 +210,7 @@
 				// JavaScript
 
 					if ($this->config['editable']) {
-						$response = response_get();
-						$response->js_add(gateway_url('framework-file', 'cms-text.js'));
+						cms_text::js_add();
 					}
 
 			}
@@ -287,6 +286,11 @@
 				foreach (cms_text::cache_files($path) as $cache_path) {
 					unlink($cache_path);
 				}
+			}
+
+			public static function js_add() {
+				$response = response_get();
+				$response->js_add(gateway_url('framework-file', 'cms-text.js'));
 			}
 
 		//--------------------------------------------------
