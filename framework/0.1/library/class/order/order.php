@@ -710,9 +710,15 @@
 				//--------------------------------------------------
 				// Cached values
 
-					if ($this->order_items) {
-						return $this->order_items;
+					if ($this->order_items === NULL) {
+						$this->order_items = $this->items_get_data();
 					}
+
+					return $this->order_items;
+
+			}
+
+			protected function items_get_data() {
 
 				//--------------------------------------------------
 				// Tax details
@@ -782,8 +788,6 @@
 
 				//--------------------------------------------------
 				// Return
-
-					$this->order_items = $items;
 
 					return $items;
 
