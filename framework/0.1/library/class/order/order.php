@@ -1116,6 +1116,32 @@
 			}
 
 		//--------------------------------------------------
+		// Delete
+
+			public function delete() {
+
+				//--------------------------------------------------
+				// Details
+
+					if ($this->order_id === NULL) {
+						exit_with_error('An order needs to be selected', 'delete');
+					}
+
+				//--------------------------------------------------
+				// Delete
+
+					$this->values_set(array(
+							'deleted' => new timestamp(),
+						));
+
+				//--------------------------------------------------
+				// Remember in session
+
+					$this->forget();
+
+			}
+
+		//--------------------------------------------------
 		// Order update
 
 			protected function order_update() {
