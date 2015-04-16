@@ -33,13 +33,27 @@ Or with a config array:
 			// 	),
 		));
 
-You can then return the record values (or field information) with:
+You can return the record values (or field information) with:
 
 	debug($record->values_get());
 	debug($record->value_get('name'));
 
 	debug($record->fields_get());
 	debug($record->field_get('name'));
+
+And either use the form helper (below), delete records (below), or simply set values with:
+
+	$record->save(array(
+			'field' => 'value',
+		));
+
+	// OR
+
+	$record->values_set(array(
+			'field' => 'value',
+		));
+
+	$record->save();
 
 This setup works really well with the form helper (described below).
 

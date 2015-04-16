@@ -376,7 +376,7 @@
 		$config_html .= '<div class="debug_keys">';
 
 		foreach ($config as $key => $value) {
-			if (!in_array($key, array('db.link', 'output.response', 'debug.time_init', 'debug.time_check', 'debug.time_query'))) {
+			if (!in_array($key, array('db.link', 'output.response', 'debug.time_init', 'debug.time_check', 'debug.time_query', 'debug.units'))) {
 				if (in_array($key, array('db.pass', 'debug.notes'))) {
 					$value_html = '???';
 				} else {

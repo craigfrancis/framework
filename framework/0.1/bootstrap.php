@@ -128,6 +128,26 @@
 				require_once(FRAMEWORK_ROOT . '/includes/07.controller.php');
 
 			//--------------------------------------------------
+			// Units
+
+				if (config::get('debug.level') >= 3) {
+
+					$note_html  = '<strong>Units</strong>:<br />' . "\n";
+
+					$units = config::get('debug.units');
+
+					foreach ($units as $unit) {
+						$note_html .= '&#xA0; ' . html($unit) . '<br />' . "\n";
+					}
+					if (count($units) == 0) {
+						$note_html .= '&#xA0; <strong>none</strong>';
+					}
+
+					debug_note_html($note_html, 'H');
+
+				}
+
+			//--------------------------------------------------
 			// Response
 
 				$response = response_get();

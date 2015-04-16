@@ -708,6 +708,8 @@
 
 		if (is_file($unit_file_path)) {
 
+			config::array_push('debug.units', $unit_name);
+
 			require_once($unit_file_path);
 
 			return new $unit_class_name($unit_file_path, $config);
