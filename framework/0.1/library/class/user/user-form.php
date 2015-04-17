@@ -19,6 +19,7 @@
 				$field_identification = new form_field_text($this, $this->user_obj->text_get('identification_label'), $config['name']);
 				$field_identification->min_length_set($this->user_obj->text_get('identification_min_len'), 1);
 				$field_identification->max_length_set($this->user_obj->text_get('identification_max_len'), 50);
+				$field_identification->autocapitalize_set(false);
 				return $field_identification;
 
 			} else {
@@ -27,6 +28,7 @@
 				$field_identification->format_error_set($this->user_obj->text_get('identification_format'));
 				$field_identification->min_length_set($this->user_obj->text_get('identification_min_len'), 1);
 				$field_identification->max_length_set($this->user_obj->text_get('identification_max_len'), 250);
+				$field_identification->autocapitalize_set(false);
 				return $field_identification;
 
 			}

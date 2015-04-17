@@ -39,6 +39,7 @@
 			protected $autofocus;
 			protected $autocorrect;
 			protected $autocomplete;
+			protected $autocapitalize;
 			protected $disabled;
 			protected $readonly;
 			protected $print_group;
@@ -123,6 +124,7 @@
 					$this->autofocus = false;
 					$this->autocorrect = NULL;
 					$this->autocomplete = NULL;
+					$this->autocapitalize = NULL;
 					$this->disabled = $form->disabled_get();
 					$this->readonly = $form->readonly_get();
 					$this->print_group = $form->print_group_get();
@@ -343,6 +345,14 @@
 				return $this->autocomplete;
 			}
 
+			public function autocapitalize_set($autocapitalize) {
+				$this->autocapitalize = $autocapitalize;
+			}
+
+			public function autocapitalize_get() {
+				return $this->autocapitalize;
+			}
+
 			public function disabled_set($disabled) {
 				$this->disabled = ($disabled == true);
 			}
@@ -493,6 +503,10 @@
 
 				if ($this->autocomplete !== NULL) {
 					$attributes['autocomplete'] = (is_string($this->autocomplete) ? $this->autocomplete : ($this->autocomplete ? 'on' : 'off'));
+				}
+
+				if ($this->autocapitalize !== NULL) {
+					$attributes['autocapitalize'] = (is_string($this->autocapitalize) ? $this->autocapitalize : ($this->autocapitalize ? 'sentences' : 'none'));
 				}
 
 				if ($this->disabled) {
