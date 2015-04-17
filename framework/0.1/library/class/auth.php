@@ -1408,6 +1408,7 @@
 
 				$field->min_length_set($this->text['identification_min_len']);
 				$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
+				$field->autocapitalize_set(false);
 				$field->autocomplete_set('username');
 
 				// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
