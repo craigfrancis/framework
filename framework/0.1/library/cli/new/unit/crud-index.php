@@ -78,7 +78,7 @@
 							$search = $search_form->value_get();
 							if ($search != '') {
 
-								foreach (preg_split('/\W+/', trim($search)) as $word) {
+								foreach (preg_split('/\s+/', trim($search)) as $word) {
 									if ($word != '') {
 
 										$where_sql[] = '
