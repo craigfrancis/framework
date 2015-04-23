@@ -77,6 +77,7 @@
 		echo 'ERROR: An upload block has been created for this project.';
 		echo;
 		echo '--------------------------------';
+		echo "${DST_PATH}/upload/block.txt";
 		remote_cmd "cat '${DST_PATH}/upload/block.txt'";
 		echo '--------------------------------';
 		remote_close;

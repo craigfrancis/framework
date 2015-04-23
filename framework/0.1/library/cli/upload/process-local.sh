@@ -43,6 +43,7 @@
 		echo 'ERROR: An upload block has been created for this project.';
 		echo;
 		echo '--------------------------------';
+		echo "${DST_PATH}/upload/block.txt";
 		cat "${DST_PATH}/upload/block.txt";
 		echo '--------------------------------';
 		exit 0;
