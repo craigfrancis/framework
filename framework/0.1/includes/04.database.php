@@ -459,9 +459,9 @@
 						$pass = trim(file_get_contents($password_path));
 					} else {
 						if (is_file($password_path)) {
-							$this->_error('Cannot read database password', true);
+							$this->_error('Cannot read database password file', true);
 						} else {
-							$this->_error('Cannot find database password', true);
+							$this->_error('Unknown database password (config "' . $prefix . 'pass")', true);
 						}
 					}
 				}
