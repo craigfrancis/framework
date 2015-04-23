@@ -42,15 +42,19 @@
 			if (!is_file($robots_path)) {
 
 				if (SERVER == 'live') {
-					$robots_path = FRAMEWORK_ROOT . '/library/view/robots-allow.txt';
-				} else {
-					$robots_path = FRAMEWORK_ROOT . '/library/view/robots-disallow.txt';
-				}
 
-				$sitemap_path = APP_ROOT . '/library/setup/sitemap.php';
-				if (is_file($sitemap_path)) {
-					$sitemap_url = url('/sitemap.xml');
-					$sitemap_url->format_set('full');
+					$robots_path = FRAMEWORK_ROOT . '/library/view/robots-allow.txt';
+
+					$sitemap_path = APP_ROOT . '/library/setup/sitemap.php';
+					if (is_file($sitemap_path)) {
+						$sitemap_url = url('/sitemap.xml');
+						$sitemap_url->format_set('full');
+					}
+
+				} else {
+
+					$robots_path = FRAMEWORK_ROOT . '/library/view/robots-disallow.txt';
+
 				}
 
 			}
