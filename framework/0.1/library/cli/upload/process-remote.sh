@@ -26,7 +26,7 @@
 
 	echo;
 	echo "Connecting to ${DST_HOST}:";
-	ssh -fN -M -S "${SSH_CONTROL}" "${DST_HOST}XX";
+	ssh -fN -M -S "${SSH_CONTROL}" "${DST_HOST}";
 	if [ "$?" != "0" ]; then
 		echo '  Error';
 		exit;
