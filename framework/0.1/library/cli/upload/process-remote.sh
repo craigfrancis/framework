@@ -26,8 +26,13 @@
 
 	echo;
 	echo "Connecting to ${DST_HOST}:";
-	ssh -fN -M -S "${SSH_CONTROL}" "${DST_HOST}";
-	echo '  Done';
+	ssh -fN -M -S "${SSH_CONTROL}" "${DST_HOST}XX";
+	if [ "$?" != "0" ]; then
+		echo '  Error';
+		exit;
+	else
+		echo '  Done';
+	fi
 
 	function remote_cmd {
 		ssh -t -o 'LogLevel=QUIET' -S "${SSH_CONTROL}" "${DST_HOST}" $@;
