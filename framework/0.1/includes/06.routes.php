@@ -32,8 +32,12 @@
 
 		if ($route_path == '/robots.txt') {
 
-			$robots_path = VIEW_ROOT . '/robots.txt';
+			$robots_path = APP_ROOT . '/library/setup/robots-' . safe_file_name(SERVER) . '.txt';
 			$sitemap_url = NULL;
+
+			if (!is_file($robots_path)) {
+				$robots_path = APP_ROOT . '/library/setup/robots.txt';
+			}
 
 			if (!is_file($robots_path)) {
 

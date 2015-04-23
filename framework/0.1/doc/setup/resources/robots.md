@@ -9,4 +9,10 @@ This is not a security feature, and should not be used to [protect private infor
 
 To add your own `robots.txt`, simply create the file:
 
-	/app/view/robots.txt
+	/app/library/setup/robots.txt
+
+Or:
+
+	/app/library/setup/robots-stage.txt
+	/app/library/setup/robots-demo.txt
+	/app/library/setup/robots-live.txt
