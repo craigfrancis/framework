@@ -1406,12 +1406,12 @@
 					$field = new form_field_text($form, $config['label'], $config['name']);
 				} else {
 					$field = new form_field_email($form, $config['label'], $config['name']);
+					$field->check_domain_set($config['check_domain']);
 					$field->format_error_set($this->text['identification_format']);
 				}
 
 				$field->min_length_set($this->text['identification_min_len']);
 				$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
-				$field->check_domain_set($config['check_domain']);
 				$field->autocapitalize_set(false);
 				$field->autocomplete_set('username');
 
