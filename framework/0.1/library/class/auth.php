@@ -536,6 +536,7 @@
 							'label' => $this->text['identification_label'],
 							'name' => 'identification',
 							'max_length' => $this->identification_max_length,
+							'check_domain' => false, // DNS lookups can take time.
 						), $config));
 
 					if ($form->initial()) {
@@ -686,6 +687,7 @@
 							'label' => $this->text['identification_label'],
 							'name' => 'identification',
 							'max_length' => $this->identification_max_length,
+							'check_domain' => true,
 						), $config));
 
 					return $this->register_field_identification = $field;
@@ -873,6 +875,7 @@
 							'label' => $this->text['identification_label'],
 							'name' => 'identification',
 							'max_length' => $this->identification_max_length,
+							'check_domain' => true,
 						), $config));
 
 					$field->db_field_set($this->db_fields['main']['identification']);
@@ -1408,6 +1411,7 @@
 
 				$field->min_length_set($this->text['identification_min_len']);
 				$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
+				$field->check_domain_set($config['check_domain']);
 				$field->autocapitalize_set(false);
 				$field->autocomplete_set('username');
 
