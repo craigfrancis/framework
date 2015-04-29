@@ -84,7 +84,7 @@
 
 		</div>
 
-		<footer>
+		<footer id="page_footer">
 			<h2>Footer</h2>
 			<p class="copyright">© <?= html(config::get('output.site_name', 'Company Name')) ?> <?= html(date('Y')) ?></p>
 		</footer>
