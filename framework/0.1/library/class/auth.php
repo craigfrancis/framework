@@ -135,9 +135,10 @@
 						);
 
 					$this->db_where_sql = array(
-							'main'     => 'm.deleted = "0000-00-00 00:00:00"',
-							'session'  => 's.deleted = "0000-00-00 00:00:00"',
-							'password' => 'true',
+							'main'       => 'm.deleted = "0000-00-00 00:00:00"',
+							'main_login' => 'true', // e.g. to block inactive users during login
+							'session'    => 's.deleted = "0000-00-00 00:00:00"',
+							'password'   => 'true',
 						);
 
 					$this->db_fields = array(
@@ -784,6 +785,9 @@
 
 						if ($form->valid()) {
 
+// TODO: Add a separate register table, send an email, on confirmation (assuming identification is unique) the record can be copied over.
+// But what about profile changes once registered?
+
 							$this->register_details = array(
 									'identification' => $identification,
 									'password' => $password_1,
@@ -1264,6 +1268,7 @@
 							WHERE
 								' . $where_sql . ' AND
 								' . $this->db_where_sql['main'] . ' AND
+								' . $this->db_where_sql['main_login'] . ' AND
 								m.' . $db->escape_field($this->db_fields['main']['password']) . ' != "" AND
 								m.' . $db->escape_field($this->db_fields['main']['deleted'])  . ' = "0000-00-00 00:00:00"
 							LIMIT
