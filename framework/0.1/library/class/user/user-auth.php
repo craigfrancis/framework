@@ -9,6 +9,7 @@
 
 		protected $db_table_fields;
 		protected $db_where_sql;
+		protected $db_where_login_sql;
 		protected $lockout_attempts = 60; // Once every 30 seconds, for the 30 minutes
 		protected $lockout_timeout = 1800;
 		protected $lockout_mode = NULL;
@@ -27,8 +28,6 @@
 			//--------------------------------------------------
 			// Table
 
-				$this->db_where_sql = 'true';
-
 				$this->db_table_fields = array(
 						'id' => 'id',
 						'identification' => ($user->identification_type_get() == 'username' ? 'username' : 'email'),
@@ -37,6 +36,9 @@
 						'edited' => 'edited',
 						'deleted' => 'deleted'
 					);
+
+				$this->db_where_sql = 'true';
+				$this->db_where_login_sql = 'true';
 
 		}
 
@@ -376,6 +378,7 @@
 							WHERE
 								' . $where_sql . ' AND
 								' . $this->db_where_sql . ' AND
+								' . $this->db_where_login_sql . ' AND
 								' . $db->escape_field($this->db_table_fields['password']) . ' != "" AND
 								' . $db->escape_field($this->db_table_fields['deleted'])  . ' = "0000-00-00 00:00:00"
 							LIMIT
@@ -459,6 +462,7 @@
 												' . $db->escape_field($this->db_table_fields['password']) . ' = "' . $db->escape($new_hash) . '"
 											WHERE
 												' . $this->db_where_sql . ' AND
+												' . $this->db_where_login_sql . ' AND
 												' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($db_id) . '" AND
 												' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"
 											LIMIT
