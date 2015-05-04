@@ -22,8 +22,9 @@
 			$id = $this->image_id_get($credits);
 			$site = config::get('lolcat.site');
 			$pass = hash('sha256', $id . $site . config::get('lolcat.pass'));
+			$url = config::get('lolcat.url', 'https://www.devcf.com/a/api/lolcat/');
 
-			return url('https://www.devcf.com/a/api/lolcat/', array(
+			return url($url, array(
 					'id' => $id,
 					'site' => $site,
 					'pass' => $pass,
