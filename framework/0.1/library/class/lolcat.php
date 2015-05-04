@@ -17,9 +17,9 @@
 
 	class lolcat_base extends check {
 
-		public function image_get_url($credits = NULL) {
+		public function image_url_get($credits = NULL) {
 
-			$id = $this->image_get_id($credits);
+			$id = $this->image_id_get($credits);
 			$site = config::get('lolcat.site');
 			$pass = hash('sha256', $id . $site . config::get('lolcat.pass'));
 
@@ -31,17 +31,19 @@
 
 		}
 
-		public function image_get_id($credits = NULL) {
+		public function image_id_get($credits = NULL) {
 
 			if ($credits === NULL) {
-				$credits = intval($this->credit_get());
+				$credits = $this->credit_get();
 			}
 
-			if ($credits < 1) {
-				$credits = 1;
+			$credits = floor($credits); // 4.9 is not enough for image 5.
+
+			if ($credits < 0) {
+				$credits = 0;
 			}
 
-			return ceil($credits / 100);
+			return ($credits + 1); // No credits still gets image 1
 
 		}
 
