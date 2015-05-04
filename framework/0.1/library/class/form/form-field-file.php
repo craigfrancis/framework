@@ -61,29 +61,36 @@
 				//--------------------------------------------------
 				// Hidden files
 
-					if ($this->form_submitted) {
-						$hidden_files = $this->form->hidden_value_get('h-' . $this->name);
-					} else if ($this->form->saved_values_available()) {
-						$hidden_files = $this->form->saved_value_get('h-' . $this->name); // Looks for hidden field, saved_values does not include $_FILES
-						if ($hidden_files !== NULL) {
-							$hidden_files = urldecode($hidden_files);
+					if (count($this->files) == 0) { // If user uploaded one or more files, assume it is to replace.
+
+						if ($this->form_submitted) {
+							$hidden_files = $this->form->hidden_value_get('h-' . $this->name);
+						} else if ($this->form->saved_values_available()) {
+							$hidden_files = $this->form->saved_value_get('h-' . $this->name); // Looks for hidden field, saved_values does not include $_FILES
+							if ($hidden_files !== NULL) {
+								$hidden_files = urldecode($hidden_files);
+							}
+						} else {
+							$hidden_files = NULL;
 						}
-					} else {
-						$hidden_files = NULL;
-					}
 
-					if ($hidden_files !== NULL) {
-						foreach (explode('-', $hidden_files) as $file_hash) {
-							$file_info = $this->file_info($file_hash);
-							if ($file_info) {
+						if ($hidden_files !== NULL) {
+							foreach (explode('-', $hidden_files) as $file_hash) {
+								$file_info = $this->file_info($file_hash);
+								if ($file_info) {
 
-								$file_info['preserve'] = true;
+									$file_info['preserve'] = true;
 
-								$this->files[] = $file_info;
+									$this->files[] = $file_info;
 
+								}
 							}
 						}
+
 					}
+
+				//--------------------------------------------------
+				// Config
 
 					$this->uploaded = (count($this->files) > 0); // Shortcut
 					$this->file_current = NULL;
@@ -170,7 +177,7 @@
 							exit_with_error('Only "uploaded" files can be processed with form_field_file', 'Path: ' . $file_info['tmp_name']);
 						}
 
-						$file_hash = hash('sha256', $file_info['tmp_name']);
+						$file_hash = hash('sha256', $file_info['tmp_name']); // Temp name should be unique, and faster than hasing the contents of the whole file.
 						$file_path = form_field_file::_file_tmp_folder() . '/' . $file_hash;
 
 						move_uploaded_file($file_info['tmp_name'], $file_path);
@@ -438,6 +445,21 @@
 			}
 
 		//--------------------------------------------------
+		// Errors
+
+			public function error_file_add($id, $error, $hidden_info = NULL) {
+
+				if (isset($this->files[$id])) {
+					$this->files[$id]['preserve'] = false;
+				} else {
+					exit_with_error('Unknown file id "' . $id . '"');
+				}
+
+				$this->error_add($error, $hidden_info);
+
+			}
+
+		//--------------------------------------------------
 		// Value
 
 			public function value_get() {
@@ -487,6 +509,10 @@
 					}
 				}
 				return $return;
+			}
+
+			public function file_id_get() {
+				return $this->file_current;
 			}
 
 			public function file_path_get() {
