@@ -71,8 +71,20 @@
 
 			public function scheme_set($scheme) {
 				$this->format = 'full';
-				$this->scheme = $scheme;
+				$this->scheme = $scheme; // Takes precedence over the value in path_data
 				$this->path_cache = NULL;
+			}
+
+			public function scheme_get() {
+				if ($this->scheme !== NULL) {
+					return $this->scheme;
+				} else {
+					if (isset($this->path_data['scheme'])) {
+						return $this->path_data['scheme'];
+					} else {
+						return NULL;
+					}
+				}
 			}
 
 			public function path_get() {
@@ -204,15 +216,7 @@
 				//--------------------------------------------------
 				// Scheme
 
-					if ($this->scheme !== NULL) {
-						$scheme = $this->scheme;
-					} else {
-						if (isset($this->path_data['scheme'])) {
-							$scheme = $this->path_data['scheme'];
-						} else {
-							$scheme = NULL;
-						}
-					}
+					$scheme = $this->scheme_get();
 
 				//--------------------------------------------------
 				// Mail to support
