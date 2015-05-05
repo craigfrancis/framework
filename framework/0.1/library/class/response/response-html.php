@@ -711,7 +711,7 @@
 						if ($css_query_string === NULL) {
 							$css_query_string = array();
 						}
-						$css_query_string['viewport_width'] = '60em'; /* (60em * 16px) = 960px */
+						$css_query_string['viewport_width'] = config::get('output.css_viewport_fallback', '60em'); /* (60em * 16px) = 960px */
 					}
 
 					foreach ($this->resources_get('css') as $file) { // Cannot use array_unique, as some versions of php do not support multi-dimensional arrays
