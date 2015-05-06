@@ -44,6 +44,7 @@
 							'file_missing_url' => NULL,
 							'image_type' => 'jpg',
 							'image_quality' => NULL,
+							'image_preserve_original' => false, // Ideally the image needs to be re-saved, ensuring no hacked files are uploaded and exposed on the website.
 							'image_preserve_unsafe' => false,
 							'image_url_prefix' => '', // Could include the domain name (e.g. for email images).
 							'image_placeholder_url' => NULL, // If you want to show placeholder images, e.g. /a/img/place-holder/100x100.jpg
@@ -305,8 +306,13 @@
 
 						$this->_writable_check(dirname($original_path));
 
-						$source_image = new image($path); // The image needs to be re-saved, ensures no hacked files are uploaded and exposed on the website
-						$source_image->save($original_path, $this->config['image_type'], $this->config['image_quality'], $this->config['image_preserve_unsafe']);
+						$preserve_original = $this->config['image_preserve_original'];
+						if ($this->config['image_preserve_unsafe']) {
+							$preserve_original = true;
+						}
+
+						$source_image = new image($path);
+						$source_image->save($original_path, $this->config['image_type'], $this->config['image_quality'], $preserve_original);
 						$source_image->destroy();
 
 					}
