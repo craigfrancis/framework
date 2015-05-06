@@ -949,7 +949,7 @@
 		//--------------------------------------------------
 		// Events
 
-			public function payment_received($values = NULL) {
+			public function payment_received($values = array()) {
 
 				//--------------------------------------------------
 				// Details
@@ -966,17 +966,13 @@
 				//--------------------------------------------------
 				// Store
 
-					if (!is_array($values)) {
-						$values = array();
-					}
-
 					$this->values_set(array_merge($values, array(
 							'payment_received' => new timestamp(),
 						)));
 
 			}
 
-			public function payment_settled($values = NULL) {
+			public function payment_settled($values = array()) {
 
 				//--------------------------------------------------
 				// Details
@@ -993,17 +989,13 @@
 				//--------------------------------------------------
 				// Store
 
-					if (!is_array($values)) {
-						$values = array();
-					}
-
 					$this->values_set(array_merge($values, array(
 							'payment_settled' => new timestamp(),
 						)));
 
 			}
 
-			public function processed($values = NULL) { // aka "dispatched"
+			public function processed($values = array()) { // aka "dispatched"
 
 				//--------------------------------------------------
 				// Details
@@ -1019,10 +1011,6 @@
 
 				//--------------------------------------------------
 				// Store
-
-					if (!is_array($values)) {
-						$values = array();
-					}
 
 					$this->values_set(array_merge($values, array(
 							'processed' => new timestamp(),
