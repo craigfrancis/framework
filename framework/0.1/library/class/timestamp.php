@@ -14,21 +14,25 @@
 		// Setup
 
 			public function __construct($time = 'now', $timezone = NULL) {
-				if ($time === NULL || $time === '0000-00-00 00:00:00' || $time === '0000-00-00') {
-					$this->null = ($time === NULL ? true : $time);
-				} else if ($timezone == 'db') {
-					parent::__construct($time, new DateTimeZone($this->db_timezone));
-					parent::setTimezone(new DateTimeZone(config::get('output.timezone')));
-				} else {
-					if ($timezone === NULL) {
-						$timezone = config::get('output.timezone');
-					}
-					if (is_numeric($time)) {
-						parent::__construct('@' . $time); // Numbers should always be timestamps (ignore '20080701')
-						parent::setTimezone(new DateTimeZone($timezone)); // Timezone is ignored on construct.
+				try {
+					if ($time === NULL || $time === '0000-00-00 00:00:00' || $time === '0000-00-00') {
+						$this->null = ($time === NULL ? true : $time);
+					} else if ($timezone == 'db') {
+						parent::__construct($time, new DateTimeZone($this->db_timezone));
+						parent::setTimezone(new DateTimeZone(config::get('output.timezone')));
 					} else {
-						parent::__construct($time, new DateTimeZone($timezone));
+						if ($timezone === NULL) {
+							$timezone = config::get('output.timezone');
+						}
+						if (is_numeric($time)) {
+							parent::__construct('@' . $time); // Numbers should always be timestamps (ignore '20080701')
+							parent::setTimezone(new DateTimeZone($timezone)); // Timezone is ignored on construct.
+						} else {
+							parent::__construct($time, new DateTimeZone($timezone));
+						}
 					}
+				} catch (Exception $e) {
+					$this->null = true;
 				}
 			}
 
