@@ -72,6 +72,12 @@
 				}
 			}
 
+			public function modify($modify) {
+				if (!$this->null) {
+					parent::modify($modify);
+				}
+			}
+
 			public function _debug_dump() {
 				if ($this->null) {
 					return 'NULL';
