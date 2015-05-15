@@ -375,8 +375,33 @@
 				}
 				$set_sql = implode(', ', $set_sql);
 
-				return $this->query('INSERT INTO ' . $table_sql . ' ('. $fields_sql . ') VALUES (' . $values_sql . ') ON DUPLICATE KEY UPDATE ' . $set_sql);
+				return $this->query('INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $values_sql . ') ON DUPLICATE KEY UPDATE ' . $set_sql);
 
+			}
+
+		}
+
+		public function insert_many($table_sql, $records) {
+
+			$fields = array_keys(reset($records));
+
+			$fields_sql = implode(', ', array_map(array($this, 'escape_field'), $fields));
+
+			$records_sql = array();
+			foreach ($records as $values) {
+				$values_sql = array();
+				foreach ($fields as $field) {
+					if (!isset($values[$field]) || $values[$field] === NULL) {
+						$values_sql[] = 'NULL';
+					} else {
+						$values_sql[] = $this->escape_string($values[$field]);
+					}
+				}
+				$records_sql[] = implode(', ', $values_sql);
+			}
+
+			if (count($records_sql) > 0) {
+				return $this->query('INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . implode('), (', $records_sql) . ')');
 			}
 
 		}
