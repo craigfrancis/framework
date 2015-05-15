@@ -197,7 +197,11 @@
 				return $this->_value_string($this->value);
 			}
 
-			public function value_time_stamp_get() {
+			public function value_timestamp_get() {
+				return new timestamp(($this->value_provided ? $this->value_date_get() : '0000-00-00'), 'db');
+			}
+
+			public function value_time_stamp_get() { // Legacy name... but you should look at the timestamp helper anyway :-)
 				if ($this->value['M'] == 0 && $this->value['D'] == 0 && $this->value['Y'] == 0) {
 					$timestamp = false;
 				} else {
