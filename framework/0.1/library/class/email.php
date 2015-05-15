@@ -533,7 +533,7 @@
 
 					if ($this->from_name != '' && $this->from_email != '') {
 
-						$headers['From'] = '"' . addslashes($this->from_name) . '" <' . addslashes($this->from_email) .'>';
+						$headers['From'] = '"' . addslashes($this->from_name) . '" <' . addslashes($this->from_email) . '>';
 
 					} else if ($this->from_email !== NULL) {
 
@@ -552,7 +552,7 @@
 
 					foreach ($this->cc_emails as $cc_email) {
 						if ($cc_email['name'] !== NULL) {
-							$cc_addresses[] = '"' . addslashes($cc_email['name']) . '" <' . addslashes($cc_email['email']) .'>';
+							$cc_addresses[] = '"' . addslashes($cc_email['name']) . '" <' . addslashes($cc_email['email']) . '>';
 						} else {
 							$cc_addresses[] = addslashes($cc_email['email']);
 						}
@@ -569,7 +569,7 @@
 
 					foreach ($this->bcc_emails as $bcc_email) {
 						if ($bcc_email['name'] !== NULL) {
-							$bcc_addresses[] = '"' . addslashes($bcc_email['name']) . '" <' . addslashes($bcc_email['email']) .'>';
+							$bcc_addresses[] = '"' . addslashes($bcc_email['name']) . '" <' . addslashes($bcc_email['email']) . '>';
 						} else {
 							$bcc_addresses[] = addslashes($bcc_email['email']);
 						}
@@ -584,7 +584,7 @@
 
 					if ($this->reply_to_name !== NULL && $this->reply_to_email !== NULL) {
 
-						$headers['Reply-To'] = '"' . addslashes($this->reply_to_name) . '" <' . addslashes($this->reply_to_email) .'>';
+						$headers['Reply-To'] = '"' . addslashes($this->reply_to_name) . '" <' . addslashes($this->reply_to_email) . '>';
 
 					} else if ($this->reply_to_email !== NULL) {
 

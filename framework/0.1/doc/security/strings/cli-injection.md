@@ -14,4 +14,4 @@ The command you want to execute should use [escapeshellcmd](https://php.net/esca
 
 For example:
 
-	system('ls '. escapeshellarg($dir));
+	system('ls ' . escapeshellarg($dir));

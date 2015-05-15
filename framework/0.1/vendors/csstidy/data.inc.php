@@ -414,7 +414,7 @@ $GLOBALS['csstidy']['predefined_templates']['default'][] = '</span><span class="
 $GLOBALS['csstidy']['predefined_templates']['default'][] = '</span><span class="format">;</span>'."\n"; //string after value
 $GLOBALS['csstidy']['predefined_templates']['default'][] = '<span class="format">}</span>'; //closing bracket - selector
 $GLOBALS['csstidy']['predefined_templates']['default'][] = "\n\n"; //space between blocks {...}
-$GLOBALS['csstidy']['predefined_templates']['default'][] = "\n".'<span class="format">}</span>'. "\n\n"; //closing bracket @-rule
+$GLOBALS['csstidy']['predefined_templates']['default'][] = "\n".'<span class="format">}</span>' . "\n\n"; //closing bracket @-rule
 $GLOBALS['csstidy']['predefined_templates']['default'][] = ''; //indent in @-rule
 $GLOBALS['csstidy']['predefined_templates']['default'][] = '<span class="comment">'; // before comment
 $GLOBALS['csstidy']['predefined_templates']['default'][] = '</span>'."\n"; // after comment

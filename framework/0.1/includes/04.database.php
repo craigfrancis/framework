@@ -361,11 +361,11 @@
 
 			if ($on_duplicate === NULL) {
 
-				return $this->query('INSERT INTO ' . $table_sql . ' ('. $fields_sql . ') VALUES (' . $values_sql . ')');
+				return $this->query('INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $values_sql . ')');
 
 			} else if (!is_array($on_duplicate)) {
 
-				return $this->query('INSERT INTO ' . $table_sql . ' ('. $fields_sql . ') VALUES (' . $values_sql . ') ON DUPLICATE KEY UPDATE ' . $on_duplicate);
+				return $this->query('INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $values_sql . ') ON DUPLICATE KEY UPDATE ' . $on_duplicate);
 
 			} else {
 
@@ -414,7 +414,7 @@
 			}
 			$set_sql = implode(', ', $set_sql);
 
-			return $this->query('UPDATE ' . $table_sql . ' SET '. $set_sql . ' WHERE ' . $where_sql);
+			return $this->query('UPDATE ' . $table_sql . ' SET ' . $set_sql . ' WHERE ' . $where_sql);
 
 		}
 

@@ -1034,7 +1034,7 @@ class cms_markdown_base extends check {
 				$token_relist[] = $strong_re;
 
 				# Construct master expression from list.
-				$token_re = '{('. implode('|', $token_relist) .')}';
+				$token_re = '{(' . implode('|', $token_relist) . ')}';
 				$this->em_strong_prepared_relist["$em$strong"] = $token_re;
 			}
 		}

@@ -371,7 +371,7 @@ function _unicode(&$string, &$i)
 
 	if(hexdec($add) > 47 && hexdec($add) < 58 || hexdec($add) > 64 && hexdec($add) < 91 || hexdec($add) > 96 && hexdec($add) < 123)
 	{
-		$this->log('Replaced unicode notation: Changed \\'. $add .' to ' . chr(hexdec($add)),'Information');
+		$this->log('Replaced unicode notation: Changed \\' . $add . ' to ' . chr(hexdec($add)),'Information');
 		$add = chr(hexdec($add));
 		$replaced = true;
 	}

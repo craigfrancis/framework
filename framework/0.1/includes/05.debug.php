@@ -585,7 +585,7 @@
 						}
 
 						if ($query_prefix_length > 0) {
-							$query_html = preg_replace('/^'. preg_quote($query_prefix_string, '/') . '/m', '', $query_html);
+							$query_html = preg_replace('/^' . preg_quote($query_prefix_string, '/') . '/m', '', $query_html);
 						}
 
 					}
@@ -675,7 +675,7 @@
 
 						if (DB_PREFIX != '') {
 
-							preg_match_all('/\b(' . preg_quote(DB_PREFIX, '/') .'[a-z0-9_]+)`?( AS ([a-z0-9]+))?/', $query, $matches, PREG_SET_ORDER);
+							preg_match_all('/\b(' . preg_quote(DB_PREFIX, '/') . '[a-z0-9_]+)`?( AS ([a-z0-9]+))?/', $query, $matches, PREG_SET_ORDER);
 
 						} else {
 

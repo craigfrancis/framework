@@ -11,4 +11,4 @@ If you are using a user supplied variable (rare), then use the [`preg_quote`](ht
 
 So for example, using the multi-line regular expression to replace line prefix:
 
-	$str = preg_replace('/^'. preg_quote($prefix, '/') . '/m', '', $str);
+	$str = preg_replace('/^' . preg_quote($prefix, '/') . '/m', '', $str);
