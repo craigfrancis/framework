@@ -52,6 +52,7 @@
 			'check::',
 			'dump::',
 			'diff::',
+			'reset',
 			'upload:',
 		);
 
@@ -222,10 +223,19 @@
 
 				case 'diff':
 
-					require_once(FRAMEWORK_ROOT . '/library/cli/diff.php');
 					require_once(FRAMEWORK_ROOT . '/library/cli/dump.php');
+					require_once(FRAMEWORK_ROOT . '/library/cli/diff.php');
 
 					diff_run($option_value, defined('UPLOAD_ROOT'));
+					break;
+
+				case 'reset':
+
+					require_once(FRAMEWORK_ROOT . '/library/cli/permission.php');
+					require_once(FRAMEWORK_ROOT . '/library/cli/reset.php');
+
+					reset_run($option_value);
+					// permission_reset(); TODO
 					break;
 
 				case 'upload':

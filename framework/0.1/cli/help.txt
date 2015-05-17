@@ -28,4 +28,6 @@
 
  --diff[=mode]     Compare saved 'dir' and/or 'db' to the current site.
 
+ --reset           Reset the website with dummy data.
+
  --upload=server   Upload to server (demo or live).

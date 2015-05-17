@@ -9,7 +9,6 @@
 		if (!is_dir($setup_folder)) {
 			mkdir($setup_folder);
 		}
-		unset($setup_folder);
 
 		if (!$mode || $mode == 'dir') {
 			file_put_contents(APP_ROOT . '/library/setup/dir.files.txt', implode("\n", dump_dir(FILE_ROOT)));
