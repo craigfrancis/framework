@@ -5,8 +5,9 @@
 		//--------------------------------------------------
 		// Variables
 
+			private $tables = array();
 			private $timestamps = array();
-			private $now = array();
+			private $now = NULL;
 			private $list_paths = array();
 			private $list_data = array();
 			private $list_length = array();
@@ -20,36 +21,37 @@
 
 			protected function setup($config) {
 
-				$this->now = new timestamp();
+				$now = new timestamp();
+				$this->now = $now->format('db'); // No need to format each time
 
 				$this->list_paths = $config['list_paths'];
 
 			}
 
-		//--------------------------------------------------
-		// Add a record
+			public function tables_set($tables) {
+				$this->tables = $tables;
+			}
 
-			final public function value_parse($value) {
+		//--------------------------------------------------
+		// Child record
+
+			final public function child_record_create($table, $values, $config) {
+				$this->tables[$table]['class']->record_add($values, $config);
+			}
+
+		//--------------------------------------------------
+		// Create a value
+
+			final public function value_get($value, $id = NULL, $record = NULL) {
 
 				$type = $value['type'];
 
 				if ($type == 'timestamp') {
 
-					if (!isset($this->timestamps[$value['from']][$value['to']])) {
+					if (!isset($this->timestamps[$value['from']])) $this->timestamps[$value['from']] = strtotime($value['from']);
+					if (!isset($this->timestamps[$value['to']]))   $this->timestamps[$value['to']]   = strtotime($value['to']);
 
-						$from = new timestamp($value['from']);
-						$to = new timestamp($value['to']);
-
-						$this->timestamps[$value['from']][$value['to']] = array(
-								$from->format('U'),
-								$to->format('U'),
-							);
-
-					}
-
-					list($from, $to) = $this->timestamps[$value['from']][$value['to']];
-
-					return date('Y-m-d H:i:s', rand($from, $to)); // timestamp too slow (0.8 vs 0.3 seconds for 10000 records)
+					return date('Y-m-d H:i:s', rand($this->timestamps[$value['from']], $this->timestamps[$value['to']])); // timestamp too slow (0.8 vs 0.3 seconds for 10000 records)
 
 				} else if ($type == 'now') {
 
@@ -59,6 +61,7 @@
 
 					if (!isset($this->list_data[$type])) {
 						$this->list_data[$type] = file($this->list_paths[$type], FILE_IGNORE_NEW_LINES);
+						array_shift($this->list_data[$type]); // Source
 						$this->list_length[$type] = (count($this->list_data[$type]) - 1);
 					}
 
@@ -68,11 +71,26 @@
 						$value = rand(1, 120) . ' ' . $value;
 					}
 
+					$rand = rand(0, 100);
+					if ($rand > 98) {
+						$value = strtoupper($value);
+					} else if ($rand > 96) {
+						$value = strtolower($value);
+					}
+
 					return $value;
 
 				} else if ($type == 'email') {
 
-					return rand(1000, 9999) . '@example.com';
+					if (isset($record['name_first']) && !is_array($record['name_first'])) {
+						$prefix = $record['name_first'];
+					} else if (isset($record['name']) && !is_array($record['name'])) {
+						$prefix = $record['name'];
+					} else {
+						$prefix = $this->value_get(array('type' => 'name_first'));
+					}
+
+					return human_to_ref($prefix) . $id . '@example.com';
 
 				}
 

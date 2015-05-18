@@ -20,12 +20,13 @@
 				return;
 			}
 
-			$reset_path = APP_ROOT . '/library/reset';
-			if (!is_dir($reset_path)) {
-				mkdir($reset_path);
-			}
+			$framework_path = FRAMEWORK_ROOT . '/library/cli/reset';
 
-			$base_path = FRAMEWORK_ROOT . '/library/cli/reset';
+			$reset_base_path = APP_ROOT . '/library/reset';
+			$reset_001_path = $reset_base_path . '/001';
+
+			if (!is_dir($reset_base_path)) mkdir($reset_base_path);
+			if (!is_dir($reset_001_path)) mkdir($reset_001_path);
 
 			ini_set('memory_limit', '1024M');
 
@@ -48,12 +49,11 @@ echo "\n";
 			}
 
 		//--------------------------------------------------
-		// Tables
+		// Table info
 
 			$db = db_get();
 
 			$tables = array();
-			$unknowns = array();
 
 			foreach ($db->fetch_all('SHOW TABLES') as $row) {
 
@@ -63,39 +63,102 @@ echo "\n";
 
 				$fields = $db->fetch_fields($table_sql);
 
-				$path = $reset_path . '/' . safe_file_name(str_replace('_', '-', $table)) . '.php';
-
-				$found = is_file($path);
-
 				$tables[$table] = array(
-						'path' => $path,
-						'found' => $found,
 						'name' => 'reset_' . $table,
 						'fields' => $fields,
 						'table_sql' => $table_sql,
+						'path' => $reset_001_path . '/' . safe_file_name(str_replace('_', '-', $table)) . '.php',
 					);
 
-				if (!$found) {
-					$unknowns[] = $table;
+			}
+
+		//--------------------------------------------------
+		// Put tables into rounds
+
+			$k = 0;
+			$unknown_tables = array_keys($tables);
+			$unknown_files = array();
+			$table_rounds = array();
+
+			while (true) {
+
+				$k++;
+
+				$folder = $reset_base_path . '/' . str_pad($k, 3, '0', STR_PAD_LEFT);
+
+				if (is_dir($folder)) {
+
+					$table_rounds[$k] = array();
+
+					$files = array();
+					foreach (glob($folder . '/*.php') as $path) {
+						$table = str_replace('-', '_', str_replace(array($folder . '/', '.php'), '', $path));
+						if (isset($tables[$table])) {
+
+							$tables[$table]['path'] = $path;
+
+							$table_rounds[$k][] = $table;
+
+							unset($unknown_tables[array_search($table, $unknown_tables)]);
+
+						} else {
+
+							$unknown_files[] = $path;
+
+						}
+					}
+
+				} else {
+
+					break;
+
 				}
 
 			}
 
-// TODO: Remove unused files?
-
 		//--------------------------------------------------
-		// Unknowns
+		// Unknown files
 
-			if (count($unknowns) > 0) {
+			if (count($unknown_files) > 0) {
 
 				//--------------------------------------------------
 				// Notice
 
-					$length = (max(array_map('strlen', $unknowns)) + 2);
+					echo 'Extra reset files:' . "\n";
+					foreach ($unknown_files as $path) {
+						echo '    ' . prefix_replace(ROOT, $path) . "\n";
+					}
+
+				//--------------------------------------------------
+				// Remove
+
+					echo "\n" . 'Type "DELETE" to remove: ';
+
+					$line = trim(fgets(STDIN));
+
+					echo "\n";
+
+					if ($line == 'DELETE') {
+						foreach ($unknown_files as $path) {
+							unlink($path);
+						}
+					}
+
+			}
+
+		//--------------------------------------------------
+		// Unknown tables
+
+			if (count($unknown_tables) > 0) {
+
+				//--------------------------------------------------
+				// Notice
+
+					$length = (max(array_map('strlen', $unknown_tables)) + 2);
 
 					echo 'Missing reset files:' . "\n";
-					foreach ($unknowns as $unknown) {
-						echo '    ' . str_pad($unknown . ': ', $length) . '.' . prefix_replace(ROOT, $tables[$unknown]['path']) . "\n";
+					foreach ($unknown_tables as $table) {
+						echo '    ' . str_pad($table . ': ', $length) . '.' . prefix_replace(ROOT, $tables[$table]['path']) . "\n";
 					}
 
 				//--------------------------------------------------
@@ -111,27 +174,38 @@ echo "\n";
 
 					if ($line == 'YES') {
 
-						$template = file_get_contents($base_path . '/blank.php');
+						$template = file_get_contents($framework_path . '/blank.php');
+						$auto_types = array('name', 'name_first', 'name_last', 'email', 'address_1');
 
-						foreach ($unknowns as $unknown) {
+						foreach ($unknown_tables as $table) {
 
 							//--------------------------------------------------
 							// Fields
 
-								$fields = $tables[$unknown]['fields'];
+								$fields = $tables[$table]['fields'];
 
 								$length = (max(array_map('strlen', array_keys($fields))) + 2);
 
 								$fields_php = array();
 								foreach ($fields as $field_name => $field_info) {
 
-									// if ($field_name == 'id') {
-									// 	$value = "'auto_id'";
-									// } else {
-										$value = 'NULL';
-									// }
+									if ($field_name == 'id') {
+										$value = '$config[\'id\'],';
+									} else if ($field_name == 'username') {
+										$value = '\'' . ($table == 'admin' ? 'admin' : 'user') . '-\' . $config[\'id\'],';
+									} else if ($field_name == 'created') {
+										$value = 'array(\'type\' => \'timestamp\', \'from\' => \'-2 years\', \'to\' => \'now\'),';
+									} else if ($field_name == 'edited') {
+										$value = 'array(\'type\' => \'now\'),';
+									} else if ($field_name == 'deleted') {
+										$value = '\'0000-00-00 00:00:00\',';
+									} else if (in_array($field_name, $auto_types)) {
+										$value = 'array(\'type\' => \'' . ($field_name == 'name' ? 'name_first' : $field_name) . '\'),';
+									} else {
+										$value = '\'\', // ' . $field_info['type'];
+									}
 
-									$fields_php[] = str_pad("'" . $field_name . "'", $length) . ' => ' . $value . ', // ' . $field_info['type'];
+									$fields_php[] = str_pad("'" . $field_name . "'", $length) . ' => ' . $value;
 
 								}
 
@@ -140,15 +214,19 @@ echo "\n";
 							//--------------------------------------------------
 							// Template
 
-								$content = str_replace('[CLASS_NAME]', $tables[$unknown]['name'], $template);
+								$path = $tables[$table]['path'];
+
+								$content = str_replace('[CLASS_NAME]', $tables[$table]['name'], $template);
 								$content = str_replace('[FIELDS]', $fields_php, $content);
 
-								file_put_contents($tables[$unknown]['path'], $content);
+								file_put_contents($path, $content);
 
 							//--------------------------------------------------
 							// Found
 
-								$tables[$unknown]['found'] = true;
+								$table_rounds[1][] = $table;
+
+								$tables[$table]['path'] = $path;
 
 						}
 
@@ -167,31 +245,46 @@ echo "\n";
 						),
 				));
 
+			foreach ($table_rounds as $round_id => $round_tables) {
+				foreach ($round_tables as $table) {
+
+					require_once($tables[$table]['path']);
+
+					$tables[$table]['class'] = new $tables[$table]['name']($helper);
+
+				}
+			}
+
+			$helper->tables_set($tables);
+
+		//--------------------------------------------------
+		// Generate records
+
 			$length = (max(array_map('strlen', array_keys($tables))) + 2);
 			$total = 0;
 
 			echo 'Generating records: ' . "\n";
 
-			foreach ($tables as $table => $info) {
-				if ($info['found']) {
+			foreach ($table_rounds as $round_id => $round_tables) {
+				foreach ($round_tables as $table) {
 
 					$start = microtime(true);
 
 					echo '    ' . str_pad($table . ': ', $length);
 
-					require_once($info['path']);
-
-					$tables[$table]['class'] = new $info['name']($helper);
+					$tables[$table]['class']->setup();
 
 					$time = round((microtime(true) - $start), 4);
 					$total += $time;
 
-					echo 'Done - ' . $time . "\n";
+					echo 'Done - ' . number_format($time, 4) . "\n";
 
 				}
 			}
 
-			echo str_pad('', $length + 11) . $total . "\n\n";
+			echo str_pad('', $length + 11) . number_format($total, 4) . "\n\n";
+
+			$overall = $total;
 
 		//--------------------------------------------------
 		// Insert records
@@ -200,29 +293,29 @@ echo "\n";
 
 			echo 'Inserting records: ' . "\n";
 
-			foreach ($tables as $table => $info) {
-				if ($info['found']) {
+			foreach ($table_rounds as $round_id => $round_tables) {
+				foreach ($round_tables as $table) {
 
 					$start = microtime(true);
 
 					echo '    ' . str_pad($table . ': ', $length);
 
-					$records = $info['class']->records_get();
+					$records = $tables[$table]['class']->records_get();
 
 					if (is_array($records)) { // Not NULL
 
-						$db->query('TRUNCATE TABLE ' . $info['table_sql']);
+						$db->query('TRUNCATE TABLE ' . $tables[$table]['table_sql']);
 
 						$record_count = count($records);
 
 						if ($record_count > 0) {
-							$db->insert_many($info['table_sql'], $records);
+							$db->insert_many($tables[$table]['table_sql'], $records);
 						}
 
 						$time = round((microtime(true) - $start), 4);
 						$total += $time;
 
-						echo 'Done - ' . $time . ' (' . number_format($record_count) . ')' . "\n";
+						echo 'Done - ' . number_format($time, 4) . ' (' . number_format($record_count) . ')' . "\n";
 
 					} else {
 
@@ -233,12 +326,14 @@ echo "\n";
 				}
 			}
 
-			echo str_pad('', $length + 11) . $total . "\n\n";
+			echo str_pad('', $length + 11) . number_format($total, 4) . "\n\n";
+
+			$overall += $total;
 
 		//--------------------------------------------------
 		// Done
 
-			echo 'Done' . "\n\n";
+			echo 'Complete - ' . number_format($overall, 4) . ' seconds' . "\n\n";
 
 	}
 

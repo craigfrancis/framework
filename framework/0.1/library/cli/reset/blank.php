@@ -2,16 +2,16 @@
 
 	class [CLASS_NAME] extends reset_db_table {
 
-		// protected function setup($config) {
+		// public function setup() {
 		// 	for ($k = 0; $k < 10000; $k++) {
 		// 		$this->record_add();
 		// 	}
 		// }
 
-		// protected function record_create($defaults, $config) {
+		// protected function record_create($values, $config) {
 		// 	return array_merge(array(
-		// 			[FIELDS],
-		// 		), $defaults);
+		// 			[FIELDS]
+		// 		), $values);
 		// }
 
 		public function records_get() {
