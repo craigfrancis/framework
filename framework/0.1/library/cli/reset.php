@@ -260,38 +260,103 @@ echo "\n";
 		//--------------------------------------------------
 		// Generate records
 
-			$length = (max(array_map('strlen', array_keys($tables))) + 2);
-			$total = 0;
+			echo "--------------------------------------------------\n\n";
 
-			echo 'Generating records: ' . "\n";
+			$length = (max(array_map('strlen', array_keys($tables))) + 2);
+			$overall = 0;
+			$round_count = count($table_rounds);
 
 			foreach ($table_rounds as $round_id => $round_tables) {
-				foreach ($round_tables as $table) {
 
-					$start = microtime(true);
+				//--------------------------------------------------
+				// Setup
 
-					echo '    ' . str_pad($table . ': ', $length);
+					$suffix = ($round_count > 1 ? ' (' . $round_id . ' of ' . $round_count . ')' : '');
 
-					$tables[$table]['class']->setup();
+				//--------------------------------------------------
+				// Generating
 
-					$time = round((microtime(true) - $start), 4);
-					$total += $time;
+					$total = 0;
 
-					echo 'Done - ' . number_format($time, 4) . "\n";
+					echo 'Generating' . $suffix . ': ' . "\n";
 
-				}
+					foreach ($round_tables as $table) {
+
+						$start = microtime(true);
+
+						echo '    ' . str_pad($table . ': ', $length);
+
+						$tables[$table]['class']->setup();
+
+						$time = round((microtime(true) - $start), 4);
+						$total += $time;
+
+						echo 'Done - ' . number_format($time, 4) . "\n";
+
+					}
+
+					echo str_pad('', $length + 11) . number_format($total, 4) . "\n\n";
+
+					$overall += $total;
+
+				//--------------------------------------------------
+				// Insert records
+
+					$total = 0;
+
+					echo 'Inserting' . $suffix . ': ' . "\n";
+
+					foreach ($round_tables as $table) {
+
+						$start = microtime(true);
+
+						echo '    ' . str_pad($table . ': ', $length);
+
+						$records = $tables[$table]['class']->records_get();
+
+						$tables[$table]['class']->records_reset();
+
+						if (is_array($records)) { // Not NULL
+
+							$db->query('TRUNCATE TABLE ' . $tables[$table]['table_sql']);
+
+							$record_count = count($records);
+
+							if ($record_count > 0) {
+								$db->insert_many($tables[$table]['table_sql'], $records);
+							}
+
+							$time = round((microtime(true) - $start), 4);
+							$total += $time;
+
+							echo 'Done - ' . number_format($time, 4) . ' (' . number_format($record_count) . ')' . "\n";
+
+						} else {
+
+							echo 'Skipped' . "\n";
+
+						}
+
+					}
+
+					echo str_pad('', $length + 11) . number_format($total, 4) . "\n\n";
+
+					$overall += $total;
+
+				//--------------------------------------------------
+				// Next
+
+					echo "--------------------------------------------------\n\n";
+
 			}
 
-			echo str_pad('', $length + 11) . number_format($total, 4) . "\n\n";
-
-			$overall = $total;
-
 		//--------------------------------------------------
-		// Insert records
+		// Extra inserts
 
 			$total = 0;
+			$found = false;
 
-			echo 'Inserting records: ' . "\n";
+			echo 'Extras: ' . "\n";
 
 			foreach ($table_rounds as $round_id => $round_tables) {
 				foreach ($round_tables as $table) {
@@ -300,17 +365,11 @@ echo "\n";
 
 					echo '    ' . str_pad($table . ': ', $length);
 
-					$records = $tables[$table]['class']->records_get();
+					$records = $tables[$table]['class']->records_get_extra();
 
-					if (is_array($records)) { // Not NULL
+					if (count($records) > 0) {
 
-						$db->query('TRUNCATE TABLE ' . $tables[$table]['table_sql']);
-
-						$record_count = count($records);
-
-						if ($record_count > 0) {
-							$db->insert_many($tables[$table]['table_sql'], $records);
-						}
+						$db->insert_many($tables[$table]['table_sql'], $records);
 
 						$time = round((microtime(true) - $start), 4);
 						$total += $time;
@@ -326,13 +385,54 @@ echo "\n";
 				}
 			}
 
-			echo str_pad('', $length + 11) . number_format($total, 4) . "\n\n";
+			if ($found) {
+				echo str_pad('', $length + 11) . number_format($total, 4) . "\n\n";
+			} else {
+				echo '    None' . "\n\n";
+			}
 
 			$overall += $total;
 
 		//--------------------------------------------------
-		// Done
+		// Cleanup
 
+			$total = 0;
+			$found = false;
+
+			echo 'Cleanup: ' . "\n";
+
+			foreach ($table_rounds as $round_id => $round_tables) {
+				foreach ($round_tables as $table) {
+					if (method_exists($tables[$table]['class'], 'cleanup')) {
+
+						$start = microtime(true);
+
+						echo '    ' . str_pad($table . ': ', $length);
+
+						$tables[$table]['class']->cleanup();
+
+						$time = round((microtime(true) - $start), 4);
+						$total += $time;
+						$found = true;
+
+						echo 'Done - ' . number_format($time, 4) . "\n";
+
+					}
+				}
+			}
+
+			if ($found) {
+				echo str_pad('', $length + 11) . number_format($total, 4) . "\n\n";
+			} else {
+				echo '    None' . "\n\n";
+			}
+
+			$overall += $total;
+
+		//--------------------------------------------------
+		// Complete
+
+			echo "--------------------------------------------------\n\n";
 			echo 'Complete - ' . number_format($overall, 4) . ' seconds' . "\n\n";
 
 	}
