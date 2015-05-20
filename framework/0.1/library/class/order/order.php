@@ -1142,53 +1142,59 @@
 				//--------------------------------------------------
 				// Delivery
 
-					//--------------------------------------------------
-					// Current delivery price
+					$this->order_update_delivery();
 
-						$delivery_price = $this->delivery_price_get();
+			}
 
-					//--------------------------------------------------
-					// No change with the 1 record (if more, still replace)
+			protected function order_update_delivery() {
 
-						$db = $this->db_get();
+				//--------------------------------------------------
+				// Current delivery price
 
-						$sql = 'SELECT
-									oi.price
-								FROM
+					$delivery_price = $this->delivery_price_get();
+
+				//--------------------------------------------------
+				// No change with the 1 record (if more, still replace)
+
+					$db = $this->db_get();
+
+					$sql = 'SELECT
+								oi.price
+							FROM
+								' . $db->escape_table($this->db_table_item) . ' AS oi
+							WHERE
+								oi.order_id = "' . $db->escape($this->order_id) . '" AND
+								oi.type = "delivery" AND
+								oi.deleted = "0000-00-00 00:00:00"';
+
+					$delivery = $db->fetch_all($sql);
+
+					if (count($delivery) == 1 && round($delivery[0]['price'], 2) == round($delivery_price, 2)) {
+						return;
+					}
+
+				//--------------------------------------------------
+				// Replace delivery record
+
+					$now = new timestamp();
+
+					$db->query('UPDATE
 									' . $db->escape_table($this->db_table_item) . ' AS oi
+								SET
+									oi.deleted = "' . $db->escape($now) . '"
 								WHERE
 									oi.order_id = "' . $db->escape($this->order_id) . '" AND
 									oi.type = "delivery" AND
-									oi.deleted = "0000-00-00 00:00:00"';
+									oi.deleted = "0000-00-00 00:00:00"');
 
-						$delivery = $db->fetch_all($sql);
-
-						if (count($delivery) == 1 && round($delivery[0]['price'], 2) == round($delivery_price, 2)) {
-							return;
-						}
-
-					//--------------------------------------------------
-					// Replace delivery record
-
-						$now = new timestamp();
-
-						$db->query('UPDATE
-										' . $db->escape_table($this->db_table_item) . ' AS oi
-									SET
-										oi.deleted = "' . $db->escape($now) . '"
-									WHERE
-										oi.order_id = "' . $db->escape($this->order_id) . '" AND
-										oi.type = "delivery" AND
-										oi.deleted = "0000-00-00 00:00:00"');
-
-						$db->insert($this->db_table_item, array(
-								'order_id' => $this->order_id,
-								'type' => 'delivery',
-								'price' => $delivery_price,
-								'quantity' => 1,
-								'created' => $now,
-								'deleted' => '0000-00-00 00:00:00',
-							));
+					$db->insert($this->db_table_item, array(
+							'order_id' => $this->order_id,
+							'type' => 'delivery',
+							'price' => $delivery_price,
+							'quantity' => 1,
+							'created' => $now,
+							'deleted' => '0000-00-00 00:00:00',
+						));
 
 			}
 
