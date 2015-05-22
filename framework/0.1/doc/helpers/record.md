@@ -110,7 +110,7 @@ Or extend the record class, for every record edited via this helper:
 
 				if (count($config['log_values']) > 0) {
 
-					$item_type = prefix_replace(DB_PREFIX, $config['table']);
+					$item_type = prefix_replace(DB_PREFIX, '', $config['table']);
 
 					$config['log_table'] = DB_PREFIX . 'log';
 					$config['log_values']['item_type'] = $item_type;

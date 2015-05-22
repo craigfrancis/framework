@@ -57,7 +57,7 @@ echo "\n";
 
 			foreach ($db->fetch_all('SHOW TABLES') as $row) {
 
-				$table = prefix_replace(DB_PREFIX, array_pop($row));
+				$table = prefix_replace(DB_PREFIX, '', array_pop($row));
 
 				$table_sql = $db->escape_table(DB_PREFIX . $table);
 
@@ -126,7 +126,7 @@ echo "\n";
 
 					echo 'Extra reset files:' . "\n";
 					foreach ($unknown_files as $path) {
-						echo '    ' . prefix_replace(ROOT, $path) . "\n";
+						echo '    ' . prefix_replace(ROOT, '', $path) . "\n";
 					}
 
 				//--------------------------------------------------
@@ -158,7 +158,7 @@ echo "\n";
 
 					echo 'Missing reset files:' . "\n";
 					foreach ($unknown_tables as $table) {
-						echo '    ' . str_pad($table . ': ', $length) . '.' . prefix_replace(ROOT, $tables[$table]['path']) . "\n";
+						echo '    ' . str_pad($table . ': ', $length) . '.' . prefix_replace(ROOT, '', $tables[$table]['path']) . "\n";
 					}
 
 				//--------------------------------------------------

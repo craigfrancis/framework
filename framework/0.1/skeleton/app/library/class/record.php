@@ -11,7 +11,7 @@
 			if (count($config['log_values']) > 0) {
 
 				$config['log_table'] = DB_PREFIX . 'log';
-				$config['log_values']['table'] = prefix_replace(DB_PREFIX, $config['table']);
+				$config['log_values']['table'] = prefix_replace(DB_PREFIX, '', $config['table']);
 				$config['log_values']['admin_id'] = ADMIN_ID;
 
 			}

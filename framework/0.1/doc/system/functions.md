@@ -59,8 +59,8 @@ For other variables, you should probably use the [cookie](../../doc/helpers/cook
 		// prefix_match('/prefix/', '/prefix/match/');
 		// true
 
-	prefix_replace($prefix, $string);
-		// prefix_replace('aaa_', 'aaa_bbb');
+	prefix_replace($prefix, $replace, $string);
+		// prefix_replace('aaa_', '', 'aaa_bbb');
 		// 'bbb'
 
 	is_email($email);

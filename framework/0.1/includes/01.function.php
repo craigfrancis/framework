@@ -293,10 +293,10 @@
 		return (strncmp($string, $prefix, strlen($prefix)) == 0);
 	}
 
-	function prefix_replace($prefix, $string) {
+	function prefix_replace($prefix, $replace, $string) {
 		$prefix_length = strlen($prefix);
 		if (strncmp($string, $prefix, $prefix_length) == 0) { // 0 = strings are equal
-			return substr($string, $prefix_length);
+			return $replace . substr($string, $prefix_length);
 		} else {
 			return $string;
 		}
@@ -753,7 +753,7 @@
 		if (!is_array($config)) {
 
 			$record_name = $config;
-			$record_name = prefix_replace(DB_PREFIX, $record_name);
+			$record_name = prefix_replace(DB_PREFIX, '', $record_name);
 			$record_name = human_to_ref($record_name);
 
 			$config = array_merge(array(
