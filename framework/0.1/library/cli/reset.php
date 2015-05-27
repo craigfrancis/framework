@@ -63,9 +63,21 @@ echo "\n";
 
 				$fields = $db->fetch_fields($table_sql);
 
+				$field_datetimes = array();
+				$field_dates = array();
+				foreach ($fields as $field_name => $field_info) {
+					if ($field_info['type'] == 'datetime') {
+						$field_datetimes[] = $field_name;
+					} else if ($field_info['type'] == 'date') {
+						$field_dates[] = $field_name;
+					}
+				}
+
 				$tables[$table] = array(
 						'name' => 'reset_' . $table,
 						'fields' => $fields,
+						'field_datetimes' => $field_datetimes,
+						'field_dates' => $field_dates,
 						'table_sql' => $table_sql,
 						'path' => $reset_001_path . '/' . safe_file_name(str_replace('_', '-', $table)) . '.php',
 					);
@@ -195,6 +207,8 @@ echo "\n";
 										$value = '\'' . ($table == 'admin' ? 'admin' : 'user') . '-\' . $config[\'id\'],';
 									} else if ($field_name == 'created') {
 										$value = 'array(\'type\' => \'timestamp\', \'from\' => \'-2 years\', \'to\' => \'now\'),';
+									} else if (substr($field_name, -8) == 'postcode') {
+										$value = 'array(\'type\' => \'postcode\', \'country\' => \'UK\'),';
 									} else if ($field_name == 'edited') {
 										$value = 'array(\'type\' => \'now\'),';
 									} else if ($field_name == 'deleted') {
@@ -250,7 +264,7 @@ echo "\n";
 
 					require_once($tables[$table]['path']);
 
-					$tables[$table]['class'] = new $tables[$table]['name']($helper);
+					$tables[$table]['class'] = new $tables[$table]['name']($table, $helper);
 
 				}
 			}

@@ -11,6 +11,7 @@
 			private $list_paths = array();
 			private $list_data = array();
 			private $list_length = array();
+			private $list_postcode = array('AL','CB','CM','BT','BR','E','EC','DE','LE','LN','DH','DL','NE','BB','BL','CA','AB','DD','DG','HP','MK','NN','BN','CR','CT','BA','BH','BS','CF','LD','LL','B','CV','DY','BD','DN','HD');
 
 		//--------------------------------------------------
 		// Setup
@@ -21,8 +22,7 @@
 
 			protected function setup($config) {
 
-				$now = new timestamp();
-				$this->now = $now->format('db'); // No need to format each time
+				$this->now = time();
 
 				$this->list_paths = $config['list_paths'];
 
@@ -42,7 +42,7 @@
 		//--------------------------------------------------
 		// Create a value
 
-			final public function value_get($value, $id = NULL, $record = NULL) {
+			private function value_get($value, $record, $config) {
 
 				$type = $value['type'];
 
@@ -51,7 +51,7 @@
 					if (!isset($this->timestamps[$value['from']])) $this->timestamps[$value['from']] = strtotime($value['from']);
 					if (!isset($this->timestamps[$value['to']]))   $this->timestamps[$value['to']]   = strtotime($value['to']);
 
-					return date('Y-m-d H:i:s', rand($this->timestamps[$value['from']], $this->timestamps[$value['to']])); // timestamp too slow (0.8 vs 0.3 seconds for 10000 records)
+					return rand($this->timestamps[$value['from']], $this->timestamps[$value['to']]);
 
 				} else if ($type == 'now') {
 
@@ -80,6 +80,20 @@
 
 					return $value;
 
+				} else if ($type == 'postcode') {
+
+					if (isset($value['country'])) {
+						$country = $value['country'];
+					} else {
+						$country = 'UK';
+					}
+
+					if ($country == 'UK') {
+						return $this->list_postcode[array_rand($this->list_postcode)] . rand(1, 20) . ' ' . rand(1, 9) . substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 2);
+					} else {
+						return '';
+					}
+
 				} else if ($type == 'email') {
 
 					if (isset($record['name_first']) && !is_array($record['name_first'])) {
@@ -87,12 +101,39 @@
 					} else if (isset($record['name']) && !is_array($record['name'])) {
 						$prefix = $record['name'];
 					} else {
-						$prefix = $this->value_get(array('type' => 'name_first'));
+						$prefix = $this->value_get(array('type' => 'name_first'), $record, $config);
 					}
 
-					return human_to_ref($prefix) . $id . '@example.com';
+					return human_to_ref($prefix) . $config['id'] . '@example.com';
 
 				}
+
+			}
+
+		//--------------------------------------------------
+		// Cleanup values
+
+			function values_parse($table, $record, $config) {
+
+				foreach ($record as $field => $value) {
+					if (is_array($value)) {
+						$record[$field] = $this->value_get($value, $record, $config);
+					}
+				}
+
+				foreach ($this->tables[$table]['field_datetimes'] as $field) { // Timestamp helpers are too slow (0.8 vs 0.3 seconds for 10000 records)... and timestamp intgers allow rand(start, end)
+					if (is_int($record[$field])) {
+						$record[$field] = gmdate('Y-m-d H:i:s', $record[$field]);
+					}
+				}
+
+				foreach ($this->tables[$table]['field_dates'] as $field) {
+					if (is_int($record[$field])) {
+						$record[$field] = gmdate('Y-m-d', $record[$field]);
+					}
+				}
+
+				return $record;
 
 			}
 

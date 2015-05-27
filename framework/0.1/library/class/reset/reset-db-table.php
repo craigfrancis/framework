@@ -7,12 +7,14 @@
 
 			private $id = 0;
 			private $records = array();
+			private $table = NULL;
 			private $helper = NULL;
 
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($helper) {
+			public function __construct($table, $helper) {
+				$this->table = $table;
 				$this->helper = $helper;
 			}
 
@@ -28,13 +30,7 @@
 
 				$record = $this->record_create($values, $config);
 
-				foreach ($record as $field => $value) {
-					if (is_array($value)) {
-						$record[$field] = $this->helper->value_get($value, $config['id'], $record);
-					}
-				}
-
-				$this->records[] = $record;
+				$this->records[] = $this->helper->values_parse($this->table, $record, $config);
 
 				return $record;
 
