@@ -33,25 +33,23 @@
 			}
 
 		//--------------------------------------------------
-		// Child record
+		// Create record - typically for child records.
 
-			final public function child_record_create($table, $values, $config) {
+			final public function record_create($table, $values, $config = array()) {
 				$this->tables[$table]['class']->record_add($values, $config);
 			}
 
 		//--------------------------------------------------
 		// Create a value
 
-			private function value_get($value, $record, $config) {
-
-				$type = $value['type'];
+			public function value_get($type, $config = array()) {
 
 				if ($type == 'timestamp') {
 
-					if (!isset($this->timestamps[$value['from']])) $this->timestamps[$value['from']] = strtotime($value['from']);
-					if (!isset($this->timestamps[$value['to']]))   $this->timestamps[$value['to']]   = strtotime($value['to']);
+					if (!isset($this->timestamps[$config['from']])) $this->timestamps[$config['from']] = strtotime($config['from']);
+					if (!isset($this->timestamps[$config['to']]))   $this->timestamps[$config['to']]   = strtotime($config['to']);
 
-					return rand($this->timestamps[$value['from']], $this->timestamps[$value['to']]);
+					return rand($this->timestamps[$config['from']], $this->timestamps[$config['to']]);
 
 				} else if ($type == 'now') {
 
@@ -82,8 +80,8 @@
 
 				} else if ($type == 'postcode') {
 
-					if (isset($value['country'])) {
-						$country = $value['country'];
+					if (isset($config['country'])) {
+						$country = $config['country'];
 					} else {
 						$country = 'UK';
 					}
@@ -94,18 +92,6 @@
 						return '';
 					}
 
-				} else if ($type == 'email') {
-
-					if (isset($record['name_first']) && !is_array($record['name_first'])) {
-						$prefix = $record['name_first'];
-					} else if (isset($record['name']) && !is_array($record['name'])) {
-						$prefix = $record['name'];
-					} else {
-						$prefix = $this->value_get(array('type' => 'name_first'), $record, $config);
-					}
-
-					return human_to_ref($prefix) . $config['id'] . '@example.com';
-
 				}
 
 			}
@@ -113,7 +99,7 @@
 		//--------------------------------------------------
 		// Cleanup values
 
-			function values_parse($table, $record, $config) {
+			public function values_parse($table, $record, $config) {
 
 				foreach ($record as $field => $value) {
 					if (is_array($value)) {

@@ -8,7 +8,8 @@
 			private $id = 0;
 			private $records = array();
 			private $table = NULL;
-			private $helper = NULL;
+
+			protected $helper = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -38,13 +39,6 @@
 
 			protected function record_create($values, $config) {
 				return $values;
-			}
-
-		//--------------------------------------------------
-		// Child records
-
-			protected function child_record_create($table, $values, $config = array()) {
-				return $this->helper->child_record_create($table, $values, $config);
 			}
 
 		//--------------------------------------------------

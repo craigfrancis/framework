@@ -187,7 +187,7 @@ echo "\n";
 					if ($line == 'YES') {
 
 						$template = file_get_contents($framework_path . '/blank.php');
-						$auto_types = array('name', 'name_first', 'name_last', 'email', 'address_1');
+						$auto_types = array('name', 'name_first', 'name_last', 'address_1');
 
 						foreach ($unknown_tables as $table) {
 
@@ -205,16 +205,18 @@ echo "\n";
 										$value = '$config[\'id\'],';
 									} else if ($field_name == 'username') {
 										$value = '\'' . ($table == 'admin' ? 'admin' : 'user') . '-\' . $config[\'id\'],';
-									} else if ($field_name == 'created') {
-										$value = 'array(\'type\' => \'timestamp\', \'from\' => \'-2 years\', \'to\' => \'now\'),';
-									} else if (substr($field_name, -8) == 'postcode') {
-										$value = 'array(\'type\' => \'postcode\', \'country\' => \'UK\'),';
-									} else if ($field_name == 'edited') {
-										$value = 'array(\'type\' => \'now\'),';
+									} else if ($field_name == 'email') {
+										$value = '$config[\'id\'] . \'@example.com\',';
 									} else if ($field_name == 'deleted') {
 										$value = '\'0000-00-00 00:00:00\',';
+									} else if ($field_name == 'edited') {
+										$value = '$this->helper->value_get(\'now\'),';
+									} else if ($field_name == 'created') {
+										$value = '$this->helper->value_get(\'timestamp\', array(\'from\' => \'-2 years\', \'to\' => \'now\')),';
+									} else if (substr($field_name, -8) == 'postcode') {
+										$value = '$this->helper->value_get(\'postcode\', array(\'country\' => \'UK\')),';
 									} else if (in_array($field_name, $auto_types)) {
-										$value = 'array(\'type\' => \'' . ($field_name == 'name' ? 'name_first' : $field_name) . '\'),';
+										$value = '$this->helper->value_get(\'' . ($field_name == 'name' ? 'name_first' : $field_name) . '\'),';
 									} else {
 										$value = '\'\', // ' . $field_info['type'];
 									}
