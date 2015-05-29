@@ -306,11 +306,11 @@
 				$this->sort_inactive_suffix_html = $content_html;
 			}
 
-			public function heading_add($heading, $sort_name = NULL, $class_name = '', $colspan = 1) {
-				$this->heading_add_html(html($heading), $sort_name, $class_name, $colspan);
+			public function heading_add($heading, $sort_name = NULL, $class_name = '', $config = array()) {
+				$this->heading_add_html(html($heading), $sort_name, $class_name, $config);
 			}
 
-			public function heading_add_html($heading_html, $sort_name = NULL, $class_name = '', $colspan = 1) {
+			public function heading_add_html($heading_html, $sort_name = NULL, $class_name = '', $config = array()) {
 
 				if (!isset($this->headings[$this->heading_id])) {
 					$this->headings[$this->heading_id] = array();
@@ -330,12 +330,17 @@
 
 				}
 
-				$this->headings[$this->heading_id][] = array(
+				if (is_numeric($config)) {
+					$config = array('colspan' => $config);
+				}
+
+				$this->headings[$this->heading_id][] = array_merge(array(
 						'html' => $heading_html,
 						'sort_id' => $sort_id,
 						'class_name' => $class_name,
-						'colspan' => $colspan,
-					);
+						'colspan' => 1,
+						'title' => NULL,
+					), $config);
 
 			}
 
@@ -343,21 +348,26 @@
 				$this->heading_id++;
 			}
 
-			public function footer_add($footer, $class_name = '', $colspan = 1) {
-				$this->footer_add_html(html($footer), $class_name, $colspan);
+			public function footer_add($footer, $class_name = '', $config = array()) {
+				$this->footer_add_html(html($footer), $class_name, $config);
 			}
 
-			public function footer_add_html($footer_html, $class_name = '', $colspan = 1) {
+			public function footer_add_html($footer_html, $class_name = '', $config = array()) {
 
 				if (!isset($this->footers[$this->footer_id])) {
 					$this->footers[$this->footer_id] = array();
 				}
 
-				$this->footers[$this->footer_id][] = array(
+				if (is_numeric($config)) {
+					$config = array('colspan' => $config);
+				}
+
+				$this->footers[$this->footer_id][] = array_merge(array(
 						'html' => $footer_html,
 						'class_name' => $class_name,
-						'colspan' => $colspan,
-					);
+						'colspan' => 1,
+						'title' => NULL,
+					), $config);
 
 			}
 
@@ -479,6 +489,13 @@
 								}
 
 							//--------------------------------------------------
+							// Attributes - title
+
+								if ($heading_info['title'] !== NULL) {
+									$attributes_html .= ' title="' . html($heading_info['title']) . '"';
+								}
+
+							//--------------------------------------------------
 							// Attributes - class
 
 								if (!isset($col_class[$col_id])) {
@@ -546,6 +563,13 @@
 										$attributes_html = ' colspan="' . html($footer_info['colspan']) . '"';
 									} else {
 										$attributes_html = '';
+									}
+
+								//--------------------------------------------------
+								// Attributes - title
+
+									if ($footer_info['title'] !== NULL) {
+										$attributes_html .= ' title="' . html($footer_info['title']) . '"';
 									}
 
 								//--------------------------------------------------
@@ -630,6 +654,13 @@
 									$attributes_html = ' colspan="' . html($cell_info['colspan']) . '"';
 								} else {
 									$attributes_html = '';
+								}
+
+							//--------------------------------------------------
+							// Attributes - title
+
+								if ($cell_info['title'] !== NULL) {
+									$attributes_html .= ' title="' . html($cell_info['title']) . '"';
 								}
 
 							//--------------------------------------------------
@@ -1056,27 +1087,30 @@
 
 		}
 
-		public function cell_add($content = '', $class_name = '', $colspan = 1) {
-			$this->data[] = array(
-					'html' => nl2br(html($content)),
-					'class_name' => $class_name,
-					'colspan' => $colspan,
-				);
+		public function cell_add($content = '', $class_name = '', $config = array()) {
+			$this->cell_add_html(nl2br(html($content)), $class_name, $config);
 		}
 
-		public function cell_add_html($content_html = '', $class_name = '', $colspan = 1) {
-			$this->data[] = array(
+		public function cell_add_html($content_html = '', $class_name = '', $config = array()) {
+
+			if (is_numeric($config)) {
+				$config = array('colspan' => $config);
+			}
+
+			$this->data[] = array_merge(array(
 					'html' => $content_html,
 					'class_name' => $class_name,
-					'colspan' => $colspan,
-				);
+					'colspan' => 1,
+					'title' => NULL,
+				), $config);
+
 		}
 
-		public function cell_add_link($url, $text, $class_name = '', $colspan = 1) {
+		public function cell_add_link($url, $text, $class_name = '', $config = array()) {
 			if ($url) {
-				$this->cell_add_html('<a href="' . html($url) . '">' . nl2br(html($text)) . '</a>', $class_name, $colspan);
+				$this->cell_add_html('<a href="' . html($url) . '">' . nl2br(html($text)) . '</a>', $class_name, $config);
 			} else {
-				$this->cell_add($text, $class_name, $colspan);
+				$this->cell_add($text, $class_name, $config);
 			}
 		}
 

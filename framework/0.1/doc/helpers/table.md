@@ -15,7 +15,7 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 	$table->no_records_set('No records found');
 
 	$table->heading_add('Heading 1');
-	$table->heading_add('Heading 2');
+	$table->heading_add('Heading 2', NULL, 'class_name');
 
 	while (false) {
 		$table_row = new table_row($table);
@@ -39,9 +39,15 @@ Start by creating the table_row object:
 
 Then to add the cells, call:
 
-	$table_row->cell_add($content, $class_name, $colspan);
-	$table_row->cell_add_html($content_html, $class_name, $colspan);
-	$table_row->cell_add_link($url, $text, $class_name, $colspan);
+	$table_row->cell_add($content);
+	$table_row->cell_add_html($content_html);
+	$table_row->cell_add_link($url, $text); // $url can be NULL.
+
+Or if you want to set a class and/or colspan:
+
+	$table_row->cell_add($content, 'class_name', array('colspan' => 1));
+	$table_row->cell_add_html($content_html, 'class_name', array('colspan' => 1));
+	$table_row->cell_add_link($url, $text, 'class_name', array('colspan' => 1));
 
 For example:
 
@@ -55,7 +61,7 @@ While the colspan will default to 1, it can be changed (e.g. 3), or set to -1 (t
 	$table_row->cell_add('Col 3');
 
 	$table_row = new table_row($table);
-	$table_row->cell_add('Spans 3 columns', NULL, -1);
+	$table_row->cell_add('Spans 3 columns', NULL, array('colspan' => -1));
 
 ---
 
