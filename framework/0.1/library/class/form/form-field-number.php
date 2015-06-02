@@ -56,7 +56,7 @@
 
 			public function format_error_set_html($error_html) {
 
-				if ($this->form_submitted && $this->value !== '' && $this->value_clean === NULL) {
+				if ($this->form_submitted && $this->value !== '' && $this->value !== NULL && $this->value_clean === NULL) {
 
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 
