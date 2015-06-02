@@ -567,6 +567,15 @@
 					$time_init = microtime(true);
 
 				//--------------------------------------------------
+				// Query type
+
+					$select_query = preg_match('/^\W*\(?\W*SELECT.*FROM/is', $query); // Don't debug queries without a table, e.g. SELECT FOUND_ROWS();
+
+					if ($select_query) {
+						$query = preg_replace('/^\W*\(?\W*SELECT/', '$0 SQL_NO_CACHE', $query);
+					}
+
+				//--------------------------------------------------
 				// HTML Format for the query
 
 					$query_html = html($query);
@@ -591,8 +600,6 @@
 					}
 
 					$query_html = trim(preg_replace('/^[ \t]*(?! |\t|SELECT|UPDATE|DELETE|INSERT|SHOW|FROM|USING|LEFT|SET|WHERE|GROUP|ORDER|LIMIT)/m', '    ', $query_html));
-
-					$select_query = preg_match('/^\W*\(?\W*SELECT.*FROM/is', $query); // Don't debug queries without a table, e.g. SELECT FOUND_ROWS();
 
 				//--------------------------------------------------
 				// Called from
