@@ -174,6 +174,24 @@
 
 		}
 
+		protected function _session_details_delete() {
+
+			//--------------------------------------------------
+			// Delete session details
+
+				$session_name = $this->user_obj->session_name_get();
+
+				if ($this->use_cookies) {
+					cookie::delete($session_name . '_id');
+					cookie::delete($session_name . '_pass');
+				} else {
+					session::regenerate(); // State change, new session id
+					session::delete($session_name . '_id');
+					session::delete($session_name . '_pass');
+				}
+
+		}
+
 		public function session_token_get() {
 
 			list($session_id, $session_pass) = $this->_session_details_get();
@@ -276,6 +294,10 @@
 
 						}
 
+					} else {
+
+						$this->_session_details_delete(); // Invalid session ID, might as well remove (so no need to SELECT again on next page load).
+
 					}
 
 				}
@@ -327,16 +349,7 @@
 			//--------------------------------------------------
 			// Be nice, and cleanup - not necessary
 
-				$session_name = $this->user_obj->session_name_get();
-
-				if ($this->use_cookies) {
-					cookie::delete($session_name . '_id');
-					cookie::delete($session_name . '_pass');
-				} else {
-					session::regenerate(); // State change, new session id
-					session::delete($session_name . '_id');
-					session::delete($session_name . '_pass');
-				}
+				$this->_session_details_delete();
 
 		}
 
