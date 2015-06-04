@@ -14,6 +14,8 @@
 			private $url = NULL;
 			private $page_count = NULL;
 			private $page_number = NULL;
+			private $form_mode = false;
+			private $form_new_page = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -31,7 +33,7 @@
 							'item_limit' => 24, // Divisible by 1, 2, 3, 4, 6, 12
 							'item_count' => NULL, // Unknown
 							'base_url' => NULL,
-							'mode' => 'link', // or 'form'
+							'mode' => 'link', // or 'form', or 'form_redirect'
 							'variable' => 'page',
 							'elements' => array('<p class="pagination" role="list">', 'hidden', 'first', 'back', 'links', 'next', 'last', 'extra', '</p>' . "\n"),
 							'indent_html' => "\n\t\t\t\t",
@@ -61,6 +63,8 @@
 					}
 
 					$this->config = array_merge($default_config, $config);
+
+					$this->form_mode = ($this->config['mode'] == 'form' || $this->config['mode'] == 'form_redirect');
 
 				//--------------------------------------------------
 				// Item count
@@ -126,7 +130,7 @@
 						$page_number = intval($page_number);
 					}
 
-					if ($this->config['mode'] == 'form') {
+					if ($this->form_mode) {
 
 						$page_relative = request($this->config['variable'] . '_rel');
 
@@ -136,24 +140,30 @@
 
 							if ($page_relative_html == $this->config['first_html']) {
 
-								$page_number = 1;
+								$new_page_number = 1;
 
 							} else if ($page_relative_html == $this->config['last_html']) {
 
-								$page_number = $this->page_count;
+								$new_page_number = $this->page_count;
 
 							} else if ($page_relative_html == $this->config['back_html']) {
 
-								$page_number -= 1;
+								$new_page_number = ($page_number - 1);
 
 							} else if ($page_relative_html == $this->config['next_html']) {
 
-								$page_number += 1;
+								$new_page_number = ($page_number + 1);
 
 							} else {
 
-								$page_number = $page_relative_html;
+								$new_page_number = $page_relative_html;
 
+							}
+
+							if ($this->config['mode'] == 'form_redirect') {
+								$this->form_new_page = $new_page_number;
+							} else {
+								$page_number = $new_page_number;
 							}
 
 						}
@@ -259,7 +269,7 @@
 					$url = NULL;
 				}
 
-				if ($this->config['mode'] == 'form') {
+				if ($this->form_mode) {
 
 					return '<input type="submit" name="' . html($this->config['variable']) . '_rel" value="' . $link_html . '"' . ($url === NULL ? ' disabled="disabled"' : '') . ' />';
 
@@ -278,6 +288,13 @@
 				}
 
 			}
+
+			public function redirect_url_get() {
+				return $this->page_url_get($this->form_new_page);
+			}
+
+		//--------------------------------------------------
+		// HTML
 
 			public function html() {
 
@@ -332,7 +349,7 @@
 							'next' => $nav_links_html['next'],
 							'last' => $nav_links_html['last'],
 							'extra' => $extra_html,
-							'hidden' => ($this->config['mode'] == 'form' ? '<input type="hidden" name="' . html($this->config['variable']) . '" value="' . html($this->page_number) . '" />' : ''),
+							'hidden' => ($this->form_mode ? '<input type="hidden" name="' . html($this->config['variable']) . '" value="' . html($this->page_number) . '" />' : ''),
 						));
 
 			}

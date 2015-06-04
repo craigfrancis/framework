@@ -122,6 +122,30 @@ Note that the '`true`' used to set the item count will trigger a redirect if the
 
 ---
 
+## Usage with forms
+
+If you want to use submit buttons (rather than links), then set the 'mode' config:
+
+	$paginator = new paginator(array(
+			'item_count' => $result_count,
+			'mode' => 'form',
+		));
+
+This version will change the page number immediately.
+
+Alternativly, if you need to save something first, then use:
+
+	$paginator = new paginator(array(
+			'item_count' => $result_count,
+			'mode' => 'form_redirect',
+		));
+
+	if ($form->submitted() && $form->valid()) {
+		redirect($paginator->redirect_url_get());
+	}
+
+---
+
 ## Show page count
 
 See below for a more customisable solution, but if you just want to show the number of pages/records next to all paginators:
@@ -168,7 +192,7 @@ The pagination helper has the following configuration options available.
 		Used for the links, typically not needed.
 
 	mode
-		'link', or can be set to 'form' if you need submit buttons.
+		'link', or set to 'form' or 'form_redirect' for buttons.
 
 	variable
 		'page', the name of the variable used in the query string.
