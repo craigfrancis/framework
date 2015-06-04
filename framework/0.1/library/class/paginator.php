@@ -161,7 +161,9 @@
 							}
 
 							if ($this->config['mode'] == 'form_redirect') {
-								$this->form_new_page = $new_page_number;
+								if ($page_number >= 1 && $page_number <= $this->page_count) { // Sanity check (page count may have changed)
+									$this->form_new_page = $new_page_number;
+								}
 							} else {
 								$page_number = $new_page_number;
 							}
