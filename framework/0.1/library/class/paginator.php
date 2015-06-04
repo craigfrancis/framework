@@ -238,10 +238,10 @@
 					}
 
 					if ($page_number === NULL) {
-						return $this->url;
-					} else {
-						return $this->url->get(array($this->config['variable'] => ($page_number == 1 ? NULL : $page_number)));
+						$page_number = $this->page_number;
 					}
+
+					return $this->url->get(array($this->config['variable'] => ($page_number == 1 ? NULL : $page_number)));
 
 				} else {
 
@@ -254,7 +254,7 @@
 			public function page_link_get_html($link_html, $page_number = NULL) {
 
 				if ($page_number != $this->page_number) {
-					$url = $this->page_url_get($page_number === NULL ? $this->page_number : $page_number);
+					$url = $this->page_url_get($page_number);
 				} else {
 					$url = NULL;
 				}

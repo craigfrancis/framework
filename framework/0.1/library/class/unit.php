@@ -91,7 +91,7 @@
 			}
 
 			protected function authenticate($config) {
-				return true;
+				return true; // TODO Should default to false
 			}
 
 			protected function setup($config) {
