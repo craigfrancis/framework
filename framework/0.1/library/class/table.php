@@ -498,12 +498,18 @@
 							//--------------------------------------------------
 							// Attributes - class
 
-								if (!isset($col_class[$col_id])) {
-									$col_class[$col_id] = '';
-								}
+								$m = ($col_id + $heading_info['colspan']);
 
-								if ($this->data_inherit_heading_class && $heading_info['class_name'] != '') {
-									$col_class[$col_id] .= ' ' . $heading_info['class_name'];
+								for ($k = $col_id; $k < $m; $k++) {
+
+									if (!isset($col_class[$k])) {
+										$col_class[$k] = '';
+									}
+
+									if ($this->data_inherit_heading_class && $heading_info['class_name'] != '') {
+										$col_class[$k] .= ' ' . $heading_info['class_name'];
+									}
+
 								}
 
 								if ($heading_info['class_name'] != '') {
