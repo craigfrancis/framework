@@ -785,7 +785,7 @@
 
 					if (class_exists($api_object)) {
 
-						$api = new $api_object($this->api, $this->sub_path, $this->gateway, 'run');
+						$api = new $api_object($this->api, $this->version, $this->sub_path, $this->gateway, 'run');
 
 						$result = $api->run();
 
