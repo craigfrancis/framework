@@ -210,13 +210,19 @@
 
 		if ($gateway_url !== NULL && prefix_match($gateway_url, $route_path)) {
 
-			if (preg_match('/^[\/]*([^\/]+)[\/]*(.*)$/', substr($route_path, strlen($gateway_url)), $matches)) {
+			if (preg_match('/^[\/]*(v([0-9]+)\/+)?([^\/]+)[\/]*(.*)$/', substr($route_path, strlen($gateway_url)), $matches)) {
+
+				if ($matches[2] !== '') {
+					$version = $matches[2];
+				} else {
+					$version = 1;
+				}
 
 				config::set('output.mode', 'gateway');
 
 				$gateway = new gateway();
 
-				$success = $gateway->run($matches[1], $matches[2]);
+				$success = $gateway->run($matches[3], $version, $matches[4]);
 
 				if ($success === false) {
 					error_send('page-not-found');

@@ -365,7 +365,7 @@
 		//--------------------------------------------------
 		// Running of an api (server support)
 
-			public function run($api, $sub_path = NULL) {
+			public function run($api, $version = 1, $sub_path = NULL) {
 
 				//--------------------------------------------------
 				// Make sure we have plenty of memory
@@ -383,7 +383,7 @@
 				//--------------------------------------------------
 				// Run API
 
-					$api = new api($api, $sub_path, $this);
+					$api = new api($api, $version, $sub_path, $this);
 					return $api->run_wrapper();
 
 			}
@@ -507,6 +507,7 @@
 		//--------------------------------------------------
 		// Variables
 
+			private $version;
 			private $api;
 			private $sub_path;
 			private $gateway;
@@ -516,7 +517,7 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($api, $sub_path, $gateway, $mode = 'wrapper') {
+			public function __construct($api, $version = 1, $sub_path = NULL, $gateway = NULL, $mode = 'wrapper') {
 
 				//--------------------------------------------------
 				// Clean sub path
@@ -535,6 +536,7 @@
 				//--------------------------------------------------
 				// Store
 
+					$this->version = $version;
 					$this->api = $api;
 					$this->sub_path = $sub_path;
 					$this->gateway = $gateway;
@@ -622,7 +624,9 @@
 				//--------------------------------------------------
 				// Check tables
 
-					$this->gateway->_check_tables();
+					if ($this->gateway) {
+						$this->gateway->_check_tables();
+					}
 
 				//--------------------------------------------------
 				// Kill old passwords
@@ -649,7 +653,11 @@
 						//--------------------------------------------------
 						// Create new key/pass
 
-							$client_key = $this->gateway->_client_config($client, 'key');
+							if ($this->gateway) {
+								$client_key = $this->gateway->_client_config($client, 'key');
+							} else {
+								exit_with_error('You need to call the API with a gateway object');
+							}
 
 							$db_key = '';
 							for ($k=0; $k<32; $k++) {
@@ -754,7 +762,13 @@
 
 					$gateway = $this;
 
-					$api_path = APP_ROOT . '/gateway/' . safe_file_name($this->api) . '.php';
+					$api_path = APP_ROOT . '/gateway/v' . intval($this->version) . '/' . safe_file_name($this->api) . '.php';
+					$api_object = str_replace('-', '_', $this->api) . '_v' . intval($this->version) . '_api';
+
+					if ($this->version == 1 && !is_file($api_path)) {
+						$api_path = APP_ROOT . '/gateway/' . safe_file_name($this->api) . '.php';
+						$api_object = str_replace('-', '_', $this->api) . '_api';
+					}
 
 					if (!is_file($api_path)) {
 						$api_path = FRAMEWORK_ROOT . '/library/gateway/' . safe_file_name($this->api) . '.php';
@@ -768,8 +782,6 @@
 
 				//--------------------------------------------------
 				// Object mode support
-
-					$api_object = str_replace('-', '_', $this->api) . '_api';
 
 					if (class_exists($api_object)) {
 
