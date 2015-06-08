@@ -53,8 +53,6 @@
 				$this->error_message = NULL;
 				$this->error_data = NULL;
 
-				$this->connection = NULL;
-
 			}
 
 			public function value_set($name, $value) {
@@ -86,23 +84,23 @@
 		// Actions
 
 			public function get($url, $data = '') {
-				$this->connection_open($url, 'GET', $data);
-				return $this->connection_read();
+				$this->request($url, 'GET', $data);
+				return $this->request_parse();
 			}
 
 			public function post($url, $data = '') {
-				$this->connection_open($url, 'POST', $data);
-				return $this->connection_read();
+				$this->request($url, 'POST', $data);
+				return $this->request_parse();
 			}
 
 			public function put($url, $data = '') {
-				$this->connection_open($url, 'PUT', $data);
-				return $this->connection_read();
+				$this->request($url, 'PUT', $data);
+				return $this->request_parse();
 			}
 
 			public function delete($url, $data = '') {
-				$this->connection_open($url, 'DELETE', $data);
-				return $this->connection_read();
+				$this->request($url, 'DELETE', $data);
+				return $this->request_parse();
 			}
 
 		//--------------------------------------------------
@@ -193,9 +191,9 @@
 			}
 
 		//--------------------------------------------------
-		// Connection
+		// Request
 
-			public function connection_open($url, $method = 'GET', $data = '') {
+			public function request($url, $method = 'GET', $data = '') {
 
 				//--------------------------------------------------
 				// No error
@@ -308,7 +306,7 @@
 
 						if ($method != 'GET') {
 
-							if ($data == '' || is_array($data)) {
+							if ($data == '' || is_array($data)) { // Similar to "http_build_query()"
 
 								$data_encoded = array();
 
@@ -377,16 +375,14 @@
 // $context = stream_context_create($contextOptions);
 // http://www.docnet.nu/tech-portal/2014/06/26/ssl-and-php-streams-part-1-you-are-doing-it-wrongtm/C0
 
-					$this->connection = @fsockopen($socket_host, $port, $errno, $errstr, 5);
-					if ($this->connection) {
+					$connection = @fsockopen($socket_host, $port, $errno, $errstr, 5);
+					if ($connection) {
 
-						$result = @fwrite($this->connection, $request); // Send request
+						$result = @fwrite($connection, $request); // Send request
 
-						if ($result == strlen($request)) { // Connection lost will result in some bytes being written
-							return true;
+						if ($result != strlen($request)) { // Connection lost will result in some bytes being written
+							$this->error_message = 'Connection lost to "' . $socket_host . ':' . $port . '"';
 						}
-
-						$this->error_message = 'Connection lost to "' . $socket_host . ':' . $port . '"';
 
 					} else {
 
@@ -394,25 +390,12 @@
 
 					}
 
-					if ($this->exit_on_error) {
-						exit_with_error($this->error_message);
-					} else {
-						return false;
-					}
-
-			}
-
-			public function connection_get() {
-				return $this->connection;
-			}
-
-			public function connection_read() {
-
-				//--------------------------------------------------
-				// Bad connection
-
-					if (!$this->connection) {
-						return false;
+					if ($this->error_message) {
+						if ($this->exit_on_error) {
+							exit_with_error($this->error_message);
+						} else {
+							return false;
+						}
 					}
 
 				//--------------------------------------------------
@@ -421,10 +404,10 @@
 					$error_reporting = error_reporting(0); // Dam IIS forgetting close_notify indicator - https://php.net/file
 
 					$response = '';
-					while (!feof($this->connection)) {
-						$response .= fgets($this->connection, 2048);
+					while (!feof($connection)) {
+						$response .= fgets($connection, 2048);
 					}
-					fclose($this->connection);
+					fclose($connection);
 
 					error_reporting($error_reporting);
 
