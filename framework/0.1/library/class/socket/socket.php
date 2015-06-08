@@ -84,23 +84,19 @@
 		// Actions
 
 			public function get($url, $data = '') {
-				$this->request($url, 'GET', $data);
-				return $this->request_parse();
+				return $this->request($url, 'GET', $data);
 			}
 
 			public function post($url, $data = '') {
-				$this->request($url, 'POST', $data);
-				return $this->request_parse();
+				return $this->request($url, 'POST', $data);
 			}
 
 			public function put($url, $data = '') {
-				$this->request($url, 'PUT', $data);
-				return $this->request_parse();
+				return $this->request($url, 'PUT', $data);
 			}
 
 			public function delete($url, $data = '') {
-				$this->request($url, 'DELETE', $data);
-				return $this->request_parse();
+				return $this->request($url, 'DELETE', $data);
 			}
 
 		//--------------------------------------------------
