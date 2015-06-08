@@ -552,7 +552,7 @@
 
 			}
 
-			public function saved_value_get($name) {
+			private function saved_values_used() {
 
 				if ($this->saved_values_used === false) {
 
@@ -565,6 +565,12 @@
 					session::delete('save_request_data');
 
 				}
+
+			}
+
+			public function saved_value_get($name) {
+
+				$this->saved_values_used();
 
 				if (isset($this->saved_values_data[$name])) {
 					return $this->saved_values_data[$name];
@@ -579,6 +585,9 @@
 
 			public function submitted($page = NULL) {
 				if ($this->form_submitted === true && $this->disabled === false && $this->readonly === false) {
+
+					$this->saved_values_used(); // Just incase there are no fields on the page calling saved_value_get()
+
 					if ($this->print_page_setup === NULL) {
 						if ($page !== NULL) {
 							exit_with_error('Cannot call form->submitted(' . $page . ') without form->print_page_start(X)');
@@ -590,6 +599,7 @@
 						}
 						return ($page <= $this->print_page_submit);
 					}
+
 				}
 				return false;
 			}
