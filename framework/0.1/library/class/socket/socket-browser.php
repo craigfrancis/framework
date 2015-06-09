@@ -21,7 +21,7 @@
 			protected $form = NULL;
 			protected $exit_on_error = true;
 			protected $error_message = NULL;
-			protected $error_data = NULL;
+			protected $error_details = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -44,7 +44,7 @@
 				$this->form = NULL;
 
 				$this->error_message = NULL;
-				$this->error_data = NULL;
+				$this->error_details = NULL;
 
 				$this->socket->reset();
 
@@ -86,16 +86,16 @@
 				return $this->error_message;
 			}
 
-			public function error_data_get() {
-				return $this->error_data;
+			public function error_details_get() {
+				return $this->error_details;
 			}
 
-			protected function _error($message, $data = NULL) {
+			private function error($message, $hidden_info = NULL) {
 				if ($this->exit_on_error) {
-					exit_with_error($message, $data);
+					exit_with_error($message, $hidden_info);
 				} else {
 					$this->error_message = $message;
-					$this->error_data = $data;
+					$this->error_details = $hidden_info;
 				}
 				return false;
 			}
@@ -176,7 +176,7 @@
 				if ($nodes->length == 1) {
 					return $nodes->item(0);
 				} else {
-					return $this->_error('There were ' . $nodes->length . ' nodes with the XPath "' . $query . '"', $this->current_url);
+					return $this->error('There were ' . $nodes->length . ' nodes with the XPath "' . $query . '"', $this->current_url);
 				}
 
 			}
@@ -188,7 +188,7 @@
 				}
 
 				if ($dom == false) {
-					return $this->_error('There was no content returned from last query.', $this->current_url);
+					return $this->error('There was no content returned from last query.', $this->current_url);
 				}
 
 				$xpath = new DOMXPath($dom);
@@ -241,7 +241,7 @@
 					if ($url !== '') {
 						return $url;
 					} else {
-						return $this->_error('Cannot find a href attribute on link "' . $query . '"');
+						return $this->error('Cannot find a href attribute on link "' . $query . '"');
 					}
 
 			}
@@ -383,7 +383,7 @@
 				$field = $this->_form_field_get($name);
 
 				if ($field['type'] == 'select' && !isset($field['options'][$value])) {
-					return $this->_error('Cannot use the value "' . $value . '" in the select field "' . $name . '" (' . implode('/', array_keys($field['options'])) . ')', $this->current_url);
+					return $this->error('Cannot use the value "' . $value . '" in the select field "' . $name . '" (' . implode('/', array_keys($field['options'])) . ')', $this->current_url);
 				}
 
 				$this->form['fields'][$name]['value'] = $value;
@@ -397,7 +397,7 @@
 				if ($field['type'] == 'select') {
 					return $field['options'];
 				} else {
-					return $this->_error('The field "' . $name . '" is not a select field', $this->current_url);
+					return $this->error('The field "' . $name . '" is not a select field', $this->current_url);
 				}
 
 			}
@@ -409,7 +409,7 @@
 				}
 
 				if (!isset($this->form['fields'][$name])) {
-					return $this->_error('Cannot find the form field "' . $name . '"', $this->current_url);
+					return $this->error('Cannot find the form field "' . $name . '"', $this->current_url);
 				}
 
 				return $this->form['fields'][$name];
@@ -448,7 +448,7 @@
 					if ($button_name != '') { // Not NULL or empty-name
 
 						if (!isset($this->form['submits'][$button_name])) {
-							return $this->_error('Cannot submit the form with the unknown button "' . $button_name . '"', $this->current_url);
+							return $this->error('Cannot submit the form with the unknown button "' . $button_name . '"', $this->current_url);
 						}
 
 						if ($button_value === NULL) {
@@ -545,7 +545,7 @@
 							$url_parts = @parse_url($url);
 
 							if ($url_parts === false) {
-								return $this->_error('Cannot parse url "' . $url . '"');
+								return $this->error('Cannot parse url "' . $url . '"');
 							}
 
 							if (!isset($url_parts['host'])) { // Not a full URL
@@ -569,7 +569,7 @@
 									}
 
 									if (!isset($url_parts['host'])) {
-										return $this->_error('Unknown host in new url "' . $url . '", or current url "' . $this->current_url . '"');
+										return $this->error('Unknown host in new url "' . $url . '", or current url "' . $this->current_url . '"');
 									}
 
 								//--------------------------------------------------
@@ -681,7 +681,7 @@
 
 							$socket_error = $this->socket->error_message_get();
 							if ($socket_error !== NULL) {
-								$this->_error($socket_error, $this->socket->error_data_get());
+								$this->error($socket_error, $this->socket->error_details_get());
 							}
 
 						//--------------------------------------------------

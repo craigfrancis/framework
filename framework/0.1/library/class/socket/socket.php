@@ -22,7 +22,7 @@
 			private $response_data = '';
 			private $exit_on_error = true;
 			private $error_message = NULL;
-			private $error_data = NULL;
+			private $error_details = NULL;
 			private $connection = NULL;
 
 		//--------------------------------------------------
@@ -51,7 +51,7 @@
 				$this->response_data = '';
 
 				$this->error_message = NULL;
-				$this->error_data = NULL;
+				$this->error_details = NULL;
 
 			}
 
@@ -76,8 +76,29 @@
 				$this->login_password = $password;
 			}
 
+		//--------------------------------------------------
+		// Error handling
+
 			public function exit_on_error_set($exit_on_error) {
 				$this->exit_on_error = $exit_on_error;
+			}
+
+			public function error_message_get() {
+				return $this->error_message;
+			}
+
+			public function error_details_get() {
+				return $this->error_details;
+			}
+
+			private function error($message, $hidden_info = NULL) {
+				if ($this->exit_on_error) {
+					exit_with_error($message, $hidden_info);
+				} else {
+					$this->error_message = $message;
+					$this->error_details = $hidden_info;
+				}
+				return false;
 			}
 
 		//--------------------------------------------------
@@ -178,14 +199,6 @@
 
 			}
 
-			public function error_message_get() {
-				return $this->error_message;
-			}
-
-			public function error_data_get() {
-				return $this->error_data;
-			}
-
 		//--------------------------------------------------
 		// Request
 
@@ -195,7 +208,7 @@
 				// No error
 
 					$this->error_message = NULL;
-					$this->error_data = NULL;
+					$this->error_details = NULL;
 
 				//--------------------------------------------------
 				// Post data with GET request
@@ -224,7 +237,11 @@
 					//--------------------------------------------------
 					// Host
 
-						$host = $url_parts['host'];
+						if (isset($url_parts['host'])) {
+							$host = $url_parts['host'];
+						} else {
+							return $this->error('Missing host from requested url', $url);
+						}
 
 						$socket_host = ($https ? 'ssl://' : '') . $host;
 
@@ -357,7 +374,23 @@
 						$this->request_path = $path;
 
 				//--------------------------------------------------
-				// Communication
+				// Certificate check
+
+					if ($https) {
+
+						$ca_bundle_paths = array(
+								'/etc/pki/tls/certs/ca-bundle.crt', // Fedora, RHEL, CentOS (ca-certificates package)
+								'/etc/ssl/certs/ca-certificates.crt', // Debian, Ubuntu, Gentoo, Arch Linux (ca-certificates package)
+								'/etc/ssl/ca-bundle.pem', // SUSE, openSUSE (ca-certificates package)
+								'/usr/local/share/certs/ca-root-nss.crt', // FreeBSD (ca_root_nss_package)
+								'/usr/ssl/certs/ca-bundle.crt', // Cygwin
+								'/opt/local/share/curl/curl-ca-bundle.crt', // OS X macports, curl-ca-bundle package
+								'/usr/local/share/curl/curl-ca-bundle.crt', // Default cURL CA bunde path (without --with-ca-bundle option)
+								'/usr/share/ssl/certs/ca-bundle.crt', // Really old RedHat?
+								'/etc/ssl/cert.pem', // OpenBSD
+							);
+
+					}
 
 // TODO:
 // $contextOptions = array(
@@ -371,27 +404,28 @@
 // $context = stream_context_create($contextOptions);
 // http://www.docnet.nu/tech-portal/2014/06/26/ssl-and-php-streams-part-1-you-are-doing-it-wrongtm/C0
 
+				//--------------------------------------------------
+				// Communication
+
+					$error = false;
+
 					$connection = @fsockopen($socket_host, $port, $errno, $errstr, 5);
 					if ($connection) {
 
 						$result = @fwrite($connection, $request); // Send request
 
 						if ($result != strlen($request)) { // Connection lost will result in some bytes being written
-							$this->error_message = 'Connection lost to "' . $socket_host . ':' . $port . '"';
+							$error = 'Connection lost to "' . $socket_host . ':' . $port . '"';
 						}
 
 					} else {
 
-						$this->error_message = 'Failed connection to "' . $socket_host . ':' . $port . '" (' . $errno . ': ' . $errstr . ')';
+						$error = 'Failed connection to "' . $socket_host . ':' . $port . '" (' . $errno . ': ' . $errstr . ')';
 
 					}
 
-					if ($this->error_message) {
-						if ($this->exit_on_error) {
-							exit_with_error($this->error_message);
-						} else {
-							return false;
-						}
+					if ($error) {
+						return $this->error($error);
 					}
 
 				//--------------------------------------------------
@@ -419,14 +453,7 @@
 
 					} else {
 
-						$this->error_message = 'Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")';
-						$this->error_data = $response;
-
-						if ($this->exit_on_error) {
-							exit_with_error($this->error_message, $this->error_data);
-						} else {
-							return false;
-						}
+						return $this->error('Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")', $response);
 
 					}
 
