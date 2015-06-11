@@ -495,9 +495,9 @@
 
 					if ($connection) {
 
-						stream_set_timeout($connection, $this->request_timeout);
+						// stream_set_timeout($connection, $this->request_timeout);
 
-						$result = @fwrite($connection, $request); // Send request
+						$result = fwrite($connection, $request); // Send request
 
 						if ($result != strlen($request)) { // Connection lost will result in some bytes being written
 							$error = 'Connection lost to "' . $socket_host . '"';
