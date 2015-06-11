@@ -495,7 +495,7 @@
 
 					if ($connection) {
 
-						stream_set_timeout($connection, $this->request_timeout);
+						// stream_set_timeout($connection, $this->request_timeout);
 
 						$result = @fwrite($connection, $request); // Send request
 
