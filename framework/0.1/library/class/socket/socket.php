@@ -495,9 +495,9 @@
 
 					if ($connection) {
 
-						// stream_set_timeout($connection, $this->request_timeout);
+						stream_set_timeout($connection, $this->request_timeout);
 
-						$result = fwrite($connection, $request); // Send request
+						$result = @fwrite($connection, $request); // Send request
 
 						if ($result != strlen($request)) { // Connection lost will result in some bytes being written
 							$error = 'Connection lost to "' . $socket_host . '"';
@@ -528,17 +528,23 @@
 				//--------------------------------------------------
 				// Receive
 
-					// $error_reporting = error_reporting(0); // Dam IIS forgetting close_notify indicator - https://php.net/file
+					$error_reporting = error_reporting(0); // Dam IIS forgetting close_notify indicator - https://php.net/file
 
 					$response = '';
 					while (!feof($connection)) {
-						$response .= fgets($connection, 2048);
+						$response .= fread($connection, 2048);
 					}
-					fclose($connection);
 
-					// error_reporting($error_reporting);
+					// $response = stream_get_contents($connection);
+
+					error_reporting($error_reporting);
 
 					$this->response_full = $response;
+
+				//--------------------------------------------------
+				// Close connection
+
+					fclose($connection);
 
 				//--------------------------------------------------
 				// Split off the header
