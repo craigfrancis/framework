@@ -413,7 +413,7 @@
 				//--------------------------------------------------
 				// Certificate check
 
-					if ($https) {
+					if (false) {
 
 							// https://github.com/padraic/file_get_contents/blob/master/src/Humbug/FileGetContents.php
 							// http://www.docnet.nu/tech-portal/2014/06/26/ssl-and-php-streams-part-1-you-are-doing-it-wrongtm/C0
