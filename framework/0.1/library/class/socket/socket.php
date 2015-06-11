@@ -223,7 +223,8 @@
 
 						$chunk_length = hexdec(rtrim($hex_length, "\r\n"));
 						$output .= substr($chunked_str, $chunked_pos, $chunk_length);
-						$chunked_pos = (strpos($chunked_str, "\n", $chunked_pos + $chunk_length) + 1);
+						$chunked_pos = ($chunked_pos + $chunk_length);
+							// $chunked_pos = (strpos($chunked_str, "\n", $chunked_pos + $chunk_length) + 1);
 
 					} while ($chunked_pos < $chunked_length);
 
@@ -253,9 +254,7 @@
 					if ($method == 'GET' && is_array($data)) {
 						$url = url($url, $data);
 					}
-debug($url);
-debug($method);
-debug($data);
+
 				//--------------------------------------------------
 				// Parse the URL
 
@@ -411,7 +410,7 @@ debug($data);
 						$this->request_full = $request;
 						$this->request_host = $host;
 						$this->request_path = $path;
-debug($request);
+
 				//--------------------------------------------------
 				// Certificate check
 
@@ -430,7 +429,7 @@ debug($request);
 							);
 
 						$skip_domains = config::get('socket.insecure_domains', array());
-debug($skip_domains);
+
 						if ($skip_domains !== 'all' && !in_array($host, $skip_domains)) {
 
 							$ca_bundle_path = config::get('socket.tls_ca_path', ini_get('openssl.cafile'));
@@ -467,7 +466,7 @@ debug($skip_domains);
 							$options['ssl']['cafile'] = $ca_bundle_path;
 							$options['ssl']['CN_match'] = $host;
 							$options['ssl']['peer_name'] = $host; // For PHP 5.6+
-debug($options);
+
 						}
 
 						if (version_compare(PHP_VERSION, '5.4.13') >= 0) {
@@ -490,10 +489,8 @@ debug($options);
 
 					set_error_handler(array($this, 'error_connect'));
 					if ($context) {
-debug($socket_host);
 						$connection = stream_socket_client($socket_host, $errno, $errstr, $this->request_timeout, STREAM_CLIENT_CONNECT, $context);
 					} else {
-debug($host);
 						$connection = fsockopen($host, $port, $errno, $errstr, $this->request_timeout);
 					}
 					restore_error_handler();
@@ -558,7 +555,7 @@ debug($host);
 
 						$this->response_headers = str_replace("\r\n", "\n", $matches[1]);
 						$this->response_data = substr($response, strlen($matches[1] . $matches[2]));
-debug($this->response_data);
+
 					} else {
 
 						return $this->error('Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")', $response);
