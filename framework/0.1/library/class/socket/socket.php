@@ -533,12 +533,12 @@ debug($host);
 
 					$error_reporting = error_reporting(0); // Dam IIS forgetting close_notify indicator - https://php.net/file
 
-					// $response = '';
-					// while (!feof($connection)) {
-					// 	$response .= fread($connection, 2048);
-					// }
+					$response = '';
+					while (!feof($connection)) {
+						$response .= fread($connection, 2048);
+					}
 
-					$response = stream_get_contents($connection);
+					// $response = stream_get_contents($connection);
 
 					error_reporting($error_reporting);
 
