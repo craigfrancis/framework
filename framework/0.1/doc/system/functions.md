@@ -75,7 +75,8 @@ For other variables, you should probably use the [cookie](../../doc/helpers/cook
 		// [2] => "folder"
 
 	cut_to_length($text, $length, $trim_to_char, $trim_suffix);
-		// cut_to_length('This is some text', 11, ' ');
+		// cut_to_length('This is some text', 11, true);
+		// cut_to_length('This is some text', 11, ',');
 		// 'This is…'
 
 	cut_to_words($text, $words, $trim);
