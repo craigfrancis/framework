@@ -293,7 +293,7 @@
 							return $this->error('Missing host from requested url', $url);
 						}
 
-						$socket_host = ($https ? 'tls://' : 'tcp://') . $host . ':' . $port;
+						$socket_host = ($https ? 'ssl://' : 'tcp://') . $host . ':' . $port;
 
 					//--------------------------------------------------
 					// Return Path
