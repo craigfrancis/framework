@@ -670,12 +670,6 @@
 
 							}
 
-							$this->current_url = $url;
-							$this->current_data = $this->socket->response_data_get();
-							$this->current_code = $this->socket->response_code_get();
-
-							$this->socket->header_set('Referer', $url);
-
 						//--------------------------------------------------
 						// Error
 
@@ -683,6 +677,15 @@
 							if ($socket_error !== NULL) {
 								$this->error($socket_error, $this->socket->error_details_get());
 							}
+
+						//--------------------------------------------------
+						// Response
+
+							$this->current_url = $url;
+							$this->current_data = $this->socket->response_data_get();
+							$this->current_code = $this->socket->response_code_get();
+
+							$this->socket->header_set('Referer', $url);
 
 						//--------------------------------------------------
 						// Accept encoding
