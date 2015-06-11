@@ -253,7 +253,9 @@
 					if ($method == 'GET' && is_array($data)) {
 						$url = url($url, $data);
 					}
-
+debug($url);
+debug($method);
+debug($data);
 				//--------------------------------------------------
 				// Parse the URL
 
@@ -409,7 +411,7 @@
 						$this->request_full = $request;
 						$this->request_host = $host;
 						$this->request_path = $path;
-
+debug($request);
 				//--------------------------------------------------
 				// Certificate check
 
