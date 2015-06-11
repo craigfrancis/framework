@@ -14,16 +14,20 @@
 			private $cookies = array();
 			private $login_username = '';
 			private $login_password = '';
+
+			private $request_timeout = 3;
 			private $request_full = '';
 			private $request_host = '';
 			private $request_path = '';
+
 			private $response_full = '';
 			private $response_headers = '';
 			private $response_data = '';
+
 			private $exit_on_error = true;
 			private $error_message = NULL;
 			private $error_details = NULL;
-			private $connection = NULL;
+			private $error_connect = array();
 
 		//--------------------------------------------------
 		// Setup
@@ -46,12 +50,14 @@
 				$this->request_full = '';
 				$this->request_host = '';
 				$this->request_path = '';
+
 				$this->response_full = '';
 				$this->response_headers = '';
 				$this->response_data = '';
 
 				$this->error_message = NULL;
 				$this->error_details = NULL;
+				$this->error_connect = array();
 
 			}
 
@@ -74,6 +80,10 @@
 			public function login_set($username, $password) {
 				$this->login_username = $username;
 				$this->login_password = $password;
+			}
+
+			public function timeout_set($seconds) {
+				$this->request_timeout = $seconds;
 			}
 
 		//--------------------------------------------------
@@ -99,6 +109,32 @@
 					$this->error_details = $hidden_info;
 				}
 				return false;
+			}
+
+			private function error_connect($err_no, $err_str, $err_file, $err_line, $err_context) {
+
+				switch ($err_no) {
+					case E_NOTICE:
+					case E_USER_NOTICE:
+						$error_type = 'Notice';
+					break;
+					case E_WARNING:
+					case E_USER_WARNING:
+						$error_type = 'Warning';
+					break;
+					case E_ERROR:
+					case E_USER_ERROR:
+						$error_type = 'Fatal Error';
+					break;
+					default:
+						$error_type = 'Unknown';
+					break;
+				}
+
+				$this->error_connect[] = $error_type . ' : ' . $err_str . ' in "' . $err_file . '" on line ' . $err_line;
+
+				return true;
+
 			}
 
 		//--------------------------------------------------
@@ -209,6 +245,7 @@
 
 					$this->error_message = NULL;
 					$this->error_details = NULL;
+					$this->error_connect = array();
 
 				//--------------------------------------------------
 				// Post data with GET request
@@ -228,34 +265,10 @@
 					//--------------------------------------------------
 					// HTTPS
 
-						$https = (isset($url_parts['scheme']) && $url_parts['scheme'] == 'https');
+						$https = (isset($url_parts['scheme']) && strtolower($url_parts['scheme']) == 'https');
 
 						if (!isset($url_parts['scheme']) && isset($url_parts['port']) && $url_parts['port'] == 443) {
 							$https = true;
-						}
-
-					//--------------------------------------------------
-					// Host
-
-						if (isset($url_parts['host'])) {
-							$host = $url_parts['host'];
-						} else {
-							return $this->error('Missing host from requested url', $url);
-						}
-
-						$socket_host = ($https ? 'ssl://' : '') . $host;
-
-					//--------------------------------------------------
-					// Return Path
-
-						if (!isset($url_parts['path']) || $url_parts['path'] == '') {
-							$path = '/';
-						} else {
-							$path = $url_parts['path'];
-						}
-
-						if (isset($url_parts['query']) && $url_parts['query'] != '') {
-							$path .= '?' . $url_parts['query'];
 						}
 
 					//--------------------------------------------------
@@ -269,6 +282,30 @@
 							}
 						} else {
 							$port = $url_parts['port'];
+						}
+
+					//--------------------------------------------------
+					// Host
+
+						if (isset($url_parts['host'])) {
+							$host = $url_parts['host'];
+						} else {
+							return $this->error('Missing host from requested url', $url);
+						}
+
+						$socket_host = ($https ? 'tls://' : 'tcp://') . $host . ':' . $port;
+
+					//--------------------------------------------------
+					// Return Path
+
+						if (!isset($url_parts['path']) || $url_parts['path'] == '') {
+							$path = '/';
+						} else {
+							$path = $url_parts['path'];
+						}
+
+						if (isset($url_parts['query']) && $url_parts['query'] != '') {
+							$path .= '?' . $url_parts['query'];
 						}
 
 					//--------------------------------------------------
@@ -378,54 +415,114 @@
 
 					if ($https) {
 
-						$ca_bundle_paths = array(
-								'/etc/pki/tls/certs/ca-bundle.crt', // Fedora, RHEL, CentOS (ca-certificates package)
-								'/etc/ssl/certs/ca-certificates.crt', // Debian, Ubuntu, Gentoo, Arch Linux (ca-certificates package)
-								'/etc/ssl/ca-bundle.pem', // SUSE, openSUSE (ca-certificates package)
-								'/usr/local/share/certs/ca-root-nss.crt', // FreeBSD (ca_root_nss_package)
-								'/usr/ssl/certs/ca-bundle.crt', // Cygwin
-								'/opt/local/share/curl/curl-ca-bundle.crt', // OS X macports, curl-ca-bundle package
-								'/usr/local/share/curl/curl-ca-bundle.crt', // Default cURL CA bunde path (without --with-ca-bundle option)
-								'/usr/share/ssl/certs/ca-bundle.crt', // Really old RedHat?
-								'/etc/ssl/cert.pem', // OpenBSD
+							// https://github.com/padraic/file_get_contents/blob/master/src/Humbug/FileGetContents.php
+							// http://www.docnet.nu/tech-portal/2014/06/26/ssl-and-php-streams-part-1-you-are-doing-it-wrongtm/C0
+							// https://mozilla.github.io/server-side-tls/ssl-config-generator/
+
+						$options = array(
+								'ssl' => array(
+										'ciphers' => 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA',
+										'SNI_enabled' => true,
+										'SNI_server_name' => $host,
+									)
 							);
 
-					}
+						$skip_domains = config::get('socket.insecure_domains', array());
+						if (!in_array($host, $skip_domains)) {
 
-// TODO:
-// $contextOptions = array(
-// 	'ssl' => array(
-// 		'verify_peer' => true,
-// 		'cafile' => '/path/to/cafile.pem',
-// 		'CN_match' => 'example.com',
-// 		'ciphers' => 'HIGH:!SSLv2:!SSLv3',
-// 	),
-// );
-// $context = stream_context_create($contextOptions);
-// http://www.docnet.nu/tech-portal/2014/06/26/ssl-and-php-streams-part-1-you-are-doing-it-wrongtm/C0
+							$ca_bundle_path = config::get('socket.tls_ca_path', ini_get('openssl.cafile'));
+							if (!$ca_bundle_path) { // NULL or false
+
+								$ca_bundle_paths = array(
+										'/etc/pki/tls/certs/ca-bundle.crt', // Fedora, RHEL, CentOS (ca-certificates package)
+										'/etc/ssl/certs/ca-certificates.crt', // Debian, Ubuntu, Gentoo, Arch Linux (ca-certificates package)
+										'/etc/ssl/ca-bundle.pem', // SUSE, openSUSE (ca-certificates package)
+										'/usr/local/share/certs/ca-root-nss.crt', // FreeBSD (ca_root_nss_package)
+										'/usr/ssl/certs/ca-bundle.crt', // Cygwin
+										'/usr/local/etc/openssl/cert.pem', // OS X openssl
+										'/opt/local/share/curl/curl-ca-bundle.crt', // OS X macports, curl-ca-bundle package
+										'/usr/local/share/curl/curl-ca-bundle.crt', // Default cURL CA bunde path (without --with-ca-bundle option)
+										'/usr/share/ssl/certs/ca-bundle.crt', // Really old RedHat?
+										'/etc/ssl/cert.pem', // OpenBSD
+									);
+
+								$ca_bundle_path = NULL;
+								foreach ($ca_bundle_paths as $path) {
+									if ($path != '' && is_file($path) && is_readable($path)) {
+										$ca_bundle_path = $path;
+									}
+								}
+
+								if ($ca_bundle_path === NULL) {
+									exit_with_error('Cannot find a CA bundle file', debug_dump($ca_bundle_paths));
+								}
+
+							}
+
+							$options['ssl']['verify_peer'] = true;
+							$options['ssl']['verify_depth'] = 7;
+							$options['ssl']['cafile'] = $ca_bundle_path;
+							$options['ssl']['CN_match'] = $host;
+							$options['ssl']['peer_name'] = $host; // For PHP 5.6+
+
+						}
+
+						if (version_compare(PHP_VERSION, '5.4.13') >= 0) {
+							$options['ssl']['disable_compression'] = true; // CRIME, etc
+						}
+
+						$context = stream_context_create($options);
+
+					} else {
+
+						$context = NULL;
+
+					}
 
 				//--------------------------------------------------
 				// Communication
 
 					$error = false;
+					$error_details = NULL;
 
-					$connection = @fsockopen($socket_host, $port, $errno, $errstr, 5);
+					set_error_handler(array($this, 'error_connect'));
+					if ($context) {
+						$connection = stream_socket_client($socket_host, $errno, $errstr, $this->request_timeout, STREAM_CLIENT_CONNECT, $context);
+					} else {
+						$connection = fsockopen($host, $port, $errno, $errstr, $this->request_timeout);
+					}
+					restore_error_handler();
+
 					if ($connection) {
+
+						stream_set_timeout($connection, $this->request_timeout);
 
 						$result = @fwrite($connection, $request); // Send request
 
 						if ($result != strlen($request)) { // Connection lost will result in some bytes being written
-							$error = 'Connection lost to "' . $socket_host . ':' . $port . '"';
+							$error = 'Connection lost to "' . $socket_host . '"';
 						}
 
 					} else {
 
-						$error = 'Failed connection to "' . $socket_host . ':' . $port . '" (' . $errno . ': ' . $errstr . ')';
+						$error = 'Failed connection to "' . $socket_host . '"';
+
+						$error_details = $this->error_connect;
+
+						if ($errno > 0 || $errstr != '') {
+							$error_details[] = $errno . ': ' . $errstr;
+						}
+
+						if ($context) {
+							$error_details[] = 'Self signed certificates can use the "socket.insecure_domains" config array.';
+						}
+
+						$error_details = implode("\n\n", $error_details);
 
 					}
 
 					if ($error) {
-						return $this->error($error);
+						return $this->error($error, $error_details);
 					}
 
 				//--------------------------------------------------
