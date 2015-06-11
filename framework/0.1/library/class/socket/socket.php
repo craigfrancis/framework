@@ -428,7 +428,7 @@
 							);
 
 						$skip_domains = config::get('socket.insecure_domains', array());
-						if (!in_array($host, $skip_domains)) {
+						if ($skip_domains === 'all' || !in_array($host, $skip_domains)) {
 
 							$ca_bundle_path = config::get('socket.tls_ca_path', ini_get('openssl.cafile'));
 							if (!$ca_bundle_path) { // NULL or false
