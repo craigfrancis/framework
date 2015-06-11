@@ -462,8 +462,8 @@
 							$options['ssl']['verify_peer'] = true;
 							$options['ssl']['verify_depth'] = 7;
 							$options['ssl']['cafile'] = $ca_bundle_path;
-							$options['ssl']['CN_match'] = $host;
-							// $options['ssl']['peer_name'] = $host; // For PHP 5.6+
+							// $options['ssl']['CN_match'] = $host;
+							$options['ssl']['peer_name'] = $host; // For PHP 5.6+
 
 						}
 
