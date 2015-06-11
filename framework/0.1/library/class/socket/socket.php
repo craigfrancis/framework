@@ -293,7 +293,7 @@
 							return $this->error('Missing host from requested url', $url);
 						}
 
-						$socket_host = ($https ? 'ssl://' : 'tcp://') . $host . ':' . $port;
+						$socket_host = ($https ? 'tls://' : 'tcp://') . $host . ':' . $port;
 
 					//--------------------------------------------------
 					// Return Path
@@ -462,14 +462,14 @@
 							$options['ssl']['verify_peer'] = true;
 							$options['ssl']['verify_depth'] = 7;
 							$options['ssl']['cafile'] = $ca_bundle_path;
-							// $options['ssl']['CN_match'] = $host;
+							$options['ssl']['CN_match'] = $host;
 							$options['ssl']['peer_name'] = $host; // For PHP 5.6+
 
 						}
 
-						// if (version_compare(PHP_VERSION, '5.4.13') >= 0) {
-						// 	$options['ssl']['disable_compression'] = true; // CRIME, etc
-						// }
+						if (version_compare(PHP_VERSION, '5.4.13') >= 0) {
+							$options['ssl']['disable_compression'] = true; // CRIME, etc
+						}
 
 						$context = stream_context_create($options);
 
@@ -528,7 +528,7 @@
 				//--------------------------------------------------
 				// Receive
 
-					$error_reporting = error_reporting(0); // Dam IIS forgetting close_notify indicator - https://php.net/file
+					// $error_reporting = error_reporting(0); // Dam IIS forgetting close_notify indicator - https://php.net/file
 
 					$response = '';
 					while (!feof($connection)) {
@@ -536,7 +536,7 @@
 					}
 					fclose($connection);
 
-					error_reporting($error_reporting);
+					// error_reporting($error_reporting);
 
 					$this->response_full = $response;
 
