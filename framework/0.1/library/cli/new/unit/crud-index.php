@@ -27,13 +27,21 @@
 			//--------------------------------------------------
 			// Search form
 
-				if ($config['search']) {
+				if ($config['search'] === true) {
 
 					$search_form = unit_get('search_form');
 
+					$this->set('search', $search_form);
+
+					$search_text = $search_form->value_get();
+
+				} else if ($config['search']) {
+
+					$search_text = $config['search'];
+
 				} else {
 
-					$search_form = NULL;
+					$search_text = '';
 
 				}
 
@@ -74,20 +82,11 @@
 					//--------------------------------------------------
 					// Keywords
 
-						if ($search_form) {
-							$search = $search_form->value_get();
-							if ($search != '') {
+						foreach (split_words($search_text) as $word) {
 
-								foreach (preg_split('/\s+/', trim($search)) as $word) {
-									if ($word != '') {
+							$where_sql[] = '
+								i.name LIKE "%' . $db->escape_like($word) . '%"';
 
-										$where_sql[] = '
-											i.name LIKE "%' . $db->escape_like($word) . '%"';
-
-									}
-								}
-
-							}
 						}
 
 					//--------------------------------------------------
@@ -183,7 +182,6 @@
 
 				$this->set('table', $table);
 				$this->set('paginator', $paginator);
-				$this->set('search', $search_form);
 
 		}
 
