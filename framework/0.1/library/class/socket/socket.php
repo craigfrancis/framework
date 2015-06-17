@@ -412,72 +412,82 @@
 						$this->request_path = $path;
 
 				//--------------------------------------------------
-				// Certificate check
+				// HTTPS context
+
+					$context = NULL;
 
 					if ($https) {
-
-							// https://github.com/padraic/file_get_contents/blob/master/src/Humbug/FileGetContents.php
-							// http://www.docnet.nu/tech-portal/2014/06/26/ssl-and-php-streams-part-1-you-are-doing-it-wrongtm/C0
-							// https://mozilla.github.io/server-side-tls/ssl-config-generator/
-
-						$options = array(
-								'ssl' => array(
-										'ciphers' => 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA',
-										'SNI_enabled' => true,
-										'SNI_server_name' => $host,
-									)
-							);
 
 						$skip_domains = config::get('socket.insecure_domains', array());
 
 						if ($skip_domains !== 'all' && !in_array($host, $skip_domains)) {
 
-							$ca_bundle_path = config::get('socket.tls_ca_path', ini_get('openssl.cafile'));
-							if (!$ca_bundle_path) { // NULL or false
+								// https://github.com/padraic/file_get_contents/blob/master/src/Humbug/FileGetContents.php
+								// http://www.docnet.nu/tech-portal/2014/06/26/ssl-and-php-streams-part-1-you-are-doing-it-wrongtm/C0
+								// https://mozilla.github.io/server-side-tls/ssl-config-generator/
 
-								$ca_bundle_paths = array(
-										'/etc/pki/tls/certs/ca-bundle.crt', // Fedora, RHEL, CentOS (ca-certificates package)
-										'/etc/ssl/certs/ca-certificates.crt', // Debian, Ubuntu, Gentoo, Arch Linux (ca-certificates package)
-										'/etc/ssl/ca-bundle.pem', // SUSE, openSUSE (ca-certificates package)
-										'/usr/local/share/certs/ca-root-nss.crt', // FreeBSD (ca_root_nss_package)
-										'/usr/ssl/certs/ca-bundle.crt', // Cygwin
-										'/usr/local/etc/openssl/cert.pem', // OS X openssl
-										'/opt/local/share/curl/curl-ca-bundle.crt', // OS X macports, curl-ca-bundle package
-										'/usr/local/share/curl/curl-ca-bundle.crt', // Default cURL CA bunde path (without --with-ca-bundle option)
-										'/usr/share/ssl/certs/ca-bundle.crt', // Really old RedHat?
-										'/etc/ssl/cert.pem', // OpenBSD
+							//--------------------------------------------------
+							// Basic options... could be set for all HTTPS
+							// connections, but it seems 5.3 might be a bit
+							// on the buggy side for stream_socket_client()
+							// e.g. the script doing a timeout instead.
+
+								$options = array(
+										'ssl' => array(
+												'ciphers' => 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA',
+												'SNI_enabled' => true,
+												'SNI_server_name' => $host,
+											)
 									);
 
-								$ca_bundle_path = NULL;
-								foreach ($ca_bundle_paths as $path) {
-									if ($path != '' && is_file($path) && is_readable($path)) {
-										$ca_bundle_path = $path;
+								if (version_compare(PHP_VERSION, '5.4.13') >= 0) {
+									$options['ssl']['disable_compression'] = true; // CRIME, etc
+								}
+
+							//--------------------------------------------------
+							// Verify peer
+
+								$ca_bundle_path = config::get('socket.tls_ca_path', ini_get('openssl.cafile'));
+								if (!$ca_bundle_path) { // NULL or false
+
+									$ca_bundle_paths = array(
+											'/etc/pki/tls/certs/ca-bundle.crt', // Fedora, RHEL, CentOS (ca-certificates package)
+											'/etc/ssl/certs/ca-certificates.crt', // Debian, Ubuntu, Gentoo, Arch Linux (ca-certificates package)
+											'/etc/ssl/ca-bundle.pem', // SUSE, openSUSE (ca-certificates package)
+											'/usr/local/share/certs/ca-root-nss.crt', // FreeBSD (ca_root_nss_package)
+											'/usr/ssl/certs/ca-bundle.crt', // Cygwin
+											'/usr/local/etc/openssl/cert.pem', // OS X openssl
+											'/opt/local/share/curl/curl-ca-bundle.crt', // OS X macports, curl-ca-bundle package
+											'/usr/local/share/curl/curl-ca-bundle.crt', // Default cURL CA bunde path (without --with-ca-bundle option)
+											'/usr/share/ssl/certs/ca-bundle.crt', // Really old RedHat?
+											'/etc/ssl/cert.pem', // OpenBSD
+										);
+
+									$ca_bundle_path = NULL;
+									foreach ($ca_bundle_paths as $path) {
+										if ($path != '' && is_file($path) && is_readable($path)) {
+											$ca_bundle_path = $path;
+										}
 									}
+
+									if ($ca_bundle_path === NULL) {
+										exit_with_error('Cannot find a CA bundle file', debug_dump($ca_bundle_paths));
+									}
+
 								}
 
-								if ($ca_bundle_path === NULL) {
-									exit_with_error('Cannot find a CA bundle file', debug_dump($ca_bundle_paths));
-								}
+								$options['ssl']['verify_peer'] = true;
+								$options['ssl']['verify_depth'] = 7;
+								$options['ssl']['cafile'] = $ca_bundle_path;
+								$options['ssl']['CN_match'] = $host;
+								$options['ssl']['peer_name'] = $host; // For PHP 5.6+
 
-							}
+							//--------------------------------------------------
+							// Context
 
-							$options['ssl']['verify_peer'] = true;
-							$options['ssl']['verify_depth'] = 7;
-							$options['ssl']['cafile'] = $ca_bundle_path;
-							$options['ssl']['CN_match'] = $host;
-							$options['ssl']['peer_name'] = $host; // For PHP 5.6+
+								$context = stream_context_create($options);
 
 						}
-
-						if (version_compare(PHP_VERSION, '5.4.13') >= 0) {
-							$options['ssl']['disable_compression'] = true; // CRIME, etc
-						}
-
-						$context = stream_context_create($options);
-
-					} else {
-
-						$context = NULL;
 
 					}
 

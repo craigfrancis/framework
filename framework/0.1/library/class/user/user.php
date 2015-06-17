@@ -801,7 +801,7 @@
 
 								$result = $this->auth->verify(NULL, $password_value);
 
-			 					if ($result <= 0) {
+								if ($result <= 0) {
 									$password_ref->error_add($this->text['save_details_invalid_password']);
 								}
 
