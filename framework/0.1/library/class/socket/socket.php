@@ -501,7 +501,7 @@
 					if ($context) {
 						$connection = stream_socket_client($socket_host, $errno, $errstr, $this->request_timeout, STREAM_CLIENT_CONNECT, $context);
 					} else {
-						$connection = fsockopen($host, $port, $errno, $errstr, $this->request_timeout);
+						$connection = fsockopen($socket_host, $port, $errno, $errstr, $this->request_timeout);
 					}
 					restore_error_handler();
 
