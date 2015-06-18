@@ -295,6 +295,7 @@
 						}
 
 						$socket_host = ($https ? 'tls://' : 'tcp://') . $host . ':' . $port;
+						$fsock_host = ($https ? 'tls://' : '') . $host;
 
 					//--------------------------------------------------
 					// Return Path
@@ -494,6 +495,10 @@
 				//--------------------------------------------------
 				// Communication
 
+					$this->response_full = '';
+					$this->response_headers = '';
+					$this->response_data = '';
+
 					$error = false;
 					$error_details = NULL;
 
@@ -501,7 +506,7 @@
 					if ($context) {
 						$connection = stream_socket_client($socket_host, $errno, $errstr, $this->request_timeout, STREAM_CLIENT_CONNECT, $context);
 					} else {
-						$connection = fsockopen($socket_host, $port, $errno, $errstr, $this->request_timeout);
+						$connection = fsockopen($fsock_host, $port, $errno, $errstr, $this->request_timeout);
 					}
 					restore_error_handler();
 
