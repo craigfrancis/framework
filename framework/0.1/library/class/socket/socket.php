@@ -419,34 +419,31 @@
 
 					if ($https) {
 
-						$skip_domains = config::get('socket.insecure_domains', array());
+							// https://github.com/padraic/file_get_contents/blob/master/src/Humbug/FileGetContents.php
+							// http://www.docnet.nu/tech-portal/2014/06/26/ssl-and-php-streams-part-1-you-are-doing-it-wrongtm/C0
+							// https://mozilla.github.io/server-side-tls/ssl-config-generator/
 
-						if ($skip_domains !== 'all' && !in_array($host, $skip_domains)) {
+						//--------------------------------------------------
+						// Basic options
 
-								// https://github.com/padraic/file_get_contents/blob/master/src/Humbug/FileGetContents.php
-								// http://www.docnet.nu/tech-portal/2014/06/26/ssl-and-php-streams-part-1-you-are-doing-it-wrongtm/C0
-								// https://mozilla.github.io/server-side-tls/ssl-config-generator/
+							$options = array(
+									'ssl' => array(
+											'ciphers' => 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA',
+											'SNI_enabled' => true,
+											'SNI_server_name' => $host,
+										)
+								);
 
-							//--------------------------------------------------
-							// Basic options... could be set for all HTTPS
-							// connections, but it seems 5.3 might be a bit
-							// on the buggy side for stream_socket_client()
-							// e.g. the script doing a timeout instead.
+							if (version_compare(PHP_VERSION, '5.4.13') >= 0) {
+								$options['ssl']['disable_compression'] = true; // CRIME, etc
+							}
 
-								$options = array(
-										'ssl' => array(
-												'ciphers' => 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA',
-												'SNI_enabled' => true,
-												'SNI_server_name' => $host,
-											)
-									);
+						//--------------------------------------------------
+						// Verify peer
 
-								if (version_compare(PHP_VERSION, '5.4.13') >= 0) {
-									$options['ssl']['disable_compression'] = true; // CRIME, etc
-								}
+							$skip_domains = config::get('socket.insecure_domains', array());
 
-							//--------------------------------------------------
-							// Verify peer
+							if ($skip_domains !== 'all' && !in_array($host, $skip_domains)) {
 
 								$ca_bundle_path = config::get('socket.tls_ca_path', ini_get('openssl.cafile'));
 								if (!$ca_bundle_path) { // NULL or false
@@ -483,12 +480,12 @@
 								$options['ssl']['CN_match'] = $host;
 								$options['ssl']['peer_name'] = $host; // For PHP 5.6+
 
-							//--------------------------------------------------
-							// Context
+							}
 
-								$context = stream_context_create($options);
+						//--------------------------------------------------
+						// Context
 
-						}
+							$context = stream_context_create($options);
 
 					}
 
