@@ -82,12 +82,26 @@
 // form of HTML/XML/CSV without having to write the
 // full native function in the script.
 
-	function html($text) {
-		return htmlspecialchars($text, ENT_QUOTES, config::get('output.charset')); // htmlentities does not work for HTML5+XML
-	}
+	if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
 
-	function html_decode($html) {
-		return html_entity_decode($html, ENT_QUOTES, config::get('output.charset'));
+		function html($text) {
+			return htmlspecialchars($text, (ENT_QUOTES | ENT_HTML5), config::get('output.charset')); // htmlentities does not work for HTML5+XML
+		}
+
+		function html_decode($html) {
+			return html_entity_decode($html, (ENT_QUOTES | ENT_HTML5), config::get('output.charset'));
+		}
+
+	} else {
+
+		function html($text) {
+			return htmlspecialchars($text, ENT_QUOTES, config::get('output.charset')); // htmlentities does not work for HTML5+XML
+		}
+
+		function html_decode($html) {
+			return html_entity_decode($html, ENT_QUOTES, config::get('output.charset'));
+		}
+
 	}
 
 	function html_tag($tag, $attributes) {
