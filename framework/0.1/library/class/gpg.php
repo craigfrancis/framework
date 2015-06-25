@@ -118,10 +118,16 @@
 				$result = $this->_exec_zip('--encrypt --local-user ' . escapeshellarg($this->private_key_email) . ' --recipient ' . escapeshellarg($key_to) . ' --output ' . escapeshellarg($path_dest_new) . ' ' . escapeshellarg(basename($path_source)));
 
 				if (is_file($path_dest_new)) {
-					rename($path_dest_new, $path_dest);
-				}
 
-				return $path_dest;
+					rename($path_dest_new, $path_dest);
+
+					return $path_dest;
+
+				} else {
+
+					exit_with_error('Cannot use GPG to zip the file', debug_dump($result));
+
+				}
 
 			}
 
