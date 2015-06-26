@@ -54,6 +54,7 @@
 			private $csrf_error_html = 'The request did not appear to come from a trusted source, please try again.';
 			private $saved_values_data = NULL;
 			private $saved_values_used = NULL;
+			private $saved_message_html = 'Please submit this form again.';
 
 		//--------------------------------------------------
 		// Setup
@@ -732,6 +733,13 @@
 
 					if ($input_vars_max > 0 && $input_vars_max <= count($_REQUEST)) {
 						exit_with_error('The form submitted too many values for this server.', 'Maximum input variables: ' . $input_vars_max . ' (max_input_vars)');
+					}
+
+				//--------------------------------------------------
+				// Saved value
+
+					if (!$this->form_submitted && $this->saved_values_available()) {
+						$this->_field_error_add_html(-1, $this->saved_message_html);
 					}
 
 				//--------------------------------------------------
