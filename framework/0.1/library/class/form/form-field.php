@@ -630,7 +630,14 @@
 		// Shorter representation in debug_dump()
 
 			public function _debug_dump() {
-				return get_class($this) . ' = "' . $this->value . '"';
+				if (isset($this->value)) {
+					$value = '"' . $this->value . '"';
+				} else if (isset($this->values)) {
+					$value = debug_dump($this->values, 2);
+				} else {
+					$value = 'NULL';
+				}
+				return get_class($this) . ' = ' . $value;
 			}
 
 	}
