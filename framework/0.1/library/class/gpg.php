@@ -68,6 +68,19 @@
 
 			}
 
+			public function public_key_exists($key) {
+				$public_key_path = $this->public_key_path($key);
+				return ($public_key_path !== NULL && is_file($public_key_path));
+			}
+
+			public function public_key_path($key) {
+				if (is_email($key, false)) { // DNS lookup takes too much time.
+					return APP_ROOT . '/library/gpg/' . $key . '.key.pub';
+				} else {
+					return NULL;
+				}
+			}
+
 		//--------------------------------------------------
 		// Sign
 
@@ -189,8 +202,10 @@
 				$key_exists = $this->_key_exists($key);
 				if (!$key_exists) {
 
-					$public_key_path = APP_ROOT . '/library/gpg/' . $key . '.key.pub';
-					if (is_file($public_key_path)) {
+					$public_key_path = $this->public_key_path($key);
+					if ($public_key_path === NULL) {
+						exit_with_error('Invalid email address format for public key', $key);
+					} else if (is_file($public_key_path)) {
 						$result = $this->_exec('--import ' . escapeshellarg($public_key_path));
 						$result = $this->_exec('--batch --yes --passphrase ' . escapeshellarg($this->default_pass_phrase) . ' --local-user ' . escapeshellarg($this->private_key_email) . ' --sign-key ' . escapeshellarg($key));
 					}
