@@ -527,6 +527,10 @@
 				$this->db_values[$name] = $value;
 			}
 
+			public function saved_message_set_html($message_html) {
+				$this->saved_message_html = $message_html;
+			}
+
 			public function saved_values_available() {
 
 				if ($this->form_passive) {
