@@ -22,62 +22,61 @@
 			protected function setup($config) {
 
 				//--------------------------------------------------
-				// Profile
+				// Config
+
+					$default_config = array_merge(array(
+							'table_sql'           => DB_PREFIX . 'table',
+							'where_sql'           => 'true',
+							'field_id_sql'        => 'id',
+							'field_latitude_sql'  => 'latitude',
+							'field_longitude_sql' => 'longitude',
+							'field_address_sql'   => array(),
+							'field_postcode_sql'  => 'postcode',
+							'field_country_sql'   => NULL,
+							'extra_fields_sql'    => array(),
+							'max_results'         => 5,
+							'max_km'              => 40, // 25 miles
+							'min_results'         => 0,
+						), config::get_all('nearest.default'));
 
 					if (is_string($config)) {
 						$profile = $config;
 					} else if (isset($config['profile'])) {
 						$profile = $config['profile'];
 					} else {
-						exit_with_error('You need to specify a nearest profile');
+						$profile = NULL;
 					}
-
-				//--------------------------------------------------
-				// Default config
-
-					$default_config = array(
-							'table_sql' => DB_PREFIX . 'table',
-							'where_sql' => 'true',
-							'field_id_sql' => 'id',
-							'field_latitude_sql' => 'latitude',
-							'field_longitude_sql' => 'longitude',
-							'field_address_sql' => array(),
-							'field_postcode_sql' => 'postcode',
-							'field_country_sql' => NULL,
-							'extra_fields_sql' => array(),
-							'max_results' => 5,
-							'max_km' => 40, // 25 miles
-							'min_results' => 0,
-						);
-
-					$default_config = array_merge($default_config, config::get_all('nearest.default'));
-
-				//--------------------------------------------------
-				// Set config
 
 					if (!is_array($config)) {
 						$config = array();
 					}
 
-					$profile_prefix = 'nearest.' . $profile;
-					$profile_config = config::get_all($profile_prefix);
+					if ($profile) {
 
-					if (count($profile_config) > 0) {
-						$config = array_merge($profile_config, $config);
-					} else {
-						exit_with_error('Cannot find config for nearest profile "' . $profile . '" (' . $profile_prefix . '.*)');
+						$profile_prefix = 'nearest.' . $profile;
+						$profile_config = config::get_all($profile_prefix);
+
+						if (count($profile_config) > 0) {
+							$config = array_merge($profile_config, $config);
+						} else {
+							exit_with_error('Cannot find config for nearest profile "' . $profile . '" (' . $profile_prefix . '.*)');
+						}
+
 					}
 
 					$this->config = array_merge($default_config, $config);
 
 				//--------------------------------------------------
-				// Update field name variables
+				// Create 'field_x' values from 'field_x_sql'
 
 					foreach ($this->config as $key => $value) {
 						if (substr($key, 0, 6) == 'field_' && substr($key, -4) == '_sql' && is_string($value)) {
 							$key_short = substr($key, 0, -4);
 							if (!isset($this->config[$key_short])) {
-								$this->config[$key_short] = preg_replace('/^[^\.]+\./', '', $value);
+								if (($pos = strpos($value, '.')) !== false) { // Remove table alias "a.name"
+									$value = substr($value, ($pos + 1));
+								}
+								$this->config[$key_short] = $value;
 							}
 						}
 					}
@@ -96,104 +95,91 @@
 
 			public function locations_nearest($search, $country = NULL) {
 
-				//--------------------------------------------------
-				// Find location
+				$locations = $this->locations_get();
 
-					$result = $this->search($search, $country);
-
-					if ($result == NULL) {
-						return array();
-					}
-
-				//--------------------------------------------------
-				// Return all locations
-
-					$locations = $this->locations_distance($result['latitude'], $result['longitude']);
-
-				//--------------------------------------------------
-				// Results
-
-					$results = array();
-					$k = 0;
-
-					$distances = array();
-					foreach ($locations as $id => $info) {
-						$distances[$id] = $info['distance'];
-					}
-
-					asort($distances, SORT_NUMERIC);
-
-					foreach ($distances as $location => $distance) {
-
-						$k++;
-
-						if ((($this->config['max_results'] > 0 && $k > $this->config['max_results']) || ($this->config['max_km'] > 0 && $distance > $this->config['max_km'])) && ($this->config['min_results'] == 0 || $k > $this->config['min_results'])) {
-							break;
-						}
-
-						$results[$location] = $locations[$location];
-
-					}
-
-				//--------------------------------------------------
-				// Return
-
-					return $results;
+				return $this->locations_limited($locations, $search, $country);
 
 			}
 
-			public function locations_distance($latitude, $longitude) {
+			public function locations_limited($locations, $search, $country = NULL) {
+
+				$k = 0;
+				$results = array();
+				$locations = $this->locations_distance($locations, $search, $country);
+
+				array_key_sort($locations, 'distance', SORT_NUMERIC, SORT_ASC);
+
+				foreach ($locations as $location) {
+
+					if ($location['distance'] === NULL) {
+						continue;
+					}
+
+					$k++;
+
+					if ((($this->config['max_results'] > 0 && $k > $this->config['max_results']) || ($this->config['max_km'] > 0 && $location['distance'] > $this->config['max_km'])) && ($this->config['min_results'] == 0 || $k > $this->config['min_results'])) {
+						break;
+					}
+
+					$results[$location[$this->config['field_id']]] = $location;
+
+				}
+
+				return $results;
+
+			}
+
+			public function locations_distance($locations, $search, $country = NULL) {
 
 				//--------------------------------------------------
-				// Return locations
+				// Find location
 
-					$pi = pi();
+					if (is_array($search)) {
 
-					$radians_lat1 = ($latitude * $pi / 180);
-					$radians_long1 = ($longitude * $pi / 180);
+						$point = $search; // Already a known point.
 
-					$locations = array();
+					} else {
 
-					$fields = array(
-							$this->config['field_id_sql'],
-							$this->config['field_latitude_sql'],
-							$this->config['field_longitude_sql'],
-						);
+						$point = $this->search($search, $country);
 
-					$fields = array_merge($fields, $this->config['extra_fields_sql']);
-
-					$sql_where = '
-						' . $this->config['field_latitude_sql'] . ' != 0 AND
-						' . $this->config['field_longitude_sql'] . ' != 0 AND
-						' . $this->config['where_sql'];
-
-					$db = $this->db_get();
-
-					$db->select($this->config['table_sql'], $fields, $sql_where);
-					foreach ($db->fetch_all() as $row) {
-
-						$radians_lat2 = $row[$this->config['field_latitude']] * $pi / 180;
-						$radians_long2 = $row[$this->config['field_longitude']] * $pi / 180;
-
-						$R = 6371; // earth's mean radius in km
-						$d_lat  = $radians_lat2 - $radians_lat1;
-						$d_long = $radians_long2 - $radians_long1;
-
-						$a = sin($d_lat/2) * sin($d_lat/2) + cos($radians_lat1) * cos($radians_lat2) * sin($d_long/2) * sin($d_long/2);
-						$c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-						$distance = $R * $c;
-
-						$info = array(
-								'latitude' => $row[$this->config['field_latitude']],
-								'longitude' => $row[$this->config['field_longitude']],
-								'distance' => $distance,
-							);
-
-						foreach ($this->config['extra_fields_sql'] as $field) {
-							$info[$field] = $row[$field];
+						if ($point === NULL) {
+							return array(); // Invalid search, no results
 						}
 
-						$locations[$row[$this->config['field_id']]] = $info;
+					}
+
+				//--------------------------------------------------
+				// Apply distance to $locations
+
+					$pi = pi();
+					$radius = 6371; // earth's mean radius in km
+
+					$radians_lat1 = ($point['latitude'] * $pi / 180);
+					$radians_long1 = ($point['longitude'] * $pi / 180);
+
+					foreach ($locations as $id => $location) {
+
+						$latitude = $location[$this->config['field_latitude']];
+						$longitude = $location[$this->config['field_longitude']];
+
+						if ($latitude == 0 && $longitude == 0) { // Technically valid, but more likley to be unknown.
+
+							$locations[$id]['distance'] = NULL;
+
+						} else {
+
+							$radians_lat2 = ($latitude * $pi / 180);
+							$radians_long2 = ($longitude * $pi / 180);
+
+							$d_lat  = $radians_lat2 - $radians_lat1;
+							$d_long = $radians_long2 - $radians_long1;
+
+							$a = sin($d_lat/2) * sin($d_lat/2) + cos($radians_lat1) * cos($radians_lat2) * sin($d_long/2) * sin($d_long/2);
+							$c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+							$locations[$id]['distance'] = ($radius * $c);
+
+						}
 
 					}
 
@@ -204,6 +190,29 @@
 
 			}
 
+			private function locations_get() {
+
+				$fields = array(
+						$this->config['field_id_sql'],
+						$this->config['field_latitude_sql'],
+						$this->config['field_longitude_sql'],
+					);
+
+				$fields = array_merge($fields, $this->config['extra_fields_sql']);
+
+				$sql_where = '
+					' . $this->config['field_latitude_sql'] . ' != 0 AND
+					' . $this->config['field_longitude_sql'] . ' != 0 AND
+					' . $this->config['where_sql'];
+
+				$db = $this->db_get();
+
+				$db->select($this->config['table_sql'], $fields, $sql_where);
+
+				return $db->fetch_all();
+
+			}
+
 		//--------------------------------------------------
 		// Search to return co-ordinates
 
@@ -211,6 +220,8 @@
 
 				//--------------------------------------------------
 				// Country
+
+					$country = strtolower($country);
 
 					if ($country == NULL || $country == 'uk') {
 						$country = 'gb'; // Google Maps
@@ -302,9 +313,11 @@
 					}
 
 				//--------------------------------------------------
-				// Try Google - will also pick up towns, etc.
+				// Try Google
 
-					if ($latitude === NULL) {
+					$google_maps_key = config::get('nearest.gm_key'); // https://developers.google.com/maps/documentation/geocoding/#api_key
+
+					if ($latitude === NULL && $google_maps_key !== NULL) {
 
 						//--------------------------------------------------
 						// Ask
@@ -313,10 +326,10 @@
 									'address' => $search_query,
 									'sensor' => 'false',
 									'region' => $country,
-									'key' => config::get('nearest.gm_key', NULL),
+									'key' => $google_maps_key,
 								)));
 
-							usleep(500000); // Half a second, to keep Google happy
+							usleep(300000); // 300ms, to keep Google happy (limited to 5 requests per second, or 2500 per day).
 
 						//--------------------------------------------------
 						// Extract
@@ -333,7 +346,30 @@
 					}
 
 				//--------------------------------------------------
-				// Try outer-code
+				// Cache 3rd party response
+
+					if ($latitude !== NULL && $cached == false) {
+
+						$now = new timestamp();
+
+						$values_update = array(
+							'search'    => $search_query,
+							'country'   => $country,
+							'latitude'  => $latitude,
+							'longitude' => $longitude,
+							'accuracy'  => $accuracy,
+							'edited'    => $now,
+						);
+
+						$values_insert = $values_update;
+						$values_insert['created'] = $now;
+
+						$db->insert(DB_PREFIX . 'system_nearest_cache', $values_insert, $values_update);
+
+					}
+
+				//--------------------------------------------------
+				// Try outer-code (backup)
 
 					if ($latitude === NULL) {
 
@@ -371,29 +407,6 @@
 							$longitude = $row['longitude'];
 							$accuracy = 3;
 						}
-
-					}
-
-				//--------------------------------------------------
-				// Cache
-
-					if ($latitude !== NULL && $cached == false) {
-
-						$now = new timestamp();
-
-						$values_update = array(
-							'search'    => $search_query,
-							'country'   => $country,
-							'latitude'  => $latitude,
-							'longitude' => $longitude,
-							'accuracy'  => $accuracy,
-							'edited'    => $now,
-						);
-
-						$values_insert = $values_update;
-						$values_insert['created'] = $now;
-
-						$db->insert(DB_PREFIX . 'system_nearest_cache', $values_insert, $values_update);
 
 					}
 
@@ -540,7 +553,7 @@
 						' . $this->config['field_id_sql'] . ' = "' . $db->escape($id) . '" AND
 						' . $this->config['where_sql'];
 
-					$this->update_locations();
+					$this->update_locations(-1);
 
 					$this->config['where_sql'] = $old_sql_where;
 
