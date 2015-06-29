@@ -44,16 +44,16 @@ Where the config could be something like:
 If you have a more complicated source, then you can pass in an array of results:
 
 	$nearest = new nearest(array(
-			'field_latitude' => 'location_latitude',
-			'field_longitude' => 'location_longitude',
+			'field_latitude' => 'latitude',
+			'field_longitude' => 'longitude',
 			'max_results' => 0, // Unlimited
 			'max_km' => 0, // Unlimited
 		));
 
 	// $results = array(array(
 	// 		'name' => 'A',
-	// 		'longitude' => 0.1,
-	// 		'latitude' => 0.1,
+	// 		'latitude' => 50.54,
+	// 		'longitude' => -2.596,
 	// 	));
 
 	$results = $nearest->locations_distance($results, $postcode);
