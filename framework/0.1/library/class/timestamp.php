@@ -46,10 +46,10 @@
 			public function format($format, $null_value = NULL) {
 				if ($this->null) {
 					return $null_value;
-				} else if ($format == 'db') {
+				} else if ($format == 'db' || $format == 'db-date') {
 					$timezone = parent::getTimezone();
 					parent::setTimezone(new DateTimeZone($this->db_timezone));
-					$output = parent::format('Y-m-d H:i:s');
+					$output = parent::format($format == 'db' ? 'Y-m-d H:i:s' : 'Y-m-d');
 					@parent::setTimezone($timezone); // Avoid PHP 5.3 bug 45543 (can not set timezones without ID)
 					return $output;
 				} else {
