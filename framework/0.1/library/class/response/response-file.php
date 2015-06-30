@@ -118,6 +118,10 @@
 					header('Content-Disposition: ' . head($mode) . '; filename="' . head($this->name_get()) . '"');
 					header('Content-Length: ' . head($length));
 
+					if ($mode !== 'inline') {
+						header('X-Download-Options: noopen');
+					}
+
 					header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (https://support.microsoft.com/kb/316431)
 					header('Pragma:');
 

@@ -1056,6 +1056,10 @@
 		header('Content-Disposition: ' . head($mode) . '; filename="' . head($name) . '"');
 		header('Content-Length: ' . head(filesize($path)));
 
+		if ($mode !== 'inline') {
+			header('X-Download-Options: noopen');
+		}
+
 		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (https://support.microsoft.com/kb/316431)
 		header('Pragma:');
 
@@ -1071,6 +1075,10 @@
 
 		header('Content-Disposition: ' . head($mode) . '; filename="' . head($name) . '"');
 		header('Content-Length: ' . head(strlen($content)));
+
+		if ($mode !== 'inline') {
+			header('X-Download-Options: noopen');
+		}
 
 		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (https://support.microsoft.com/kb/316431)
 		header('Pragma:');

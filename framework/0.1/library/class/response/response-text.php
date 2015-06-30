@@ -89,7 +89,15 @@
 
 				$file_name = $this->name_get();
 				if ($file_name !== NULL) {
-					header('Content-Disposition: ' . head($this->inline_get() ? 'inline' : 'attachment') . '; filename="' . head($file_name) . '"');
+
+					$mode = ($this->inline_get() ? 'inline' : 'attachment');
+
+					header('Content-Disposition: ' . head($mode) . '; filename="' . head($file_name) . '"');
+
+					if ($mode !== 'inline') {
+						header('X-Download-Options: noopen');
+					}
+
 				}
 
 				echo $this->content;
