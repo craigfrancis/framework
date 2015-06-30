@@ -427,11 +427,11 @@
 			}
 
 			public function update_init($limit = 30) {
-				$this->update_locations(0, $limit);
+				return $this->update_locations(0, $limit);
 			}
 
 			public function update_all() {
-				$this->update_locations(-1);
+				return $this->update_locations(-1);
 			}
 
 			public function update_locations($min_accuracy = 3, $limit = NULL) {
@@ -479,8 +479,12 @@
 						$options['limit_sql'] = $limit;
 					}
 
+					$updates = array();
+
 					$db->select($this->config['table_sql'], $fields, $where_sql, $options);
 					foreach ($db->fetch_all() as $row) {
+
+						$update = -1; // No change
 
 						$existing_accuracy_latitude  = strlen(substr(strrchr($row[$this->config['field_latitude']],  '.'), 1));
 						$existing_accuracy_longitude = strlen(substr(strrchr($row[$this->config['field_longitude']], '.'), 1));
@@ -532,11 +536,24 @@
 
 									$db->update($this->config['table_sql'], $values, $sql_where);
 
+									$update = 1;
+
+								} else {
+
+									$update = 0;
+
 								}
 
 						}
 
+						$updates[$row[$this->config['field_id_sql']]] = $update;
+
 					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $updates;
 
 			}
 
@@ -553,9 +570,14 @@
 						' . $this->config['field_id_sql'] . ' = "' . $db->escape($id) . '" AND
 						' . $this->config['where_sql'];
 
-					$this->update_locations(-1);
+					$results = $this->update_locations(-1);
 
 					$this->config['where_sql'] = $old_sql_where;
+
+				//--------------------------------------------------
+				// Return
+
+					return $results;
 
 			}
 
