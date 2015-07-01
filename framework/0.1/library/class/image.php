@@ -534,12 +534,12 @@
 										$dst_height = $canvas_height;
 									}
 
-									if ($this->image_width > $canvas_width) { // Push width down to fit within canvas
+									if ($dst_width > $canvas_width) { // Push width down to fit within canvas
 										$dst_width = $canvas_width;
 										$dst_height = ceil($canvas_width * ($this->image_height / $this->image_width));
 									}
 
-									if ($this->image_height > $canvas_height) { // Push height down to fit within canvas
+									if ($dst_height > $canvas_height) { // Push height down to fit within canvas
 										$dst_height = $canvas_height;
 										$dst_width = ceil($canvas_height * ($this->image_width / $this->image_height));
 									}
