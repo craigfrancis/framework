@@ -34,8 +34,9 @@ Where the config could be something like:
 	$config['nearest.users.max_results'] = 10;
 	$config['nearest.users.max_km'] = 0; // Unlimited
 
-	$config['nearest.gm_key'] = 'XXX';
-		// https://code.google.com/apis/console/
+	$config['nearest.gm_key'] = '';
+		// Can leave blank to use Google Maps, or get a key from:
+		// https://console.developers.google.com
 
 ---
 
