@@ -376,7 +376,7 @@
 						$db->query('SELECT 1 FROM ' . DB_PREFIX . 'system_nearest_outcode LIMIT 1');
 						if ($db->num_rows() == 0) {
 
-							$fields = array('outcode', 'x', 'y', 'latitude', 'longitude', 'district');
+							$fields = array('outcode', 'latitude', 'longitude');
 							$field_count = count($fields);
 
 							if (($handle = fopen(FRAMEWORK_ROOT . '/library/class/nearest/outcode.csv', 'r')) !== false) {
@@ -602,14 +602,10 @@
 
 		debug_require_db_table(DB_PREFIX . 'system_nearest_outcode', '
 				CREATE TABLE [TABLE] (
-					outcode varchar(5) NOT NULL default \'\',
-					x int(11) NOT NULL default \'0\',
-					y int(11) NOT NULL default \'0\',
-					latitude int(11) NOT NULL default \'0\',
-					longitude int(11) NOT NULL default \'0\',
-					district varchar(40) NOT NULL default \'\',
-					PRIMARY KEY (outcode),
-					KEY x (x,y)
+					outcode varchar(5) NOT NULL,
+					latitude double NOT NULL,
+					longitude double NOT NULL,
+					PRIMARY KEY (outcode)
 				);');
 
 	}
