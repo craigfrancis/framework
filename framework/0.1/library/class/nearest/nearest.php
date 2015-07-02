@@ -326,7 +326,7 @@
 									'address' => $search_query,
 									'sensor' => 'false',
 									'region' => $country,
-									'key' => $google_maps_key,
+									'key' => ($google_maps_key === '' ? NULL : $google_maps_key),
 								)));
 
 							usleep(300000); // 300ms, to keep Google happy (limited to 5 requests per second, or 2500 per day).
