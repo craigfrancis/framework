@@ -16,6 +16,7 @@
 			protected $form = NULL;
 
 			protected $text = array();
+			protected $text_html = array();
 			protected $user_id = 0;
 			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $form_name = 'user_form';
@@ -181,6 +182,10 @@
 
 			public function text_set($id, $text) {
 				$this->text[$id] = $text;
+			}
+
+			public function text_set_html($id, $html) {
+				$this->text_html[$id] = $html;
 			}
 
 			public function text_get($id) {
@@ -728,11 +733,19 @@
 
 					if ($result === 'invalid_identification') {
 
-						$form->error_add($this->text['login_invalid_identification']);
+						if (isset($this->text_html['login_invalid_identification'])) {
+							$form->error_add_html($this->text_html['login_invalid_identification']);
+						} else {
+							$form->error_add($this->text['login_invalid_identification']);
+						}
 
 					} else if ($result === 'invalid_password') {
 
-						$form->error_add($this->text['login_invalid_password']);
+						if (isset($this->text_html['login_invalid_password'])) {
+							$form->error_add_html($this->text_html['login_invalid_password']);
+						} else {
+							$form->error_add($this->text['login_invalid_password']);
+						}
 
 					} else if ($result === 'failure_repetition') {
 

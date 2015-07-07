@@ -95,7 +95,7 @@
 							'password_repeat_max_len'        => 'Your password confirmation cannot be longer than XXX characters.',
 
 							'failure_login_identification'   => 'Invalid log-in details.',
-							'failure_login_password'         => 'Invalid log-in details.',
+							'failure_login_password'         => 'Invalid log-in details.', // TODO: Set to NULL?
 							'failure_login_repetition'       => 'Too many login attempts.',
 							'failure_identification_current' => 'The email address supplied is already in use.',
 							'failure_password_current'       => 'Your current password is incorrect.', // Used on profile page
@@ -123,7 +123,7 @@
 
 					}
 
-					$this->text = array_merge($default_text, $this->text);
+					$this->text = array_merge($default_text, $this->text); // TODO: Maybe $this->messages_html ?
 
 				//--------------------------------------------------
 				// Tables
