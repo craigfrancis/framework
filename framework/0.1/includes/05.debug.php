@@ -571,7 +571,7 @@
 
 					$select_query = preg_match('/^\W*\(?\W*SELECT.*FROM/is', $query); // Don't debug queries without a table, e.g. SELECT FOUND_ROWS();
 
-					if ($select_query) {
+					if ($select_query && strpos($query, 'SQL_NO_CACHE') === false) {
 						$query = preg_replace('/^\W*\(?\W*SELECT/', '$0 SQL_NO_CACHE', $query);
 					}
 
