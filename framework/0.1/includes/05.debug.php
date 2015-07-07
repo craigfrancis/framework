@@ -106,80 +106,80 @@
 			report_add($error_report, 'error');
 
 		//--------------------------------------------------
-		// Return the primary contacts email address.
-
-			$contact_email = config::get('email.error');
-
-			if (is_array($contact_email)) {
-				$contact_email = reset($contact_email);
-			}
-
-		//--------------------------------------------------
 		// Tell the user
 
-			if ($contact_email != '' || config::get('debug.level') == 0) {
-				$hidden_info = ''; // If there is an email address, don't show the hidden info (e.g. on live).
-			}
+			if (config::get('output.sent') !== true) { // e.g. the loading helper has already sent the response.
 
-			if (php_sapi_name() == 'cli' || config::get('output.mime') == 'text/plain') {
-
-				echo "\n" . '--------------------------------------------------' . "\n\n";
-				echo 'System Error:' . "\n\n";
-				echo $message . "\n\n";
-
-				if ($hidden_info != '') {
-					echo $hidden_info . "\n\n";
+				$contact_email = config::get('email.error');
+				if (is_array($contact_email)) {
+					$contact_email = reset($contact_email);
 				}
 
-				echo '--------------------------------------------------' . "\n\n";
-
-			} else {
-
-				if (!headers_sent()) {
-					http_response_code(500);
-					mime_set('text/html');
+				if ($contact_email != '' || config::get('debug.level') == 0) {
+					$hidden_info = ''; // If there is an email address, don't show the hidden info (e.g. on live).
 				}
 
-				if (function_exists('response_get')) {
-					$response = response_get();
-				} else {
-					$response = NULL;
-				}
+				if (php_sapi_name() == 'cli' || config::get('output.mime') == 'text/plain') {
 
-				if ($response && $response->error_get() === false) { // Avoid looping
-
-					$error = array(
-							'message' => $message,
-							'hidden_info' => $hidden_info,
-							'contact_email' => $contact_email,
-						);
-
-					config::set('output.error', $error);
-
-					$response->set($error);
-					$response->error_send('system');
-
-				} else {
-
-					echo '<!DOCTYPE html>
-						<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
-						<head>
-							<meta charset="' . html(config::get('output.charset')) . '" />
-							<title>System Error</title>
-						</head>
-						<body id="p_error">
-							<h1>System Error</h1>
-							<p>' . nl2br(html($message)) . '</p>';
+					echo "\n" . '--------------------------------------------------' . "\n\n";
+					echo 'System Error:' . "\n\n";
+					echo $message . "\n\n";
 
 					if ($hidden_info != '') {
-						echo '
-							<hr />
-							<div>' . nl2br(html($hidden_info)) . '</div>'; // Don't use <pre>, SQL can have very long lines.
+						echo $hidden_info . "\n\n";
 					}
 
-					echo '
-						</body>
-						</html>';
+					echo '--------------------------------------------------' . "\n\n";
+
+				} else {
+
+					if (!headers_sent()) {
+						http_response_code(500);
+						mime_set('text/html');
+					}
+
+					if (function_exists('response_get')) {
+						$response = response_get();
+					} else {
+						$response = NULL;
+					}
+
+					if ($response && $response->error_get() === false) { // Avoid looping
+
+						$error = array(
+								'message' => $message,
+								'hidden_info' => $hidden_info,
+								'contact_email' => $contact_email,
+							);
+
+						config::set('output.error', $error);
+
+						$response->set($error);
+						$response->error_send('system');
+
+					} else {
+
+						echo '<!DOCTYPE html>
+							<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
+							<head>
+								<meta charset="' . html(config::get('output.charset')) . '" />
+								<title>System Error</title>
+							</head>
+							<body id="p_error">
+								<h1>System Error</h1>
+								<p>' . nl2br(html($message)) . '</p>';
+
+						if ($hidden_info != '') {
+							echo '
+								<hr />
+								<div>' . nl2br(html($hidden_info)) . '</div>'; // Don't use <pre>, SQL can have very long lines.
+						}
+
+						echo '
+							</body>
+							</html>';
+
+					}
 
 				}
 

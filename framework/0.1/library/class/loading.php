@@ -494,6 +494,8 @@
 				//--------------------------------------------------
 				// Send output
 
+					config::set('output.sent', true);
+
 					header('Refresh: ' . head($refresh_header));
 
 					header('Connection: close');
