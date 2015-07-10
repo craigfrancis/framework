@@ -110,7 +110,7 @@
 									);
 
 								if (isset($config['order_description'])) {
-									$values['Description'] = $config['order_description'];
+									$values['Description'] = str_replace(array("\n", "\r"), '', $config['order_description']);
 								} else {
 									$values['Description'] = 'Order ' . $config['order_ref'];
 								}
