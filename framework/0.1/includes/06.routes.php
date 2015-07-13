@@ -166,7 +166,16 @@
 					}
 
 				//--------------------------------------------------
-				// Simple
+				// Website override, can either do everythign itself,
+				// or provide the function url_cleanup()
+
+					$include_path = APP_ROOT . '/library/setup/url-cleanup.php';
+					if (is_file($include_path)) {
+						script_run_once($include_path);
+					}
+
+				//--------------------------------------------------
+				// Change
 
 						// Note: We don't know if the destination is valid,
 						// as while we could do the check when loading the
@@ -178,10 +187,18 @@
 					$new_url->path_set($new_path);
 					$new_url = $new_url->get();
 
-					if (SERVER == 'stage') {
+					if (function_exists('url_cleanup')) {
+
+						url_cleanup($route_path, $new_path, $new_url);
+
+					} else if (SERVER == 'stage') {
+
 						exit('<p>URL Cleanup: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
+
 					} else {
+
 						redirect($new_url, 301);
+
 					}
 
 			}
