@@ -1116,15 +1116,17 @@
 					$field_names = array();
 
 					foreach ($this->fields as $field) {
+						if ($field->type_get() != 'info') {
 
-						$field_name = $field->input_name_get();
-						$field_names[] = $field_name;
+							$field_name = $field->input_name_get();
+							$field_names[] = $field_name;
 
-						$field_value = $field->value_hidden_get(); // File field may always return a value, irrespective of $field->print_hidden
-						if ($field_value !== NULL) {
-							$this->hidden_values['h-' . $field_name] = $field_value;
+							$field_value = $field->value_hidden_get(); // File field may always return a value, irrespective of $field->print_hidden
+							if ($field_value !== NULL) {
+								$this->hidden_values['h-' . $field_name] = $field_value;
+							}
+
 						}
-
 					}
 
 					if ($this->form_button_name !== NULL) {
