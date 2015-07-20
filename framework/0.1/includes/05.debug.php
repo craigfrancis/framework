@@ -606,7 +606,7 @@
 							}
 						}
 
-						if (!preg_match('/^[A-Z]+( |$)/', $line_text)) {
+						if (!preg_match('/^[A-Z]+( |$)/', $line_text)) { // Keywords, such as SELECT/FROM/WHERE/etc (not functions)
 							$line_indent += 1;
 						}
 
