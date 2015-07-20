@@ -139,10 +139,8 @@
 			public function value_set($value) {
 				if ($value === '') {
 					$this->value_clean = 0;
-				} else if ($value !== NULL) {
-					$this->value_clean = parse_number($value);
 				} else {
-					$this->value_clean = NULL;
+					$this->value_clean = parse_number($value);
 				}
 				$this->value = $value;
 			}
@@ -158,12 +156,7 @@
 			protected function _value_print_get($decimal_places = 2) {
 
 				$value = parent::_value_print_get(); // Value from $this->value, saved_value, or database
-
-				if ($value === NULL) {
-					$value_clean = NULL;
-				} else {
-					$value_clean = parse_number($value);
-				}
+				$value_clean = parse_number($value);
 
 				if ($value_clean !== NULL) {
 					if ($value_clean == 0 && $this->zero_to_blank && $this->type != 'currency') {

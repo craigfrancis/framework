@@ -462,7 +462,7 @@
 // Parse number - floatval() but for human hands
 
 	function parse_number($value) {
-		if (!is_float($value) && !is_int($value)) {
+		if (!is_float($value) && !is_int($value) && $value !== NULL) {
 
 			$value = preg_replace('/^[^0-9\.\-]*(-?)[^0-9\.]*(.*?)[^0-9\.]*$/', '$1$2', $value); // Strip prefix/suffix invalid characters (e.g. currency symbol)
 
@@ -481,9 +481,9 @@
 		return $value;
 	}
 
-		// foreach (array('£10.01', '-$11.05c', '#7,000.01', '6,000', '5,00', '.34', '-£.3') as $number) {
+		// foreach (array('£10.01', '-$11.05c', '#7,000.01', '6,000', '5,00', '.34', '-£.3', 'XXX', NULL) as $number) {
 		// 	$result = parse_number($number);
-		// 	echo $number . ' = ' . ($result === NULL ? 'NULL' : $result) . '<br />' . "\n";
+		// 	echo ($number === NULL ? 'NULL' : '"' . $number . '"') . ' = ' . ($result === NULL ? 'NULL' : $result) . '<br />' . "\n";
 		// }
 		// exit();
 
