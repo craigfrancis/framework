@@ -578,28 +578,43 @@
 				//--------------------------------------------------
 				// HTML Format for the query
 
-					$query_html = html($query);
-					if (strpos($query_html, "\n") !== false) {
+					$indent = 0;
+					$query_lines = array();
+					$query_text = preg_replace('/\) (AND|OR) \(/', "\n$0\n", $query); // Could be better, just breaking up the keyword searching sections.
 
-						$query_prefix_string = '';
-						$query_prefix_length = 0;
-						foreach (explode("\n", $query_html) as $line) {
-							if (preg_match('/^\t+/', $line, $matches)) {
-								$prefix_length = strlen($matches[0]);
-								if ($query_prefix_length == 0 || $prefix_length < $query_prefix_length) {
-									$query_prefix_length = $prefix_length;
-									$query_prefix_string = $matches[0];
-								}
+					foreach (explode("\n", $query_text) as $line_text) {
+
+						$line_text = trim($line_text);
+						$line_indent = $indent;
+
+						if ($line_text == '') {
+							continue;
+						}
+
+						$open = strrpos($line_text, '('); // The LAST bracket is an OPEN bracket.
+						$close = strrpos($line_text, ')');
+						if ($open !== false && ($close === false || $open > $close)) {
+							$indent += 2;
+						}
+
+						$open = strpos($line_text, '('); // The FIRST bracket is a CLOSE bracket.
+						$close = strpos($line_text, ')');
+						if ($close !== false && ($open === false || $open > $close)) {
+							$indent -= 2;
+							if ($close == 0) { // Not always an exact match, e.g. ending a subquery with ") AS s"
+								$line_indent -= 2;
 							}
 						}
 
-						if ($query_prefix_length > 0) {
-							$query_html = preg_replace('/^' . preg_quote($query_prefix_string, '/') . '/m', '', $query_html);
+						if (!preg_match('/^[A-Z]+( |$)/', $line_text)) {
+							$line_indent += 1;
 						}
+
+						$query_lines[] = str_repeat('    ', $line_indent) . $line_text;
 
 					}
 
-					$query_html = trim(preg_replace('/^[ \t]*(?! |\t|SELECT|UPDATE|DELETE|INSERT|SHOW|FROM|USING|LEFT|SET|WHERE|GROUP|ORDER|LIMIT)/m', '    ', $query_html));
+					$query_html = html(implode("\n", $query_lines) . ';');
 
 				//--------------------------------------------------
 				// Called from
