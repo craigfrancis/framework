@@ -463,20 +463,29 @@
 
 	function parse_number($value) {
 		if (!is_float($value) && !is_int($value)) {
-			$value = preg_replace('/^[^0-9\-]*(-?)[^0-9]*(.*?)[^0-9]*$/', '$1$2', $value); // Strip prefix/suffix invalid characters (e.g. currency symbol)
-			if (preg_match('/^(.*),(.*)$/', $value, $matches)) {
-				if (strlen($matches[2]) > 2) {
-					$value = str_replace(',', '', $matches[1]) . $matches[2]; // Strip the thousand separators, but don't convert "5,00" to "500"
-				}
+
+			$value = preg_replace('/^[^0-9\.\-]*(-?)[^0-9\.]*(.*?)[^0-9\.]*$/', '$1$2', $value); // Strip prefix/suffix invalid characters (e.g. currency symbol)
+
+			$pos = strrpos($value, ',');
+			if ($pos !== false && (strlen($value) - $pos) > 3) { // Strip the thousand separators, but don't convert the European "5,00" to "500"
+				$value = str_replace(',', '', $value);
 			}
-			if (!preg_match('/^\-?[0-9]+(\.[0-9]{0,})?$/', $value)) {
+
+			if (!preg_match('/^\-?[0-9]*(\.[0-9]{0,})?$/', $value)) { // Also allowing '.3' to become 0.3
 				return NULL; // Invalid number
 			} else {
 				$value = floatval($value);
 			}
+
 		}
 		return $value;
 	}
+
+		// foreach (array('£10.01', '-$11.05c', '#7,000.01', '6,000', '5,00', '.34', '-£.3') as $number) {
+		// 	$result = parse_number($number);
+		// 	echo $number . ' = ' . ($result === NULL ? 'NULL' : $result) . '<br />' . "\n";
+		// }
+		// exit();
 
 //--------------------------------------------------
 // Format currency
