@@ -23,6 +23,8 @@
 			private $day_url_base   = NULL;
 			private $day_urls       = array();
 			private $day_events     = array();
+			private $day_class      = array();
+			private $day_data       = array();
 
 		//--------------------------------------------------
 		// Setup
@@ -211,6 +213,14 @@
 
 			public function day_url_set($date, $url) {
 				$this->day_urls[$date] = $url;
+			}
+
+			public function day_class_set($date, $class) {
+				$this->day_class[$date] = $class;
+			}
+
+			public function day_data_set($date, $field, $value) {
+				$this->day_data[$date][$field] = $value;
 			}
 
 		//--------------------------------------------------
@@ -435,6 +445,8 @@
 				//--------------------------------------------------
 				// Days
 
+					$day_tag = ($this->config['mode'] == 'week' ? 'li' : 'td');
+
 					$today_timestamp = new timestamp();
 					$today_date = $today_timestamp->format('Y-m-d');
 
@@ -475,19 +487,29 @@
 						//--------------------------------------------------
 						// Print the day HTML
 
-							$class = '';
+							$class = (isset($this->day_class[$loop_date]) ? $this->day_class[$loop_date] : '');
 							if ($loop_day >= 6) $class .= ' weekend';
 							if ($loop_today) $class .= ' today';
 							if ($loop_timestamp >= $this->focus_start && $loop_timestamp < $this->focus_end) $class .= ' focus';
 							if ($loop_timestamp > $today_timestamp) $class .= ' future';
 
+							$attributes = array('class' => trim($class));
+							if ($loop_today) {
+								$attributes['id'] = 'today';
+							}
+							if (isset($this->day_data[$loop_date])) {
+								foreach ($this->day_data[$loop_date] as $field => $value) {
+									$attributes['data-' . $field] = $value;
+								}
+							}
+
 							$html .= '
-									<' . ($this->config['mode'] == 'week' ? 'li' : 'td') . ' class="' . trim($class) . '"' . ($loop_today ? ' id="today"' : '') . '>';
+									' . html_tag($day_tag, $attributes);
 
 							$html .= $this->html_day($loop_date, $loop_timestamp, $loop_url);
 
 							$html .= '
-									</' . ($this->config['mode'] == 'week' ? 'li' : 'td') . '>';
+									</' . $day_tag . '>';
 
 						//--------------------------------------------------
 						// Next day
