@@ -294,7 +294,7 @@
 			}
 
 			public function required_mark_set($required_mark) {
-				$this->required_mark_set_html(html($required_mark));
+				$this->required_mark_set_html($required_mark === true ? true : html($required_mark));
 			}
 
 			public function required_mark_set_html($required_mark_html) {
@@ -302,8 +302,8 @@
 			}
 
 			public function required_mark_get_html($required_mark_position = NULL) {
-				if ($this->required) {
-					if ($this->required_mark_html !== NULL) {
+				if ($this->required || $this->required_mark_html !== NULL) {
+					if ($this->required_mark_html !== NULL && $this->required_mark_html !== true) {
 						return $this->required_mark_html;
 					} else {
 						return $this->form->required_mark_get_html($required_mark_position);

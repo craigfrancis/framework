@@ -355,9 +355,9 @@
 				if ($this->required_mark_html !== NULL) {
 					return $this->required_mark_html;
 				} else if (($required_mark_position === 'right') || ($required_mark_position === NULL && $this->required_mark_position === 'right')) {
-					return '&#xA0;<abbr class="required" title="Required">*</abbr>';
+					return '&#xA0;<abbr class="required" title="Required" aria-label="Required">*</abbr>';
 				} else {
-					return '<abbr class="required" title="Required">*</abbr>&#xA0;';
+					return '<abbr class="required" title="Required" aria-label="Required">*</abbr>&#xA0;';
 				}
 			}
 
