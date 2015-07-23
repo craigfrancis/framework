@@ -478,7 +478,7 @@
 								if ($k > 1 && !($k % 7)) {
 									$html .= '
 										</tr>
-										<tr>';
+										<tr' . ($loop_timestamp > $today_timestamp ? ' class="future"' : '') . '>';
 								}
 							}
 
@@ -493,7 +493,7 @@
 							if ($loop_timestamp >= $this->focus_start && $loop_timestamp < $this->focus_end) $class .= ' focus';
 							if ($loop_timestamp > $today_timestamp) $class .= ' future';
 
-							$attributes = array('class' => trim($class));
+							$attributes = array('class' => trim($class), 'data-date' => $loop_date);
 							if ($loop_today) {
 								$attributes['id'] = 'today';
 							}
