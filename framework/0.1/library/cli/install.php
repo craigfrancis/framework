@@ -244,7 +244,7 @@
 
 			$install_path = APP_ROOT . '/library/setup/install.sh';
 			if (is_file($install_path)) {
-				command_run($install_path, true);
+				command_run($install_path . ' ' . escapeshellarg(SERVER), true);
 			}
 
 	}
