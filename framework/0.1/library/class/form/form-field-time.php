@@ -169,7 +169,7 @@
 						return NULL;
 					}
 				} else if ($this->value_provided) {
-					return return $this->value_time_get();
+					return $this->value_time_get();
 				} else {
 					return $this->value_default;
 				}
