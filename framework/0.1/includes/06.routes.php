@@ -25,8 +25,6 @@
 
 		$route_asset = prefix_match(ASSET_URL . '/', $route_path);
 
-		unset($url_prefix);
-
 	//--------------------------------------------------
 	// Robots
 
@@ -184,7 +182,7 @@
 
 					$new_url = new url();
 					$new_url->format_set('full');
-					$new_url->path_set($new_path);
+					$new_url->path_set($url_prefix . $new_path);
 					$new_url = $new_url->get();
 
 					if (function_exists('url_cleanup')) {
@@ -581,6 +579,6 @@
 
 	config::set('route.path', $route_path);
 
-	unset($route_path, $routes, $route, $id, $path, $method, $preg_path, $matches, $var_name, $var_id, $old_path);
+	unset($route_path, $url_prefix, $routes, $route, $id, $path, $method, $preg_path, $matches, $var_name, $var_id, $old_path);
 
 ?>

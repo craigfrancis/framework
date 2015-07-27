@@ -888,6 +888,10 @@
 				foreach ($files as $id => $file) {
 					if (!isset($file['url'])) {
 
+						if ((!is_object($file['path']) || !is_a($file['path'], 'url')) && (substr($file['path'], 0, 1) == '/')) {
+							$file['path'] = config::get('url.prefix') . $file['path'];
+						}
+
 						if ($version && substr($file['path'], 0, 1) == '/' && is_file(PUBLIC_ROOT . $file['path'])) {
 
 							$url = timestamp_url($file['path']);
