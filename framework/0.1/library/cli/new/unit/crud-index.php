@@ -10,6 +10,7 @@
 
 				'paginate'   => array('default' => true),
 				'search'     => array('default' => true),
+				'download'   => array('default' => true),
 
 			);
 
@@ -21,6 +22,12 @@
 
 			//--------------------------------------------------
 			// Config
+
+				$output_csv = ($config['download'] && request('output') == 'csv');
+
+				if ($output_csv) {
+					$config['paginate'] = false;
+				}
 
 				$db = db_get();
 
@@ -167,9 +174,25 @@
 				}
 
 			//--------------------------------------------------
+			// CSV output
+
+				if ($output_csv) {
+
+					$table->charset_output_set('ISO-8859-1');
+					$table->csv_download('File.csv');
+					exit();
+
+				}
+
+			//--------------------------------------------------
 			// Links
 
 				$links_html = array();
+
+				if ($config['download']) {
+					$export_url = url(array('output' => 'csv'));
+					$links_html[] = '<a href="' . html($export_url) . '">Download</a>';
+				}
 
 				if ($config['add_url']) {
 					$links_html[] = '<a href="' . html($config['add_url']) . '">add item</a>';
