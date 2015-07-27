@@ -148,7 +148,7 @@
 //--------------------------------------------------
 // Upload
 
-	// $config['upload.demo.source'] = 'git';
+	// $config['upload.demo.source'] = 'git'; // or 'svn'
 	// $config['upload.demo.location'] = 'demo:/www/demo/company.project';
 	// $config['upload.demo.update'] = false; // or true, or array('project', 'framework')
 

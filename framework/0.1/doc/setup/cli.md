@@ -42,7 +42,7 @@ Update or compare against the 2 configuration files that list the database struc
 	./cli --dump
 	./cli --diff
 
-Upload the project to a particular server:
+[Upload](../../doc/system/uploading.md) the project to a particular server:
 
 	./cli --upload=demo
 	./cli --upload=live

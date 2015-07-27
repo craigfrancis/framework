@@ -48,6 +48,8 @@ Or customise the overall page [template](../../doc/setup/templates.md):
 
 Then start creating [units](../../doc/setup/units.md), and loading them with [controllers](../../doc/setup/controllers.md).
 
+When your are ready to upload to a server, look at the [uploading process](../../doc/system/uploading.md).
+
 ---
 
 ## Alternative Apache config

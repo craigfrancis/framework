@@ -91,6 +91,7 @@
 				$system_nav->link_add('/doc/system/response/', 'Response');
 				$system_nav->link_add('/doc/system/functions/', 'Functions');
 				$system_nav->link_add('/doc/system/database/', 'Database');
+				$system_nav->link_add('/doc/system/uploading/', 'Uploading');
 				$system_nav->link_add('/doc/system/tester/', 'Tester');
 
 				$section_nav->link_add('/doc/system/', 'System', array('child' => $system_nav));
