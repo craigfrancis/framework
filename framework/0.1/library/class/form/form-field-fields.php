@@ -202,7 +202,18 @@
 			}
 
 			public function value_default_set($default) {
-				$this->value_default = $default; // Really used by date/time fields.
+
+				$this->value_default = $default;
+
+					// Really used by date/time fields, and
+					// only when the form is submitted.
+					// If you want to show a default, then
+					// do the same as all other fields with:
+					//
+					// if ($form->initial()) {
+					// 	$field->value_set('XXX');
+					// }
+
 			}
 
 			public function value_get($field = NULL) {
