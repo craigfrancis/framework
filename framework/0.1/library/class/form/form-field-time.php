@@ -169,14 +169,14 @@
 						return NULL;
 					}
 				} else if ($this->value_provided) {
-					return $this->_value_string($this->value);
+					return return $this->value_time_get();
 				} else {
-					return $this->_value_string($this->value_default);
+					return $this->value_default;
 				}
 			}
 
 			public function value_time_get() {
-				return $this->value_get();
+				return $this->_value_string($this->value);
 			}
 
 			protected function _value_string($value) {
