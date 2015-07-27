@@ -189,7 +189,7 @@
 				} else if ($this->value_provided) {
 					return $this->_value_string($this->value);
 				} else {
-					return $this->value_default;
+					return $this->_value_string($this->value_default);
 				}
 			}
 
