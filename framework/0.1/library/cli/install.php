@@ -244,7 +244,9 @@
 
 			$install_path = APP_ROOT . '/library/setup/install.sh';
 			if (is_file($install_path)) {
+				chmod($install_path, 0755);
 				command_run($install_path . ' ' . escapeshellarg(SERVER), true);
+				chmod($install_path, 0744);
 			}
 
 	}
