@@ -12,6 +12,7 @@
 
 					$this->fields = array('H', 'I', 'S');
 					$this->format_html = array_merge(array('separator' => ':', 'H' => 'HH', 'I' => 'MM', 'S' => 'SS'), config::get('form.time_format_html', array()));
+					$this->value_default = '00:00:00';
 					$this->input_separator = "\n\t\t\t\t\t\t\t\t\t";
 					$this->input_config = array(
 							'H' => array(
@@ -169,14 +170,14 @@
 						return NULL;
 					}
 				} else if ($this->value_provided) {
-					return $this->value_time_get();
+					return $this->_value_string($this->value);
 				} else {
 					return $this->value_default;
 				}
 			}
 
 			public function value_time_get() {
-				return $this->_value_string($this->value);
+				return $this->value_get();
 			}
 
 			protected function _value_string($value) {

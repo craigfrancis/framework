@@ -18,6 +18,7 @@
 					$this->type = 'date';
 					$this->fields = array('D', 'M', 'Y');
 					$this->format_html = array_merge(array('separator' => '/', 'D' => 'DD', 'M' => 'MM', 'Y' => 'YYYY'), config::get('form.date_format_html', array()));
+					$this->value_default = '0000-00-00';
 					$this->input_separator = "\n\t\t\t\t\t\t\t\t\t";
 					$this->input_config = array(
 							'D' => array(
@@ -187,18 +188,18 @@
 						return NULL;
 					}
 				} else if ($this->value_provided) {
-					return $this->value_date_get();
+					return $this->_value_string($this->value);
 				} else {
 					return $this->value_default;
 				}
 			}
 
 			public function value_date_get() {
-				return $this->_value_string($this->value);
+				return $this->value_get();
 			}
 
 			public function value_timestamp_get() {
-				return new timestamp(($this->value_provided ? $this->value_date_get() : '0000-00-00'), 'db');
+				return new timestamp($this->value_get(), 'db');
 			}
 
 			public function value_time_stamp_get() { // Legacy name... but you should look at the timestamp helper anyway :-)
