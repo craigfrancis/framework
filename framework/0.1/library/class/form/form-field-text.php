@@ -46,6 +46,10 @@
 							$this->value = $this->form->hidden_value_get('h-' . $this->name);
 						}
 
+						if ($this->value !== NULL && config::get('form.auto_trim', true)) {
+							$this->value = trim($this->value);
+						}
+
 					}
 
 				//--------------------------------------------------
