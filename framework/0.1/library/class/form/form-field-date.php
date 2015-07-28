@@ -203,7 +203,7 @@
 			}
 
 			public function value_timestamp_get() {
-				return new timestamp($this->value_get(), 'db');
+				return new timestamp($this->value_date_get(), 'db');
 			}
 
 			public function value_time_stamp_get() { // Legacy name... but you should look at the timestamp helper anyway :-)
