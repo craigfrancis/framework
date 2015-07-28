@@ -234,7 +234,7 @@
 					}
 					return $return;
 				} else {
-					return $this->value_default;
+					return NULL; // Not value_default
 				}
 			}
 

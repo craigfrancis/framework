@@ -190,12 +190,16 @@
 				} else if ($this->value_provided) {
 					return $this->_value_string($this->value);
 				} else {
-					return $this->value_default;
+					return NULL;
 				}
 			}
 
 			public function value_date_get() {
-				return $this->value_get();
+				$value = $this->value_get();
+				if ($value === NULL) {
+					$value = $this->value_default;
+				}
+				return $value;
 			}
 
 			public function value_timestamp_get() {
