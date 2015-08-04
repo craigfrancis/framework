@@ -5,48 +5,50 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $form;
-			protected $form_field_uid;
-			protected $form_submitted;
+			protected $form = NULL;
+			protected $form_field_uid = NULL;
+			protected $form_submitted = false;
 
-			protected $id;
-			protected $name;
-			protected $type;
-			protected $wrapper_tag;
-			protected $wrapper_id;
-			protected $wrapper_class;
-			protected $wrapper_data;
-			protected $label_html;
-			protected $label_suffix_html;
-			protected $label_class;
-			protected $label_wrapper_tag;
-			protected $label_wrapper_class;
-			protected $input_first;
-			protected $input_class;
-			protected $input_data;
-			protected $input_wrapper_tag;
-			protected $input_wrapper_class;
-			protected $input_described_by;
-			protected $format_class;
-			protected $format_tag;
-			protected $info_html;
-			protected $info_class;
-			protected $info_tag;
-			protected $validation_js;
-			protected $required;
-			protected $required_mark_html;
-			protected $required_mark_position;
-			protected $autofocus;
-			protected $autocorrect;
-			protected $autocomplete;
-			protected $autocapitalize;
-			protected $disabled;
-			protected $readonly;
-			protected $print_group;
-			protected $print_include;
-			protected $print_hidden;
-			protected $db_field_name;
-			protected $db_field_key;
+			protected $id = NULL;
+			protected $name = NULL;
+			protected $type = 'unknown';
+			protected $wrapper_tag = 'div';
+			protected $wrapper_id = NULL;
+			protected $wrapper_class = '';
+			protected $wrapper_data = array();
+			protected $label_html = '';
+			protected $label_suffix_html = '';
+			protected $label_class = NULL;
+			protected $label_wrapper_tag = 'span';
+			protected $label_wrapper_class = 'label';
+			protected $input_first = false;
+			protected $input_class = NULL;
+			protected $input_data = array();
+			protected $input_wrapper_tag = 'span';
+			protected $input_wrapper_class = 'input';
+			protected $input_described_by = array();
+			protected $format_class = 'format';
+			protected $format_tag = 'span';
+			protected $info_html = NULL;
+			protected $info_class = 'info';
+			protected $info_tag = 'span';
+			protected $validation_js = array();
+			protected $required = false;
+			protected $required_mark_html = NULL;
+			protected $required_mark_position = NULL;
+			protected $autofocus = false;
+			protected $autocorrect = NULL;
+			protected $autocomplete = NULL;
+			protected $autocapitalize = NULL;
+			protected $disabled = false;
+			protected $readonly = false;
+			protected $print_group = NULL;
+			protected $print_include = true;
+			protected $print_hidden = false;
+			protected $db_record = NULL;
+			protected $db_field_name = NULL;
+			protected $db_field_key = false;
+			protected $db_field_info = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -97,41 +99,13 @@
 					$this->form_submitted = $form->submitted();
 
 					$this->id = 'fld_' . human_to_ref($this->name);
-					$this->type = 'unknown';
-					$this->wrapper_tag = 'div';
-					$this->wrapper_id = NULL;
-					$this->wrapper_class = '';
-					$this->wrapper_data = array();
+
 					$this->label_html = $label_html;
 					$this->label_suffix_html = $form->label_suffix_get_html();
-					$this->label_class = NULL;
-					$this->label_wrapper_tag = 'span';
-					$this->label_wrapper_class = 'label';
-					$this->input_first = false;
-					$this->input_class = NULL;
-					$this->input_data = array();
-					$this->input_wrapper_tag = 'span';
-					$this->input_wrapper_class = 'input';
-					$this->format_class = 'format';
-					$this->format_tag = 'span';
-					$this->info_html = NULL;
-					$this->info_class = 'info';
-					$this->info_tag = 'span';
-					$this->validation_js = array();
-					$this->required = false;
-					$this->required_mark_html = NULL;
-					$this->required_mark_position = NULL;
-					$this->autofocus = false;
-					$this->autocorrect = NULL;
-					$this->autocomplete = NULL;
-					$this->autocapitalize = NULL;
+
 					$this->disabled = $form->disabled_get();
 					$this->readonly = $form->readonly_get();
 					$this->print_group = $form->print_group_get();
-					$this->print_include = true;
-					$this->print_hidden = false;
-					$this->db_field_name = NULL;
-					$this->db_field_key = false;
 
 			}
 
