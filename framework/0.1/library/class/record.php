@@ -105,8 +105,8 @@
 
 			}
 
-			public function _fields_set($fields) { // DO NOT USE, only for the form helper till all projects use records.
-				$this->config['fields'] = $fields;
+			public function _fields_add($field) { // DO NOT USE, only for the form helper till all projects use records.
+				$this->config['fields'][] = $field;
 			}
 
 			// public function where_set($where) {

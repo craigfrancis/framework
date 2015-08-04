@@ -41,7 +41,6 @@
 			private $post_validation_done = false;
 			private $db_link = NULL;
 			private $db_record = NULL;
-			private $db_record_fields_set = false;
 			private $db_table_name_sql = NULL;
 			private $db_table_alias_sql = NULL;
 			private $db_where_sql = NULL;
@@ -459,40 +458,6 @@
 				$this->db_save_disabled = true;
 			}
 
-			private function _db_record_fields_set() {
-				if (!$this->db_record_fields_set) {
-
-					$fields = array();
-					foreach ($this->fields as $field) {
-						$field_name = $field->db_field_name_get();
-						if ($field_name !== NULL) {
-							$fields[] = $field_name;
-						}
-					}
-					if (count($fields) > 0) {
-						$record = $this->db_record_get();
-						$record->_fields_set($fields);
-					}
-
-					$this->db_record_fields_set = true;
-
-				}
-			}
-
-			public function db_select_value_get($field) {
-
-				$record = $this->db_record_get();
-
-				if ($record === false) {
-					exit_with_error('You need to call "db_record_set" or "db_table_set_sql" on the form object');
-				}
-
-				$this->_db_record_fields_set();
-
-				return $record->value_get($field);
-
-			}
-
 			public function db_value_set($name, $value) { // TODO: Look at using $record->value_set();
 				$this->db_values[$name] = $value;
 			}
@@ -841,8 +806,6 @@
 					if ($record === false) {
 						exit_with_error('You need to call "db_record_set" or "db_table_set_sql" on the form object');
 					}
-
-					$this->_db_record_fields_set();
 
 				//--------------------------------------------------
 				// Record save

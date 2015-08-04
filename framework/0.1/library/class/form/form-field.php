@@ -376,7 +376,10 @@
 				$this->db_record = $record;
 				$this->db_field_name = $field_name;
 				$this->db_field_key = $field_key;
+
 				$this->db_field_info = $record->field_get($field_name); // Will exit_with_error if invalid.
+
+				$record->_fields_add($field_name); // Temp (only until all projects use the record helper)
 
 			}
 
@@ -403,6 +406,10 @@
 
 			public function db_field_key_get() {
 				return $this->db_field_key;
+			}
+
+			public function db_field_value_get() {
+				return $this->db_record->value_get($this->db_field_name);
 			}
 
 		//--------------------------------------------------

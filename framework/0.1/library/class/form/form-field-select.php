@@ -267,7 +267,7 @@
 
 				} else if ($this->db_field_name !== NULL) {
 
-					$db_values = $this->form->db_select_value_get($this->db_field_name);
+					$db_values = $this->db_field_value_get();
 
 					if ($this->multiple) {
 						$db_values = explode(',', $db_values); // Commas are not valid characters in enum/set fields.

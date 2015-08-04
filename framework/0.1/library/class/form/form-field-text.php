@@ -152,7 +152,7 @@
 			protected function _value_print_get() {
 				if ($this->value === NULL) {
 					if ($this->db_field_name !== NULL) {
-						$db_value = $this->form->db_select_value_get($this->db_field_name);
+						$db_value = $this->db_field_value_get();
 					} else {
 						$db_value = '';
 					}

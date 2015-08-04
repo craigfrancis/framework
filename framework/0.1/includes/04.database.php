@@ -427,7 +427,7 @@
 			} else if ($fields === NULL) {
 				$fields_sql = '*';
 			} else {
-				$fields_sql = implode(', ', array_map(array($this, 'escape_field'), $fields));
+				$fields_sql = implode(', ', array_map(array($this, 'escape_field'), array_unique($fields)));
 			}
 
 			if (is_array($where_sql)) {
