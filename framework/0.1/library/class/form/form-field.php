@@ -396,7 +396,7 @@
 				$this->_db_field_set($a, $b);
 			}
 
-			public function db_field_get($key = NULL) {
+			public function db_field_info_get($key = NULL) {
 				if ($key) {
 					if (isset($this->db_field_info[$key])) {
 						return $this->db_field_info[$key];

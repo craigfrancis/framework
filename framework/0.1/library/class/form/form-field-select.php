@@ -81,7 +81,7 @@
 				//--------------------------------------------------
 				// Options
 
-					$config = $this->db_field_get();
+					$config = $this->db_field_info_get();
 
 					if ($config && ($config['type'] == 'enum' || $config['type'] == 'set')) {
 
