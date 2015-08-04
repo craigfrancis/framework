@@ -71,9 +71,14 @@
 
 			}
 
-			public function db_field_set($field, $field_key = 'value') {
+			public function db_field_set($field, $field_type = 'value', $record = NULL) {
 
-				$this->_db_field_set($field, $field_key);
+				if ($record === NULL && is_object($field_type) && is_a($field_type, 'record')) {
+					$record = $field_type;
+					$field_type = 'value';
+				}
+
+				$this->_db_field_set($field, ($field_type == 'key'), $record);
 
 				$options = $this->form->db_field_options_get($field);
 
@@ -267,7 +272,7 @@
 
 					$values = array();
 
-					if ($this->db_field_key == 'key') {
+					if ($this->db_field_key) {
 						foreach ($db_values as $key) {
 							if (isset($this->option_values[$key])) {
 								$values[] = $key;

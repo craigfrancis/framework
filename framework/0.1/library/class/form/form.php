@@ -815,7 +815,7 @@
 							$field_key = $field->db_field_key_get();
 							$field_config = $this->db_field_get($field_name);
 
-							if ($field_key == 'key') {
+							if ($field_key) {
 								$values[$field_name] = $field->value_key_get();
 							} else {
 								$values[$field_name] = $field->value_get();

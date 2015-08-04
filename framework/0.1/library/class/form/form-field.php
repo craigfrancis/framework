@@ -131,7 +131,7 @@
 					$this->print_include = true;
 					$this->print_hidden = false;
 					$this->db_field_name = NULL;
-					$this->db_field_key = 'value';
+					$this->db_field_key = false;
 
 			}
 
@@ -393,7 +393,7 @@
 				return $this->print_group;
 			}
 
-			protected function _db_field_set($field_name, $field_key = 'value') {
+			protected function _db_field_set($field_name, $field_key, $record) {
 
 				if ($this->form->db_field_get($field_name) === NULL) {
 					exit_with_error('Invalid db field "' . html($field_name) . '" set for field "' . $this->label_html . '"');
@@ -402,10 +402,12 @@
 				$this->db_field_name = $field_name;
 				$this->db_field_key = $field_key;
 
+				// TODO: $record
+
 			}
 
-			public function db_field_set($field) {
-				$this->_db_field_set($field);
+			public function db_field_set($field, $record = NULL) {
+				$this->_db_field_set($field, false, $record);
 			}
 
 			public function db_field_name_get() {
