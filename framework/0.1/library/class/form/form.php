@@ -700,86 +700,52 @@
 
 			public function data_array_get() {
 
-				//--------------------------------------------------
-				// Values
+				$values = array();
 
-					$values = array();
+				foreach ($this->fields as $field) {
 
-					foreach ($this->fields as $field) {
+					$field_name = $field->label_get_text();
+					$field_type = $field->type_get();
 
-						$field_name = $field->label_get_text();
-						$field_type = $field->type_get();
-
-						if ($field_type == 'date') {
-							$value = $field->value_date_get();
-							if ($value == '0000-00-00') {
-								$value = ''; // Not provided
-							}
-						} else if ($field_type == 'file' || $field_type == 'image') {
-							if ($field->uploaded()) {
-								$value = $field->file_name_get() . ' (' . file_size_to_human($field->file_size_get()) . ')';
-							} else {
-								$value = 'N/A';
-							}
-						} else {
-							$value = $field->value_get();
+					if ($field_type == 'date') {
+						$value = $field->value_date_get();
+						if ($value == '0000-00-00') {
+							$value = ''; // Not provided
 						}
-
-						$values[$field->input_name_get()] = array($field_name, $value); // Input name should be unique
-
+					} else if ($field_type == 'file' || $field_type == 'image') {
+						if ($field->uploaded()) {
+							$value = $field->file_name_get() . ' (' . file_size_to_human($field->file_size_get()) . ')';
+						} else {
+							$value = 'N/A';
+						}
+					} else {
+						$value = $field->value_get();
 					}
 
-				//--------------------------------------------------
-				// Return
+					$values[$field->input_name_get()] = array($field_name, $value); // Input name should be unique
 
-					return $values;
+				}
+
+				return $values;
 
 			}
 
 			public function data_db_get() {
 
-				//--------------------------------------------------
-				// Fields
+				$values = array();
 
-					$values = array();
-
-					foreach ($this->fields as $field) {
-						$field_name = $field->db_field_name_get();
-						if ($field_name !== NULL && !$field->disabled_get() && !$field->readonly_get()) {
-
-							$field_key = $field->db_field_key_get();
-							$field_config = $field->db_field_get();
-
-							if ($field_key) {
-								$values[$field_name] = $field->value_key_get();
-							} else {
-								$values[$field_name] = $field->value_get();
-							}
-
-							if ($field_config['null']) {
-								if ($field_config['type'] == 'int' && $values[$field_name] === '') {
-									$values[$field_name] = NULL; // e.g. number field setting an empty string (not 0).
-								}
-							} else {
-								if ($values[$field_name] === NULL) {
-									$values[$field_name] = ''; // e.g. enum with "not null" and select field with selected label.
-								}
-							}
-
-						}
+				foreach ($this->fields as $field) {
+					$value_new = $field->_db_field_value_new_get();
+					if ($value_new) {
+						$values[$value_new[0]] = $value_new[1];
 					}
+				}
 
-				//--------------------------------------------------
-				// DB Values
+				foreach ($this->db_values as $name => $value) { // More reliable than array_merge at keeping keys
+					$values[$name] = $value;
+				}
 
-					foreach ($this->db_values as $name => $value) { // More reliable than array_merge at keeping keys
-						$values[$name] = $value;
-					}
-
-				//--------------------------------------------------
-				// Return
-
-					return $values;
+				return $values;
 
 			}
 
@@ -807,12 +773,31 @@
 						exit_with_error('You need to call "db_record_set" or "db_table_set_sql" on the form object');
 					}
 
-				//--------------------------------------------------
-				// Record save
+					if (is_array($record)) {
 
-					$values = $this->data_db_get();
+						if (count($this->db_values) > 0) {
+							exit_with_error('Cannot use "db_value_set" with multiple record helpers, instead call "value_set" on the record itself.');
+						}
 
-					$record->save($values);
+						$records = $record;
+
+					} else {
+
+						foreach ($this->db_values as $name => $value) {
+							$record->value_set($name, $value);
+						}
+
+						$records = array($record);
+
+					}
+
+					foreach ($this->fields as $field) {
+						$value_new = $field->_db_field_value_update();
+					}
+
+					foreach ($records as $record) {
+						$record->save();
+					}
 
 			}
 

@@ -412,6 +412,43 @@
 				return $this->db_record->value_get($this->db_field_name);
 			}
 
+			public function _db_field_value_new_get() {
+
+				if ($this->db_field_name !== NULL && !$this->disabled && !$this->readonly) {
+
+					if ($this->db_field_key) {
+						$field_value = $this->value_key_get();
+					} else {
+						$field_value = $this->value_get();
+					}
+
+					if ($this->db_field_info['null']) {
+						if ($this->db_field_info['type'] == 'int' && $field_value === '') {
+							$field_value = NULL; // e.g. number field setting an empty string (not 0).
+						}
+					} else {
+						if ($field_value === NULL) {
+							$field_value = ''; // e.g. enum with "not null" and select field with selected label.
+						}
+					}
+
+					return array($this->db_field_name, $field_value);
+
+				} else {
+
+					return NULL; // Not setting the field to NULL
+
+				}
+
+			}
+
+			public function _db_field_value_update() {
+				$value_new = $this->_db_field_value_new_get();
+				if ($value_new) {
+					$this->db_record->value_set($value_new[0], $value_new[1]);
+				}
+			}
+
 		//--------------------------------------------------
 		// Errors
 

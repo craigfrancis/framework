@@ -285,7 +285,7 @@
 
 						foreach ($new_values as $field => $new_value) {
 
-							if (!isset($old_values[$field])) {
+							if (!array_key_exists($field, $old_values)) {
 								continue; // Probably a new value supplied though $form->db_value_set();
 							}
 
