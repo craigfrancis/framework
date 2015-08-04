@@ -396,6 +396,14 @@
 				$this->_db_field_set($a, $b);
 			}
 
+			public function db_field_name_get() {
+				return $this->db_field_name;
+			}
+
+			public function db_field_key_get() {
+				return $this->db_field_key;
+			}
+
 			public function db_field_info_get($key = NULL) {
 				if ($key) {
 					if (isset($this->db_field_info[$key])) {
@@ -407,14 +415,6 @@
 					}
 				}
 				return NULL;
-			}
-
-			public function db_field_name_get() {
-				return $this->db_field_name;
-			}
-
-			public function db_field_key_get() {
-				return $this->db_field_key;
 			}
 
 			public function db_field_value_get() {
