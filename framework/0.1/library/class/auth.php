@@ -828,6 +828,8 @@
 					//--------------------------------------------------
 					// Register
 
+							// TODO: Shoud probably use value_set on the record helper.
+
 						$form->db_value_set($this->db_fields['main']['identification'], $this->register_details['identification']);
 
 						$user_id = $form->db_insert();

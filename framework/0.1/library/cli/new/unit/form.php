@@ -56,7 +56,7 @@
 							//--------------------------------------------------
 							// Save
 
-								// $form->db_value_set('ip', config::get('request.ip'));
+								// $record->value_set('ip', config::get('request.ip'));
 
 								$form->db_save();
 
