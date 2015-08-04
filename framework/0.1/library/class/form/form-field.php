@@ -367,15 +367,24 @@
 				return $this->print_group;
 			}
 
-			protected function _db_field_set($field_name, $field_key, $record) {
+			protected function _db_field_set($a, $b = NULL, $c = NULL) {
 
-				if ($record === NULL) {
+				if (is_object($a) && is_a($a, 'record')) {
+					$record = $a;
+					$field_name = $b;
+					$field_type = $c;
+				} else {
 					$record = $this->form->db_record_get();
+					if (!is_object($record) || !is_a($record, 'record')) {
+						exit_with_error('Please specify a record to use when setting the db field for "' . $this->name . '"');
+					}
+					$field_name = $a;
+					$field_type = $b;
 				}
 
 				$this->db_record = $record;
 				$this->db_field_name = $field_name;
-				$this->db_field_key = $field_key;
+				$this->db_field_key = ($field_type == 'key');
 
 				$this->db_field_info = $record->field_get($field_name); // Will exit_with_error if invalid.
 
@@ -383,8 +392,8 @@
 
 			}
 
-			public function db_field_set($field, $record = NULL) {
-				$this->_db_field_set($field, false, $record);
+			public function db_field_set($a, $b = NULL) {
+				$this->_db_field_set($a, $b);
 			}
 
 			public function db_field_get($key = NULL) {
@@ -418,6 +427,8 @@
 
 					if ($this->db_field_key) {
 						$field_value = $this->value_key_get();
+					} else if ($this->type == 'date') {
+						$field_value = $this->value_date_get();
 					} else {
 						$field_value = $this->value_get();
 					}

@@ -71,31 +71,29 @@
 
 			}
 
-			public function db_field_set($field, $field_type = 'value', $record = NULL) {
+			public function db_field_set($a, $b = NULL, $c = NULL) {
 
-				if ($record === NULL && is_object($field_type) && is_a($field_type, 'record')) {
-					$record = $field_type;
-					$field_type = 'value';
-				}
+				//--------------------------------------------------
+				// Set field
 
-				$this->_db_field_set($field, ($field_type == 'key'), $record);
+					$this->_db_field_set($a, $b, $c);
 
-				$config = $this->db_field_get();
-				if ($config && ($config['type'] == 'enum' || $config['type'] == 'set')) {
-					$options = $config['options'];
-				} else {
-					$options = NULL;
-				}
+				//--------------------------------------------------
+				// Options
 
-				if ($options) {
+					$config = $this->db_field_get();
 
-					while (($key = array_search('', $options)) !== false) { // If you want a blank option, use label_option_set, and remove the required_error.
-						unset($options[$key]);
+					if ($config && ($config['type'] == 'enum' || $config['type'] == 'set')) {
+
+						$options = $config['options'];
+
+						while (($key = array_search('', $options)) !== false) { // If you want a blank option, use label_option_set, and remove the required_error.
+							unset($options[$key]);
+						}
+
+						$this->option_values_set($options); // The array index might change (structure change), so use the "option_values" method, so it only uses the values
+
 					}
-
-					$this->option_values_set($options); // The array index might change (structure change), so use the "option_values" method, so it only uses the values
-
-				}
 
 			}
 
