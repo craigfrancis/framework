@@ -73,7 +73,7 @@
 							//--------------------------------------------------
 							// Next page
 
-								redirect($config['index_url']);
+								$form->dest_redirect($config['index_url']);
 
 						}
 
