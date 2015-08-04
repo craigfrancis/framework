@@ -370,7 +370,7 @@
 			protected function _db_field_set($field_name, $field_key, $record) {
 
 				if ($record === NULL) {
-					$record = $form->db_record_get();
+					$record = $this->form->db_record_get();
 				}
 
 				$this->db_record = $record;
