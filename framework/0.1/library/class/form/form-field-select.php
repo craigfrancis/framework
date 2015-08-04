@@ -80,7 +80,12 @@
 
 				$this->_db_field_set($field, ($field_type == 'key'), $record);
 
-				$options = $this->form->db_field_options_get($field);
+				$config = $this->db_field_get();
+				if ($config && ($config['type'] == 'enum' || $config['type'] == 'set')) {
+					$options = $config['options'];
+				} else {
+					$options = NULL;
+				}
 
 				if ($options) {
 

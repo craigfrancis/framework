@@ -455,36 +455,6 @@
 				$this->db_log_values = $values;
 			}
 
-			public function db_field_get($field, $key = NULL) {
-				if ($this->db_fields === NULL) {
-					$record = $this->db_record_get();
-					if ($record) {
-						$this->db_fields = $record->fields_get();
-					} else {
-						$this->db_fields = false;
-					}
-				}
-				if ($key) {
-					if (isset($this->db_fields[$field][$key])) {
-						return $this->db_fields[$field][$key];
-					}
-				} else {
-					if (isset($this->db_fields[$field])) {
-						return $this->db_fields[$field];
-					}
-				}
-				return NULL;
-			}
-
-			public function db_field_options_get($field) {
-				$config = $this->db_field_get($field);
-				if ($config && ($config['type'] == 'enum' || $config['type'] == 'set')) {
-					return $config['options'];
-				} else {
-					return NULL;
-				}
-			}
-
 			public function db_save_disable() {
 				$this->db_save_disabled = true;
 			}
@@ -813,7 +783,7 @@
 						if ($field_name !== NULL && !$field->disabled_get() && !$field->readonly_get()) {
 
 							$field_key = $field->db_field_key_get();
-							$field_config = $this->db_field_get($field_name);
+							$field_config = $field->db_field_get();
 
 							if ($field_key) {
 								$values[$field_name] = $field->value_key_get();

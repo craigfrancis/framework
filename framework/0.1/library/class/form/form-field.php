@@ -369,19 +369,32 @@
 
 			protected function _db_field_set($field_name, $field_key, $record) {
 
-				if ($this->form->db_field_get($field_name) === NULL) {
-					exit_with_error('Invalid db field "' . html($field_name) . '" set for field "' . $this->label_html . '"');
+				if ($record === NULL) {
+					$record = $form->db_record_get();
 				}
 
+				$this->db_record = $record;
 				$this->db_field_name = $field_name;
 				$this->db_field_key = $field_key;
-
-				// TODO: $record
+				$this->db_field_info = $record->field_get($field_name); // Will exit_with_error if invalid.
 
 			}
 
 			public function db_field_set($field, $record = NULL) {
 				$this->_db_field_set($field, false, $record);
+			}
+
+			public function db_field_get($key = NULL) {
+				if ($key) {
+					if (isset($this->db_field_info[$key])) {
+						return $this->db_field_info[$key];
+					}
+				} else {
+					if (isset($this->db_field_info)) {
+						return $this->db_field_info;
+					}
+				}
+				return NULL;
 			}
 
 			public function db_field_name_get() {

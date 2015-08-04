@@ -123,7 +123,7 @@
 						exit('<p>You need to call "db_field_set", on the field "' . $this->label_html . '"</p>');
 					}
 
-					$size = intval($this->form->db_field_get($this->db_field_name, 'length')); // Convert NULL to 0 explicitly, always triggers error.
+					$size = intval($this->db_field_get('length')); // Convert NULL to 0 explicitly, always triggers error.
 
 				}
 
