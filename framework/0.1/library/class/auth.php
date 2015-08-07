@@ -2,6 +2,9 @@
 
 		// http://www.troyhunt.com/2015/01/introducing-secure-account-management.html
 
+		// Notes:
+		// - Verify email address on register, but also on email address change?
+
 	class auth_base extends check {
 
 		//--------------------------------------------------
