@@ -6,6 +6,7 @@
 		// Variables
 
 			private $tables = array();
+			private $table = NULL;
 			private $timestamps = array();
 			private $now = NULL;
 			private $list_paths = array();
@@ -32,11 +33,15 @@
 				$this->tables = $tables;
 			}
 
+			public function _table_set($table) {
+				$this->table = $table;
+			}
+
 		//--------------------------------------------------
 		// Create record - typically for child records.
 
 			final public function record_create($table, $values, $config = array()) {
-				$this->tables[$table]['class']->record_add($values, $config);
+				return $this->tables[$table]['class']->record_add($values, $config);
 			}
 
 		//--------------------------------------------------
@@ -54,6 +59,12 @@
 				} else if ($type == 'now') {
 
 					return $this->now;
+
+				} else if ($type == 'random_enum') {
+
+					$options = $this->tables[$this->table]['fields'][$config['field']]['options'];
+
+					return $options[array_rand($options)];
 
 				} else if (isset($this->list_paths[$type])) { // name_first, name_last, etc
 
@@ -100,12 +111,6 @@
 		// Cleanup values
 
 			public function values_parse($table, $record, $config) {
-
-				foreach ($record as $field => $value) {
-					if (is_array($value)) {
-						$record[$field] = $this->value_get($value, $record, $config);
-					}
-				}
 
 				foreach ($this->tables[$table]['field_datetimes'] as $field) { // Timestamp helpers are too slow (0.8 vs 0.3 seconds for 10000 records)... and timestamp intgers allow rand(start, end)
 					if (isset($record[$field]) && is_int($record[$field])) {

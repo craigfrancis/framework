@@ -30,7 +30,7 @@
 
 			ini_set('memory_limit', '1024M');
 
-			set_time_limit(5); // Don't time out
+			set_time_limit(30); // Don't time out
 
 		//--------------------------------------------------
 		// Confirm
@@ -38,9 +38,7 @@
 			echo 'This action will empty the database and fill it with dummy data.' . "\n\n";
 			echo 'Type "YES" to continue: ';
 
-//			$line = trim(fgets(STDIN));
-$line = 'YES';
-echo "\n";
+			$line = trim(fgets(STDIN));
 
 			echo "\n";
 
@@ -183,9 +181,7 @@ echo "\n";
 
 					echo "\n" . 'Type "YES" to create: ';
 
-//					$line = trim(fgets(STDIN));
-$line = 'YES';
-echo "\n";
+					$line = trim(fgets(STDIN));
 
 					echo "\n";
 
@@ -271,7 +267,7 @@ echo "\n";
 
 					require_once($tables[$table]['path']);
 
-					$tables[$table]['class'] = new $tables[$table]['name']($table, $helper);
+					$tables[$table]['class'] = new $tables[$table]['name']($helper, $table, $tables[$table]['fields']);
 
 				}
 			}
@@ -308,6 +304,8 @@ echo "\n";
 
 						echo '    ' . str_pad($table . ': ', $length);
 
+						$helper->_table_set($table);
+
 						$tables[$table]['class']->setup();
 
 						$time = round((microtime(true) - $start), 4);
@@ -334,6 +332,8 @@ echo "\n";
 
 						echo '    ' . str_pad($table . ': ', $length);
 
+						$helper->_table_set($table);
+
 						$fields = $tables[$table]['field_names'];
 						$records = $tables[$table]['class']->records_get();
 
@@ -350,7 +350,7 @@ echo "\n";
 								foreach ($records as $values) {
 									$values_sql = array();
 									foreach ($fields as $field) {
-										if (!isset($values[$field])) {
+										if (!array_key_exists($field, $values)) {
 
 											$missing_fields[$table][] = $field;
 											$values_sql[] = '""';
@@ -413,6 +413,8 @@ echo "\n";
 
 					echo '    ' . str_pad($table . ': ', $length);
 
+					$helper->_table_set($table);
+
 					$records = $tables[$table]['class']->records_get_extra();
 
 					$record_count = count($records);
@@ -458,6 +460,8 @@ echo "\n";
 						$start = microtime(true);
 
 						echo '    ' . str_pad($table . ': ', $length);
+
+						$helper->_table_set($table);
 
 						$tables[$table]['class']->cleanup();
 

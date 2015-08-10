@@ -5,21 +5,30 @@
 		//--------------------------------------------------
 		// Variables
 
+			protected $helper = NULL;
+
 			private $id = 0;
 			private $records = array();
 			private $table = NULL;
-
-			protected $helper = NULL;
+			private $fields = array();
 
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($table, $helper) {
-				$this->table = $table;
+			public function __construct($helper, $table, $fields) {
 				$this->helper = $helper;
+				$this->table = $table;
+				$this->fields = $fields;
 			}
 
 			public function setup() {
+			}
+
+		//--------------------------------------------------
+		// Field get
+
+			protected function field_get($name, $property) {
+				return $this->fields[$name][$property];
 			}
 
 		//--------------------------------------------------
@@ -31,7 +40,9 @@
 
 				$record = $this->record_create($values, $config);
 
-				$this->records[] = $this->helper->values_parse($this->table, $record, $config);
+				$record = $this->helper->values_parse($this->table, $record, $config);
+
+				$this->records[] = $record;
 
 				return $record;
 
