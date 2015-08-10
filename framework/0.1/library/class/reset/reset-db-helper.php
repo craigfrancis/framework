@@ -6,7 +6,6 @@
 		// Variables
 
 			private $tables = array();
-			private $table = NULL;
 			private $timestamps = array();
 			private $now = NULL;
 			private $list_paths = array();
@@ -33,10 +32,6 @@
 				$this->tables = $tables;
 			}
 
-			public function _table_set($table) {
-				$this->table = $table;
-			}
-
 		//--------------------------------------------------
 		// Create record - typically for child records.
 
@@ -59,12 +54,6 @@
 				} else if ($type == 'now') {
 
 					return $this->now;
-
-				} else if ($type == 'random_enum') {
-
-					$options = $this->tables[$this->table]['fields'][$config['field']]['options'];
-
-					return $options[array_rand($options)];
 
 				} else if (isset($this->list_paths[$type])) { // name_first, name_last, etc
 

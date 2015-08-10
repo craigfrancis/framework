@@ -304,8 +304,6 @@
 
 						echo '    ' . str_pad($table . ': ', $length);
 
-						$helper->_table_set($table);
-
 						$tables[$table]['class']->setup();
 
 						$time = round((microtime(true) - $start), 4);
@@ -331,8 +329,6 @@
 						$start = microtime(true);
 
 						echo '    ' . str_pad($table . ': ', $length);
-
-						$helper->_table_set($table);
 
 						$fields = $tables[$table]['field_names'];
 						$records = $tables[$table]['class']->records_get();
@@ -413,8 +409,6 @@
 
 					echo '    ' . str_pad($table . ': ', $length);
 
-					$helper->_table_set($table);
-
 					$records = $tables[$table]['class']->records_get_extra();
 
 					$record_count = count($records);
@@ -460,8 +454,6 @@
 						$start = microtime(true);
 
 						echo '    ' . str_pad($table . ': ', $length);
-
-						$helper->_table_set($table);
 
 						$tables[$table]['class']->cleanup();
 
