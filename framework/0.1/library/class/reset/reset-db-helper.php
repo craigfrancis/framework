@@ -108,13 +108,13 @@
 				}
 
 				foreach ($this->tables[$table]['field_datetimes'] as $field) { // Timestamp helpers are too slow (0.8 vs 0.3 seconds for 10000 records)... and timestamp intgers allow rand(start, end)
-					if (is_int($record[$field])) {
+					if (isset($record[$field]) && is_int($record[$field])) {
 						$record[$field] = gmdate('Y-m-d H:i:s', $record[$field]);
 					}
 				}
 
 				foreach ($this->tables[$table]['field_dates'] as $field) {
-					if (is_int($record[$field])) {
+					if (isset($record[$field]) && is_int($record[$field])) {
 						$record[$field] = gmdate('Y-m-d', $record[$field]);
 					}
 				}

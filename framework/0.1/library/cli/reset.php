@@ -63,6 +63,9 @@ echo "\n";
 
 				$fields = $db->fetch_fields($table_sql);
 
+				$field_names = array_keys($fields);
+				$field_names_sql = implode(', ', array_map(array($db, 'escape_field'), $field_names));
+
 				$field_datetimes = array();
 				$field_dates = array();
 				foreach ($fields as $field_name => $field_info) {
@@ -76,6 +79,8 @@ echo "\n";
 				$tables[$table] = array(
 						'name' => 'reset_' . $table,
 						'fields' => $fields,
+						'field_names' => $field_names,
+						'field_names_sql' => $field_names_sql,
 						'field_datetimes' => $field_datetimes,
 						'field_dates' => $field_dates,
 						'table_sql' => $table_sql,
@@ -281,6 +286,7 @@ echo "\n";
 			$length = (max(array_map('strlen', array_keys($tables))) + 2);
 			$overall = 0;
 			$round_count = count($table_rounds);
+			$missing_fields = array();
 
 			foreach ($table_rounds as $round_id => $round_tables) {
 
@@ -328,9 +334,8 @@ echo "\n";
 
 						echo '    ' . str_pad($table . ': ', $length);
 
+						$fields = $tables[$table]['field_names'];
 						$records = $tables[$table]['class']->records_get();
-
-						$tables[$table]['class']->records_reset();
 
 						if (is_array($records)) { // Not NULL
 
@@ -339,7 +344,32 @@ echo "\n";
 							$record_count = count($records);
 
 							if ($record_count > 0) {
-								$db->insert_many($tables[$table]['table_sql'], $records);
+
+								$records_sql = array();
+
+								foreach ($records as $values) {
+									$values_sql = array();
+									foreach ($fields as $field) {
+										if (!isset($values[$field])) {
+
+											$missing_fields[$table][] = $field;
+											$values_sql[] = '""';
+
+										} else if ($values[$field] === NULL) {
+
+											$values_sql[] = 'NULL';
+
+										} else {
+
+											$values_sql[] = $db->escape_string($values[$field]);
+
+										}
+									}
+									$records_sql[] = implode(', ', $values_sql);
+								}
+
+								$db->query('INSERT INTO ' . $tables[$table]['table_sql'] . ' (' . $tables[$table]['field_names_sql'] . ') VALUES (' . implode('), (', $records_sql) . ')');
+
 							}
 
 							$time = round((microtime(true) - $start), 4);
@@ -352,6 +382,8 @@ echo "\n";
 							echo 'Skipped' . "\n";
 
 						}
+
+						$tables[$table]['class']->records_reset();
 
 					}
 
@@ -383,7 +415,9 @@ echo "\n";
 
 					$records = $tables[$table]['class']->records_get_extra();
 
-					if (count($records) > 0) {
+					$record_count = count($records);
+
+					if ($record_count > 0) {
 
 						$db->insert_many($tables[$table]['table_sql'], $records);
 
@@ -444,6 +478,23 @@ echo "\n";
 			}
 
 			$overall += $total;
+
+		//--------------------------------------------------
+		//
+
+			if (count($missing_fields) > 0) {
+
+				echo "--------------------------------------------------\n\n";
+				echo 'Missing fields' . "\n\n";
+				foreach ($missing_fields as $table => $fields) {
+					echo '  ' . $table . "\n";
+					foreach (array_unique($fields) as $field) {
+						echo '    ' . $field . "\n";
+					}
+					echo "\n";
+				}
+				exit();
+			}
 
 		//--------------------------------------------------
 		// Complete
