@@ -10,6 +10,7 @@
 			protected $value_provided = NULL;
 
 			protected $fields = array();
+			protected $placeholders = array();
 			protected $format_html = array('separator' => ' ');
 			protected $invalid_error_set = false;
 			protected $invalid_error_found = false;
@@ -67,6 +68,10 @@
 
 					$this->type = 'fields';
 
+			}
+
+			public function placeholders_set($placeholders) {
+				$this->placeholders = $placeholders;
 			}
 
 		//--------------------------------------------------
@@ -426,6 +431,10 @@
 
 				if ($field != reset($this->fields)) {
 					$attributes['autofocus'] = NULL;
+				}
+
+				if (isset($this->placeholders[$field])) {
+					$attributes['placeholder'] = $this->placeholders[$field];
 				}
 
 				if ($this->type == 'date' && $this->autocomplete === 'bday') {
