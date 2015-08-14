@@ -3,7 +3,7 @@
 
 	"use strict";
 
-	var debug_open, debug_links;
+	var debug_open, debug_wrapper, debug_links;
 
 	function debug_setup() {
 
@@ -12,7 +12,6 @@
 
 			var body,
 				debug_types,
-				wrapper,
 				output,
 				ref,
 				link,
@@ -51,13 +50,13 @@
 		//--------------------------------------------------
 		// Add to DOM
 
-			wrapper = document.createElement('div');
+			debug_wrapper = document.createElement('div');
+			debug_wrapper.id = 'debug_output';
+
 			output = document.createElement('div');
 
 			debug_links = document.createElement('p');
 			debug_links.id = 'debug_links';
-
-			wrapper.id = 'debug_output';
 
 			for (k in debug_types) {
 				if (debug_types[k].notes.length > 0) {
@@ -128,13 +127,18 @@
 			var time_text = document.createElement('span');
 			time_text.className = 'debug_time' + (debug_time > 0.1 ? ' debug_slow' : '');
 			time_text.appendChild(document.createTextNode(' - ' + debug_time));
+			time_text.ondblclick = debug_close;
 			debug_links.appendChild(time_text);
 
-			wrapper.appendChild(debug_links);
-			wrapper.appendChild(output);
+			debug_wrapper.appendChild(debug_links);
+			debug_wrapper.appendChild(output);
 
-			body.appendChild(wrapper);
+			body.appendChild(debug_wrapper);
 
+	}
+
+	function debug_close() {
+		debug_wrapper.parentNode.removeChild(debug_wrapper);
 	}
 
 	function debug_open_link() {
