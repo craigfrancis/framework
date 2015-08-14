@@ -84,7 +84,7 @@
 				$controller_name = str_replace('-', '_', $building_name) . '_controller';
 
 				if (!is_file($controller_path)) {
-					$controller_log[] = $controller_path . ': n/a';
+					$controller_log[] = $controller_path . ' - absent';
 					continue;
 				}
 
@@ -181,7 +181,7 @@
 
 						foreach ($reflection_parameters as $id => $reflection_parameter) {
 							if (!$reflection_parameter->isOptional() && !isset($parameters[$id])) {
-								$controller_log[] = $controller_log_prefix . 'n/a';
+								$controller_log[] = $controller_log_prefix . 'absent';
 								$valid = false;
 							}
 						}
@@ -189,7 +189,7 @@
 					}
 
 					if ($valid && count($parameters) > count($reflection_parameters)) {
-						$controller_log[] = $controller_log_prefix . 'n/a';
+						$controller_log[] = $controller_log_prefix . 'absent';
 						$valid = false;
 					}
 
@@ -221,7 +221,7 @@
 
 		if (!is_file($controller_path)) {
 
-			$controller_log[] = $controller_path . ': include absent';
+			$controller_log[] = $controller_path . ' - absent';
 
 		} else {
 
@@ -247,7 +247,7 @@
 			$action_route_stack_pending = $route_stack;
 			$action_method = 'action_index';
 
-			$controller_log[] = $controller_path . ': include found';
+			$controller_log[] = $controller_path . ' - found';
 
 		}
 
@@ -259,7 +259,12 @@
 			$note_html = '<strong>Controllers</strong>:<br />' . "\n";
 
 			foreach ($controller_log as $log) {
-				$note_html .= '&#xA0; ' . preg_replace('/^([^:]+:)([^\(\)]*(\(\))?)/', '\1 <strong>\2</strong>', html($log)) . '<br />' . "\n";
+				$log_html = html($log);
+				$log_html = str_replace(' - no change', ' - <span class="debug_unchanged">no change</span>', $log_html);
+				$log_html = str_replace(' - found', ' - <span class="debug_found">found</span>', $log_html);
+				$log_html = str_replace(' - absent', ' - <span class="debug_absent">absent</span>', $log_html);
+				$log_html = preg_replace('/^([^:]+:)([^\(\)]*(\(\))?)/', '\1 <strong>\2</strong>', $log_html);
+				$note_html .= '&#xA0; ' . $log_html . '<br />' . "\n";
 			}
 
 			debug_note_html(str_replace(ROOT, '', $note_html), 'H');

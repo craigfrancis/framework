@@ -21,6 +21,7 @@
 		font: normal normal 12px/14px monospace;
 		text-align: left;
 		text-decoration: none;
+		max-width: none;
 	}
 
 	#debug_output {
@@ -32,8 +33,26 @@
 	#debug_output #debug_links span.debug_time,
 	#debug_output #debug_links a.debug_link {
 		padding: 1px;
-		color: #DDD;
+		color: #767676;
 		background: #FFF;
+		font-family: helvetica;
+	}
+
+	#debug_output #debug_links span.debug_time.debug_slow {
+		color: #A00;
+		font-weight: bold;
+	}
+
+	#debug_output #debug_links a.debug_link {
+		font-weight: bold;
+	}
+
+	#debug_output #debug_links a.debug_link:before {
+		content: "[";
+	}
+
+	#debug_output #debug_links a.debug_link:after {
+		content: "]";
 	}
 
 	#debug_output .debug_notes {
@@ -51,17 +70,18 @@
 		overflow: auto;
 	}
 
-	#debug_output .debug_notes .note a {
+	#debug_output .debug_notes .note a,
+	#debug_output .debug_notes .note .debug_found,
+	#debug_output .debug_notes .note .debug_unchanged,
+	#debug_output .debug_notes .note span.comment {
 		color: #00F;
 		background: inherit;
 	}
 
+	#debug_output .debug_notes .note .debug_absent,
 	#debug_output .debug_notes .note strong.warning {
-		color: #F00;
-	}
-
-	#debug_output .debug_notes .note span.comment {
-		color: #999;
+		color: #A00;
+		background: inherit;
 	}
 
 	#debug_output .debug_notes .note pre {

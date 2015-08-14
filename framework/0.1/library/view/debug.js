@@ -113,7 +113,7 @@
 					// Link
 
 						link = document.createElement('a');
-						link.appendChild(document.createTextNode('[' + k + ']'));
+						link.appendChild(document.createTextNode(k));
 						link.className = 'debug_link';
 						link.title = debug_types[k].name;
 						link.href = '#debug_notes_' + ref;
@@ -126,7 +126,7 @@
 			}
 
 			var time_text = document.createElement('span');
-			time_text.className = 'debug_time';
+			time_text.className = 'debug_time' + (debug_time > 0.1 ? ' debug_slow' : '');
 			time_text.appendChild(document.createTextNode(' - ' + debug_time));
 			debug_links.appendChild(time_text);
 
@@ -141,11 +141,11 @@
 
 		if (debug_open && debug_open !== this) {
 			debug_open.debugOutput.style.display = 'none';
-			debug_open.style.color = '#DDD';
+			debug_open.style.color = '#767676';
 		}
 
 		var open = (this.debugOutput.style.display === 'block');
-		this.style.color = (open ? '#DDD' : '#000');
+		this.style.color = (open ? '#767676' : '#00F');
 		this.debugOutput.style.display = (open ? 'none' : 'block');
 		this.debugOutput.style.minHeight = (window.innerHeight - debug_links.offsetHeight) + 'px';
 		this.scrollIntoView();

@@ -662,7 +662,10 @@
 
 						foreach ($css_types as $css_type_name => $css_type_info) {
 							foreach ($css_type_info['log'] as $log) {
-								$note_html .= "\n" . '&#xA0; ' . str_replace(' - found', ' - <strong>found</strong>', html($log)) . '<br />';
+								$log_html = html($log);
+								$log_html = str_replace(' - found', ' - <strong class="debug_found">found</strong>', $log_html);
+								$log_html = str_replace(' - absent', ' - <span class="debug_absent">absent</span>', $log_html);
+								$note_html .= "\n" . '&#xA0; ' . $log_html . '<br />';
 							}
 						}
 
