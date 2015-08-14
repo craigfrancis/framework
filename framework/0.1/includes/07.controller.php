@@ -337,6 +337,7 @@
 		}
 
 		$note_html .= '&#xA0; $response-><strong>description_set</strong>(\'Page description.\');<br />' . "\n";
+		$note_html .= '&#xA0; $response-><strong>csp_source_add</strong>(\'frame-src\', \'https://www.example.com\');<br />' . "\n";
 		$note_html .= '&#xA0; $response-><strong>js_add</strong>(\'/path/to/file.js\');<br />' . "\n";
 		$note_html .= '&#xA0; $response-><strong>js_code_add</strong>(\'var x = \' . json_encode($x) . \';\');<br />' . "\n";
 		$note_html .= '&#xA0; $response-><strong>css_auto</strong>();<br />' . "\n";
