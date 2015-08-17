@@ -4,7 +4,8 @@
 		// - Add a registration table (http://www.troyhunt.com/2015/01/introducing-secure-account-management.html)
 		// - Verify email address on register, but also on email address change?
 		// - And add a CSRF value field in the DB just for the logout URL.
-		// - Add a remember me table (https://paragonie.com/blog/2015/08/you-wouldnt-base64-a-password-cryptography-decoded)
+		// - Add a remember me table (https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence)
+		// - Use encryption to the stored db hash (like a pepper, https://github.com/paragonie/password_lock).
 
 	class auth_base extends check {
 
