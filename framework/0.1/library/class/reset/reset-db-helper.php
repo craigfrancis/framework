@@ -46,10 +46,25 @@
 
 				if ($type == 'timestamp') {
 
-					if (!isset($this->timestamps[$config['from']])) $this->timestamps[$config['from']] = strtotime($config['from']);
-					if (!isset($this->timestamps[$config['to']]))   $this->timestamps[$config['to']]   = strtotime($config['to']);
+					if (is_int($config['from'])) {
+						$from = $config['from'];
+					} else {
+						if (!isset($this->timestamps[$config['from']])) {
+							$this->timestamps[$config['from']] = strtotime($config['from']);
+						}
+						$from = $this->timestamps[$config['from']];
+					}
 
-					return rand($this->timestamps[$config['from']], $this->timestamps[$config['to']]);
+					if (is_int($config['to'])) {
+						$to = $config['to'];
+					} else {
+						if (!isset($this->timestamps[$config['to']])) {
+							$this->timestamps[$config['to']] = strtotime($config['to']);
+						}
+						$to = $this->timestamps[$config['to']];
+					}
+
+					return rand($from, $to);
 
 				} else if ($type == 'now') {
 

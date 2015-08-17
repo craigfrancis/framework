@@ -333,7 +333,13 @@
 						$fields = $tables[$table]['field_names'];
 						$records = $tables[$table]['class']->records_get();
 
-						if (is_array($records)) { // Not NULL
+						$tables[$table]['class']->records_reset();
+
+						if ($records === NULL) { // Not NULL
+
+							echo 'Skipped' . "\n";
+
+						} else {
 
 							$db->query('TRUNCATE TABLE ' . $tables[$table]['table_sql']);
 
@@ -373,13 +379,7 @@
 
 							echo 'Done - ' . number_format($time, 4) . ' (' . number_format($record_count) . ')' . "\n";
 
-						} else {
-
-							echo 'Skipped' . "\n";
-
 						}
-
-						$tables[$table]['class']->records_reset();
 
 					}
 
@@ -409,7 +409,7 @@
 
 					echo '    ' . str_pad($table . ': ', $length);
 
-					$records = $tables[$table]['class']->records_get_extra();
+					$records = $tables[$table]['class']->records_get();
 
 					$record_count = count($records);
 
@@ -476,7 +476,7 @@
 			$overall += $total;
 
 		//--------------------------------------------------
-		//
+		// Missing fields
 
 			if (count($missing_fields) > 0) {
 

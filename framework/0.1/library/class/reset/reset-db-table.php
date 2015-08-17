@@ -8,7 +8,7 @@
 			protected $helper = NULL;
 
 			private $id = 0;
-			private $records = array();
+			private $records = NULL;
 			private $table = NULL;
 			private $fields = array();
 
@@ -56,15 +56,11 @@
 		// Get the records
 
 			public function records_get() {
-				return (count($this->records) == 0 ? NULL : $this->records); // Don't empty table if there are no records.
+				return $this->records;
 			}
 
 			final public function records_reset() {
 				$this->records = array();
-			}
-
-			final public function records_get_extra() {
-				return $this->records;
 			}
 
 	}

@@ -4,6 +4,8 @@
 
 		// public function setup() {
 		//
+		// 	$this->records_reset(); // Reset
+		//
 		// 	$this->record_add(array(
 		// 		));
 		//
@@ -19,10 +21,6 @@
 		// 			[FIELDS]
 		// 		), $values);
 		//
-		// }
-
-		// public function records_get() {
-		// 	return array(); // Reset
 		// }
 
 		// public function cleanup() {
