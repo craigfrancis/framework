@@ -472,7 +472,10 @@
 					while (ob_get_level() > 0) {
 						$output = ob_get_clean() . $output;
 					}
-					$output = str_pad($output, 1024);
+
+					$output = str_pad($output, 1023); // Prompt the webserver to send the packet.
+
+					$output .= "\n"; // For when the client is using fgets()
 
 				//--------------------------------------------------
 				// Disable mod_gzip or mod_deflate, to end connection

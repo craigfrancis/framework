@@ -549,11 +549,37 @@
 					// 	$response .= fread($connection, 2048);
 					// }
 
-					$response = stream_get_contents($connection);
+					// $response = stream_get_contents($connection);
+
+					$length = NULL;
+					$response_headers = '';
+					$response_data = NULL;
+
+					while (($line = fgets($connection, 255))) {
+						if ($response_data === NULL) {
+
+							$response_headers .= $line;
+
+							if (strncmp($line, 'Content-Length:', 15) === 0) {
+								$length = intval(substr($line, 15));
+							} else if (trim($line) == '') {
+								$response_data = '';
+							}
+
+						} else {
+
+							$response_data .= $line;
+
+							if ($length !== NULL && strlen($response_data) >= $length) {
+								break; // For the 'loading' helper to run on the remote server (EOF will not come)
+							}
+
+						}
+					}
 
 					error_reporting($error_reporting);
 
-					$this->response_full = $response;
+					$this->response_full = $response_headers . $response_data;
 
 				//--------------------------------------------------
 				// Close connection
@@ -561,16 +587,16 @@
 					fclose($connection);
 
 				//--------------------------------------------------
-				// Split off the header
+				// Store
 
-					if (preg_match('/^(.*?)(\n\n|\r\n\r\n)/ms', $response, $matches)) {
+					if ($response_data !== NULL) {
 
-						$this->response_headers = str_replace("\r\n", "\n", $matches[1]);
-						$this->response_data = substr($response, strlen($matches[1] . $matches[2]));
+						$this->response_headers = str_replace("\r\n", "\n", $response_headers);
+						$this->response_data = $response_data;
 
 					} else {
 
-						return $this->error('Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")', $response);
+						return $this->error('Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")', $this->response_full);
 
 					}
 
