@@ -92,7 +92,7 @@
 
 				$this->_key_check_public($key_to);
 
-				$file_path_plain = tempnam('/tmp', 'gpg');
+				$file_path_plain = tempnam(sys_get_temp_dir(), 'gpg');
 				$file_path_encrypted = $file_path_plain . '.asc';
 
 				file_put_contents($file_path_plain, $data_plain);
@@ -117,7 +117,7 @@
 				$this->_key_check_public($key_to);
 
 				if ($path_dest === NULL) {
-					$path_dest = tempnam('/tmp', 'gpg.');
+					$path_dest = tempnam(sys_get_temp_dir(), 'gpg.');
 				}
 
 				$path_dest_new = $path_dest . '.new';
@@ -165,9 +165,9 @@
 				$key_exists = $this->_key_exists($key_email);
 				if (!$key_exists) {
 
-					$key_config_path = tempnam('/tmp', 'gpg');
-					$pubring_path = tempnam('/tmp', 'gpg.pub');
-					$secring_path = tempnam('/tmp', 'gpg.sec');
+					$key_config_path = tempnam(sys_get_temp_dir(), 'gpg');
+					$pubring_path = tempnam(sys_get_temp_dir(), 'gpg.pub');
+					$secring_path = tempnam(sys_get_temp_dir(), 'gpg.sec');
 
 					$key_config_content  = 'Key-Type: DSA' . "\n";
 					$key_config_content .= 'Key-Length: 2048' . "\n";

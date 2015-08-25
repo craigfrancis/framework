@@ -1068,7 +1068,7 @@
 			function _html_to_csv($html) {
 				$text = html_decode(strip_tags($html));
 				if ($this->charset_output !== NULL && $this->charset_output != $this->charset_input) {
-					$text = iconv($this->charset_input, $this->charset_output . '//TRANSLIT', $text);
+					$text = @iconv($this->charset_input, $this->charset_output . '//TRANSLIT', $text);
 				}
 				return csv($text);
 			}
