@@ -365,6 +365,13 @@
 						$print_values = array_slice($print_values, 0, 1);
 					}
 
+					if ($this->label_option !== NULL && $this->select_size == 1 && !$this->multiple) {
+						$label_html = '
+										<option value="">' . ($this->label_option === '' ? '&#xA0;' : html($this->label_option)) . '</option>'; // Value must be blank for HTML5
+					} else {
+						$label_html = NULL;
+					}
+
 				//--------------------------------------------------
 				// Group HTML
 
@@ -380,7 +387,13 @@
 							}
 
 							foreach (array_keys($this->option_groups, $opt_group) as $key) {
-								if (isset($this->option_values[$key])) {
+								if ($key === '') {
+
+									$group_html .= $label_html;
+
+									$label_html = NULL;
+
+								} else if (isset($this->option_values[$key])) {
 
 									$used_keys[] = $key;
 
@@ -404,12 +417,7 @@
 				// Main HTML
 
 					$html = '
-									' . html_tag('select', $this->_input_attributes());
-
-					if ($this->label_option !== NULL && $this->select_size == 1 && !$this->multiple) {
-						$html .= '
-										<option value="">' . ($this->label_option === '' ? '&#xA0;' : html($this->label_option)) . '</option>'; // Value must be blank for HTML5
-					}
+									' . html_tag('select', $this->_input_attributes()) . $label_html;
 
 					foreach ($this->option_values as $key => $value) {
 						if (!in_array($key, $used_keys)) {
