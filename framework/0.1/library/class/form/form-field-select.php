@@ -10,6 +10,7 @@
 			protected $label_option = NULL;
 			protected $option_values = array();
 			protected $option_groups = NULL;
+			protected $db_field_options = NULL;
 			protected $select_size = 1;
 			protected $required_error_set = false;
 			protected $invalid_error_set = false;
@@ -74,6 +75,13 @@
 			public function db_field_set($a, $b = NULL, $c = NULL) {
 
 				//--------------------------------------------------
+				// Checks
+
+					if ($this->invalid_error_set) {
+						exit_with_error('Cannot call db_field_set() after invalid_error_set()');
+					}
+
+				//--------------------------------------------------
 				// Set field
 
 					$this->_db_field_set($a, $b, $c);
@@ -91,7 +99,8 @@
 							unset($options[$key]);
 						}
 
-						$this->option_values_set($options); // The array index might change (structure change), so use the "option_values" method, so it only uses the values
+						$this->db_field_options = $options;
+						$this->option_values = array_combine($options, $options);
 
 					}
 
@@ -114,24 +123,19 @@
 					exit_with_error('Cannot call options_set() after invalid_error_set()');
 				}
 				if (in_array('', array_keys($options), true)) { // Performs a strict check (allowing id 0)
-					exit_with_error('Cannot have an option with a blank key.', debug_dump($options));
-				} else {
-					$this->option_values = $options;
+					exit_with_error('Cannot have an option with a blank key, use label_option_set() instead.', debug_dump($options));
 				}
+				if ($this->db_field_options !== NULL) {
+					$diff = array_diff(($this->db_field_key ? array_keys($options) : $options), $this->db_field_options);
+					if (count($diff) > 0) {
+						exit_with_error('Invalid option ' . ($this->db_field_key ? 'key' : 'value') . (count($diff) == 1 ? '' : 's') . ' "' . implode('", "', $diff) . '" (not allowed in the database).', debug_dump($this->db_field_options));
+					}
+				}
+				$this->option_values = $options;
 			}
 
 			public function option_values_set($values) {
-				if ($this->invalid_error_set) {
-					exit_with_error('Cannot call option_values_set() after invalid_error_set()');
-				}
-				$this->option_values = array();
-				foreach ($values as $value) {
-					if ($value === '') {
-						exit_with_error('Cannot have an option with a blank key.', debug_dump($values));
-					} else {
-						$this->option_values[$value] = $value; // Use the value for the key as well... so if the values change between loading the form, and submitting (e.g. site update).
-					}
-				}
+				$this->options_set(array_combine($values, $values));
 			}
 
 			public function options_get() {

@@ -181,21 +181,14 @@
 			}
 
 			public function input_options_value_set($field, $options, $label = '') { // Only use the values (ignores the keys)
-				if ($this->invalid_error_set) {
-					exit_with_error('Cannot call input_options_value_set() after invalid_error_set()');
-				}
-				$text_options = array();
-				foreach ($options as $option) {
-					$text_options[$option] = $option;
-				}
-				$this->input_config_set($field, array('options' => $text_options, 'label' => $label));
+				$this->input_options_text_set($field, array_combine($options, $options), $label);
 			}
 
 			public function input_options_text_set($field, $options, $label = '') { // Uses the array keys for the value, and array values for display text
 				if ($this->invalid_error_set) {
 					exit_with_error('Cannot call input_options_text_set() after invalid_error_set()');
 				}
-				$this->input_config_set($field, array('options' => $options, 'label' => $label, 'pad_length' => 0));
+				$this->input_config_set($field, array('options' => $options, 'label' => $label));
 			}
 
 		//--------------------------------------------------
