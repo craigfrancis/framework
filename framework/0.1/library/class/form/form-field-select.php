@@ -369,7 +369,7 @@
 						$label_html = '
 										<option value="">' . ($this->label_option === '' ? '&#xA0;' : html($this->label_option)) . '</option>'; // Value must be blank for HTML5
 					} else {
-						$label_html = NULL;
+						$label_html = '';
 					}
 
 				//--------------------------------------------------
@@ -391,7 +391,7 @@
 
 									$group_html .= $label_html;
 
-									$label_html = NULL;
+									$label_html = '';
 
 								} else if (isset($this->option_values[$key])) {
 
