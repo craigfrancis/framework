@@ -748,7 +748,7 @@
 
 		} else {
 
-			return NULL;
+			exit_with_error('The unit "' . $unit_name . '" does not exist');
 
 		}
 

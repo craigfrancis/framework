@@ -76,7 +76,7 @@
             },
             "items": {
                 "type": "enum",
-                "length": 3,
+                "length": 5,
                 "collation": "utf8_unicode_ci",
                 "null": false,
                 "default": null,
@@ -84,9 +84,11 @@
                 "options": [
                     "A",
                     "B",
-                    "C"
+                    "C",
+                    "D",
+                    "E"
                 ],
-                "definition": "enum('A','B','C') NOT NULL"
+                "definition": "enum('A','B','C','D','E') NOT NULL"
             },
             "selection": {
                 "type": "set",
