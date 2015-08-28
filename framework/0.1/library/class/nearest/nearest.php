@@ -336,8 +336,11 @@
 						// Extract
 
 							$result = simplexml_load_string($contents);
-							if (isset($result->status) && $result->status == 'OK') {
-								if (isset($result->result) >= 1) {
+
+							if (isset($result->status) && isset($result->result) && $result->status == 'OK') {
+								if (strval($result->result->type) == 'country') {
+									// A query containing a component filter will only return the geocoding results that match the filter. If no matches are found, the geocoder will return a result that matches the filter itself.
+								} else {
 									$latitude = floatval($result->result->geometry->location->lat);
 									$longitude = floatval($result->result->geometry->location->lng);
 									$accuracy = ($result->result->geometry->location_type == 'ROOFTOP' ? 5 : 4);
