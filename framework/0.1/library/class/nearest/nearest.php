@@ -325,6 +325,7 @@
 							$contents = file_get_contents(url('https://maps.google.com/maps/api/geocode/xml', array(
 									'address' => $search_query,
 									'sensor' => 'false',
+									'components' => 'country:' . $country,
 									'region' => $country,
 									'key' => ($google_maps_key === '' ? NULL : $google_maps_key),
 								)));
