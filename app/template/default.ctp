@@ -61,6 +61,10 @@
 			//--------------------------------------------------
 			// Setup
 
+				$server_nav = new nav();
+				$server_nav->link_add('/doc/setup/server/apache/', 'Apache');
+				$server_nav->link_add('/doc/setup/server/nginx/', 'Nginx');
+
 				$resources_nav = new nav();
 				$resources_nav->link_add('/doc/setup/resources/favicon/', 'Favicon');
 				$resources_nav->link_add('/doc/setup/resources/robots/', 'Robots (txt)');
@@ -68,18 +72,19 @@
 
 				$setup_nav = new nav();
 				$setup_nav->link_add('/doc/setup/structure/', 'Structure');
-				$setup_nav->link_add('/doc/setup/bootstrap/', 'Bootstrap');
-				$setup_nav->link_add('/doc/setup/config/', 'Config');
-				$setup_nav->link_add('/doc/setup/constants/', 'Constants');
-				$setup_nav->link_add('/doc/setup/debug/', 'Debug');
-				$setup_nav->link_add('/doc/setup/routes/', 'Routes');
-				$setup_nav->link_add('/doc/setup/controllers/', 'Controllers');
-				$setup_nav->link_add('/doc/setup/units/', 'Units');
+				$setup_nav->link_add('/doc/setup/server/', 'Server', array('child' => $server_nav));
 				$setup_nav->link_add('/doc/setup/views/', 'Views');
 				$setup_nav->link_add('/doc/setup/templates/', 'Templates');
-				$setup_nav->link_add('/doc/setup/resources/', 'Resources', array('child' => $resources_nav));
+				$setup_nav->link_add('/doc/setup/units/', 'Units');
+				$setup_nav->link_add('/doc/setup/controllers/', 'Controllers');
+				$setup_nav->link_add('/doc/setup/routes/', 'Routes');
 				$setup_nav->link_add('/doc/setup/gateways/', 'Gateways');
 				$setup_nav->link_add('/doc/setup/jobs/', 'Jobs');
+				$setup_nav->link_add('/doc/setup/config/', 'Config');
+				$setup_nav->link_add('/doc/setup/constants/', 'Constants');
+				$setup_nav->link_add('/doc/setup/resources/', 'Resources', array('child' => $resources_nav));
+				$setup_nav->link_add('/doc/setup/debug/', 'Debug');
+				$setup_nav->link_add('/doc/setup/bootstrap/', 'Bootstrap');
 				$setup_nav->link_add('/doc/setup/cli/', 'CLI');
 
 				$section_nav->link_add('/doc/setup/', 'Setup', array('child' => $setup_nav));

@@ -1,11 +1,13 @@
 
 # Units
 
-A unit allows you to package up something like a [form](../../doc/helpers/form.md) or [table](../../doc/helpers/form.md) into something that will appear on a webpage (potentially many times).
+A unit allows you to package up something like a **form** or **table** into something that will appear on a webpage (potentially many times).
 
-It usually comprises of the PHP (in a self contained object), and its own HTML output.
+Each unit contains its own PHP code and HTML output.
 
-It is possible for a unit to also use units itself. For example you might want a generic search form (e.g. a single text field and submit button), which can be used in other units that list articles, customers, etc.
+The PHP code will often use [helpers](../../doc/helpers.md), but it is possiblt to also call in other units as well.
+
+For example, you might want a simple search form (e.g. a single text field and submit button), which uses the [form helper](../../doc/helpers/form.md), where it can be used in other units that list articles, customers, etc.
 
 ---
 
@@ -20,9 +22,9 @@ Or simply add a 'php' and a 'ctp' file to the appropriate folder:
 	/app/unit/search/search-form.php
 	/app/unit/search/search-form.ctp
 
-The php file contains a class of the same name (with underscores and 'unit' suffix).
+The **.php** file contains a class of the same name (with underscores and 'unit' suffix).
 
-The ctp file contains the HTML, and is optional if you have provided a html() method.
+The **.ctp** file contains the HTML, and is optional if you have provided a html() method.
 
 ---
 
@@ -46,15 +48,13 @@ And the HTML:
 
 ## Example usage
 
-Any time you need the unit, you can either call:
+For any [controller](../../doc/setup/controllers.md) that does not have a related [view file](../../doc/setup/views.md), you can call:
 
 	$unit = unit_add('contact_form', array(
 			'dest_url' => url('/contact/thank-you/'),
 		));
 
-Where it will be printed automatically if you don't have a related [view file](../../doc/setup/views.md) in /app/view/.
-
-Or you can use the `unit_get()` function instead:
+Or you can use the `unit_get()` function:
 
 	$unit = unit_get('contact_form', array(
 			'dest_url' => url('/contact/thank-you/'),
@@ -63,11 +63,11 @@ Or you can use the `unit_get()` function instead:
 	$response = response_get();
 	$response->set('unit', $unit);
 
-Where it can be printed with:
+Where the view file can print the unit with:
 
 	<?= $unit->html(); ?>
 
-The reference to the unit also allows you to call custom methods on it, and retrieve variables that have been set, e.g.
+The reference to the unit (returned from `unit_add()` or `unit_get()`) also allows you to call custom methods on it, and retrieve variables that have been set, e.g.
 
 	$unit->search_get();
 

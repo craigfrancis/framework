@@ -7,7 +7,7 @@
 			);
 
 		protected function authenticate($config) {
-			return true;
+			return true; // Anyone can use
 		}
 
 		protected function setup($config) {

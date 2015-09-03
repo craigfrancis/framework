@@ -22,7 +22,7 @@ To run a gateway from elsewhere on the site use:
 
 ---
 
-Also need to add notes about the [tester helper](../../doc/system/tester.md), and maintenance gateway.
+TODO: add notes about the [tester helper](../../doc/system/tester.md), and maintenance gateway.
 
 ---
 

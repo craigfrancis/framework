@@ -3,6 +3,8 @@
 
 Unlike other frameworks, the routes are rarely used, as [controllers](../../doc/setup/controllers.md) are loaded automatically.
 
+---
+
 Routes allow you to make generic changes to URLs for your website, for example you may prefix every URL with the ISO language code:
 
 	https://www.example.com/en/about/
