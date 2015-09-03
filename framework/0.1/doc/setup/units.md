@@ -48,13 +48,13 @@ And the HTML:
 
 ## Example usage
 
-For any [controller](../../doc/setup/controllers.md) that does not have a related [view file](../../doc/setup/views.md), you can call:
+For any [controller](../../doc/setup/controllers.md) that does not have a related [view file](../../doc/setup/views.md), you can simply call:
 
 	$unit = unit_add('contact_form', array(
 			'dest_url' => url('/contact/thank-you/'),
 		));
 
-Or you can use the `unit_get()` function:
+**Or** you can use the `unit_get()` function:
 
 	$unit = unit_get('contact_form', array(
 			'dest_url' => url('/contact/thank-you/'),
@@ -123,16 +123,15 @@ You can pass variables to the HTML by calling:
 
 	$this->set('name', 'value');
 
-Which can be accessed as local variables in the HTML:
+Which can be accessed in the HTML with:
 
 	<?= html($name); ?>
 
 These variables are not available to the main [view file](../../doc/setup/views.md) (a unit should be self contained).
 
-But if you need to access the [response object](../../doc/system/response.md), you can still call:
+But you can still access the [response object](../../doc/system/response.md), and call:
 
 	$response = response_get();
-
 	$response->js_add('/path/to/file.js');
 	$response->set('name', 'value');
 
