@@ -428,7 +428,17 @@
 		}
 	}
 
-	if (!function_exists('hex2bin')) {
+	if (!function_exists('array_column')) { // 5.5+
+		function array_column($array, $column_key, $index_key = null) {
+			$results = array();
+			foreach ($array as $k => $v) {
+				$results[($index_key ? $v[$index_key] : $k)] = $v[$column_key];
+			}
+			return $results;
+		}
+	}
+
+	if (!function_exists('hex2bin')) { // 5.4+
 		function hex2bin($hex) {
 			return pack('H*', $hex);
 		}
@@ -1145,8 +1155,8 @@
 //--------------------------------------------------
 // Set http response code
 
-	if (!function_exists('http_response_code')) {
-		function http_response_code($code = NULL) { // Pre PHP 5.4
+	if (!function_exists('http_response_code')) { // PHP 5.4+
+		function http_response_code($code = NULL) {
 
 			if ($code !== NULL) {
 
