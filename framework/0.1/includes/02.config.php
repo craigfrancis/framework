@@ -213,9 +213,9 @@
 	//--------------------------------------------------
 	// Resources
 
-		if (!defined('ASSET_URL'))    define('ASSET_URL',    config::get('url.prefix') . '/a');
+		if (!defined('ASSET_URL'))    define('ASSET_URL',    '/a');
 		if (!defined('ASSET_ROOT'))   define('ASSET_ROOT',   PUBLIC_ROOT . '/a');
-		if (!defined('FILE_URL'))     define('FILE_URL',     config::get('url.prefix') . '/a/files');
+		if (!defined('FILE_URL'))     define('FILE_URL',     '/a/files');
 		if (!defined('FILE_ROOT'))    define('FILE_ROOT',    ROOT . '/files');
 		if (!defined('PRIVATE_ROOT')) define('PRIVATE_ROOT', ROOT . '/private');
 
