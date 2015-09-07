@@ -231,8 +231,8 @@
 				$this->input_data[$field] = $value;
 			}
 
-			public function input_wrapper_tag_set($class) {
-				$this->input_wrapper_tag = $class;
+			public function input_wrapper_tag_set($tag) {
+				$this->input_wrapper_tag = $tag;
 			}
 
 			public function input_wrapper_class_set($class) {
