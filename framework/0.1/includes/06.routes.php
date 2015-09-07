@@ -20,6 +20,9 @@
 
 		$url_prefix = config::get('url.prefix');
 		if ($url_prefix != '') {
+			if (substr($url_prefix, -1) == '/') {
+				exit_with_error('The "url.prefix" config should not end with a slash.', 'url.prefix = ' .  $url_prefix);
+			}
 			$route_path = preg_replace('/^' . preg_quote($url_prefix, '/') . '/', '', $route_path);
 		}
 
