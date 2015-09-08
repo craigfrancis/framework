@@ -254,12 +254,17 @@
 
 						$query_string = config::get('request.query');
 						if ($query_string !== '' && $query_string !== NULL) {
+
 							parse_str($query_string, $parameters);
+
 							foreach ($parameters as $key => $value) {
-								if (!array_key_exists($key, $this->parameters)) { // Already set parameters take priority (don't replace)
-									$this->parameters[$key] = $value;
+								if (array_key_exists($key, $this->parameters)) {
+									unset($parameters[$key]); // Already set parameters take priority (don't replace)
 								}
 							}
+
+							$this->parameters = array_merge($parameters, $this->parameters); // Kept parameters go first (not appended at the end).
+
 						}
 
 					}
