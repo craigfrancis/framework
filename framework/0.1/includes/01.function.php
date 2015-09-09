@@ -139,10 +139,8 @@
 		function human_to_ref($text) {
 
 			$text = strtolower($text);
-			$text = preg_replace('/[^a-z0-9_]/i', '_', $text);
-			$text = preg_replace('/__+/', '_', $text);
-			$text = preg_replace('/_+$/', '', $text);
-			$text = preg_replace('/^_+/', '', $text);
+			$text = preg_replace('/[^a-z0-9]/i', ' ', $text);
+			$text = preg_replace('/ +/', '_', trim($text));
 
 			return $text;
 
