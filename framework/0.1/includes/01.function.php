@@ -589,6 +589,9 @@
 		if (config::get('request.method') == 'POST') { // If user clicks back after seeing login form it might be as a GET request, so don't loose their POST data from before.
 			session::set('save_request_data', $_POST);
 		}
+		if (!is_object($url) || !is_a($url, 'url')) {
+			$url = url($url);
+		}
 		redirect($url);
 	}
 
