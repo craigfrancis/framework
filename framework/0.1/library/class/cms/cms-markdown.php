@@ -48,6 +48,9 @@ class cms_markdown_base extends check {
 	private $predef_urls = array();
 	private $predef_titles = array();
 
+	# Item ID's
+	private $item_ids = array();
+
 	public function __construct($config = NULL) {
 	#
 	# Constructor function. Initialize appropriate member variables.
@@ -792,13 +795,15 @@ class cms_markdown_base extends check {
 
 		$level = $matches[2]{0} == '=' ? 1 : 2;
 		$level += intval($this->config['heading_level'] - 1);
-		$block = "<h$level>".$this->runSpanGamut($matches[1])."</h$level>";
+		$content = $this->runSpanGamut($matches[1]);
+		$block = "<h$level id=\"" . htmlspecialchars($this->getItemId($content)) . "\">".$content."</h$level>";
 		return "\n" . $this->hashBlock($block) . "\n\n";
 	}
 	function _doHeaders_callback_atx($matches) {
 		$level = strlen($matches[1]);
 		$level += intval($this->config['heading_level'] - 1);
-		$block = "<h$level>".$this->runSpanGamut($matches[2])."</h$level>";
+		$content = $this->runSpanGamut($matches[2]);
+		$block = "<h$level id=\"" . htmlspecialchars($this->getItemId($content)) . "\">".$content."</h$level>";
 		return "\n" . $this->hashBlock($block) . "\n\n";
 	}
 
@@ -1461,6 +1466,18 @@ class cms_markdown_base extends check {
 		}
 	}
 
+	function getItemId($text) {
+		$text = strtolower($text);
+		$text = preg_replace('/[^a-z0-9]/i', ' ', $text);
+		$text = preg_replace('/ +/', '_', trim($text));
+		$id = $text;
+		$k = 1;
+		while (in_array($id, $this->item_ids)) {
+			$id = $text . '_' . ++$k;
+		}
+		$this->item_ids[] = $id;
+		return $id;
+	}
 
 	function outdent($text) {
 	#
