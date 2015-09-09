@@ -1,14 +1,8 @@
 Below are some example configurations for Apache.
 
-### Uploaded files
+They include support for [uploaded files](../../../doc/helpers/file.md), where the framework will map the /a/files/ URL to a separate [files](../../../doc/setup/structure.md#files) folder.
 
-Typically the framework will map the /a/files/ URL to the /files/ folder.
-
-This folder is not touched when uploading changes to the website, as it contains files that are uploaded to the website (e.g. CMS controlled images).
-
-### Cache busting URLs
-
-The framework will allow you to include the modifiation time in the URL of images, CSS, and JavaScript files, so the server can then set a long cache time on them with the ExpiresByType rules:
+And [versioning url's on resourses](../../../doc/setup/resources.md#versioning) (e.g. images, CSS, and JavaScript), where the cache headers can be set with:
 
 	ExpiresActive On
 	ExpiresByType image/gif "access plus 12 months"
@@ -18,14 +12,6 @@ The framework will allow you to include the modifiation time in the URL of image
 	ExpiresByType text/css "access plus 12 months"
 	ExpiresByType application/javascript "access plus 12 months"
 	ExpiresByType application/x-font-woff "access plus 12 months"
-
-For resources linked to automaticaly by the framework, this feature can be enabled with:
-
-	$config['output.timestamp_url'] = true;
-
-And anything you include yourself, can use the timestamp_url() function:
-
-	<img src="<?= html(timestamp_url('/a/img/logo.gif')) ?>" alt="Logo" />
 
 ---
 

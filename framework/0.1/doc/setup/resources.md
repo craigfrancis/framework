@@ -35,6 +35,10 @@ This can be enabled with the config options:
 
 	$config['output.timestamp_url'] = true;
 
+If you want to use this feature yourself (e.g. images), there is the timestamp_url() function:
+
+	<img src="<?= html(timestamp_url('/a/img/logo.gif')) ?>" alt="Logo" />
+
 ---
 
 ## JavaScript code
