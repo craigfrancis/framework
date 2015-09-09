@@ -388,7 +388,9 @@
 				//--------------------------------------------------
 				// Described by
 
-					$this->input_described_by[] = ($tag_id = $this->form->_field_tag_id_get());
+					$tag_id = $this->form->_field_tag_id_get();
+
+					array_unshift($this->input_described_by, $tag_id); // Label comes first
 
 				//--------------------------------------------------
 				// Return the HTML for the label

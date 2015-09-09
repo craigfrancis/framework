@@ -624,7 +624,8 @@
 				if ($this->info_html == '') {
 					return '';
 				} else {
-					$this->input_described_by[] = ($tag_id = $this->form->_field_tag_id_get());
+					$tag_id = $this->form->_field_tag_id_get();
+					$this->input_described_by[] = $tag_id;
 					return ($indent > 0 ? "\n" : '') . str_repeat("\t", $indent) . '<' . html($this->info_tag) . ' class="' . html($this->info_class) . '" id="' . html($tag_id) . '">' . $this->info_html . '</' . html($this->info_tag) . '>';
 				}
 			}

@@ -70,9 +70,11 @@
 					$label_html = preg_replace('/<label[^>]+>(.*)<\/label>/', '$1', $label_html); // Ugly, but better than duplication
 				}
 
-				$this->input_described_by[] = ($tag_id = $this->form->_field_tag_id_get()); // For "aria-describedby"
+				$tag_id = $this->form->_field_tag_id_get(); // For "aria-describedby"
 
-				return '<span id="' . html($tag_id) . '">' . $label_html . '</span>';
+				array_unshift($this->input_described_by, $tag_id); // Label comes first
+
+				return '<span id="' . html($tag_id) . '">' . $label_html . '</span>'; // No, you still can't have multiple labels for an input
 
 			}
 
