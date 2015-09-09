@@ -588,7 +588,7 @@
 			session::set('save_request_data', $_POST);
 		}
 		if (!is_object($url) || !is_a($url, 'url')) {
-			$url = url($url);
+			$url = url($url); // Ensures that url.prefix can be applied.
 		}
 		redirect($url);
 	}
