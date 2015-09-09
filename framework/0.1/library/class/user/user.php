@@ -205,7 +205,7 @@
 
 			public function require_login() {
 				if ($this->user_id == 0) {
-					$this->login_redirect(url($this->login_url));
+					$this->login_redirect($this->login_url);
 				}
 			}
 
