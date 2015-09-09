@@ -55,36 +55,51 @@ And anything you include yourself, can use the timestamp_url() function:
 
 ## Simple .htaccess
 
-    RewriteEngine On
+	RewriteEngine On
 
 	RewriteRule ^/a/files/(.*) /www/live/test.project/files/$1
 
 	RewriteRule ^(.*)/[0-9]+-([^/]+)$ $1/$2 [L]
 
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^(.*)$ /index.php [L]
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^(.*)$ /index.php [L]
 
 ---
 
 ## Sub-folder .htaccess
 
-If the website is going work in a sub-folder for something like a WordPress website:
+If the website is going work in a sub-folder (e.g under a WordPress website).
+
+Assuming the main website sets its DocumentRoot to:
+
+	/www/live/main.website/public_html/
+
+First create a folder outside of this folder, so you have something like:
+
+	/www/live/sub.website/
+	/www/live/sub.website/app/public/
+	/www/live/sub.website/files/
+
+Then create a symlink in the main websites DocumentRoot to the public folder of this project.
+
+	ln -s /www/live/sub.website/app/public/ /www/live/main.website/public_html/sub-folder
+
+And finaly add (or edit) the .htaccess file:
+
+	/www/live/sub.website/app/public/.htaccess
 
 	RewriteEngine On
 
-	RewriteBase /
-	RewriteRule ^index\.php$ - [L]
-
-	RewriteRule ^(folder/.*)/[0-9]+-([^/]+)$ $1/$2 [L]
+	RewriteRule ^(.*)/[0-9]+-([^/]+)$ $1/$2 [L]
 
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule ^folder/ folder/index.php [L]
+	RewriteRule ^(.*)$ /sub-folder/index.php [L]
 
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule . /index.php [L]
+Note how the last RewriteRule starts with "/sub-folder", this is because the .htaccess version of RewriteRule starts from the DocumentRoot.
+
+For the /a/files/ folder, you can use an [install script](../../../doc/system/uploading.md) to create another symlink.
 
 ---
 
