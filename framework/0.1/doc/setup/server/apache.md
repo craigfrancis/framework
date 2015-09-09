@@ -1,8 +1,8 @@
 Below are some example configurations for Apache.
 
-They include support for [uploaded files](../../../doc/helpers/file.md), where the framework will map the /a/files/ URL to a separate [files](../../../doc/setup/structure.md#files) folder.
+The examples include support for uploaded files (e.g. via the [file helper](../../../doc/helpers/file.md)), where the web server needs to map the /a/files/ URL to the [/files/](../../../doc/setup/structure.md#files) folder.
 
-And [versioning url's on resourses](../../../doc/setup/resources.md#versioning) (e.g. images, CSS, and JavaScript), where the cache headers can be set with:
+And [versioning url's on resourses](../../../doc/setup/resources.md#versioning) (e.g. images, CSS, and JavaScript), where the cache headers can also be set with:
 
 	ExpiresActive On
 	ExpiresByType image/gif "access plus 12 months"
@@ -85,7 +85,7 @@ And finaly add (or edit) the .htaccess file:
 
 Note how the last RewriteRule starts with "/sub-folder", this is because the .htaccess version of RewriteRule starts from the DocumentRoot.
 
-For the /a/files/ folder, you can use an [install script](../../../doc/system/uploading.md) to create another symlink.
+For the /a/files/ folder, you can use an [install script](../../../doc/system/uploading.md#install_scripts) to create another symlink.
 
 ---
 
