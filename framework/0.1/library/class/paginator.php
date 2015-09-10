@@ -222,10 +222,12 @@
 
 				if ($this->page_number > 1) {
 
-					$url = $this->page_url_get(1);
-					if ($url !== NULL) {
-						config::array_set('output.links', 'first', $url);
-					}
+					// Not valid HTML5 (yet).
+					//
+					// $url = $this->page_url_get(1);
+					// if ($url !== NULL) {
+					// 	config::array_set('output.links', 'first', $url);
+					// }
 
 					$url = $this->page_url_get($this->page_number - 1);
 					if ($url !== NULL) {
@@ -241,10 +243,10 @@
 						config::array_set('output.links', 'next', $url);
 					}
 
-					$url = $this->page_url_get($this->page_count);
-					if ($url !== NULL) {
-						config::array_set('output.links', 'last', $url);
-					}
+					// $url = $this->page_url_get($this->page_count);
+					// if ($url !== NULL) {
+					// 	config::array_set('output.links', 'last', $url);
+					// }
 
 				}
 
@@ -308,10 +310,10 @@
 						$rel = 'prev';
 					} else if ($page_number == ($this->page_number + 1)) {
 						$rel = 'next';
-					} else if ($page_number == 1) {
-						$rel = 'first';
-					} else if ($page_number == $this->page_count) {
-						$rel = 'last';
+					// } else if ($page_number == 1) {
+					// 	$rel = 'first';
+					// } else if ($page_number == $this->page_count) {
+					// 	$rel = 'last';
 					} else {
 						$rel = NULL;
 					}
