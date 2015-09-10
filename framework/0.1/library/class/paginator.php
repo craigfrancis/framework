@@ -475,4 +475,56 @@
 
 	}
 
+//--------------------------------------------------
+// TODO: Work more like example from Mike West:
+// https://mikewest.org/2010/02/an-accessible-pagination-pattern
+//
+// - Not sure everyone will understand the "Pagination" label.
+// - Not sure joining the previous and link to a single link will work (:hover css, and tab order).
+// - Can only use setsize/posinset on a listitem (a child of list).
+
+	// $default_config = array(
+	// 		'item_limit' => 24, // Divisible by 1, 2, 3, 4, 6, 12
+	// 		'item_count' => NULL, // Unknown
+	// 		'base_url' => NULL,
+	// 		'mode' => 'link', // or 'form', or 'form_redirect'
+	// 		'variable' => 'page',
+	// 		'link_count' => 9,
+	// 		'link_wrapper_element' => 'li',
+	// 		'link_number_pad' => 0,
+	// 		'elements' => NULL, // So you can change the order.
+	// 		'elements_html' => array(
+	// 				'start' => '
+	// 					<div id="paginator_[ID]" class="paginator">
+	// 						<p id="paginator_[ID]_label">Pagination</p>
+	// 						<ul role="navigation" aria-labelledby="paginator_[ID]_label">',
+	// 				'first' => NULL,
+	// 				'back' => '<span aria-label="Back">[«]</span>',
+	// 				'link' => '<span>Page</span> [PAGE]',
+	// 				'next' => '<span aria-label="Next">[»]</span>',
+	// 				'last' => NULL,
+	// 				'extra' => '<span class="pagination_extra">Page [PAGE_NUMBER] of [PAGE_COUNT]</span>',
+	// 				'end' => '
+	// 						</ul>
+	// 					</div>',
+	// 			),
+	// 	);
+
+	// if (!isset($this->config['elements'])) {
+	// 	$this->config['elements'] = array_keys($this->config['elements_html']);
+	// }
+
+	// $paginator_id = (config::get('paginator.count', 0) + 1);
+	// config::set('paginator.count', $paginator_id);
+
+// 'first_html'  => Part of elements_html
+// 'back_html'   => Part of elements_html
+// 'next_html'   => Part of elements_html
+// 'last_html'   => Part of elements_html
+// 'extra_html'  => Removed,
+// 'indent_html' => Removed,
+// 'number_pad'  => link_number_pad
+
+// array_merge_recursive
+
 ?>
