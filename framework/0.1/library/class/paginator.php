@@ -219,14 +219,32 @@
 					$this->page_number = 1;
 				}
 
-				$url = $this->page_url_get($this->page_number - 1);
-				if ($url !== NULL) {
-					config::array_set('output.links', 'prev', $url);
+				if ($this->page_number > 1) {
+
+					$url = $this->page_url_get(1);
+					if ($url !== NULL) {
+						config::array_set('output.links', 'first', $url);
+					}
+
+					$url = $this->page_url_get($this->page_number - 1);
+					if ($url !== NULL) {
+						config::array_set('output.links', 'prev', $url);
+					}
+
 				}
 
-				$url = $this->page_url_get($this->page_number + 1);
-				if ($url !== NULL) {
-					config::array_set('output.links', 'next', $url);
+				if ($this->page_number < $this->page_count) {
+
+					$url = $this->page_url_get($this->page_number + 1);
+					if ($url !== NULL) {
+						config::array_set('output.links', 'next', $url);
+					}
+
+					$url = $this->page_url_get($this->page_count);
+					if ($url !== NULL) {
+						config::array_set('output.links', 'last', $url);
+					}
+
 				}
 
 			}
