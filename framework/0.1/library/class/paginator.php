@@ -285,7 +285,19 @@
 
 				} else {
 
-					return '<a href="' . html($url) . '">' . $link_html . '</a>';
+					if ($page_number == ($this->page_number - 1)) {
+						$rel = 'prev';
+					} else if ($page_number == ($this->page_number + 1)) {
+						$rel = 'next';
+					} else if ($page_number == 1) {
+						$rel = 'first';
+					} else if ($page_number == $this->page_count) {
+						$rel = 'last';
+					} else {
+						$rel = NULL;
+					}
+
+					return '<a href="' . html($url) . '"' . ($rel ? ' rel="' . html($rel) . '"' : '') . '>' . $link_html . '</a>';
 
 				}
 
