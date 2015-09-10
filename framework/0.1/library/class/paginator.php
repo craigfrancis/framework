@@ -44,6 +44,7 @@
 							'number_pad' => 0,
 							'link_count' => 9,
 							'link_wrapper_element' => 'span',
+							'link_html' => NULL,
 							'extra_html' => NULL, // '<span class="pagination_extra">Page [PAGE_NUMBER] of [PAGE_COUNT]</span>'
 						);
 
@@ -490,7 +491,12 @@
 
 						$c = ($start == $this->page_number);
 
-						$link_html = $this->page_link_get_html(str_pad($start, $this->config['number_pad'], '0', STR_PAD_LEFT), $start);
+						$link_html = str_pad($start, $this->config['number_pad'], '0', STR_PAD_LEFT);
+						if ($this->config['link_html']) {
+							$link_html = str_replace('[PAGE]', $link_html, $this->config['link_html']);
+						}
+
+						$link_html = $this->page_link_get_html($link_html, $start);
 
 						$page_links_html[$start] = '<' . html($this->config['link_wrapper_element']) . ' class="pagination_page pagination_page_' . html($i) . ($c ? ' pagination_current' : '') . '" data-setsize="' . html($this->page_count) . '" data-posinset="' . html($start) . '">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
