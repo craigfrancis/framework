@@ -520,6 +520,7 @@
 // - Not sure everyone will understand the "Pagination" label.
 // - Not sure joining the previous and link to a single link will work (:hover css, and tab order).
 // - Can only use setsize/posinset on a listitem (a child of list).
+// - Cannot set role="navigation" on a <ul> (https://github.com/validator/validator/issues/157)
 
 	// $default_config = array(
 	// 		'item_limit' => 24, // Divisible by 1, 2, 3, 4, 6, 12
