@@ -139,19 +139,19 @@
 
 							$page_relative_html = html($page_relative);
 
-							if ($page_relative_html == $this->config['first_html']) {
+							if ($page_relative_html == strip_tags($this->config['first_html'])) {
 
 								$new_page_number = 1;
 
-							} else if ($page_relative_html == $this->config['last_html']) {
+							} else if ($page_relative_html == strip_tags($this->config['last_html'])) {
 
 								$new_page_number = $this->page_count;
 
-							} else if ($page_relative_html == $this->config['back_html']) {
+							} else if ($page_relative_html == strip_tags($this->config['back_html'])) {
 
 								$new_page_number = ($page_number - 1);
 
-							} else if ($page_relative_html == $this->config['next_html']) {
+							} else if ($page_relative_html == strip_tags($this->config['next_html'])) {
 
 								$new_page_number = ($page_number + 1);
 
@@ -294,7 +294,7 @@
 
 				if ($this->form_mode) {
 
-					return '<input type="submit" name="' . html($this->config['variable']) . '_rel" value="' . $link_html . '"' . ($url === NULL ? ' disabled="disabled"' : '') . ' />';
+					return '<input type="submit" name="' . html($this->config['variable']) . '_rel" value="' . strip_tags($link_html) . '"' . ($url === NULL ? ' disabled="disabled"' : '') . ' />';
 
 				} else if ($page_number == $this->page_number) {
 
@@ -565,5 +565,7 @@
 // 'number_pad'  => link_number_pad
 
 // array_merge_recursive
+
+// When using <input type="submit" the back_html with a span needs to use strip_tags
 
 ?>
