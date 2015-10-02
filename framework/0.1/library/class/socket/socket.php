@@ -215,9 +215,14 @@
 					$chunked_length = strlen($chunked_str);
 					$chunked_pos = 0;
 
-					do { // See comment at https://php.net/manual/en/function.http-chunked-decode.php
+					while ($chunked_pos < $chunked_length) { // See comment at https://php.net/manual/en/function.http-chunked-decode.php
 
 						$pos_nl = strpos($chunked_str, "\n", ($chunked_pos + 1));
+
+						if ($pos_nl === false) { // Bad response from remote server
+							break;
+						}
+
 						$hex_length = substr($chunked_str, $chunked_pos, ($pos_nl - $chunked_pos));
 						$chunked_pos = ($pos_nl + 1);
 
@@ -226,7 +231,7 @@
 						$chunked_pos = ($chunked_pos + $chunk_length);
 							// $chunked_pos = (strpos($chunked_str, "\n", $chunked_pos + $chunk_length) + 1);
 
-					} while ($chunked_pos < $chunked_length);
+					}
 
 					return $output;
 
