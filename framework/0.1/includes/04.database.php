@@ -32,6 +32,23 @@
 			return $this->escape(preg_quote($val));
 		}
 
+		public function escape_match_boolean_all($field, $search) {
+			$search_query = array();
+			foreach (split_words($search) as $word) {
+				$char = substr($word, 0, 1);
+				if ($char == '-' || $char == '+') {
+					$search_query[] = $word;
+				} else {
+					$search_query[] = '+' . $word; // Default to an AND in BOOLEAN MATCH, otherwise it's seen as an OR
+				}
+			}
+			if (count($search_query) > 0) {
+				return 'MATCH (' . $this->escape_field($field) . ') AGAINST ("' . $this->escape(implode(' ', $search_query)) . '" IN BOOLEAN MODE)';
+			} else {
+				return 'false';
+			}
+		}
+
 		public function escape_field($field) {
 			$field_sql = '`' . str_replace('`', '', $field) . '`'; // Back tick is an illegal character
 			$field_sql = str_replace('.', '`.`', $field_sql); // Allow table definition
