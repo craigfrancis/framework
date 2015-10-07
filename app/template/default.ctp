@@ -133,29 +133,29 @@
 				$form_nav->link_add('/doc/helpers/form/fields/', 'Fields', array('child' => $form_fields_nav));
 
 				$helpers_nav = new nav();
+				$helpers_nav->link_add('/doc/helpers/cms-text/', 'CMS Text');
 				$helpers_nav->link_add('/doc/helpers/config/', 'Config');
-				$helpers_nav->link_add('/doc/helpers/session/', 'Session');
 				$helpers_nav->link_add('/doc/helpers/cookie/', 'Cookie');
-				$helpers_nav->link_add('/doc/helpers/query/', 'Query');
-				$helpers_nav->link_add('/doc/helpers/record/', 'Record');
-				$helpers_nav->link_add('/doc/helpers/url/', 'URL');
-				$helpers_nav->link_add('/doc/helpers/timestamp/', 'Timestamp');
-				$helpers_nav->link_add('/doc/helpers/form/', 'Form'); // , array('child' => $form_nav)
 				$helpers_nav->link_add('/doc/helpers/email/', 'Email');
 				$helpers_nav->link_add('/doc/helpers/file/', 'File');
-				$helpers_nav->link_add('/doc/helpers/image/', 'Image');
-				$helpers_nav->link_add('/doc/helpers/user/', 'User');
-				$helpers_nav->link_add('/doc/helpers/order/', 'Order');
-				$helpers_nav->link_add('/doc/helpers/payment/', 'Payment');
-				$helpers_nav->link_add('/doc/helpers/nav/', 'Navigation');
-				$helpers_nav->link_add('/doc/helpers/table/', 'Table');
-				$helpers_nav->link_add('/doc/helpers/paginator/', 'Paginator');
-				$helpers_nav->link_add('/doc/helpers/cms-text/', 'CMS Text');
-				$helpers_nav->link_add('/doc/helpers/nearest/', 'Nearest');
-				$helpers_nav->link_add('/doc/helpers/lock/', 'Lock');
-				$helpers_nav->link_add('/doc/helpers/loading/', 'Loading');
-				$helpers_nav->link_add('/doc/helpers/socket/', 'Socket');
+				$helpers_nav->link_add('/doc/helpers/form/', 'Form'); // , array('child' => $form_nav)
 				$helpers_nav->link_add('/doc/helpers/gpg/', 'GPG');
+				$helpers_nav->link_add('/doc/helpers/image/', 'Image');
+				$helpers_nav->link_add('/doc/helpers/loading/', 'Loading');
+				$helpers_nav->link_add('/doc/helpers/lock/', 'Lock');
+				$helpers_nav->link_add('/doc/helpers/nav/', 'Navigation');
+				$helpers_nav->link_add('/doc/helpers/nearest/', 'Nearest');
+				$helpers_nav->link_add('/doc/helpers/order/', 'Order');
+				$helpers_nav->link_add('/doc/helpers/paginator/', 'Paginator');
+				$helpers_nav->link_add('/doc/helpers/payment/', 'Payment');
+				$helpers_nav->link_add('/doc/helpers/query/', 'Query');
+				$helpers_nav->link_add('/doc/helpers/record/', 'Record');
+				$helpers_nav->link_add('/doc/helpers/session/', 'Session');
+				$helpers_nav->link_add('/doc/helpers/socket/', 'Socket');
+				$helpers_nav->link_add('/doc/helpers/table/', 'Table');
+				$helpers_nav->link_add('/doc/helpers/timestamp/', 'Timestamp');
+				$helpers_nav->link_add('/doc/helpers/url/', 'URL');
+				$helpers_nav->link_add('/doc/helpers/user/', 'User');
 
 				$section_nav->link_add('/doc/helpers/', 'Helpers', array('child' => $helpers_nav));
 
