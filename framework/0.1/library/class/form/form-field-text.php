@@ -152,7 +152,7 @@
 			protected function _value_print_get() {
 				if ($this->value === NULL) {
 					if ($this->db_field_name !== NULL) {
-						$db_value = $this->db_field_value_get();
+						$db_value = strval($this->db_field_value_get()); // Cannot be NULL, otherwise value_hidden_get() will return NULL, and then a field with print_hidden_set(true) will not get a hidden field.
 					} else {
 						$db_value = '';
 					}
