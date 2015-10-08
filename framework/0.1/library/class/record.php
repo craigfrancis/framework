@@ -273,31 +273,37 @@
 				//--------------------------------------------------
 				// Changes
 
-					if ($insert_mode) {
+					$changed = true; // New record
 
-						$changed = true; // New record
-
-					} else {
+					if (!$insert_mode) {
 
 						$old_values = $this->values_get();
 
-						$changed = false;
+						if ($old_values === false) { // e.g. a second table, where the ID may be known (auto increment from the first table), but the record may not exist yet.
 
-						foreach ($new_values as $field => $new_value) {
+							$insert_mode = true;
 
-							if (!array_key_exists($field, $old_values)) {
-								continue; // Probably a new value supplied though $form->db_value_set();
-							}
+						} else {
 
-							if (strval($new_value) !== strval($old_values[$field])) { // If the value changes from "123" to "0123", and ignore an INT field being set to NULL (NULL === 0)
+							$changed = false;
 
-								if ($new_value === '' && $old_values[$field] === '0') {
-									continue; // Special case for select fields on an int field (value returned as string) and the "label_option"
+							foreach ($new_values as $field => $new_value) {
+
+								if (!array_key_exists($field, $old_values)) {
+									continue; // Probably a new value supplied though $form->db_value_set();
 								}
 
-								$this->log_change($field, $old_values[$field], $new_value);
+								if (strval($new_value) !== strval($old_values[$field])) { // If the value changes from "123" to "0123", and ignore an INT field being set to NULL (NULL === 0)
 
-								$changed = true;
+									if ($new_value === '' && $old_values[$field] === '0') {
+										continue; // Special case for select fields on an int field (value returned as string) and the "label_option"
+									}
+
+									$this->log_change($field, $old_values[$field], $new_value);
+
+									$changed = true;
+
+								}
 
 							}
 
