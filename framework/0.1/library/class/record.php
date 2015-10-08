@@ -279,7 +279,7 @@
 
 						$old_values = $this->values_get();
 
-						if ($old_values === false) { // e.g. a second table, where the ID may be known (auto increment from the first table), but the record may not exist yet.
+						if ($old_values === false) { // e.g. inserting a record into a second table, where the ID is already known (auto increment from the first table).
 
 							$insert_mode = true;
 
