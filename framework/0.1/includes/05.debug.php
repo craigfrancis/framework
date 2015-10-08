@@ -747,7 +747,7 @@
 
 										$valid = false;
 										foreach ($sql_conditions as $sql_condition) {
-											if (preg_match('/' . str_replace('`', '(`|\b)', preg_quote($required_clause, '/')) . ' (IS NULL|=|>|>=|<|<=|!=)/', $sql_condition)) {
+											if (preg_match('/' . str_replace('`', '(`|\b)', preg_quote($required_clause, '/')) . ' (IS NULL|IS NOT NULL|=|>|>=|<|<=|!=)/', $sql_condition)) {
 												$valid = true;
 												break;
 											}

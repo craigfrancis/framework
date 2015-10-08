@@ -1495,13 +1495,13 @@
 									$header = 'Public-Key-Pins-Report-Only';
 								}
 
-								if (config::get('output.pkp_report', false) || !$enforced) {
-
-									$report_uri = gateway_url('pkp-report');
-									$report_uri->scheme_set('https');
-
+								$report_uri = config::get('output.pkp_report', false);
+								if ($report_uri || !$enforced) {
+									if ($report_uri === true) {
+										$report_uri = gateway_url('pkp-report');
+										$report_uri->scheme_set('https');
+									}
 									$pkp_pins[] = 'report-uri="' . $report_uri . '"';
-
 								}
 
 								header($header . ': ' . head(implode('; ', $pkp_pins)));
@@ -1557,8 +1557,12 @@
 								$csp['reflected-xss'] = $output_xss_reflected; // Not quoted
 							}
 
-							if ((config::get('output.csp_report', false) || !$enforced) && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
-								$csp['report-uri'] = gateway_url('csp-report');
+							$report_uri = config::get('output.csp_report', false);
+							if (($report_uri || !$enforced) && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
+								if ($report_uri === true) {
+									$report_uri = gateway_url('csp-report');
+								}
+								$csp['report-uri'] = $report_uri;
 							}
 
 							$output = array();
