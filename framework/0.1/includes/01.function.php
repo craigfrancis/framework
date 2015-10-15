@@ -119,7 +119,7 @@
 	}
 
 	function csv($text) {
-		return str_replace('"', '""', $text);
+		return '"' . str_replace('"', '""', $text) . '"';
 	}
 
 	function head($text) {
