@@ -927,7 +927,7 @@
 
 						foreach ($heading_row as $col_id => $heading_info) {
 
-							$csv_output .= '"' . $this->_html_to_csv($heading_info['html']) . '",';
+							$csv_output .= $this->_html_to_csv($heading_info['html']) . ',';
 
 							for ($k = 1; $k < $heading_info['colspan']; $k++) {
 								$csv_output .= '"",';
@@ -954,7 +954,7 @@
 
 						foreach ($this->rows[$row_key]['row']->data as $cell_info) {
 
-							$csv_output .= '"' . $this->_html_to_csv($cell_info['html']) . '",';
+							$csv_output .= $this->_html_to_csv($cell_info['html']) . ',';
 
 							for ($k = 1; $k < $cell_info['colspan']; $k++) {
 								$csv_output .= '"",';
@@ -978,7 +978,7 @@
 
 					if (count($this->rows) == 0) {
 
-						$csv_output .= '"' . $this->_html_to_csv($this->no_records_html) . '",';
+						$csv_output .= $this->_html_to_csv($this->no_records_html) . ',';
 
 						for ($k = 0; $k < ($col_count - 1); $k++) {
 							$csv_output .= '"",';
@@ -997,7 +997,7 @@
 
 							foreach ($footer_row as $footer_info) {
 
-								$csv_output .= '"' . $this->_html_to_csv($footer_info['html']) . '",';
+								$csv_output .= $this->_html_to_csv($footer_info['html']) . ',';
 
 								for ($k = 1; $k < $footer_info['colspan']; $k++) {
 									$csv_output .= '"",';
