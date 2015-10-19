@@ -39,16 +39,18 @@
 				// Default config
 
 					$default_config = array(
-							'revision' => 0,
-							'processor' => 'markdown',
-							'cacheable' => true,
-							'editable' => false,
+							'revision'    => 0,
+							'processor'   => 'markdown',
+							'table_sql'   => DB_PREFIX . 'cms_text',
+							'where_sql'   => 'true',
+							'cacheable'   => true,
+							'editable'    => false,
 							'log_missing' => true,
-							'path' => config::get('request.path'),
-							'versions' => array(),
-							'variables' => array(),
-							'priority' => array(),
-							'edit_url' => '/admin/cms-text/edit/',
+							'path'        => config::get('request.path'),
+							'versions'    => array(),
+							'variables'   => array(),
+							'priority'    => array(),
+							'edit_url'    => '/admin/cms-text/edit/',
 						);
 
 					$default_config = array_merge($default_config, config::get_all('cms.default'));
@@ -74,7 +76,7 @@
 
 					if (config::get('debug.level') > 0) {
 
-						debug_require_db_table(DB_PREFIX . 'cms_text', '
+						debug_require_db_table($this->config['table_sql'], '
 								CREATE TABLE [TABLE] (
 									path varchar(100) NOT NULL,
 									section varchar(100) NOT NULL,
@@ -224,13 +226,14 @@
 					$sql = 'SELECT
 								' . implode(', ', $fields_sql) . '
 							FROM
-								' . DB_PREFIX . 'cms_text AS ct
+								' . $this->config['table_sql'] . '
 							WHERE
 								(
 									path = "' . $db->escape($this->config['path']) . '" OR
 									global = "true"
 								) AND
-								revision = "' . $db->escape($this->config['revision']) . '"';
+								revision = "' . $db->escape($this->config['revision']) . '" AND
+								' . $this->config['where_sql'];
 
 					foreach ($db->fetch_all($sql) as $row) {
 
