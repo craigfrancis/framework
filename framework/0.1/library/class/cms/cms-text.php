@@ -25,11 +25,6 @@
 			protected function setup($config) {
 
 				//--------------------------------------------------
-				// Resources
-
-					$db = $this->db_get();
-
-				//--------------------------------------------------
 				// Profile
 
 					if (is_string($config)) {
@@ -129,80 +124,11 @@
 
 					if (!is_array($this->content) && strlen($cache_name) <= 255) { // Can't use cache (filename too long - assuming ext3), so don't work at all.
 
-						//--------------------------------------------------
-						// Processor
+						$this->content = $this->content_get();
 
-							$processor = $this->processor_get();
-
-						//--------------------------------------------------
-						// Fields
-
-							$fields_sql = array(
-									'path',
-									'section',
-									'content',
-								);
-
-							foreach ($this->config['versions'] as $version_name => $version_fields) {
-								$fields_sql = array_merge($fields_sql, array_keys($version_fields));
-							}
-
-							$fields_sql = array_unique($fields_sql);
-
-						//--------------------------------------------------
-						// Return
-
-							$this->content = array();
-
-							$versions = $this->config['versions'];
-							if (count($versions) == 0) {
-								$versions = array('default' => array());
-							}
-
-							$sql = 'SELECT
-										' . implode(', ', $fields_sql) . '
-									FROM
-										' . DB_PREFIX . 'cms_text AS ct
-									WHERE
-										(
-											path = "' . $db->escape($this->config['path']) . '" OR
-											global = "true"
-										) AND
-										revision = "' . $db->escape($this->config['revision']) . '"';
-
-							foreach ($db->fetch_all($sql) as $row) {
-
-								//--------------------------------------------------
-								// HTML
-
-									$html_block = $processor->process_block_html($row['content']);
-									$html_inline = $processor->process_inline_html($row['content']);
-
-								//--------------------------------------------------
-								// Version match
-
-									foreach ($versions as $version_name => $version_fields) {
-										$match = true;
-										foreach ($version_fields as $field_name => $field_value) {
-											if ($row[$field_name] != $field_value) {
-												$match = false;
-											}
-										}
-										if ($match) {
-											$this->content[$row['path']][$row['section']][$version_name]['html_block'] = $html_block;
-											$this->content[$row['path']][$row['section']][$version_name]['html_inline'] = $html_inline;
-											$this->content[$row['path']][$row['section']][$version_name]['source'] = $row['content'];
-										}
-									}
-
-							}
-
-						//--------------------------------------------------
-						// Store
-
-							if ($cache_name) {
-								file_put_contents($cache_path, serialize($this->content));
-							}
+						if ($cache_name) {
+							file_put_contents($cache_path, serialize($this->content));
+						}
 
 					}
 
@@ -258,6 +184,85 @@
 				}
 
 				return $this->processor;
+
+			}
+
+			protected function content_get() {
+
+				//--------------------------------------------------
+				// Config
+
+					$db = $this->db_get();
+
+					$processor = $this->processor_get();
+
+					$content = array();
+
+				//--------------------------------------------------
+				// Fields
+
+					$fields_sql = array(
+							'path',
+							'section',
+							'content',
+						);
+
+					foreach ($this->config['versions'] as $version_name => $version_fields) {
+						$fields_sql = array_merge($fields_sql, array_keys($version_fields));
+					}
+
+					$fields_sql = array_unique($fields_sql);
+
+				//--------------------------------------------------
+				// Get
+
+					$versions = $this->config['versions'];
+					if (count($versions) == 0) {
+						$versions = array('default' => array());
+					}
+
+					$sql = 'SELECT
+								' . implode(', ', $fields_sql) . '
+							FROM
+								' . DB_PREFIX . 'cms_text AS ct
+							WHERE
+								(
+									path = "' . $db->escape($this->config['path']) . '" OR
+									global = "true"
+								) AND
+								revision = "' . $db->escape($this->config['revision']) . '"';
+
+					foreach ($db->fetch_all($sql) as $row) {
+
+						//--------------------------------------------------
+						// HTML
+
+							$html_block = $processor->process_block_html($row['content']);
+							$html_inline = $processor->process_inline_html($row['content']);
+
+						//--------------------------------------------------
+						// Version match
+
+							foreach ($versions as $version_name => $version_fields) {
+								$match = true;
+								foreach ($version_fields as $field_name => $field_value) {
+									if ($row[$field_name] != $field_value) {
+										$match = false;
+									}
+								}
+								if ($match) {
+									$content[$row['path']][$row['section']][$version_name]['html_block'] = $html_block;
+									$content[$row['path']][$row['section']][$version_name]['html_inline'] = $html_inline;
+									$content[$row['path']][$row['section']][$version_name]['source'] = $row['content'];
+								}
+							}
+
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $content;
 
 			}
 
