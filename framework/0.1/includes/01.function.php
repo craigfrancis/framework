@@ -126,8 +126,14 @@
 		return str_replace(array("\r", "\n", "\0"), '', $text);
 	}
 
-	function safe_file_name($name) {
-		return preg_replace('/[^a-zA-Z0-9_\- ]/', '', $name);
+	function safe_file_name($name, $allow_ext = false) {
+		if ($allow_ext && preg_match('/^(.*[^\.].*)(\.[a-zA-Z0-9]+)$/', $name, $matches)) {
+			$name = $matches[1];
+			$ext = $matches[2];
+		} else {
+			$ext = '';
+		}
+		return preg_replace('/[^a-zA-Z0-9_\- ]/', '', $name) . $ext;
 	}
 
 //--------------------------------------------------
