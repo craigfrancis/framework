@@ -70,7 +70,7 @@
 			$field_password = new form_field_password($this, $this->user_obj->text_get('password_label'), $config['name']);
 
 			if ($config['required'] !== false) {
-				$field_password->min_length_set($this->user_obj->text_get('password_min_len'), 1);
+				$field_password->min_length_set($this->user_obj->text_get('password_min_len'), 1); // Length validation only done for new passwords.
 			}
 
 			$field_password->max_length_set($this->user_obj->text_get('password_max_len'), 250);
@@ -90,7 +90,7 @@
 			$field_password = new form_field_password($this, $this->user_obj->text_get('password_new_label'), $config['name']);
 
 			if ($config['required'] !== false) {
-				$field_password->min_length_set($this->user_obj->text_get('password_new_min_len'), 1);
+				$field_password->min_length_set($this->user_obj->text_get('password_new_min_len'), $this->user_obj->password_min_length());
 			}
 
 			$field_password->max_length_set($this->user_obj->text_get('password_new_max_len'), 250);
@@ -119,7 +119,7 @@
 			$field_password_repeat = new form_field_password($this, $this->user_obj->text_get('password_repeat_label'), $config['name']);
 
 			if ($config['required'] !== false) {
-				$field_password_repeat->min_length_set($this->user_obj->text_get('password_repeat_min_len'), 1);
+				$field_password_repeat->min_length_set($this->user_obj->text_get('password_repeat_min_len'), $this->user_obj->password_min_length());
 			}
 
 			$field_password_repeat->max_length_set($this->user_obj->text_get('password_repeat_max_len'), 250);

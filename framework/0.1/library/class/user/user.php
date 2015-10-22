@@ -23,6 +23,7 @@
 			protected $identification_type = 'email';
 			protected $cookie_login_last = 'user_last';
 			protected $remember_login = true;
+			protected $password_min_length = 5;
 			protected $password_reset_url = NULL;
 			protected $password_reset_user_id = NULL;
 			protected $login_url = '/';
@@ -547,6 +548,10 @@
 
 					return false;
 
+			}
+
+			public function password_min_length() {
+				return $this->password_min_length;
 			}
 
 			public function password_reset_url() {
