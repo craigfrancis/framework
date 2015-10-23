@@ -157,11 +157,14 @@
 			}
 
 		//--------------------------------------------------
-		// Details
+		// Request details
 
 			public function request_full_get() {
 				return $this->request_full;
 			}
+
+		//--------------------------------------------------
+		// Response details
 
 			public function response_full_get() {
 				return $this->response_full;
