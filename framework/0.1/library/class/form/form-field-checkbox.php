@@ -35,14 +35,14 @@
 			}
 
 			public function input_first_set($first = NULL) {
+
 				$this->input_first = ($first == true);
-				if ($first) {
-					$this->required_mark_position_set('right');
-					$this->label_suffix_html = '';
-				} else {
-					$this->required_mark_position_set('left');
-					$this->label_suffix_html = $this->form->label_suffix_get_html();
+				$this->label_suffix_html = ($first ? '' : $this->form->label_suffix_get_html());
+
+				if ($this->required_mark_position === NULL) { // Ignore if already set
+					$this->required_mark_position_set($first ? 'right' : 'left');
 				}
+
 			}
 
 			public function input_first_get() {
