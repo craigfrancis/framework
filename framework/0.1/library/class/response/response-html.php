@@ -1251,7 +1251,7 @@
 							}
 
 							if (!headers_sent()) {
-								if ($this->error == 'page-not-found' || $this->error == 'deleted') {
+								if ($this->error == 'page-not-found') { // Not $this->error == 'deleted', as while it might be about right, it shouldn't appear in web server logs as a 404, and technically the item has been found (just deleted).
 									http_response_code(404);
 								} else if ($this->error == 'system') {
 									http_response_code(500);
