@@ -278,7 +278,9 @@
 				//--------------------------------------------------
 				// Build the query URL
 
-					$gateway_url_pass = $gateway_url . '&pass=' . urlencode(md5(md5($service_pass) . md5($client_key)));
+					$pass = hash('sha256', ($service_pass . $client_key)); // Needs to be a fast hash
+
+					$gateway_url_pass = $gateway_url . '&pass=' . urlencode($pass);
 
 				//--------------------------------------------------
 				// Send request to gateway
@@ -659,12 +661,9 @@
 								exit_with_error('You need to call the API with a gateway object');
 							}
 
-							$db_key = '';
-							for ($k=0; $k<32; $k++) {
-								$db_key .= chr(mt_rand(97,122));
-							}
+							$db_key = random_key(32);
 
-							$db_pass = md5(md5($db_key) . md5($client_key));
+							$db_pass = hash('sha256', ($db_key . $client_key)); // Needs to be a fast hash
 
 						//--------------------------------------------------
 						// Store
