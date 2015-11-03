@@ -430,6 +430,7 @@
 							// https://github.com/padraic/file_get_contents/blob/master/src/Humbug/FileGetContents.php
 							// http://www.docnet.nu/tech-portal/2014/06/26/ssl-and-php-streams-part-1-you-are-doing-it-wrongtm/C0
 							// https://mozilla.github.io/server-side-tls/ssl-config-generator/
+							// http://phpsecurity.readthedocs.org/en/latest/Transport-Layer-Security-(HTTPS-SSL-and-TLS).html
 
 						//--------------------------------------------------
 						// Basic options
@@ -449,7 +450,7 @@
 						//--------------------------------------------------
 						// Verify peer
 
-							$skip_domains = config::get('socket.insecure_domains', array());
+							$skip_domains = config::get('socket.insecure_domains', array()); // Only PHP 5.6+ introduces SAN support (this function still needs to support 5.4 and 5.5)
 
 							if ($skip_domains !== 'all' && !in_array($host, $skip_domains)) {
 
@@ -479,6 +480,11 @@
 									if ($ca_bundle_path === NULL) {
 										exit_with_error('Cannot find a CA bundle file', debug_dump($ca_bundle_paths));
 									}
+
+									// Could download a fresh copy from http://curl.haxx.se/ca/cacert.pem (using a http connection?)
+									// Or https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt
+									// Or https://github.com/EvanDotPro/Sslurp/blob/master/src/Sslurp/MozillaCertData.php
+									//    https://mxr.mozilla.org/mozilla/source/security/nss/lib/ckfw/builtins/certdata.txt?raw=1
 
 								}
 
