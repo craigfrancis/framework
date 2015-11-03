@@ -143,7 +143,7 @@
 			//--------------------------------------------------
 			// Generate password
 
-				$new_password = mt_rand(1000000, 9999999);
+				$new_password = random_key(7);
 
 			//--------------------------------------------------
 			// Hash password - always run, so we don't expose
@@ -265,7 +265,7 @@
 
 				} else {
 
-					$request_pass = mt_rand(1000000, 9999999);
+					$request_pass = random_key(7);
 
 					$db->insert($this->user_obj->db_table_reset, array(
 							'pass' => $request_pass,
