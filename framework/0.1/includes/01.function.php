@@ -1358,6 +1358,7 @@
 					getmypid(), // Process IDs are not unique, so a weak entropy source (not secure).
 					uniqid('', true), // Based on the current time in microseconds (not secure).
 					mt_rand(), // Mersenne Twister pseudorandom number generator (not secure).
+					lcg_value(), // Combined linear congruential generator (not secure).
 					config::get('request.ip'),
 					config::get('request.browser'),
 				);
