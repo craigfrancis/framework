@@ -63,7 +63,7 @@
 		$csrf_token = ($csrf_session ? session::get('csrf') : cookie::get('f'));
 
 		if ($csrf_token == '') {
-			$csrf_token = mt_rand(1000000, 9999999);
+			$csrf_token = random_key(15);
 		}
 
 		if ($csrf_session) {
