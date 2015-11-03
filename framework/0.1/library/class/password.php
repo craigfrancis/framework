@@ -49,12 +49,9 @@
 
 			} else {
 
-				$hash_salt = '';
-				for ($k=0; $k<10; $k++) {
-					$hash_salt .= chr(mt_rand(97,122));
-				}
+				$hash_salt = random_key(10);
 
-				return md5(md5($record_id) . md5($password) . md5($hash_salt)) . '-' . $hash_salt;
+				return md5(md5($record_id) . md5($password) . md5($hash_salt)) . '-' . $hash_salt; // Old hashing method, no longer used
 
 			}
 
@@ -62,12 +59,12 @@
 
 		public static function verify($password, $hash, $record_id = 0) {
 
-			if (preg_match('/^([a-z0-9]{32})-([a-z]{10})$/i', $hash, $matches)) { // Old hashing method
+			if (preg_match('/^([a-z0-9]{32})-([a-z0-9]{10})$/i', $hash, $matches)) { // Old hashing method
 
 				$part_hash = $matches[1];
 				$part_salt = $matches[2];
 
-				if (md5(md5($record_id) . md5($password) . md5($part_salt)) == $part_hash) {
+				if (md5(md5($record_id) . md5($password) . md5($part_salt)) == $part_hash) { // Old hashing method, no longer used
 					return true;
 				}
 
