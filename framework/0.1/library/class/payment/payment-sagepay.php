@@ -154,7 +154,7 @@
 						//--------------------------------------------------
 						// Log
 
-							$request_pass = mt_rand(100000, 999999);
+							$request_pass = random_key(7);
 
 							$db = $this->db_get();
 
@@ -203,7 +203,7 @@
 
 								$gateway_url_parsed = parse_url($gateway_url); // Older browsers do not accept a path, and the POST url will change (redirect to "cardselection" page)... which Chrome 41 blocks.
 
-								$response->csp_source_add('form-action', 'https://' . $gateway_url_parsed['host']);
+								$response->csp_source_add('form-action', 'https://*.sagepay.com'); // $gateway_url_parsed['host'] is ok for the first submission, but it then does a rediect to a second sub-domain.
 
 							}
 
