@@ -213,7 +213,7 @@
 
 			public function select_by_ref($ref) {
 
-				if (preg_match('/^([0-9]+)-([a-z]{5})$/', $ref, $matches)) {
+				if (preg_match('/^([0-9]+)-([0-9a-z]{5})$/i', $ref, $matches)) {
 					$this->select_by_id($matches[1], $matches[2]);
 				} else {
 					$this->reset();
@@ -1056,10 +1056,7 @@
 				//--------------------------------------------------
 				// Order values
 
-					$order_pass = '';
-					for ($k=0; $k<5; $k++) {
-						$order_pass .= chr(mt_rand(97,122));
-					}
+					$order_pass = random_key(5);
 
 					$defaults = $this->create_defaults();
 					if (!is_array($defaults)) {
