@@ -121,6 +121,13 @@
 
 			public function html_input() {
 				$html = '';
+				if ($this->label_option != '') { // Could be NULL or ''
+					$html .= '
+							<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . ' input_label">
+								' . $this->html_input_by_key(NULL) . '
+								' . $this->html_label_by_key(NULL) . '
+							</' . html($this->input_wrapper_tag) . '>';
+				}
 				foreach ($this->option_values as $key => $value) {
 					$option_info_html = $this->html_info_by_key($key); // Allow the ID to be added to "aria-describedby"
 					$html .= '

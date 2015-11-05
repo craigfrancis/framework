@@ -106,6 +106,10 @@
 
 			}
 
+			public function db_field_options_get() {
+				return $this->db_field_options;
+			}
+
 			public function multiple_set($multiple) {
 				$this->multiple = $multiple;
 			}
