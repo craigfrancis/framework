@@ -34,21 +34,6 @@
 
 			}
 
-			public function input_first_set($first = NULL) {
-
-				$this->input_first = ($first == true);
-				$this->label_suffix_html = ($first ? '' : $this->form->label_suffix_get_html());
-
-				if ($this->required_mark_position === NULL) { // Ignore if already set
-					$this->required_mark_position_set($first ? 'right' : 'left');
-				}
-
-			}
-
-			public function input_first_get() {
-				return $this->input_first;
-			}
-
 			public function text_values_set($true, $false) {
 				$this->text_value_true = $true;
 				$this->text_value_false = $false;

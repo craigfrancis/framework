@@ -231,6 +231,21 @@
 				$this->input_data[$field] = $value;
 			}
 
+			public function input_first_set($first = NULL) {
+
+				$this->input_first = ($first == true);
+				$this->label_suffix_html = ($first ? '' : $this->form->label_suffix_get_html());
+
+				if ($this->required_mark_position === NULL) { // Ignore if already set
+					$this->required_mark_position_set($first ? 'right' : 'left');
+				}
+
+			}
+
+			public function input_first_get() {
+				return $this->input_first;
+			}
+
 			public function input_wrapper_tag_set($tag) {
 				$this->input_wrapper_tag = $tag;
 			}
@@ -283,7 +298,7 @@
 						return $this->form->required_mark_get_html($required_mark_position);
 					}
 				} else {
-					return NULL;
+					return '';
 				}
 			}
 
