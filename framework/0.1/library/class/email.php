@@ -689,31 +689,40 @@
 					$subject = $this->subject_default;
 				}
 
-				if (strpos($content_html, 'DOCTYPE') === false) {
+				if (strtoupper(substr(trim($this->body_html), 0, 9)) == '<!DOCTYPE') {
 
-					$template_html = '<!DOCTYPE html>
-							<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
-							<head>
-								<meta charset="' . html(config::get('output.charset')) . '" />';
+					$content_html = $this->body_html;
 
-					if ($subject != '') {
+				} else {
+
+					if (strtoupper(substr(trim($content_html), 0, 9)) != '<!DOCTYPE') {
+
+						$template_html = '<!DOCTYPE html>
+								<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
+								<head>
+									<meta charset="' . html(config::get('output.charset')) . '" />';
+
+						if ($subject != '') {
+							$template_html .= '
+									<title>[SUBJECT]</title>';
+						}
+
 						$template_html .= '
-								<title>[SUBJECT]</title>';
+								</head>
+								<body>
+									' . $content_html . '
+								</body>
+								</html>';
+
+						$content_html = $template_html;
+
 					}
 
-					$template_html .= '
-							</head>
-							<body>
-								' . $content_html . '
-							</body>
-							</html>';
-
-					$content_html = $template_html;
+					$content_html = str_replace('[BODY]', $this->body_html, $content_html);
 
 				}
 
 				$content_html = str_replace('[SUBJECT]', html($subject), $content_html);
-				$content_html = str_replace('[BODY]', $this->body_html, $content_html);
 				$content_html = str_replace('[URL]', html($this->template_url), $content_html);
 
 				foreach ($this->template_values_html as $name => $html) {
