@@ -34,6 +34,7 @@
 			private $field_tag_id = 0;
 			private $required_mark_html = NULL;
 			private $required_mark_position = 'left';
+			private $label_prefix_html = '';
 			private $label_suffix_html = ':';
 			private $label_override_function = NULL;
 			private $errors_html = array();
@@ -370,6 +371,18 @@
 
 			public function required_mark_position_get() {
 				return $this->required_mark_position;
+			}
+
+			public function label_prefix_set($prefix) {
+				$this->label_prefix_set_html(html($prefix));
+			}
+
+			public function label_prefix_set_html($prefix_html) {
+				$this->label_prefix_html = $prefix_html;
+			}
+
+			public function label_prefix_get_html() {
+				return $this->label_prefix_html;
 			}
 
 			public function label_suffix_set($suffix) {

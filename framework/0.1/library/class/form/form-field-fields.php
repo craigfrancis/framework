@@ -400,7 +400,7 @@
 					}
 
 					if ($label_html != '') {
-						return '<label for="' . html($this->id) . '_' . html($field) . '" id="' . html($tag_id) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . ($required_mark_position == 'left' && $required_mark_html !== NULL ? $required_mark_html : '') . $label_html . ($required_mark_position == 'right' && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>' . $this->label_suffix_html;
+						return $this->label_prefix_html . '<label for="' . html($this->id) . '_' . html($field) . '" id="' . html($tag_id) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . ($required_mark_position == 'left' && $required_mark_html !== NULL ? $required_mark_html : '') . $label_html . ($required_mark_position == 'right' && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>' . $this->label_suffix_html;
 					} else {
 						return '';
 					}

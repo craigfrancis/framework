@@ -17,6 +17,7 @@
 			protected $wrapper_class = '';
 			protected $wrapper_data = array();
 			protected $label_html = '';
+			protected $label_prefix_html = '';
 			protected $label_suffix_html = '';
 			protected $label_class = NULL;
 			protected $label_wrapper_tag = 'span';
@@ -101,6 +102,7 @@
 					$this->id = 'fld_' . human_to_ref($this->name);
 
 					$this->label_html = $label_html;
+					$this->label_prefix_html = $form->label_prefix_get_html();
 					$this->label_suffix_html = $form->label_suffix_get_html();
 
 					$this->disabled = $form->disabled_get();
@@ -172,6 +174,14 @@
 				return html_decode(strip_tags($this->label_html));
 			}
 
+			public function label_prefix_set($prefix) {
+				$this->label_prefix_set_html(html($prefix));
+			}
+
+			public function label_prefix_set_html($prefix_html) {
+				$this->label_prefix_html = $prefix_html;
+			}
+
 			public function label_suffix_set($suffix) {
 				$this->label_suffix_set_html(html($suffix));
 			}
@@ -234,6 +244,7 @@
 			public function input_first_set($first = NULL) {
 
 				$this->input_first = ($first == true);
+				$this->label_prefix_html = ($first ? '' : $this->form->label_prefix_get_html());
 				$this->label_suffix_html = ($first ? '' : $this->form->label_suffix_get_html());
 
 				if ($this->required_mark_position === NULL) { // Ignore if already set
@@ -611,7 +622,7 @@
 					}
 
 					if ($label_html != '') {
-						return '<label for="' . html($this->id) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . ($required_mark_position == 'left' && $required_mark_html !== NULL ? $required_mark_html : '') . $label_html . ($required_mark_position == 'right' && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>' . $this->label_suffix_html;
+						return $this->label_prefix_html . '<label for="' . html($this->id) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . ($required_mark_position == 'left' && $required_mark_html !== NULL ? $required_mark_html : '') . $label_html . ($required_mark_position == 'right' && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>' . $this->label_suffix_html;
 					} else {
 						return '';
 					}
