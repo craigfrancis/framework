@@ -314,7 +314,7 @@
 
 					if ($this->error) {
 
-						$title_default = config::get('output.title_error');
+						$this->title_full_set(config::get('output.title_error'));
 
 					} else {
 
@@ -332,9 +332,9 @@
 							}
 						}
 
-					}
+						$this->title_set($title_default);
 
-					$this->title_set($title_default);
+					}
 
 				}
 
