@@ -106,6 +106,17 @@
 			report_add($error_report, 'error');
 
 		//--------------------------------------------------
+		// The error
+
+			$error = array(
+					'message' => $message,
+					'hidden_info' => $hidden_info,
+					'contact_email' => $contact_email,
+				);
+
+			config::set('output.error', $error);
+
+		//--------------------------------------------------
 		// Tell the user
 
 			if (config::get('output.sent') !== true) { // e.g. the loading helper has already sent the response.
@@ -145,14 +156,6 @@
 					}
 
 					if ($response && $response->error_get() === false) { // Avoid looping
-
-						$error = array(
-								'message' => $message,
-								'hidden_info' => $hidden_info,
-								'contact_email' => $contact_email,
-							);
-
-						config::set('output.error', $error);
 
 						$response->set($error);
 						$response->error_send('system');
