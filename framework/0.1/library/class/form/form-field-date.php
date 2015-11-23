@@ -25,6 +25,7 @@
 									'size' => 2,
 									'pad_length' => 0,
 									'pad_char' => '0',
+									'arial_label' => 'Day',
 									'label' => '',
 									'options' => NULL,
 								),
@@ -32,6 +33,7 @@
 									'size' => 2,
 									'pad_length' => 0,
 									'pad_char' => '0',
+									'arial_label' => 'Month',
 									'label' => '',
 									'options' => NULL,
 								),
@@ -39,6 +41,7 @@
 									'size' => 4,
 									'pad_length' => 0,
 									'pad_char' => '0',
+									'arial_label' => 'Year',
 									'label' => '',
 									'options' => NULL,
 								));

@@ -19,6 +19,7 @@
 									'size' => 2,
 									'pad_length' => 2,
 									'pad_char' => '0',
+									'arial_label' => 'Hour',
 									'label' => '',
 									'options' => NULL,
 								),
@@ -26,6 +27,7 @@
 									'size' => 2,
 									'pad_length' => 2,
 									'pad_char' => '0',
+									'arial_label' => 'Minute',
 									'label' => '',
 									'options' => NULL,
 								),
@@ -33,6 +35,7 @@
 									'size' => 2,
 									'pad_length' => 2,
 									'pad_char' => '0',
+									'arial_label' => 'Second',
 									'label' => '',
 									'options' => NULL,
 								));

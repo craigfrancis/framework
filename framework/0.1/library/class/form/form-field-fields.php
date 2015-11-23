@@ -70,6 +70,13 @@
 
 			}
 
+			public function placeholder_set($placeholder) {
+				$placeholder = $this->_value_parse($placeholder);
+				if ($placeholder) {
+					$this->placeholders_set($placeholder);
+				}
+			}
+
 			public function placeholders_set($placeholders) {
 				$this->placeholders = $placeholders;
 			}
@@ -150,6 +157,7 @@
 							'pad_length' => 0,
 							'pad_char' => '0',
 							'label' => '',
+							'arial_label' => '',
 							'options' => NULL,
 						), $config);
 
@@ -430,6 +438,10 @@
 
 				if (isset($this->placeholders[$field])) {
 					$attributes['placeholder'] = $this->placeholders[$field];
+				}
+
+				if ($this->label_html && $input_config['arial_label']) {
+					$attributes['aria-label'] = html_decode($this->label_html) . ' (' . $input_config['arial_label'] . ')';
 				}
 
 				if ($this->type == 'date' && $this->autocomplete === 'bday') {
