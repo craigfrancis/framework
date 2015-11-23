@@ -17,6 +17,7 @@
 			protected $input_order = array();
 			protected $input_separator = ' ';
 			protected $input_config = array();
+			protected $input_described_by = NULL; // Disabled, as these fields use aria-label
 
 		//--------------------------------------------------
 		// Setup
@@ -157,7 +158,7 @@
 							'pad_length' => 0,
 							'pad_char' => '0',
 							'label' => '',
-							'arial_label' => '',
+							'aria_label' => '',
 							'options' => NULL,
 						), $config);
 
@@ -394,13 +395,6 @@
 					}
 
 				//--------------------------------------------------
-				// Described by
-
-					$tag_id = $this->form->_field_tag_id_get();
-
-					array_unshift($this->input_described_by, $tag_id); // Label comes first
-
-				//--------------------------------------------------
 				// Return the HTML for the label
 
 					if ($label_html === NULL) {
@@ -408,7 +402,7 @@
 					}
 
 					if ($label_html != '') {
-						return $this->label_prefix_html . '<label for="' . html($this->id) . '_' . html($field) . '" id="' . html($tag_id) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . ($required_mark_position == 'left' && $required_mark_html !== NULL ? $required_mark_html : '') . $label_html . ($required_mark_position == 'right' && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>' . $this->label_suffix_html;
+						return $this->label_prefix_html . '<label for="' . html($this->id) . '_' . html($field) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . ($required_mark_position == 'left' && $required_mark_html !== NULL ? $required_mark_html : '') . $label_html . ($required_mark_position == 'right' && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>' . $this->label_suffix_html;
 					} else {
 						return '';
 					}
@@ -440,8 +434,8 @@
 					$attributes['placeholder'] = $this->placeholders[$field];
 				}
 
-				if ($this->label_html && $input_config['arial_label']) {
-					$attributes['aria-label'] = html_decode($this->label_html) . ' (' . $input_config['arial_label'] . ')';
+				if ($this->label_html && $input_config['aria_label']) {
+					$attributes['aria-label'] = html_decode($this->label_html) . ' (' . $input_config['aria_label'] . ')';
 				}
 
 				if ($this->type == 'date' && $this->autocomplete === 'bday') {
