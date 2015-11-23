@@ -108,6 +108,11 @@
 		//--------------------------------------------------
 		// The error
 
+			$contact_email = config::get('email.error');
+			if (is_array($contact_email)) {
+				$contact_email = reset($contact_email);
+			}
+
 			$error = array(
 					'message' => $message,
 					'hidden_info' => $hidden_info,
@@ -120,11 +125,6 @@
 		// Tell the user
 
 			if (config::get('output.sent') !== true) { // e.g. the loading helper has already sent the response.
-
-				$contact_email = config::get('email.error');
-				if (is_array($contact_email)) {
-					$contact_email = reset($contact_email);
-				}
 
 				if ($contact_email != '' || config::get('debug.level') == 0) {
 					$hidden_info = ''; // If there is an email address, don't show the hidden info (e.g. on live).
