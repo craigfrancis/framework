@@ -158,7 +158,7 @@
 							'pad_length' => 0,
 							'pad_char' => '0',
 							'label' => '',
-							'aria_label' => '',
+							'label_aria' => '',
 							'options' => NULL,
 						), $config);
 
@@ -434,8 +434,14 @@
 					$attributes['placeholder'] = $this->placeholders[$field];
 				}
 
-				if ($this->label_html && $input_config['aria_label']) {
-					$attributes['aria-label'] = html_decode($this->label_html) . ' (' . $input_config['aria_label'] . ')';
+				if ($input_config['label_aria']) {
+					if ($this->label_aria === '') {
+						$attributes['aria-label'] = $input_config['label_aria'];
+					} else if ($this->label_aria !== NULL) {
+						$attributes['aria-label'] = $this->label_aria . ' (' . $input_config['label_aria'] . ')';
+					} else if ($this->label_html) {
+						$attributes['aria-label'] = html_decode($this->label_html) . ' (' . $input_config['label_aria'] . ')';
+					}
 				}
 
 				if ($this->type == 'date' && $this->autocomplete === 'bday') {

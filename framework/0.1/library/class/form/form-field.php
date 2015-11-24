@@ -17,6 +17,7 @@
 			protected $wrapper_class = '';
 			protected $wrapper_data = array();
 			protected $label_html = '';
+			protected $label_aria = NULL;
 			protected $label_prefix_html = '';
 			protected $label_suffix_html = '';
 			protected $label_class = NULL;
@@ -172,6 +173,10 @@
 
 			public function label_get_text() { // Text suffix used as it's processed data
 				return html_decode(strip_tags($this->label_html));
+			}
+
+			public function label_aria_set($label) {
+				$this->label_aria = $label;
 			}
 
 			public function label_prefix_set($prefix) {
@@ -585,6 +590,10 @@
 
 				if ($this->readonly) {
 					$attributes['readonly'] = 'readonly';
+				}
+
+				if ($this->label_aria) {
+					$attributes['aria-label'] = $this->label_aria;
 				}
 
 				if (!$this->valid()) {
