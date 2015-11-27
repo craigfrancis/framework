@@ -6,9 +6,10 @@
 		// Variables
 
 			protected $value_print_cache = NULL;
-			protected $options_disabled = NULL;
+			protected $option_values_html = array();
 			protected $options_info_id = array();
 			protected $options_info_html = NULL;
+			protected $options_disabled = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -28,8 +29,9 @@
 
 			}
 
-			public function options_disabled($options_disabled) {
-				$this->options_disabled = $options_disabled;
+			public function options_set_html($options_html) { // If you are adding links, consider options_info_set()
+				$this->options_set(array_map('html_decode', array_map('strip_tags', $options_html)));
+				$this->option_values_html = $options_html;
 			}
 
 			public function options_info_set($options_info) {
@@ -38,6 +40,10 @@
 
 			public function options_info_set_html($options_info_html) {
 				$this->options_info_html = $options_info_html;
+			}
+
+			public function options_disabled($options_disabled) {
+				$this->options_disabled = $options_disabled;
 			}
 
 		//--------------------------------------------------
@@ -98,12 +104,12 @@
 				if ($label_html === NULL) {
 
 					if ($key === NULL) {
-						$label = $this->label_option;
+						$label_html = html($this->label_option);
+					} else if (isset($this->option_values_html[$key])) {
+						$label_html = $this->option_values_html[$key];
 					} else {
-						$label = $this->option_values[$key];
+						$label_html = html($this->option_values[$key]);
 					}
-
-					$label_html = html($label);
 
 					$function = $this->form->label_override_get_function();
 					if ($function !== NULL) {

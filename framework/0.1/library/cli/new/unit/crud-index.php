@@ -191,7 +191,7 @@
 
 				if ($config['download']) {
 					$export_url = url(array('output' => 'csv'));
-					$links_html[] = '<a href="' . html($export_url) . '">Download</a>';
+					$links_html[] = '<a href="' . html($export_url) . '">download</a>';
 				}
 
 				if ($config['add_url']) {
