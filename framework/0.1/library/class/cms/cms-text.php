@@ -334,6 +334,10 @@
 
 					$config = array_merge($defaults, $config);
 
+					if (strlen($config['section']) > 100) {
+						exit_with_error('Cannot have a section name that is longer than 100 characters', $config['section']);
+					}
+
 					$config['variables'] = array_merge($this->config['variables'], $config['variables']);
 
 				//--------------------------------------------------
