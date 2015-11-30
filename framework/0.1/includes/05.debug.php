@@ -613,6 +613,10 @@
 							$line_indent += 1;
 						}
 
+						if ($line_indent < 0) {
+							$line_indent = 0;
+						}
+
 						$query_lines[] = str_repeat('    ', $line_indent) . $line_text;
 
 					}
