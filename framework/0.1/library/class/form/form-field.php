@@ -331,7 +331,9 @@
 			}
 
 			public function autofocus_auto_set() {
-				if (method_exists($this, '_value_print_get')) {
+				if (!$this->valid()) {
+					$this->autofocus = true;
+				} else if (method_exists($this, '_value_print_get')) {
 					$this->autofocus = ($this->_value_print_get() == '');
 				}
 				return $this->autofocus;

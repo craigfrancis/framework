@@ -83,7 +83,12 @@
 			}
 
 			public function autofocus_auto_set() {
-				$this->autofocus = ($this->_value_print_get() === NULL);
+				if (!$this->valid()) {
+					$this->autofocus = true;
+				} else {
+					$value = $this->_value_print_get();
+					$this->autofocus = ($value === NULL || count(array_filter($value)) == 0); // Where $value may be [0,0,0] after the form is submitted.
+				}
 				return $this->autofocus;
 			}
 
