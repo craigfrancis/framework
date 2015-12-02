@@ -330,6 +330,13 @@
 				$this->autofocus = ($autofocus == true);
 			}
 
+			public function autofocus_auto_set() {
+				if (method_exists($this, '_value_print_get')) {
+					$this->autofocus = ($this->_value_print_get() == '');
+				}
+				return $this->autofocus;
+			}
+
 			public function autofocus_get() {
 				return $this->autofocus;
 			}

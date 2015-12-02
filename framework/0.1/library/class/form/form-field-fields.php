@@ -82,6 +82,11 @@
 				$this->placeholders = $placeholders;
 			}
 
+			public function autofocus_auto_set() {
+				$this->autofocus = ($this->_value_print_get() === NULL);
+				return $this->autofocus;
+			}
+
 		//--------------------------------------------------
 		// Format
 

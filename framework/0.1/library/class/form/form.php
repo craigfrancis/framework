@@ -1142,32 +1142,12 @@
 				// Auto focus
 
 					if ($this->autofocus) {
-
 						foreach ($this->fields as $field_uid => $field) {
-
-							$field_type = $field->type_get();
-							if ($field_type == 'date') {
-								$autofocus = ($field->value_get() == '0000-00-00');
-							} else if ($field_type == 'time') {
-								$autofocus = ($field->value_get() == '00:00:00');
-							} else if ($field_type != 'file' && $field_type != 'image') {
-								$autofocus = ($field->value_get() == '');
-							} else {
-								$autofocus = false;
-							}
-
-							if (!$this->_field_valid($field_uid)) {
-								$autofocus = true;
-							}
-
-							if ($autofocus) {
+							if ($field->autofocus_auto_set()) {
 								$this->autofocus_submit = false;
-								$field->autofocus_set(true);
 								break;
 							}
-
 						}
-
 					}
 
 				//--------------------------------------------------
