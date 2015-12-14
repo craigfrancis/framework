@@ -1575,6 +1575,10 @@
 								}
 							}
 
+							if (https_only()) {
+								$output[] = 'block-all-mixed-content';
+							}
+
 							header($header . ': ' . head(implode('; ', $output)));
 
 							if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
