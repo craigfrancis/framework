@@ -331,14 +331,14 @@
 				return $this->hidden_value_set('dest', $url);
 			}
 
-			public function dest_redirect($default_url) {
+			public function dest_redirect($default_url, $config = array()) {
 
 				$dest = $this->dest_url_get();
 
 				if (substr($dest, 0, 1) == '/') { // Scheme-relative URL "//example.com" won't work, the domain is prefixed.
-					redirect($dest);
+					redirect($dest, $config);
 				} else {
-					redirect($default_url);
+					redirect($default_url, $config);
 				}
 
 			}

@@ -926,12 +926,24 @@
 	}
 
 //--------------------------------------------------
-// Function to send the user onto another page.
-// This takes into IE6 into consideration when
-// redirecting from a HTTPS connection to the
-// standard HTTP
+// Redirect the user
 
-	function redirect($url, $http_response_code = 302) {
+	function redirect($url, $config = array()) {
+
+		if (is_numeric($config)) {
+			$config = array('code' => $config);
+		} else if (!is_array($config)) {
+			$config = array();
+		}
+
+		$config = array_merge(array(
+				'permanent' => false,
+				'exit' => true,
+			), $config);
+
+		if (!isset($config['code'])) {
+			$config['code'] = ($config['permanent'] ? 301 : 302);
+		}
 
 		mime_set('text/html');
 
@@ -958,11 +970,11 @@
 			}
 		}
 
-		if (substr($url, 0, 7) == 'http://' && config::get('request.https') && strpos(config::get('request.browser'), 'MSIE 6.') !== false) {
-			header('Refresh: 0; url=' . head($url));
-			exit('<p><a href="' . html($url) . '">Loading...</a></p>');
+		header('Location: ' . head($url), true, $config['code']);
+
+		if ($config['exit'] === false) {
+			http_connection_close($next_html);
 		} else {
-			header('Location: ' . head($url), true, $http_response_code);
 			exit($next_html);
 		}
 
@@ -1064,6 +1076,60 @@
 		}
 
 		return $return;
+
+	}
+
+//--------------------------------------------------
+// End connection (so we can do further processing)
+
+	function http_connection_close($output_html = '') {
+
+		//--------------------------------------------------
+		// Close session, for next page load
+
+			if (session::open()) {
+				session::close();
+			}
+
+		//--------------------------------------------------
+		// Output, with support for output buffers
+
+			while (ob_get_level() > 0) {
+				$output_html = ob_get_clean() . $output_html;
+			}
+
+			$output_html = str_pad($output_html, 1023); // Prompt the webserver to send the packet.
+
+			$output_html .= "\n"; // For when the client is using fgets()
+
+		//--------------------------------------------------
+		// Disable mod_gzip or mod_deflate, to end connection
+
+			apache_setenv('no-gzip', 1);
+
+		//--------------------------------------------------
+		// Extra
+
+			// if (request('ModPagespeed') != 'off') {
+			// 	redirect(url(array('ModPagespeed' => 'off')));
+			// }
+
+			// ini_set('zlib.output_compression', 0);
+			// ini_set('implicit_flush', 1);
+
+			ignore_user_abort(true);
+
+		//--------------------------------------------------
+		// Send output
+
+			config::set('output.sent', true);
+
+			header('Connection: close');
+			header('Content-Length: ' . head(strlen($output_html)));
+
+			echo $output_html; // If you get the error "Cannot modify header information", check that exit_with_error was not called afterwards.
+
+			flush();
 
 	}
 

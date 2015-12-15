@@ -462,51 +462,11 @@
 					}
 
 				//--------------------------------------------------
-				// Output, with support for output buffers
-
-					ob_start();
-
-					echo $contents_html;
-
-					$output = '';
-					while (ob_get_level() > 0) {
-						$output = ob_get_clean() . $output;
-					}
-
-					$output = str_pad($output, 1023); // Prompt the webserver to send the packet.
-
-					$output .= "\n"; // For when the client is using fgets()
-
-				//--------------------------------------------------
-				// Disable mod_gzip or mod_deflate, to end connection
-
-					apache_setenv('no-gzip', 1);
-
-				//--------------------------------------------------
-				// Extra
-
-					// if (request('ModPagespeed') != 'off') {
-					// 	redirect(url(array('ModPagespeed' => 'off')));
-					// }
-
-					// ini_set('zlib.output_compression', 0);
-					// ini_set('implicit_flush', 1);
-
-					ignore_user_abort(true);
-
-				//--------------------------------------------------
-				// Send output
-
-					config::set('output.sent', true);
+				// Output
 
 					header('Refresh: ' . head($refresh_header));
 
-					header('Connection: close');
-					header('Content-Length: ' . head(strlen($output)));
-
-					echo $output; // If you get the error "Cannot modify header information", check that exit_with_error was not called afterwards.
-
-					flush();
+					http_connection_close($contents_html);
 
 			}
 
