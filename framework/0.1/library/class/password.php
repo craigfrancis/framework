@@ -21,7 +21,15 @@
 
 			if (function_exists('password_hash')) {
 
-				return password_hash($password, PASSWORD_DEFAULT);
+				$start = microtime(true);
+
+				$ret = password_hash($password, PASSWORD_DEFAULT);
+
+				if (function_exists('debug_log_time')) {
+					debug_log_time('PASSH=' . round((microtime(true) - $start), 3));
+				}
+
+				return $ret;
 
 			} else if (defined('CRYPT_BLOWFISH') && CRYPT_BLOWFISH == true) {
 
@@ -39,7 +47,13 @@
 					$hash_format = '$2a$10$'; // Not great, but better than nothing.
 				}
 
+				$start = microtime(true);
+
 				$ret = crypt($password, ($hash_format . $hash_salt));
+
+				if (function_exists('debug_log_time')) {
+					debug_log_time('PASSH=' . round((microtime(true) - $start), 3));
+				}
 
 				if (!is_string($ret) || strlen($ret) <= 13) {
 					exit_with_error('Error when creating crypt version of password', $hash_format . "\n" . $ret);
@@ -70,13 +84,27 @@
 
 			} else if (function_exists('password_verify')) {
 
-				if (password_verify($password, $hash)) {
+				$start = microtime(true);
+
+				$ret = password_verify($password, $hash);
+
+				if (function_exists('debug_log_time')) {
+					debug_log_time('PASS=' . round((microtime(true) - $start), 3));
+				}
+
+				if ($ret === true) {
 					return true;
 				}
 
 			} else if (defined('CRYPT_BLOWFISH') && CRYPT_BLOWFISH == true) {
 
+				$start = microtime(true);
+
 				$ret = crypt($password, $hash);
+
+				if (function_exists('debug_log_time')) {
+					debug_log_time('PASS=' . round((microtime(true) - $start), 3));
+				}
 
 				if (is_string($ret) && strlen($ret) > 13 && $ret == $hash) {
 					return true;

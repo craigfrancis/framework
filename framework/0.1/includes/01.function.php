@@ -463,8 +463,19 @@
 	function is_email($email, $check_domain = true) {
 		if (preg_match('/^\w[-=.+\'\w]*@(\w[-._\w]*\.[a-zA-Z]{2,}.*)$/', $email, $matches)) {
 			if ($check_domain && config::get('email.check_domain', true) && function_exists('checkdnsrr')) {
-				if (checkdnsrr($matches[1] . '.', 'MX')) return true; // If a 'mail exchange' record exists
-				if (checkdnsrr($matches[1] . '.', 'A'))  return true; // Mail servers can fall back on 'A' records
+				$start = microtime(true);
+				foreach (array('MX', 'A') as $type) {
+					$valid = checkdnsrr($matches[1] . '.', $type);
+					if ($valid) {
+						if (function_exists('debug_log_time')) {
+							debug_log_time('DNS' . $type . '=' . round((microtime(true) - $start), 3));
+						}
+						return true;
+					}
+				}
+				if (function_exists('debug_log_time')) {
+					debug_log_time('DNSX=' . round((microtime(true) - $start), 3));
+				}
 			} else {
 				return true; // Skipping domain check, or on a Windows server.
 			}

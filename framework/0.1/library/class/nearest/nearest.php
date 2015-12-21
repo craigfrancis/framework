@@ -216,7 +216,7 @@
 		//--------------------------------------------------
 		// Search to return co-ordinates
 
-			public function search($search, $country = NULL) {
+			public function search($search, $country = NULL, $slow = false) {
 
 				//--------------------------------------------------
 				// Country
@@ -322,6 +322,8 @@
 						//--------------------------------------------------
 						// Ask
 
+							$start = microtime(true);
+
 							$contents = file_get_contents(url('https://maps.google.com/maps/api/geocode/xml', array(
 									'address' => $search_query,
 									'sensor' => 'false',
@@ -330,7 +332,13 @@
 									'key' => ($google_maps_key === '' ? NULL : $google_maps_key),
 								)));
 
-							usleep(300000); // 300ms, to keep Google happy (limited to 5 requests per second, or 2500 per day).
+							if ($slow) {
+								usleep(300000); // 300ms, to keep Google happy (limited to 5 requests per second, or 2500 per day).
+							}
+
+							if (function_exists('debug_log_time')) {
+								debug_log_time('GEO=' . round((microtime(true) - $start), 3));
+							}
 
 						//--------------------------------------------------
 						// Extract
@@ -516,13 +524,13 @@
 								}
 								$search = implode($search, ', ');
 
-								$result = $this->search($search, $country);
+								$result = $this->search($search, $country, true);
 
 							//--------------------------------------------------
 							// Postcode only search
 
 								if ($result === NULL) {
-									$result = $this->search($row[$this->config['field_postcode']], $country);
+									$result = $this->search($row[$this->config['field_postcode']], $country, true);
 								}
 
 							//--------------------------------------------------
