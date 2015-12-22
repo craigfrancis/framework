@@ -110,8 +110,10 @@
 				$result = $this->result;
 			}
 			$data = array();
-			while ($row = mysqli_fetch_assoc($result)) {
-				$data[] = $row;
+			if ($result !== true) {
+				while ($row = mysqli_fetch_assoc($result)) {
+					$data[] = $row;
+				}
 			}
 			return $data;
 		}
