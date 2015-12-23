@@ -515,16 +515,24 @@
 							//--------------------------------------------------
 							// Full address search
 
-								$search = array();
-								foreach (array_merge($this->config['field_address_sql'], array($this->config['field_postcode_sql'])) as $field) {
-									$val = trim($row[$field]);
-									if ($val != '') {
-										$search[] = $val;
-									}
-								}
-								$search = implode($search, ', ');
+								if (count($this->config['field_address_sql']) > 0) {
 
-								$result = $this->search($search, $country, true);
+									$search = array();
+									foreach (array_merge($this->config['field_address_sql'], array($this->config['field_postcode_sql'])) as $field) {
+										$val = trim($row[$field]);
+										if ($val != '') {
+											$search[] = $val;
+										}
+									}
+									$search = implode($search, ', ');
+
+									$result = $this->search($search, $country, true);
+
+								} else {
+
+									$result = NULL;
+
+								}
 
 							//--------------------------------------------------
 							// Postcode only search
