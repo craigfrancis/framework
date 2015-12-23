@@ -25,6 +25,7 @@
 				// Config
 
 					$default_config = array_merge(array(
+							'profile'             => NULL,
 							'table_sql'           => DB_PREFIX . 'table',
 							'where_sql'           => 'true',
 							'field_id_sql'        => 'id',
@@ -35,7 +36,8 @@
 							'field_country_sql'   => NULL,
 							'extra_fields_sql'    => array(),
 							'max_results'         => 5,
-							'max_km'              => 40, // 25 miles
+							'max_km'              => NULL,
+							'max_miles'           => NULL,
 							'min_results'         => 0,
 						), config::get_all('nearest.default'));
 
@@ -65,6 +67,14 @@
 					}
 
 					$this->config = array_merge($default_config, $config);
+
+					if (!$this->config['max_km']) {
+						if ($this->config['max_miles'] > 0) {
+							$this->config['max_km'] = ($this->config['max_miles'] * 1.60934);
+						} else {
+							$this->config['max_km'] = 40; // 25 miles
+						}
+					}
 
 				//--------------------------------------------------
 				// Create 'field_x' values from 'field_x_sql'
@@ -162,7 +172,7 @@
 						$latitude = $location[$this->config['field_latitude']];
 						$longitude = $location[$this->config['field_longitude']];
 
-						if ($latitude == 0 && $longitude == 0) { // Technically valid, but more likley to be unknown.
+						if ($latitude == 0 && $longitude == 0) { // Technically valid, but more likely to be unknown.
 
 							$locations[$id]['distance'] = NULL;
 
