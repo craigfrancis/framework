@@ -333,7 +333,7 @@
 								)));
 
 							if ($slow) {
-								usleep(300000); // 300ms, to keep Google happy (limited to 5 requests per second, or 2500 per day).
+								usleep(200000); // 200ms, to keep Google happy (limited to 5 requests per second, or 2500 per day).
 							}
 
 							if (function_exists('debug_log_time')) {
@@ -491,11 +491,13 @@
 						$options['limit_sql'] = $limit;
 					}
 
+					$k = 0;
 					$updates = array();
 
 					$db->select($this->config['table_sql'], $fields, $where_sql, $options);
 					foreach ($db->fetch_all() as $row) {
 
+						$k++;
 						$update = -1; // No change
 
 						$existing_accuracy_latitude  = strlen(substr(strrchr($row[$this->config['field_latitude']],  '.'), 1));
@@ -526,7 +528,7 @@
 									}
 									$search = implode($search, ', ');
 
-									$result = $this->search($search, $country, true);
+									$result = $this->search($search, $country, ($k > 1));
 
 								} else {
 
@@ -538,7 +540,7 @@
 							// Postcode only search
 
 								if ($result === NULL) {
-									$result = $this->search($row[$this->config['field_postcode']], $country, true);
+									$result = $this->search($row[$this->config['field_postcode']], $country, ($k > 1));
 								}
 
 							//--------------------------------------------------
