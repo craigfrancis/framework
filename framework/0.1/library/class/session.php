@@ -145,6 +145,8 @@
 				//--------------------------------------------------
 				// Start
 
+					$start = microtime(true);
+
 					$ignore_errors = (headers_sent() && config::get('session.started') === true);
 
 					if ($ignore_errors) {
@@ -161,6 +163,13 @@
 					}
 
 					config::set('session.started', true);
+
+					if (function_exists('debug_log_time')) {
+						$time = round((microtime(true) - $start), 5);
+						if ($time > 0.001) {
+							debug_log_time('SESS=' . $time);
+						}
+					}
 
 				//--------------------------------------------------
 				// Store session ID - must happen immediately after
