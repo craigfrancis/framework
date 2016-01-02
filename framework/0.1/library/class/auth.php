@@ -100,8 +100,9 @@
 							'password_repeat_min_len'        => 'Your password confirmation is required.',
 							'password_repeat_max_len'        => 'Your password confirmation cannot be longer than XXX characters.',
 
-							'failure_login_identification'   => 'Incorrect log-in details.',
-							'failure_login_password'         => 'Incorrect log-in details.', // TODO: Set to NULL?
+							'failure_login_details'          => 'Incorrect log-in details.',
+							'failure_login_identification'   => NULL, // Do not use, except for very special situations (e.g. low security and overly user friendly).
+							'failure_login_password'         => NULL,
 							'failure_login_repetition'       => 'Too many login attempts.',
 							'failure_identification_current' => 'The email address supplied is already in use.',
 							'failure_password_current'       => 'Your current password is incorrect.', // Used on profile page
@@ -130,6 +131,9 @@
 					}
 
 					$this->text = array_merge($default_text, $this->text); // TODO: Maybe $this->messages_html ?
+
+					if (!$this->text['failure_login_identification']) $this->text['failure_login_identification'] = $this->text['failure_login_details'];
+					if (!$this->text['failure_login_password'])       $this->text['failure_login_password']       = $this->text['failure_login_details'];
 
 				//--------------------------------------------------
 				// Tables
