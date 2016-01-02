@@ -3,8 +3,6 @@
 		// Notes:
 		// - Add a registration table (http://www.troyhunt.com/2015/01/introducing-secure-account-management.html)
 		// - Verify email address on register, but also on email address change?
-		// - And add a CSRF value field in the DB just for the logout URL.
-		// - Increment a counter of pages loaded in a session (looking for odd behaviour).
 		// - Add a remember me table (https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence)
 		// - Use encryption to the stored db hash (like a pepper, https://github.com/paragonie/password_lock).
 
@@ -32,8 +30,8 @@
 
 			protected $username_max_length = 30;
 			protected $email_max_length = 100;
-			protected $password_min_length = 6;
-			protected $password_max_length = 250;
+			protected $password_min_length = 6; // A balance between security and usability.
+			protected $password_max_length = 250; // Bcrypt truncates to 72 characters anyway.
 
 			protected $text = array();
 
@@ -41,6 +39,8 @@
 			protected $db_table = array();
 			protected $db_fields = array();
 			protected $db_where_sql = array();
+
+			protected $logout_details = NULL;
 
 			protected $login_field_identification = NULL;
 			protected $login_field_password = NULL;
@@ -191,8 +191,10 @@
 									user_id int(11) NOT NULL,
 									ip tinytext NOT NULL,
 									browser tinytext NOT NULL,
+									logout_csrf tinytext NOT NULL,
 									created datetime NOT NULL,
 									last_used datetime NOT NULL,
+									request_count int(11) NOT NULL,
 									deleted datetime NOT NULL,
 									PRIMARY KEY (id),
 									KEY user_id (user_id)
@@ -267,6 +269,12 @@
 
 							$db = $this->db_get();
 
+							$fields_sql = array('s.pass', 's.user_id', 's.ip', 's.logout_csrf');
+							foreach ($config['fields'] as $field) {
+								$fields_sql[] = 'm.' . $db->escape_field($field);
+							}
+							$fields_sql = implode(', ', $fields_sql);
+
 							$where_sql = '
 								s.id = "' . $db->escape($session_id) . '" AND
 								s.pass != "" AND
@@ -277,12 +285,6 @@
 								$last_used = new timestamp((0 - $this->session_length) . ' seconds');
 								$where_sql .= ' AND' . "\n\t\t\t\t\t\t\t\t\t" . 's.last_used > "' . $db->escape($last_used) . '"';
 							}
-
-							$fields_sql = array('s.user_id', 's.pass', 's.ip');
-							foreach ($config['fields'] as $field) {
-								$fields_sql[] = 'm.' . $db->escape_field($field);
-							}
-							$fields_sql = implode(', ', $fields_sql);
 
 							$sql = 'SELECT
 										' . $fields_sql . '
@@ -304,10 +306,18 @@
 
 										$now = new timestamp();
 
+										$request_mode = config::get('output.mode');
+										if (($request_mode === 'asset') || ($request_mode === 'gateway' && in_array(config::get('output.gateway'), array('framework-file', 'js-code', 'js-newrelic')))) {
+											$request_increment = 0;
+										} else {
+											$request_increment = 1;
+										}
+
 										$db->query('UPDATE
 														' . $db->escape_table($this->db_table['session']) . ' AS s
 													SET
-														s.last_used = "' . $db->escape($now) . '"
+														s.last_used = "' . $db->escape($now) . '",
+														s.request_count = (s.request_count + ' . intval($request_increment) . ')
 													WHERE
 														s.id = "' . $db->escape($session_id) . '" AND
 														' . $this->db_where_sql['session']);
@@ -451,13 +461,15 @@
 				// Create a new session
 
 					$db->insert($this->db_table['session'], array(
-							'pass'      => hash($this->session_hash, $session_pass),
-							'user_id'   => $user_id,
-							'ip'        => config::get('request.ip'),
-							'browser'   => config::get('request.browser'),
-							'created'   => $now,
-							'last_used' => $now,
-							'deleted'   => '0000-00-00 00:00:00',
+							'pass'          => hash($this->session_hash, $session_pass), // Must be a quick hash for fast page loading time.
+							'user_id'       => $user_id,
+							'ip'            => config::get('request.ip'),
+							'browser'       => config::get('request.browser'),
+							'logout_csrf'   => random_key(15), // Different to csrf_token_get() as this is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
+							'created'       => $now,
+							'last_used'     => $now,
+							'request_count' => 0,
+							'deleted'       => '0000-00-00 00:00:00',
 						));
 
 					$session_id = $db->insert_id();
@@ -480,45 +492,99 @@
 
 					}
 
+				//--------------------------------------------------
+				// Change the CSRF token, invalidating forms open in
+				// different browser tabs (or browser history).
+
+					csrf_token_change();
+
 			}
 
-			public function session_logout() {
+		//--------------------------------------------------
+		// Logout
+
+			public function logout_url_get($logout_url = NULL) {
+				if ($this->session_info) {
+					$logout_url = url($logout_url, array('csrf' => $this->session_info['logout_csrf']));
+				}
+				return $logout_url; // Never return NULL, the logout page should always be linked to (even it it only shows an error).
+			}
+
+			public function logout_validate() {
 
 				//--------------------------------------------------
-				// Delete the current session
+				// Config
 
-					if ($this->session_info) { // TODO: Test
+					$this->logout_details = false;
 
-						$db = $this->db_get();
+				//--------------------------------------------------
+				// Validate the logout CSRF token.
 
-						if ($this->session_history == 0) {
+					$csrf_get = request('csrf', 'GET');
 
-							$db->query('DELETE FROM
-											s
-										USING
-											' . $db->escape_table($this->db_table['session']) . ' AS s
-										WHERE
-											s.id = "' . $db->escape($this->session_info['id']) . '" AND
-											' . $this->db_where_sql['session']);
+					if ($this->session_info && $this->session_info['logout_csrf'] === $csrf_get) {
 
-						} else {
+						$this->logout_details = array(
+								'csrf' => $csrf_get,
+							);
 
-							$now = new timestamp();
-
-							$db->query('UPDATE
-											' . $db->escape_table($this->db_table['session']) . ' AS s
-										SET
-											s.deleted = "' . $db->escape($now) . '"
-										WHERE
-											s.id = "' . $db->escape($this->session_info['id']) . '" AND
-											' . $this->db_where_sql['session']);
-
-						}
+						return true;
 
 					}
 
 				//--------------------------------------------------
-				// Be nice, and cleanup - not necessary
+				// Failure
+
+					return false;
+
+			}
+
+			public function logout_complete() {
+
+				//--------------------------------------------------
+				// Config
+
+					if ($this->logout_details === NULL) {
+						exit_with_error('You must call auth::logout_validate() before auth::logout_complete().');
+					}
+
+					if (!$this->logout_details) {
+						exit_with_error('The logout details are not valid, so why has auth::logout_complete() been called?');
+					}
+
+				//--------------------------------------------------
+				// Delete the current session
+
+					$db = $this->db_get();
+
+// TODO: Test
+
+					if ($this->session_history == 0) {
+
+						$db->query('DELETE FROM
+										s
+									USING
+										' . $db->escape_table($this->db_table['session']) . ' AS s
+									WHERE
+										s.id = "' . $db->escape($this->session_info['id']) . '" AND
+										' . $this->db_where_sql['session']);
+
+					} else {
+
+						$now = new timestamp();
+
+						$db->query('UPDATE
+										' . $db->escape_table($this->db_table['session']) . ' AS s
+									SET
+										s.deleted = "' . $db->escape($now) . '"
+									WHERE
+										s.id = "' . $db->escape($this->session_info['id']) . '" AND
+										' . $this->db_where_sql['session']);
+
+					}
+
+				//--------------------------------------------------
+				// Be nice, and cleanup (not necessary)
 
 					if ($this->session_cookies) {
 						cookie::delete($this->session_name . '_id');
@@ -528,6 +594,12 @@
 						session::delete($this->session_name . '_id');
 						session::delete($this->session_name . '_pass');
 					}
+
+				//--------------------------------------------------
+				// Change the CSRF token, invalidating forms open in
+				// different browser tabs (or browser history).
+
+					csrf_token_change();
 
 			}
 
@@ -770,7 +842,7 @@
 					//--------------------------------------------------
 					// Validate password
 
-						$result = $this->validate_password($password_1);
+						$result = $this->validate_password_new($password_1);
 
 						if (is_string($result)) {
 
@@ -778,7 +850,7 @@
 
 						} else if ($result !== true) {
 
-							exit_with_error('Unknown response from auth::validate_password()', $result);
+							exit_with_error('Unknown response from auth::validate_password_new()', $result);
 
 						} else if ($password_1 != $password_2) {
 
@@ -834,7 +906,7 @@
 					//--------------------------------------------------
 					// Register
 
-							// TODO: Shoud probably use value_set on the record helper.
+							// TODO: Should probably use value_set on the record helper.
 
 						$form->db_value_set($this->db_fields['main']['identification'], $this->register_details['identification']);
 
@@ -1036,7 +1108,7 @@
 							$password_1 = $this->update_field_password_new_1->value_get();
 							$password_2 = $this->update_field_password_new_2->value_get();
 
-							$result = $this->validate_password($password_1);
+							$result = $this->validate_password_new($password_1);
 
 							if (is_string($result)) {
 
@@ -1044,7 +1116,7 @@
 
 							} else if ($result !== true) {
 
-								exit_with_error('Unknown response from auth::validate_password()', $result);
+								exit_with_error('Unknown response from auth::validate_password_new()', $result);
 
 							} else if ($password_1 != $password_2) {
 
@@ -1203,7 +1275,7 @@
 				}
 
 				public function reset_process_validate() {
-					$this->validate_password();
+					$this->validate_password_new();
 					// Repeat password is the same
 				}
 
@@ -1246,8 +1318,8 @@
 
 			}
 
-			protected function validate_password($password) {
-				return true; // Could set additional complexity requirements (making the password harder to remember)
+			protected function validate_password_new($password) {
+				return true; // Could set additional complexity requirements (e.g. must contain numbers/letters/etc, to make the password harder to remember)
 			}
 
 			protected function validate_login($identification, $password) {

@@ -148,6 +148,8 @@
 
 				}
 
+				csrf_token_change();
+
 		}
 
 		protected function _session_details_get() {
@@ -189,6 +191,8 @@
 					session::delete($session_name . '_id');
 					session::delete($session_name . '_pass');
 				}
+
+				csrf_token_change();
 
 		}
 

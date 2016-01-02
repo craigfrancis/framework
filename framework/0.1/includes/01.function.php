@@ -59,21 +59,23 @@
 
 	function csrf_token_get() {
 
-		$csrf_session = false; // Sessions expire after 24 minutes by default... (class_exists('session', false) && session::open())
-		$csrf_token = ($csrf_session ? session::get('csrf') : cookie::get('f'));
+		$csrf_token = trim(cookie::get('f')); // Don't use sessions, as they typically expire after 24 minutes.
 
 		if ($csrf_token == '') {
 			$csrf_token = random_key(15);
 		}
 
-		if ($csrf_session) {
-			session::set('csrf', $csrf_token);
-			cookie::init(); // Send 'cookie_check'
-		} else {
-			cookie::set('f', $csrf_token); // Short cookie name
-		}
+		cookie::set('f', $csrf_token); // Short cookie name, keep re-sending.
 
 		return $csrf_token;
+
+	}
+
+	function csrf_token_change() {
+
+		$csrf_token = random_key(15);
+
+		cookie::set('f', $csrf_token);
 
 	}
 
