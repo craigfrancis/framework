@@ -119,6 +119,9 @@
 					$default_text['email_max_len'] = $default_text['identification_max_len'];
 					$default_text['email_format'] = $default_text['identification_format'];
 
+					if (!$default_text['failure_login_identification']) $default_text['failure_login_identification'] = $default_text['failure_login_details'];
+					if (!$default_text['failure_login_password'])       $default_text['failure_login_password']       = $default_text['failure_login_details'];
+
 					if ($this->identification_type == 'username') {
 
 						$default_text['identification_label'] = 'Username';
@@ -131,9 +134,6 @@
 					}
 
 					$this->text = array_merge($default_text, $this->text); // TODO: Maybe $this->messages_html ?
-
-					if (!$this->text['failure_login_identification']) $this->text['failure_login_identification'] = $this->text['failure_login_details'];
-					if (!$this->text['failure_login_password'])       $this->text['failure_login_password']       = $this->text['failure_login_details'];
 
 				//--------------------------------------------------
 				// Tables
