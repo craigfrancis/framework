@@ -141,6 +141,7 @@
 					$this->db_table = array(
 							'main'     => DB_PREFIX . 'user',
 							'session'  => DB_PREFIX . 'user_session',
+							'register' => DB_PREFIX . 'user_register', // Can be set to NULL to skip email verification (and help attackers identify active accounts).
 							'password' => DB_PREFIX . 'user_password',
 						);
 
@@ -148,6 +149,7 @@
 							'main'       => 'm.deleted = "0000-00-00 00:00:00"',
 							'main_login' => 'true', // e.g. to block inactive users during login
 							'session'    => 's.deleted = "0000-00-00 00:00:00"',
+							'register'   => 'true',
 							'password'   => 'true',
 						);
 
@@ -160,7 +162,15 @@
 									'edited'         => 'edited',
 									'deleted'        => 'deleted',
 								),
+							'register' => array(),
 						);
+
+					if ($this->db_table['register'] === NULL) {
+						$this->db_table['register'] = $this->db_table['main'];
+					} else {
+						$this->db_fields['register']['token'] = 'token';
+						$this->db_fields['register']['email'] = 'email';
+					}
 
 					if ($this->identification_type == 'username') {
 
@@ -173,6 +183,8 @@
 						$this->identification_max_length = $this->email_max_length;
 
 					}
+
+					$this->db_fields['register'] = array_merge($this->db_fields['main'], $this->db_fields['register']);
 
 					if (config::get('debug.level') > 0) {
 
@@ -204,8 +216,6 @@
 									KEY user_id (user_id)
 								);');
 
-						// Password reset feature not always used
-
 					}
 
 			}
@@ -215,14 +225,6 @@
 					$this->db_link = db_get();
 				}
 				return $this->db_link;
-			}
-
-			public function db_table_get($name = 'main') {
-				if (isset($this->db_table[$name])) {
-					return $this->db_table[$name];
-				} else {
-					exit_with_error('Unrecognised table "' . $name . '"');
-				}
 			}
 
 		//--------------------------------------------------
@@ -561,8 +563,6 @@
 
 					$db = $this->db_get();
 
-// TODO: Test
-
 					if ($this->session_history == 0) {
 
 						$db->query('DELETE FROM
@@ -611,7 +611,7 @@
 		// Login
 
 			//--------------------------------------------------
-			// Fields
+			// Setup
 
 				public function login_field_identification_get($form, $config = array()) {
 
@@ -762,7 +762,11 @@
 		// Register
 
 			//--------------------------------------------------
-			// Fields
+			// Setup
+
+				public function register_table_get() {
+					return $this->db_table['register'];
+				}
 
 				public function register_field_identification_get($form, $config = array()) {
 
@@ -825,6 +829,25 @@
 						$this->register_details = NULL; // Make sure (if called more than once)
 
 					//--------------------------------------------------
+					// Check table
+
+						if (config::get('debug.level') > 0 && $this->db_table['register']) {
+
+							debug_require_db_table($this->db_table['register'], '
+									CREATE TABLE [TABLE] (
+										id int(11) NOT NULL AUTO_INCREMENT,
+										token tinytext NOT NULL,
+										' . $this->db_fields['register']['identification'] . ' tinytext NOT NULL,
+										pass tinytext NOT NULL,
+										created datetime NOT NULL,
+										edited datetime NOT NULL,
+										deleted datetime NOT NULL,
+										PRIMARY KEY (id)
+									);');
+
+						}
+
+					//--------------------------------------------------
 					// Validate identification
 
 						$result = $this->validate_identification($identification, NULL);
@@ -867,9 +890,6 @@
 
 						if ($form->valid()) {
 
-// TODO: Add a separate register table, send an email, on confirmation (assuming identification is unique) the record can be copied over.
-// But what about profile changes once registered?
-
 							$this->register_details = array(
 									'identification' => $identification,
 									'password' => $password_1,
@@ -910,9 +930,12 @@
 					//--------------------------------------------------
 					// Register
 
-							// TODO: Should probably use value_set on the record helper.
+// TODO: Should probably use value_set on the record helper.
 
-						$form->db_value_set($this->db_fields['main']['identification'], $this->register_details['identification']);
+// TODO: Add a separate register table, send an email, on confirmation (assuming identification is unique) the record can be copied over.
+// But what about profile changes once registered?
+
+$form->db_value_set($this->db_fields['main']['identification'], $this->register_details['identification']);
 
 						$user_id = $form->db_insert();
 
@@ -955,7 +978,11 @@
 		// Update
 
 			//--------------------------------------------------
-			// Fields
+			// Setup
+
+				public function update_table_get() {
+					return $this->db_table['main'];
+				}
 
 				public function update_field_identification_get($form, $config = array()) {
 
@@ -1180,7 +1207,7 @@
 					// Update
 
 						if ($this->update_details['identification']	) {
-
+// TODO: Use value_set on record?
 							$form->db_value_set($this->db_fields['main']['identification'], $this->update_details['identification']);
 
 							$this->login_last_set($this->update_details['identification']);
@@ -1208,7 +1235,11 @@
 		// Reset (forgotten password)
 
 			//--------------------------------------------------
-			// Fields
+			// Setup
+
+				public function reset_table_get() {
+					return $this->db_table['password'];
+				}
 
 				public function reset_field_email_get($form, $config = array()) { // Must be email, username will be known and can be used to spam.
 
@@ -1279,6 +1310,19 @@
 				}
 
 				public function reset_process_validate() {
+
+					// if (config::get('debug.level') > 0) {
+					//
+					// 	debug_require_db_table($this->db_table['password'], '
+					// 			CREATE TABLE [TABLE] (
+					// 				id int(11) NOT NULL AUTO_INCREMENT,
+					// 				created datetime NOT NULL,
+					// 				deleted datetime NOT NULL,
+					// 				PRIMARY KEY (id)
+					// 			);');
+					//
+					// }
+
 					$this->validate_password_new();
 					// Repeat password is the same
 				}
