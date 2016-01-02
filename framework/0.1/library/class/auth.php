@@ -17,7 +17,6 @@
 			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $session_info = NULL;
 			protected $session_pass = NULL;
-			protected $session_hash = 'sha256'; // Using CRYPT_BLOWFISH would make page loading too slow (good for login though)
 			protected $session_length = 1800; // 30 minutes, or set to 0 for indefinite length
 			protected $session_ip_lock = false; // By default this is disabled (AOL users)
 			protected $session_concurrent = false; // Close previous sessions on new session start
@@ -30,7 +29,8 @@
 			protected $username_max_length = 30;
 			protected $email_max_length = 100;
 			protected $password_min_length = 6; // A balance between security and usability.
-			protected $password_max_length = 250; // Bcrypt truncates to 72 characters anyway.
+			protected $password_max_length = 250; // CRYPT_BLOWFISH truncates to 72 characters anyway.
+			protected $quick_hash = 'sha256'; // Using CRYPT_BLOWFISH for everything (e.g. session pass) would make page loading too slow (good for login though)
 
 			protected $text = array();
 
@@ -146,9 +146,9 @@
 
 					$this->db_where_sql = array(
 							'main'       => 'm.deleted = "0000-00-00 00:00:00"',
-							'main_login' => 'true', // e.g. to block inactive users during login
+							'main_login' => 'true', // e.g. 'm.active = "true"' to block inactive users during login
 							'session'    => 's.deleted = "0000-00-00 00:00:00"',
-							'register'   => 'true',
+							'register'   => 'r.deleted = "0000-00-00 00:00:00"',
 							'password'   => 'true',
 						);
 
@@ -164,11 +164,10 @@
 							'register' => array(),
 						);
 
-					if ($this->db_table['register'] === NULL) {
-						$this->db_table['register'] = $this->db_table['main'];
-					} else {
+					if ($this->db_table['register']) {
 						$this->db_fields['register']['token'] = 'token';
-						$this->db_fields['register']['email'] = 'email';
+						$this->db_fields['register']['ip'] = 'ip';
+						$this->db_fields['register']['browser'] = 'browser';
 					}
 
 					if ($this->identification_type == 'username') {
@@ -304,7 +303,7 @@
 
 								$ip_test = ($this->session_ip_lock == false || config::get('request.ip') == $row['ip']);
 
-								if ($ip_test && $row['pass'] != '' && hash($this->session_hash, $session_pass) == $row['pass']) {
+								if ($ip_test && $row['pass'] != '' && hash($this->quick_hash, $session_pass) == $row['pass']) {
 
 									//--------------------------------------------------
 									// Update the session - keep active
@@ -390,7 +389,7 @@
 				}
 			}
 
-			protected function session_start($user_id) { // See the login_* or register_* functions (don't call directly)
+			protected function session_start($user_id, $identification) { // See the login_* or register_* functions (do not call directly)
 
 				//--------------------------------------------------
 				// Config
@@ -466,11 +465,11 @@
 				// Create a new session
 
 					$db->insert($this->db_table['session'], array(
-							'pass'          => hash($this->session_hash, $session_pass), // Must be a quick hash for fast page loading time.
+							'pass'          => hash($this->quick_hash, $session_pass), // Must be a quick hash for fast page loading time.
 							'user_id'       => $user_id,
 							'ip'            => config::get('request.ip'),
 							'browser'       => config::get('request.browser'),
-							'logout_csrf'   => random_key(15), // Different to csrf_token_get() as this is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
+							'logout_csrf'   => random_key(15), // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
 							'created'       => $now,
 							'last_used'     => $now,
 							'request_count' => 0,
@@ -496,6 +495,8 @@
 						session::set($this->session_name . '_pass', $session_pass); // Password support still used so an "auth_token" can be passed to the user.
 
 					}
+
+					$this->login_last_set($identification);
 
 				//--------------------------------------------------
 				// Change the CSRF token, invalidating forms open in
@@ -553,7 +554,7 @@
 						exit_with_error('You must call auth::logout_validate() before auth::logout_complete().');
 					}
 
-					if (!$this->logout_details) {
+					if (!is_array($this->logout_details)) {
 						exit_with_error('The logout details are not valid, so why has auth::logout_complete() been called?');
 					}
 
@@ -610,7 +611,7 @@
 		// Login
 
 			//--------------------------------------------------
-			// Setup
+			// Fields
 
 				public function login_field_identification_get($form, $config = array()) {
 
@@ -658,7 +659,7 @@
 						$identification = $this->login_field_identification->value_get();
 						$password = $this->login_field_password->value_get();
 
-						$this->login_details = NULL; // Make sure (if called more than once)
+						$this->login_details = false;
 
 					//--------------------------------------------------
 					// Validate
@@ -685,7 +686,7 @@
 
 							} else if (!is_int($result)) {
 
-								exit_with_error('Unknown response from auth::validate_login()', $result);
+								exit_with_error('Invalid response from auth::validate_login()', $result);
 
 							} else {
 
@@ -713,8 +714,12 @@
 					//--------------------------------------------------
 					// Config
 
-						if (!$this->login_details) {
+						if ($this->login_details === NULL) {
 							exit_with_error('You must call auth::login_validate() before auth::login_complete().');
+						}
+
+						if (!is_array($this->login_details)) {
+							exit_with_error('The login details are not valid, so why has auth::login_complete() been called?');
 						}
 
 						if (!$this->login_details['form']->valid()) {
@@ -722,14 +727,9 @@
 						}
 
 					//--------------------------------------------------
-					// Remember identification
-
-						$this->login_last_set($this->login_details['identification']);
-
-					//--------------------------------------------------
 					// Start session
 
-						$this->session_start($this->login_details['id']);
+						$this->session_start($this->login_details['id'], $this->login_details['identification']);
 
 					//--------------------------------------------------
 					// Try to restore session
@@ -761,11 +761,34 @@
 		// Register
 
 			//--------------------------------------------------
-			// Setup
+			// Table
 
 				public function register_table_get() {
-					return $this->db_table['register'];
+
+					if (config::get('debug.level') > 0 && $this->db_table['register']) {
+
+						debug_require_db_table($this->db_table['register'], '
+								CREATE TABLE [TABLE] (
+									id int(11) NOT NULL AUTO_INCREMENT,
+									' . $this->db_fields['register']['token'] . ' tinytext NOT NULL,
+									' . $this->db_fields['register']['ip'] . ' tinytext NOT NULL,
+									' . $this->db_fields['register']['browser'] . ' tinytext NOT NULL,
+									' . $this->db_fields['register']['identification'] . ' tinytext NOT NULL,
+									pass tinytext NOT NULL,
+									created datetime NOT NULL,
+									edited datetime NOT NULL,
+									deleted datetime NOT NULL,
+									PRIMARY KEY (id)
+								);');
+
+					}
+
+					return ($this->db_table['register'] ? $this->db_table['register'] : $this->db_table['main']);
+
 				}
+
+			//--------------------------------------------------
+			// Fields
 
 				public function register_field_identification_get($form, $config = array()) {
 
@@ -825,50 +848,38 @@
 						$password_1 = $this->register_field_password_1->value_get();
 						$password_2 = $this->register_field_password_2->value_get();
 
-						$this->register_details = NULL; // Make sure (if called more than once)
+						$this->register_details = false;
 
 					//--------------------------------------------------
-					// Check table
+					// Validate identification uniqueness
 
-						if (config::get('debug.level') > 0 && $this->db_table['register']) {
+						$identification_unique = $this->validate_identification_unique($identification, NULL);
 
-							debug_require_db_table($this->db_table['register'], '
-									CREATE TABLE [TABLE] (
-										id int(11) NOT NULL AUTO_INCREMENT,
-										token tinytext NOT NULL,
-										' . $this->db_fields['register']['identification'] . ' tinytext NOT NULL,
-										pass tinytext NOT NULL,
-										created datetime NOT NULL,
-										edited datetime NOT NULL,
-										deleted datetime NOT NULL,
-										PRIMARY KEY (id)
-									);');
+						if ((!$identification_unique) && (!$this->db_table['register'] || $this->identification_type == 'username')) {
+
+							$this->register_field_identification->error_add($this->text['failure_identification_current']);
 
 						}
 
 					//--------------------------------------------------
-					// Validate identification
+					// Validate identification complexity
 
-						$result = $this->validate_identification($identification, NULL);
+						$result = $this->validate_identification_complexity($identification, NULL);
 
-						if ($result === 'failure_current') {
-
-							$this->register_field_identification->error_add($this->text['failure_identification_current']);
-
-						} else if (is_string($result)) {
+						if (is_string($result)) {
 
 							$this->register_field_identification->error_add($result); // Custom (project specific) error message
 
 						} else if ($result !== true) {
 
-							exit_with_error('Unknown response from auth::validate_identification()', $result);
+							exit_with_error('Invalid response from auth::validate_identification_complexity()', $result);
 
 						}
 
 					//--------------------------------------------------
 					// Validate password
 
-						$result = $this->validate_password_new($password_1);
+						$result = $this->validate_password_complexity($password_1);
 
 						if (is_string($result)) {
 
@@ -876,7 +887,7 @@
 
 						} else if ($result !== true) {
 
-							exit_with_error('Unknown response from auth::validate_password_new()', $result);
+							exit_with_error('Invalid response from auth::validate_password_complexity()', $result);
 
 						} else if ($password_1 != $password_2) {
 
@@ -891,6 +902,7 @@
 
 							$this->register_details = array(
 									'identification' => $identification,
+									'identification_unique' => $identification_unique,
 									'password' => $password_1,
 									'form' => $form,
 								);
@@ -914,8 +926,12 @@
 								'login' => true,
 							), $config);
 
-						if (!$this->register_details) {
+						if ($this->register_details === NULL) {
 							exit_with_error('You must call auth::register_validate() before auth::register_complete().');
+						}
+
+						if (!is_array($this->register_details)) {
+							exit_with_error('The register details are not valid, so why has auth::register_complete() been called?');
 						}
 
 						if (!$this->register_details['form']->valid()) {
@@ -923,56 +939,162 @@
 						}
 
 						$form = $this->register_details['form'];
-
-						$db = $this->db_get();
-
-					//--------------------------------------------------
-					// Register
-
-// TODO: Should probably use value_set on the record helper.
-
-// TODO: Add a separate register table, send an email, on confirmation (assuming identification is unique) the record can be copied over.
-// But what about profile changes once registered?
-
-// - Add a registration table (http://www.troyhunt.com/2015/01/introducing-secure-account-management.html)
-// - Verify email address on register, but also on email address change?
-
-$form->db_value_set($this->db_fields['main']['identification'], $this->register_details['identification']);
-
-						$user_id = $form->db_insert();
+						$record = $form->db_record_get();
 
 					//--------------------------------------------------
-					// Password
+					// Details
 
-						$password_hash = password::hash($this->register_details['password'], $user_id);
-
-						$db->query('UPDATE
-										' . $db->escape_table($this->db_table['main']) . ' AS m
-									SET
-										m.' . $db->escape_field($this->db_fields['main']['password']) . ' = "' . $db->escape($password_hash) . '"
-									WHERE
-										m.' . $db->escape_field($this->db_fields['main']['id']) . ' = "' . $db->escape($user_id) . '" AND
-										m.' . $db->escape_field($this->db_fields['main']['deleted']) . ' = "0000-00-00 00:00:00" AND
-										' . $this->db_where_sql['main'] . '
-									LIMIT
-										1');
+						$record->value_set($this->db_fields['register']['identification'], $this->register_details['identification']);
+						$record->value_set($this->db_fields['register']['password'], password::hash($this->register_details['password']));
 
 					//--------------------------------------------------
-					// Remember identification
+					// Register token
 
-						$this->login_last_set($this->register_details['identification']);
+						if ($this->db_table['register']) {
+
+							$register_pass = random_key(15);
+
+							$record->value_set($this->db_fields['register']['ip'], config::get('request.ip'));
+							$record->value_set($this->db_fields['register']['browser'], config::get('request.browser'));
+
+							if ($this->register_details['identification_unique']) {
+								$record->value_set($this->db_fields['register']['token'], hash($this->quick_hash, $register_pass));
+							}
+
+						} else {
+
+							$register_pass = NULL;
+
+						}
+
+					//--------------------------------------------------
+					// Save
+
+						$record_id = $form->db_insert();
 
 					//--------------------------------------------------
 					// Start session
 
-						if ($config['login']) {
-							$this->session_start($user_id);
+						if ($register_pass === NULL && $config['login']) {
+
+							$this->session_start($record_id, $this->register_details['identification']);
+
 						}
 
 					//--------------------------------------------------
 					// Return
 
-						return $user_id;
+						if ($register_pass) {
+
+							if ($this->register_details['identification_unique']) {
+								return $record_id . '-' . $register_pass; // Return the registration token to complete registration with auth::register_confirm()
+							} else {
+								return false; // Not unique, so send an email telling the user they already have an account.
+							}
+
+						} else {
+
+							return $record_id; // User ID
+
+						}
+
+				}
+
+				public function register_confirm($register_token) {
+
+					//--------------------------------------------------
+					// Config
+
+						$db = $this->db_get();
+
+						$now = new timestamp();
+
+						if (preg_match('/^([0-9]+)-(.+)$/', $register_token, $matches)) {
+							$register_id = $matches[1];
+							$register_pass = $matches[2];
+						} else {
+							$register_id = 0;
+							$register_pass = '';
+						}
+
+						$register_id = intval($register_id);
+
+					//--------------------------------------------------
+					// Complete if valid
+
+						$sql = 'SELECT
+									*
+								FROM
+									' . $db->escape_table($this->db_table['register']) . ' AS r
+								WHERE
+									r.' . $db->escape_field($this->db_fields['register']['id']) . ' = "' . $db->escape($register_id) . '" AND
+									r.' . $db->escape_field($this->db_fields['register']['token']) . ' != "" AND
+									r.' . $db->escape_field($this->db_fields['register']['password']) . ' != "" AND
+									' . $this->db_where_sql['register'];
+
+						if ($row = $db->fetch_row($sql)) {
+
+							$token_field = $this->db_fields['register']['token'];
+							$identification_field = $this->db_fields['register']['identification'];
+
+							if (hash($this->quick_hash, $register_pass) == $row[$token_field]) {
+
+								//--------------------------------------------------
+								// Identification
+
+									$identification_value = $row[$identification_field];
+
+									$identification_unique = $this->validate_identification_unique($identification_value, NULL);
+
+									if (!$identification_unique) {
+										return false;
+									}
+
+								//--------------------------------------------------
+								// Copy record
+
+									$values = $row;
+									unset($values[$this->db_fields['register']['id']]);
+									unset($values[$this->db_fields['register']['token']]);
+									unset($values[$this->db_fields['register']['ip']]);
+									unset($values[$this->db_fields['register']['browser']]);
+
+									$values['created'] = $now;
+									$values['edited'] = $now;
+
+									$db->insert($this->db_table['main'], $values);
+
+									$user_id = $db->insert_id();
+
+								//--------------------------------------------------
+								// Delete registration
+
+									$db->query('UPDATE
+													' . $db->escape_table($this->db_table['register']) . ' AS r
+												SET
+													r.' . $db->escape_field($this->db_fields['register']['deleted']) . ' = "' . $db->escape($now) . '",
+													r.' . $db->escape_field($this->db_fields['register']['password']) . ' = ""
+												WHERE
+													r.' . $db->escape_field($this->db_fields['register']['id']) . ' = "' . $db->escape($register_id) . '" AND
+													' . $this->db_where_sql['register']);
+
+								//--------------------------------------------------
+								// Start session
+
+									$this->session_start($user_id, $identification_value);
+
+								//--------------------------------------------------
+								// Return
+
+									return $user_id;
+
+							}
+						}
+
+					//--------------------------------------------------
+					// Failure
+
+						return false;
 
 				}
 
@@ -980,11 +1102,14 @@ $form->db_value_set($this->db_fields['main']['identification'], $this->register_
 		// Update
 
 			//--------------------------------------------------
-			// Setup
+			// Table
 
 				public function update_table_get() {
 					return $this->db_table['main'];
 				}
+
+			//--------------------------------------------------
+			// Fields
 
 				public function update_field_identification_get($form, $config = array()) {
 
@@ -1066,7 +1191,7 @@ $form->db_value_set($this->db_fields['main']['identification'], $this->register_
 						$new_identification = NULL;
 						$new_password = NULL;
 
-						$this->update_details = NULL; // Make sure (if called more than once)
+						$this->update_details = false;
 
 					//--------------------------------------------------
 					// Validate identification
@@ -1076,19 +1201,24 @@ $form->db_value_set($this->db_fields['main']['identification'], $this->register_
 							$form = $this->update_field_identification->form_get();
 							$new_identification = $this->update_field_identification->value_get();
 
-							$result = $this->validate_identification($new_identification, $this->session_user_id_get());
+							$identification_unique = $this->validate_identification_unique($new_identification, $this->session_user_id_get());
 
-							if ($result === 'failure_current') {
+// TODO: Sending email to confirm change? or error if an account already exists with this password (maybe link to forgotten password page?).
+// Should this happen on email and/or username?
 
+							if (!$identification_unique) {
 								$this->update_field_identification->error_add($this->text['failure_identification_current']);
+							}
 
-							} else if (is_string($result)) {
+							$result = $this->validate_identification_complexity($new_identification, $this->session_user_id_get());
+
+							if (is_string($result)) {
 
 								$this->update_field_identification->error_add($result); // Custom (project specific) error message
 
 							} else if ($result !== true) {
 
-								exit_with_error('Unknown response from auth::validate_identification()', $result);
+								exit_with_error('Invalid response from auth::validate_identification_complexity()', $result);
 
 							}
 
@@ -1122,7 +1252,7 @@ $form->db_value_set($this->db_fields['main']['identification'], $this->register_
 
 							} else if (!is_int($result)) {
 
-								exit_with_error('Unknown response from auth::validate_login()', $result);
+								exit_with_error('Invalid response from auth::validate_login()', $result);
 
 							}
 
@@ -1141,7 +1271,7 @@ $form->db_value_set($this->db_fields['main']['identification'], $this->register_
 							$password_1 = $this->update_field_password_new_1->value_get();
 							$password_2 = $this->update_field_password_new_2->value_get();
 
-							$result = $this->validate_password_new($password_1);
+							$result = $this->validate_password_complexity($password_1);
 
 							if (is_string($result)) {
 
@@ -1149,7 +1279,7 @@ $form->db_value_set($this->db_fields['main']['identification'], $this->register_
 
 							} else if ($result !== true) {
 
-								exit_with_error('Unknown response from auth::validate_password_new()', $result);
+								exit_with_error('Invalid response from auth::validate_password_complexity()', $result);
 
 							} else if ($password_1 != $password_2) {
 
@@ -1193,8 +1323,12 @@ $form->db_value_set($this->db_fields['main']['identification'], $this->register_
 					//--------------------------------------------------
 					// Config
 
-						if (!$this->update_details) {
+						if ($this->update_details === NULL) {
 							exit_with_error('You must call auth::update_validate() before auth::update_complete().');
+						}
+
+						if (!is_array($this->update_details)) {
+							exit_with_error('The update details are not valid, so why has auth::update_complete() been called?');
 						}
 
 						if (!$this->update_details['form']->valid()) {
@@ -1202,15 +1336,16 @@ $form->db_value_set($this->db_fields['main']['identification'], $this->register_
 						}
 
 						$form = $this->update_details['form'];
-
-						$db = $this->db_get();
+						$record = $form->db_record_get();
 
 					//--------------------------------------------------
 					// Update
 
+// TODO: Don't change email address without verification?
+
 						if ($this->update_details['identification']	) {
-// TODO: Use value_set on record?
-							$form->db_value_set($this->db_fields['main']['identification'], $this->update_details['identification']);
+
+							$record->value_set($this->db_fields['main']['identification'], $this->update_details['identification']);
 
 							$this->login_last_set($this->update_details['identification']);
 
@@ -1220,7 +1355,7 @@ $form->db_value_set($this->db_fields['main']['identification'], $this->register_
 
 							$password_hash = password::hash($this->update_details['password'], $this->session_user_id_get());
 
-							$form->db_value_set($this->db_fields['main']['password'], $password_hash);
+							$record->value_set($this->db_fields['main']['password'], $password_hash);
 
 						}
 
@@ -1237,11 +1372,28 @@ $form->db_value_set($this->db_fields['main']['identification'], $this->register_
 		// Reset (forgotten password)
 
 			//--------------------------------------------------
-			// Setup
+			// Table
 
 				public function reset_table_get() {
+
+					if (config::get('debug.level') > 0) {
+
+						debug_require_db_table($this->db_table['password'], '
+								CREATE TABLE [TABLE] (
+									id int(11) NOT NULL AUTO_INCREMENT,
+									created datetime NOT NULL,
+									deleted datetime NOT NULL,
+									PRIMARY KEY (id)
+								);');
+
+					}
+
 					return $this->db_table['password'];
+
 				}
+
+			//--------------------------------------------------
+			// Fields
 
 				public function reset_field_email_get($form, $config = array()) { // Must be email, username will be known and can be used to spam.
 
@@ -1313,19 +1465,7 @@ $form->db_value_set($this->db_fields['main']['identification'], $this->register_
 
 				public function reset_process_validate() {
 
-					// if (config::get('debug.level') > 0) {
-					//
-					// 	debug_require_db_table($this->db_table['password'], '
-					// 			CREATE TABLE [TABLE] (
-					// 				id int(11) NOT NULL AUTO_INCREMENT,
-					// 				created datetime NOT NULL,
-					// 				deleted datetime NOT NULL,
-					// 				PRIMARY KEY (id)
-					// 			);');
-					//
-					// }
-
-					$this->validate_password_new();
+					$this->validate_password_complexity();
 					// Repeat password is the same
 				}
 
@@ -1335,40 +1475,31 @@ $form->db_value_set($this->db_fields['main']['identification'], $this->register_
 		//--------------------------------------------------
 		// Support functions
 
-			protected function validate_identification($identification, $user_id) {
+			protected function validate_identification_unique($identification, $user_id) {
 
-				//--------------------------------------------------
-				// Config
+				$db = db_get();
 
-					$db = $this->db_get();
+				$sql = 'SELECT
+							1
+						FROM
+							' . $db->escape_table($this->db_table['main']) . ' AS m
+						WHERE
+							m.' . $db->escape_field($this->db_fields['main']['identification']) . ' = "' . $db->escape($identification) . '" AND
+							m.' . $db->escape_field($this->db_fields['main']['id']) . ' != "' . $db->escape($user_id) . '" AND
+							m.' . $db->escape_field($this->db_fields['main']['deleted'])  . ' = "0000-00-00 00:00:00" AND
+							' . $this->db_where_sql['main'] . '
+						LIMIT
+							1';
 
-				//--------------------------------------------------
-				// Account details
-
-					$sql = 'SELECT
-								1
-							FROM
-								' . $db->escape_table($this->db_table['main']) . ' AS m
-							WHERE
-								m.' . $db->escape_field($this->db_fields['main']['identification']) . ' = "' . $db->escape($identification) . '" AND
-								m.' . $db->escape_field($this->db_fields['main']['id']) . ' != "' . $db->escape($user_id) . '" AND
-								m.' . $db->escape_field($this->db_fields['main']['deleted'])  . ' = "0000-00-00 00:00:00" AND
-								' . $this->db_where_sql['main'] . '
-							LIMIT
-								1';
-
-					if ($row = $db->fetch_row($sql)) {
-						return 'failure_current';
-					}
-
-				//--------------------------------------------------
-				// Valid
-
-					return true;
+				return ($db->num_rows($sql) == 0);
 
 			}
 
-			protected function validate_password_new($password) {
+			protected function validate_identification_complexity($identification, $user_id) {
+				return true; // Could set additional complexity requirements (e.g. username must only contain letters)
+			}
+
+			protected function validate_password_complexity($password) {
 				return true; // Could set additional complexity requirements (e.g. must contain numbers/letters/etc, to make the password harder to remember)
 			}
 
