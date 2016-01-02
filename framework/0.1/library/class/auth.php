@@ -133,7 +133,7 @@
 
 					}
 
-					$this->text = array_merge($default_text, $this->text); // TODO: Maybe $this->messages_html ?
+					$this->text = array_merge($default_text, $this->text); // Maybe $default_html and $this->messages_html ... but most of the time this is for field labels, so could use separate errors_html?
 
 				//--------------------------------------------------
 				// Tables
