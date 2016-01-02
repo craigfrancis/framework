@@ -1,10 +1,9 @@
 <?php
 
 		// Notes:
-		// - Add a registration table (http://www.troyhunt.com/2015/01/introducing-secure-account-management.html)
-		// - Verify email address on register, but also on email address change?
-		// - Add a remember me table (https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence)
-		// - Use encryption to the stored db hash (like a pepper, https://github.com/paragonie/password_lock).
+		// http://www.troyhunt.com/2015/01/introducing-secure-account-management.html
+		// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence - Remember me feature
+		// https://github.com/paragonie/password_lock - Encryption instead of a peper (probably adding unnecessary complications)
 
 	class auth_base extends check {
 
@@ -934,6 +933,9 @@
 
 // TODO: Add a separate register table, send an email, on confirmation (assuming identification is unique) the record can be copied over.
 // But what about profile changes once registered?
+
+// - Add a registration table (http://www.troyhunt.com/2015/01/introducing-secure-account-management.html)
+// - Verify email address on register, but also on email address change?
 
 $form->db_value_set($this->db_fields['main']['identification'], $this->register_details['identification']);
 
