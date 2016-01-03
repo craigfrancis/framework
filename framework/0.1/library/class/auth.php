@@ -38,8 +38,11 @@
 
 			protected $db_link = NULL;
 			protected $db_table = array();
-			protected $db_fields = array();
 			protected $db_where_sql = array();
+			protected $db_fields = array(
+					'main' => array(),
+					'register' => array(),
+				);
 
 			protected $logout_details = NULL;
 			protected $login_details = NULL;
@@ -124,50 +127,39 @@
 				//--------------------------------------------------
 				// Tables
 
-					$this->db_table = array(
+					$this->db_table = array_merge(array(
 							'main'     => DB_PREFIX . 'user',
 							'session'  => DB_PREFIX . 'user_auth_session',
 							'password' => DB_PREFIX . 'user_auth_password',
 							'register' => DB_PREFIX . 'user_auth_register', // Can be set to NULL to skip email verification (and help attackers identify active accounts).
 							'update'   => DB_PREFIX . 'user_auth_update',
-						);
+						), $this->db_table);
 
-					$this->db_where_sql = array(
+					$this->db_where_sql = array_merge(array(
 							'main'       => 'm.deleted = "0000-00-00 00:00:00"',
 							'main_login' => 'true', // e.g. 'm.active = "true"' to block inactive users during login.
 							'register'   => 'r.deleted = "0000-00-00 00:00:00"',
-						);
+						), $this->db_where_sql);
 
-					$this->db_fields = array(
-							'main' => array(
-									'id'             => 'id',
-									'identification' => 'email',
-									'password'       => 'pass',
-									'created'        => 'created',
-									'edited'         => 'edited',
-									'deleted'        => 'deleted',
-								),
-							'register' => array(
-									'id'             => 'id',
-									'token'          => 'token',
-									'ip'             => 'ip',
-									'browser'        => 'browser', // Other fields copied from 'main'
-								),
-						);
+					$this->db_fields['main'] = array_merge(array(
+							'id'             => 'id',
+							'identification' => ($this->identification_type == 'username' ? 'username' : 'email'),
+							'password'       => 'pass',
+							'created'        => 'created',
+							'edited'         => 'edited',
+							'deleted'        => 'deleted',
+						), $this->db_fields['main']);
 
-					if ($this->identification_type == 'username') {
+					$this->db_fields['register'] = array_merge($this->db_fields['main'], array(
+							'id'             => 'id',
+							'token'          => 'token',
+							'ip'             => 'ip',
+							'browser'        => 'browser', // Other fields copied from 'main'
+						), $this->db_fields['register']);
 
-						$this->db_fields['main']['identification'] = 'username';
-
-						$this->identification_max_length = $this->username_max_length;
-
-					} else {
-
-						$this->identification_max_length = $this->email_max_length;
-
+					if ($this->identification_max_length === NULL) {
+						$this->identification_max_length = ($this->identification_type == 'username' ? $this->username_max_length : $this->email_max_length);
 					}
-
-					$this->db_fields['register'] = array_merge($this->db_fields['main'], $this->db_fields['register']);
 
 					if (config::get('debug.level') > 0) {
 
@@ -444,7 +436,7 @@
 
 							exit_with_error('Invalid response from auth::validate_identification_complexity()', $identification_complexity);
 
-						} else if (!$identification_unique && $this->identification_type == 'username') {
+						} else if ((!$identification_unique) && (!$confirm || $this->identification_type == 'username')) {
 
 							$errors['identification'] = $this->text['failure_identification_current'];
 
@@ -719,6 +711,7 @@
 									token tinytext NOT NULL,
 									ip tinytext NOT NULL,
 									browser tinytext NOT NULL,
+									user_id int(11) NOT NULL,
 									email tinytext NOT NULL,
 									created datetime NOT NULL,
 									deleted datetime NOT NULL,
@@ -770,7 +763,7 @@
 
 								exit_with_error('Invalid response from auth::validate_identification_complexity()', $identification_complexity);
 
-							} else if (!$identification_unique && $this->identification_type == 'username') {
+							} else if ((!$identification_unique) && (!$confirm || $this->identification_type == 'username')) {
 
 								$errors['identification'] = $this->text['failure_identification_current'];
 
@@ -1215,7 +1208,7 @@
 									FROM
 										' . $db->escape_table($this->db_table['session']) . ' AS s
 									LEFT JOIN
-										' . $db->escape_table($this->db_table['main']) . ' AS m ON m.id = s.user_id
+										' . $db->escape_table($this->db_table['main']) . ' AS m ON m.' . $db->escape_field($this->db_fields['main']['id']) . ' = s.user_id
 									WHERE
 										' . $where_sql;
 
