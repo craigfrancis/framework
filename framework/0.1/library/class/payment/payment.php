@@ -83,8 +83,6 @@
 				//--------------------------------------------------
 				// Config
 
-					$dummy_url = https_url('/');
-
 					$config_defaults = array_merge(array(
 							'order' => NULL,
 						), $config_defaults);

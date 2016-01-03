@@ -42,7 +42,7 @@
 						), $config);
 
 					if ($config['email_mode'] && $config['url_prefix'] == '') {
-						$url_prefix = https_url('/');
+						$url_prefix = http_url('/');
 						if (substr($url_prefix, -1) == '/') {
 							$url_prefix = substr($url_prefix, 0, -1);
 						}

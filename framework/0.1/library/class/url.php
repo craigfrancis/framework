@@ -314,9 +314,17 @@
 							//--------------------------------------------------
 							// Scheme
 
-								if ($scheme == 'https' && $host == config::get('output.domain') && !https_available()) {
+								if (($scheme == 'https' || $scheme == 'http') && ($host == config::get('output.domain'))) {
 
-									$scheme = 'http'; // Drop down to HTTP if HTTPS is not available.
+									if ($scheme == 'http') {
+										if (https_available()) {
+											$scheme = 'https'; // Use HTTPS whenever possible.
+										}
+									} else {
+										if (!https_available()) {
+											$scheme = 'http'; // Drop down to HTTP if HTTPS is not available.
+										}
+									}
 
 								} else if ($scheme === '' || $scheme === NULL) {
 
@@ -451,7 +459,6 @@
 		echo '&#xA0; ' . html(url('https://www.example.com')) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('https://user:pass@www.example.com:80/about/folder/?id=example#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(http_url('./thank-you/')) . '<br />' . "\n";
-		echo '&#xA0; ' . html(https_url()) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('mailto:user@example.com', array('subject' => 'My Subject'))) . '<br />' . "\n";
 
 		$example = new url('/news/?d=e#top', 'id', array('id' => 10, 'a' => 'b'));

@@ -25,7 +25,7 @@
 				$form = new form();
 				$form->form_class_set('basic_form');
 				$form->form_button_set('Send');
-				//$form->form_action_set(https_url('#my-id'));
+				//$form->form_action_set(http_url('#my-id'));
 				//$form->db_record_set($record);
 
 			//--------------------------------------------------

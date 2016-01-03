@@ -141,8 +141,8 @@
 						</shopping-cart>
 						<checkout-flow-support>
 							<merchant-checkout-flow-support>
-								<edit-cart-url>' . xml(https_url('/order/')) . '</edit-cart-url>
-								<continue-shopping-url>' . xml(https_url('/order/thankYou/')) . '</continue-shopping-url>
+								<edit-cart-url>' . xml(http_url('/order/')) . '</edit-cart-url>
+								<continue-shopping-url>' . xml(http_url('/order/thankYou/')) . '</continue-shopping-url>
 								<request-buyer-phone-number>false</request-buyer-phone-number>
 								<shipping-methods>
 									<flat-rate-shipping name="UK Delivery">
