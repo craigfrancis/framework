@@ -3,7 +3,40 @@
 		// Notes:
 		// http://www.troyhunt.com/2015/01/introducing-secure-account-management.html
 		// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence - Remember me feature
-		// https://github.com/paragonie/password_lock - Encryption instead of a peper (probably adding unnecessary complications)
+		// https://github.com/paragonie/password_lock - Encryption instead of a pepper (probably adding unnecessary complications)
+
+			// class auth_base extends check {
+			// 	public function __construct() {
+			// 		$this->setup();
+			// 	}
+			// 	public function setup() {
+			// 	}
+			// 	public function login_validate($username, $password) {
+			// 		return $username;
+			// 	}
+			// }
+			//
+			// class auth_form_base extends auth {
+			// 	public function login_validate($username = NULL, $password = NULL) {
+			// 		return parent::login_validate('aaa', 'bbb');
+			// 	}
+			// }
+			//
+			// class admin extends auth_form {
+			// 	public function setup() {
+			// 		parent::setup();
+			// 	}
+			// }
+			//
+			// class member extends auth_form {
+			// 	public function setup() {
+			// 		parent::setup();
+			// 	}
+			// }
+			//
+			// $auth = new member();
+			//
+			// $output = $auth->login_validate();
 
 	class auth_base extends check {
 
@@ -20,7 +53,7 @@
 			protected $session_length = 1800; // 30 minutes, or set to 0 for indefinite length
 			protected $session_ip_lock = false; // By default this is disabled (AOL users)
 			protected $session_concurrent = false; // Close previous sessions on new session start
-			protected $session_cookies = true; // Use sessions by default
+			protected $session_cookies = false; // Use sessions by default
 			protected $session_history = 2592000; // Keep session data for 30 days, 0 to delete once expired, -1 to keep data indefinitely
 
 			protected $identification_type = 'email'; // Or 'username'
@@ -30,6 +63,7 @@
 			protected $email_max_length = 100;
 			protected $password_min_length = 6; // A balance between security and usability.
 			protected $password_max_length = 250; // CRYPT_BLOWFISH truncates to 72 characters anyway.
+			protected $login_last_cookie = 'u'; // Or set to NULL to not remember.
 			protected $quick_hash = 'sha256'; // Using CRYPT_BLOWFISH for everything (e.g. session pass) would make page loading too slow (good for login though)
 
 			protected $text = array();
@@ -43,7 +77,6 @@
 
 			protected $login_field_identification = NULL;
 			protected $login_field_password = NULL;
-			protected $login_last_cookie = 'u'; // Or set to NULL to not remember.
 			protected $login_details = NULL;
 
 			protected $register_field_identification = NULL;
