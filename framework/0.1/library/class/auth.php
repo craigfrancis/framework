@@ -5,39 +5,6 @@
 		// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence - Remember me feature
 		// https://github.com/paragonie/password_lock - Encryption instead of a pepper (probably adding unnecessary complications)
 
-			// class auth_base extends check {
-			// 	public function __construct() {
-			// 		$this->setup();
-			// 	}
-			// 	public function setup() {
-			// 	}
-			// 	public function login_validate($username, $password) {
-			// 		return $username;
-			// 	}
-			// }
-			//
-			// class auth_form_base extends auth {
-			// 	public function login_validate($username = NULL, $password = NULL) {
-			// 		return parent::login_validate('aaa', 'bbb');
-			// 	}
-			// }
-			//
-			// class admin extends auth_form {
-			// 	public function setup() {
-			// 		parent::setup();
-			// 	}
-			// }
-			//
-			// class member extends auth_form {
-			// 	public function setup() {
-			// 		parent::setup();
-			// 	}
-			// }
-			//
-			// $auth = new member();
-			//
-			// $output = $auth->login_validate();
-
 	class auth_base extends check {
 
 		//--------------------------------------------------
@@ -54,7 +21,7 @@
 			protected $session_ip_lock = false; // By default this is disabled (AOL users)
 			protected $session_concurrent = false; // Close previous sessions on new session start
 			protected $session_cookies = false; // Use sessions by default
-			protected $session_history = 2592000; // Keep session data for 30 days, 0 to delete once expired, -1 to keep data indefinitely
+			protected $session_history = 7776000; // Keep session data for X seconds (defaults to 90 days)
 
 			protected $identification_type = 'email'; // Or 'username'
 			protected $identification_max_length = NULL;
@@ -74,26 +41,9 @@
 			protected $db_where_sql = array();
 
 			protected $logout_details = NULL;
-
-			protected $login_field_identification = NULL;
-			protected $login_field_password = NULL;
 			protected $login_details = NULL;
-
-			protected $register_field_identification = NULL;
-			protected $register_field_password_1 = NULL;
-			protected $register_field_password_2 = NULL;
 			protected $register_details = NULL;
-
-			protected $update_field_identification = NULL;
-			protected $update_field_password_old = NULL;
-			protected $update_field_password_new_required = false;
-			protected $update_field_password_new_1 = NULL;
-			protected $update_field_password_new_2 = NULL;
 			protected $update_details = NULL;
-
-			protected $reset_field_email = NULL;
-			protected $reset_field_password_1 = NULL;
-			protected $reset_field_password_2 = NULL;
 			protected $reset_details = NULL;
 
 		//--------------------------------------------------
@@ -172,17 +122,19 @@
 
 					$this->db_table = array(
 							'main'     => DB_PREFIX . 'user',
-							'session'  => DB_PREFIX . 'user_session',
-							'register' => DB_PREFIX . 'user_register', // Can be set to NULL to skip email verification (and help attackers identify active accounts).
-							'password' => DB_PREFIX . 'user_password',
+							'session'  => DB_PREFIX . 'user_auth_session',
+							'password' => DB_PREFIX . 'user_auth_password',
+							'register' => DB_PREFIX . 'user_auth_register', // Can be set to NULL to skip email verification (and help attackers identify active accounts).
+							'update'   => DB_PREFIX . 'user_auth_update',
 						);
 
 					$this->db_where_sql = array(
 							'main'       => 'm.deleted = "0000-00-00 00:00:00"',
-							'main_login' => 'true', // e.g. 'm.active = "true"' to block inactive users during login
-							'session'    => 's.deleted = "0000-00-00 00:00:00"',
+							'main_login' => 'true', // e.g. 'm.active = "true"' to block inactive users during login.
 							'register'   => 'r.deleted = "0000-00-00 00:00:00"',
+							'session'    => 'true',
 							'password'   => 'true',
+							'update'     => 'true',
 						);
 
 					$this->db_fields = array(
@@ -194,14 +146,13 @@
 									'edited'         => 'edited',
 									'deleted'        => 'deleted',
 								),
-							'register' => array(),
+							'register' => array(
+									'id'             => 'id',
+									'token'          => 'token',
+									'ip'             => 'ip',
+									'browser'        => 'browser', // Other fields copied from 'main'
+								),
 						);
-
-					if ($this->db_table['register']) {
-						$this->db_fields['register']['token'] = 'token';
-						$this->db_fields['register']['ip'] = 'ip';
-						$this->db_fields['register']['browser'] = 'browser';
-					}
 
 					if ($this->identification_type == 'username') {
 
@@ -219,16 +170,18 @@
 
 					if (config::get('debug.level') > 0) {
 
+						$db = $this->db_get();
+
 						debug_require_db_table($this->db_table['main'], '
 								CREATE TABLE [TABLE] (
-									id int(11) NOT NULL AUTO_INCREMENT,
-									' . $this->db_fields['main']['identification'] . ' varchar(' . $this->identification_max_length . ') NOT NULL,
-									pass tinytext NOT NULL,
-									created datetime NOT NULL,
-									edited datetime NOT NULL,
-									deleted datetime NOT NULL,
-									PRIMARY KEY (id),
-									UNIQUE KEY ' . $this->db_fields['main']['identification'] . ' (' . $this->db_fields['main']['identification'] . ')
+									' . $db->escape_field($this->db_fields['main']['id']) . ' int(11) NOT NULL AUTO_INCREMENT,
+									' . $db->escape_field($this->db_fields['main']['identification']) . ' varchar(' . $this->identification_max_length . ') NOT NULL,
+									' . $db->escape_field($this->db_fields['main']['password']) . ' tinytext NOT NULL,
+									' . $db->escape_field($this->db_fields['main']['created']) . ' datetime NOT NULL,
+									' . $db->escape_field($this->db_fields['main']['edited']) . ' datetime NOT NULL,
+									' . $db->escape_field($this->db_fields['main']['deleted']) . ' datetime NOT NULL,
+									PRIMARY KEY (' . $db->escape_field($this->db_fields['main']['id']) . '),
+									UNIQUE KEY ' . $db->escape_field($this->db_fields['main']['identification']) . ' (' . $db->escape_field($this->db_fields['main']['identification']) . ')
 								);');
 
 						debug_require_db_table($this->db_table['session'], '
@@ -257,6 +210,920 @@
 				}
 				return $this->db_link;
 			}
+
+		//--------------------------------------------------
+		// Login
+
+			public function login_validate($identification, $password) {
+
+				$this->login_details = false;
+
+				$result = $this->validate_login($identification, $password);
+
+				if ($result === 'failure_identification') {
+
+					return $this->text['failure_login_identification'];
+
+				} else if ($result === 'failure_password') {
+
+					return $this->text['failure_login_password'];
+
+				} else if ($result === 'failure_repetition') {
+
+					return $this->text['failure_login_repetition'];
+
+				} else if (is_string($result)) {
+
+					return $result; // Custom (project specific) error message.
+
+				} else if (!is_int($result)) {
+
+					exit_with_error('Invalid response from auth::validate_login()', $result);
+
+				} else {
+
+					$this->login_details = array(
+							'id' => $result,
+							'identification' => $identification,
+						);
+
+					return $result; // Success (return user_id, which is true-ish)
+
+				}
+
+			}
+
+			public function login_complete() {
+
+				//--------------------------------------------------
+				// Config
+
+					if ($this->login_details === NULL) {
+						exit_with_error('You must call auth::login_validate() before auth::login_complete().');
+					}
+
+					if (!is_array($this->login_details)) {
+						exit_with_error('The login details are not valid, so why has auth::login_complete() been called?');
+					}
+
+				//--------------------------------------------------
+				// Start session
+
+					$this->session_start($this->login_details['id'], $this->login_details['identification']);
+
+				//--------------------------------------------------
+				// Try to restore session
+
+					save_request_restore($this->login_details['identification']);
+
+				//--------------------------------------------------
+				// Return
+
+					return $this->login_details['id'];
+
+			}
+
+			public function login_last_get() {
+				if ($this->login_last_cookie !== NULL) {
+					return cookie::get($this->login_last_cookie);
+				} else {
+					return NULL;
+				}
+			}
+
+			protected function login_last_set($identification) {
+				if ($this->login_last_cookie !== NULL) {
+					cookie::set($this->login_last_cookie, $identification, '+30 days');
+				}
+			}
+
+		//--------------------------------------------------
+		// Logout
+
+			public function logout_url_get($logout_url = NULL) {
+				if ($this->session_info) {
+					$logout_url = url($logout_url, array('csrf' => $this->session_info['logout_csrf']));
+				}
+				return $logout_url; // Never return NULL, the logout page should always be linked to (even it it only shows an error).
+			}
+
+			public function logout_validate() {
+
+				//--------------------------------------------------
+				// Config
+
+					$this->logout_details = false;
+
+				//--------------------------------------------------
+				// Validate the logout CSRF token.
+
+					$csrf_get = request('csrf', 'GET');
+
+					if ($this->session_info && $this->session_info['logout_csrf'] === $csrf_get) {
+
+						$this->logout_details = array(
+								'csrf' => $csrf_get,
+							);
+
+						return true;
+
+					}
+
+				//--------------------------------------------------
+				// Failure
+
+					return false;
+
+			}
+
+			public function logout_complete() {
+
+				//--------------------------------------------------
+				// Config
+
+					if ($this->logout_details === NULL) {
+						exit_with_error('You must call auth::logout_validate() before auth::logout_complete().');
+					}
+
+					if (!is_array($this->logout_details)) {
+						exit_with_error('The logout details are not valid, so why has auth::logout_complete() been called?');
+					}
+
+					$db = $this->db_get();
+
+					$now = new timestamp();
+
+				//--------------------------------------------------
+				// Delete the current session
+
+					$db->query('UPDATE
+									' . $db->escape_table($this->db_table['session']) . ' AS s
+								SET
+									s.deleted = "' . $db->escape($now) . '"
+								WHERE
+									s.id = "' . $db->escape($this->session_info['id']) . '" AND
+									s.deleted = "0000-00-00 00:00:00" AND
+									' . $this->db_where_sql['session']);
+
+				//--------------------------------------------------
+				// Be nice, and cleanup (not necessary)
+
+					if ($this->session_cookies) {
+						cookie::delete($this->session_name . '_id');
+						cookie::delete($this->session_name . '_pass');
+					} else {
+						session::regenerate(); // State change, new session id
+						session::delete($this->session_name . '_id');
+						session::delete($this->session_name . '_pass');
+					}
+
+				//--------------------------------------------------
+				// Change the CSRF token, invalidating forms open in
+				// different browser tabs (or browser history).
+
+					csrf_token_change();
+
+			}
+
+		//--------------------------------------------------
+		// Register
+
+			//--------------------------------------------------
+			// Table
+
+				public function register_table_get() {
+
+					if (config::get('debug.level') > 0 && $this->db_table['register']) {
+
+						$db = $this->db_get();
+
+						debug_require_db_table($this->db_table['register'], '
+								CREATE TABLE [TABLE] (
+									' . $db->escape_field($this->db_fields['register']['id']) . ' int(11) NOT NULL AUTO_INCREMENT,
+									' . $db->escape_field($this->db_fields['register']['token']) . ' tinytext NOT NULL,
+									' . $db->escape_field($this->db_fields['register']['ip']) . ' tinytext NOT NULL,
+									' . $db->escape_field($this->db_fields['register']['browser']) . ' tinytext NOT NULL,
+									' . $db->escape_field($this->db_fields['register']['identification']) . ' tinytext NOT NULL,
+									' . $db->escape_field($this->db_fields['register']['password']) . ' tinytext NOT NULL,
+									' . $db->escape_field($this->db_fields['register']['created']) . ' datetime NOT NULL,
+									' . $db->escape_field($this->db_fields['register']['edited']) . ' datetime NOT NULL,
+									' . $db->escape_field($this->db_fields['register']['deleted']) . ' datetime NOT NULL,
+									PRIMARY KEY (id)
+								);');
+
+					}
+
+					return ($this->db_table['register'] ? $this->db_table['register'] : $this->db_table['main']);
+
+				}
+
+			//--------------------------------------------------
+			// Request
+
+				public function register_validate($identification, $password_1, $password_2) {
+
+					//--------------------------------------------------
+					// Config
+
+						$this->register_details = false;
+
+						$errors = array();
+
+						$confirm = ($this->db_table['register'] !== NULL);
+
+					//--------------------------------------------------
+					// Validate identification
+
+						$identification_unique = $this->validate_identification_unique($identification, NULL);
+						$identification_complexity = $this->validate_identification_complexity($identification, NULL);
+
+						if ($confirm && $this->identification_type != 'username') {
+
+							$confirm = true;
+
+						} else if (!$identification_unique) {
+
+							$errors['identification'] = $this->text['failure_identification_current'];
+
+						} else if (is_string($identification_complexity)) {
+
+							$errors['identification'] = $identification_complexity; // Custom (project specific) error message
+
+						} else if ($identification_complexity !== true) {
+
+							exit_with_error('Invalid response from auth::validate_identification_complexity()', $identification_complexity);
+
+						}
+
+					//--------------------------------------------------
+					// Validate password
+
+						$result = $this->validate_password_complexity($password_1);
+
+						if (is_string($result)) {
+
+							$errors['password_1'] = $result; // Custom (project specific) error message
+
+						} else if ($result !== true) {
+
+							exit_with_error('Invalid response from auth::validate_password_complexity()', $result);
+
+						} else if ($password_1 != $password_2) {
+
+							$errors['password_2'] = $this->text['failure_password_repeat'];
+
+						}
+
+					//--------------------------------------------------
+					// Return
+
+						if (count($errors) == 0) {
+
+							$this->register_details = array(
+									'identification' => $identification,
+									'identification_unique' => $identification_unique,
+									'password' => $password_1,
+									'confirm' => $confirm,
+								);
+
+							return true;
+
+						} else {
+
+							return $errors;
+
+						}
+
+				}
+
+				public function register_complete($config = array()) {
+
+					//--------------------------------------------------
+					// Config
+
+						$config = array_merge(array(
+								'login' => true,
+								'confirm' => false,
+								'form' => NULL,
+								'record' => NULL,
+							), $config);
+
+						if ($this->register_details === NULL) {
+							exit_with_error('You must call auth::register_validate() before auth::register_complete().');
+						}
+
+						if (!is_array($this->register_details)) {
+							exit_with_error('The register details are not valid, so why has auth::register_complete() been called?');
+						}
+
+						if (isset($config['record'])) {
+							$record = $config['record'];
+						} else {
+							exit_with_error('You must pass a record to auth::register_complete(array(\'record\' => $record))');
+						}
+
+						if ($config['confirm'] === true) {
+							$this->register_details['confirm'] = $config['confirm'];
+						}
+
+					//--------------------------------------------------
+					// Details
+
+						$record->value_set($this->db_fields['register']['identification'], $this->register_details['identification']);
+						$record->value_set($this->db_fields['register']['password'], password::hash($this->register_details['password']));
+
+					//--------------------------------------------------
+					// Register token
+
+						if ($this->register_details['confirm']) {
+
+							$register_pass = random_key(15);
+
+							$record->value_set($this->db_fields['register']['ip'], config::get('request.ip'));
+							$record->value_set($this->db_fields['register']['browser'], config::get('request.browser'));
+
+							if ($this->register_details['identification_unique']) {
+								$record->value_set($this->db_fields['register']['token'], hash($this->quick_hash, $register_pass));
+							}
+
+						} else {
+
+							$register_pass = NULL;
+
+						}
+
+					//--------------------------------------------------
+					// Save
+
+						if (isset($config['form'])) {
+
+							$record_id = $config['form']->db_insert();
+
+						} else {
+
+							$record->save();
+
+							$record_id = $record->db_get()->insert_id();
+
+						}
+
+					//--------------------------------------------------
+					// Start session
+
+						if ($register_pass === NULL && $config['login']) {
+
+							$this->session_start($record_id, $this->register_details['identification']);
+
+						}
+
+					//--------------------------------------------------
+					// Return
+
+						if ($register_pass) {
+
+							if ($this->register_details['identification_unique']) {
+								return $record_id . '-' . $register_pass; // Return the token to complete registration with auth::register_confirm()
+							} else {
+								return false; // Not unique, so send an email telling the user they already have an account.
+							}
+
+						} else {
+
+							return $record_id; // User ID
+
+						}
+
+				}
+
+				public function register_confirm($register_token) {
+
+					//--------------------------------------------------
+					// Config
+
+						$db = $this->db_get();
+
+						$now = new timestamp();
+
+						if (preg_match('/^([0-9]+)-(.+)$/', $register_token, $matches)) {
+							$register_id = $matches[1];
+							$register_pass = $matches[2];
+						} else {
+							$register_id = 0;
+							$register_pass = '';
+						}
+
+						$register_id = intval($register_id);
+
+					//--------------------------------------------------
+					// Complete if valid
+
+						$sql = 'SELECT
+									*
+								FROM
+									' . $db->escape_table($this->db_table['register']) . ' AS r
+								WHERE
+									r.' . $db->escape_field($this->db_fields['register']['id']) . ' = "' . $db->escape($register_id) . '" AND
+									r.' . $db->escape_field($this->db_fields['register']['token']) . ' != "" AND
+									r.' . $db->escape_field($this->db_fields['register']['password']) . ' != "" AND
+									' . $this->db_where_sql['register'];
+
+						if ($row = $db->fetch_row($sql)) {
+
+							$token_field = $this->db_fields['register']['token'];
+							$identification_field = $this->db_fields['register']['identification'];
+
+							if (hash($this->quick_hash, $register_pass) == $row[$token_field]) {
+
+								//--------------------------------------------------
+								// Identification
+
+									$identification_value = $row[$identification_field];
+
+									$identification_unique = $this->validate_identification_unique($identification_value, NULL);
+
+									if (!$identification_unique) {
+										return false;
+									}
+
+								//--------------------------------------------------
+								// Copy record
+
+									$values = $row;
+									unset($values[$this->db_fields['register']['id']]);
+									unset($values[$this->db_fields['register']['token']]);
+									unset($values[$this->db_fields['register']['ip']]);
+									unset($values[$this->db_fields['register']['browser']]);
+
+									$values[$values[$this->db_fields['register']['created']]] = $now;
+									$values[$values[$this->db_fields['register']['edited']]] = $now;
+
+									$db->insert($this->db_table['main'], $values);
+
+									$user_id = $db->insert_id();
+
+								//--------------------------------------------------
+								// Delete registration
+
+									$db->query('UPDATE
+													' . $db->escape_table($this->db_table['register']) . ' AS r
+												SET
+													r.' . $db->escape_field($this->db_fields['register']['deleted']) . ' = "' . $db->escape($now) . '",
+													r.' . $db->escape_field($this->db_fields['register']['password']) . ' = ""
+												WHERE
+													r.' . $db->escape_field($this->db_fields['register']['id']) . ' = "' . $db->escape($register_id) . '" AND
+													' . $this->db_where_sql['register']);
+
+								//--------------------------------------------------
+								// Start session
+
+									$this->session_start($user_id, $identification_value);
+
+								//--------------------------------------------------
+								// Return
+
+									return $user_id;
+
+							}
+						}
+
+					//--------------------------------------------------
+					// Failure
+
+						return false;
+
+				}
+
+		//--------------------------------------------------
+		// Update
+
+			//--------------------------------------------------
+			// Table
+
+				public function update_table_get() {
+
+					if (config::get('debug.level') > 0 && $this->db_table['update']) {
+
+						$db = $this->db_get();
+
+						debug_require_db_table($this->db_table['update'], '
+								CREATE TABLE [TABLE] (
+									id int(11) NOT NULL AUTO_INCREMENT,
+									token tinytext NOT NULL,
+									ip tinytext NOT NULL,
+									browser tinytext NOT NULL,
+									email tinytext NOT NULL,
+									created datetime NOT NULL,
+									deleted datetime NOT NULL,
+									PRIMARY KEY (id)
+								);');
+
+					}
+
+					return $this->db_table['main'];
+
+				}
+
+			//--------------------------------------------------
+			// Request
+
+				public function update_validate($values) {
+
+					//--------------------------------------------------
+					// Config
+
+						if ($this->session_info === NULL) {
+							exit_with_error('Cannot call auth::update_validate() when the user is not logged in.');
+						}
+
+						$this->update_details = false;
+
+						$errors = array();
+
+						$confirm = false;
+
+					//--------------------------------------------------
+					// Identification
+
+						$identification_new = NULL;
+						$identification_unique = NULL;
+
+						if (array_key_exists('identification', $values) && $values['identification'] != $this->session_info[$this->db_fields['main']['identification']]) {
+
+							$confirm = ($this->db_table['update'] !== NULL);
+
+							$identification_unique = $this->validate_identification_unique($values['identification'], $this->session_user_id_get());
+							$identification_complexity = $this->validate_identification_complexity($values['identification'], $this->session_user_id_get());
+
+							if ($confirm && $this->identification_type != 'username') {
+
+								$confirm = $values['identification']; // New email address, to be confirmed.
+
+							} else if (!$identification_unique) {
+
+								$errors['identification'] = $this->text['failure_identification_current'];
+
+							} else if (is_string($identification_complexity)) {
+
+								$errors['identification'] = $identification_complexity; // Custom (project specific) error message
+
+							} else if ($identification_complexity !== true) {
+
+								exit_with_error('Invalid response from auth::validate_identification_complexity()', $identification_complexity);
+
+							} else {
+
+								$identification_new = $values['identification'];
+
+							}
+
+						}
+
+					//--------------------------------------------------
+					// Old password
+
+						if (array_key_exists('password_old', $values)) {
+
+							$old_password = $values['password_old'];
+
+							$result = $this->validate_login(NULL, $old_password);
+
+							if ($result === 'failure_identification') {
+
+								exit_with_error('Could not return details about user id "' . $this->session_user_id_get() . '"');
+
+							} else if ($result === 'failure_password') {
+
+								$errors['password_old'] = $this->text['failure_login_password'];
+
+							} else if ($result === 'failure_repetition') {
+
+								$errors['password_old'] = $this->text['failure_login_repetition'];
+
+							} else if (is_string($result)) {
+
+								$errors['password_old'] = $result; // Custom (project specific) error message.
+
+							} else if (!is_int($result)) {
+
+								exit_with_error('Invalid response from auth::validate_login()', $result);
+
+							}
+
+						}
+
+					//--------------------------------------------------
+					// New password
+
+						$password_new = NULL;
+
+						if (array_key_exists('password_new_1', $values)) {
+
+							if (!array_key_exists('password_new_2', $values)) {
+								exit_with_error('Cannot call auth::update_validate() with new password 1, but not 2.');
+							}
+
+							$password_1 = $values['password_new_1'];
+							$password_2 = $values['password_new_2'];
+
+							$result = $this->validate_password_complexity($password_1);
+
+							if (is_string($result)) {
+
+								$errors['password_new_1'] = $result; // Custom (project specific) error message
+
+							} else if ($result !== true) {
+
+								exit_with_error('Invalid response from auth::validate_password_complexity()', $result);
+
+							} else if ($password_1 != $password_2) {
+
+								$errors['password_new_2'] = $this->text['failure_password_repeat'];
+
+							} else {
+
+								$password_new = $password_1;
+
+							}
+
+						}
+
+					//--------------------------------------------------
+					// Return
+
+						if (count($errors) == 0) {
+
+							$this->update_details = array(
+									'identification' => $identification_new,
+									'identification_unique' => $identification_unique,
+									'password' => $password_new,
+									'confirm' => $confirm,
+								);
+
+							return true;
+
+						} else {
+
+							return $errors;
+
+						}
+
+				}
+
+				public function update_complete($config = array()) {
+
+					//--------------------------------------------------
+					// Config
+
+						$config = array_merge(array(
+								'login' => true,
+								'form' => NULL,
+								'record' => NULL,
+								'confirm' => NULL,
+							), $config);
+
+						if ($this->update_details === NULL) {
+							exit_with_error('You must call auth::update_validate() before auth::update_complete().');
+						}
+
+						if (!is_array($this->update_details)) {
+							exit_with_error('The update details are not valid, so why has auth::update_complete() been called?');
+						}
+
+						if (isset($config['record'])) {
+							$record = $config['record'];
+						} else {
+							exit_with_error('You must pass a record to auth::register_complete(array(\'record\' => $record))');
+						}
+
+						if (isset($config['confirm'])) {
+							$this->update_details['confirm'] = $config['confirm'];
+						} else if ($this->update_details['confirm'] === true) {
+							exit_with_error('You must pass the users email address to auth::register_complete(array(\'confirm\' => $email)), or disable email confirmations');
+						}
+
+					//--------------------------------------------------
+					// Update
+
+						if ($this->update_details['identification']) {
+
+							$record->value_set($this->db_fields['main']['identification'], $this->update_details['identification']);
+
+							$this->login_last_set($this->update_details['identification']);
+
+						}
+
+						if ($this->update_details['password']) { // could be NULL or blank (if not required)
+
+							$password_hash = password::hash($this->update_details['password']);
+
+							$record->value_set($this->db_fields['main']['password'], $password_hash);
+
+						}
+
+					//--------------------------------------------------
+					// Save
+
+						if (isset($config['form'])) {
+
+							$config['form']->db_save();
+
+						} else {
+
+							$record->save();
+
+						}
+
+						if ($this->update_details['confirm']) {
+							if ($this->update_details['identification_unique']) {
+
+								$update_pass = random_key(15);
+
+								$db = db_get();
+
+								$now = new timestamp();
+
+								$db->insert($this->db_table['update'], array(
+										'id'      => '',
+										'token'   => hash($this->quick_hash, $update_pass),
+										'ip'      => config::get('request.ip'),
+										'browser' => config::get('request.browser'),
+										'user_id' => $this->session_user_id_get(),
+										'email'   => $this->update_details['confirm'],
+										'created' => $now,
+										'deleted' => '0000-00-00 00:00:00',
+									));
+
+								$update_token = $db->insert_id() . '-' . $update_pass;
+
+							} else {
+
+								$update_token = false;
+
+							}
+						} else {
+
+							$update_token = NULL;
+
+						}
+
+					//--------------------------------------------------
+					// Return
+
+						if ($update_token) {
+
+							return $update_token; // Return the token to complete update with auth::update_confirm()
+
+						} else {
+
+							return true; // Success
+
+						}
+
+				}
+
+				public function update_confirm($update_token) {
+
+					//--------------------------------------------------
+					// Config
+
+						$db = $this->db_get();
+
+						$now = new timestamp();
+
+						if (preg_match('/^([0-9]+)-(.+)$/', $update_token, $matches)) {
+							$update_id = $matches[1];
+							$update_pass = $matches[2];
+						} else {
+							$update_id = 0;
+							$update_pass = '';
+						}
+
+						$update_id = intval($update_id);
+
+					//--------------------------------------------------
+					// Complete if valid
+
+						$sql = 'SELECT
+									u.token,
+									u.user_id,
+									u.email
+								FROM
+									' . $db->escape_table($this->db_table['update']) . ' AS u
+								WHERE
+									u.id = "' . $db->escape($update_id) . '" AND
+									u.token != "" AND
+									u.deleted = "0000-00-00 00:00:00" AND
+									' . $this->db_where_sql['update'];
+
+						if ($row = $db->fetch_row($sql)) {
+							if (hash($this->quick_hash, $update_pass) == $row['token']) {
+
+								//--------------------------------------------------
+								// Still unique
+
+									$identification_unique = $this->validate_identification_unique($row['email'], $row['user_id']);
+
+									if (!$identification_unique) {
+										return false;
+									}
+
+								//--------------------------------------------------
+								// Update
+
+									$db->query('UPDATE
+													' . $db->escape_table($this->db_table['update']) . ' AS u
+												SET
+													u.deleted = "' . $db->escape($now) . '"
+												WHERE
+													u.id = "' . $db->escape($update_id) . '" AND
+													u.deleted = "0000-00-00 00:00:00" AND
+													' . $this->db_where_sql['update']);
+
+									if ($db->affected_rows() == 1) {
+
+										$record = record_get($this->update_table_get(), $row['user_id'], array(
+												'email',
+											));
+
+										$record->save(array(
+												'email' => $row['email'],
+											));
+
+									}
+
+								//--------------------------------------------------
+								// Return
+
+									return true;
+
+							}
+						}
+
+					//--------------------------------------------------
+					// Failure
+
+						return false;
+
+				}
+
+		//--------------------------------------------------
+		// Reset (forgotten password)
+
+			//--------------------------------------------------
+			// Table
+
+				public function reset_table_get() {
+
+					if (config::get('debug.level') > 0) {
+
+						debug_require_db_table($this->db_table['password'], '
+								CREATE TABLE [TABLE] (
+									id int(11) NOT NULL AUTO_INCREMENT,
+									created datetime NOT NULL,
+									deleted datetime NOT NULL,
+									PRIMARY KEY (id)
+								);');
+
+					}
+
+					return $this->db_table['password'];
+
+				}
+
+			//--------------------------------------------------
+			// Request
+
+				public function reset_request_validate() {
+
+					// Too many attempts?
+					// What happens if there is more than one account?
+
+				}
+
+				public function reset_request_complete($change_url = NULL) {
+					// Return
+					//   false = invalid_user
+					//   $change_url = url($request_url, array('t' => $request_id . '-' . $request_pass));
+					//   $change_url->format_set('full');
+					//
+					// Store users email address in user_password
+				}
+
+			//--------------------------------------------------
+			// Process
+
+				public function reset_process_active() {
+					return false; // Still a valid token?
+				}
+
+				public function reset_process_validate() {
+
+					$this->validate_password_complexity();
+					// Repeat password is the same
+				}
+
+				public function reset_process_complete() {
+				}
 
 		//--------------------------------------------------
 		// Session
@@ -306,7 +1173,7 @@
 
 							$db = $this->db_get();
 
-							$fields_sql = array('s.pass', 's.user_id', 's.ip', 's.logout_csrf');
+							$fields_sql = array('s.pass', 's.user_id', 's.ip', 's.logout_csrf', 'm.' . $db->escape_field($this->db_fields['main']['identification']));
 							foreach ($config['fields'] as $field) {
 								$fields_sql[] = 'm.' . $db->escape_field($field);
 							}
@@ -315,6 +1182,7 @@
 							$where_sql = '
 								s.id = "' . $db->escape($session_id) . '" AND
 								s.pass != "" AND
+								s.deleted = "0000-00-00 00:00:00" AND
 								' . $this->db_where_sql['session'] . ' AND
 								' . $this->db_where_sql['main'];
 
@@ -357,6 +1225,7 @@
 														s.request_count = (s.request_count + ' . intval($request_increment) . ')
 													WHERE
 														s.id = "' . $db->escape($session_id) . '" AND
+														s.deleted = "0000-00-00 00:00:00" AND
 														' . $this->db_where_sql['session']);
 
 									//--------------------------------------------------
@@ -435,57 +1304,15 @@
 				// Process previous sessions
 
 					if ($this->session_concurrent !== true) {
-						if ($this->session_history == 0) {
 
-							$db->query('DELETE FROM
-											s
-										USING
-											' . $db->escape_table($this->db_table['session']) . ' AS s
-										WHERE
-											s.user_id = "' . $db->escape($user_id) . '" AND
-											' . $this->db_where_sql['session']);
-
-						} else {
-
-							$db->query('UPDATE
-											' . $db->escape_table($this->db_table['session']) . ' AS s
-										SET
-											s.deleted = "' . $db->escape($now) . '"
-										WHERE
-											s.user_id = "' . $db->escape($user_id) . '" AND
-											' . $this->db_where_sql['session']);
-
-						}
-					}
-
-				//--------------------------------------------------
-				// Delete old sessions (house cleaning)
-
-					if ($this->session_history >= 0) { // TODO: Check usage (inc session start and logout)
-
-						$deleted_before = new timestamp((0 - $this->session_history) . ' seconds');
-
-						$db->query('DELETE FROM
-										s
-									USING
+						$db->query('UPDATE
 										' . $db->escape_table($this->db_table['session']) . ' AS s
+									SET
+										s.deleted = "' . $db->escape($now) . '"
 									WHERE
-										s.deleted != "0000-00-00 00:00:00" AND
-										s.deleted < "' . $db->escape($deleted_before) . '"');
-
-						if ($this->session_length > 0) {
-
-							$last_used = new timestamp((0 - $this->session_length - $this->session_history) . ' seconds');
-
-							$db->query('DELETE FROM
-											s
-										USING
-											' . $db->escape_table($this->db_table['session']) . ' AS s
-										WHERE
-											s.last_used < "' . $db->escape($last_used) . '" AND
-											' . $this->db_where_sql['session']);
-
-						}
+										s.user_id = "' . $db->escape($user_id) . '" AND
+										s.deleted = "0000-00-00 00:00:00" AND
+										' . $this->db_where_sql['session']);
 
 					}
 
@@ -540,970 +1367,45 @@
 			}
 
 		//--------------------------------------------------
-		// Logout
+		// Cleanup
 
-			public function logout_url_get($logout_url = NULL) {
-				if ($this->session_info) {
-					$logout_url = url($logout_url, array('csrf' => $this->session_info['logout_csrf']));
-				}
-				return $logout_url; // Never return NULL, the logout page should always be linked to (even it it only shows an error).
-			}
-
-			public function logout_validate() {
+			public function cleanup() {
 
 				//--------------------------------------------------
-				// Config
+				// Old sessions
 
-					$this->logout_details = false;
+					if ($this->session_history >= 0) { // TODO: Check usage (inc session start and logout)
 
-				//--------------------------------------------------
-				// Validate the logout CSRF token.
-
-					$csrf_get = request('csrf', 'GET');
-
-					if ($this->session_info && $this->session_info['logout_csrf'] === $csrf_get) {
-
-						$this->logout_details = array(
-								'csrf' => $csrf_get,
-							);
-
-						return true;
-
-					}
-
-				//--------------------------------------------------
-				// Failure
-
-					return false;
-
-			}
-
-			public function logout_complete() {
-
-				//--------------------------------------------------
-				// Config
-
-					if ($this->logout_details === NULL) {
-						exit_with_error('You must call auth::logout_validate() before auth::logout_complete().');
-					}
-
-					if (!is_array($this->logout_details)) {
-						exit_with_error('The logout details are not valid, so why has auth::logout_complete() been called?');
-					}
-
-				//--------------------------------------------------
-				// Delete the current session
-
-					$db = $this->db_get();
-
-					if ($this->session_history == 0) {
+						$deleted_before = new timestamp((0 - $this->session_history) . ' seconds');
 
 						$db->query('DELETE FROM
 										s
 									USING
 										' . $db->escape_table($this->db_table['session']) . ' AS s
 									WHERE
-										s.id = "' . $db->escape($this->session_info['id']) . '" AND
-										' . $this->db_where_sql['session']);
+										s.deleted != "0000-00-00 00:00:00" AND
+										s.deleted < "' . $db->escape($deleted_before) . '"');
 
-					} else {
+						if ($this->session_length > 0) {
 
-						$now = new timestamp();
+							$last_used = new timestamp((0 - $this->session_length - $this->session_history) . ' seconds');
 
-						$db->query('UPDATE
-										' . $db->escape_table($this->db_table['session']) . ' AS s
-									SET
-										s.deleted = "' . $db->escape($now) . '"
-									WHERE
-										s.id = "' . $db->escape($this->session_info['id']) . '" AND
-										' . $this->db_where_sql['session']);
+							$db->query('DELETE FROM
+											s
+										USING
+											' . $db->escape_table($this->db_table['session']) . ' AS s
+										WHERE
+											s.last_used < "' . $db->escape($last_used) . '" AND
+											s.deleted = "0000-00-00 00:00:00" AND
+											' . $this->db_where_sql['session']);
+
+						}
 
 					}
 
-				//--------------------------------------------------
-				// Be nice, and cleanup (not necessary)
-
-					if ($this->session_cookies) {
-						cookie::delete($this->session_name . '_id');
-						cookie::delete($this->session_name . '_pass');
-					} else {
-						session::regenerate(); // State change, new session id
-						session::delete($this->session_name . '_id');
-						session::delete($this->session_name . '_pass');
-					}
-
-				//--------------------------------------------------
-				// Change the CSRF token, invalidating forms open in
-				// different browser tabs (or browser history).
-
-					csrf_token_change();
+// TODO: Delete old password resets, and register/update tables,
 
 			}
-
-		//--------------------------------------------------
-		// Login
-
-			//--------------------------------------------------
-			// Fields
-
-				public function login_field_identification_get($form, $config = array()) {
-
-					$field = $this->field_identification_get($form, array_merge(array(
-							'label' => $this->text['identification_label'],
-							'name' => 'identification',
-							'max_length' => $this->identification_max_length,
-							'check_domain' => false, // DNS lookups can take time.
-						), $config));
-
-					if ($form->initial()) {
-						$field->value_set($this->login_last_get());
-					}
-
-					return $this->login_field_identification = $field;
-
-				}
-
-				public function login_field_password_get($form, $config = array()) {
-
-					$field = $this->field_password_1_get($form, array_merge(array(
-							'label' => $this->text['password_label'],
-							'name' => 'password',
-							'min_length' => $this->password_min_length,
-							'max_length' => $this->password_max_length,
-						), $config, array(
-							'required' => true,
-							'autocomplete' => 'current-password',
-						)));
-
-					return $this->login_field_password = $field;
-
-				}
-
-			//--------------------------------------------------
-			// Request
-
-				public function login_validate() {
-
-					//--------------------------------------------------
-					// Config
-
-						$form = $this->login_field_identification->form_get();
-
-						$identification = $this->login_field_identification->value_get();
-						$password = $this->login_field_password->value_get();
-
-						$this->login_details = false;
-
-					//--------------------------------------------------
-					// Validate
-
-						if ($form->valid()) { // Basic checks such as required fields, and CSRF
-
-							$result = $this->validate_login($identification, $password);
-
-							if ($result === 'failure_identification') {
-
-								$form->error_add($this->text['failure_login_identification']); // Do NOT attach to specific input field (identifies which value is wrong).
-
-							} else if ($result === 'failure_password') {
-
-								$form->error_add($this->text['failure_login_password']);
-
-							} else if ($result === 'failure_repetition') {
-
-								$form->error_add($this->text['failure_login_repetition']);
-
-							} else if (is_string($result)) {
-
-								$form->error_add($result); // Custom (project specific) error message.
-
-							} else if (!is_int($result)) {
-
-								exit_with_error('Invalid response from auth::validate_login()', $result);
-
-							} else {
-
-								$this->login_details = array(
-										'id' => $result,
-										'identification' => $identification,
-										'form' => $form,
-									);
-
-								return $result; // Success (return user_id, which is true-ish)
-
-							}
-
-						}
-
-					//--------------------------------------------------
-					// Failure
-
-						return false;
-
-				}
-
-				public function login_complete() {
-
-					//--------------------------------------------------
-					// Config
-
-						if ($this->login_details === NULL) {
-							exit_with_error('You must call auth::login_validate() before auth::login_complete().');
-						}
-
-						if (!is_array($this->login_details)) {
-							exit_with_error('The login details are not valid, so why has auth::login_complete() been called?');
-						}
-
-						if (!$this->login_details['form']->valid()) {
-							exit_with_error('The form is not valid, so why has auth::login_complete() been called?');
-						}
-
-					//--------------------------------------------------
-					// Start session
-
-						$this->session_start($this->login_details['id'], $this->login_details['identification']);
-
-					//--------------------------------------------------
-					// Try to restore session
-
-						save_request_restore($this->login_details['identification']);
-
-					//--------------------------------------------------
-					// Return
-
-						return $this->login_details['id'];
-
-				}
-
-				public function login_last_get() {
-					if ($this->login_last_cookie !== NULL) {
-						return cookie::get($this->login_last_cookie);
-					} else {
-						return NULL;
-					}
-				}
-
-				protected function login_last_set($identification) {
-					if ($this->login_last_cookie !== NULL) {
-						cookie::set($this->login_last_cookie, $identification, '+30 days');
-					}
-				}
-
-		//--------------------------------------------------
-		// Register
-
-			//--------------------------------------------------
-			// Table
-
-				public function register_table_get() {
-
-					if (config::get('debug.level') > 0 && $this->db_table['register']) {
-
-						debug_require_db_table($this->db_table['register'], '
-								CREATE TABLE [TABLE] (
-									id int(11) NOT NULL AUTO_INCREMENT,
-									' . $this->db_fields['register']['token'] . ' tinytext NOT NULL,
-									' . $this->db_fields['register']['ip'] . ' tinytext NOT NULL,
-									' . $this->db_fields['register']['browser'] . ' tinytext NOT NULL,
-									' . $this->db_fields['register']['identification'] . ' tinytext NOT NULL,
-									pass tinytext NOT NULL,
-									created datetime NOT NULL,
-									edited datetime NOT NULL,
-									deleted datetime NOT NULL,
-									PRIMARY KEY (id)
-								);');
-
-					}
-
-					return ($this->db_table['register'] ? $this->db_table['register'] : $this->db_table['main']);
-
-				}
-
-			//--------------------------------------------------
-			// Fields
-
-				public function register_field_identification_get($form, $config = array()) {
-
-					$field = $this->field_identification_get($form, array_merge(array(
-							'label' => $this->text['identification_label'],
-							'name' => 'identification',
-							'max_length' => $this->identification_max_length,
-							'check_domain' => true,
-						), $config));
-
-					return $this->register_field_identification = $field;
-
-				}
-
-				public function register_field_password_1_get($form, $config = array()) {
-
-					$field = $this->field_password_1_get($form, array_merge(array(
-							'label' => $this->text['password_label'],
-							'name' => 'password',
-							'min_length' => $this->password_min_length,
-							'max_length' => $this->password_max_length,
-						), $config, array(
-							'required' => true,
-							'autocomplete' => 'new-password',
-						)));
-
-					return $this->register_field_password_1 = $field;
-
-				}
-
-				public function register_field_password_2_get($form, $config = array()) {
-
-					$field = $this->field_password_2_get($form, array_merge(array(
-							'label' => $this->text['password_repeat_label'],
-							'name' => 'password_repeat',
-							'min_length' => $this->password_min_length,
-							'max_length' => $this->password_max_length,
-						), $config, array(
-							'required' => true,
-						)));
-
-					return $this->register_field_password_2 = $field;
-
-				}
-
-			//--------------------------------------------------
-			// Request
-
-				public function register_validate() {
-
-					//--------------------------------------------------
-					// Config
-
-						$form = $this->register_field_identification->form_get();
-
-						$identification = $this->register_field_identification->value_get();
-						$password_1 = $this->register_field_password_1->value_get();
-						$password_2 = $this->register_field_password_2->value_get();
-
-						$this->register_details = false;
-
-					//--------------------------------------------------
-					// Validate identification uniqueness
-
-						$identification_unique = $this->validate_identification_unique($identification, NULL);
-
-						if ((!$identification_unique) && (!$this->db_table['register'] || $this->identification_type == 'username')) {
-
-							$this->register_field_identification->error_add($this->text['failure_identification_current']);
-
-						}
-
-					//--------------------------------------------------
-					// Validate identification complexity
-
-						$result = $this->validate_identification_complexity($identification, NULL);
-
-						if (is_string($result)) {
-
-							$this->register_field_identification->error_add($result); // Custom (project specific) error message
-
-						} else if ($result !== true) {
-
-							exit_with_error('Invalid response from auth::validate_identification_complexity()', $result);
-
-						}
-
-					//--------------------------------------------------
-					// Validate password
-
-						$result = $this->validate_password_complexity($password_1);
-
-						if (is_string($result)) {
-
-							$this->register_field_password_1->error_add($result); // Custom (project specific) error message
-
-						} else if ($result !== true) {
-
-							exit_with_error('Invalid response from auth::validate_password_complexity()', $result);
-
-						} else if ($password_1 != $password_2) {
-
-							$this->register_field_password_2->error_add($this->text['failure_password_repeat']);
-
-						}
-
-					//--------------------------------------------------
-					// Return
-
-						if ($form->valid()) {
-
-							$this->register_details = array(
-									'identification' => $identification,
-									'identification_unique' => $identification_unique,
-									'password' => $password_1,
-									'form' => $form,
-								);
-
-							return true;
-
-						} else {
-
-							return false;
-
-						}
-
-				}
-
-				public function register_complete($config = array()) {
-
-					//--------------------------------------------------
-					// Config
-
-						$config = array_merge(array(
-								'login' => true,
-							), $config);
-
-						if ($this->register_details === NULL) {
-							exit_with_error('You must call auth::register_validate() before auth::register_complete().');
-						}
-
-						if (!is_array($this->register_details)) {
-							exit_with_error('The register details are not valid, so why has auth::register_complete() been called?');
-						}
-
-						if (!$this->register_details['form']->valid()) {
-							exit_with_error('The form is not valid, so why has auth::register_complete() been called?');
-						}
-
-						$form = $this->register_details['form'];
-						$record = $form->db_record_get();
-
-					//--------------------------------------------------
-					// Details
-
-						$record->value_set($this->db_fields['register']['identification'], $this->register_details['identification']);
-						$record->value_set($this->db_fields['register']['password'], password::hash($this->register_details['password']));
-
-					//--------------------------------------------------
-					// Register token
-
-						if ($this->db_table['register']) {
-
-							$register_pass = random_key(15);
-
-							$record->value_set($this->db_fields['register']['ip'], config::get('request.ip'));
-							$record->value_set($this->db_fields['register']['browser'], config::get('request.browser'));
-
-							if ($this->register_details['identification_unique']) {
-								$record->value_set($this->db_fields['register']['token'], hash($this->quick_hash, $register_pass));
-							}
-
-						} else {
-
-							$register_pass = NULL;
-
-						}
-
-					//--------------------------------------------------
-					// Save
-
-						$record_id = $form->db_insert();
-
-					//--------------------------------------------------
-					// Start session
-
-						if ($register_pass === NULL && $config['login']) {
-
-							$this->session_start($record_id, $this->register_details['identification']);
-
-						}
-
-					//--------------------------------------------------
-					// Return
-
-						if ($register_pass) {
-
-							if ($this->register_details['identification_unique']) {
-								return $record_id . '-' . $register_pass; // Return the registration token to complete registration with auth::register_confirm()
-							} else {
-								return false; // Not unique, so send an email telling the user they already have an account.
-							}
-
-						} else {
-
-							return $record_id; // User ID
-
-						}
-
-				}
-
-				public function register_confirm($register_token) {
-
-					//--------------------------------------------------
-					// Config
-
-						$db = $this->db_get();
-
-						$now = new timestamp();
-
-						if (preg_match('/^([0-9]+)-(.+)$/', $register_token, $matches)) {
-							$register_id = $matches[1];
-							$register_pass = $matches[2];
-						} else {
-							$register_id = 0;
-							$register_pass = '';
-						}
-
-						$register_id = intval($register_id);
-
-					//--------------------------------------------------
-					// Complete if valid
-
-						$sql = 'SELECT
-									*
-								FROM
-									' . $db->escape_table($this->db_table['register']) . ' AS r
-								WHERE
-									r.' . $db->escape_field($this->db_fields['register']['id']) . ' = "' . $db->escape($register_id) . '" AND
-									r.' . $db->escape_field($this->db_fields['register']['token']) . ' != "" AND
-									r.' . $db->escape_field($this->db_fields['register']['password']) . ' != "" AND
-									' . $this->db_where_sql['register'];
-
-						if ($row = $db->fetch_row($sql)) {
-
-							$token_field = $this->db_fields['register']['token'];
-							$identification_field = $this->db_fields['register']['identification'];
-
-							if (hash($this->quick_hash, $register_pass) == $row[$token_field]) {
-
-								//--------------------------------------------------
-								// Identification
-
-									$identification_value = $row[$identification_field];
-
-									$identification_unique = $this->validate_identification_unique($identification_value, NULL);
-
-									if (!$identification_unique) {
-										return false;
-									}
-
-								//--------------------------------------------------
-								// Copy record
-
-									$values = $row;
-									unset($values[$this->db_fields['register']['id']]);
-									unset($values[$this->db_fields['register']['token']]);
-									unset($values[$this->db_fields['register']['ip']]);
-									unset($values[$this->db_fields['register']['browser']]);
-
-									$values['created'] = $now;
-									$values['edited'] = $now;
-
-									$db->insert($this->db_table['main'], $values);
-
-									$user_id = $db->insert_id();
-
-								//--------------------------------------------------
-								// Delete registration
-
-									$db->query('UPDATE
-													' . $db->escape_table($this->db_table['register']) . ' AS r
-												SET
-													r.' . $db->escape_field($this->db_fields['register']['deleted']) . ' = "' . $db->escape($now) . '",
-													r.' . $db->escape_field($this->db_fields['register']['password']) . ' = ""
-												WHERE
-													r.' . $db->escape_field($this->db_fields['register']['id']) . ' = "' . $db->escape($register_id) . '" AND
-													' . $this->db_where_sql['register']);
-
-								//--------------------------------------------------
-								// Start session
-
-									$this->session_start($user_id, $identification_value);
-
-								//--------------------------------------------------
-								// Return
-
-									return $user_id;
-
-							}
-						}
-
-					//--------------------------------------------------
-					// Failure
-
-						return false;
-
-				}
-
-		//--------------------------------------------------
-		// Update
-
-			//--------------------------------------------------
-			// Table
-
-				public function update_table_get() {
-					return $this->db_table['main'];
-				}
-
-			//--------------------------------------------------
-			// Fields
-
-				public function update_field_identification_get($form, $config = array()) {
-
-					$field = $this->field_identification_get($form, array_merge(array(
-							'label' => $this->text['identification_label'],
-							'name' => 'identification',
-							'max_length' => $this->identification_max_length,
-							'check_domain' => true,
-						), $config));
-
-					$field->db_field_set($this->db_fields['main']['identification']);
-
-					return $this->update_field_identification = $field;
-
-				}
-
-				public function update_field_password_old_get($form, $config = array()) {
-
-					$field = $this->field_password_1_get($form, array_merge(array(
-							'label' => $this->text['password_old_label'],
-							'name' => 'password',
-							'min_length' => $this->password_min_length,
-							'max_length' => $this->password_max_length,
-						), $config, array(
-							'required' => true,
-							'autocomplete' => 'current-password',
-						)));
-
-					return $this->update_field_password_old = $field;
-
-				}
-
-				public function update_field_password_new_1_get($form, $config = array()) {
-
-					$this->update_field_password_new_required = (isset($config['required']) ? $config['required'] : false);
-
-					$field = $this->field_password_1_get($form, array_merge(array(
-							'label' => $this->text['password_new_label'],
-							'name' => 'password_new',
-							'min_length' => $this->password_min_length,
-							'max_length' => $this->password_max_length,
-						), $config, array(
-							'required' => $this->update_field_password_new_required,
-							'autocomplete' => 'new-password',
-						)));
-
-					return $this->update_field_password_new_1 = $field;
-
-				}
-
-				public function update_field_password_new_2_get($form, $config = array()) {
-
-					$field = $this->field_password_2_get($form, array_merge(array(
-							'label' => $this->text['password_repeat_label'],
-							'name' => 'password_repeat',
-							'min_length' => $this->password_min_length,
-							'max_length' => $this->password_max_length,
-						), $config, array(
-							'required' => $this->update_field_password_new_required,
-						)));
-
-					return $this->update_field_password_new_2 = $field;
-
-				}
-
-			//--------------------------------------------------
-			// Request
-
-				public function update_validate() {
-
-					//--------------------------------------------------
-					// Config
-
-						if ($this->session_info === NULL) {
-							exit_with_error('Cannot call auth::update_validate() when the user is not logged in.');
-						}
-
-						$form = NULL;
-						$new_identification = NULL;
-						$new_password = NULL;
-
-						$this->update_details = false;
-
-					//--------------------------------------------------
-					// Validate identification
-
-						if ($this->update_field_identification !== NULL) {
-
-							$form = $this->update_field_identification->form_get();
-							$new_identification = $this->update_field_identification->value_get();
-
-							$identification_unique = $this->validate_identification_unique($new_identification, $this->session_user_id_get());
-
-// TODO: Sending email to confirm change? or error if an account already exists with this password (maybe link to forgotten password page?).
-// Should this happen on email and/or username?
-
-							if (!$identification_unique) {
-								$this->update_field_identification->error_add($this->text['failure_identification_current']);
-							}
-
-							$result = $this->validate_identification_complexity($new_identification, $this->session_user_id_get());
-
-							if (is_string($result)) {
-
-								$this->update_field_identification->error_add($result); // Custom (project specific) error message
-
-							} else if ($result !== true) {
-
-								exit_with_error('Invalid response from auth::validate_identification_complexity()', $result);
-
-							}
-
-						}
-
-					//--------------------------------------------------
-					// Validate old password
-
-						if ($this->update_field_password_old !== NULL) {
-
-							$form = $this->update_field_password_old->form_get();
-							$old_password = $this->update_field_password_old->value_get();
-
-							$result = $this->validate_login(NULL, $old_password);
-
-							if ($result === 'failure_identification') {
-
-								exit_with_error('Could not return details about user id "' . $this->session_user_id_get() . '"');
-
-							} else if ($result === 'failure_password') {
-
-								$this->update_field_password_old->error_add($this->text['failure_login_password']);
-
-							} else if ($result === 'failure_repetition') {
-
-								$this->update_field_password_old->error_add($this->text['failure_login_repetition']);
-
-							} else if (is_string($result)) {
-
-								$this->update_field_password_old->error_add($result); // Custom (project specific) error message.
-
-							} else if (!is_int($result)) {
-
-								exit_with_error('Invalid response from auth::validate_login()', $result);
-
-							}
-
-						}
-
-					//--------------------------------------------------
-					// Validate new password
-
-						if ($this->update_field_password_new_1 !== NULL) {
-
-							if ($this->update_field_password_new_2 === NULL) {
-								exit_with_error('Cannot call auth::update_validate() with new password 1, but not 2.');
-							}
-
-							$form = $this->update_field_password_new_1->form_get();
-							$password_1 = $this->update_field_password_new_1->value_get();
-							$password_2 = $this->update_field_password_new_2->value_get();
-
-							$result = $this->validate_password_complexity($password_1);
-
-							if (is_string($result)) {
-
-								$this->update_field_password_new_1->error_add($result); // Custom (project specific) error message
-
-							} else if ($result !== true) {
-
-								exit_with_error('Invalid response from auth::validate_password_complexity()', $result);
-
-							} else if ($password_1 != $password_2) {
-
-								$this->update_field_password_new_2->error_add($this->text['failure_password_repeat']);
-
-							} else {
-
-								$new_password = $password_1;
-
-							}
-
-						}
-
-					//--------------------------------------------------
-					// Return
-
-						if ($form === NULL) {
-							exit_with_error('Cannot call auth::update_validate() without using one of the update fields.');
-						}
-
-						if ($form->valid()) {
-
-							$this->update_details = array(
-									'identification' => $new_identification,
-									'password' => $new_password,
-									'form' => $form,
-								);
-
-							return true;
-
-						} else {
-
-							return false;
-
-						}
-
-				}
-
-				public function update_complete() {
-
-					//--------------------------------------------------
-					// Config
-
-						if ($this->update_details === NULL) {
-							exit_with_error('You must call auth::update_validate() before auth::update_complete().');
-						}
-
-						if (!is_array($this->update_details)) {
-							exit_with_error('The update details are not valid, so why has auth::update_complete() been called?');
-						}
-
-						if (!$this->update_details['form']->valid()) {
-							exit_with_error('The form is not valid, so why has auth::update_complete() been called?');
-						}
-
-						$form = $this->update_details['form'];
-						$record = $form->db_record_get();
-
-					//--------------------------------------------------
-					// Update
-
-// TODO: Don't change email address without verification?
-
-						if ($this->update_details['identification']	) {
-
-							$record->value_set($this->db_fields['main']['identification'], $this->update_details['identification']);
-
-							$this->login_last_set($this->update_details['identification']);
-
-						}
-
-						if ($this->update_details['password']) { // could be NULL or blank (if not required)
-
-							$password_hash = password::hash($this->update_details['password'], $this->session_user_id_get());
-
-							$record->value_set($this->db_fields['main']['password'], $password_hash);
-
-						}
-
-						$form->db_save();
-
-					//--------------------------------------------------
-					// Return
-
-						return true;
-
-				}
-
-		//--------------------------------------------------
-		// Reset (forgotten password)
-
-			//--------------------------------------------------
-			// Table
-
-				public function reset_table_get() {
-
-					if (config::get('debug.level') > 0) {
-
-						debug_require_db_table($this->db_table['password'], '
-								CREATE TABLE [TABLE] (
-									id int(11) NOT NULL AUTO_INCREMENT,
-									created datetime NOT NULL,
-									deleted datetime NOT NULL,
-									PRIMARY KEY (id)
-								);');
-
-					}
-
-					return $this->db_table['password'];
-
-				}
-
-			//--------------------------------------------------
-			// Fields
-
-				public function reset_field_email_get($form, $config = array()) { // Must be email, username will be known and can be used to spam.
-
-					$config = array_merge(array(
-							'label' => $this->text['email_label'],
-							'name' => 'email',
-							'max_length' => $this->email_max_length,
-						), $config);
-
-					$field = new form_field_email($form, $config['label'], $config['name']);
-					$field->format_error_set($this->text['email_format']);
-					$field->min_length_set($this->text['email_min_len']);
-					$field->max_length_set($this->text['email_max_len'], $config['max_length']);
-					$field->autocomplete_set('email');
-
-					// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
-
-					return $this->reset_field_email = $field;
-
-				}
-
-				public function reset_field_password_new_1_get($form, $config = array()) {
-
-					// $config = array_merge(array(
-					// 		'label' => $this->text['password_label'], - New Password
-					// 		'name' => 'password',
-					// 		'max_length' => 250,
-					// 	), $config);
-
-					// Required
-
-				}
-
-				public function reset_field_password_new_2_get($form, $config = array()) {
-
-					// $config = array_merge(array(
-					// 		'label' => $this->text['password_label'], - Repeat Password
-					// 		'name' => 'password',
-					// 		'max_length' => 250,
-					// 	), $config);
-
-				}
-
-			//--------------------------------------------------
-			// Request
-
-				public function reset_request_validate() {
-
-					// Too many attempts?
-					// What happens if there is more than one account?
-
-				}
-
-				public function reset_request_complete($change_url = NULL) {
-					// Return
-					//   false = invalid_user
-					//   $change_url = url($request_url, array('t' => $request_id . '-' . $request_pass));
-					//   $change_url->format_set('full');
-					//
-					// Store users email address in user_password
-				}
-
-			//--------------------------------------------------
-			// Process
-
-				public function reset_process_active() {
-					return false; // Still a valid token?
-				}
-
-				public function reset_process_validate() {
-
-					$this->validate_password_complexity();
-					// Repeat password is the same
-				}
-
-				public function reset_process_complete() {
-				}
 
 		//--------------------------------------------------
 		// Support functions
@@ -1604,6 +1506,7 @@
 										) AND
 										s.pass = "" AND
 										s.created > "' . $db->escape($created_after) . '" AND
+										s.deleted = "0000-00-00 00:00:00" AND
 										' . $this->db_where_sql['session']);
 
 						if ($db->num_rows() >= $this->lockout_attempts) { // Once every 30 seconds, for the 30 minutes
@@ -1640,7 +1543,7 @@
 
 								if (password::needs_rehash($db_hash)) {
 
-									$new_hash = password::hash($password, $db_id);
+									$new_hash = password::hash($password);
 
 									$db->query('UPDATE
 													' . $db->escape_table($this->db_table['main']) . ' AS m
@@ -1655,7 +1558,7 @@
 
 								}
 
-								return intval($db_id); // Success
+								return intval($db_id); // Succes, and must be an integer (not an error string).
 
 							} else {
 
@@ -1690,65 +1593,9 @@
 					}
 
 				//--------------------------------------------------
-				// Return error
+				// Return error string
 
 					return $error;
-
-			}
-
-		//--------------------------------------------------
-		// Fields
-
-			protected function field_identification_get($form, $config) {
-
-				if ($this->identification_type == 'username') {
-					$field = new form_field_text($form, $config['label'], $config['name']);
-				} else {
-					$field = new form_field_email($form, $config['label'], $config['name']);
-					$field->check_domain_set($config['check_domain']);
-					$field->format_error_set($this->text['identification_format']);
-				}
-
-				$field->min_length_set($this->text['identification_min_len']);
-				$field->max_length_set($this->text['identification_max_len'], $config['max_length']);
-				$field->autocapitalize_set(false);
-				$field->autocomplete_set('username');
-
-				// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
-
-				return $field;
-
-			}
-
-			public function field_password_1_get($form, $config) { // Used in login, register, update (x2), reset.
-
-				$field = new form_field_password($form, $config['label'], $config['name']);
-				$field->max_length_set($this->text['password_max_len'], $config['max_length']);
-				$field->autocomplete_set($config['autocomplete']);
-
-				if ($config['required']) {
-					$field->min_length_set($this->text['password_min_len'], $config['min_length']);
-				}
-
-				// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
-
-				return $field;
-
-			}
-
-			public function field_password_2_get($form, $config) { // Used in register, update, reset.
-
-				$field = new form_field_password($form, $config['label'], $config['name']);
-				$field->max_length_set($this->text['password_repeat_max_len'], $config['max_length']);
-				$field->autocomplete_set('new-password');
-
-				if ($config['required']) {
-					$field->min_length_set($this->text['password_repeat_min_len'], $config['min_length']);
-				}
-
-				// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
-
-				return $field;
 
 			}
 
