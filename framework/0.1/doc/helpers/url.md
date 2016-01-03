@@ -46,7 +46,7 @@ Individual parameters can be set in a number of ways, for example:
 
 ## URL Setup
 
-If your not using the `http(s)_url()` helper functions, you can require a 'full' url via:
+If your not using the `http_url()` helper function, you can also require a 'full' url via:
 
 	$home_url = url('/');
 	$home_url->format_set('full');
