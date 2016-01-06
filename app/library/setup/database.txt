@@ -154,6 +154,16 @@
                 "options": null,
                 "definition": "tinytext NOT NULL"
             },
+            "telephone": {
+                "type": "tinytext",
+                "length": 255,
+                "collation": "utf8_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "tinytext NOT NULL"
+            },
             "ip": {
                 "type": "tinytext",
                 "length": 255,

@@ -573,6 +573,75 @@
 	}
 
 //--------------------------------------------------
+// Format telephone number (very rough)
+
+	function format_telephone_number($number) {
+
+		if (strlen(preg_replace('/[^0-9]/', '', $number)) < 6) {
+
+				// 1234 Street Name
+				// Ex Directory
+				// not given
+				// Don't have a phone
+
+			return NULL;
+
+		} else {
+
+				// 000 0000 0000 Ex 00
+				// 00000 000000, mob - 00000000000
+				// 00000000000 or 00000000000
+				// 00000000000  /  W: 00000000000
+				// 00000000 0000 (WORK)
+				// 00000000000 (txt only)
+				// 00000 000000 (after 2PM only)
+				// 00000 000000 not to be use for marketing
+				// 00000 000000 or +00 00 000 0000(S.Korea)
+				// US 000 000 0000
+				// (US Home) 0000000000
+				// c/o 00000 000000
+
+				// Try to tidy up "oo00000000000" or "OI000 000000", but not "c/o 00000 000000"
+
+			$chars = preg_split('//u', $number, -1, PREG_SPLIT_NO_EMPTY); // UTF-8 character splitting
+			$length = count($chars);
+			$dividers = array(' ', '(', ')', '-');
+
+			for ($k = 0; $k < $length; $k++) {
+				if (in_array($chars[$k], array('i', 'I', 'o', 'O'))) {
+					if ($k > 0 && !ctype_digit($chars[$k - 1]) && !in_array($chars[$k - 1], $dividers)) { // Only apply if start of string, or preceding char is a digit/divider.
+						continue;
+					}
+					$new = $chars;
+					while ($k < $length) {
+						if (in_array($chars[$k], array('i', 'I'))) {
+							$new[$k] = 1;
+						} else if (in_array($chars[$k], array('o', 'O'))) {
+							$new[$k] = 0;
+						} else {
+							break;
+						}
+						$k++;
+					}
+					if ($k == $length || ctype_digit($chars[$k]) || in_array($chars[$k], $dividers)) { // Only apply if end of string, or following char is a digit/divider.
+						$chars = $new;
+					}
+				}
+			}
+
+			return implode($chars);
+
+		}
+
+	}
+
+		// foreach (array('00o000oo0IO00', 'oo1O0000001oO', 'OI00i o0001Ii', 'c/o 00000 o00000', 'unknown', NULL) as $number) {
+		// 	$result = format_telephone_number($number);
+		// 	echo ($number === NULL ? 'NULL' : '"' . $number . '"') . ' = ' . ($result === NULL ? 'NULL' : $result) . '<br />' . "\n";
+		// }
+		// exit();
+
+//--------------------------------------------------
 // Format URL path
 
 	function format_url_path($src) {

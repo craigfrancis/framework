@@ -1111,6 +1111,13 @@
 					// Too many attempts?
 					// What happens if there is more than one account?
 
+
+
+
+
+
+
+
 				}
 
 				public function reset_request_complete($change_url = NULL) {
@@ -1417,7 +1424,7 @@
 				//--------------------------------------------------
 				// Old sessions
 
-					if ($this->session_history >= 0) { // TODO: Check usage (inc session start and logout)
+					if ($this->session_history >= 0) {
 
 						$deleted_before = new timestamp((0 - $this->session_history) . ' seconds');
 

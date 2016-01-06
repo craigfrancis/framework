@@ -21,6 +21,7 @@
 						'password',
 						'url',
 						'postcode',
+						'telephone',
 						'file',
 						'file-multiple',
 						'image',
@@ -145,6 +146,7 @@
 								'number',
 								'amount',
 								'postcode',
+								'telephone',
 								'ip',
 							));
 
