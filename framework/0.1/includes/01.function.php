@@ -370,6 +370,13 @@
 		return $words;
 	}
 
+	function clean_characters($text) {
+		$text = preg_replace('/[\x{2004}-\x{200A}]/u', ' ', $text); // THREE-PER-EM SPACE, FOUR-PER-EM SPACE, SIX-PER-EM-SPACE, FIGURE SPACE, PUNCTUATION SPACE, THIN SPACE, HAIR SPACE
+		$text = preg_replace('/[\x{200B}-\x{200D}]/u', '', $text); // ZERO WIDTH SPACE, ZERO WIDTH NON-JOINER, ZERO WIDTH JOINER
+		$text = preg_replace('/\R/u', "\n", $text); // Any unicode newline sequence, including LINE SEPARATOR (\x{2028})
+		return $text;
+	}
+
 	function strip_slashes_deep($value) {
 	 	return (is_array($value) ? array_map('strip_slashes_deep', $value) : stripslashes($value));
 	}
