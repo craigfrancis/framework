@@ -34,6 +34,8 @@
 			//--------------------------------------------------
 			// Search form
 
+				$search_text = '';
+
 				if ($config['search'] === true) {
 
 					$search_form = unit_get('search_form');
@@ -45,10 +47,6 @@
 				} else if ($config['search']) {
 
 					$search_text = $config['search'];
-
-				} else {
-
-					$search_text = '';
 
 				}
 
