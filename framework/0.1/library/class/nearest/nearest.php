@@ -68,7 +68,7 @@
 
 					$this->config = array_merge($default_config, $config);
 
-					if (!$this->config['max_km'] === NULL) {
+					if (!$this->config['max_km'] === NULL) { // Could be 0 to get all locations.
 						if ($this->config['max_miles'] > 0) {
 							$this->config['max_km'] = ($this->config['max_miles'] * 1.60934);
 						} else {
