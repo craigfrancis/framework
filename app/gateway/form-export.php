@@ -134,6 +134,7 @@
 		'form-field-number',
 		'form-field-password',
 		'form-field-postcode',
+		'form-field-telephone',
 		'form-field-currency',
 		'form-field-checkbox',
 		'form-field-checkboxes',
