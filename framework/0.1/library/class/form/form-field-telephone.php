@@ -5,7 +5,6 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $format_country = 'UK';
 			protected $format_error_set = false;
 			protected $format_error_found = false;
 
@@ -29,10 +28,6 @@
 		//--------------------------------------------------
 		// Errors
 
-			public function format_country_set($country) {
-				$this->format_country = $country;
-			}
-
 			public function format_error_set($error) {
 				$this->format_error_set_html(html($error));
 			}
@@ -40,7 +35,7 @@
 			public function format_error_set_html($error_html) {
 
 				if ($this->form_submitted && $this->value != '') {
-					$telephone_clean = format_telephone_number($this->value, $this->format_country);
+					$telephone_clean = format_telephone_number($this->value);
 					if ($telephone_clean === NULL) {
 
 						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
