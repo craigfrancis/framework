@@ -22,6 +22,7 @@
 				// Additional field configuration
 
 					$this->type = 'telephone';
+					$this->input_type = 'number'; // 'tel' does exist, but iOS does not allow characters (e.g. "0000 000000 Ex 00")
 
 			}
 

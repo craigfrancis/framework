@@ -24,6 +24,7 @@
 
 					$this->type = 'email';
 					$this->input_type = 'email';
+					$this->autocapitalize = 'none';
 
 			}
 
