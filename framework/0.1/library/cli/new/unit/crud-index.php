@@ -34,7 +34,7 @@
 			//--------------------------------------------------
 			// Search form
 
-				$search_text = '';
+				$search_text = $config['search'];
 
 				if ($config['search'] === true) {
 
@@ -43,10 +43,6 @@
 					$this->set('search', $search_form);
 
 					$search_text = $search_form->value_get();
-
-				} else if ($config['search']) {
-
-					$search_text = $config['search'];
 
 				}
 

@@ -50,8 +50,8 @@
 							if (config::get('form.auto_trim', true)) {
 								$this->value = trim($this->value);
 							}
-							if (config::get('form.auto_clean', false)) {
-								$this->value = clean_characters($this->value);
+							if (config::get('form.auto_clean_whitespace', false)) {
+								$this->value = clean_whitespace($this->value);
 							}
 						}
 
