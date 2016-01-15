@@ -19,17 +19,6 @@
 	fi
 
 #--------------------------------------------------
-# Git push
-#--------------------------------------------------
-
-	if [[ "${DST_SOURCE}" == 'git' ]]; then
-
-		cd "${ROOT}";
-		git push;
-
-	fi
-
-#--------------------------------------------------
 # SSH control connection
 #--------------------------------------------------
 
@@ -67,7 +56,7 @@
 		echo;
 		echo "  ssh ${DST_HOST};";
 		if [[ "${DST_SOURCE}" == 'git' ]]; then
-			echo "  git checkout XXX '${DST_PATH}';";
+			echo "  git clone XXX '${DST_PATH}';";
 		else
 			echo "  svn checkout XXX '${DST_PATH}';";
 		fi
