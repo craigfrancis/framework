@@ -367,7 +367,12 @@
 		$words = preg_split('/\s+/', $text); // Only on whitespace, so not "O'Brien"
 		$words = array_map('trim', $words);
 		$words = array_filter($words, 'strlen');
-		return $words;
+		foreach ($words as $id => $word) {
+			if (strlen(preg_replace('/\W/', '', $word)) == 0) { // Remove non-words (e.g. "A - B" to only "A" and "B")
+				unset($words[$id]);
+			}
+		}
+		return array_values($words); // Re-index
 	}
 
 	function clean_whitespace($text) {
