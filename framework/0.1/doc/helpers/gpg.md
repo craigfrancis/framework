@@ -5,6 +5,10 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 
 Install dependencies
 
+	brew install gpg
+
+Or
+
 	https://nightly.gpgtools.org/
 
 	MacGPG1-latest.dmg
