@@ -253,6 +253,8 @@
 
 				$output = array();
 
+					// Due to GnuPG-bug-id 1442 (17th Nov 2015), before 2.1.10, we cannot add... ' --gpg ' . escapeshellarg($this->gpg_command)
+
 				$command = $this->gpg_zip_command . ' --gpg-args "--no-tty" ' . $command . ' 2>&1';
 
 				exec($command, $output, $result);
