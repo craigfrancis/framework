@@ -364,16 +364,17 @@
 	}
 
 	function split_words($text) {
-		$words = preg_split('/\s+/', $text); // Only on whitespace, so not "O'Brien"
-		$words = array_map('trim', $words);
-		$words = array_filter($words, 'strlen');
-		foreach ($words as $id => $word) {
-			if (strlen(preg_replace('/\W/', '', $word)) == 0) { // Remove non-words (e.g. "A - B" to only "A" and "B")
-				unset($words[$id]);
+		$words = array();
+		foreach (preg_split('/\s+/', $text) as $word) { // Only on whitespace, so not "O'Brien"
+			$word = preg_replace('/^\W*(.*?)\W*$/', '$1', $word); // Trim non-word characters from start/end (e.g. "A, B" or "A - B" or "A 'B'" to only "A" and "B")
+			if (strlen($word) > 0) {
+				$words[] = $word;
 			}
 		}
 		return array_values($words); // Re-index
 	}
+
+		// exit('<pre>' . print_r(split_words("A - 'B' C, D O'Brien E"), true) . '</pre>');
 
 	function clean_whitespace($text) {
 		$text = preg_replace('/[\x{00A0}\x{2002}-\x{200A}\x{202F}\x{205F}\x{3000}]/u', ' ', $text); // NO-BREAK SPACE, (EN SPACE, EM SPACE, THREE-PER-EM SPACE, FOUR-PER-EM SPACE, SIX-PER-EM SPACE, FIGURE SPACE, PUNCTUATION SPACE, THIN SPACE, HAIR SPACE), NARROW NO-BREAK SPACE, MEDIUM MATHEMATICAL SPACE, IDEOGRAPHIC SPACE
