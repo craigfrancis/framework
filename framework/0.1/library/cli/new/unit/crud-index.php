@@ -26,6 +26,7 @@
 				$output_csv = ($config['download'] && request('output') == 'csv');
 
 				if ($output_csv) {
+					$config['delete_url'] = NULL; // No longer needed
 					$config['paginate'] = false;
 				}
 
