@@ -106,12 +106,22 @@
 			report_add($error_report, 'error');
 
 		//--------------------------------------------------
-		// The error
+		// Config
 
 			$contact_email = config::get('email.error');
 			if (is_array($contact_email)) {
 				$contact_email = reset($contact_email);
 			}
+
+		//--------------------------------------------------
+		// Remove hidden info
+
+			if ($contact_email != '' || config::get('debug.level') == 0) {
+				$hidden_info = ''; // If there is an email address, don't show the hidden info (e.g. on live).
+			}
+
+		//--------------------------------------------------
+		// The error
 
 			$error = array(
 					'message' => $message,
@@ -125,10 +135,6 @@
 		// Tell the user
 
 			if (config::get('output.sent') !== true) { // e.g. the loading helper has already sent the response.
-
-				if ($contact_email != '' || config::get('debug.level') == 0) {
-					$hidden_info = ''; // If there is an email address, don't show the hidden info (e.g. on live).
-				}
 
 				if (php_sapi_name() == 'cli' || config::get('output.mime') == 'text/plain') {
 
