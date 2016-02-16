@@ -139,6 +139,7 @@
 					ini_set('session.use_only_cookies', true); // Prevent session fixation though the URL
 					ini_set('session.cookie_secure', https_only());
 					ini_set('session.cookie_httponly', true); // Not available to JS
+					ini_set('session.use_strict_mode', true); // Since PHP 5.5.2, but we also use the 'key' below to also do this.
 
 					session_name(config::get('session.name'));
 
