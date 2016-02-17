@@ -336,6 +336,7 @@
 				// Headers and browser caching
 
 					config::set('output.mode', 'asset');
+					config::set('debug.show', false);
 
 					$mime_types = array(
 							'css' => 'text/css',
