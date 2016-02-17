@@ -62,6 +62,8 @@
 
 		protected function field_password_get($config) {
 
+			config::set('output.tracking', false);
+
 			$config = array_merge(array(
 					'name' => 'password',
 					'required' => true, // Default required (register page, or re-confirm on profile page)
@@ -81,6 +83,8 @@
 		}
 
 		protected function field_password_new_get($config) {
+
+			config::set('output.tracking', false);
 
 			$config = array_merge(array(
 					'name' => 'password_new',

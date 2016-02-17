@@ -472,6 +472,8 @@
 
 			protected function field_password_get($form, $config) { // Used in login, register, update (x2), reset.
 
+				config::set('output.tracking', false);
+
 				$field = new form_field_password($form, $config['label'], $config['name']);
 				$field->max_length_set($this->text['password_max_length'], $config['max_length']);
 				$field->autocomplete_set($config['autocomplete']);
@@ -488,6 +490,8 @@
 
 			protected function field_password_new_get($form, $config) { // Used in login, register, update (x2), reset.
 
+				config::set('output.tracking', false);
+
 				$field = new form_field_password($form, $config['label'], $config['name']);
 				$field->max_length_set($this->text['password_new_max_length'], $config['max_length']);
 				$field->autocomplete_set($config['autocomplete']);
@@ -503,6 +507,8 @@
 			}
 
 			protected function field_password_repeat_get($form, $config) { // Used in register, update, reset.
+
+				config::set('output.tracking', false);
 
 				$field = new form_field_password($form, $config['label'], $config['name']);
 				$field->max_length_set($this->text['password_repeat_max_length'], $config['max_length']);
