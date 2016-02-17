@@ -485,6 +485,19 @@
 	}
 
 //--------------------------------------------------
+// Configuration debug
+
+	if (config::get('debug.level') >= 3 && REQUEST_MODE != 'cli') { // In CLI mode, use the "-c" option
+
+		debug_note_html(debug_config_html(), 'C');
+		debug_note_html(debug_constants_html(), 'C');
+
+			// Done after the assets are loaded (need to be quick, and won't be used),
+			// but before the controllers start loading any objects into the site config.
+
+	}
+
+//--------------------------------------------------
 // Process routes
 
 	$routes = array();

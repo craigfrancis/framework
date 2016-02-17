@@ -514,14 +514,6 @@
 			}
 
 		//--------------------------------------------------
-		// Show configuration
-
-			if (config::get('debug.level') >= 3 && REQUEST_MODE != 'cli') { // In CLI mode, use the "-c" option
-				debug_note_html(debug_config_html(), 'C');
-				debug_note_html(debug_constants_html(), 'C');
-			}
-
-		//--------------------------------------------------
 		// Database debug
 
 			// if (config::get('db.host') !== NULL) { ... Try to avoid always connecting, e.g. returning a minified CSS file should not need a DB connection.
