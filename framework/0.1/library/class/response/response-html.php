@@ -1618,6 +1618,22 @@
 
 						$this->css_add(gateway_url('framework-file', 'debug.css'));
 
+						if (config::get('db.host') !== NULL) {
+
+							debug_require_db_table(DB_PREFIX . 'system_report', '
+									CREATE TABLE [TABLE] (
+										id int(11) NOT NULL auto_increment,
+										type tinytext NOT NULL,
+										created datetime NOT NULL,
+										message text NOT NULL,
+										request tinytext NOT NULL,
+										referrer tinytext NOT NULL,
+										ip tinytext NOT NULL,
+										PRIMARY KEY  (id)
+									);');
+
+						}
+
 					}
 
 				//--------------------------------------------------

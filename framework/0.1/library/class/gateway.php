@@ -370,19 +370,11 @@
 			public function run($api, $version = 1, $sub_path = NULL) {
 
 				//--------------------------------------------------
-				// Make sure we have plenty of memory
+				// Config
 
 					ini_set('memory_limit', '1024M');
 
-				//--------------------------------------------------
-				// Run setup
-
 					config::set('output.gateway', $api);
-
-					$include_path = APP_ROOT . '/library/setup/setup.php';
-					if (is_file($include_path)) {
-						script_run_once($include_path);
-					}
 
 				//--------------------------------------------------
 				// Run API
@@ -759,12 +751,13 @@
 					}
 
 				//--------------------------------------------------
-				// Include the script
+				// API
 
 					$gateway = $this;
 
 					$api_path = APP_ROOT . '/gateway/v' . intval($this->version) . '/' . safe_file_name($this->api) . '.php';
 					$api_object = str_replace('-', '_', $this->api) . '_v' . intval($this->version) . '_api';
+					$api_framework = false;
 
 					if ($this->version == 1 && !is_file($api_path)) {
 						$api_path = APP_ROOT . '/gateway/' . safe_file_name($this->api) . '.php';
@@ -773,6 +766,17 @@
 
 					if (!is_file($api_path)) {
 						$api_path = FRAMEWORK_ROOT . '/library/gateway/' . safe_file_name($this->api) . '.php';
+						$api_framework = true;
+					}
+
+				//--------------------------------------------------
+				// Includes
+
+					if (!$api_framework) {
+						$include_path = APP_ROOT . '/library/setup/setup.php';
+						if (is_file($include_path)) {
+							script_run_once($include_path);
+						}
 					}
 
 					if (is_file($api_path)) {
