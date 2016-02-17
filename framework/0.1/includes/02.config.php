@@ -297,6 +297,25 @@
 			));
 
 	//--------------------------------------------------
+	// Tracking
+
+		config::set_default('output.tracking', (SERVER == 'live'));
+
+		if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
+
+			config::set('output.tracking', false);
+
+		} else if (function_exists('getallheaders')) {
+
+			foreach (getallheaders() as $name => $value) {
+				if (strtolower($name) == 'dnt' && $value == 1) {
+					config::set('output.tracking', false);
+				}
+			}
+
+		}
+
+	//--------------------------------------------------
 	// Cookie
 
 		config::set_default('cookie.protect', false); // Does increase header size, which probably isn't good for page speed

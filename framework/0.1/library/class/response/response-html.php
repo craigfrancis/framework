@@ -5,7 +5,6 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $tracking_enabled = NULL;
 			private $browser_advanced = true;
 			private $message = NULL;
 			private $title = NULL;
@@ -390,35 +389,6 @@
 				} else {
 					return NULL;
 				}
-
-			}
-
-		//--------------------------------------------------
-		// Tracking
-
-			public function tracking_allowed_get() {
-
-				if ($this->tracking_enabled === NULL) {
-
-					$this->tracking_enabled = config::get('output.tracking', (SERVER == 'live'));
-
-					if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
-
-						$this->tracking_enabled = false;
-
-					} else if (function_exists('getallheaders')) {
-
-						foreach (getallheaders() as $name => $value) {
-							if (strtolower($name) == 'dnt' && $value == 1) {
-								$this->tracking_enabled = false;
-							}
-						}
-
-					}
-
-				}
-
-				return $this->tracking_enabled;
 
 			}
 
@@ -1337,58 +1307,60 @@
 					}
 
 				//--------------------------------------------------
-				// JavaScript
+				// JavaScript enabled
 
-					//--------------------------------------------------
-					// If enabled
+					$js_state = request('js', 'GET');
 
-						$js_state = request('js', 'GET');
+					if ($js_state == 'disabled') {
 
-						if ($js_state == 'disabled') {
+						cookie::set('js_disable', 'true');
 
-							cookie::set('js_disable', 'true');
+						$this->js_enabled = false;
 
-							$this->js_enabled = false;
+					} else if ($js_state != '') {
 
-						} else if ($js_state != '') {
+						cookie::delete('js_disable');
 
-							cookie::delete('js_disable');
+						$this->js_enabled = true;
 
-							$this->js_enabled = true;
+					} else {
 
-						} else {
+						$this->js_enabled = (cookie::get('js_disable') != 'true');
 
-							$this->js_enabled = (cookie::get('js_disable') != 'true');
+					}
 
-						}
+				//--------------------------------------------------
+				// Tracking
 
 					//--------------------------------------------------
 					// Google analytics
 
-						$tracking_ga_code = config::get('tracking.ga_code');
-						$tracking_js_path = config::get('tracking.js_path');
+						if (config::get('output.tracking')) {
 
-						if ($tracking_ga_code !== NULL && $this->tracking_allowed_get()) {
+							$tracking_ga_code = config::get('tracking.ga_code');
+							$tracking_js_path = config::get('tracking.js_path');
 
-							$js_code  = 'var _gaq = _gaq || [];' . "\n";
-							$js_code .= '_gaq.push(["_setAccount", "' . html($tracking_ga_code) . '"]);' . "\n";
-							$js_code .= '_gaq.push(["_setSiteSpeedSampleRate", 10]);' . "\n";
-							$js_code .= '_gaq.push(["_trackPageview"]);' . "\n\n";
-							$js_code .= '(function() {' . "\n";
-							$js_code .= '	var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true; ga.src = "https://ssl.google-analytics.com/ga.js";' . "\n";
-							$js_code .= '	var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s);' . "\n";
-							$js_code .= '})();' . "\n";
+							if ($tracking_ga_code !== NULL) {
 
-							$this->js_code_add($js_code, 'async');
+								$js_code  = 'var _gaq = _gaq || [];' . "\n";
+								$js_code .= '_gaq.push(["_setAccount", "' . html($tracking_ga_code) . '"]);' . "\n";
+								$js_code .= '_gaq.push(["_setSiteSpeedSampleRate", 10]);' . "\n";
+								$js_code .= '_gaq.push(["_trackPageview"]);' . "\n\n";
+								$js_code .= '(function() {' . "\n";
+								$js_code .= '	var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true; ga.src = "https://ssl.google-analytics.com/ga.js";' . "\n";
+								$js_code .= '	var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s);' . "\n";
+								$js_code .= '})();' . "\n";
 
-							$this->csp_source_add('script-src', array('https://ssl.google-analytics.com'));
-							$this->csp_source_add('img-src', array('https://ssl.google-analytics.com', 'http://www.google-analytics.com'));
+								$this->js_code_add($js_code, 'async');
 
-						}
+								$this->csp_source_add('script-src', array('https://ssl.google-analytics.com'));
+								$this->csp_source_add('img-src', array('https://ssl.google-analytics.com', 'http://www.google-analytics.com'));
 
-						if ($tracking_js_path !== NULL && $this->tracking_allowed_get()) {
+							} else if ($tracking_js_path !== NULL) {
 
-							$this->js_add($tracking_js_path);
+								$this->js_add($tracking_js_path);
+
+							}
 
 						}
 
@@ -1397,7 +1369,7 @@
 
 						if (extension_loaded('newrelic')) {
 
-							if ($this->tracking_allowed_get()) {
+							if (config::get('output.tracking')) {
 
 								$head_js = newrelic_get_browser_timing_header(false);
 
