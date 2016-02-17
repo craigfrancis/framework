@@ -13,6 +13,8 @@
 			private $error = false;
 			private $variables = array();
 			private $units = array();
+			private $completed_send_init = false;
+			private $completed_css_auto = false;
 
 			private $headers_sent = false;
 			private $head_html = '';
@@ -519,11 +521,13 @@
 			public function css_auto() {
 
 				//--------------------------------------------------
-				// Cannot run after head flush
+				// Do not run more than once (e.g. $response->head_flush)
 
-					if ($this->head_flushed) {
+					if ($this->completed_css_auto) {
 						return;
 					}
+
+					$this->completed_css_auto = true;
 
 				//--------------------------------------------------
 				// Get config
@@ -946,7 +950,6 @@
 
 					if ($this->head_flushed) {
 						ob_end_clean();
-						ob_start();
 						return '';
 					}
 
@@ -1058,9 +1061,9 @@
 				//--------------------------------------------------
 				// Clear buffers
 
-					$buffer_output = '';
+					$buffers = array();
 					while (ob_get_level() > 0) {
-						$buffer_output = ob_get_clean() . $buffer_output;
+						$buffers[] = ob_get_clean();
 					}
 
 				//--------------------------------------------------
@@ -1080,11 +1083,12 @@
 					flush();
 
 				//--------------------------------------------------
-				// Re-start output buffer
+				// Re-start output buffers
 
-					ob_start();
-
-					echo $buffer_output;
+					foreach ($buffers as $buffer) {
+						ob_start();
+						echo $buffer;
+					}
 
 				//--------------------------------------------------
 				// Mark as flushed
@@ -1267,12 +1271,14 @@
 				//--------------------------------------------------
 				// Send init
 
-					if (!$this->head_flushed) {
-						$this->_send_init();
-					}
+					$this->_send_init();
 
 				//--------------------------------------------------
 				// Send template
+
+					if ($this->head_flushed) {
+						ob_start();
+					}
 
 					script_run($this->_template_path_get(), array_merge($this->variables, array('response' => $this)));
 
@@ -1286,6 +1292,15 @@
 			}
 
 			private function _send_init() {
+
+				//--------------------------------------------------
+				// Do not run more than once (e.g. $response->head_flush)
+
+					if ($this->completed_send_init) {
+						return;
+					}
+
+					$this->completed_send_init = true;
 
 				//--------------------------------------------------
 				// Debug
