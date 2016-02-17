@@ -71,20 +71,28 @@ But if you have an error, you can use the global [error_send](../../doc/system/f
 	$response->error_send($ref);
 	exit();
 
+### Flush early
+
 And if you are pushing the performance side of page loading, it is possible add the following to your controller:
 
 	$response->head_flush();
 	sleep(1); // Testing
 
-This will start sending your `<head>` to the browser so it can start downloading external resources (i.e. css). But be careful if your using `css_auto()`, as that should not be in the template file. Instead create your own response_html:
+Or for an example which might included a form, and automatically selected CSS:
 
-	class response_html extends response_html_base {
-		protected function setup() {
-			$response->css_auto();
-		}
+	if (config::get('request.method') == 'GET') {
+
+		// csrf_token_get();
+
+		$response = response_get();
+		$response->css_auto();
+		$response->head_flush();
+
 	}
 
-Also see:
+This will start sending your `<head>` to the browser so it can start downloading external resources (i.e. css).
+
+### Also see
 
 	output.canonical
 	output.links
