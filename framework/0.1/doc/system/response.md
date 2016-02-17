@@ -73,7 +73,7 @@ But if you have an error, you can use the global [error_send](../../doc/system/f
 
 ### Flush early
 
-And if you are pushing the performance side of page loading, it is possible add the following to your controller:
+If you are pushing the performance side of page loading, it is possible add the following to your controller:
 
 	$response->head_flush();
 	sleep(1); // Testing
@@ -90,7 +90,7 @@ Or for an example which might included a form, and automatically selected CSS:
 
 	}
 
-This will start sending your `<head>` to the browser so it can start downloading external resources (i.e. css).
+This will start sending your `<head>` to the browser so it can start downloading some external resources (i.e. css).
 
 ### Also see
 
