@@ -3,6 +3,7 @@
 		// Notes:
 		// http://www.troyhunt.com/2015/01/introducing-secure-account-management.html
 		// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence - Remember me feature
+		// http://blog.alejandrocelaya.com/2016/02/09/how-to-properly-implement-persistent-login/ - Remember me feature
 		// https://github.com/paragonie/password_lock - Encryption instead of a pepper (probably adding unnecessary complications)
 
 	class auth_base extends check {
