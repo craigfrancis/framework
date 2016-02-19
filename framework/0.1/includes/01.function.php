@@ -1038,7 +1038,7 @@
 			), $config);
 
 		if (!isset($config['code'])) {
-			$config['code'] = ($config['permanent'] ? 301 : 302);
+			$config['code'] = ($config['permanent'] ? 301 : 302); // Use 307 to get a client to re-POST data. A permanent version of this (308) is coming, but was only defined in 2014 - https://tools.ietf.org/html/rfc2616#section-10.3.8
 		}
 
 		mime_set('text/html');
