@@ -334,7 +334,7 @@
 
 					$csrf_get = request('csrf', 'GET');
 
-					if ($this->session_info && $this->session_info['logout_csrf'] === $csrf_get) {
+					if ($this->session_info && $this->session_info['logout_csrf'] == $csrf_get) {
 
 						$this->logout_details = array(
 								'csrf' => $csrf_get,
