@@ -925,13 +925,35 @@
 
 				$message = $this->message_get();
 
-				if ($message == '') {
-					return '';
+				if (!is_array($message)) {
+					$message = array('text' => $message);
+				}
+
+				$message = array_merge(array(
+						'tag'   => 'div',
+						'id'    => 'page_message',
+						'class' => NULL,
+						'text'  => NULL,
+						'html'  => NULL,
+					), $message);
+
+				if ($message['html']) {
+
+					return $message['html'];
+
+				} else if ($message['text']) {
+
+					$tag = $message['tag'];
+					$text = $message['text'];
+
+					unset($message['tag'], $message['text']);
+
+					return html_tag($tag, $message) . $text . '</' . html($tag) . '>';
+
 				} else {
-					return '
-						<div id="page_message">
-							<p>' . html($message) . '</p>
-						</div>';
+
+					return '';
+
 				}
 
 			}
