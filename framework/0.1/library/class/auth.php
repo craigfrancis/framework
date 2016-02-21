@@ -16,7 +16,8 @@
 			protected $lockout_mode = NULL;
 			protected $lockout_user_id = NULL;
 
-			protected $user_id = NULL; // Only used when editing a user, see $auth->user_id_set()
+			protected $user_id = NULL; // Only used when editing a user, see $auth->user_set()
+			protected $user_identification = NULL;
 
 			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $session_info = NULL;
@@ -214,12 +215,17 @@
 		//--------------------------------------------------
 		// Editing
 
-			public function user_id_set($user_id) { // Typically for admin use only
+			public function user_set($user_id, $user_identification) { // Typically for admin use only
 				$this->user_id = $user_id;
+				$this->user_identification = $user_identification;
 			}
 
 			public function user_id_get() {
 				return $this->user_id;
+			}
+
+			public function user_identification_get() {
+				return $this->user_identification;
 			}
 
 		//--------------------------------------------------
@@ -329,7 +335,7 @@
 
 				$config = array_merge(array(
 						'session_concurrent' => NULL,
-						'remember_login'     => NULL,
+						'remember_login'     => false,
 					), $config);
 
 				if ($this->user_id === NULL) {
@@ -344,7 +350,7 @@
 
 				$this->session_concurrent = $config['session_concurrent'];
 
-				$this->session_start($this->user_id, $config['remember_login']);
+				$this->session_start($this->user_id, ($config['remember_login'] === true ? $this->user_identification : NULL));
 
 				$this->session_concurrent = $system_session_concurrent;
 
@@ -419,7 +425,7 @@
 		// Register
 
 			//--------------------------------------------------
-			// Table
+			// Config
 
 				public function register_table_get() {
 
@@ -536,10 +542,10 @@
 					// Config
 
 						$config = array_merge(array(
-								'login' => true,
+								'login'   => true,
 								'confirm' => false,
-								'form' => NULL,
-								'record' => NULL,
+								'form'    => NULL,
+								'record'  => NULL,
 							), $config);
 
 						if ($this->register_details === NULL) {
@@ -740,7 +746,7 @@
 		// Update
 
 			//--------------------------------------------------
-			// Table
+			// Config
 
 				public function update_table_get() {
 
@@ -927,10 +933,11 @@
 					// Config
 
 						$config = array_merge(array(
-								'login' => true,
-								'confirm' => NULL, // Set to an email address when identification is a username.
-								'form' => NULL,
-								'record' => NULL,
+								'login'          => true,
+								'confirm'        => NULL, // Set to an email address when identification is a username.
+								'form'           => NULL,
+								'record'         => NULL,
+								'remember_login' => NULL,
 							), $config);
 
 						if ($this->update_details === NULL) {
@@ -1126,7 +1133,7 @@
 		// Reset (forgotten password)
 
 			//--------------------------------------------------
-			// Table
+			// Config
 
 				public function reset_table_get() {
 
