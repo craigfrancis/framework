@@ -252,7 +252,12 @@
 						), $config));
 
 					if ($form->initial()) {
-						$field->value_set($this->session_info[$this->db_fields['main']['identification']]);
+						if ($this->user_identification) {
+							$user_identification = $this->user_identification;
+						} else {
+							$user_identification = $this->session_info[$this->db_fields['main']['identification']];
+						}
+						$field->value_set($user_identification);
 					}
 
 					return $this->update_field_identification = $field;

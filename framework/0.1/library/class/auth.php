@@ -781,8 +781,18 @@
 					//--------------------------------------------------
 					// Config
 
-						if ($this->session_info === NULL) {
-							exit_with_error('Cannot call auth::update_validate() when the user is not logged in.');
+						$user_edit = ($this->user_id !== NULL);
+
+						if ($user_edit) {
+							$user_id = $this->user_id;
+							$user_identification = $this->user_identification;
+						} else {
+							$user_id = $this->session_user_id_get();
+							$user_identification = $this->session_info[$this->db_fields['main']['identification']];
+						}
+
+						if ($user_id === NULL) {
+							exit_with_error('Cannot call auth::update_validate() when the user is not selected or logged in.');
 						}
 
 						$this->update_details = false;
@@ -801,8 +811,8 @@
 
 							$confirm = ($this->db_table['update'] !== NULL);
 
-							$identification_complexity = $this->validate_identification_complexity($values['identification'], $this->session_user_id_get());
-							$identification_unique = $this->validate_identification_unique($values['identification'], $this->session_user_id_get());
+							$identification_complexity = $this->validate_identification_complexity($values['identification'], $user_id);
+							$identification_unique = $this->validate_identification_unique($values['identification'], $user_id);
 
 							if (is_string($identification_complexity)) {
 
@@ -816,7 +826,7 @@
 
 								$errors['identification'] = $this->text['failure_identification_current'];
 
-							} else if ($values['identification'] == $this->session_info[$this->db_fields['main']['identification']]) {
+							} else if ($values['identification'] == $user_identification) {
 
 								$confirm = false; // No change
 
@@ -843,7 +853,7 @@
 
 							if ($result === 'failure_identification') {
 
-								exit_with_error('Could not return details about user id "' . $this->session_user_id_get() . '"');
+								exit_with_error('Could not return details about user id "' . $user_id . '"');
 
 							} else if ($result === 'failure_password') {
 
@@ -915,6 +925,8 @@
 									'identification_unique' => $identification_unique,
 									'password' => $password_new,
 									'confirm' => $confirm,
+									'user_edit' => $user_edit,
+									'user_id' => $user_id,
 								);
 
 							return true;
@@ -965,6 +977,10 @@
 							exit_with_error('You must pass the users email address to auth::register_complete(array(\'confirm\' => $email)), or disable email confirmations.');
 						}
 
+						if (isset($config['remember_login'])) {
+							$config['remember_login'] = ($this->update_details['user_edit'] == false); // Default to remembering login details when user is editing their profile (not admin).
+						}
+
 					//--------------------------------------------------
 					// Details
 
@@ -972,7 +988,9 @@
 
 							$record->value_set($this->db_fields['main']['identification'], $this->update_details['identification']);
 
-							$this->login_last_set($this->update_details['identification']);
+							if ($config['remember_login'] === true) {
+								$this->login_last_set($this->update_details['identification']);
+							}
 
 						}
 
@@ -1019,7 +1037,7 @@
 									'token'   => $update_hash,
 									'ip'      => config::get('request.ip'),
 									'browser' => config::get('request.browser'),
-									'user_id' => $this->session_user_id_get(),
+									'user_id' => $this->update_details['user_id'],
 									'email'   => $this->update_details['confirm'],
 									'created' => $now,
 									'deleted' => '0000-00-00 00:00:00',
