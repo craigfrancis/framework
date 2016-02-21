@@ -205,6 +205,10 @@
 				return $this->db_link;
 			}
 
+			public function password_min_length_get() {
+				return $this->password_min_length;
+			}
+
 		//--------------------------------------------------
 		// Login
 
