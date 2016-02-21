@@ -148,7 +148,7 @@
 
 				}
 
-				csrf_token_change();
+				// csrf_token_change(); - Most of the time the users session has expired
 
 		}
 

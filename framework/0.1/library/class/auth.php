@@ -280,7 +280,7 @@
 				// Change the CSRF token, invalidating forms open in
 				// different browser tabs (or browser history).
 
-					csrf_token_change();
+					// csrf_token_change(); - Most of the time the users session has expired
 
 				//--------------------------------------------------
 				// Try to restore session
