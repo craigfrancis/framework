@@ -16,6 +16,8 @@
 			protected $lockout_mode = NULL;
 			protected $lockout_user_id = NULL;
 
+			protected $user_id = NULL; // Only used when editing a user, see $auth->user_id_set()
+
 			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $session_info = NULL;
 			protected $session_pass = NULL;
@@ -210,6 +212,17 @@
 			}
 
 		//--------------------------------------------------
+		// Editing
+
+			public function user_id_set($user_id) { // Typically for admin use only
+				$this->user_id = $user_id;
+			}
+
+			public function user_id_get() {
+				return $this->user_id;
+			}
+
+		//--------------------------------------------------
 		// Login
 
 			public function login_validate($identification, $password) {
@@ -310,6 +323,31 @@
 				if ($this->login_last_cookie !== NULL) {
 					cookie::set($this->login_last_cookie, $identification, '+30 days');
 				}
+			}
+
+			public function login_forced($config = array()) {
+
+				$config = array_merge(array(
+						'session_concurrent' => NULL,
+						'remember_login'     => NULL,
+					), $config);
+
+				if ($this->user_id === NULL) {
+					exit_with_error('You must call auth::user_id_set() before auth::login_forced().');
+				}
+
+				if ($config['session_concurrent'] !== false && $config['session_concurrent'] !== true) {
+					exit_with_error('You must specify "session_concurrent" when calling auth::login_forced().');
+				}
+
+				$system_session_concurrent = $this->session_concurrent;
+
+				$this->session_concurrent = $config['session_concurrent'];
+
+				$this->session_start($this->user_id, $config['remember_login']);
+
+				$this->session_concurrent = $system_session_concurrent;
+
 			}
 
 		//--------------------------------------------------
@@ -1382,7 +1420,9 @@
 
 					}
 
-					$this->login_last_set($identification);
+					if ($identification !== NULL) {
+						$this->login_last_set($identification);
+					}
 
 			}
 
