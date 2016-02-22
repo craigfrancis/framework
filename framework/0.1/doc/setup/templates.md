@@ -41,11 +41,11 @@ After the output from the [view](../../doc/setup/views.md) or [units](../../doc/
 
 The **`$response->head_get_html();`** will add the following:
 
-- `<meta charset="UTF-8" />`
+- `<meta charset="UTF-8">`
 - `<title>` Set with the [response object](../../doc/system/response.md).
 - `<meta name="description">` Set with the [response object](../../doc/system/response.md).
-- `<link rel="shortcut icon" />` For the [favicon.ico](../../doc/setup/resources/favicon.md).
-- `<link rel="canonical" />`
+- `<link rel="shortcut icon">` For the [favicon.ico](../../doc/setup/resources/favicon.md).
+- `<link rel="canonical">`
 - `<link rel="stylesheet">` For the [style sheets](../../doc/setup/resources.md).
 - `<script>`
 
