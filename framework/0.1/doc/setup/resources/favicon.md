@@ -15,7 +15,7 @@ The path to this file can be changed with:
 
 	$config['output.favicon_path'] = '/full/path/to/favicon.ico';
 
-This configuration value *cannot* be set in `/app/library/setup/setup.php`, as that file often makes database queries, and opens a session, which should not be needed to quickly serve up a simple file.
+This configuration value *cannot* be set in `/app/library/setup/setup.php`, as that file often makes database queries, and opens a session, which should not be necessary to quickly serve up a simple file.
 
 ---
 
