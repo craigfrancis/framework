@@ -39,6 +39,22 @@ After the output from the [view](../../doc/setup/views.md) or [units](../../doc/
 	</body>
 	</html>
 
+The **`$response->head_get_html();`** will add the following:
+
+- `<meta charset="UTF-8" />`
+- `<title>` Set with the [response object](../../doc/system/response.md).
+- `<meta name="description">` Set with the [response object](../../doc/system/response.md).
+- `<link rel="shortcut icon" />` For the [favicon.ico](../../doc/setup/resources/favicon.md).
+- `<link rel="canonical" />`
+- `<link rel="stylesheet">` For the [style sheets](../../doc/setup/resources.md).
+- `<script>`
+
+And then anything else you have added with `$response->head_add_html();`
+
+Note that these `<script>` tags are added with:
+
+	$response->js_add('/a/js/js-loading.js', 'async', 'head');
+
 ---
 
 ## Variables
