@@ -23,7 +23,7 @@ If you want to tell the browser to get the favicon from somewhere else, set:
 
 	$config['output.favicon_url'] = '/url/to/favicon.ico';
 
-Where it will use this value in the link tag in the [html response](../../doc/system/response.md):
+Where it will use this value in the link tag in the [html response](../../../doc/system/response.md):
 
 	<link rel="shortcut icon" type="image/x-icon" href="/url/to/favicon.ico" />
 
