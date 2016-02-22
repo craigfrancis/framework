@@ -3,19 +3,28 @@
 
 All websites need a favicon, if only to stop the browser having to download a [404 page](https://developer.yahoo.com/performance/rules.html#favicon).
 
-I would suggest saving it in:
+By default you should save it to:
 
 	/app/public/a/img/global/favicon.ico
 
-This path can be changed with:
-
-	$config['output.favicon_url']
-	$config['output.favicon_path']
-
-The following link tag will be automatically added to the [html response](../../doc/system/response.md):
-
-	<link rel="shortcut icon" type="image/x-icon" href="/a/img/global/favicon.ico" />
-
-And if the browser ignores it, the file will also be served from:
+This will be served by the framework when a request is made to:
 
 	https://www.example.com/favicon.ico
+
+The path to this file can be changed with:
+
+	$config['output.favicon_path'] = '/full/path/to/favicon.ico';
+
+This configuration value *cannot* be set in `/app/library/setup/setup.php`, as that file often makes database queries, and opens a session, which should not be needed to quickly serve up a simple file.
+
+---
+
+If you want to tell the browser to get the favicon from somewhere else, set:
+
+	$config['output.favicon_url'] = '/url/to/favicon.ico';
+
+Where it will use this value in the link tag in the [html response](../../doc/system/response.md):
+
+	<link rel="shortcut icon" type="image/x-icon" href="/url/to/favicon.ico" />
+
+This configuration value *can* be set in `/app/library/setup/setup.php`.
