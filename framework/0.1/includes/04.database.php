@@ -365,6 +365,14 @@
 		}
 
 		public function insert($table_sql, $values, $on_duplicate = NULL) {
+			$this->_insert($table_sql, $values, $on_duplicate, false);
+		}
+
+		public function insert_delayed($table_sql, $values, $on_duplicate = NULL) {
+			$this->_insert($table_sql, $values, $on_duplicate, true);
+		}
+
+		private function _insert($table_sql, $values, $on_duplicate, $delayed) {
 
 			$fields_sql = implode(', ', array_map(array($this, 'escape_field'), array_keys($values)));
 
@@ -378,25 +386,31 @@
 			}
 			$values_sql = implode(', ', $values_sql);
 
-			if ($on_duplicate === NULL) {
-
-				return $this->query('INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $values_sql . ')');
-
-			} else if (!is_array($on_duplicate)) {
-
-				return $this->query('INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $values_sql . ') ON DUPLICATE KEY UPDATE ' . $on_duplicate);
-
+			if ($delayed) {
+				$insert_sql = 'INSERT DELAYED';
 			} else {
-
-				$set_sql = array();
-				foreach ($on_duplicate as $field_name => $field_value) {
-					$set_sql[] = $this->escape_field($field_name) . ' = ' . $this->escape_string($field_value);
-				}
-				$set_sql = implode(', ', $set_sql);
-
-				return $this->query('INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $values_sql . ') ON DUPLICATE KEY UPDATE ' . $set_sql);
-
+				$insert_sql = 'INSERT';
 			}
+
+			$insert_sql .= ' INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $values_sql . ')';
+
+			if ($on_duplicate !== NULL) {
+				if (is_array($on_duplicate)) {
+
+					$set_sql = array();
+					foreach ($on_duplicate as $field_name => $field_value) {
+						$set_sql[] = $this->escape_field($field_name) . ' = ' . $this->escape_string($field_value);
+					}
+					$insert_sql .= ' ON DUPLICATE KEY UPDATE ' . implode(', ', $set_sql);
+
+				} else {
+
+					$insert_sql .= ' ON DUPLICATE KEY UPDATE ' . $on_duplicate; // Dangerous but allows "count = (count + 1)"
+
+				}
+			}
+
+			return $this->query($insert_sql);
 
 		}
 
