@@ -366,13 +366,7 @@
 
 					$content_default = ($content_html === NULL);
 
-					if ($content_default) {
-
-						if ($config['default'] !== NULL) {
-							$content_text = $config['default'];
-						} else {
-							$content_text = $config['section'];
-						}
+					if ($content_default && $config['default'] !== NULL) {
 
 						$processor = $this->processor_get();
 
