@@ -371,9 +371,9 @@
 						$processor = $this->processor_get();
 
 						if ($inline) {
-							$content_html = $processor->process_inline_html($content_text);
+							$content_html = $processor->process_inline_html($config['default']);
 						} else {
-							$content_html = $processor->process_block_html($content_text);
+							$content_html = $processor->process_block_html($config['default']);
 						}
 
 					}
