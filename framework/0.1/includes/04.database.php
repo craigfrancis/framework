@@ -64,7 +64,7 @@
 		public function query($sql, $values = NULL, $run_debug = true) {
 
 			if ($values === false) {
-				trigger_error('Second parameter in query() is now for SQL parameters', E_USER_NOTICE);
+				trigger_error('Second parameter in query() is for SQL parameters', E_USER_NOTICE);
 				$values = NULL;
 				$run_debug = false;
 			}
@@ -132,9 +132,15 @@
 			return mysqli_num_rows($result);
 		}
 
-		public function fetch($sql = NULL, $row = 0, $col = 0) {
+		public function fetch($sql = NULL, $values = NULL, $row = 0, $col = 0) {
+			if ($values !== NULL && !is_array($values)) {
+				trigger_error('Second parameter in fetch() is for SQL parameters', E_USER_NOTICE);
+				$col = $row;
+				$row = $values;
+				$values = NULL;
+			}
 			if (is_string($sql)) {
-				$result = $this->query($sql);
+				$result = $this->query($sql, $values);
 			} else if ($sql !== NULL) {
 				$result = $sql;
 			} else {
