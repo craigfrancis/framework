@@ -75,7 +75,7 @@
 
 				$this->result = debug_database($this, $sql, $values);
 
-			} else if (function_exists('mysqli_stmt_get_result')) {
+			} else if (function_exists('mysqli_stmt_get_result')) { // When mysqlnd is installed - There is no way I'm using bind_result(), where the values from the database should stay in their array (ref fetch_assoc), and work around are messy.
 
 				$this->statement = mysqli_prepare($this->link, $sql);
 
@@ -98,6 +98,16 @@
 				}
 
 			} else {
+
+				if ($values) {
+					$offset = 0;
+					$k = 0;
+					while (($pos = strpos($sql, '?', $offset)) !== false) {
+						$sql_value = $this->escape_string($values[$k++][1]);
+						$sql = substr($sql, 0, $pos) . $sql_value . substr($sql, ($pos + 1));
+						$offset = ($pos + strlen($sql_value));
+					}
+				}
 
 				$this->result = mysqli_query($this->link, $sql);
 

@@ -634,11 +634,14 @@
 				// Values
 
 					if ($values) {
-						foreach ($values as $value) {
-							if (($pos = strpos($query_html, '?')) !== false) {
-								$value = ($value[0] == 's' ? '"' . $value[1] . '"' : $value[1]);
-								$query_html = substr($query_html, 0, $pos) . '<strong class="value">' . html($value) . '</strong>' . substr($query_html, ($pos + 1));
-							}
+						$offset = 0;
+						$k = 0;
+						while (($pos = strpos($query_html, '?', $offset)) !== false) {
+							$value = $values[$k++];
+							$value_html = html($value[0] == 's' ? '"' . $value[1] . '"' : $value[1]);
+							$value_html = '<strong class="value">' . $value_html . '</strong>';
+							$query_html = substr($query_html, 0, $pos) . $value_html . substr($query_html, ($pos + 1));
+							$offset = ($pos + strlen($value_html));
 						}
 					}
 
