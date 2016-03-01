@@ -628,7 +628,6 @@
 						$offset = 0;
 						$k = 0;
 						while (($pos = strpos($query_html, '?', $offset)) !== false) {
-							$k++;
 							if (isset($parameters[$k])) {
 								$parameter_html = html($parameters[$k][0] == 's' ? '"' . $parameters[$k][1] . '"' : $parameters[$k][1]);
 							} else {
@@ -637,6 +636,7 @@
 							$parameter_html = '<strong class="value">' . $parameter_html . '</strong>';
 							$query_html = substr($query_html, 0, $pos) . $parameter_html . substr($query_html, ($pos + 1));
 							$offset = ($pos + strlen($parameter_html));
+							$k++;
 						}
 					}
 
