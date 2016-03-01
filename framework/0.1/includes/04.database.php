@@ -3,6 +3,8 @@
 	class db extends check {
 
 		private $result;
+		private $statement;
+		private $affected_rows;
 		private $connection;
 		private $link;
 		private $structure_table_cache;
@@ -59,22 +61,55 @@
 			return '`' . str_replace('`', '', $table) . '`';
 		}
 
-		public function query($sql, $run_debug = true) {
-			$this->connect();
-			if ($run_debug && function_exists('debug_database')) {
-				$this->result = debug_database($this, $sql);
-			} else {
-				$this->result = mysqli_query($this->link, $sql);
+		public function query($sql, $values = NULL, $run_debug = true) {
+
+			if ($values === false) {
+				trigger_error('Second parameter in query() is now for SQL parameters', E_USER_NOTICE);
+				$values = NULL;
+				$run_debug = false;
 			}
+
+			$this->connect();
+
+			if ($run_debug && function_exists('debug_database')) {
+
+				$this->result = debug_database($this, $sql, $values);
+
+			} else {
+
+				$this->statement = mysqli_prepare($this->link, $sql);
+
+				if ($values) {
+					$ref_values = array(implode(array_column($values, 0)));
+					foreach ($values as $key => $value) {
+						$ref_values[] = &$values[$key][1];
+					}
+					call_user_func_array(array($this->statement, 'bind_param'), $ref_values);
+				}
+
+				$this->result = $this->statement->execute();
+				if ($this->result) {
+					$this->affected_rows = $this->statement->affected_rows;
+					$this->result = $this->statement->get_result();
+					if ($this->result === false) {
+						$this->result = true; // Didn't create any results, e.g. UPDATE, INSERT, DELETE
+					}
+					$this->statement->close(); // If this isn't successful, we need to get to the errno
+				}
+
+			}
+
 			if (!$this->result) {
 				$this->_error($sql);
 			}
+
 			return $this->result;
+
 		}
 
-		public function num_rows($sql = NULL) {
+		public function num_rows($sql = NULL, $values = NULL) {
 			if (is_string($sql)) {
-				$result = $this->query($sql);
+				$result = $this->query($sql, $values);
 			} else if ($sql !== NULL) {
 				$result = $sql;
 			} else {
@@ -101,9 +136,9 @@
 			return false; // match old mysql_result behaviour, also a field could be NULL
 		}
 
-		public function fetch_all($sql = NULL) {
+		public function fetch_all($sql = NULL, $values = NULL) {
 			if (is_string($sql)) {
-				$result = $this->query($sql);
+				$result = $this->query($sql, $values);
 			} else if ($sql !== NULL) {
 				$result = $sql;
 			} else {
@@ -118,9 +153,9 @@
 			return $data;
 		}
 
-		public function fetch_row($sql = NULL) {
+		public function fetch_row($sql = NULL, $values = NULL) {
 			if (is_string($sql)) {
-				$result = $this->query($sql);
+				$result = $this->query($sql, $values);
 			} else if ($sql !== NULL) {
 				$result = $sql;
 			} else {
@@ -352,11 +387,11 @@
 		}
 
 		public function insert_id() {
-			return mysqli_insert_id($this->link);
+			return mysqli_insert_id($this->link); // Do not use $this->statement->insert_id as this DOES NOT get updated if running multiple INSERT's
 		}
 
 		public function affected_rows() {
-			return mysqli_affected_rows($this->link);
+			return $this->affected_rows; // mysqli_affected_rows($this->link);
 		}
 
 		public function enum_values($table_sql, $field) {
@@ -512,7 +547,7 @@
 				$host = config::get($prefix . 'host');
 
 				if ($pass === NULL) {
-					$password_path = (defined('UPLOAD_ROOT') ? UPLOAD_ROOT : ROOT) . '/private/passwords/database.txt';
+					$password_path = (defined('UPLOAD_ROOT') ? UPLOAD_ROOT : ROOT) . '/private/passwords/database.txt'; // Could also go into `/private/config/server.ini`, but this will appear in debug output (although it should show the value '???').
 					if (is_readable($password_path)) {
 						$pass = trim(file_get_contents($password_path));
 					} else {
@@ -553,7 +588,9 @@
 
 		public function _error($query = 'N/A', $use_query_as_error = false) { // Public so debug script can call
 
-			if ($this->link) {
+			if ($this->statement && $this->statement->errno > 0) {
+				$extra = $this->statement->errno . ': ' . $this->statement->error;
+			} else if ($this->link) {
 				$extra = mysqli_errno($this->link) . ': ' . mysqli_error($this->link);
 			} else {
 				$extra = '';

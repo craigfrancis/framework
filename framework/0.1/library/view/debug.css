@@ -88,6 +88,10 @@
 		display: block;
 	}
 
+	#debug_output .debug_notes .note .debug_sql .value {
+		color: #A00;
+	}
+
 	#debug_output .debug_notes .note ul {
 		margin: 10px 0 5px 2em;
 	}

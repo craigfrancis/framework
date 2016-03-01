@@ -540,7 +540,7 @@
 
 				$db = db_get();
 
-				$db->query('SHOW TABLES LIKE "' . $db->escape($table) . '"', false); // No debug
+				$db->query('SHOW TABLES LIKE "' . $db->escape($table) . '"', NULL, false); // No debug
 				if ($db->num_rows() == 0) {
 					if (php_sapi_name() == 'cli' || config::get('output.mime') == 'text/plain') {
 						exit('Missing table "' . $table . '":' . "\n\n" . str_replace('[TABLE]', $table, $sql) . "\n\n");
@@ -553,13 +553,22 @@
 
 			}
 
-			function debug_database($db, $query) {
+			function debug_database($db, $query, $values = NULL) {
 
 				//--------------------------------------------------
 				// Skip if disabled debugging
 
+
+
 					if (config::get('debug.db') !== true) {
-						return mysqli_query($db->link_get(), $query);
+						return $db->query($query, $values, false);
+
+
+						if ($values) {
+// TODO
+						} else {
+							return mysqli_query($db->link_get(), $query);
+						}
 					}
 
 				//--------------------------------------------------
@@ -620,6 +629,18 @@
 					}
 
 					$query_html = html(implode("\n", $query_lines) . ';');
+
+				//--------------------------------------------------
+				// Values
+
+					if ($values) {
+						foreach ($values as $value) {
+							if (($pos = strpos($query_html, '?')) !== false) {
+								$value = ($value[0] == 's' ? '"' . $value[1] . '"' : $value[1]);
+								$query_html = substr($query_html, 0, $pos) . '<strong class="value">' . html($value) . '</strong>' . substr($query_html, ($pos + 1));
+							}
+						}
+					}
 
 				//--------------------------------------------------
 				// Called from
@@ -806,10 +827,7 @@
 
 					$time_start = microtime(true);
 
-					$result = mysqli_query($db->link_get(), $query);
-					if (!$result) {
-						$db->_error($query);
-					}
+					$result = $db->query($query, $values, false);
 
 					$time_check = round(($time_start - $time_init), 3);
 					$time_query = round((microtime(true) - $time_start), 3);
