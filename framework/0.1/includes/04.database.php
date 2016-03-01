@@ -75,6 +75,10 @@
 
 				$this->result = debug_database($this, $sql, $values);
 
+			} else if (!function_exists('mysqli_stmt_get_result')) {
+
+				$this->result = mysqli_query($this->link, $sql);
+
 			} else {
 
 				$this->statement = mysqli_prepare($this->link, $sql);
@@ -391,7 +395,11 @@
 		}
 
 		public function affected_rows() {
-			return $this->affected_rows; // mysqli_affected_rows($this->link);
+			if ($this->affected_rows !== NULL) {
+				return $this->affected_rows;
+			} else {
+				return mysqli_affected_rows($this->link);
+			}
 		}
 
 		public function enum_values($table_sql, $field) {
