@@ -78,8 +78,12 @@
 					//--------------------------------------------------
 					// Start
 
+						$parameters = array();
+
 						$where_sql = array();
-						$where_sql[] = 'i.deleted = "0000-00-00 00:00:00"';
+						$where_sql[] = 'i.deleted = ?';
+
+						$parameters[] = array('s', '0000-00-00 00:00:00');
 
 					//--------------------------------------------------
 					// Keywords
@@ -87,7 +91,10 @@
 						foreach (split_words($search_text) as $word) {
 
 							$where_sql[] = '
-								i.name LIKE "%' . $db->escape_like($word) . '%"';
+								i.name_first LIKE ? OR
+								i.name_last LIKE ?';
+
+							$parameters = array_merge($parameters, array_fill(0, 2, array('s', '%' . $word . '%')));
 
 						}
 
@@ -114,7 +121,7 @@
 							WHERE
 								' . $where_sql;
 
-					$result_count = $db->fetch($sql);
+					$result_count = $db->fetch($sql, $parameters);
 
 					$paginator = new paginator($result_count);
 
@@ -143,7 +150,7 @@
 							' . $paginator->limit_get_sql();
 				}
 
-				foreach ($db->fetch_all($sql) as $row) {
+				foreach ($db->fetch_all($sql, $parameters) as $row) {
 
 					//--------------------------------------------------
 					// Details
