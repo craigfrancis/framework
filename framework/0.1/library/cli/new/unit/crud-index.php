@@ -78,11 +78,10 @@
 					//--------------------------------------------------
 					// Start
 
-						$parameters = array();
-
 						$where_sql = array();
 						$where_sql[] = 'i.deleted = ?';
 
+						$parameters = array();
 						$parameters[] = array('s', '0000-00-00 00:00:00');
 
 					//--------------------------------------------------

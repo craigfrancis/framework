@@ -61,11 +61,11 @@
 			return '`' . str_replace('`', '', $table) . '`';
 		}
 
-		public function query($sql, $values = NULL, $run_debug = true) {
+		public function query($sql, $parameters = NULL, $run_debug = true) {
 
-			if ($values === false) {
+			if ($parameters === false) {
 				trigger_error('Second parameter in query() is for SQL parameters', E_USER_NOTICE);
-				$values = NULL;
+				$parameters = NULL;
 				$run_debug = false;
 			}
 
@@ -73,16 +73,16 @@
 
 			if ($run_debug && function_exists('debug_database')) {
 
-				$this->result = debug_database($this, $sql, $values);
+				$this->result = debug_database($this, $sql, $parameters);
 
-			} else if (function_exists('mysqli_stmt_get_result')) { // When mysqlnd is installed - There is no way I'm using bind_result(), where the values from the database should stay in their array (ref fetch_assoc), and work around are messy.
+			} else if (function_exists('mysqli_stmt_get_result2')) { // When mysqlnd is installed - There is no way I'm using bind_result(), where the values from the database should stay in their array (ref fetch_assoc), and work around are messy.
 
 				$this->statement = mysqli_prepare($this->link, $sql);
 
-				if ($values) {
-					$ref_values = array(implode(array_column($values, 0)));
-					foreach ($values as $key => $value) {
-						$ref_values[] = &$values[$key][1];
+				if ($parameters) {
+					$ref_values = array(implode(array_column($parameters, 0)));
+					foreach ($parameters as $key => $value) {
+						$ref_values[] = &$parameters[$key][1];
 					}
 					call_user_func_array(array($this->statement, 'bind_param'), $ref_values);
 				}
@@ -99,11 +99,11 @@
 
 			} else {
 
-				if ($values) {
+				if ($parameters) {
 					$offset = 0;
 					$k = 0;
 					while (($pos = strpos($sql, '?', $offset)) !== false) {
-						$sql_value = $this->escape_string($values[$k++][1]);
+						$sql_value = $this->escape_string($parameters[$k++][1]);
 						$sql = substr($sql, 0, $pos) . $sql_value . substr($sql, ($pos + 1));
 						$offset = ($pos + strlen($sql_value));
 					}
@@ -121,9 +121,9 @@
 
 		}
 
-		public function num_rows($sql = NULL, $values = NULL) {
+		public function num_rows($sql = NULL, $parameters = NULL) {
 			if (is_string($sql)) {
-				$result = $this->query($sql, $values);
+				$result = $this->query($sql, $parameters);
 			} else if ($sql !== NULL) {
 				$result = $sql;
 			} else {
@@ -132,15 +132,15 @@
 			return mysqli_num_rows($result);
 		}
 
-		public function fetch($sql = NULL, $values = NULL, $row = 0, $col = 0) {
-			if ($values !== NULL && !is_array($values)) {
+		public function fetch($sql = NULL, $parameters = NULL, $row = 0, $col = 0) {
+			if ($parameters !== NULL && !is_array($parameters)) {
 				trigger_error('Second parameter in fetch() is for SQL parameters', E_USER_NOTICE);
 				$col = $row;
-				$row = $values;
-				$values = NULL;
+				$row = $parameters;
+				$parameters = NULL;
 			}
 			if (is_string($sql)) {
-				$result = $this->query($sql, $values);
+				$result = $this->query($sql, $parameters);
 			} else if ($sql !== NULL) {
 				$result = $sql;
 			} else {
@@ -156,9 +156,9 @@
 			return false; // match old mysql_result behaviour, also a field could be NULL
 		}
 
-		public function fetch_all($sql = NULL, $values = NULL) {
+		public function fetch_all($sql = NULL, $parameters = NULL) {
 			if (is_string($sql)) {
-				$result = $this->query($sql, $values);
+				$result = $this->query($sql, $parameters);
 			} else if ($sql !== NULL) {
 				$result = $sql;
 			} else {
@@ -173,9 +173,9 @@
 			return $data;
 		}
 
-		public function fetch_row($sql = NULL, $values = NULL) {
+		public function fetch_row($sql = NULL, $parameters = NULL) {
 			if (is_string($sql)) {
-				$result = $this->query($sql, $values);
+				$result = $this->query($sql, $parameters);
 			} else if ($sql !== NULL) {
 				$result = $sql;
 			} else {
@@ -423,12 +423,12 @@
 			return $field_info['options'];
 		}
 
-		public function insert($table_sql, $values, $on_duplicate = NULL) {
-			$this->_insert($table_sql, $values, $on_duplicate, false);
+		public function insert($table_sql, $parameters, $on_duplicate = NULL) {
+			$this->_insert($table_sql, $parameters, $on_duplicate, false);
 		}
 
-		public function insert_delayed($table_sql, $values, $on_duplicate = NULL) {
-			$this->_insert($table_sql, $values, $on_duplicate, true);
+		public function insert_delayed($table_sql, $parameters, $on_duplicate = NULL) {
+			$this->_insert($table_sql, $parameters, $on_duplicate, true);
 		}
 
 		private function _insert($table_sql, $values, $on_duplicate, $delayed) {

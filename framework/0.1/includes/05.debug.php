@@ -553,22 +553,13 @@
 
 			}
 
-			function debug_database($db, $query, $values = NULL) {
+			function debug_database($db, $sql, $parameters = NULL) {
 
 				//--------------------------------------------------
 				// Skip if disabled debugging
 
-
-
 					if (config::get('debug.db') !== true) {
-						return $db->query($query, $values, false);
-
-
-						if ($values) {
-// TODO
-						} else {
-							return mysqli_query($db->link_get(), $query);
-						}
+						return $db->query($sql, $parameters, false);
 					}
 
 				//--------------------------------------------------
@@ -579,10 +570,10 @@
 				//--------------------------------------------------
 				// Query type
 
-					$select_query = preg_match('/^\W*\(?\W*SELECT.*FROM/is', $query); // Don't debug queries without a table, e.g. SELECT FOUND_ROWS();
+					$select_query = preg_match('/^\W*\(?\W*SELECT.*FROM/is', $sql); // Don't debug queries without a table, e.g. SELECT FOUND_ROWS();
 
-					if ($select_query && strpos($query, 'SQL_NO_CACHE') === false) {
-						$query = preg_replace('/^\W*\(?\W*SELECT/', '$0 SQL_NO_CACHE', $query);
+					if ($select_query && strpos($sql, 'SQL_NO_CACHE') === false) {
+						$sql = preg_replace('/^\W*\(?\W*SELECT/', '$0 SQL_NO_CACHE', $sql);
 					}
 
 				//--------------------------------------------------
@@ -590,7 +581,7 @@
 
 					$indent = 0;
 					$query_lines = array();
-					$query_text = preg_replace('/\) (AND|OR) \(/', "\n$0\n", $query); // Could be better, just breaking up the keyword searching sections.
+					$query_text = preg_replace('/\) (AND|OR) \(/', "\n$0\n", $sql); // Could be better, just breaking up the keyword searching sections.
 
 					foreach (explode("\n", $query_text) as $line_text) {
 
@@ -633,15 +624,19 @@
 				//--------------------------------------------------
 				// Values
 
-					if ($values) {
+					if ($parameters) {
 						$offset = 0;
 						$k = 0;
 						while (($pos = strpos($query_html, '?', $offset)) !== false) {
-							$value = $values[$k++];
-							$value_html = html($value[0] == 's' ? '"' . $value[1] . '"' : $value[1]);
-							$value_html = '<strong class="value">' . $value_html . '</strong>';
-							$query_html = substr($query_html, 0, $pos) . $value_html . substr($query_html, ($pos + 1));
-							$offset = ($pos + strlen($value_html));
+							$k++;
+							if (isset($parameters[$k])) {
+								$parameter_html = html($parameters[$k][0] == 's' ? '"' . $parameters[$k][1] . '"' : $parameters[$k][1]);
+							} else {
+								$parameter_html = 'NULL';
+							}
+							$parameter_html = '<strong class="value">' . $parameter_html . '</strong>';
+							$query_html = substr($query_html, 0, $pos) . $parameter_html . substr($query_html, ($pos + 1));
+							$offset = ($pos + strlen($parameter_html));
 						}
 					}
 
@@ -666,7 +661,7 @@
 
 						$headers_printed = false;
 
-						$rst = @mysqli_query($db->link_get(), 'EXPLAIN ' . $query);
+						$rst = @mysqli_query($db->link_get(), 'EXPLAIN ' . $sql);
 						if ($rst) {
 							while ($row = mysqli_fetch_assoc($rst)) {
 
@@ -706,11 +701,11 @@
 
 					$text_html = '';
 
-					if (preg_match('/^(SELECT|UPDATE|DELETE)/i', ltrim($query))) {
+					if (preg_match('/^(SELECT|UPDATE|DELETE)/i', ltrim($sql))) {
 
 						$tables = array();
 
-						// if (preg_match('/WHERE(.*)/ims', $query, $matches)) {
+						// if (preg_match('/WHERE(.*)/ims', $sql, $matches)) {
 						// 	$where_sql = $matches[1];
 						// 	$where_sql = preg_replace('/ORDER BY.*/ms', '', $where_sql);
 						// 	$where_sql = preg_replace('/LIMIT\W+[0-9].*/ms', '', $where_sql);
@@ -719,20 +714,20 @@
 						// }
 
 						$where_sql = '';
-						preg_match_all('/WHERE(.*?)(GROUP BY|ORDER BY|LIMIT\W+[0-9]|LEFT JOIN|$)/is', $query, $matches_sql, PREG_SET_ORDER);
+						preg_match_all('/WHERE(.*?)(GROUP BY|ORDER BY|LIMIT\W+[0-9]|LEFT JOIN|$)/is', $sql, $matches_sql, PREG_SET_ORDER);
 						foreach ($matches_sql as $match_sql) {
 							$where_sql .= $match_sql[1];
 						}
 
 						if (DB_PREFIX != '') {
 
-							preg_match_all('/\b(' . preg_quote(DB_PREFIX, '/') . '[a-z0-9_]+)`?( AS ([a-z0-9]+))?/', $query, $matches, PREG_SET_ORDER);
+							preg_match_all('/\b(' . preg_quote(DB_PREFIX, '/') . '[a-z0-9_]+)`?( AS ([a-z0-9]+))?/', $sql, $matches, PREG_SET_ORDER);
 
 						} else {
 
 							$matches = array();
 
-							preg_match_all('/(UPDATE|FROM)([^\(]*?)(WHERE|GROUP BY|HAVING|ORDER BY|LIMIT|$)/isD', $query, $from_matches, PREG_SET_ORDER);
+							preg_match_all('/(UPDATE|FROM)([^\(]*?)(WHERE|GROUP BY|HAVING|ORDER BY|LIMIT|$)/isD', $sql, $from_matches, PREG_SET_ORDER);
 
 							foreach ($from_matches as $match) {
 								foreach (preg_split('/(,|(NATURAL\s+)?(LEFT|RIGHT|INNER|CROSS)\s+(OUTER\s+)?JOIN)/', $match[2]) as $table) {
@@ -770,7 +765,7 @@
 
 										$sql_conditions = array($where_sql);
 
-										if (preg_match('/' . preg_quote($table[1], '/') . (isset($table[3]) ? ' +AS +' . preg_quote($table[3], '/') : '') . ' +ON(.*)/ms', $query, $on_details)) {
+										if (preg_match('/' . preg_quote($table[1], '/') . (isset($table[3]) ? ' +AS +' . preg_quote($table[3], '/') : '') . ' +ON(.*)/ms', $sql, $on_details)) {
 											$sql_conditions[] = preg_replace('/(LEFT|RIGHT|INNER|CROSS|WHERE|GROUP BY|HAVING|ORDER BY|LIMIT).*/ms', '', $on_details[1]);
 										}
 
@@ -830,7 +825,7 @@
 
 					$time_start = microtime(true);
 
-					$result = $db->query($query, $values, false);
+					$result = $db->query($sql, $parameters, false);
 
 					$time_check = round(($time_start - $time_init), 3);
 					$time_query = round((microtime(true) - $time_start), 3);
