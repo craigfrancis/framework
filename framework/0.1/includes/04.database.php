@@ -61,7 +61,7 @@
 			return '`' . str_replace('`', '', $table) . '`';
 		}
 
-		public function query($sql, $parameters = NULL, $run_debug = true) {
+		public function query($sql, $parameters = NULL, $run_debug = true, $exit_on_error = true) {
 
 			if ($parameters === false) {
 				trigger_error('Second parameter in query() is for SQL parameters', E_USER_NOTICE);
@@ -79,22 +79,30 @@
 
 				$this->statement = mysqli_prepare($this->link, $sql);
 
-				if ($parameters) {
-					$ref_values = array(implode(array_column($parameters, 0)));
-					foreach ($parameters as $key => $value) {
-						$ref_values[] = &$parameters[$key][1];
-					}
-					call_user_func_array(array($this->statement, 'bind_param'), $ref_values);
-				}
+				if ($this->statement) {
 
-				$this->result = $this->statement->execute();
-				if ($this->result) {
-					$this->affected_rows = $this->statement->affected_rows;
-					$this->result = $this->statement->get_result();
-					if ($this->result === false) {
-						$this->result = true; // Didn't create any results, e.g. UPDATE, INSERT, DELETE
+					if ($parameters) {
+						$ref_values = array(implode(array_column($parameters, 0)));
+						foreach ($parameters as $key => $value) {
+							$ref_values[] = &$parameters[$key][1];
+						}
+						call_user_func_array(array($this->statement, 'bind_param'), $ref_values);
 					}
-					$this->statement->close(); // If this isn't successful, we need to get to the errno
+
+					$this->result = $this->statement->execute();
+					if ($this->result) {
+						$this->affected_rows = $this->statement->affected_rows;
+						$this->result = $this->statement->get_result();
+						if ($this->result === false) {
+							$this->result = true; // Didn't create any results, e.g. UPDATE, INSERT, DELETE
+						}
+						$this->statement->close(); // If this isn't successful, we need to get to the errno
+					}
+
+				} else {
+
+					$this->result = false;
+
 				}
 
 			} else {
@@ -113,7 +121,7 @@
 
 			}
 
-			if (!$this->result) {
+			if (!$this->result && $exit_on_error) {
 				$this->_error($sql);
 			}
 

@@ -661,9 +661,10 @@
 
 						$headers_printed = false;
 
-						$rst = @mysqli_query($db->link_get(), 'EXPLAIN ' . $sql);
-						if ($rst) {
-							while ($row = mysqli_fetch_assoc($rst)) {
+						$result = $db->query('EXPLAIN ' . $sql, $parameters, false, false); // No debug, and don't exit on error
+
+						if ($result) {
+							while ($row = $db->fetch_row($result)) {
 
 								if ($headers_printed == false) {
 									$headers_printed = true;
@@ -747,8 +748,9 @@
 
 							foreach (config::get('debug.db_required_fields') as $required_field) {
 
-								$rst = @mysqli_query($db->link_get(), 'SHOW COLUMNS FROM ' . $table[1] . ' LIKE "' . $required_field . '"');
-								if ($rst && $row = mysqli_fetch_assoc($rst)) {
+								$result = $db->query('SHOW COLUMNS FROM ' . $table[1] . ' LIKE "' . $required_field . '"', NULL, false, false); // No debug, and don't exit on error
+
+								if ($result && $row = $db->fetch_row($result)) {
 
 									//--------------------------------------------------
 									// Found
@@ -831,7 +833,7 @@
 					$time_query = round((microtime(true) - $time_start), 3);
 
 					if ($select_query) {
-						$results_html = '<div class="note_rows">Rows: ' . html(mysqli_num_rows($result)) . '</div>';
+						$results_html = '<div class="note_rows">Rows: ' . html($db->num_rows($result)) . '</div>';
 					} else {
 						$results_html = '';
 					}
