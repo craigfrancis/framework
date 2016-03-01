@@ -75,7 +75,7 @@
 
 				$this->result = debug_database($this, $sql, $parameters);
 
-			} else if (function_exists('mysqli_stmt_get_result2')) { // When mysqlnd is installed - There is no way I'm using bind_result(), where the values from the database should stay in their array (ref fetch_assoc), and work around are messy.
+			} else if (function_exists('mysqli_stmt_get_result')) { // When mysqlnd is installed - There is no way I'm using bind_result(), where the values from the database should stay in their array (ref fetch_assoc), and work around are messy.
 
 				$this->statement = mysqli_prepare($this->link, $sql);
 
