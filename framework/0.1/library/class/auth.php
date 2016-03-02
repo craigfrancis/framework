@@ -374,9 +374,16 @@
 					$this->logout_details = false;
 
 				//--------------------------------------------------
-				// Validate the logout CSRF token.
+				// Token exists
 
 					$csrf_get = request('csrf', 'GET');
+
+					if ($csrf_get === NULL) {
+						return NULL; // Also a falsy value, as the csrf hasn't been set, so maybe try a redirect before showing an error message.
+					}
+
+				//--------------------------------------------------
+				// Validate the logout CSRF token.
 
 					if ($this->session_info && $this->session_info['logout_csrf'] == $csrf_get) {
 
