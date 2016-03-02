@@ -93,7 +93,7 @@
 								i.name_first LIKE ? OR
 								i.name_last LIKE ?';
 
-							$parameters = array_merge($parameters, array_fill(0, 2, array('s', '%' . $word . '%')));
+							$parameters = array_merge($parameters, $db->parameter_like($word, 2));
 
 						}
 
@@ -154,11 +154,11 @@
 					//--------------------------------------------------
 					// Details
 
-						if ($config['edit_url']) {
-							$edit_url = $config['edit_url']->get(array('id' => $row['id']));
-						} else {
-							$edit_url = NULL;
-						}
+						$edit_url = NULL;
+						$delete_url = NULL;
+
+						if ($config['edit_url'])   $edit_url   = $config['edit_url']->get(array('id'   => $row['id'], 'dest' => 'referrer'));
+						if ($config['delete_url']) $delete_url = $config['delete_url']->get(array('id' => $row['id'], 'dest' => 'referrer'));
 
 						// $created = new timestamp($row['created'], 'db');
 						// $created->format('l jS F Y, g:i:sa');
@@ -170,7 +170,7 @@
 						$table_row = new table_row($table);
 
 						if (in_array('name',   $columns)) $table_row->cell_add_link($edit_url, $row['name']);
-						if (in_array('delete', $columns)) $table_row->cell_add_link($config['delete_url']->get(array('id' => $row['id'])), 'Delete');
+						if (in_array('delete', $columns)) $table_row->cell_add_link($delete_url, 'Delete');
 
 				}
 

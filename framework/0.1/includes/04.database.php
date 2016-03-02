@@ -61,6 +61,12 @@
 			return '`' . str_replace('`', '', $table) . '`';
 		}
 
+		public function parameter_like($val, $count = 0) {
+			$val = str_replace('_', '\_', $val);
+			$val = str_replace('%', '\%', $val);
+			return array_fill(0, $count, array('s', '%' . $val . '%'));
+		}
+
 		public function query($sql, $parameters = NULL, $run_debug = true, $exit_on_error = true) {
 
 			if ($parameters === false) {
