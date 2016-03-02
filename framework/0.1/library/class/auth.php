@@ -11,7 +11,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $lockout_attempts = 10;
+			protected $lockout_attempts = 60; // Once every 30 seconds, for the 30 minutes
 			protected $lockout_timeout = 1800; // 30 minutes
 			protected $lockout_mode = NULL;
 			protected $lockout_user_id = NULL;
