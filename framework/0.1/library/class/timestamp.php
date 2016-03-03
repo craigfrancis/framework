@@ -60,7 +60,7 @@
 				}
 			}
 
-			public function html($format_text, $null_html = NULL) {
+			public function html($format_text, $null_html = NULL, $format_title = NULL) {
 				if ($this->null) {
 					return $null_html;
 				} else {
@@ -68,7 +68,7 @@
 					if (($pos = strpos($attribute_value, 'T00:00:00')) !== false) {
 						$attribute_value = substr($attribute_value, 0, $pos);
 					}
-					return '<time datetime="' . html($attribute_value) . '">' . html($this->format($format_text)) . '</time>';
+					return '<time datetime="' . html($attribute_value) . '"' . ($format_title ? ' title="' . html($this->format($format_title)) . '"' : '') . '>' . html($this->format($format_text)) . '</time>';
 				}
 			}
 
