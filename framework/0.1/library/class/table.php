@@ -307,7 +307,7 @@
 			}
 
 			public function heading_add($heading, $sort_name = NULL, $class_name = '', $config = array()) {
-				$this->heading_add_html(html($heading), $sort_name, $class_name, $config);
+				$this->heading_add_html(nl2br(html($heading)), $sort_name, $class_name, $config);
 			}
 
 			public function heading_add_html($heading_html, $sort_name = NULL, $class_name = '', $config = array()) {
