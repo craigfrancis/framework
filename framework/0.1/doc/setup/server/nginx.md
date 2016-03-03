@@ -87,3 +87,14 @@ Still a work in progress...
 		}
 
 	}
+
+---
+
+Also look at:
+
+	sendfile on;
+	sendfile_max_chunk 1m;
+
+	https://www.nginx.com/resources/admin-guide/serving-static-content/
+
+	Use this for /app/public/a/* and /files/*
