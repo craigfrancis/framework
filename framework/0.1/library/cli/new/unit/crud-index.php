@@ -157,8 +157,8 @@
 						$edit_url = NULL;
 						$delete_url = NULL;
 
-						if ($config['edit_url'])   $edit_url   = $config['edit_url']->get(array('id'   => $row['id'], 'dest' => 'referrer'));
-						if ($config['delete_url']) $delete_url = $config['delete_url']->get(array('id' => $row['id'], 'dest' => 'referrer'));
+						if ($config['edit_url'])   $edit_url   = $config['edit_url']->get(array('id'   => $row['id']));
+						if ($config['delete_url']) $delete_url = $config['delete_url']->get(array('id' => $row['id']));
 
 						// $created = new timestamp($row['created'], 'db');
 						// $created->format('l jS F Y, g:i:sa');

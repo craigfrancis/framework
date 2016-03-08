@@ -6,7 +6,7 @@
 
 			$unit = unit_add('[UNIT_REF]_index', array(
 					'add_url' => url('[UNIT_URL]/edit/'),
-					'edit_url' => url('[UNIT_URL]/edit/'),
+					'edit_url' => url('[UNIT_URL]/edit/', array('dest' => 'referrer')),
 					'delete_url' => url('[UNIT_URL]/delete/'),
 				));
 
