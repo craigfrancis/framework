@@ -18,7 +18,7 @@
 			protected $footer_id = 0;
 			protected $rows = array();
 
-			protected $id_name = '';
+			protected $id_value = '';
 			protected $class_name = '';
 			protected $current_url = NULL;
 			protected $no_records_html = 'No records found';
@@ -85,7 +85,7 @@
 			}
 
 			public function id_set($id) {
-				$this->id_name = $id;
+				$this->id_value = $id;
 			}
 
 			public function caption_set($caption) {
@@ -381,11 +381,11 @@
 
 			}
 
-			public function _row_add($row, $class_name = '', $id_name = '') { // Public for table_row to call
+			public function _row_add($row, $class_name = '', $id_value = '') { // Public for table_row to call
 				$this->rows[] = array(
 						'row' => $row,
 						'class_name' => $class_name,
-						'id_name' => $id_name,
+						'id_value' => $id_value,
 					);
 			}
 
@@ -432,7 +432,7 @@
 						// https://stackoverflow.com/q/24863531
 
 					$output_html = '
-						<table' . ($this->id_name != '' ? ' id="' . html($this->id_name) . '"' : '') . ($this->class_name != '' ? ' class="' . html($this->class_name) . '"' : '') . '>';
+						<table' . ($this->id_value != '' ? ' id="' . html($this->id_value) . '"' : '') . ($this->class_name != '' ? ' class="' . html($this->class_name) . '"' : '') . '>';
 
 					if ($this->caption_text) {
 						$output_html .= '
@@ -630,7 +630,7 @@
 					foreach (array_keys($this->rows) as $row_key) {
 
 						$row_class = trim($this->rows[$row_key]['class_name'] . ($row_count++ % 2 ? ' even' : ' odd'));
-						$row_id = $this->rows[$row_key]['id_name'];
+						$row_id = $this->rows[$row_key]['id_value'];
 
 						$output_html .= '
 								<tr';
@@ -1026,6 +1026,38 @@
 			public function csv_download($file_name, $mode = NULL) {
 
 				//--------------------------------------------------
+				// Debug mode
+
+					if ($mode === NULL && config::get('debug.level') >= 0 && request('debug') !== 'false') {
+
+						if (!$this->id_value) {
+							$this->id_set('table_' . $this->table_id);
+						}
+
+						$output_html  = $this->html();
+						$output_html .= '<p>Debug view / <a href="' . html(url(array('debug' => 'false'))) . '">Download CSV</a></p>';
+						$output_html .= '<style>';
+						$output_html .= '#' . html($this->id_value) . ' { border-collapse: collapse; border-spacing: 0; }';
+						$output_html .= '#' . html($this->id_value) . ' caption { margin: 0 0 0.5em 0; }';
+						$output_html .= '#' . html($this->id_value) . ' thead span.sort { font-size: 0.75em; }';
+						$output_html .= '#' . html($this->id_value) . ' thead th { background-color: #DDD; }';
+						$output_html .= '#' . html($this->id_value) . ' tr:nth-child(even) { background-color: #F7F7F7; }';
+						$output_html .= '#' . html($this->id_value) . ' tr:hover { background-color: #FFD; }';
+						$output_html .= '#' . html($this->id_value) . ' th { border: 1px solid #000; padding: 2px 4px; white-space: nowrap; }';
+						$output_html .= '#' . html($this->id_value) . ' td { border: 1px solid #000; padding: 2px 4px; white-space: nowrap; }';
+						$output_html .= '</style>';
+
+						$response = response_get('html');
+						$response->csp_source_add('style-src',  array('"unsafe-inline"'));
+						$response->template_path_set(FRAMEWORK_ROOT . '/library/template/blank.ctp');
+						$response->view_set_html($output_html);
+						$response->send(); // So we can see the debug output.
+
+						exit();
+
+					}
+
+				//--------------------------------------------------
 				// Set output charset
 
 					if ($this->charset_output !== NULL) {
@@ -1035,7 +1067,7 @@
 				//--------------------------------------------------
 				// Mime type
 
-					if ($mode === 'inline' || ($mode === NULL && SERVER == 'stage')) {
+					if ($mode === 'inline') {
 
 						$mode = 'inline';
 						$mime = 'text/plain';
@@ -1079,7 +1111,7 @@
 
 		public $data;
 
-		public function __construct($table, $class_name = '', $id_name = '') {
+		public function __construct($table, $class_name = '', $id_value = '') {
 
 			//--------------------------------------------------
 			// Defaults
@@ -1089,7 +1121,7 @@
 			//--------------------------------------------------
 			// Add
 
-				$table->_row_add($this, $class_name, $id_name);
+				$table->_row_add($this, $class_name, $id_value);
 
 		}
 
