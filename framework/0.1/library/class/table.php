@@ -1028,7 +1028,7 @@
 				//--------------------------------------------------
 				// Debug mode
 
-					if ($mode === NULL && config::get('debug.level') >= 0 && request('debug') !== 'false') {
+					if ($mode === NULL && config::get('debug.level') > 0 && request('debug') !== 'false') {
 
 						if (!$this->id_value) {
 							$this->id_set('table_' . $this->table_id);
