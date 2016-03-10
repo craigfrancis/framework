@@ -1388,6 +1388,18 @@
 				}
 			}
 
+			public function session_info_get($field) {
+				if ($this->session_info === NULL) {
+					return NULL;
+				} else if ($field == 'id' || $field == 'user_id') {
+					exit_with_error('Use the appropriate $auth->session_' . $field . '_get().');
+				} else if (!isset($this->session_info[$field])) {
+					exit_with_error('The current session does not have a "' . $field . '" set.');
+				} else {
+					return $this->session_info[$field];
+				}
+			}
+
 			protected function session_start($user_id, $identification) { // See the login_* or register_* functions (do not call directly)
 
 				//--------------------------------------------------
