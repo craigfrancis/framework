@@ -20,13 +20,14 @@
 			protected $user_identification = NULL;
 
 			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
-			protected $session_info = NULL;
-			protected $session_pass = NULL;
 			protected $session_length = 1800; // 30 minutes, or set to 0 for indefinite length
 			protected $session_ip_lock = false; // By default this is disabled (AOL users)
 			protected $session_concurrent = false; // Close previous sessions on new session start
 			protected $session_cookies = false; // Use sessions by default
 			protected $session_history = 7776000; // Keep session data for X seconds (defaults to 90 days)
+
+			private $session_info = NULL; // Please use $auth->session_info_get();
+			private $session_pass = NULL;
 
 			protected $identification_type = 'email'; // Or 'username'
 			protected $identification_max_length = NULL;
