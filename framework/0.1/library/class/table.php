@@ -1035,7 +1035,6 @@
 						}
 
 						$output_html  = $this->html();
-						$output_html .= '<p>Debug view / <a href="' . html(url(array('debug' => 'false'))) . '">Download CSV</a></p>';
 						$output_html .= '<style>';
 						$output_html .= '#' . html($this->id_value) . ' { border-collapse: collapse; border-spacing: 0; }';
 						$output_html .= '#' . html($this->id_value) . ' caption { margin: 0 0 0.5em 0; }';
@@ -1046,6 +1045,10 @@
 						$output_html .= '#' . html($this->id_value) . ' th { border: 1px solid #000; padding: 2px 4px; white-space: nowrap; }';
 						$output_html .= '#' . html($this->id_value) . ' td { border: 1px solid #000; padding: 2px 4px; white-space: nowrap; }';
 						$output_html .= '</style>';
+
+						if (config::get('request.method') == 'GET') {
+							$output_html .= '<p>Debug view / <a href="' . html(url(array('debug' => 'false'))) . '">Download CSV</a></p>';
+						}
 
 						$response = response_get('html');
 						$response->csp_source_add('style-src',  array('"unsafe-inline"'));
