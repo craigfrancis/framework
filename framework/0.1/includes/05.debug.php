@@ -553,13 +553,13 @@
 
 			}
 
-			function debug_database($db, $sql, $parameters = NULL) {
+			function debug_database($db, $sql, $parameters, $exit_on_error) {
 
 				//--------------------------------------------------
 				// Skip if disabled debugging
 
 					if (config::get('debug.db') !== true) {
-						return $db->query($sql, $parameters, false);
+						return $db->query($sql, $parameters, false, $exit_on_error);
 					}
 
 				//--------------------------------------------------
@@ -827,12 +827,12 @@
 
 					$time_start = microtime(true);
 
-					$result = $db->query($sql, $parameters, false);
+					$result = $db->query($sql, $parameters, false, $exit_on_error);
 
 					$time_check = round(($time_start - $time_init), 3);
 					$time_query = round((microtime(true) - $time_start), 3);
 
-					if ($select_query) {
+					if ($select_query && $result) {
 						$results_html = '<div class="note_rows">Rows: ' . html($db->num_rows($result)) . '</div>';
 					} else {
 						$results_html = '';

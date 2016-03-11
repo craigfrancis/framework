@@ -96,7 +96,7 @@
 
 			if ($run_debug && function_exists('debug_database')) {
 
-				$this->result = debug_database($this, $sql, $parameters);
+				$this->result = debug_database($this, $sql, $parameters, $exit_on_error);
 
 			} else if (function_exists('mysqli_stmt_get_result')) { // When mysqlnd is installed - There is no way I'm using bind_result(), where the values from the database should stay in their array (ref fetch_assoc), and work around are messy.
 
@@ -641,15 +641,19 @@
 
 		}
 
+		public function error_get() {
+			if ($this->statement && $this->statement->errno > 0) {
+				return $this->statement->errno . ': ' . $this->statement->error;
+			} else if ($this->link) {
+				return mysqli_errno($this->link) . ': ' . mysqli_error($this->link);
+			} else {
+				return NULL;
+			}
+		}
+
 		public function _error($query = 'N/A', $use_query_as_error = false) { // Public so debug script can call
 
-			if ($this->statement && $this->statement->errno > 0) {
-				$extra = $this->statement->errno . ': ' . $this->statement->error;
-			} else if ($this->link) {
-				$extra = mysqli_errno($this->link) . ': ' . mysqli_error($this->link);
-			} else {
-				$extra = '';
-			}
+			$extra = $this->error_get();
 
 			if (function_exists('exit_with_error') && config::get('db.error_thrown') !== true) {
 				config::set('db.error_thrown', true);
