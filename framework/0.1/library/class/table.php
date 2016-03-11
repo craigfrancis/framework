@@ -1042,8 +1042,8 @@
 						$output_html .= '#' . html($this->id_value) . ' thead th { background-color: #DDD; }';
 						$output_html .= '#' . html($this->id_value) . ' tr:nth-child(even) { background-color: #F7F7F7; }';
 						$output_html .= '#' . html($this->id_value) . ' tr:hover { background-color: #FFD; }';
-						$output_html .= '#' . html($this->id_value) . ' th { border: 1px solid #000; padding: 2px 4px; white-space: nowrap; }';
-						$output_html .= '#' . html($this->id_value) . ' td { border: 1px solid #000; padding: 2px 4px; white-space: nowrap; }';
+						$output_html .= '#' . html($this->id_value) . ' th { border: 1px solid #000; padding: 2px 4px; white-space: nowrap; vertical-align: top; }';
+						$output_html .= '#' . html($this->id_value) . ' td { border: 1px solid #000; padding: 2px 4px; white-space: nowrap; vertical-align: top; }';
 						$output_html .= '</style>';
 
 						if (config::get('request.method') == 'GET') {
