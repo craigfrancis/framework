@@ -116,10 +116,10 @@
 			public function business_days_add($business_days) {
 				$business_days = intval($business_days); // Decrement does not work on strings
 				$holidays = timestamp::holidays_get();
-				while ($business_days > 0) {
-					$this->modify('+1 day');
+				while ($business_days != 0) {
+					$this->modify($business_days > 0 ? '+1 day' : '-1 day');
 					if ($this->format('N') < 6 && !in_array($this->format('Y-m-d'), $holidays)) {
-						$business_days--;
+						$business_days += ($business_days > 0 ? -1 : 1);
 					}
 				}
 				return $this;
