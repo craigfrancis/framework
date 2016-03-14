@@ -570,10 +570,10 @@
 				//--------------------------------------------------
 				// Query type
 
-					$select_query = preg_match('/^\W*\(?\W*SELECT.*FROM/is', $sql); // Don't debug queries without a table, e.g. SELECT FOUND_ROWS();
+					$select_query = preg_match('/^\W*SELECT.*FROM/is', $sql); // Check for "non-word" characters, as it may contain brackets, e.g. a UNION... And don't debug queries without a table, e.g. SELECT FOUND_ROWS();
 
 					if ($select_query && strpos($sql, 'SQL_NO_CACHE') === false) {
-						$sql = preg_replace('/^\W*\(?\W*SELECT/', '$0 SQL_NO_CACHE', $sql);
+						$sql = preg_replace('/^\W*SELECT/', '$0 SQL_NO_CACHE', $sql);
 					}
 
 				//--------------------------------------------------
@@ -702,7 +702,7 @@
 
 					$text_html = '';
 
-					if (preg_match('/^\W*\(?\W*(SELECT|UPDATE|DELETE)/i', ltrim($sql))) {
+					if (preg_match('/^\W*(SELECT|UPDATE|DELETE)/i', ltrim($sql))) {
 
 						$tables = array();
 
