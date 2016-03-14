@@ -702,7 +702,7 @@
 
 					$text_html = '';
 
-					if (preg_match('/^(SELECT|UPDATE|DELETE)/i', ltrim($sql))) {
+					if (preg_match('/^\W*\(?\W*(SELECT|UPDATE|DELETE)/i', ltrim($sql))) {
 
 						$tables = array();
 
