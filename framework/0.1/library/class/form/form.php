@@ -64,7 +64,7 @@
 			}
 
 			final private function __clone() {
-				trigger_error('Clone of form object is not allowed.', E_USER_ERROR); // You would need a different form_id (to distinguish which form is submitted), but now fields defined on form 1 won't won't collect their POST values (their form was "not submitted"), and in some cases the "errors" will need to be reset.
+				trigger_error('Clone of form object is not allowed.', E_USER_ERROR); // You would need a different form_id (to distinguish which form is submitted), but now fields defined on form 1 won't won't collect their POST values (form 1 was "not submitted"), and errors generated on form 1 will be shown on both forms (irrespective of which form was submitted).
 			}
 
 			protected function setup() {
