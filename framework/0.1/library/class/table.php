@@ -457,28 +457,36 @@
 							//--------------------------------------------------
 							// HTML content, url, and class
 
+								$heading_html = $heading_info['html'];
+								$heading_url = NULL;
 								$attributes_html = '';
 
-								if ($this->sort_name === NULL || $heading_info['sort_id'] === NULL) {
+								if ($this->sort_name !== NULL && $heading_info['sort_id'] !== NULL) {
+									if ($sort_field == $this->sort_fields[$heading_info['sort_id']]) {
 
-									$heading_html = $heading_info['html'];
+										$heading_url = $this->sort_url_get($heading_info['sort_id'], ($sort_asc ? 'D' : 'A'));
 
-								} else if ($sort_field == $this->sort_fields[$heading_info['sort_id']]) {
+										$heading_html = ($sort_asc ? $this->sort_active_asc_prefix_html : $this->sort_active_desc_prefix_html) . $heading_html . ($sort_asc ? $this->sort_active_asc_suffix_html : $this->sort_active_desc_suffix_html);
 
-									$url = $this->sort_url_get($heading_info['sort_id'], ($sort_asc ? 'D' : 'A'));
+										$heading_info['class_name'] .= ' sorted ' . ($sort_asc ? 'sorted_asc' : 'sorted_desc');
 
-									$heading_html = '<a href="' . html($url) . '">' . ($sort_asc ? $this->sort_active_asc_prefix_html : $this->sort_active_desc_prefix_html) . $heading_info['html'] . ($sort_asc ? $this->sort_active_asc_suffix_html : $this->sort_active_desc_suffix_html) . '</a>';
+										$attributes_html .= ' aria-sort="' . ($sort_asc ? 'ascending' : 'descending') . '"'; // https://www.w3.org/TR/wai-aria/states_and_properties#aria-sort
 
-									$heading_info['class_name'] .= ' sorted ' . ($sort_asc ? 'sorted_asc' : 'sorted_desc');
+									} else {
 
-									$attributes_html .= ' aria-sort="' . ($sort_asc ? 'ascending' : 'descending') . '"'; // https://www.w3.org/TR/wai-aria/states_and_properties#aria-sort
+										$heading_url = $this->sort_url_get($heading_info['sort_id'], 'A');
 
-								} else {
+										$heading_html = ($this->sort_inactive_prefix_html . $heading_html . $this->sort_inactive_suffix_html);
 
-									$url = $this->sort_url_get($heading_info['sort_id'], 'A');
+									}
+								}
 
-									$heading_html = '<a href="' . html($url) . '">' . $this->sort_inactive_prefix_html . $heading_info['html'] . $this->sort_inactive_suffix_html . '</a>';
+								if ($heading_info['html'] == '') {
+									$heading_html = str_replace('&#xA0;', '', $heading_html);
+								}
 
+								if ($heading_url) {
+									$heading_html = '<a href="' . html($heading_url) . '">' . $heading_html . '</a>';
 								}
 
 							//--------------------------------------------------
