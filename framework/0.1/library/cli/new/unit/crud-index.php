@@ -79,10 +79,9 @@
 					// Start
 
 						$where_sql = array();
-						$where_sql[] = 'i.deleted = ?';
+						$where_sql[] = 'i.deleted = "0000-00-00 00:00:00"';
 
 						$parameters = array();
-						$parameters[] = array('s', '0000-00-00 00:00:00');
 
 					//--------------------------------------------------
 					// Keywords
