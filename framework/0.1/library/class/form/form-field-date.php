@@ -78,7 +78,7 @@
 				if ($field == 'M' && !is_array($options)) {
 					$months = array();
 					for ($k = 1; $k <= 12; $k++) {
-						$months[$k] = date($options, mktime(0, 0, 0, $k));
+						$months[$k] = date($options, mktime(0, 0, 0, $k, 1)); // Must specify day, as on the 31st this will push other month 2 is pushed to March
 					}
 					$options = $months;
 				}
