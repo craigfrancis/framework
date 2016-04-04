@@ -143,6 +143,9 @@
 							exit_with_error('Missing parameter "' . $k . '" in SQL', $sql);
 						}
 					}
+					if (isset($parameters[$k])) {
+						exit_with_error('Unused parameter "' . $k . '" in SQL', $sql);
+					}
 				}
 
 				$this->result = mysqli_query($this->link, $sql);
