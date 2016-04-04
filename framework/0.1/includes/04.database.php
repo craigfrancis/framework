@@ -134,9 +134,14 @@
 					$offset = 0;
 					$k = 0;
 					while (($pos = strpos($sql, '?', $offset)) !== false) {
-						$sql_value = $this->escape_string($parameters[$k++][1]);
-						$sql = substr($sql, 0, $pos) . $sql_value . substr($sql, ($pos + 1));
-						$offset = ($pos + strlen($sql_value));
+						if (isset($parameters[$k])) {
+							$sql_value = $this->escape_string($parameters[$k][1]);
+							$sql = substr($sql, 0, $pos) . $sql_value . substr($sql, ($pos + 1));
+							$offset = ($pos + strlen($sql_value));
+							$k++;
+						} else {
+							exit_with_error('Missing parameter "' . $k . '" in SQL', $sql);
+						}
 					}
 				}
 
