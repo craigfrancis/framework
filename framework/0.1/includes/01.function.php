@@ -1237,7 +1237,7 @@
 //--------------------------------------------------
 // Download
 
-	function http_download_file($path, $mime, $name = NULL, $mode = 'attachment') {
+	function http_download_file($path, $mime, $name = NULL, $mode = 'attachment', $x_send_header = NULL) {
 
 		config::set('debug.show', false);
 
@@ -1253,10 +1253,11 @@
 			header('X-Download-Options: noopen');
 		}
 
-		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (https://support.microsoft.com/kb/316431)
-		header('Pragma:');
-
-		readfile($path);
+		if ($x_send_header) {
+			header(($x_send_header === true ? 'X-Sendfile' : $x_send_header) . ': '. head($path));
+		} else {
+			readfile($path);
+		}
 
 	}
 
@@ -1272,9 +1273,6 @@
 		if ($mode !== 'inline') {
 			header('X-Download-Options: noopen');
 		}
-
-		header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (https://support.microsoft.com/kb/316431)
-		header('Pragma:');
 
 		echo $content;
 
