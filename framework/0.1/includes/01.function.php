@@ -1213,6 +1213,10 @@
 			// ini_set('zlib.output_compression', 0);
 			// ini_set('implicit_flush', 1);
 
+			// header('X-Accel-Buffering: no'); -- nginx
+
+				// http://www.jeffgeerling.com/blog/2016/streaming-php-disabling-output-buffering-php-apache-nginx-and-varnish
+
 			ignore_user_abort(true);
 
 		//--------------------------------------------------
