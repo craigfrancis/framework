@@ -508,9 +508,9 @@
 						$content .= '' . "\n";
 						$content .= '--' . $this->boundaries[0] . "\n";
 						$content .= 'Content-Type: text/html; charset="' . head(addslashes(config::get('output.charset'))) . '"' . "\n";
-						$content .= 'Content-Transfer-Encoding: 7bit' . "\n";
+						$content .= 'Content-Transfer-Encoding: base64' . "\n";
 						$content .= '' . "\n";
-						$content .= $content_html . "\n";
+						$content .= chunk_split(base64_encode($content_html), 76) . "\n";
 						$content .= '' . "\n";
 						$content .= '--' . $this->boundaries[0] . '--';
 
