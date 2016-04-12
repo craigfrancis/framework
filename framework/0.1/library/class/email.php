@@ -29,6 +29,7 @@
 			protected $body_html = '';
 			protected $content_text = NULL;
 			protected $content_html = NULL;
+			protected $default_style = NULL;
 			protected $boundaries = array();
 
 		//--------------------------------------------------
@@ -46,6 +47,7 @@
 					$this->subject_prefix = config::get('email.subject_prefix');
 					$this->from_email = config::get('email.from_email');
 					$this->from_name = config::get('email.from_name');
+					$this->default_style = config::get('email.default_style');
 
 				//--------------------------------------------------
 				// Default headers for debug
@@ -278,6 +280,10 @@
 
 					$this->body_html .= '</table>' . "\n";
 
+			}
+
+			public function default_style_set($default_style) {
+				$this->default_style = $default_style;
 			}
 
 		//--------------------------------------------------
@@ -718,7 +724,22 @@
 
 					}
 
-					$content_html = str_replace('[BODY]', $this->body_html, $content_html);
+					$body_html = $this->body_html;
+
+					if ($this->default_style) {
+
+						preg_match_all('/(<table[^>]*)>/', $body_html, $matches, PREG_SET_ORDER); // Outlook will default to "Times New Roman" for every nested table.
+						foreach ($matches as $cMatch) {
+							if (stripos($cMatch[0], 'style') === false) {
+								$body_html = str_replace($cMatch[0], $cMatch[1] . ' style="' . html($this->default_style) . '">', $body_html);
+							}
+						}
+
+						$body_html = "\n" . '<div style="' . html($this->default_style) . '">' . "\n" . $body_html . "\n" . '</div>';
+
+					}
+
+					$content_html = str_replace('[BODY]', $body_html, $content_html);
 
 				}
 
