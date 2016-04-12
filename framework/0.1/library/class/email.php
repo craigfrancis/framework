@@ -639,109 +639,159 @@
 
 			public function text() {
 
-				if ($this->content_text !== NULL) {
-					return $this->content_text;
-				}
+				//--------------------------------------------------
+				// Already done
 
-				if ($this->template_path !== NULL) {
-
-					$template_file = $this->template_path . '/index.txt';
-					if (is_file($template_file)) {
-						$content_text = file_get_contents($template_file);
-					} else {
-						exit_with_error('Cannot find template file: ' . $template_file);
+					if ($this->content_text !== NULL) {
+						return $this->content_text;
 					}
 
-				} else {
+				//--------------------------------------------------
+				// Main content
 
-					$content_text = '[BODY]';
+					if ($this->template_path !== NULL) {
 
-				}
+						$template_file = $this->template_path . '/index.txt';
+						if (is_file($template_file)) {
+							$content_text = file_get_contents($template_file);
+						} else {
+							exit_with_error('Cannot find template file: ' . $template_file);
+						}
 
-				$content_text = str_replace('[SUBJECT]', $this->subject_text, $content_text);
-				$content_text = str_replace('[BODY]', $this->body_text, $content_text);
-				$content_text = str_replace('[URL]', $this->template_url, $content_text);
+					} else {
 
-				foreach ($this->template_values_text as $name => $value) {
-					$content_text = str_replace('[' . $name . ']', $value, $content_text);
-				}
+						$content_text = '[BODY]';
 
-				if ($this->template_edit_function !== NULL) {
-					$content_text = call_user_func($this->template_edit_function, $content_text, 'text', $this);
-				}
+					}
 
-				return $content_text;
+				//--------------------------------------------------
+				// Variables
+
+					$content_text = str_replace('[SUBJECT]', $this->subject_text, $content_text);
+					$content_text = str_replace('[BODY]', $this->body_text, $content_text);
+					$content_text = str_replace('[URL]', $this->template_url, $content_text);
+
+					foreach ($this->template_values_text as $name => $value) {
+						$content_text = str_replace('[' . $name . ']', $value, $content_text);
+					}
+
+				//--------------------------------------------------
+				// Ability to tweak output
+
+					if ($this->template_edit_function !== NULL) {
+						$content_text = call_user_func($this->template_edit_function, $content_text, 'text', $this);
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $content_text;
 
 			}
 
 			public function html() {
 
-				if ($this->content_html !== NULL) {
-					return $this->content_html;
-				}
+				//--------------------------------------------------
+				// Already done
 
-				if ($this->template_path === NULL && $this->body_html == '') {
-					return '';
-				}
+					if ($this->content_html !== NULL) {
+						return $this->content_html;
+					}
 
-				if ($this->template_path !== NULL) {
+					if ($this->template_path === NULL && $this->body_html == '') {
+						return '';
+					}
 
-					$template_file = $this->template_path . '/index.html';
-					if (is_file($template_file)) {
-						$content_html = file_get_contents($template_file);
+				//--------------------------------------------------
+				// Main content
+
+					if ($this->template_path !== NULL) {
+
+						$template_file = $this->template_path . '/index.html';
+						if (is_file($template_file)) {
+							$content_html = file_get_contents($template_file);
+						} else {
+							exit_with_error('Cannot find template file: ' . $template_file);
+						}
+
 					} else {
-						exit_with_error('Cannot find template file: ' . $template_file);
-					}
 
-				} else {
-
-					$content_html = '[BODY]';
-
-				}
-
-				$subject = $this->subject_text;
-				if ($subject == '') {
-					$subject = $this->subject_default;
-				}
-
-				if (strtoupper(substr(trim($this->body_html), 0, 9)) == '<!DOCTYPE') {
-
-					$content_html = $this->body_html;
-
-				} else {
-
-					if (strtoupper(substr(trim($content_html), 0, 9)) != '<!DOCTYPE') {
-
-						$template_html  = '<!DOCTYPE html>' . "\n";
-						$template_html .= '<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">' . "\n";
-						$template_html .= '<head>' . "\n";
-						$template_html .= '	<meta charset="' . html(config::get('output.charset')) . '" />' . "\n";
-
-						if ($subject != '') {
-							$template_html .= '	<title>[SUBJECT]</title>' . "\n";
-						}
-
-						$template_html .= '</head>' . "\n";
-						$template_html .= '<body>' . "\n";
-
-						if ($this->default_style) {
-							$template_html .= '<div style="' . html($this->default_style) . '">' . "\n";
-						}
-
-						$template_html .= "\n" . $content_html . "\n\n";
-
-						if ($this->default_style) {
-							$template_html .= '</div>' . "\n";
-						}
-
-						$template_html .= '</body>' . "\n";
-						$template_html .= '</html>' . "\n";
-
-						$content_html = $template_html;
+						$content_html = '[BODY]';
 
 					}
 
-					$content_html = str_replace('[BODY]', $this->body_html, $content_html);
+				//--------------------------------------------------
+				// Subject
+
+					$subject = $this->subject_text;
+					if ($subject == '') {
+						$subject = $this->subject_default;
+					}
+
+				//--------------------------------------------------
+				// Ensure it is a full HTML document.
+
+					if (strtoupper(substr(trim($this->body_html), 0, 9)) == '<!DOCTYPE') {
+
+						$content_html = $this->body_html;
+
+					} else {
+
+						if (strtoupper(substr(trim($content_html), 0, 9)) != '<!DOCTYPE') {
+
+							$template_html  = '<!DOCTYPE html>' . "\n";
+							$template_html .= '<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">' . "\n";
+							$template_html .= '<head>' . "\n";
+							$template_html .= '	<meta charset="' . html(config::get('output.charset')) . '" />' . "\n";
+
+							if ($subject != '') {
+								$template_html .= '	<title>[SUBJECT]</title>' . "\n";
+							}
+
+							$template_html .= '</head>' . "\n";
+							$template_html .= '<body>' . "\n";
+
+							if ($this->default_style) {
+								$template_html .= '<div style="' . html($this->default_style) . '">' . "\n";
+							}
+
+							$template_html .= "\n" . $content_html . "\n\n";
+
+							if ($this->default_style) {
+								$template_html .= '</div>' . "\n";
+							}
+
+							$template_html .= '</body>' . "\n";
+							$template_html .= '</html>' . "\n";
+
+							$content_html = $template_html;
+
+						}
+
+						$content_html = str_replace('[BODY]', $this->body_html, $content_html);
+
+					}
+
+				//--------------------------------------------------
+				// Variables
+
+					$content_html = str_replace('[SUBJECT]', html($subject), $content_html);
+					$content_html = str_replace('[URL]', html($this->template_url), $content_html);
+
+					foreach ($this->template_values_html as $name => $html) {
+						$content_html = str_replace('[' . $name . ']', $html, $content_html);
+					}
+
+					if ($this->subject_text == '') {
+						if (preg_match('/<title>([^<]+)<\/title>/i', $content_html, $matches)) {
+							$this->subject_text = $matches[1];
+						}
+					}
+
+				//--------------------------------------------------
+				// Bug fixes
+
+					$content_html = str_replace('&apos;', '&#039;', $content_html); // Outlook (2013) and Android (4.0.4) does not understand &apos;, so shows it raw.
 
 					if ($this->default_style) { // Outlook defaults to "Times New Roman" for every nested table, and OSX Mail does so when forwarding the email.
 
@@ -759,28 +809,17 @@
 
 					}
 
-				}
+				//--------------------------------------------------
+				// Ability to tweak output
 
-				$content_html = str_replace('[SUBJECT]', html($subject), $content_html);
-				$content_html = str_replace('[URL]', html($this->template_url), $content_html);
-
-				foreach ($this->template_values_html as $name => $html) {
-					$content_html = str_replace('[' . $name . ']', $html, $content_html);
-				}
-
-				if ($this->subject_text == '') {
-					if (preg_match('/<title>([^<]+)<\/title>/i', $content_html, $matches)) {
-						$this->subject_text = $matches[1];
+					if ($this->template_edit_function !== NULL) {
+						$content_html = call_user_func($this->template_edit_function, $content_html, 'html', $this);
 					}
-				}
 
-				$content_html = str_replace('&apos;', '&#039;', $content_html); // Outlook (2013) and Android (4.0.4) does not understand &apos;, so shows it raw.
+				//--------------------------------------------------
+				// Return
 
-				if ($this->template_edit_function !== NULL) {
-					$content_html = call_user_func($this->template_edit_function, $content_html, 'html', $this);
-				}
-
-				return $content_html;
+					return $content_html;
 
 			}
 
