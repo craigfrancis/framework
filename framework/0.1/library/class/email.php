@@ -25,6 +25,7 @@
 			protected $template_url = NULL;
 			protected $template_values_text = array();
 			protected $template_values_html = array();
+			protected $template_edit_function = NULL;
 			protected $body_text = '';
 			protected $body_html = '';
 			protected $content_text = NULL;
@@ -131,6 +132,10 @@
 
 			public function template_value_set_html($name, $value) {
 				$this->template_values_html[$name] = $value;
+			}
+
+			public function template_edit_function_set($function) {
+				$this->template_edit_function = $function;
 			}
 
 			public function from_set($email, $name = NULL) {
@@ -661,6 +666,10 @@
 					$content_text = str_replace('[' . $name . ']', $value, $content_text);
 				}
 
+				if ($this->template_edit_function !== NULL) {
+					$content_text = call_user_func($this->template_edit_function, $content_text, 'text', $this);
+				}
+
 				return $content_text;
 
 			}
@@ -766,6 +775,10 @@
 				}
 
 				$content_html = str_replace('&apos;', '&#039;', $content_html); // Outlook (2013) and Android (4.0.4) does not understand &apos;, so shows it raw.
+
+				if ($this->template_edit_function !== NULL) {
+					$content_html = call_user_func($this->template_edit_function, $content_html, 'html', $this);
+				}
 
 				return $content_html;
 
