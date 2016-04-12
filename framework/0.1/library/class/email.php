@@ -703,43 +703,52 @@
 
 					if (strtoupper(substr(trim($content_html), 0, 9)) != '<!DOCTYPE') {
 
-						$template_html = '<!DOCTYPE html>
-								<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
-								<head>
-									<meta charset="' . html(config::get('output.charset')) . '" />';
+						$template_html  = '<!DOCTYPE html>' . "\n";
+						$template_html .= '<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">' . "\n";
+						$template_html .= '<head>' . "\n";
+						$template_html .= '	<meta charset="' . html(config::get('output.charset')) . '" />' . "\n";
 
 						if ($subject != '') {
-							$template_html .= '
-									<title>[SUBJECT]</title>';
+							$template_html .= '	<title>[SUBJECT]</title>' . "\n";
 						}
 
-						$template_html .= '
-								</head>
-								<body>
-									' . $content_html . '
-								</body>
-								</html>';
+						$template_html .= '</head>' . "\n";
+						$template_html .= '<body>' . "\n";
+
+						if ($this->default_style) {
+							$template_html .= '<div style="' . html($this->default_style) . '">' . "\n";
+						}
+
+						$template_html .= "\n" . $content_html . "\n\n";
+
+						if ($this->default_style) {
+							$template_html .= '</div>' . "\n";
+						}
+
+						$template_html .= '</body>' . "\n";
+						$template_html .= '</html>' . "\n";
 
 						$content_html = $template_html;
 
 					}
 
-					$body_html = $this->body_html;
+					$content_html = str_replace('[BODY]', $this->body_html, $content_html);
 
-					if ($this->default_style) {
+					if ($this->default_style) { // Outlook defaults to "Times New Roman" for every nested table, and OSX Mail does so when forwarding the email.
 
-						preg_match_all('/(<table[^>]*)>/', $body_html, $matches, PREG_SET_ORDER); // Outlook will default to "Times New Roman" for every nested table.
+						preg_match_all('/(<table[^>]*)>/', $content_html, $matches, PREG_SET_ORDER); // Never parse HTML with regex, unless you are adding an ugly hack for Outlook.
+
 						foreach ($matches as $cMatch) {
-							if (stripos($cMatch[0], 'style') === false) {
-								$body_html = str_replace($cMatch[0], $cMatch[1] . ' style="' . html($this->default_style) . '">', $body_html);
+							if (($pos = stripos($cMatch[0], 'style')) !== false) { // Attempt to add to the beginning of a correctly quoted "style" attribute, otherwise skip this <table>.
+								$pos += 5;
+								$table_html = substr($cMatch[1], 0, $pos) . preg_replace('/^\s*=\s*("|\')/', '$0' . html($this->default_style) . '; ', substr($cMatch[1], $pos)) . '>';
+							} else {
+								$table_html = $cMatch[1] . ' style="' . html($this->default_style) . '">';
 							}
+							$content_html = str_replace($cMatch[0], $table_html, $content_html);
 						}
 
-						$body_html = "\n" . '<div style="' . html($this->default_style) . '">' . "\n" . $body_html . "\n" . '</div>';
-
 					}
-
-					$content_html = str_replace('[BODY]', $body_html, $content_html);
 
 				}
 
