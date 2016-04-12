@@ -765,6 +765,8 @@
 					}
 				}
 
+				$content_html = str_replace('&apos;', '&#039;', $content_html); // Outlook (2013) and Android (4.0.4) does not understand &apos;, so shows it raw.
+
 				return $content_html;
 
 			}
