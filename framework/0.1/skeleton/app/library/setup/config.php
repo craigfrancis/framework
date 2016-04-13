@@ -126,12 +126,12 @@
 	$config['output.csp_enabled'] = true;
 	$config['output.csp_enforced'] = true;
 	$config['output.csp_directives'] = array(
-			'default-src'  => array("'none'"),
-			'base-uri'     => array("'self'"),
-			'form-action'  => array("'self'"),
-			'style-src'    => array("'self'"),
-			'img-src'      => array("'self'", 'https://www.google-analytics.com'),
-			'script-src'   => array("'self'", 'https://www.google-analytics.com'),
+			'default-src' => array("'none'"),
+			'base-uri'    => array("'self'"),
+			'form-action' => array("'self'"),
+			'style-src'   => array("'self'"),
+			'img-src'     => array("'self'", 'https://www.google-analytics.com'),
+			'script-src'  => array("'self'", 'https://www.google-analytics.com'),
 		);
 
 //--------------------------------------------------
