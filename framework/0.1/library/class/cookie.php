@@ -78,7 +78,7 @@
 			//--------------------------------------------------
 			// Set
 
-				$native = (version_compare(PHP_VERSION, '5.2.0', '>='));
+				$native = (version_compare(PHP_VERSION, '5.2.0', '>=')); // The HttpOnly parameter was added in 5.2.0
 
 				if ($config['same_site'] !== NULL) {
 					$native = false;
