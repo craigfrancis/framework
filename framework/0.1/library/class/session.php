@@ -83,15 +83,6 @@
 			session_write_close(); // Bug fix to write session file and gain lock, so other requests wait for lock (https://bugs.php.net/bug.php?id=61470)
 			session_start(); // Will send cookie more than once (https://bugs.php.net/bug.php?id=67736)
 
-			// $result = session_regenerate_id(true);
-			// if (!$result) {
-			// 	$debug = array(config::get('session.id'), debug_dump($_SESSION), debug_dump($_COOKIE));
-			// 	if (headers_sent($file, $line)) {
-			// 		$debug[] = 'Headers sent: ' . $file . ' (line ' . $line . ')';
-			// 	}
-			// 	exit_with_error('Cannot regenerate session id', implode("\n\n", $debug));
-			// }
-
 			config::set('session.id', session_id());
 
 		}
@@ -130,7 +121,7 @@
 
 		public static function start() {
 
-			if (config::get('session.id') === NULL) { // Cannot call session_id(), as this is not reset on session_write_close().
+			if (config::get('session.id') === NULL) { // Cannot call session_id() to see if the session exists, as it's not reset on session_write_close().
 
 				//--------------------------------------------------
 				// Config
