@@ -9,7 +9,12 @@
 		public static $salt = ROOT;
 
 		public static function init() {
-			self::set('c', '1'); // cookie_check
+
+			if (config::get('cookie.check', false) !== true) {
+				config::set('cookie.check', true);
+				self::set('c', '1'); // cookie_check
+			}
+
 		}
 
 		public static function set($variable, $value, $config = array()) {
@@ -56,9 +61,7 @@
 
 				} else {
 
-					if (!isset($_COOKIE[config::get('cookie.prefix', '') . 'c'])) { // cookie_check
-						self::init();
-					}
+					self::init();
 
 					if ($value === NULL) {
 						unset($_COOKIE[$variable_full]);
