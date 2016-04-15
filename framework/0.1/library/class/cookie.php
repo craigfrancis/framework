@@ -29,6 +29,7 @@
 						'domain' => NULL,
 						'secure' => https_only(),
 						'http_only' => true,
+						'same_site' => NULL,
 					), $config);
 
 				if (is_object($config['expires']) && is_a($config['expires'], 'timestamp')) {
@@ -77,10 +78,56 @@
 			//--------------------------------------------------
 			// Set
 
-				if (version_compare(PHP_VERSION, '5.2.0', '>=')) {
+				$native = (version_compare(PHP_VERSION, '5.2.0', '>='));
+
+				if ($config['same_site'] !== NULL) {
+					$native = false;
+				}
+
+				if ($native) {
+
 					return setcookie($variable_full, $value, $config['expires'], $config['path'], $config['domain'], $config['secure'], $config['http_only']);
+
 				} else {
-					return setcookie($variable_full, $value, $config['expires'], $config['path'], $config['domain'], $config['secure']);
+
+						// https://github.com/zendframework/zend-http/blob/master/src/Header/SetCookie.php#L230
+						// https://github.com/php/php-src/blob/master/ext/standard/head.c#L80
+
+						// cookie::set('session', 'aaa');
+						// cookie::set('zero', 'bbb', 0);
+						// cookie::set('test', 'valué', '+30 days');
+						// cookie::set('30séconds', '30 second value!', (time() + 30));
+						// cookie::set('empty', '');
+						// cookie::delete('delete-me');
+
+					$delete = ($value == '');
+					if ($config['expires'] && ($config['expires'] - time()) < 0) {
+						$delete = true;
+					}
+
+					if ($delete) {
+
+						$header = urlencode($variable_full) . '=deleted'; // MSIE doesn't delete a cookie when you set it to a null value.
+						$header .= '; Expires=Thu, 01-Jan-1970 00:00:01 GMT';
+						$header .= '; Max-Age=0';
+
+					} else {
+
+						$header = urlencode($variable_full) . '=' . urlencode($value);
+
+						if ($config['expires'])   $header .= '; Expires=' . gmdate('D, d-M-Y H:i:s', $config['expires']) . ' GMT';
+						if ($config['expires'])   $header .= '; Max-Age=' . ($config['expires'] - time());
+
+					}
+
+					if ($config['domain'])    $header .= '; Domain=' . $config['domain'];
+					if ($config['path'])      $header .= '; Path=' . $config['path'];
+					if ($config['secure'])    $header .= '; Secure';
+					if ($config['http_only']) $header .= '; HttpOnly';
+					if ($config['same_site']) $header .= '; SameSite=' . $config['same_site'];
+
+					header('Set-Cookie: ' . $header);
+
 				}
 
 		}

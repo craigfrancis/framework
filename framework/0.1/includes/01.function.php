@@ -62,28 +62,26 @@
 		$csrf_token = config::get('cookie.csrf_value');
 
 		if (!$csrf_token) {
-
-			$csrf_token = trim(cookie::get('f')); // Don't use sessions, as they typically expire after 24 minutes.
-
-			if ($csrf_token == '') {
-				$csrf_token = random_key(15);
-			}
-
-			cookie::set('f', $csrf_token); // Short cookie name, keep re-sending.
-
-			config::set('cookie.csrf_value', $csrf_token); // Avoid repeated cookie headers.
-
+			return csrf_token_change(cookie::get('f')); // Keep re-sending the cookie (or make one up if not set)
+		} else {
+			return $csrf_token;
 		}
-
-		return $csrf_token;
 
 	}
 
-	function csrf_token_change() {
+	function csrf_token_change($csrf_token = '') {
 
-		$csrf_token = random_key(15);
+		$csrf_token = trim($csrf_token);
 
-		cookie::set('f', $csrf_token);
+		if ($csrf_token == '') {
+			$csrf_token = random_key(15);
+		}
+
+		cookie::set('f', $csrf_token, array('same_site' => 'Strict')); // Short cookie name (header size), and not using sessions, as they typically expire after 24 minutes.
+
+		config::set('cookie.csrf_value', $csrf_token); // Avoid repeated cookie headers.
+
+		return $csrf_token;
 
 	}
 
