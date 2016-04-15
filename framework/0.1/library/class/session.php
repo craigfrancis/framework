@@ -6,7 +6,7 @@
 
 	config::set('session.id', NULL);
 	config::set_default('session.key', sha1(ENCRYPTION_KEY . '-' . SERVER));
-	config::set_default('session.name', config::get('cookie.prefix') . 's');
+	config::set_default('session.name', 's');
 
 	class session_base extends check {
 
@@ -79,11 +79,12 @@
 			}
 
 			session_regenerate_id(true); // Also delete old session file
-
 			session_write_close(); // Bug fix to write session file and gain lock, so other requests wait for lock (https://bugs.php.net/bug.php?id=61470)
-			session_start(); // Will send cookie more than once (https://bugs.php.net/bug.php?id=67736)
+			session_start();
 
 			config::set('session.id', session_id());
+
+			session::send_cookie();
 
 		}
 
@@ -93,10 +94,6 @@
 
 		public static function destroy() {
 
-			$params = session_get_cookie_params();
-
-			setcookie(config::get('session.name'), '', (time() - 42000), $params['path'], $params['domain'], https_only(), true);
-
 			if (config::get('session.id') !== NULL) {
 
 				session_destroy();
@@ -104,6 +101,8 @@
 				config::set('session.id', NULL);
 
 			}
+
+			session::send_cookie();
 
 		}
 
@@ -126,16 +125,24 @@
 				//--------------------------------------------------
 				// Config
 
-					ini_set('session.use_cookies', true);
+					ini_set('session.use_cookies', false); // We set our own cookies, as PHP sends cookies more than once (due to our regenerate feature, and due to a bug https://bugs.php.net/bug.php?id=67736)
 					ini_set('session.use_only_cookies', true); // Prevent session fixation though the URL
 					ini_set('session.cookie_secure', https_only());
 					ini_set('session.cookie_httponly', true); // Not available to JS
 					ini_set('session.use_strict_mode', true); // Since PHP 5.5.2, but we also use the 'key' below to also do this.
 
-					session_name(config::get('session.name'));
+					$session_name = config::get('session.name');
+					$session_id = cookie::get($session_name);
+
+					session_name($session_name);
+					if ($session_id) {
+						session_id($session_id);
+					}
 
 				//--------------------------------------------------
 				// Start
+
+					$send_cookie = true;
 
 					$start = microtime(true);
 
@@ -189,6 +196,8 @@
 
 							session::set('session.key', $config_key);
 
+							$send_cookie = false;
+
 						} else {
 
 							session::destroy();
@@ -224,14 +233,47 @@
 							session::set('session.regenerate_age', time());
 
 							if ($session_age !== NULL) {
+
 								session::regenerate();
+
+								$send_cookie = false;
+
 							}
 
 						}
 
 					}
 
+				//--------------------------------------------------
+				// Send cookie
+
+					if ($send_cookie && $session_id != config::get('session.id')) {
+
+							// Only send if it has changed (e.g. initial set).
+							// Also protect against sending while using 'loading'
+							// helper, which opens/closes the session to update
+							// it's status (by which time headers have been sent).
+
+						session::send_cookie();
+
+					}
+
 			}
+
+		}
+
+		private static function send_cookie() {
+
+			$params = session_get_cookie_params();
+
+			cookie::set(config::get('session.name'), config::get('session.id'), array(
+					'expires'   => 0, // Session cookie
+					'path'      => $params['path'],
+					'domain'    => $params['domain'],
+					'secure'    => $params['secure'],
+					'http_only' => $params['httponly'],
+					'same_site' => 'Lax',
+				));
 
 		}
 
