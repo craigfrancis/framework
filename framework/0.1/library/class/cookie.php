@@ -29,10 +29,10 @@
 				}
 
 				$config = array_merge(array(
-						'expires' => 0, // Session cookie
-						'path' => '/',
-						'domain' => NULL,
-						'secure' => https_only(),
+						'expires'   => 0, // Session cookie
+						'path'      => '/',
+						'domain'    => NULL,
+						'secure'    => https_only(),
 						'http_only' => true,
 						'same_site' => NULL,
 					), $config);
@@ -129,7 +129,7 @@
 					if ($config['http_only']) $header .= '; HttpOnly';
 					if ($config['same_site']) $header .= '; SameSite=' . $config['same_site'];
 
-					header('Set-Cookie: ' . $header);
+					header('Set-Cookie: ' . $header, false);
 
 				}
 
