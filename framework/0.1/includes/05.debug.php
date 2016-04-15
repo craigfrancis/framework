@@ -31,6 +31,7 @@
 				$email_values = array_merge($email_values, array('Message' => $message));
 
 				$email = new email();
+				$email->default_style_set(NULL);
 				$email->subject_set('System ' . ucfirst($type) . ': ' . config::get('output.domain'));
 				$email->request_table_add($email_values);
 

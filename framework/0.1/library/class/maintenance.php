@@ -544,6 +544,7 @@
 							}
 
 							$email = new email();
+							$email->default_style_set(NULL);
 							$email->subject_set($email_title);
 							$email->body_html_add($job_output_html); // Assume HTML
 							$email->send($email_addresses);
