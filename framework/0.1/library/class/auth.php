@@ -36,7 +36,8 @@
 			protected $email_max_length = 100;
 			protected $password_min_length = 6; // A balance between security and usability.
 			protected $password_max_length = 250; // CRYPT_BLOWFISH truncates to 72 characters anyway.
-			protected $login_last_cookie = 'u'; // Or set to NULL to not remember.
+			protected $last_cookie_name = 'u'; // Or set to NULL to not remember.
+			protected $last_cookie_path = '/';
 			protected $quick_hash = 'sha256'; // Using CRYPT_BLOWFISH for everything (e.g. session pass) would make page loading too slow (good for login though)
 
 			protected $text = array();
@@ -319,16 +320,20 @@
 			}
 
 			public function login_last_get() {
-				if ($this->login_last_cookie !== NULL) {
-					return cookie::get($this->login_last_cookie);
+				if ($this->last_cookie_name !== NULL) {
+					return cookie::get($this->last_cookie_name);
 				} else {
 					return NULL;
 				}
 			}
 
 			protected function login_last_set($identification) {
-				if ($this->login_last_cookie !== NULL) {
-					cookie::set($this->login_last_cookie, $identification, '+30 days');
+				if ($this->last_cookie_name !== NULL) {
+					cookie::set($this->last_cookie_name, $identification, array(
+							'expires'   => '+30 days',
+							'path'      => $this->last_cookie_path,
+							'same_site' => 'Lax',
+						));
 				}
 			}
 
