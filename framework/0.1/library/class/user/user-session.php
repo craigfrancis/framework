@@ -137,8 +137,8 @@
 
 					$cookie_age = (time() + $this->length);
 
-					cookie::set($session_name . '_id', $session_id, $cookie_age);
-					cookie::set($session_name . '_pass', $session_pass, $cookie_age);
+					cookie::set($session_name . '_id',   $session_id,   array('expires' => $cookie_age, 'same_site' => 'Lax'));
+					cookie::set($session_name . '_pass', $session_pass, array('expires' => $cookie_age, 'same_site' => 'Lax'));
 
 				} else {
 
@@ -281,8 +281,8 @@
 
 									$cookie_age = (time() + $this->length); // Update cookie expiry date/time on client
 
-									cookie::set($session_name . '_id', $session_id, $cookie_age);
-									cookie::set($session_name . '_pass', $session_pass, $cookie_age);
+									cookie::set($session_name . '_id',   $session_id,   $cookie_age, array('expires' => $cookie_age, 'same_site' => 'Lax'));
+									cookie::set($session_name . '_pass', $session_pass, $cookie_age, array('expires' => $cookie_age, 'same_site' => 'Lax'));
 
 								}
 

@@ -1334,8 +1334,8 @@
 
 											$cookie_age = new timestamp($this->session_length . ' seconds');
 
-											cookie::set($this->session_name . '_id', $session_id, $cookie_age);
-											cookie::set($this->session_name . '_pass', $session_pass, $cookie_age);
+											cookie::set($this->session_name . '_id',   $session_id,   array('expires' => $cookie_age, 'same_site' => 'Lax'));
+											cookie::set($this->session_name . '_pass', $session_pass, array('expires' => $cookie_age, 'same_site' => 'Lax'));
 
 										}
 
@@ -1459,8 +1459,8 @@
 
 						$cookie_age = new timestamp($this->session_length . ' seconds');
 
-						cookie::set($this->session_name . '_id', $session_id, $cookie_age);
-						cookie::set($this->session_name . '_pass', $session_pass, $cookie_age);
+						cookie::set($this->session_name . '_id',   $session_id,   array('expires' => $cookie_age, 'same_site' => 'Lax'));
+						cookie::set($this->session_name . '_pass', $session_pass, array('expires' => $cookie_age, 'same_site' => 'Lax'));
 
 					} else {
 
