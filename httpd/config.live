@@ -56,7 +56,7 @@
 		ServerAlias primeframework.com
 		ServerAlias *.primeframework.com
 
-		Redirect 301 / https://www.phpprime.com/
+		Redirect 301 / http://www.phpprime.com/
 
 	</VirtualHost>
 
