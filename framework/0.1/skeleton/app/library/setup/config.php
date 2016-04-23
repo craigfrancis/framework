@@ -98,6 +98,8 @@
 			$config['output.protocols'] = array('http', 'https');
 			$config['output.domain'] = 'www.example.com';
 
+			// $config['cookie.prefix'] = '__Host-'; // A `Secure` cookie, with no `Domain` attribute
+
 	}
 
 //--------------------------------------------------
