@@ -12,7 +12,7 @@
 
 			if (config::get('cookie.check', false) !== true) {
 				config::set('cookie.check', true);
-				self::set('c', '1'); // cookie_check
+				self::set('c', '1', array('same_site' => 'Lax')); // cookie_check
 			}
 
 		}
