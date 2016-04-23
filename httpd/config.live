@@ -51,6 +51,8 @@
 
 		ServerName phpprime.com
 		ServerAlias *.phpprime.com
+		ServerAlias phpprime.co.uk
+		ServerAlias *.phpprime.co.uk
 		ServerAlias primeframework.com
 		ServerAlias *.primeframework.com
 
