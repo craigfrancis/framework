@@ -322,7 +322,7 @@
 		//--------------------------------------------------
 		// Send
 
-			private function _template_get_html() {
+			private function _template_get_html($refresh_url = NULL, $refresh_header = NULL) {
 
 				//--------------------------------------------------
 				// Template path
@@ -337,27 +337,99 @@
 
 					} else {
 
-						return NULL;
+						$template_path = template_path('loading');
+
+						if (!is_file($template_path)) {
+							$template_path = NULL;
+						}
 
 					}
 
 				//--------------------------------------------------
-				// Path error
+				// Contents
 
-					if (!is_file($template_path)) {
+					$contents_html = NULL;
 
-						$this->_cleanup();
+					if ($template_path) {
 
-						exit_with_error('Could not return template file.', $template_path);
+						if (!is_file($template_path)) {
+
+							$this->_cleanup();
+
+							exit_with_error('Could not return template file.', $template_path);
+
+						} else {
+
+							ob_start();
+							script_run($template_path);
+							$contents_html = ob_get_clean();
+
+						}
+
+					} else {
+
+						$contents_html  = '<h1>Loading</h1>' . "\n";
+						$contents_html .= '<p>[MESSAGE]... [[TIME_START]]</p>';
 
 					}
 
 				//--------------------------------------------------
-				// Process
+				// Refresh URL
 
-					ob_start();
-					script_run($template_path);
-					return ob_get_clean();
+					if ($refresh_url === NULL) {
+						$refresh_url = url();
+					}
+
+					$contents_html = str_replace('[URL]', html($refresh_url), $contents_html);
+
+				//--------------------------------------------------
+				// Template
+
+					if (stripos($contents_html, 'http-equiv="refresh"') === false) { // Template is missing the refresh Meta Tag
+
+						if ($refresh_header) {
+							$refresh_html = "\n\t" . '<meta http-equiv="refresh" content="' . html($refresh_header) . '" />' . "\n\n";
+						} else {
+							$refresh_html = '';
+						}
+
+						$pos = stripos($contents_html, '</head>');
+						if ($pos !== false) {
+
+					 		$contents_html = substr($contents_html, 0, $pos) . $refresh_html . substr($contents_html, $pos);
+
+						} else {
+
+							$css_file = '/css/global/loading.css';
+							if (is_file(ASSET_ROOT . $css_file)) {
+								$css_html = '<link rel="stylesheet" type="text/css" href="' . html(timestamp_url(ASSET_URL . '/css/global/loading.css')) . '" media="all" />';
+							} else {
+								$css_html = '';
+							}
+
+							$contents_html = '<!DOCTYPE html>
+								<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
+								<head>
+									<meta charset="' . html(config::get('output.charset')) . '" />
+									<title>Loading</title>
+									' . $refresh_html . '
+									' . $css_html . '
+								</head>
+								<body>
+									<main id="page_content">
+										' . $contents_html . '
+									</main>
+								</body>
+								</html>';
+
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $contents_html;
 
 			}
 
@@ -366,12 +438,10 @@
 				//--------------------------------------------------
 				// Loading contents
 
-					$contents_html = $this->_template_get_html();
+					$refresh_url = $this->config['refresh_url'];
+					$refresh_header = $this->config['refresh_frequency'] . '; url=' . $refresh_url;
 
-					if ($contents_html === NULL) {
-						$contents_html  = '<h1>Loading</h1>' . "\n";
-						$contents_html .= '<p>[MESSAGE]... [[TIME_START]]</p>';
-					}
+					$contents_html = $this->_template_get_html($refresh_url, $refresh_header);
 
 				//--------------------------------------------------
 				// Variables
@@ -409,57 +479,6 @@
 
 					$contents_html = str_replace('[TIME_START]', html($time_diff_start), $contents_html);
 					$contents_html = str_replace('[TIME_UPDATE]', html($time_diff_update), $contents_html);
-
-				//--------------------------------------------------
-				// Refresh URL
-
-					$refresh_url = $this->config['refresh_url'];
-					if ($refresh_url === NULL) {
-						$refresh_url = url();
-					}
-
-					$refresh_header = $this->config['refresh_frequency'] . '; url=' . $refresh_url;
-
-					if (strpos($contents_html, '[URL]') !== false) { // Template contains the Meta Tag, Link, or JavaScript (with alternative).
-
-						$contents_html = str_replace('[URL]', html($refresh_url), $contents_html);
-
-					} else {
-
-						$refresh_html = "\n\t" . '<meta http-equiv="refresh" content="' . html($refresh_header) . '" />' . "\n\n";
-
-						$pos = stripos($contents_html, '</head>');
-						if ($pos !== false) {
-
-					 		$contents_html = substr($contents_html, 0, $pos) . $refresh_html . substr($contents_html, $pos);
-
-						} else {
-
-							$css_file = '/css/global/loading.css';
-							if (is_file(ASSET_ROOT . $css_file)) {
-								$css_html = '<link rel="stylesheet" type="text/css" href="' . html(timestamp_url(ASSET_URL . '/css/global/loading.css')) . '" media="all" />';
-							} else {
-								$css_html = '';
-							}
-
-							$contents_html = '<!DOCTYPE html>
-								<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
-								<head>
-									<meta charset="' . html(config::get('output.charset')) . '" />
-									<title>Loading</title>
-									' . $refresh_html . '
-									' . $css_html . '
-								</head>
-								<body>
-									<div id="page_content" role="main">
-										' . $contents_html . '
-									</div>
-								</body>
-								</html>';
-
-						}
-
-					}
 
 				//--------------------------------------------------
 				// Output
