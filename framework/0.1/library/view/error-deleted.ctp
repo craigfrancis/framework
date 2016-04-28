@@ -2,18 +2,24 @@
 
 	$response->set('title_html', '<h1>Deleted</h1>');
 
-	if (!isset($message)) {
+	if (!isset($message_html)) {
 
-		$message = 'This ' . (isset($type) ? $type : 'item');
+		if (!isset($message)) {
 
-		if (isset($timestamp)) {
-			$message .= ' was deleted on the ' . $timestamp->format('jS F Y, \a\t g:ia') . '.';
-		} else {
-			$message .= ' has been deleted.';
+			$message = 'This ' . (isset($type) ? $type : 'item');
+
+			if (isset($timestamp)) {
+				$message .= ' was deleted on the ' . $timestamp->format('jS F Y, \a\t g:ia') . '.';
+			} else {
+				$message .= ' has been deleted.';
+			}
+
 		}
+
+		$message_html = html($message);
 
 	}
 
-	echo '<p>' . html($message) . '</p>';
+	echo '<p>' . $message_html . '</p>';
 
 ?>
