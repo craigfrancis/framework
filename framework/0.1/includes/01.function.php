@@ -1531,7 +1531,7 @@
 				);
 
 			if (function_exists('openssl_random_pseudo_bytes')) {
-				$input[] = openssl_random_pseudo_bytes($length); // Second argument shows if strong (or not).
+				$input[] = openssl_random_pseudo_bytes($length); // Second argument shows if strong (or not), and it might not always be random (https://wiki.openssl.org/index.php/Random_fork-safety and https://github.com/paragonie/random_compat/issues/96)
 			}
 
 			if (function_exists('mcrypt_create_iv')) {
