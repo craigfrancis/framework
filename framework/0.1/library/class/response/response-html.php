@@ -506,15 +506,19 @@
 			public function css_add($path, $media = 'all') {
 				$this->css_files_main[] = array(
 						'path' => $path,
-						'media' => $media,
+						'attributes' => array(
+								'media' => $media,
+							),
 					);
 			}
 
 			public function css_alternate_add($path, $media, $title) {
 				$this->css_files_alternate[] = array(
 						'path' => $path,
-						'media' => $media,
-						'title' => $title,
+						'attributes' => array(
+								'media' => $media,
+								'title' => $title,
+							),
 					);
 			}
 
@@ -704,9 +708,19 @@
 						}
 
 						if ($mode == 'html') {
-							$return .= "\n\t" . '<link rel="stylesheet" type="text/css" href="' . html($url) . '" media="' . html($file['media']) . '" />';
+
+							$attributes = array_merge(array(
+									'rel' => 'stylesheet',
+									'type' => 'text/css',
+									'href' => $url,
+								), $file['attributes']);
+
+							$return .= "\n\t" . html_tag('link', $attributes);
+
 						} else if ($mode == 'xml') {
-							$return .= "\n" . '<?xml-stylesheet href="' . xml($url) . '" media="' . xml($file['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
+
+							$return .= "\n" . '<?xml-stylesheet href="' . xml($url) . '" media="' . xml($file['attributes']['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
+
 						}
 
 					}
@@ -730,9 +744,19 @@
 							}
 
 							if ($mode == 'html') {
-								$return .= "\n\t" . '<link rel="alternate stylesheet" type="text/css" href="' . html($url) . '" media="' . html($file['media']) . '" title="' . html($file['title']) . '" />';
+
+								$attributes = array_merge(array(
+										'rel' => 'alternate stylesheet',
+										'type' => 'text/css',
+										'href' => $url,
+									), $file['attributes']);
+
+								$return .= "\n\t" . html_tag('link', $attributes);
+
 							} else if ($mode == 'xml') {
-								$return .= "\n" . '<?xml-stylesheet href="' . html($url) . '" alternate="yes" title="' . html($file['title']) . '" media="' . html($file['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
+
+								$return .= "\n" . '<?xml-stylesheet href="' . html($url) . '" alternate="yes" title="' . html($file['attributes']['title']) . '" media="' . html($file['attributes']['media']) . '" type="text/css" charset="' . xml(config::get('output.charset')) . '"?>';
+
 							}
 
 						}
@@ -768,6 +792,15 @@
 				$version = config::get('output.timestamp_url', false);
 				$minify = false;
 
+				$integrity = config::get('output.integrity', false);
+				if ($integrity) {
+					foreach ($files as $id => $file) {
+						if (substr($file['path'], 0, 1) == '/' && !isset($file['attributes']['integrity']) && is_file(PUBLIC_ROOT . $file['path'])) {
+							$files[$id]['attributes']['integrity'] = 'sha256-' . base64_encode(hash('sha256', file_get_contents(PUBLIC_ROOT . $file['path']), true));
+						}
+					}
+				}
+
 				if ($type == 'js_head' || $type == 'js_foot' || $type == 'js') {
 
 					//--------------------------------------------------
@@ -797,7 +830,7 @@
 					//--------------------------------------------------
 					// Combined JS
 
-						if (config::get('output.js_combine')) {
+						if (!$integrity && config::get('output.js_combine')) {
 
 							$grouped_files = array(); // Local files that can be grouped
 
@@ -873,7 +906,7 @@
 
 							$url = timestamp_url($file['path']);
 
-							if ($minify) {
+							if (!$integrity && $minify) {
 								if (substr($url, -4) == '.css' && substr($url, -8) != '.min.css') {
 									$url = substr($url, 0, -4) . '.min.css';
 								} else if (substr($url, -3) == '.js' && substr($url, -7) != '.min.js') {

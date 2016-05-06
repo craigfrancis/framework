@@ -119,7 +119,7 @@
 				$html .= ' ' . html(is_int($name) ? $value : $name) . '="' . html($value) . '"';
 			}
 		}
-		return $html . ($tag == 'input' ? ' />' : '>');
+		return $html . ($tag == 'input' || $tag == 'link' ? ' />' : '>');
 	}
 
 	function xml($text) {
