@@ -626,9 +626,18 @@
 					$this->_error('PHP does not have MySQLi support - https://php.net/mysqli_connect', true);
 				}
 
+				$start = microtime(true);
+
 				$this->link = @mysqli_connect($host, $user, $pass, $name);
 				if (!$this->link) {
 					$this->_error('Database connection error: ' . mysqli_connect_error() . ' (' . mysqli_connect_errno() . ')', true);
+				}
+
+				if (function_exists('debug_log_time')) {
+					$time = round((microtime(true) - $start), 5);
+					if ($time > 0.01) {
+						debug_log_time('DB=' . $time);
+					}
 				}
 
 				if (config::get('output.charset') == 'UTF-8') {
