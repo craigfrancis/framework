@@ -59,7 +59,7 @@
 
 	}
 
-	function exit_with_error($message, $hidden_info = '') {
+	function exit_with_error($message, $hidden_info = '', $type = 'error') {
 
 		//--------------------------------------------------
 		// Called from
@@ -104,7 +104,7 @@
 				$error_report .= $hidden_info;
 			}
 
-			report_add($error_report, 'error');
+			report_add($error_report, $type);
 
 		//--------------------------------------------------
 		// Config
