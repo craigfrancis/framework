@@ -923,33 +923,28 @@
 			public function csv() {
 
 				//--------------------------------------------------
+				// File pointer
+
+					$fp = fopen('php://temp', 'r+');
+
+				//--------------------------------------------------
 				// Headings
-
-					$col_count = 0;
-
-					$csv_output = '';
 
 					foreach ($this->headings as $row_id => $heading_row) {
 
-						$col_id = 0;
+						$csv_output = array();
 
-						foreach ($heading_row as $col_id => $heading_info) {
+						foreach ($heading_row as $heading_info) {
 
-							$csv_output .= $this->_html_to_csv($heading_info['html']) . ',';
+							$csv_output[] = $heading_info['html'];
 
-							for ($k = 1; $k < $heading_info['colspan']; $k++) {
-								$csv_output .= '"",';
+							for ($k = 1; $k < $heading_info['colspan']; $k++) { // This is faster than ... $row = array_pad(array($heading_info['html']), $heading_info['colspan'], '');
+								$csv_output[] = '';
 							}
 
-							$col_id += $heading_info['colspan'];
-
 						}
 
-						if ($col_id > $col_count) {
-							$col_count = $col_id;
-						}
-
-						$csv_output .= "\n";
+						fputcsv($fp, $csv_output);
 
 					}
 
@@ -958,26 +953,19 @@
 
 					foreach (array_keys($this->rows) as $row_key) {
 
-						$col_id = 0;
+						$csv_output = array();
 
 						foreach ($this->rows[$row_key]['row']->data as $cell_info) {
 
-							$csv_output .= $this->_html_to_csv($cell_info['html']) . ',';
+							$csv_output[] = $cell_info['html'];
 
 							for ($k = 1; $k < $cell_info['colspan']; $k++) {
-								$csv_output .= '"",';
+								$csv_output[] = '';
 							}
 
-							$col_id += $cell_info['colspan'];
-
 						}
 
-						while ($col_id < $col_count) {
-							$csv_output .= '"",';
-							$col_id++;
-						}
-
-						$csv_output .= "\n";
+						fputcsv($fp, $csv_output);
 
 					}
 
@@ -986,13 +974,7 @@
 
 					if (count($this->rows) == 0) {
 
-						$csv_output .= $this->_html_to_csv($this->no_records_html) . ',';
-
-						for ($k = 0; $k < ($col_count - 1); $k++) {
-							$csv_output .= '"",';
-						}
-
-						$csv_output .= "\n";
+						fputcsv($fp, array($this->no_records_html));
 
 					}
 
@@ -1003,26 +985,43 @@
 
 						foreach ($this->footers as $footer_row) {
 
+							$csv_output = array();
+
 							foreach ($footer_row as $footer_info) {
 
-								$csv_output .= $this->_html_to_csv($footer_info['html']) . ',';
+								$csv_output[] = $footer_info['html'];
 
 								for ($k = 1; $k < $footer_info['colspan']; $k++) {
-									$csv_output .= '"",';
+									$csv_output[] = '';
 								}
 
 							}
 
-							$csv_output .= "\n";
+							fputcsv($fp, $csv_output);
 
 						}
 
 					}
 
 				//--------------------------------------------------
-				// Clean end of lines
+				// Get output
 
-					$csv_output = preg_replace('/,$/m', '', $csv_output);
+					rewind($fp);
+
+					$csv_output = '';
+
+					while (!feof($fp)) {
+						$csv_output .= fgetss($fp); // Gets line from file pointer, and strips HTML tags
+					}
+
+					fclose($fp);
+
+				//--------------------------------------------------
+				// Correct charset
+
+					if ($this->charset_output !== NULL && $this->charset_output != $this->charset_input) {
+						$csv_output = @iconv($this->charset_input, $this->charset_output . '//TRANSLIT', $csv_output);
+					}
 
 				//--------------------------------------------------
 				// Return
@@ -1100,20 +1099,12 @@
 		//--------------------------------------------------
 		// Support functions
 
-			function _html_to_text($html, $max_width = NULL) {
+			private function _html_to_text($html, $max_width = NULL) {
 				$text = html_decode(strip_tags($html));
 				if ($max_width !== NULL) {
 					$text = explode("\n", wordwrap($text, $max_width, "\n", true));
 				}
 				return $text;
-			}
-
-			function _html_to_csv($html) {
-				$text = html_decode(strip_tags($html));
-				if ($this->charset_output !== NULL && $this->charset_output != $this->charset_input) {
-					$text = @iconv($this->charset_input, $this->charset_output . '//TRANSLIT', $text);
-				}
-				return csv($text);
 			}
 
 	}
