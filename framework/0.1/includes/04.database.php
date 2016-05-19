@@ -67,22 +67,23 @@
 			return array_fill(0, $count, array('s', '%' . $val . '%'));
 		}
 
-		// public function parameter_in($values) {
-		// 	http://php.net/manual/en/mysqli-stmt.bind-param.php#103622
-		// 	list($in_sql, $in_parameters) = $db->parameter_in(array_keys($items));
-		// 	if ($values) {
-		// 		$sql = implode(',', array_fill(0, count($values), '?'));
-		// 		$sql = substr(str_repeat('?,', count($values)), 0, -1);
-		// 		$parameters = array();
-		// 		foreach ($values as $value) {
-		// 			$parameters[] =  array('s', $value);
-		// 		}
-		// 	} else {
-		// 		$sql = '?';
-		// 		$parameters[] = array('s', '');
-		// 	}
-		// 	return array($sql, $parameters);
-		// }
+		public function parameter_in(&$parameters, $type, $values) { // $in_sql = $db->parameter_in($parameters, 'i', $ids);
+			$count = count($values);
+			if ($count == 0) {
+				exit_with_error('Do not run a query looking for multiple items, when there are no items to find');
+			}
+			if ($type == 'i') {
+				$values = array_map('intval', $values);
+			} else if ($type == 's') {
+				$values = array_map('strval', $values);
+			} else {
+				exit_with_error('Unknown parameter type for parameter_in(), should be "i" or "s"');
+			}
+			foreach ($values as $value) {
+				$parameters[] =  array($type, $value);
+			}
+			return substr(str_repeat('?,', $count), 0, -1);
+		}
 
 		public function query($sql, $parameters = NULL, $run_debug = true, $exit_on_error = true) {
 
