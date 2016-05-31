@@ -164,7 +164,7 @@
 			}
 
 			if ($start) {
-				debug_log_db(round((microtime(true) - $start), 5));
+				debug_log_db(round((microtime(true) - $start), 5), $sql);
 			}
 
 			return $this->result;
