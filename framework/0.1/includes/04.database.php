@@ -95,76 +95,80 @@
 
 			$this->connect();
 
-			if (function_exists('debug_log_db')) {
-				$start = microtime(true);
-			} else {
-				$start = NULL;
-			}
-
 			if ($run_debug && function_exists('debug_database')) {
 
 				$this->result = debug_database($this, $sql, $parameters, $exit_on_error);
 
-			} else if (function_exists('mysqli_stmt_get_result')) { // When mysqlnd is installed - There is no way I'm using bind_result(), where the values from the database should stay in their array (ref fetch_assoc), and work around are messy.
+			} else {
 
-				$this->statement = mysqli_prepare($this->link, $sql);
+				if (function_exists('debug_log_db')) {
+					$time_start = microtime(true);
+				} else {
+					$time_start = NULL;
+				}
 
-				if ($this->statement) {
+				if (function_exists('mysqli_stmt_get_result')) { // When mysqlnd is installed - There is no way I'm using bind_result(), where the values from the database should stay in their array (ref fetch_assoc), and work around are messy.
 
-					if ($parameters) {
-						$ref_values = array(implode(array_column($parameters, 0)));
-						foreach ($parameters as $key => $value) {
-							$ref_values[] = &$parameters[$key][1];
+					$this->statement = mysqli_prepare($this->link, $sql);
+
+					if ($this->statement) {
+
+						if ($parameters) {
+							$ref_values = array(implode(array_column($parameters, 0)));
+							foreach ($parameters as $key => $value) {
+								$ref_values[] = &$parameters[$key][1];
+							}
+							call_user_func_array(array($this->statement, 'bind_param'), $ref_values);
 						}
-						call_user_func_array(array($this->statement, 'bind_param'), $ref_values);
-					}
 
-					$this->result = $this->statement->execute();
-					if ($this->result) {
-						$this->affected_rows = $this->statement->affected_rows;
-						$this->result = $this->statement->get_result();
-						if ($this->result === false) {
-							$this->result = true; // Didn't create any results, e.g. UPDATE, INSERT, DELETE
+						$this->result = $this->statement->execute();
+						if ($this->result) {
+							$this->affected_rows = $this->statement->affected_rows;
+							$this->result = $this->statement->get_result();
+							if ($this->result === false) {
+								$this->result = true; // Didn't create any results, e.g. UPDATE, INSERT, DELETE
+							}
+							$this->statement->close(); // If this isn't successful, we need to get to the errno
 						}
-						$this->statement->close(); // If this isn't successful, we need to get to the errno
+
+					} else {
+
+						$this->result = false;
+
 					}
 
 				} else {
 
-					$this->result = false;
-
-				}
-
-			} else {
-
-				if ($parameters) {
-					$offset = 0;
-					$k = 0;
-					while (($pos = strpos($sql, '?', $offset)) !== false) {
+					if ($parameters) {
+						$offset = 0;
+						$k = 0;
+						while (($pos = strpos($sql, '?', $offset)) !== false) {
+							if (isset($parameters[$k])) {
+								$sql_value = $this->escape_string($parameters[$k][1]);
+								$sql = substr($sql, 0, $pos) . $sql_value . substr($sql, ($pos + 1));
+								$offset = ($pos + strlen($sql_value));
+								$k++;
+							} else {
+								exit_with_error('Missing parameter "' . $k . '" in SQL', $sql);
+							}
+						}
 						if (isset($parameters[$k])) {
-							$sql_value = $this->escape_string($parameters[$k][1]);
-							$sql = substr($sql, 0, $pos) . $sql_value . substr($sql, ($pos + 1));
-							$offset = ($pos + strlen($sql_value));
-							$k++;
-						} else {
-							exit_with_error('Missing parameter "' . $k . '" in SQL', $sql);
+							exit_with_error('Unused parameter "' . $k . '" in SQL', $sql);
 						}
 					}
-					if (isset($parameters[$k])) {
-						exit_with_error('Unused parameter "' . $k . '" in SQL', $sql);
-					}
+
+					$this->result = mysqli_query($this->link, $sql);
+
 				}
 
-				$this->result = mysqli_query($this->link, $sql);
+				if ($time_start) {
+					debug_log_db(round((microtime(true) - $time_start), 3), $sql);
+				}
 
 			}
 
 			if (!$this->result && $exit_on_error) {
 				$this->_error($sql);
-			}
-
-			if ($start) {
-				debug_log_db(round((microtime(true) - $start), 5), $sql);
 			}
 
 			return $this->result;
