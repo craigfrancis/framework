@@ -162,7 +162,7 @@
 				}
 
 				if ($time_start) {
-					debug_log_db(round((microtime(true) - $time_start), 3), $sql);
+					debug_log_db(round((microtime(true) - $time_start), 3), $sql); // This is higher than `debug.time_query`, because debug does not run for every query (e.g. SHOW COLUMNS and EXPLAIN)
 				}
 
 			}
