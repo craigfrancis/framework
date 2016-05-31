@@ -95,6 +95,12 @@
 
 			$this->connect();
 
+			if (function_exists('debug_log_db')) {
+				$start = microtime(true);
+			} else {
+				$start = NULL;
+			}
+
 			if ($run_debug && function_exists('debug_database')) {
 
 				$this->result = debug_database($this, $sql, $parameters, $exit_on_error);
@@ -155,6 +161,10 @@
 
 			if (!$this->result && $exit_on_error) {
 				$this->_error($sql);
+			}
+
+			if ($start) {
+				debug_log_db(round((microtime(true) - $start), 5));
 			}
 
 			return $this->result;
@@ -637,7 +647,7 @@
 				if (function_exists('debug_log_time')) {
 					$time = round((microtime(true) - $start), 5);
 					if ($time > 0.01) {
-						debug_log_time('DB=' . $time);
+						debug_log_time('DBC=' . $time);
 					}
 				}
 
