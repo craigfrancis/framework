@@ -612,63 +612,63 @@
 
 		private function connect() {
 
-			if (!$this->link) {
+			if ($this->link) {
+				return;
+			}
 
-				$prefix = 'db.';
-				if ($this->connection != 'default') {
-					$prefix .= $this->connection . '.';
-				}
+			$prefix = 'db.';
+			if ($this->connection != 'default') {
+				$prefix .= $this->connection . '.';
+			}
 
-				$name = config::get($prefix . 'name');
-				$user = config::get($prefix . 'user');
-				$pass = config::get($prefix . 'pass');
-				$host = config::get($prefix . 'host');
+			$name = config::get($prefix . 'name');
+			$user = config::get($prefix . 'user');
+			$pass = config::get($prefix . 'pass');
+			$host = config::get($prefix . 'host');
 
-				if ($pass === NULL) {
-					$password_path = (defined('UPLOAD_ROOT') ? UPLOAD_ROOT : ROOT) . '/private/passwords/database.txt'; // Could also go into `/private/config/server.ini`, but this will appear in debug output (although it should show the value '???').
-					if (is_readable($password_path)) {
-						$pass = trim(file_get_contents($password_path));
-					} else {
-						if (is_file($password_path)) {
-							$this->_error('Cannot read database password file', true);
-						} else {
-							$this->_error('Unknown database password (config "' . $prefix . 'pass")', true);
-						}
-					}
-				}
-
-				if (!function_exists('mysqli_connect')) {
-					$this->_error('PHP does not have MySQLi support - https://php.net/mysqli_connect', true);
-				}
-
-				$start = microtime(true);
-
-				$this->link = @mysqli_connect($host, $user, $pass, $name);
-				if (!$this->link) {
-					$this->_error('Database connection error: ' . mysqli_connect_error() . ' (' . mysqli_connect_errno() . ')', true);
-				}
-
-				if (function_exists('debug_log_time')) {
-					$time = round((microtime(true) - $start), 5);
-					if ($time > 0.01) {
-						debug_log_time('DBC=' . $time);
-					}
-				}
-
-				if (config::get('output.charset') == 'UTF-8') {
-					$charset = 'utf8';
-				} else if (config::get('output.charset') == 'ISO-8859-1') {
-					$charset = 'latin1';
+			if ($pass === NULL) {
+				$password_path = (defined('UPLOAD_ROOT') ? UPLOAD_ROOT : ROOT) . '/private/passwords/database.txt'; // Could also go into `/private/config/server.ini`, but this will appear in debug output (although it should show the value '???').
+				if (is_readable($password_path)) {
+					$pass = trim(file_get_contents($password_path));
 				} else {
-					$charset = NULL;
-				}
-
-				if ($charset !== NULL) {
-					if (!mysqli_set_charset($this->link, $charset)) {
-						$this->_error('Database charset error, when loading ' . $charset, true);
+					if (is_file($password_path)) {
+						$this->_error('Cannot read database password file', true);
+					} else {
+						$this->_error('Unknown database password (config "' . $prefix . 'pass")', true);
 					}
 				}
+			}
 
+			if (!function_exists('mysqli_connect')) {
+				$this->_error('PHP does not have MySQLi support - https://php.net/mysqli_connect', true);
+			}
+
+			$start = microtime(true);
+
+			$this->link = @mysqli_connect($host, $user, $pass, $name);
+			if (!$this->link) {
+				$this->_error('Database connection error: ' . mysqli_connect_error() . ' (' . mysqli_connect_errno() . ')', true);
+			}
+
+			if (function_exists('debug_log_time')) {
+				$time = round((microtime(true) - $start), 5);
+				if ($time > 0.01) {
+					debug_log_time('DBC=' . $time);
+				}
+			}
+
+			if (config::get('output.charset') == 'UTF-8') {
+				$charset = 'utf8';
+			} else if (config::get('output.charset') == 'ISO-8859-1') {
+				$charset = 'latin1';
+			} else {
+				$charset = NULL;
+			}
+
+			if ($charset !== NULL) {
+				if (!mysqli_set_charset($this->link, $charset)) {
+					$this->_error('Database charset error, when loading ' . $charset, true);
+				}
 			}
 
 		}
