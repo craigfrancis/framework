@@ -681,10 +681,26 @@
 
 								$explain_html .= '
 									<tr>';
+
 								foreach ($row as $key => $value) {
-									$explain_html .= '
-										<td>' . ($key == 'type' ? '<a href="https://dev.mysql.com/doc/refman/5.0/en/explain-output.html#jointype_' . html($value) . '">' : '') . ($value == '' ? '&#xA0;' : html($value)) . ($key == 'type' ? '</a>' : '') . '</td>';
+
+									if ($key == 'possible_keys') {
+										$value = str_replace(',', ', ', $value);
+									}
+
+									$value_html = ($value == '' ? '&#xA0;' : html($value));
+
+									if ($key == 'type') {
+										$explain_html .= '
+											<td><a href="https://dev.mysql.com/doc/refman/5.0/en/explain-output.html#jointype_' . html($value) . '">' . $value_html . '</a></td>';
+									} else {
+										$explain_html .= '
+											<td>' . $value_html . '</td>';
+
+									}
+
 								}
+
 								$explain_html .= '
 									</tr>';
 
