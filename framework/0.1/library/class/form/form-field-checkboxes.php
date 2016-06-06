@@ -42,7 +42,7 @@
 				$this->options_info_html = $options_info_html;
 			}
 
-			public function options_disabled($options_disabled) {
+			public function options_disabled_set($options_disabled) {
 				$this->options_disabled = $options_disabled;
 			}
 
