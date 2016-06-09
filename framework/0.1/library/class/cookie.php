@@ -63,11 +63,11 @@
 
 					self::init();
 
-					if ($value === NULL) {
-						unset($_COOKIE[$variable_full]);
-					} else {
-						$_COOKIE[$variable_full] = $value;
-					}
+					// if ($value === NULL) {
+					// 	unset($_COOKIE[$variable_full]);
+					// } else {
+					// 	$_COOKIE[$variable_full] = $value;
+					// }
 
 				}
 
