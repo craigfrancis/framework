@@ -347,7 +347,7 @@
 							}
 
 							if (function_exists('debug_log_time')) {
-								debug_log_time('GEO=' . round((microtime(true) - $start), 3));
+								debug_log_time('GEO', round((microtime(true) - $start), 3));
 							}
 
 						//--------------------------------------------------

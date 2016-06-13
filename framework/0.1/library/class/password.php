@@ -26,7 +26,7 @@
 				$ret = password_hash($password, PASSWORD_DEFAULT);
 
 				if (function_exists('debug_log_time')) {
-					debug_log_time('PASSH=' . round((microtime(true) - $start), 3));
+					debug_log_time('PASSH', round((microtime(true) - $start), 3));
 				}
 
 				return $ret;
@@ -52,7 +52,7 @@
 				$ret = crypt($password, ($hash_format . $hash_salt));
 
 				if (function_exists('debug_log_time')) {
-					debug_log_time('PASSH=' . round((microtime(true) - $start), 3));
+					debug_log_time('PASSH', round((microtime(true) - $start), 3));
 				}
 
 				if (!is_string($ret) || strlen($ret) <= 13) {
@@ -89,7 +89,7 @@
 				$ret = password_verify($password, $hash);
 
 				if (function_exists('debug_log_time')) {
-					debug_log_time('PASS=' . round((microtime(true) - $start), 3));
+					debug_log_time('PASS', round((microtime(true) - $start), 3));
 				}
 
 				if ($ret === true) {
@@ -103,7 +103,7 @@
 				$ret = crypt($password, $hash);
 
 				if (function_exists('debug_log_time')) {
-					debug_log_time('PASS=' . round((microtime(true) - $start), 3));
+					debug_log_time('PASS', round((microtime(true) - $start), 3));
 				}
 
 				if (is_string($ret) && strlen($ret) > 13 && $ret == $hash) {

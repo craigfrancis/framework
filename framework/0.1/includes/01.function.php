@@ -489,13 +489,13 @@
 					$valid = checkdnsrr($matches[1] . '.', $type);
 					if ($valid) {
 						if (function_exists('debug_log_time')) {
-							debug_log_time('DNS' . $type . '=' . round((microtime(true) - $start), 3));
+							debug_log_time('DNS' . $type, round((microtime(true) - $start), 3));
 						}
 						return true;
 					}
 				}
 				if (function_exists('debug_log_time')) {
-					debug_log_time('DNSX=' . round((microtime(true) - $start), 3));
+					debug_log_time('DNSX', round((microtime(true) - $start), 3));
 				}
 			} else {
 				return true; // Skipping domain check, or on a Windows server.

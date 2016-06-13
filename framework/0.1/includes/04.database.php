@@ -653,7 +653,7 @@
 			if (function_exists('debug_log_time')) {
 				$time = round((microtime(true) - $start), 5);
 				if ($time > 0.01) {
-					debug_log_time('DBC=' . $time);
+					debug_log_time('DBC', $time);
 				}
 			}
 
