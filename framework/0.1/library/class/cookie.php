@@ -35,6 +35,7 @@
 						'secure'    => https_only(),
 						'http_only' => true,
 						'same_site' => NULL,
+						'update'    => false,
 					), $config);
 
 				if (is_object($config['expires']) && is_a($config['expires'], 'timestamp')) {
@@ -63,11 +64,13 @@
 
 					self::init();
 
-					// if ($value === NULL) {
-					// 	unset($_COOKIE[$variable_full]);
-					// } else {
-					// 	$_COOKIE[$variable_full] = $value;
-					// }
+					if ($config['update']) {
+						if ($value === NULL) {
+							unset($_COOKIE[$variable_full]);
+						} else {
+							$_COOKIE[$variable_full] = $value;
+						}
+					}
 
 				}
 

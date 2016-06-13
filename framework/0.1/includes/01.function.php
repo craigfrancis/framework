@@ -77,7 +77,10 @@
 			$csrf_token = random_key(15);
 		}
 
-		cookie::set('f', $csrf_token, array('same_site' => 'Strict')); // Short cookie name (header size), and not using sessions, as they typically expire after 24 minutes.
+		cookie::set('f', $csrf_token, array('same_site' => 'Strict', 'update' => true));
+
+			// Not using sessions, as they typically expire after 24 minutes.
+			// Short cookie name (header size)
 
 		config::set('cookie.csrf_value', $csrf_token); // Avoid repeated cookie headers.
 
