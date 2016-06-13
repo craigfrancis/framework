@@ -81,6 +81,8 @@
 
 			// Not using sessions, as they typically expire after 24 minutes.
 			// Short cookie name (header size)
+			// Make sure it's only sent with SameSite requests.
+			// Update the _COOKIE variable to support multiple calls to csrf_token_get()
 
 		config::set('cookie.csrf_value', $csrf_token); // Avoid repeated cookie headers.
 
