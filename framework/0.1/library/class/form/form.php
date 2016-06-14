@@ -633,7 +633,7 @@
 				ksort($this->errors_html); // Match order of fields
 				foreach ($this->errors_html as $ref => $errors_html) {
 					foreach ($errors_html as $error_html) {
-						if ($error_links && isset($this->fields[$ref])) {
+						if ($error_links && isset($this->fields[$ref]) && strpos($error_html, '<a') === false) {
 							$error_html = '<a href="#' . html($this->fields[$ref]->input_first_id_get()) . '">' . $error_html . '</a>';
 						}
 						$errors_flat_html[] = $error_html;
