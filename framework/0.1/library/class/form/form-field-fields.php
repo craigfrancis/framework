@@ -71,6 +71,10 @@
 
 			}
 
+			public function input_first_id_get() {
+				return $this->id . '_' . reset($this->input_order);
+			}
+
 			public function placeholder_set($placeholder) {
 				$placeholder = $this->_value_parse($placeholder);
 				if ($placeholder) {

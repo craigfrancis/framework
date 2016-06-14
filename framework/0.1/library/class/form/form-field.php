@@ -215,6 +215,10 @@
 				return $this->id;
 			}
 
+			public function input_first_id_get() {
+				return $this->id;
+			}
+
 			public function input_name_set($name) { // name usually set on init, use this function ONLY if you really need to change it afterwards.
 
 				if ($this->name !== NULL) {

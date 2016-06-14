@@ -629,9 +629,13 @@
 			public function errors_get_html() {
 				$this->_post_validation();
 				$errors_flat_html = array();
+				$error_links = config::get('form.error_links', false);
 				ksort($this->errors_html); // Match order of fields
-				foreach ($this->errors_html as $errors_html) {
+				foreach ($this->errors_html as $ref => $errors_html) {
 					foreach ($errors_html as $error_html) {
+						if ($error_links && isset($this->fields[$ref])) {
+							$error_html = '<a href="#' . html($this->fields[$ref]->input_first_id_get()) . '">' . $error_html . '</a>';
+						}
 						$errors_flat_html[] = $error_html;
 					}
 				}
