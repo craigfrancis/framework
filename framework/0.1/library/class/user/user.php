@@ -358,8 +358,8 @@
 		//--------------------------------------------------
 		// Register
 
-			public function register_and_login() {
-				$result = $this->register();
+			public function register_and_login($config = array()) {
+				$result = $this->register($config);
 				if ($result) {
 					$this->login_forced();
 				}
