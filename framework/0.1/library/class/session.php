@@ -146,7 +146,22 @@
 
 					$start = microtime(true);
 
-					session_start();
+					$ignore_errors = (headers_sent() && config::get('session.started') === true);
+
+					if ($ignore_errors) {
+						$error_reporting = error_reporting(0); // Don't show warnings about headers, which happens in 'loading' helper.
+					}
+
+					$result = session_start();
+
+					if ($ignore_errors) {
+						error_reporting($error_reporting);
+						if (!$result) {
+							session_start(); // Try again, this time the error can appear in logs.
+						}
+					}
+
+					config::set('session.started', true);
 
 					if (function_exists('debug_log_time')) {
 						$time = round((microtime(true) - $start), 5);
