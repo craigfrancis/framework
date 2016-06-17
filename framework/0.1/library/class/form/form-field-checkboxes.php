@@ -66,6 +66,11 @@
 				}
 			}
 
+			public function input_first_id_get() {
+				reset($this->option_values);
+				return $this->field_id_by_key_get(key($this->option_values));
+			}
+
 		//--------------------------------------------------
 		// HTML label
 
