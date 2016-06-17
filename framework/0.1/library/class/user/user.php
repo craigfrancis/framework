@@ -366,7 +366,7 @@
 				return $result;
 			}
 
-			public function register() {
+			public function register($config = array()) {
 
 				//--------------------------------------------------
 				// Not a user
@@ -414,7 +414,7 @@
 						}
 
 						$this->complete_save(); // Also sets values from form 'data_db'
-						$this->complete_register();
+						$this->complete_register($config);
 
 						return true;
 
