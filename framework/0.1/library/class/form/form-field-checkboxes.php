@@ -98,7 +98,7 @@
 				}
 			}
 
-			public function html_label_by_key($key, $label_html = NULL) {
+			public function html_label_by_key($key, $label_html = NULL, $label_tag = NULL) {
 
 				if ($key !== NULL && !isset($this->option_values[$key])) {
 					return 'Unknown key "' . html($key) . '"';
@@ -123,7 +123,11 @@
 
 				}
 
-				return '<label for="' . html($input_id) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . $label_html . '</label>';
+				if ($label_tag == 'span') {
+					return '<span' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . $label_html . '</span>';
+				} else {
+					return '<label for="' . html($input_id) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . $label_html . '</label>';
+				}
 
 			}
 
@@ -131,12 +135,13 @@
 		// HTML input
 
 			public function html_input() {
+				$label_tag = ($this->input_wrapper_tag == 'label' ? 'span' : NULL);
 				$html = '';
 				if ($this->label_option != '') { // Could be NULL or ''
 					$html .= '
 							<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . ' input_label">
 								' . $this->html_input_by_key(NULL) . '
-								' . $this->html_label_by_key(NULL) . '
+								' . $this->html_label_by_key(NULL, NULL, $label_tag) . '
 							</' . html($this->input_wrapper_tag) . '>';
 				}
 				foreach ($this->option_values as $key => $value) {
@@ -144,7 +149,7 @@
 					$html .= '
 							<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . ' ' . html('key_' . human_to_ref($key)) . ' ' . html('value_' . human_to_ref($value)) . '">
 								' . $this->html_input_by_key($key) . '
-								' . $this->html_label_by_key($key) . $option_info_html . '
+								' . $this->html_label_by_key($key, NULL, $label_tag) . $option_info_html . '
 							</' . html($this->input_wrapper_tag) . '>';
 				}
 				return $html;
