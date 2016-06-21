@@ -6,6 +6,7 @@
 		// Variables
 
 			protected $input_day = NULL;
+			protected $input_single = false;
 
 		//--------------------------------------------------
 		// Setup
@@ -48,6 +49,7 @@
 
 					$this->setup_fields($form, $label, $name);
 
+					$this->input_single = config::get('form.date_input_single', false); // Use the standard 3 input fields by default, as most browsers still cannot do HTML5 type="date" fields.
 					$this->input_order_set(config::get('form.date_input_order', array('D', 'M', 'Y')));
 
 				//--------------------------------------------------
@@ -83,6 +85,23 @@
 					$options = $months;
 				}
 				parent::input_options_text_set($field, $options, $label);
+			}
+
+		//--------------------------------------------------
+		// Format
+
+			public function format_default_get_html() {
+
+				if ($this->input_single === true && is_array($this->format_html)) {
+
+					return '';
+
+				} else {
+
+					return parent::format_default_get_html();
+
+				}
+
 			}
 
 		//--------------------------------------------------
@@ -282,6 +301,23 @@
 
 				return NULL;
 
+			}
+
+		//--------------------------------------------------
+		// HTML
+
+			public function html_input() {
+				if ($this->input_single === true) {
+
+					$value = $this->_value_string($this->_value_print_get());
+
+					return $this->_html_input(array('value' => $value, 'type' => 'date'));
+
+				} else {
+
+					return parent::html_input();
+
+				}
 			}
 
 	}
