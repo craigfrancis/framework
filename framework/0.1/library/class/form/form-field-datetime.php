@@ -154,14 +154,16 @@
 				if ($this->value !== '') { // The user submitted blank, let them keep it.
 					if ($this->value_timestamp !== NULL) {
 						$timestamp = $this->value_timestamp;
+					} else if ($this->db_field_name !== NULL) {
+						$timestamp = new timestamp($this->db_field_value_get(), 'db');
 					} else {
-						$timestamp = new timestamp(parent::_value_print_get(), 'db');
+						$timestamp = new timestamp('0000-00-00 00:00:00', 'db');
 					}
 					if (!$timestamp->null()) {
 						return $timestamp->format('Y-m-d\TH:i:s');
 					}
 				}
-				return $this->value; // The browser might not support this field type, so send back what they sent us (so they can edit invalid values).
+				return $this->value; // The browser might not support this field type, so send back what they sent to us (so they can edit invalid values).
 			}
 
 		//--------------------------------------------------
@@ -184,7 +186,7 @@
 
 				$attributes = parent::_input_attributes();
 
-				$attributes['step'] = 'any'; // Google Chrome 51 will complain if a min/max value is set, and the seconds are different from them (no min/max, then seconds cannot be set).
+				$attributes['step'] = 1; // Google Chrome 51 will complain if a min/max value is set, and the seconds are different from them (no min/max, then seconds cannot be set).
 
 				if ($this->min_timestamp !== NULL) {
 					$attributes['min'] = $this->min_timestamp->format('Y-m-d\TH:i:s');
