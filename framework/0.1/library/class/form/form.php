@@ -681,21 +681,9 @@
 
 							cookie::require_support();
 
-$error_html = $this->csrf_error_html; // TODO: Remove after testing (added 2016-06-09)
-if (substr($error_html, -1) == '.') {
-	if (cookie::get('f') == '') {
-		$message = 'missing cookie';
-	} else if ($csrf_token == '') {
-		$message = 'missing from form';
-	} else {
-		$message = 'different values';
-	}
-	$error_html = substr($error_html, 0, -1) . ' (' . $message . ').';
-}
-
 							$note = 'SESSION:' . $this->csrf_token . ' != ' . $this->form_method . ':' . $csrf_token;
 
-							$this->_field_error_add_html(-1, $error_html, $note);
+							$this->_field_error_add_html(-1, $this->csrf_error_html, $note);
 
 						}
 
