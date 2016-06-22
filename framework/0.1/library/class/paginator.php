@@ -54,6 +54,7 @@
 				// Set config
 
 					if (!is_array($config)) { // May be a string, number, or false (if database did not return record count)
+
 						if ($config === NULL) {
 							$config = array();
 						} else {
@@ -61,6 +62,11 @@
 									'item_count' => intval($config),
 								);
 						}
+
+					} else if (isset($config['item_count']) && $config['item_count'] !== NULL) {
+
+						$config['item_count'] = intval($config['item_count']);
+
 					}
 
 					$this->config = array_merge($default_config, $config);
