@@ -83,7 +83,9 @@
 
 			public function item_count_set($item_count, $redirect = false) {
 
-				if ($this->config['item_count'] === NULL || $this->config['item_count'] != $item_count) { // If the $item_count is 0, and 'item_count' hasn't been set yet (i.e. NULL), then still run.
+				$item_count = intval($item_count);
+
+				if ($this->config['item_count'] !== $item_count) { // Be careful, 'item_count' can be NULL, and $item_count can be 0... so check types as well.
 
 					$page_requested = $this->page_number_get();
 
