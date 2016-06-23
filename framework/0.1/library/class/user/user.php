@@ -383,7 +383,8 @@
 				//--------------------------------------------------
 				// How to set extra db values
 
-					// $form->db_value_set('registered', date('Y-m-d H:i:s'));
+					// $now = new timestamp();
+					// $form->db_value_set('registered', $now);
 
 				//--------------------------------------------------
 				// Details

@@ -167,8 +167,10 @@
 
 						} else {
 
+							$now = new timestamp();
+
 							echo "\n";
-							echo 'Done @ ' . date('Y-m-d H:i:s') . "\n\n";
+							echo 'Done @ ' . $now->format('Y-m-d H:i:s') . "\n\n";
 
 							foreach ($ran_jobs as $job) {
 								echo '- ' . $job . "\n";
