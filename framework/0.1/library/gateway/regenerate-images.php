@@ -12,7 +12,9 @@
 
 	mime_set('text/plain');
 
-	echo date('Y-m-d H:i:s') . ' - Start' . "\n\n";
+	$now = new timestamp();
+
+	echo $now->foramt('Y-m-d H:i:s') . ' - Start' . "\n\n";
 
 //--------------------------------------------------
 // Files
@@ -53,8 +55,9 @@
 //--------------------------------------------------
 // Done
 
-	echo "\n";
-	echo date('Y-m-d H:i:s') . ' - Done' . "\n";
+	$now = new timestamp();
+
+	echo "\n" . $now->foramt('Y-m-d H:i:s') . ' - Done' . "\n";
 
 	exit();
 

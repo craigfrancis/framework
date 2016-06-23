@@ -78,7 +78,7 @@
 
 			$db = $this->user_obj->db_get();
 
-			$values['edited'] = date('Y-m-d H:i:s');
+			$values['edited'] = new timestamp();
 
 			$db->update($this->user_obj->db_table_main, $values, $this->db_where_get_sql($user_id));
 
