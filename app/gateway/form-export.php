@@ -145,6 +145,7 @@
 		'form-field-fields',
 		'form-field-date',
 		'form-field-time',
+		'form-field-datetime',
 		'form-field-html',
 		'form-field-info',
 	);
