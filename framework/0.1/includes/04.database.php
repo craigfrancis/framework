@@ -61,7 +61,7 @@
 			return '`' . str_replace('`', '', $table) . '`';
 		}
 
-		public function parameter_like($val, $count = 0) {
+		public function parameter_like($val, $count = 0) { // TODO: parameter_like(&$parameters, $val, $count = 0) { ... To be used as: $db->parameter_like($parameters, $word, 2);
 			$val = str_replace('_', '\_', $val);
 			$val = str_replace('%', '\%', $val);
 			return array_fill(0, $count, array('s', '%' . $val . '%'));
