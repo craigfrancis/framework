@@ -477,12 +477,12 @@
 			return $field_info['options'];
 		}
 
-		public function insert($table_sql, $parameters, $on_duplicate = NULL) {
-			$this->_insert($table_sql, $parameters, $on_duplicate, false);
+		public function insert($table_sql, $values, $on_duplicate = NULL) {
+			$this->_insert($table_sql, $values, $on_duplicate, false);
 		}
 
-		public function insert_delayed($table_sql, $parameters, $on_duplicate = NULL) {
-			$this->_insert($table_sql, $parameters, $on_duplicate, true);
+		public function insert_delayed($table_sql, $values, $on_duplicate = NULL) {
+			$this->_insert($table_sql, $values, $on_duplicate, true);
 		}
 
 		private function _insert($table_sql, $values, $on_duplicate, $delayed) {
