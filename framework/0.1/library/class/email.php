@@ -138,6 +138,48 @@
 				$this->template_edit_function = $function;
 			}
 
+			public function template_get_text() {
+
+				if ($this->template_path !== NULL) {
+
+					$template_file = $this->template_path . '/index.txt';
+					if (is_file($template_file)) {
+						return file_get_contents($template_file);
+					} else {
+						exit_with_error('Cannot find template file: ' . $template_file);
+					}
+
+				} else {
+
+					return '[BODY]';
+
+				}
+
+			}
+
+			public function template_get_html() {
+
+				if ($this->template_path === NULL && $this->body_html == '') {
+					return '';
+				}
+
+				if ($this->template_path !== NULL) {
+
+					$template_file = $this->template_path . '/index.html';
+					if (is_file($template_file)) {
+						return file_get_contents($template_file);
+					} else {
+						exit_with_error('Cannot find template file: ' . $template_file);
+					}
+
+				} else {
+
+					return '[BODY]';
+
+				}
+
+			}
+
 			public function from_set($email, $name = NULL) {
 				$this->from_email = $email;
 				$this->from_name = $name;
@@ -649,20 +691,7 @@
 				//--------------------------------------------------
 				// Main content
 
-					if ($this->template_path !== NULL) {
-
-						$template_file = $this->template_path . '/index.txt';
-						if (is_file($template_file)) {
-							$content_text = file_get_contents($template_file);
-						} else {
-							exit_with_error('Cannot find template file: ' . $template_file);
-						}
-
-					} else {
-
-						$content_text = '[BODY]';
-
-					}
+					$content_text = $this->template_get_text();
 
 				//--------------------------------------------------
 				// Variables
@@ -698,26 +727,13 @@
 						return $this->content_html;
 					}
 
-					if ($this->template_path === NULL && $this->body_html == '') {
-						return '';
-					}
-
 				//--------------------------------------------------
 				// Main content
 
-					if ($this->template_path !== NULL) {
+					$content_html = $this->template_get_html();
 
-						$template_file = $this->template_path . '/index.html';
-						if (is_file($template_file)) {
-							$content_html = file_get_contents($template_file);
-						} else {
-							exit_with_error('Cannot find template file: ' . $template_file);
-						}
-
-					} else {
-
-						$content_html = '[BODY]';
-
+					if ($content_html == '') { // Don't try wrapping it into a full HTML document
+						return $content_html;
 					}
 
 				//--------------------------------------------------
