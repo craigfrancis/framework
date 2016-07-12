@@ -158,7 +158,7 @@
 		function human_to_ref($text) {
 
 			$text = strtolower($text);
-			$text = preg_replace('/[^a-z0-9\-]/i', ' ', $text); // Keep "-" so "-1" does not become "1"
+			$text = preg_replace('/[^a-z0-9]/i', ' ', $text); // Keep "-" so "-1" does not become "1"
 			$text = preg_replace('/ +/', '_', trim($text));
 
 			return $text;
@@ -172,7 +172,7 @@
 		function human_to_camel($text) {
 
 			$text = ucwords(strtolower($text));
-			$text = preg_replace('/[^a-z0-9\-]/i', '', $text);
+			$text = preg_replace('/[^a-z0-9]/i', '', $text);
 
 			if (strlen($text) > 0) { // Min of 1 char
 				$text[0] = strtolower($text[0]);
