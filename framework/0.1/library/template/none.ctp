@@ -1,0 +1,1 @@
+<?= $response->view_get_html(); ?>
