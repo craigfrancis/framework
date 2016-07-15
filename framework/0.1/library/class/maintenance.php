@@ -11,9 +11,9 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $job_dir;
-			private $job_paths;
-			private $jobs_run;
+			private $job_dir = NULL;
+			private $job_paths = array();
+			private $jobs_run = array();
 			private $run_id = NULL;
 			private $result_url = NULL;
 			private $time_out = 1200; // 20 minutes
@@ -27,8 +27,6 @@
 				// Jobs
 
 					$this->job_dir = APP_ROOT . '/job/';
-					$this->job_paths = array();
-					$this->jobs_run = array();
 
 					if ($handle = opendir($this->job_dir)) {
 						while (false !== ($file = readdir($handle))) {
@@ -149,7 +147,7 @@
 						$lock->time_out_set($this->time_out);
 
 						if (!$lock->open()) {
-							return false;
+							return 'lock file';
 						}
 
 					}
@@ -172,7 +170,7 @@
 							$lock->close();
 
 						}
-						return false;
+						return 'database record';
 					}
 
 				//--------------------------------------------------

@@ -160,10 +160,10 @@
 					$ran_jobs = $maintenance->run();
 
 					if ($debug_show) {
-						if ($ran_jobs === false) {
+						if (!is_array($ran_jobs)) {
 
 							echo "\n";
-							echo 'Maintenance already running' . "\n\n";
+							echo 'Maintenance already running (' . $ran_jobs . ')' . "\n\n";
 
 						} else {
 
