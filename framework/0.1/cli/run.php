@@ -1,40 +1,6 @@
 <?php
 
 //--------------------------------------------------
-// Config
-
-	define('ROOT', getcwd());
-	define('CLI_ROOT', dirname(__FILE__));
-	define('FRAMEWORK_INIT_ONLY', true);
-	define('REQUEST_MODE', 'cli');
-
-	if (substr(ROOT, -13) == '/upload/files') {
-		define('UPLOAD_ROOT', substr(ROOT, 0, -13));
-	}
-
-	require_once(CLI_ROOT . '/../bootstrap.php');
-
-//--------------------------------------------------
-// Mime type
-
-	mime_set('text/plain');
-
-//--------------------------------------------------
-// Execute command
-
-	function command_run($command, $show_output = false) {
-		if ($show_output && config::get('debug.show')) {
-			echo '  ' . $command . "\n";
-		}
-		$output = shell_exec($command);
-		if ($show_output) {
-			echo $output;
-			flush();
-		}
-		return $output;
-	}
-
-//--------------------------------------------------
 // Parse options
 
 	$main_parameters = array(
@@ -68,12 +34,46 @@
 		$debug_level = intval(isset($options['d']) ? $options['d'] : $options['debug']);
 
 		if ($debug_level > 0) {
-			config::set('debug.level', $debug_level);
+			define('DEBUG_LEVEL_DEFAULT', $debug_level);
 		}
 
 	}
 
-	config::set('debug.show', $debug_show);
+	define('DEBUG_SHOW_DEFAULT', $debug_show);
+
+//--------------------------------------------------
+// Config
+
+	define('ROOT', getcwd());
+	define('CLI_ROOT', dirname(__FILE__));
+	define('FRAMEWORK_INIT_ONLY', true);
+	define('REQUEST_MODE', 'cli');
+
+	if (substr(ROOT, -13) == '/upload/files') {
+		define('UPLOAD_ROOT', substr(ROOT, 0, -13));
+	}
+
+	require_once(CLI_ROOT . '/../bootstrap.php');
+
+//--------------------------------------------------
+// Mime type
+
+	mime_set('text/plain');
+
+//--------------------------------------------------
+// Execute command
+
+	function command_run($command, $show_output = false) {
+		if ($show_output && config::get('debug.show')) {
+			echo '  ' . $command . "\n";
+		}
+		$output = shell_exec($command);
+		if ($show_output) {
+			echo $output;
+			flush();
+		}
+		return $output;
+	}
 
 //--------------------------------------------------
 // Help
