@@ -332,7 +332,7 @@
 	//--------------------------------------------------
 	// Debug
 
-		if (!defined('DEBUG_LEVEL_DEFAULT')) define('DEBUG_LEVEL_DEFAULT', (SERVER == 'stage2' ? 4 : 0));
+		if (!defined('DEBUG_LEVEL_DEFAULT')) define('DEBUG_LEVEL_DEFAULT', (SERVER == 'stage' ? 4 : 0));
 		if (!defined('DEBUG_SHOW_DEFAULT'))  define('DEBUG_SHOW_DEFAULT', true);
 
 		config::set_default('debug.level', DEBUG_LEVEL_DEFAULT);  // 0 not running, 1 for execution time, 2 to also include application logs, 3/4 for framework logs, 5+ for framework debugging.
