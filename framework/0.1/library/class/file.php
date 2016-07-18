@@ -198,6 +198,13 @@
 
 			}
 
+			public function file_delete($id, $ext = NULL) {
+				$path = $this->file_path_get($id, $ext);
+				if (is_file($path)) {
+					unlink($path);
+				}
+			}
+
 		//--------------------------------------------------
 		// Image support
 
