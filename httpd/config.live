@@ -5,6 +5,7 @@
 	<VirtualHost 85.13.241.12:443>
 
 		ServerName www.phpprime.com
+		ServerAlias phpprime.com
 
 		DocumentRoot /www/live/craig.framework/app/public/
 
