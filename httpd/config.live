@@ -1,5 +1,8 @@
+#--------------------------------------------------
+# Craig PHP Prime
+#--------------------------------------------------
 
-	<VirtualHost *:80>
+	<VirtualHost 85.13.241.12:443>
 
 		ServerName www.phpprime.com
 
@@ -10,14 +13,17 @@
 		CustomLog /www/live/craig.framework/logs/access_log inc_info
 		ErrorLog /www/live/craig.framework/logs/error_log
 
-		# Header always set X-Frame-Options: DENY
-		# Header always set X-XSS-Protection: "1; mode=block"
+		Header always set X-Frame-Options: DENY
+		Header always set X-XSS-Protection: "1; mode=block"
 		Header always set X-Content-Type-Options: nosniff
-		# Header always set Strict-Transport-Security: "max-age=31536000; includeSubDomains"
+		Header always set Strict-Transport-Security: "max-age=31536000; includeSubDomains; preload"
 
 		RewriteEngine on
 
 		RewriteRule ^/\.well-known/acme-challenge/(.*)$ /etc/acme/public/$1 [L]
+
+		RewriteCond %{HTTP_HOST} !^www\.phpprime\.com$
+		RewriteRule ^(.*) https://www.phpprime.com$1 [R=301,L]
 
 		RewriteRule ^/a/files/(.*) /www/live/craig.framework/files/$1 [S=1]
 		RewriteRule ^(.*)$ %{DOCUMENT_ROOT}$1
@@ -43,9 +49,31 @@
 		ExpiresByType application/javascript "access plus 12 months"
 		ExpiresByType application/font-woff "access plus 12 months"
 
+		SSLEngine On
+		SSLCertificateFile /etc/apache2/ssl/www.krang.org.uk.crt
+		SSLCertificateKeyFile /etc/apache2/ssl/www.krang.org.uk.key
+		SSLCertificateChainFile /etc/apache2/ssl/www.krang.org.uk.chn
+
 		<IfModule php5_module>
 			php_value newrelic.appname "Craig: Framework"
 		</IfModule>
+
+	</VirtualHost>
+
+#--------------------------------------------------
+# Craig PHP Prime (Redirect)
+#--------------------------------------------------
+
+	<VirtualHost *:80>
+
+		ServerName phpprime.com
+
+		RewriteEngine on
+		RewriteRule  ^/(.*)  https://phpprime.com/$1  [R=301,L]
+
+			# Required for HSTS Preload, the redirect for the top
+			# level domain needs to redirect to the top level domain
+			# to always have the Strict-Transport-Security header set.
 
 	</VirtualHost>
 
@@ -58,7 +86,7 @@
 		ServerAlias primeframework.com
 		ServerAlias *.primeframework.com
 
-		Redirect 301 / http://www.phpprime.com/
+		Redirect 301 / https://www.phpprime.com/
 
 	</VirtualHost>
 
