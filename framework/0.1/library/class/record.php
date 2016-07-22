@@ -293,13 +293,11 @@
 									continue; // Probably a new value supplied though $form->db_value_set();
 								}
 
-								if (strval($new_value) !== strval($old_values[$field])) { // If the value changes from "123" to "0123", and ignore an INT field being set to NULL (NULL === 0)
+								$old_value = $old_values[$field];
 
-									if ($new_value === '' && $old_values[$field] === '0') {
-										continue; // Special case for select fields on an int field (value returned as string) and the "label_option"
-									}
+								if ($this->log_value_different($old_value, $new_value)) {
 
-									$this->log_change($field, $old_values[$field], $new_value);
+									$this->log_change($field, $old_value, $new_value);
 
 									$changed = true;
 
@@ -390,6 +388,23 @@
 
 			}
 
+			public function log_value_different($old_value, $new_value) { // See testing section below.
+
+				if (strval($old_value) === strval($new_value)) {
+
+					return false;
+
+				} else {
+
+					$old_value_numeric = ($old_value === '' || (is_numeric($old_value) && (floatval($old_value) == 0 || substr($old_value, 0, 1) !== '0')));
+					$new_value_numeric = ($new_value === '' || (is_numeric($new_value) && (floatval($new_value) == 0 || substr($new_value, 0, 1) !== '0')));
+
+					return (!$old_value_numeric || !$new_value_numeric || floatval($old_value) != floatval($new_value));
+
+				}
+
+			}
+
 			protected function log_change($field, $old_value, $new_value) {
 
 				if ($this->config['log_table']) {
@@ -407,5 +422,60 @@
 			}
 
 	}
+
+//--------------------------------------------------
+// Testing
+
+	// if (false) {
+	//
+	// 	mime_set('text/plain');
+	//
+	// 		// If the value changes from "123" to "0123" log it.
+	// 		// Ignore an INT field being set to NULL (NULL === 0)
+	// 		// Ignore a number field that sets '10', but the db stores '10.00'
+	// 		// Ignore a select field that has a label_option set to '', but db stores 0
+	//
+	// 	$values = array(
+	// 			array('1',   '1.00',   'Same'),
+	// 			array('1',   '1.0001', 'DIFFERENT'),
+	// 			array('',    '0',      'Same'),
+	// 			array('',    '1',      'DIFFERENT'),
+	// 			array(NULL,  '0',      'DIFFERENT'),
+	// 			array(0,     '',       'Same'),
+	// 			array('',    '0.00',   'Same'),
+	// 			array('',    '0.01',   'DIFFERENT'),
+	// 			array('123', '0123',   'DIFFERENT'), // e.g. CRN
+	// 		);
+	//
+	// 	$record = new record_base(array());
+	// 	$value_pad = 10;
+	//
+	// 	foreach ($values as $value) {
+	//
+	// 		$old_value = $value[0];
+	// 		$new_value = $value[1];
+	//
+	// 		$result_check = $value[2];
+	// 		$result_value = ($record->log_value_different($old_value, $new_value) ? 'DIFFERENT' : 'Same');
+	//
+	// 		if ($new_value === NULL) {
+	// 			$new_value = 'NULL';
+	// 		} else if (is_string($new_value)) {
+	// 			$new_value = "'" . $new_value . "'";
+	// 		}
+	//
+	// 		if ($old_value === NULL) {
+	// 			$old_value = 'NULL';
+	// 		} else if (is_string($old_value)) {
+	// 			$old_value = "'" . $old_value . "'";
+	// 		}
+	//
+	// 		echo str_pad($old_value, $value_pad) . ' - ' . str_pad($new_value, $value_pad) . ' = ' . $result_value . ($result_value != $result_check ? ' - ERROR' : '') . "\n";
+	//
+	// 	}
+	//
+	// 	exit();
+	//
+	// }
 
 ?>
