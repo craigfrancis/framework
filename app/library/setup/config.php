@@ -70,6 +70,7 @@
 		//--------------------------------------------------
 		// General
 
+			$config['output.protocols'] = array('https');
 			$config['output.domain'] = 'www.phpprime.com';
 
 	}
