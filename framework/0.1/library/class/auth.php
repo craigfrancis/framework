@@ -1013,6 +1013,8 @@
 
 							$record->value_set($this->db_fields['main']['password'], $password_hash);
 
+// TODO: Delete all active sessions for the user (see reset_process_complete as well).
+
 						}
 
 					//--------------------------------------------------
@@ -1224,6 +1226,7 @@
 				}
 
 				public function reset_process_complete() {
+					// Delete all active sessions for the user (see update_complete as well).
 				}
 
 		//--------------------------------------------------
