@@ -124,8 +124,8 @@
 				return $this->type;
 			}
 
-			public function wrapper_tag_set($class) {
-				$this->wrapper_tag = $class;
+			public function wrapper_tag_set($tag) {
+				$this->wrapper_tag = $tag;
 			}
 
 			public function wrapper_id_set($id) {
