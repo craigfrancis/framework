@@ -27,6 +27,7 @@
 			private $print_page_submit = NULL; // Current page the user submitted.
 			private $print_page_valid = true;
 			private $print_group = NULL;
+			private $print_group_tag = 'h2';
 			private $hidden_values = array();
 			private $fields = array();
 			private $field_refs = array();
@@ -291,6 +292,10 @@
 
 			public function print_group_get() {
 				return $this->print_group;
+			}
+
+			public function print_group_tag_set($tag) {
+				return $this->print_group_tag = $tag;
 			}
 
 			public function hidden_value($name) { // You should call form->hidden_value() first to initialise - get/set may not be called when form is submitted with errors.
@@ -1188,19 +1193,34 @@
 
 					}
 
-					$field_groups = array_unique($field_groups);
+					$field_groups = array_values(array_unique($field_groups)); // And re-index
 
-					$show_group_headings = (count($field_groups) > 1);
+					$group_headings = (count($field_groups) > 1);
 
 				//--------------------------------------------------
 				// Fields HTML
 
 					$html = '';
 
-					foreach ($field_groups as $group) {
+					foreach ($field_groups as $k => $group) {
 
-						if ($show_group_headings) {
-							$html .= "\n\t\t\t\t" . '<h2>' . html($group) . '</h2>' . "\n";
+						if ($this->print_group_tag == 'fieldset') {
+
+							if ($k > 0) {
+								$html .= "\n\t\t\t\t" . '</fieldset>' . "\n";
+							}
+
+							$html .= "\n\t\t\t\t" . '<fieldset>' . "\n";
+							if ($group !== '') {
+								$html .= "\n\t\t\t\t\t" . '<legend>' . html($group) . '</legend>' . "\n";
+							}
+
+						} else if ($group_headings) {
+
+							if ($group !== '') {
+								$html .= "\n\t\t\t\t" . '<' . html($this->print_group_tag) . '>' . html($group) . '</' . html($this->print_group_tag) . '>' . "\n";
+							}
+
 						}
 
 						foreach ($this->fields as $field) {
@@ -1229,6 +1249,10 @@
 
 						}
 
+					}
+
+					if ($this->print_group_tag == 'fieldset' && $html != '') {
+						$html .= "\n\t\t\t\t" . '</fieldset>' . "\n";
 					}
 
 				//--------------------------------------------------
