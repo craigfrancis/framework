@@ -105,10 +105,6 @@
 
 			}
 
-			public function _fields_add($field) { // DO NOT USE, only for the form helper till all projects use records.
-				$this->config['fields'][] = $field;
-			}
-
 			// public function where_set($where) {
 			//
 			// 	Could pass in an array...
@@ -146,13 +142,27 @@
 				}
 			}
 
-			// public function config_set($key, $value) {
-			// 	if (key_exists($key, $this->config)) {
-			// 		$this->config[$key] = $value;
-			// 	} else {
-			// 		exit_with_error('Unknown record config "' . $key . '"');
-			// 	}
-			// }
+			public function config_set($key, $value) {
+
+				if ($key == 'fields') { // Only used in CA with 'preferred_supplier' and 'assessment_cost_note' in field_recommend_get()
+
+					if ($this->values === NULL) {
+						$this->config['fields'] = $value;
+					} else {
+						exit_with_error('Cannot set the "fields" config after returning the values for a record.');
+					}
+
+				// } else if (key_exists($key, $this->config)) {
+				//
+				// 	$this->config[$key] = $value;
+
+				} else {
+
+					exit_with_error('Unknown record config "' . $key . '"');
+
+				}
+
+			}
 
 			// public function config_get($key) {
 			// 	if (key_exists($key, $this->config)) {
@@ -161,6 +171,10 @@
 			// 		exit_with_error('Unknown record config "' . $key . '"');
 			// 	}
 			// }
+
+			public function _fields_add($field) { // DO NOT USE, only for the form helper till all projects use records.
+				$this->config['fields'][] = $field;
+			}
 
 		//--------------------------------------------------
 		// Returning
