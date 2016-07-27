@@ -23,6 +23,7 @@
 			private $readonly = false;
 			private $autofocus = false;
 			private $autofocus_submit = false;
+			private $wrapper_tag = 'fieldset';
 			private $print_page_setup = NULL; // Current page being setup in code.
 			private $print_page_submit = NULL; // Current page the user submitted.
 			private $print_page_valid = true;
@@ -221,6 +222,10 @@
 
 			public function autofocus_get() {
 				return $this->autofocus;
+			}
+
+			public function wrapper_tag_set($tag) {
+				$this->wrapper_tag = $tag;
 			}
 
 			public function print_page_start($page) {
@@ -1323,11 +1328,11 @@
 			public function html() {
 				return '
 					' . rtrim($this->html_start()) . '
-						<fieldset>
+						<' . html($this->wrapper_tag) . '>
 							' . $this->html_error_list() . '
 							' . $this->html_fields() . '
 							' . $this->html_submit() . '
-						</fieldset>
+						</' . html($this->wrapper_tag) . '>
 					' . $this->html_end() . "\n";
 			}
 
