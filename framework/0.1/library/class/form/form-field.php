@@ -294,6 +294,10 @@
 				$this->info_html = $info_html;
 			}
 
+			public function info_get_html() {
+				return $this->info_html;
+			}
+
 			public function info_class_set($class) {
 				$this->info_class = $class;
 			}
