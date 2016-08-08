@@ -233,7 +233,7 @@
 
 							error_send('deleted', array_merge(array(
 									'record' => (array('config' => $this->config, 'values' => $this->values)),
-									'timestamp' => new timestamp($this->values['deleted']),
+									'timestamp' => new timestamp($this->values['deleted'], 'db'),
 								), $this->config['deleted']));
 
 						}
