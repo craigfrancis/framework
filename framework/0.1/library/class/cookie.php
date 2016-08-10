@@ -87,7 +87,11 @@
 				$native = (version_compare(PHP_VERSION, '5.2.0', '>=')); // The HttpOnly parameter was added in 5.2.0
 
 				if ($config['same_site'] !== NULL) {
-					$native = false;
+					if (preg_match('/Android.*Chrome\/([0-9]+)/', config::get('request.browser'), $matches) && $matches[1] <= 52) { // TODO: Remove when Chrome XXX is released - https://crbug.com/632004
+						$config['same_site'] = NULL;
+					} else {
+						$native = false;
+					}
 				}
 
 				if ($native) {
