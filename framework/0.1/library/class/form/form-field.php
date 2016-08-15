@@ -422,17 +422,28 @@
 
 			protected function _db_field_set($a, $b = NULL, $c = NULL) {
 
+				$form_record = $this->form->db_record_get();
+
 				if (is_object($a) && is_a($a, 'record')) {
+
 					$record = $a;
 					$field_name = $b;
 					$field_type = $c;
+
+					if (!in_array($record, (is_array($form_record) ? $form_record : array($form_record)))) {
+						exit_with_error('The form helper needs to be told about the record for "' . $field_name . '" by using $form->db_record_set(array($record1, $record2, ...))');
+					}
+
 				} else {
-					$record = $this->form->db_record_get();
+
+					$record = $form_record;
 					if (!is_object($record) || !is_a($record, 'record')) {
 						exit_with_error('Please specify a record to use when setting the db field for "' . $this->name . '"');
 					}
+
 					$field_name = $a;
 					$field_type = $b;
+
 				}
 
 				$this->db_record = $record;
