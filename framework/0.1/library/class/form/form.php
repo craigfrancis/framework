@@ -826,7 +826,7 @@
 					}
 
 					foreach ($this->fields as $field) {
-						$value_new = $field->_db_field_value_update();
+						$field->_db_field_value_update();
 					}
 
 					foreach ($records as $record) {
