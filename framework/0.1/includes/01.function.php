@@ -158,7 +158,7 @@
 		function human_to_ref($text) {
 
 			$text = strtolower($text);
-			$text = preg_replace('/[^a-z0-9]/i', ' ', $text); // Keep "-" so "-1" does not become "1"
+			$text = preg_replace('/[^a-z0-9]/i', ' ', $text); // TODO: Allow hyphens, so the radio field "-1" does not get changed to "1", and the URL "/a/sub-page/" gets the ID "#p_a_sub-page".
 			$text = preg_replace('/ +/', '_', trim($text));
 
 			return $text;
