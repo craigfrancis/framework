@@ -936,7 +936,7 @@
 
 						foreach ($heading_row as $heading_info) {
 
-							$csv_output[] = $heading_info['html'];
+							$csv_output[] = $this->_html_to_text($heading_info['html']);
 
 							for ($k = 1; $k < $heading_info['colspan']; $k++) { // This is faster than ... $row = array_pad(array($heading_info['html']), $heading_info['colspan'], '');
 								$csv_output[] = '';
@@ -957,7 +957,7 @@
 
 						foreach ($this->rows[$row_key]['row']->data as $cell_info) {
 
-							$csv_output[] = $cell_info['html'];
+							$csv_output[] = $this->_html_to_text($cell_info['html']);
 
 							for ($k = 1; $k < $cell_info['colspan']; $k++) {
 								$csv_output[] = '';
@@ -974,7 +974,7 @@
 
 					if (count($this->rows) == 0) {
 
-						fputcsv($fp, array($this->no_records_html));
+						fputcsv($fp, array($this->_html_to_text($this->no_records_html)));
 
 					}
 
@@ -989,7 +989,7 @@
 
 							foreach ($footer_row as $footer_info) {
 
-								$csv_output[] = $footer_info['html'];
+								$csv_output[] = $this->_html_to_text($footer_info['html']);
 
 								for ($k = 1; $k < $footer_info['colspan']; $k++) {
 									$csv_output[] = '';
@@ -1013,8 +1013,6 @@
 					while (!feof($fp)) {
 						$csv_output .= fgetss($fp); // Gets line from file pointer, and strips HTML tags
 					}
-
-					$csv_output = html_decode($csv_output);
 
 					fclose($fp);
 
