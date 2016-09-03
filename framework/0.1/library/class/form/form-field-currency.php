@@ -80,9 +80,11 @@
 		//--------------------------------------------------
 		// Value
 
-			protected function _value_print_get($decimal_places = 2) {
+			protected function _value_print_get() {
 
 				$value = parent::_value_print_get();
+
+				$decimal_places = ($this->step_value == 1 ? 0 : 2);
 
 				if (is_int($value) || is_float($value)) {
 					return format_currency($value, $this->currency_char, $decimal_places, $this->zero_to_blank);

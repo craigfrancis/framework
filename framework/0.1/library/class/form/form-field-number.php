@@ -153,7 +153,7 @@
 				}
 			}
 
-			protected function _value_print_get($decimal_places = 2) {
+			protected function _value_print_get() {
 
 				$value = parent::_value_print_get(); // Value from $this->value, saved_value, or database
 				$value_clean = parse_number($value);
@@ -198,7 +198,7 @@
 					$attributes['max'] = $this->max_value;
 				}
 
-				if ($this->step_value !== NULL) {
+				if ($this->step_value !== NULL && $this->input_type != 'text') { // Text is used for currency fields
 					$attributes['step'] = $this->step_value;
 				}
 
