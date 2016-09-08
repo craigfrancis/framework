@@ -255,7 +255,7 @@
 						if ($this->user_identification) {
 							$user_identification = $this->user_identification;
 						} else {
-							$user_identification = $this->session_info[$this->db_fields['main']['identification']];
+							$user_identification = $this->session_info_get($this->db_fields['main']['identification']);
 						}
 						$field->value_set($user_identification);
 					}
