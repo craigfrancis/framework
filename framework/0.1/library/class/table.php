@@ -1011,7 +1011,7 @@
 					$csv_output = '';
 
 					while (!feof($fp)) {
-						$csv_output .= fgetss($fp); // Gets line from file pointer, and strips HTML tags
+						$csv_output .= fgets($fp);
 					}
 
 					fclose($fp);
