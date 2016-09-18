@@ -6,8 +6,8 @@
 
 	set -u;
 
-	UPLOAD_SERVER="${1}";
-	SRC_SERVER="${2}";
+	SERVER="${1}";
+	UPLOAD_SERVER="${2}";
 	SRC_HOST="${3}";
 	SRC_PATH="${4}";
 
@@ -24,7 +24,7 @@
 	SSH_CONTROL='~/.ssh/master-%r@%h:%p';
 
 	echo;
-	echo "Connecting ${SRC_SERVER} to ${SRC_HOST}:";
+	echo "Connecting ${SERVER} to ${SRC_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${SRC_HOST}";
 	echo '  Done';
 

@@ -106,8 +106,8 @@
 					if ($config_dst['source'] != SERVER) {
 
 						upload_exec('connect', array(
-								$server,
 								SERVER,
+								$server,
 								$config_src['location_host'],
 								$config_src['location_path'],
 							));
@@ -115,6 +115,7 @@
 					} else if ($config_dst['location_host'] == $config_src['location_host']) {
 
 						upload_exec('process-local', array(
+								SERVER,
 								FRAMEWORK_ROOT,
 								$config_src['location_path'],
 								$config_dst['location_path'],
@@ -127,6 +128,7 @@
 						}
 
 						upload_exec('process-remote', array(
+								SERVER,
 								FRAMEWORK_ROOT,
 								$config_dst['method'],
 								$config_src['location_path'],

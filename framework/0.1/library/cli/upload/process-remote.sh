@@ -6,11 +6,12 @@
 
 	set -u;
 
-	FRAMEWORK_ROOT="${1}";
-	UPLOAD_METHOD="${2}";
-	SRC_PATH="${3}";
-	DST_HOST="${4}";
-	DST_PATH="${5}";
+	SERVER="${1}";
+	FRAMEWORK_ROOT="${2}";
+	UPLOAD_METHOD="${3}";
+	SRC_PATH="${4}";
+	DST_HOST="${5}";
+	DST_PATH="${6}";
 
 	if [[ -z "${FRAMEWORK_ROOT}" ]] || [[ -z "${UPLOAD_METHOD}" ]] || [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo 'Missing parameters';
@@ -25,7 +26,7 @@
 	SSH_CONTROL='~/.ssh/master-%r@%h:%p';
 
 	echo;
-	echo "Connecting to ${DST_HOST}:";
+	echo "Connecting ${SERVER} to ${DST_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${DST_HOST}";
 	if [ "$?" != "0" ]; then
 		echo '  Error';

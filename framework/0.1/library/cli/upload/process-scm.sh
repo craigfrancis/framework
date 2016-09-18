@@ -6,11 +6,12 @@
 
 	set -u;
 
-	ROOT="${1}";
-	DST_SOURCE="${2}";
-	DST_HOST="${3}";
-	DST_PATH="${4}";
-	UPDATE="${5}";
+	SERVER="${1}";
+	ROOT="${2}";
+	DST_SOURCE="${3}";
+	DST_HOST="${4}";
+	DST_PATH="${5}";
+	UPDATE="${6}";
 
 	if [[ -z "${ROOT}" ]] || [[ -z "${DST_SOURCE}" ]] || [[ -z "${DST_HOST}" ]] || [[ -z "${DST_PATH}" ]]; then
 		echo 'Missing parameters';
@@ -25,7 +26,7 @@
 	SSH_CONTROL='~/.ssh/master-%r@%h:%p';
 
 	echo;
-	echo "Connecting to ${DST_HOST}:";
+	echo "Connecting ${SERVER} to ${DST_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${DST_HOST}";
 	echo '  Done';
 
