@@ -107,6 +107,7 @@
 
 						upload_exec('connect', array(
 								$server,
+								SERVER,
 								$config_src['location_host'],
 								$config_src['location_path'],
 							));

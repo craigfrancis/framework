@@ -7,8 +7,9 @@
 	set -u;
 
 	UPLOAD_SERVER="${1}";
-	SRC_HOST="${2}";
-	SRC_PATH="${3}";
+	SRC_SERVER="${2}";
+	SRC_HOST="${3}";
+	SRC_PATH="${4}";
 
 	if [[ -z "${UPLOAD_SERVER}" ]] || [[ -z "${SRC_HOST}" ]] || [[ -z "${SRC_PATH}" ]]; then
 		echo 'Missing parameters';
@@ -23,7 +24,7 @@
 	SSH_CONTROL='~/.ssh/master-%r@%h:%p';
 
 	echo;
-	echo "Connecting to ${SRC_HOST}:";
+	echo "Connecting ${SRC_SERVER} to ${SRC_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${SRC_HOST}";
 	echo '  Done';
 
