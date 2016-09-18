@@ -84,6 +84,7 @@
 						}
 
 						upload_exec('process-scm', array(
+								SERVER,
 								ROOT,
 								$config_dst['source'],
 								$config_dst['location_host'],
@@ -115,7 +116,6 @@
 					} else if ($config_dst['location_host'] == $config_src['location_host']) {
 
 						upload_exec('process-local', array(
-								SERVER,
 								FRAMEWORK_ROOT,
 								$config_src['location_path'],
 								$config_dst['location_path'],
