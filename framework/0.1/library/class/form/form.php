@@ -114,7 +114,7 @@
 
 						if ($dest == 'referrer') {
 							$referrer = config::get('request.referrer');
-							if ($referrer != '') {
+							if (substr($referrer, 0, 1) == '/') { // Must have a value, and must be for the same site. Where a scheme-relative URL "//example.com" won't work, as the domain would be prefixed.
 								$dest = url($referrer, array('dest' => NULL)); // If the previous page also had a "dest" value, drop it (stop loop)
 							} else {
 								$dest = NULL; // Not provided, e.g. user re-loaded page
