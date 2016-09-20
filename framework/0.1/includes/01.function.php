@@ -458,16 +458,6 @@
 		}
 	}
 
-	if (!function_exists('array_column')) { // 5.5+
-		function array_column($array, $column_key, $index_key = null) {
-			$results = array();
-			foreach ($array as $k => $v) {
-				$results[($index_key ? $v[$index_key] : $k)] = $v[$column_key];
-			}
-			return $results;
-		}
-	}
-
 	if (!function_exists('hex2bin')) { // 5.4+
 		function hex2bin($hex) {
 			return pack('H*', $hex);
@@ -482,6 +472,13 @@
 		}
 		return $cms_text->html($config);
 	}
+
+//--------------------------------------------------
+// Support functions
+
+	if (!function_exists('http_response_code')) require_once(FRAMEWORK_ROOT . '/library/function/http-response-code.php'); // 5.4+
+	if (!function_exists('array_column'))       require_once(FRAMEWORK_ROOT . '/library/function/array-column.php'); // 5.5+
+	if (!function_exists('random_bytes'))       require_once(FRAMEWORK_ROOT . '/library/function/random-bytes.php'); // 7.0+
 
 //--------------------------------------------------
 // Check that an email address is valid
@@ -1332,74 +1329,6 @@
 	}
 
 //--------------------------------------------------
-// Set http response code
-
-	if (!function_exists('http_response_code')) { // PHP 5.4+
-		function http_response_code($code = NULL) {
-
-			if ($code !== NULL) {
-
-				switch ($code) {
-					case 100: $text = 'Continue'; break;
-					case 101: $text = 'Switching Protocols'; break;
-					case 200: $text = 'OK'; break;
-					case 201: $text = 'Created'; break;
-					case 202: $text = 'Accepted'; break;
-					case 203: $text = 'Non-Authoritative Information'; break;
-					case 204: $text = 'No Content'; break;
-					case 205: $text = 'Reset Content'; break;
-					case 206: $text = 'Partial Content'; break;
-					case 300: $text = 'Multiple Choices'; break;
-					case 301: $text = 'Moved Permanently'; break;
-					case 302: $text = 'Moved Temporarily'; break;
-					case 303: $text = 'See Other'; break;
-					case 304: $text = 'Not Modified'; break;
-					case 305: $text = 'Use Proxy'; break;
-					case 400: $text = 'Bad Request'; break;
-					case 401: $text = 'Unauthorized'; break;
-					case 402: $text = 'Payment Required'; break;
-					case 403: $text = 'Forbidden'; break;
-					case 404: $text = 'Not Found'; break;
-					case 405: $text = 'Method Not Allowed'; break;
-					case 406: $text = 'Not Acceptable'; break;
-					case 407: $text = 'Proxy Authentication Required'; break;
-					case 408: $text = 'Request Time-out'; break;
-					case 409: $text = 'Conflict'; break;
-					case 410: $text = 'Gone'; break;
-					case 411: $text = 'Length Required'; break;
-					case 412: $text = 'Precondition Failed'; break;
-					case 413: $text = 'Request Entity Too Large'; break;
-					case 414: $text = 'Request-URI Too Large'; break;
-					case 415: $text = 'Unsupported Media Type'; break;
-					case 500: $text = 'Internal Server Error'; break;
-					case 501: $text = 'Not Implemented'; break;
-					case 502: $text = 'Bad Gateway'; break;
-					case 503: $text = 'Service Unavailable'; break;
-					case 504: $text = 'Gateway Time-out'; break;
-					case 505: $text = 'HTTP Version not supported'; break;
-					default:
-						exit_with_error('Unknown http status code "' . $code . '"');
-					break;
-				}
-
-				$protocol = head(isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
-
-				header($protocol . ' ' . $code . ' ' . $text);
-
-				config::set('output.http_response_code', $code);
-
-			} else {
-
-				$code = config::get('output.http_response_code', 200);
-
-			}
-
-			return $code;
-
-		}
-	}
-
-//--------------------------------------------------
 // HTTPS connections
 
 	function https_available() {
@@ -1562,85 +1491,6 @@
 		}
 
 		return $key;
-
-	}
-
-//--------------------------------------------------
-// Random bytes - from Drupal/phpPass
-
-	function random_bytes($count) {
-
-		//--------------------------------------------------
-		// Preserved values
-
-			static $random_state, $bytes;
-
-		//--------------------------------------------------
-		// Init on the first call. The contents of $_SERVER
-		// includes a mix of user-specific and system
-		// information that varies a little with each page.
-
-			if (!isset($random_state)) {
-				$random_state = print_r($_SERVER, true);
-				if (function_exists('getmypid')) {
-					$random_state .= getmypid(); // Further initialise with the somewhat random PHP process ID.
-				}
-				$bytes = '';
-			}
-
-		//--------------------------------------------------
-		// Need more bytes of data
-
-			if (strlen($bytes) < $count) {
-
-				//--------------------------------------------------
-				// /dev/urandom is available on many *nix systems
-				// and is considered the best commonly available
-				// pseudo-random source (but output may contain
-				// less entropy than the blocking /dev/random).
-
-					if ($fh = @fopen('/dev/urandom', 'rb')) {
-
-						// PHP only performs buffered reads, so in reality it will always read
-						// at least 4096 bytes. Thus, it costs nothing extra to read and store
-						// that much so as to speed any additional invocations.
-
-						$bytes .= fread($fh, max(4096, $count));
-						fclose($fh);
-
-					}
-
-				//--------------------------------------------------
-				// If /dev/urandom is not available or returns no
-				// bytes, this loop will generate a good set of
-				// pseudo-random bytes on any system.
-
-					while (strlen($bytes) < $count) {
-
-						// Note that it may be important that our $random_state is passed
-						// through hash() prior to being rolled into $output, that the two hash()
-						// invocations are different, and that the extra input into the first one -
-						// the microtime() - is prepended rather than appended. This is to avoid
-						// directly leaking $random_state via the $output stream, which could
-						// allow for trivial prediction of further "random" numbers.
-
-						$random_state = hash('sha256', microtime() . mt_rand() . $random_state);
-						$bytes .= hash('sha256', mt_rand() . $random_state, true);
-
-					}
-
-			}
-
-		//--------------------------------------------------
-		// Extract the required output from $bytes
-
-			$output = substr($bytes, 0, $count);
-			$bytes = substr($bytes, $count);
-
-		//--------------------------------------------------
-		// Return
-
-			return $output;
 
 	}
 
