@@ -50,7 +50,7 @@
 					$this->from_email = config::get('email.from_email');
 					$this->from_name = config::get('email.from_name');
 					$this->default_style = config::get('email.default_style');
-					$this->default_bulk = config::get('email.default_bulk', false);
+					$this->default_bulk = config::get('email.default_bulk', false); // TODO: Change default to true.
 
 				//--------------------------------------------------
 				// Default headers
