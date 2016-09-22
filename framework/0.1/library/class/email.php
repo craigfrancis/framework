@@ -31,6 +31,7 @@
 			protected $content_text = NULL;
 			protected $content_html = NULL;
 			protected $default_style = NULL;
+			protected $default_bulk = true;
 			protected $boundaries = array();
 
 		//--------------------------------------------------
@@ -49,9 +50,10 @@
 					$this->from_email = config::get('email.from_email');
 					$this->from_name = config::get('email.from_name');
 					$this->default_style = config::get('email.default_style');
+					$this->default_bulk = config::get('email.default_bulk', false);
 
 				//--------------------------------------------------
-				// Default headers for debug
+				// Default headers
 
 					$this->header_set('X-Request-IP', json_encode(config::get('request.ip')));
 					$this->header_set('X-Request-UA', json_encode(config::get('request.browser')));
@@ -467,7 +469,11 @@
 
 				$additional_parameters = '';
 
-				if ($this->return_path != NULL) {
+				if ($this->default_bulk === true) {
+
+					$additional_parameters = '-f ""'; // See $this->_build()
+
+				} else if ($this->return_path != NULL) {
 
 					$additional_parameters = '-f "' . addslashes($this->return_path) . '"';
 
@@ -646,9 +652,16 @@
 					}
 
 				//--------------------------------------------------
-				// Return path
+				// Return path, and bulk email markers
 
-					if ($this->return_path != NULL) {
+					if ($this->default_bulk === true) { // Most emails are sent automatically, and won't appreciate Out of Office AutoReplies
+
+						$headers['Return-Path'] = '<>'; // https://tools.ietf.org/html/rfc3834 and http://stackoverflow.com/questions/154718/precedence-header-in-email (also needed for GMail).
+
+						$headers['Precedence'] = 'bulk'; // https://lists.fedoraproject.org/pipermail/devel/2013-June/184139.html
+						$headers['Auto-Submitted'] = 'auto-generated';
+
+					} else if ($this->return_path != NULL) {
 
 						$headers['Return-Path'] = $this->return_path;
 
