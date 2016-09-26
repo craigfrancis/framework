@@ -602,7 +602,7 @@
 						' . $this->config['field_id_sql'] . ' = "' . $db->escape($id) . '" AND
 						' . $this->config['where_sql'];
 
-					$results = $this->update_locations(-1);
+					$results = $this->update_locations();
 
 					$this->config['where_sql'] = $old_sql_where;
 
