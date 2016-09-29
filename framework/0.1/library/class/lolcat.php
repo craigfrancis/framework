@@ -20,15 +20,24 @@
 		public function image_url_get($credits = NULL) {
 
 			$id = $this->image_id_get($credits);
-			$site = config::get('lolcat.site');
-			$pass = hash('sha256', $id . $site . config::get('lolcat.pass'));
-			$url = config::get('lolcat.url', 'https://www.devcf.com/a/api/lolcat/');
 
-			return url($url, array(
-					'id' => $id,
-					'site' => $site,
-					'pass' => $pass,
-				));
+			if ($id === NULL) {
+
+				return NULL;
+
+			} else {
+
+				$site = config::get('lolcat.site');
+				$pass = hash('sha256', $id . $site . config::get('lolcat.pass'));
+				$url = config::get('lolcat.url', 'https://www.devcf.com/a/api/lolcat/');
+
+				return url($url, array(
+						'id' => $id,
+						'site' => $site,
+						'pass' => $pass,
+					));
+
+			}
 
 		}
 
@@ -38,13 +47,21 @@
 				$credits = $this->credit_get();
 			}
 
-			$credits = floor($credits); // 4.9 is not enough for image 5.
+			if ($credits === NULL) {
 
-			if ($credits < 0) {
-				$credits = 0;
+				return NULL;
+
+			} else {
+
+				$credits = floor($credits); // 4.9 is not enough for image 5.
+
+				if ($credits < 0) {
+					$credits = 0;
+				}
+
+				return ($credits + 1); // No credits still gets image 1
+
 			}
-
-			return ($credits + 1); // No credits still gets image 1
 
 		}
 
