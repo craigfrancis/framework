@@ -613,7 +613,19 @@
 
 					} else {
 
-						return $this->error('Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")', ($context ? debug_dump($context) . "\n\n" : '') . $request . "\n\n" . $this->response_full);
+						$debug = '--------------------------------------------------' . "\n\n";
+
+						if ($context) {
+							$debug .= debug_dump($context) . "\n\n";
+							$debug .= '--------------------------------------------------' . "\n\n";
+						}
+
+						$debug .= $request . "\n\n";
+						$debug .= '--------------------------------------------------' . "\n\n";
+						$debug .= $this->response_full . "\n\n";
+						$debug .= '--------------------------------------------------' . "\n";
+
+						return $this->error('Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")', $debug);
 
 					}
 
