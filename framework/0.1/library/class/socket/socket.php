@@ -610,7 +610,7 @@
 
 					} else {
 
-						return $this->error('Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")', debug_dump($headers) . "\n\n" . $request . "\n\n" . $this->response_full);
+						return $this->error('Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")', $request . "\n\n" . $this->response_full);
 
 					}
 
