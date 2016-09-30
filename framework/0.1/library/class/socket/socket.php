@@ -556,7 +556,7 @@
 				//--------------------------------------------------
 				// Receive
 
-					$error_reporting = error_reporting(); // Dam IIS forgetting close_notify indicator - https://php.net/file
+					$error_reporting = error_reporting(0); // Dam IIS forgetting close_notify indicator - https://php.net/file
 
 					// $response = '';
 					// while (!feof($connection)) {
