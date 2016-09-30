@@ -7,6 +7,7 @@
 
 			protected $input_day = NULL;
 			protected $input_single = false;
+			protected $input_partial_allowed = false;
 
 		//--------------------------------------------------
 		// Setup
@@ -87,6 +88,10 @@
 				parent::input_options_text_set($field, $options, $label);
 			}
 
+			public function input_partial_allowed_set($input_partial_allowed) {
+				$this->input_partial_allowed = $input_partial_allowed;
+			}
+
 		//--------------------------------------------------
 		// Format
 
@@ -113,9 +118,19 @@
 
 					$valid = true;
 
-					$value = $this->value_time_stamp_get(); // Check upper bound to time-stamp, 2037 on 32bit systems
+					$time_stamp_value = $this->value_time_stamp_get(); // Check upper bound to time-stamp, 2037 on 32bit systems
 
-					if (!checkdate($this->value['M'], ($this->input_day ? $this->value['D'] : 1), $this->value['Y']) || $value === false) {
+					$partial_value = $this->value;
+					if (!$this->input_day) {
+						$partial_value['D'] = 1;
+					}
+					if ($this->input_partial_allowed) {
+						if ($partial_value['D'] == 0) $partial_value['D'] = 1;
+						if ($partial_value['M'] == 0) $partial_value['M'] = 1;
+						if ($partial_value['Y'] == 0) $partial_value['Y'] = 2000;
+					}
+
+					if (!checkdate($partial_value['M'], $partial_value['D'], $partial_value['Y']) || $time_stamp_value === false) {
 						$valid = false;
 					}
 
