@@ -435,7 +435,7 @@
 						//--------------------------------------------------
 						// Basic options
 
-							$options = array(
+							$context = array(
 									'ssl' => array(
 											'ciphers' => 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA',
 											'SNI_enabled' => true,
@@ -444,7 +444,7 @@
 								);
 
 							if (version_compare(PHP_VERSION, '5.4.13') >= 0) {
-								$options['ssl']['disable_compression'] = true; // CRIME, etc
+								$context['ssl']['disable_compression'] = true; // CRIME, etc
 							}
 
 						//--------------------------------------------------
@@ -488,18 +488,13 @@
 
 								}
 
-								$options['ssl']['verify_peer'] = true;
-								$options['ssl']['verify_depth'] = 7;
-								$options['ssl']['cafile'] = $ca_bundle_path;
-								$options['ssl']['CN_match'] = $host;
-								$options['ssl']['peer_name'] = $host; // For PHP 5.6+
+								$context['ssl']['verify_peer'] = true;
+								$context['ssl']['verify_depth'] = 7;
+								$context['ssl']['cafile'] = $ca_bundle_path;
+								$context['ssl']['CN_match'] = $host;
+								$context['ssl']['peer_name'] = $host; // For PHP 5.6+
 
 							}
-
-						//--------------------------------------------------
-						// Context
-
-							$context = stream_context_create($options);
 
 					}
 
@@ -514,11 +509,19 @@
 					$error_details = NULL;
 
 					set_error_handler(array($this, 'error_connect'));
+
 					if ($context) {
-						$connection = stream_socket_client($socket_host, $errno, $errstr, $this->request_timeout, STREAM_CLIENT_CONNECT, $context);
+
+						$context_ref = stream_context_create($context);
+
+						$connection = stream_socket_client($socket_host, $errno, $errstr, $this->request_timeout, STREAM_CLIENT_CONNECT, $context_ref);
+
 					} else {
+
 						$connection = fsockopen($fsock_host, $port, $errno, $errstr, $this->request_timeout);
+
 					}
+
 					restore_error_handler();
 
 					if ($connection) {
@@ -610,7 +613,7 @@
 
 					} else {
 
-						return $this->error('Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '", connection: "' . ($context ? 'stream_socket_client' : 'fsockopen') . '")', $request . "\n\n" . $this->response_full);
+						return $this->error('Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")', ($context ? debug_dump($context) . "\n\n" : '') . $request . "\n\n" . $this->response_full);
 
 					}
 
