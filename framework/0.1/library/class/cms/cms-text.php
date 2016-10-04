@@ -310,16 +310,17 @@
 				// Config
 
 					$defaults = array(
-							'path'        => $this->config['path'],
-							'section'     => 'content',
-							'default'     => NULL,
-							'variables'   => array(),
-							'wrapper_tag' => NULL,
-							'editable'    => $this->config['editable'],
-							'log_missing' => $this->config['log_missing'],
-							'global'      => false,
-							'marker'      => NULL,
-							'edit_url'    => $this->config['edit_url'],
+							'path'          => $this->config['path'],
+							'section'       => 'content',
+							'default'       => NULL,
+							'variables'     => array(),
+							'wrapper_tag'   => NULL,
+							'wrapper_class' => NULL,
+							'editable'      => $this->config['editable'],
+							'log_missing'   => $this->config['log_missing'],
+							'global'        => false,
+							'marker'        => NULL,
+							'edit_url'      => $this->config['edit_url'],
 						);
 
 					if (is_string($config)) {
@@ -447,9 +448,20 @@
 					}
 
 				//--------------------------------------------------
-				// Return the output code
+				// Wrapper class
 
-					$cms_class = ' section_' . $config['section'] . ($config['editable'] ? ' cms_text_editable' : '');
+					$wrapper_class = 'cms_text section_' . $config['section'];
+
+					if ($config['editable']) {
+						$wrapper_class .= ' cms_text_editable';
+					}
+
+					if ($config['wrapper_class']) {
+						$wrapper_class .= ' ' . $config['wrapper_class'];
+					}
+
+				//--------------------------------------------------
+				// Return the output code
 
 					if ($config['wrapper_tag'] == 'none' && !$config['editable']) {
 
@@ -457,15 +469,15 @@
 
 					} else if ($config['wrapper_tag'] == 'submit') {
 
-						return '<span class="cms_text' . html($cms_class) . '"><input type="submit" name="' . html($section) . '" value="' . $content_html . '" />' . ($config['editable'] ? '<a href="' . html($admin_url) . '" class="cms_text_link">[E]</a>' : '') . '</span>';
+						return '<span class="' . html($wrapper_class) . '"><input type="submit" name="' . html($section) . '" value="' . $content_html . '" />' . ($config['editable'] ? '<a href="' . html($admin_url) . '" class="cms_text_link">[E]</a>' : '') . '</span>';
 
 					} else if ($config['wrapper_tag'] == 'none' || $config['wrapper_tag'] == 'span') {
 
-						return '<span class="cms_text' . html($cms_class) . '">' . $content_html . ($config['editable'] ? '<a href="' . html($admin_url) . '" class="cms_text_link">[E]</a>' : '') . '</span>';
+						return '<span class="' . html($wrapper_class) . '">' . $content_html . ($config['editable'] ? '<a href="' . html($admin_url) . '" class="cms_text_link">[E]</a>' : '') . '</span>';
 
 					} else {
 
-						$html  = "\n" . '<div class="cms_text' . html($cms_class) . '">';
+						$html  = "\n" . '<div class="' . html($wrapper_class) . '">';
 						$html .= "\n\n" . $content_html;
 						$html .= "\n" . ($config['editable'] ? '<p class="cms_text_link_wrapper"><a href="' . html($admin_url) . '" class="cms_text_link">[E]</a></p>' : '');
 						$html .= "\n\n" . '</div>' . "\n";
