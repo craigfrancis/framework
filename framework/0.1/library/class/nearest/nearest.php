@@ -302,18 +302,25 @@
 
 					if ($latitude === NULL) {
 
-						$db->query('SELECT
-										latitude,
-										longitude,
-										accuracy
-									FROM
-										' . DB_PREFIX . 'system_nearest_cache
-									WHERE
-										search = "' . $db->escape($search_query) . '" AND
-										country = "' . $db->escape($country) . '" AND
-										edited > "' . $db->escape(date('Y-m-d H:i:s', strtotime('-1 week'))) . '"');
+						$max_age = new timestamp('-1 week');
 
-						if ($row = $db->fetch_row()) {
+						$sql = 'SELECT
+									latitude,
+									longitude,
+									accuracy
+								FROM
+									' . DB_PREFIX . 'system_nearest_cache
+								WHERE
+									search = ? AND
+									country = ? AND
+									edited > ?';
+
+						$parameters = array();
+						$parameters[] = array('s', $search_query);
+						$parameters[] = array('s', $country);
+						$parameters[] = array('s', $max_age);
+
+						if ($row = $db->fetch_row($sql, $parameters)) {
 							$latitude = $row['latitude'];
 							$longitude = $row['longitude'];
 							$accuracy = $row['accuracy'];
@@ -414,17 +421,20 @@
 
 						}
 
-						$db->query('SELECT
-										latitude,
-										longitude
-									FROM
-										' . DB_PREFIX . 'system_nearest_outcode
-									WHERE
-										outcode = "' . $db->escape($postcode === NULL ? $search : substr($postcode, 0, -4)) . '"
-									LIMIT
-										1');
+						$sql = 'SELECT
+									latitude,
+									longitude
+								FROM
+									' . DB_PREFIX . 'system_nearest_outcode
+								WHERE
+									outcode = ?
+								LIMIT
+									1';
 
-						if ($row = $db->fetch_row()) {
+						$parameters = array();
+						$parameters[] = array('s', ($postcode === NULL ? $search : substr($postcode, 0, -4)));
+
+						if ($row = $db->fetch_row($sql, $parameters)) {
 							$latitude = $row['latitude'];
 							$longitude = $row['longitude'];
 							$accuracy = 3;
@@ -558,15 +568,21 @@
 
 								if ($result !== NULL) {
 
-									$values = array();
-									$values[$this->config['field_latitude']] = $result['latitude'];
-									$values[$this->config['field_longitude']] = $result['longitude'];
+									$sql = 'UPDATE
+												' . $this->config['table_sql'] . '
+											SET
+												' . $this->config['field_latitude'] . ' = ?,
+												' . $this->config['field_longitude'] . ' = ?
+											WHERE
+												' . $this->config['field_id'] . ' = ? AND
+												' . $this->config['where_sql'];
 
-									$sql_where = '
-										' . $this->config['field_id'] . ' = "' . $db->escape($row[$this->config['field_id_sql']]) . '" AND
-										' . $this->config['where_sql'];
+									$parameters = array();
+									$parameters[] = array('s', $result['latitude']);
+									$parameters[] = array('s', $result['longitude']);
+									$parameters[] = array('s', $row[$this->config['field_id_sql']]);
 
-									$db->update($this->config['table_sql'], $values, $sql_where);
+									$db->query($sql, $parameters);
 
 									$update = 1;
 
@@ -602,7 +618,7 @@
 						' . $this->config['field_id_sql'] . ' = "' . $db->escape($id) . '" AND
 						' . $this->config['where_sql'];
 
-					$results = $this->update_locations();
+					$results = $this->update_locations(-1); // The address has probably changed, so force an update with a min_accuracy of -1
 
 					$this->config['where_sql'] = $old_sql_where;
 

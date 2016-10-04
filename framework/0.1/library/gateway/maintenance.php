@@ -94,14 +94,14 @@
 				} else if ($this->sub_path_get() == '/result/' && in_array('run', $modes)) {
 
 					$state = request('state');
-					$time = intval(request('time'));
+					$time = new timestamp(request('time'));
 
 					$html = '<h1>Maintenance</h1>';
 
 					if ($state == 'complete') {
 
 						$html .= '
-							<p>Was completed at ' . html(date('Y-m-d H:i:s', $time)) . '</p>
+							<p>Was completed at ' . $time->html('Y-m-d H:i:s', 'N/A') . '</p>
 							<ul>';
 
 						$job_count = 0;
@@ -124,7 +124,7 @@
 					} else if ($state == 'locked') {
 
 						$html .= '
-							<p>Was already running at ' . html(date('Y-m-d H:i:s', $time)) . '</p>';
+							<p>Was already running at ' . $time->html('Y-m-d H:i:s', 'N/A') . '</p>';
 
 					} else {
 
