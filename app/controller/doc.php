@@ -42,7 +42,7 @@
 					$doc_text = file_get_contents($doc_file_path);
 
 				//--------------------------------------------------
-				// Special cases
+				// Form example
 
 					if ($request_path == 'introduction' || $request_path == 'setup/units') {
 

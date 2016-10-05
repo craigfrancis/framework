@@ -30,7 +30,7 @@
 	}
 
 	a[href^="http"] {
-		color: #F00;
+		color: #D00;
 	}
 
 	a img {
@@ -327,7 +327,7 @@
 
 	.basic_form .error_list,
 	.basic_form .error {
-		color: red;
+		color: #D00;
 		background: inherit;
 		font-weight: bold;
 	}
@@ -390,7 +390,7 @@
 
 	.delete_form .error_list,
 	.delete_form .error {
-		color: red;
+		color: #D00;
 		background: inherit;
 		font-weight: bold;
 	}
@@ -524,4 +524,11 @@
 		padding: 1em;
 		overflow: auto;
 		background: #EEE;
+	}
+
+/*--------------------------------------------------*/
+/* Examples                                         */
+
+	#p_examples_form_methods ul .parameters {
+		color: #767676;
 	}

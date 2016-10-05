@@ -29,3 +29,4 @@
 	</ul>
 
 	<p><a href="<?= html(gateway_url('form-export')) ?>">Download</a> stand alone version of the forms class.</p>
+	<p><a href="/examples/form/methods/">View the methods</a> that the forms class provides.</p>
