@@ -307,7 +307,10 @@
 								} else {
 									$host = config::get('output.domain');
 									if ($host == '') {
-										exit_with_error('Cannot determine domain name for "full" url'); // Probably an email sent from the CLI, so we want to exit
+										$host = config::get('request.domain');
+										if ($host == '') {
+											exit_with_error('Cannot determine domain name for "full" url'); // Probably an email sent from the CLI, so we want to exit
+										}
 									}
 								}
 
