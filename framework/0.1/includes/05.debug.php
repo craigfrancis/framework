@@ -81,11 +81,7 @@
 		//--------------------------------------------------
 		// Clear output buffer
 
-			$output = '';
-
-			while (ob_get_level() > 0) {
-				$output = ob_get_clean() . $output;
-			}
+			$output = ob_get_clean_all();
 
 			if ($output != '') {
 				if ($hidden_info != '') {

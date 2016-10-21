@@ -87,10 +87,7 @@
 		// Disable output buffers - which NewRelic uses
 
 			if (SERVER != 'live') {
-				$output = '';
-				while (ob_get_level() > 0) {
-					$output = ob_get_clean() . $output;
-				}
+				$output = ob_get_clean_all();
 				if ($output != '') {
 					exit('Pre framework output "' . $output . '"');
 				}

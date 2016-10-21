@@ -1022,6 +1022,17 @@
 	}
 
 //--------------------------------------------------
+// End all output buffering
+
+	function ob_get_clean_all() {
+		$output = '';
+		while (ob_get_level() > 0) {
+			$output = ob_get_clean() . $output;
+		}
+		return $output;
+	}
+
+//--------------------------------------------------
 // Redirect the user
 
 	function redirect($url, $config = array()) {
@@ -1054,10 +1065,7 @@
 
 		$next_html = '<p>Go to <a href="' . html($url) . '">next page</a>.</p>';
 
-		$output = '';
-		while (ob_get_level() > 0) {
-			$output = ob_get_clean() . $output;
-		}
+		$output = ob_get_clean_all();
 		if ($output != '' || headers_sent()) {
 			if (function_exists('debug_exit')) {
 				debug_exit($output . $next_html);
