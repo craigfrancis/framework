@@ -1253,6 +1253,11 @@
 
 		config::set('debug.show', false);
 
+		$output = ob_get_clean_all();
+		if ($output != '') {
+			exit('Pre http_download_file output "' . $output . '"');
+		}
+
 		if ($mime === NULL) $mime = mime_content_type($path); // Please don't rely on this function
 		if ($name === NULL) $name = basename($path);
 
@@ -1276,6 +1281,11 @@
 	function http_download_content($content, $mime, $name, $mode = 'attachment') {
 
 		config::set('debug.show', false);
+
+		$output = ob_get_clean_all();
+		if ($output != '') {
+			exit('Pre http_download_content output "' . $output . '"');
+		}
 
 		mime_set($mime);
 
