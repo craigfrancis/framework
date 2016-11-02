@@ -219,7 +219,7 @@
 						$opcache_error = $opcache_socket->error_message_get();
 						$opcache_details = $opcache_socket->error_details_get();
 						if ($opcache_details != '') {
-							$opcache_error .= "\n\n" . $opcache_details;
+							$opcache_error .= "\n\n" . '--------------------------------------------------' . "\n\n" . $opcache_details;
 						}
 					}
 
