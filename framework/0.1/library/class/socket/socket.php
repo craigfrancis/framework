@@ -613,7 +613,7 @@
 
 					} else {
 
-						$debug = '--------------------------------------------------' . "\n\n";
+						$debug = '';
 
 						if ($context) {
 							$debug .= debug_dump($context) . "\n\n";
