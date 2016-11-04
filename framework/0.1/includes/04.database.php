@@ -266,7 +266,12 @@
 					} else if ($result->charsetnr == 33) {
 
 						$collation = 'utf8_unicode_ci';
-						$length = floor($result->length / 3);
+						$length = floor($result->length / 3); // "maximum of three bytes per character" https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html
+
+					} else if ($result->charsetnr == 45) {
+
+						$collation = 'utf8mb4_unicode_ci';
+						$length = floor($result->length / 4);
 
 					} else {
 
@@ -657,12 +662,19 @@
 				}
 			}
 
-			if (config::get('output.charset') == 'UTF-8') {
-				$charset = 'utf8';
-			} else if (config::get('output.charset') == 'ISO-8859-1') {
-				$charset = 'latin1';
+			$collation = config::get('db.collation');
+			if (($pos = strpos($collation, '_')) !== false) {
+				$charset = substr($collation, 0, $pos);
 			} else {
 				$charset = NULL;
+			}
+
+			if ($charset === NULL) {
+				if (config::get('output.charset') == 'UTF-8') {
+					$charset = 'utf8'; // Maybe one day change to utf8mb4?
+				} else if (config::get('output.charset') == 'ISO-8859-1') {
+					$charset = 'latin1';
+				}
 			}
 
 			if ($charset !== NULL) {
