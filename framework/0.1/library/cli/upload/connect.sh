@@ -24,7 +24,7 @@
 	SSH_CONTROL='~/.ssh/master-%r@%h:%p';
 
 	echo;
-	echo "Connecting ${SERVER} to ${SRC_HOST}:";
+	echo "Connecting [${SERVER}] to ${SRC_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${SRC_HOST}";
 	echo '  Done';
 
