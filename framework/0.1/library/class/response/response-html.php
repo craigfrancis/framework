@@ -1492,6 +1492,15 @@
 						}
 
 					//--------------------------------------------------
+					// Referrer policy
+
+						$output_referrer_policy = config::get('output.referrer_policy', 'origin-when-cross-origin');
+
+						if ($output_referrer_policy) {
+							header('Referrer-Policy: ' . head($output_referrer_policy));
+						}
+
+					//--------------------------------------------------
 					// Framing options
 
 						$output_framing = strtoupper(config::get('output.framing', 'DENY'));
@@ -1588,6 +1597,10 @@
 							}
 
 							$csp = config::get('output.csp_directives');
+
+							if ($output_referrer_policy) {
+								$csp['referrer'] = $output_referrer_policy;
+							}
 
 							if ($output_framing == 'DENY') {
 								$csp['frame-ancestors'] = "'none'";
