@@ -38,7 +38,7 @@
 			protected $required = false;
 			protected $required_mark_html = NULL;
 			protected $required_mark_position = NULL;
-			protected $autofocus = false;
+			protected $autofocus = NULL;
 			protected $autocorrect = NULL;
 			protected $autocomplete = NULL;
 			protected $autocapitalize = NULL;
@@ -339,14 +339,16 @@
 			}
 
 			public function autofocus_auto_set() {
-				if (!$this->valid()) {
-					$this->autofocus = true;
-				} else if (method_exists($this, '_value_print_get')) {
-					$value = $this->_value_print_get();
-					if (is_array($value)) {
-						$this->autofocus = (count(array_filter($value)) == 0); // Where $value may be [0,0,0] on a date field (when the form is submitted).
-					} else {
-						$this->autofocus = ($value == '');
+				if ($this->autofocus === NULL) { // Has been set manually
+					if (!$this->valid()) {
+						$this->autofocus = true;
+					} else if (method_exists($this, '_value_print_get')) {
+						$value = $this->_value_print_get();
+						if (is_array($value)) {
+							$this->autofocus = (count(array_filter($value)) == 0); // Where $value may be [0,0,0] on a date field (when the form is submitted).
+						} else {
+							$this->autofocus = ($value == '');
+						}
 					}
 				}
 				return $this->autofocus;
