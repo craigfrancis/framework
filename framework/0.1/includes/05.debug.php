@@ -288,6 +288,10 @@
 
 	function debug($variable = NULL) {
 
+		if (config::get('output.mime') == 'application/xhtml+xml') {
+			mime_set('text/html');
+		}
+
 		$called_from = debug_backtrace();
 		$called_from_file = substr(str_replace(ROOT, '', $called_from[0]['file']), 1);
 		$called_from_line = $called_from[0]['line'];

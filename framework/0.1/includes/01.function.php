@@ -268,7 +268,7 @@
 
 		}
 
-		function timestamp_to_human($input_seconds) {
+		function timestamp_to_human($input_seconds, $accuracy = 0) {
 
 			//--------------------------------------------------
 			// Maths
@@ -293,21 +293,25 @@
 			//--------------------------------------------------
 			// Text
 
-				$output_text = '';
+				$output_text = array();
 
-				if ($output_weeks    > 0) $output_text .= ', ' . $output_weeks    . ' week'   . ($output_weeks    != 1 ? 's' : '');
-				if ($output_days     > 0) $output_text .= ', ' . $output_days     . ' day'    . ($output_days     != 1 ? 's' : '');
-				if ($output_hours    > 0) $output_text .= ', ' . $output_hours    . ' hour'   . ($output_hours    != 1 ? 's' : '');
-				if ($output_minutes  > 0) $output_text .= ', ' . $output_minutes  . ' minute' . ($output_minutes  != 1 ? 's' : '');
+				if ($output_weeks    > 0) $output_text[] = $output_weeks    . ' week'   . ($output_weeks    != 1 ? 's' : '');
+				if ($output_days     > 0) $output_text[] = $output_days     . ' day'    . ($output_days     != 1 ? 's' : '');
+				if ($output_hours    > 0) $output_text[] = $output_hours    . ' hour'   . ($output_hours    != 1 ? 's' : '');
+				if ($output_minutes  > 0) $output_text[] = $output_minutes  . ' minute' . ($output_minutes  != 1 ? 's' : '');
 
-				if ($output_seconds > 0 || $output_text == '') {
-					$output_text .= ', ' . $output_seconds  . ' second' . ($output_seconds != 1 ? 's' : '');
+				if ($output_seconds > 0 || count($output_text) == 0) {
+					$output_text[] = $output_seconds  . ' second' . ($output_seconds != 1 ? 's' : '');
 				}
 
 			//--------------------------------------------------
 			// Grammar
 
-				$output_text = substr($output_text, 2);
+				if ($accuracy > 0) {
+					$output_text = array_slice($output_text, 0, $accuracy);
+				}
+
+				$output_text = implode(', ', $output_text);
 				$output_text = preg_replace('/, ([^,]+)$/', ', and $1', $output_text);
 
 			//--------------------------------------------------
