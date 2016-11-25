@@ -159,7 +159,7 @@
 
 			public function value_set($value, $minute = NULL, $second = NULL) {
 				$this->value = $this->_value_parse($value, $minute, $second);
-				$this->value_provided = true;
+				$this->value_provided = true; // If you are providing "00:00:00", then this is considered a value... if you want 00:00:00 to cause the field to be left blank, then don't call this function
 			}
 
 			public function value_get($field = NULL) {
