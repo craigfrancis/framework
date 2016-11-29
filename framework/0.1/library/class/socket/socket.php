@@ -452,7 +452,11 @@
 
 							$skip_domains = config::get('socket.insecure_domains', array()); // Only PHP 5.6+ introduces SAN support (this function still needs to support 5.4 and 5.5)
 
-							if ($skip_domains !== 'all' && !in_array($host, $skip_domains)) {
+							if ($skip_domains === 'all' || in_array($host, $skip_domains)) {
+
+								$context['ssl']['verify_peer'] = false;
+
+							} else {
 
 								$ca_bundle_path = config::get('socket.tls_ca_path', ini_get('openssl.cafile'));
 								if (!$ca_bundle_path) { // NULL or false
