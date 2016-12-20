@@ -90,6 +90,33 @@
 
 	}
 
+	function csrf_challenge_hash($salt, $token = NULL) {
+		if ($token === NULL) {
+			$token = csrf_token_get();
+		}
+		return base64_encode(hash('sha256', $token . $salt) . '-' . $salt);
+	}
+
+	function csrf_challenge_check($hash, $salt = NULL, $token = NULL) { // CSRF hashing experiment... the token is hashed with the form action (URL), so if the token in the HTML is leaked (e.g. malicious JS), that token can only be used for forms on this page (failure will result in an error email, for now).
+		if ($token === NULL) {
+			$token = csrf_token_get();
+		}
+		if ($token != $hash && strlen($hash) > 64) { // Looks like it was hashed (if it wasn't then don't change anything).
+			$hash = base64_decode($hash);
+			if (($pos = strpos($hash, '-')) === 64) { // A sha256 hash is 64 characters long (hexadecimal representation of 256 bits), which is "good enough", as a 15 lapha-numeric random key will still take a few years to brute force (http://calc.opensecurityresearch.com/)
+				$hash_value = substr($hash, 0, $pos);
+				$hash_salt = substr($hash, ($pos + 1));
+				if (hash('sha256', $token . $hash_salt) == $hash_value) {
+					$hash = $token;
+					if ($salt !== NULL && $hash_salt != $salt) {
+						report_add('CSRF match was valid, but the salt check failed (no error shown to user, but please investigate).' . "\n\n" . debug_dump($hash_salt) . "\n" . debug_dump($salt));
+					}
+				}
+			}
+		}
+		return ($hash == $token);
+	}
+
 //--------------------------------------------------
 // Quick functions used to convert text into a safe
 // form of HTML/XML/CSV without having to write the
