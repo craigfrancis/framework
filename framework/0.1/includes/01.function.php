@@ -59,34 +59,34 @@
 
 	function csrf_token_get() {
 
-		$csrf_token = config::get('cookie.csrf_value');
+		$token = config::get('cookie.csrf_value');
 
-		if (!$csrf_token) {
+		if (!$token) {
 			return csrf_token_change(cookie::get('f')); // Keep re-sending the cookie (or make one up if not set)
 		} else {
-			return $csrf_token;
+			return $token;
 		}
 
 	}
 
-	function csrf_token_change($csrf_token = '') {
+	function csrf_token_change($token = '') {
 
-		$csrf_token = trim($csrf_token);
+		$token = trim($token);
 
-		if ($csrf_token == '') {
-			$csrf_token = random_key(15);
+		if ($token == '') {
+			$token = random_key(15);
 		}
 
-		cookie::set('f', $csrf_token, array('same_site' => 'Lax', 'update' => true)); // TODO: Change same_site to 'Strict' when https://crbug.com/619603 is fixed (probably Chome 53)
+		cookie::set('f', $token, array('same_site' => 'Lax', 'update' => true)); // TODO: Change same_site to 'Strict' when https://crbug.com/619603 is fixed (probably Chome 53)
 
 			// Not using sessions, as they typically expire after 24 minutes.
 			// Short cookie name (header size)
 			// Make sure it's only sent with SameSite requests.
 			// Update the _COOKIE variable to support multiple calls to csrf_token_get()
 
-		config::set('cookie.csrf_value', $csrf_token); // Avoid repeated cookie headers.
+		config::set('cookie.csrf_value', $token); // Avoid repeated cookie headers.
 
-		return $csrf_token;
+		return $token;
 
 	}
 
