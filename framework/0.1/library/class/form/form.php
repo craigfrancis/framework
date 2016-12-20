@@ -687,6 +687,20 @@
 
 						$csrf_token = request('csrf', $this->form_method);
 
+						if ($this->form_submitted && $this->csrf_token != $csrf_token && strlen($csrf_token) > 64) { // Hashing experiment... the token is hashed with the form action (URL), so if the token in the HTML is leaked (e.g. malicious JS), that token can only be used for forms on this page (failure will result in an error email, for now).
+							$token = base64_decode($csrf_token);
+							if (($pos = strpos($token, '-')) === 64) { // A sha256 hash is 64 characters long (hexadecimal representation of 256 bits), which is good enough, as a 15 lapha-numeric random key will still take a few years to brute force (http://calc.opensecurityresearch.com/)
+								$token_hash = substr($token, 0, $pos);
+								$token_action = substr($token, ($pos + 1));
+								if (hash('sha256', $this->csrf_token . $token_action) == $token_hash) {
+									$csrf_token = $this->csrf_token; // So it works with the following code (it passes)
+									if ($token_action != $this->form_action) {
+										report_add('CSRF match was valid, but the action changed - odd?' . "\n\n" . $token_action . "\n" . $this->form_action, 'notice');
+									}
+								}
+							}
+						}
+
 						if ($this->form_submitted && $this->csrf_token != $csrf_token) {
 
 							cookie::require_support();
@@ -1091,8 +1105,15 @@
 					$input_fields = array();
 
 					if (!$this->form_passive) {
+
 						$input_fields['act'] = $this->form_id;
-						$input_fields['csrf'] = $this->csrf_token;
+
+						if ($this->form_method == 'POST') {
+							$input_fields['csrf'] = base64_encode(hash('sha256', $this->csrf_token . $this->form_action) . '-' . $this->form_action); // Hashing experiment (see above)
+						} else {
+							$input_fields['csrf'] = $this->csrf_token;
+						}
+
 					}
 
 					foreach ($this->hidden_values as $name => $value) {
