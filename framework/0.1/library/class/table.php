@@ -307,7 +307,7 @@
 			}
 
 			public function heading_add($heading, $sort_name = NULL, $class_name = '', $config = array()) {
-				$this->heading_add_html(nl2br(html($heading)), $sort_name, $class_name, $config);
+				return $this->heading_add_html(nl2br(html($heading)), $sort_name, $class_name, $config);
 			}
 
 			public function heading_add_html($heading_html, $sort_name = NULL, $class_name = '', $config = array()) {
@@ -342,6 +342,12 @@
 						'title' => NULL,
 					), $config);
 
+				return array($this->heading_id, (count($this->headings[$this->heading_id]) - 1));
+
+			}
+
+			public function heading_update($heading_ref, $field, $value) {
+				$this->headings[$heading_ref[0]][$heading_ref[1]][$field] = $value;
 			}
 
 			public function heading_row_end() {
