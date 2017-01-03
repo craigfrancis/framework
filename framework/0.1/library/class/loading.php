@@ -18,12 +18,7 @@
 		// Setup
 
 			public function __construct($config = NULL) {
-
-				// TODO: Do the config array_merge() here, so if a class extends, it will have the default config to work with.
-				//       Also search for other "function setup($config" cases.
-
 				$this->setup($config);
-
 			}
 
 			protected function setup($config) {
