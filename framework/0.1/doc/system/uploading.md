@@ -96,7 +96,7 @@ After the files have been uploaded, you can create an install script to do any f
 
 	/app/library/setup/install.sh
 
-These rarley need todo anything though.
+These rarely need to do anything though.
 
 For example, the path for /a/files/ is usually setup though the Apache config... but if not, you could create a symlink:
 
