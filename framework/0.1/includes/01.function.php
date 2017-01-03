@@ -77,7 +77,7 @@
 			$token = random_key(15);
 		}
 
-		cookie::set('f', $token, array('same_site' => 'Lax', 'update' => true)); // TODO: Change same_site to 'Strict' when https://crbug.com/619603 is fixed (probably Chome 53)
+		cookie::set('f', $token, array('same_site' => 'Strict', 'update' => true));
 
 			// Not using sessions, as they typically expire after 24 minutes.
 			// Short cookie name (header size)
