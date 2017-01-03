@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // Get a request value
 
-	function request($variable, $method = 'REQUEST') {
+	function request($variable, $method = 'REQUEST', $email_cleanup = false) {
 
 		//--------------------------------------------------
 		// Get value
@@ -26,7 +26,24 @@
 			} else if ($method == 'GET') {
 
 				if (isset($_GET[$variable])) {
+
 					$value = $_GET[$variable];
+
+				} else if ($email_cleanup === true) {
+
+					$alternatives = array(
+							strtolower($variable), // Just Lower-casing
+							'amp;' . $variable, // Just double html-encoding
+							'amp;' . strtolower($variable), // Lower-casing + double html-encoding
+						);
+
+					foreach ($alternatives as $alternative) {
+						if (isset($_GET[$alternative])) {
+							$value = $_GET[$alternative];
+							break;
+						}
+					}
+
 				}
 
 			} else {

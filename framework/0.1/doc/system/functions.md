@@ -49,6 +49,15 @@ When you want to get a value from GET/POST/REQUEST, then simply use:
 
 This function will return NULL if the variable does not exist.
 
+There is also a feature for links which may have been sent via email, by setting the second parameter to `'GET'` and the third to `true`, it will also look for commonly damaged URLs:
+
+	request('userName', 'GET', true);
+
+		// ?a=b&userName=x (Normal)
+		// ?a=b&username=x (Lower cased)
+		// ?a=b&amp;userName=x (Double HTML encoded)
+		// ?a=b&amp;username=x (Both)
+
 For other variables, you should probably use the [cookie](../../doc/helpers/cookie.md) and [session](../../doc/helpers/session.md) helpers.
 
 ---
