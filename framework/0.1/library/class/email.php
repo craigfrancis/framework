@@ -475,11 +475,11 @@
 
 				} else if ($this->return_path != NULL) {
 
-					$additional_parameters = '-f "' . addslashes($this->return_path) . '"';
+					$additional_parameters = '-f ' . escapeshellarg($this->return_path);
 
 				} else if ($this->from_email != NULL) {
 
-					$additional_parameters = '-f "' . addslashes($this->from_email) . '"';
+					$additional_parameters = '-f ' . escapeshellarg($this->from_email);
 
 				}
 
