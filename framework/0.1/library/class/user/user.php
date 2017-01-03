@@ -291,7 +291,7 @@
 						$this->user_id = $result;
 
 						if ($this->remember_login && $this->cookie_login_last) {
-							cookie::set($this->cookie_login_last, $identification, '+30 days');
+							cookie::set($this->cookie_login_last, $identification, array('expires' => '+30 days', 'same_site' => 'Lax'));
 						}
 
 						$this->complete_login();
@@ -329,7 +329,7 @@
 						$user_identification = $this->auth->identification_name_get($this->user_id);
 
 						if ($user_identification !== false) {
-							cookie::set($this->cookie_login_last, $user_identification, '+30 days');
+							cookie::set($this->cookie_login_last, $user_identification, array('expires' => '+30 days', 'same_site' => 'Lax'));
 						} else {
 							exit_with_error('Failed getting user identification', 'Function call: login_forced');
 						}
