@@ -50,14 +50,14 @@
 					$this->from_email = config::get('email.from_email');
 					$this->from_name = config::get('email.from_name');
 					$this->default_style = config::get('email.default_style');
-					$this->default_bulk = config::get('email.default_bulk', true);
+					$this->default_bulk = config::get('email.default_bulk', false); // Causes GMail to mark as spam, with the message: It seems to be a fake "bounce" reply to a message that you didn't actually send.
 
 				//--------------------------------------------------
 				// Default headers
 
-					$this->header_set('X-Request-IP', json_encode(config::get('request.ip')));
-					$this->header_set('X-Request-UA', json_encode(config::get('request.browser')));
-					$this->header_set('X-Request-Script', json_encode(config::get('request.url')));
+					// $this->header_set('X-Request-IP', json_encode(config::get('request.ip')));
+					// $this->header_set('X-Request-UA', json_encode(config::get('request.browser')));
+					// $this->header_set('X-Request-Script', json_encode(config::get('request.url')));
 
 			}
 
