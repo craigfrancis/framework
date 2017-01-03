@@ -23,11 +23,7 @@
 				}
 
 				if ($this->authenticate($config) !== true) {
-					if (SERVER != 'stage') {
-						report_add('Authentication failed for unit: ' . get_class($this)); // TODO: Remove
-					} else {
-						exit_with_error('Authentication failed for unit.', get_class($this));
-					}
+					exit_with_error('Authentication failed for unit.', get_class($this));
 				}
 
 				$this->setup($config);
