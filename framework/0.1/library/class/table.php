@@ -700,12 +700,18 @@
 							//--------------------------------------------------
 							// HTML
 
-								if ($cell_info['html'] === '' || $cell_info['html'] === NULL) {
-									$cell_info['html'] = '&#xA0;';
+								if ($cell_info['html'] !== NULL) {
+									$content_html = $cell_info['html'];
+								} else {
+									$content_html = nl2br(html($cell_info['text']));
+								}
+
+								if ($content_html === '' || $content_html === NULL) {
+									$content_html = '&#xA0;';
 								}
 
 								$output_html .= '
-									<td' . $attributes_html . '>' . $cell_info['html'] . '</td>';
+									<td' . $attributes_html . '>' . $content_html . '</td>';
 
 							//--------------------------------------------------
 							// Column ID
@@ -812,7 +818,11 @@
 
 						foreach ($this->rows[$row_key]['row']->data as $cell_id => $cell_info) {
 
-							$text = $this->_html_to_text($cell_info['html'], $max_width);
+							if ($cell_info['text']) {
+								$text = explode("\n", wordwrap($cell_info['text'], $max_width, "\n", true));
+							} else {
+								$text = $this->_html_to_text($cell_info['html'], $max_width);
+							}
 
 							$lines = count($text);
 
@@ -963,7 +973,11 @@
 
 						foreach ($this->rows[$row_key]['row']->data as $cell_info) {
 
-							$csv_output[] = $this->_html_to_text($cell_info['html']);
+							if ($cell_info['text']) {
+								$csv_output[] = $cell_info['text'];
+							} else {
+								$csv_output[] = $this->_html_to_text($cell_info['html']);
+							}
 
 							for ($k = 1; $k < $cell_info['colspan']; $k++) {
 								$csv_output[] = '';
@@ -1133,17 +1147,14 @@
 
 		}
 
-		public function cell_add($content = '', $class_name = '', $config = array()) {
-			$this->cell_add_html(nl2br(html($content)), $class_name, $config);
-		}
-
-		public function cell_add_html($content_html = '', $class_name = '', $config = array()) {
+		public function _cell_add_raw($content_text, $content_html, $class_name, $config) {
 
 			if (is_numeric($config)) {
 				$config = array('colspan' => $config);
 			}
 
 			$this->data[] = array_merge(array(
+					'text' => $content_text,
 					'html' => $content_html,
 					'class_name' => $class_name,
 					'colspan' => 1,
@@ -1152,12 +1163,24 @@
 
 		}
 
+		public function cell_add($content_text = '', $class_name = '', $config = array()) {
+			$this->_cell_add_raw($content_text, NULL, $class_name, $config);
+		}
+
+		public function cell_add_html($content_html = '', $class_name = '', $config = array()) {
+			$this->_cell_add_raw(NULL, $content_html, $class_name, $config);
+		}
+
 		public function cell_add_link($url, $text, $class_name = '', $config = array()) {
+
 			if ($url) {
-				$this->cell_add_html('<a href="' . html($url) . '">' . nl2br(html($text)) . '</a>', $class_name, $config);
+				$html = '<a href="' . html($url) . '">' . nl2br(html($text)) . '</a>';
 			} else {
-				$this->cell_add($text, $class_name, $config);
+				$html = NULL;
 			}
+
+			$this->_cell_add_raw($text, $html, $class_name, $config);
+
 		}
 
 	}
