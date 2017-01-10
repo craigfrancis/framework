@@ -512,6 +512,8 @@
 					$error = false;
 					$error_details = NULL;
 
+					$timeout_old = ini_set('default_socket_timeout', $this->request_timeout);
+
 					set_error_handler(array($this, 'error_connect'));
 
 					if ($context) {
@@ -555,6 +557,8 @@
 						$error_details = implode("\n\n", $error_details);
 
 					}
+
+					ini_set('default_socket_timeout', $timeout_old);
 
 					if ($error) {
 						return $this->error($error, $error_details);
