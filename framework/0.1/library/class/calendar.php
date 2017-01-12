@@ -296,7 +296,7 @@
 						$back_link_text = $back_link_timestamp->format('F');
 
 						$next_link_timestamp->modify('+1 month');
-						$next_link_url = $this->base_url->get(array('month' => $next_link_timestamp->format('n'), 'year' => $back_link_timestamp->format('o')));
+						$next_link_url = $this->base_url->get(array('month' => $next_link_timestamp->format('n'), 'year' => $next_link_timestamp->format('o')));
 						$next_link_text = $next_link_timestamp->format('F');
 
 					} else {
@@ -306,7 +306,7 @@
 						$back_link_text = 'Week ' . $back_link_timestamp->format('W');
 
 						$next_link_timestamp->modify('+1 week');
-						$next_link_url = $this->base_url->get(array('week' => $next_link_timestamp->format('W'), 'year' => $back_link_timestamp->format('o')));
+						$next_link_url = $this->base_url->get(array('week' => $next_link_timestamp->format('W'), 'year' => $next_link_timestamp->format('o')));
 						$next_link_text = 'Week ' . $next_link_timestamp->format('W');
 
 					}
