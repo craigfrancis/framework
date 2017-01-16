@@ -837,7 +837,7 @@
 								}
 							}
 
-							$this->rows[$row_key]['row']->data[$cell_id]['text'] = $text;
+							$this->rows[$row_key]['row']->data[$cell_id]['text_split'] = $text;
 
 							$col_id += $cell_info['colspan'];
 
@@ -904,7 +904,7 @@
 
 							foreach ($this->rows[$row_key]['row']->data as $cell_info) {
 
-								$text = (isset($cell_info['text'][$line]) ? $cell_info['text'][$line] : '');
+								$text = (isset($cell_info['text_split'][$line]) ? $cell_info['text_split'][$line] : '');
 
 								$output .= ($col_id > 0 ? ' ' : '') . '| ' . mb_str_pad($text, $col_widths[$col_id]);
 
