@@ -5,7 +5,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			static $db_timezone = 'UTC';
+			public static $db_timezone = 'UTC';
 
 			protected $null = false;
 			protected $formats = array(
