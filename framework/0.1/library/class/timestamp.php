@@ -5,8 +5,9 @@
 		//--------------------------------------------------
 		// Variables
 
+			static $db_timezone = 'UTC';
+
 			protected $null = false;
-			protected $db_timezone = 'UTC';
 			protected $formats = array(
 				);
 
@@ -18,7 +19,7 @@
 					if ($time === NULL || $time === '0000-00-00 00:00:00' || $time === '0000-00-00') {
 						$this->null = ($time === NULL ? true : $time);
 					} else if ($timezone == 'db') {
-						parent::__construct($time, new DateTimeZone($this->db_timezone));
+						parent::__construct($time, new DateTimeZone(self::$db_timezone));
 						parent::setTimezone(new DateTimeZone(config::get('output.timezone')));
 					} else {
 						if ($timezone === NULL) {
@@ -48,7 +49,7 @@
 					return $null_value;
 				} else if ($format == 'db' || $format == 'db-date') {
 					$timezone = parent::getTimezone();
-					parent::setTimezone(new DateTimeZone($this->db_timezone));
+					parent::setTimezone(new DateTimeZone(self::$db_timezone));
 					$output = parent::format($format == 'db' ? 'Y-m-d H:i:s' : 'Y-m-d');
 					@parent::setTimezone($timezone); // Avoid PHP 5.3 bug 45543 (can not set timezones without ID)
 					return $output;
@@ -103,7 +104,7 @@
 				}
 				$parsed = parent::createFromFormat($format, $time, new DateTimeZone($timezone));
 				if ($parsed) {
-					$parsed->setTimezone(new DateTimeZone($this->db_timezone));
+					$parsed->setTimezone(new DateTimeZone(self::$db_timezone));
 					return new timestamp($parsed->format('Y-m-d H:i:s'), 'db');
 				} else {
 					return false;
@@ -295,6 +296,12 @@
 		$timestamp->modify('+3 days');
 		debug($timestamp->format('human'));
 		debug($timestamp->html('l jS F Y'));
+
+		echo '<hr />';
+
+		$timestamp = timestamp::createFromFormat('d/m/y H:i:s', '01/07/03 12:01:02');
+		debug($timestamp->format('l jS F Y g:i:sa'));
+		debug($timestamp->format('db'));
 
 		echo '<hr />';
 
