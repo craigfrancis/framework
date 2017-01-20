@@ -130,11 +130,14 @@
 	$config['output.csp_directives'] = array(
 			'default-src' => array("'none'"),
 			'base-uri'    => array("'self'"),
-			'form-action' => array("'self'"),
+			'img-src'     => array("'self'"),
 			'style-src'   => array("'self'"),
-			'img-src'     => array("'self'", 'https://www.google-analytics.com'),
-			'script-src'  => array("'self'", 'https://www.google-analytics.com'),
+			'form-action' => array("'self'"),
+			'script-src'  => array("'self'"),
 		);
+
+			// 'script-src'  => array("'self'", 'https://www.google-analytics.com'),
+			// 'connect-src' => array("'self'", 'https://www.google-analytics.com'),
 
 //--------------------------------------------------
 // Tracking

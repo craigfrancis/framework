@@ -1412,19 +1412,17 @@
 
 							if ($tracking_ga_code !== NULL) {
 
-								$js_code  = 'var _gaq = _gaq || [];' . "\n";
-								$js_code .= '_gaq.push(["_setAccount", "' . html($tracking_ga_code) . '"]);' . "\n";
-								$js_code .= '_gaq.push(["_setSiteSpeedSampleRate", 10]);' . "\n";
-								$js_code .= '_gaq.push(["_trackPageview"]);' . "\n\n";
-								$js_code .= '(function() {' . "\n";
-								$js_code .= '	var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true; ga.src = "https://ssl.google-analytics.com/ga.js";' . "\n";
-								$js_code .= '	var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s);' . "\n";
-								$js_code .= '})();' . "\n";
+								$js_code  = '(function(i,s,o,g,r,a,m){i[\'GoogleAnalyticsObject\']=r;i[r]=i[r]||function(){' . "\n";
+								$js_code .= '(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),' . "\n";
+								$js_code .= 'm=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)' . "\n";
+								$js_code .= '})(window,document,\'script\',\'//www.google-analytics.com/analytics.js\',\'ga\');' . "\n\n";
+								$js_code .= 'ga(\'create\', ' . json_encode($tracking_ga_code) . ', {\'siteSpeedSampleRate\': 10});' . "\n";
+								$js_code .= 'ga(\'send\', \'pageview\', {\'transport\': \'xhr\'});' . "\n";
 
 								$this->js_code_add($js_code, 'async');
 
-								$this->csp_source_add('script-src', array('https://ssl.google-analytics.com'));
-								$this->csp_source_add('img-src', array('https://ssl.google-analytics.com', 'http://www.google-analytics.com'));
+								$this->csp_source_add('script-src',  array('https://www.google-analytics.com'));
+								$this->csp_source_add('connect-src', array('https://www.google-analytics.com'));
 
 							} else if ($tracking_js_path !== NULL) {
 
