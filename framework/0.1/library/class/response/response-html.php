@@ -397,7 +397,7 @@
 		//--------------------------------------------------
 		// JavaScript
 
-			public function js_add($path, $attributes = array(), $position = 'foot') { // Could be $this->js_add('/path.js', 'async');
+			public function js_add($path, $attributes = array(), $position = 'foot') { // Could be $this->js_add('/path.js', 'defer');
 				if (!isset($this->js_files[$position])) {
 					exit_with_error('Invalid js_add position "' . $position . '" - try head or foot');
 				}
@@ -1419,7 +1419,7 @@
 								$js_code .= 'ga(\'create\', ' . json_encode($tracking_ga_code) . ', {\'siteSpeedSampleRate\': 10});' . "\n";
 								$js_code .= 'ga(\'send\', \'pageview\', {\'transport\': \'xhr\'});' . "\n";
 
-								$this->js_code_add($js_code, 'async');
+								$this->js_code_add($js_code, 'defer');
 
 								$this->csp_source_add('script-src',  array('https://www.google-analytics.com'));
 								$this->csp_source_add('connect-src', array('https://www.google-analytics.com'));
@@ -1445,7 +1445,7 @@
 
 									$this->js_add(gateway_url('js-newrelic', 'head.js'), NULL, 'head'); // Can be cached
 
-									$this->js_code_add(newrelic_get_browser_timing_footer(false), 'async', 'foot');
+									$this->js_code_add(newrelic_get_browser_timing_footer(false), 'defer', 'foot');
 
 									$this->csp_source_add('img-src', array('*.newrelic.com'));
 									$this->csp_source_add('script-src', array('*.newrelic.com', 'bam.nr-data.net'));
@@ -1657,7 +1657,7 @@
 
 					if (config::get('debug.level') > 0 && config::get('debug.show') && in_array($mime_type, array('text/html', 'application/xhtml+xml'))) {
 
-						$this->js_code_add("\n", 'async'); // Add something so the file is included, and session is started. The rest will be added in debug_shutdown()
+						$this->js_code_add("\n", 'defer'); // Add something so the file is included, and session is started. The rest will be added in debug_shutdown()
 
 						config::set('debug.js_code', $this->js_code_ref);
 
