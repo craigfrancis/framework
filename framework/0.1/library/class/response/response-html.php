@@ -1596,18 +1596,10 @@
 
 							$csp = config::get('output.csp_directives');
 
-							if ($output_referrer_policy) {
-								$csp['referrer'] = $output_referrer_policy;
-							}
-
 							if ($output_framing == 'DENY') {
 								$csp['frame-ancestors'] = "'none'";
 							} else if ($output_framing == 'SAMEORIGIN') {
 								$csp['frame-ancestors'] = "'self'";
-							}
-
-							if ($output_xss_reflected == 'block' || $output_xss_reflected == 'filter') {
-								$csp['reflected-xss'] = $output_xss_reflected; // Not quoted
 							}
 
 							$report_uri = config::get('output.csp_report', false);
