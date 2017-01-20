@@ -496,6 +496,7 @@
 							$attributes = array('class' => trim($class), 'data-date' => $loop_date);
 							if ($loop_today) {
 								$attributes['id'] = 'today';
+								$attributes['aria-current'] = 'date';
 							}
 							if (isset($this->day_data[$loop_date])) {
 								foreach ($this->day_data[$loop_date] as $field => $value) {

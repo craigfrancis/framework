@@ -380,6 +380,10 @@
 											$link_attributes_html .= ' title="' . html($link_config['link_title']) . '"';
 										}
 
+										if ($this->path == $link_info['url']) { // Not $selected, as that is a best match (not exact).
+											$link_attributes_html .= ' aria-current="page"';
+										}
+
 									//--------------------------------------------------
 									// Build
 

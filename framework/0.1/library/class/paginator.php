@@ -508,7 +508,7 @@
 
 						$link_html = $this->page_link_get_html($link_html, $start);
 
-						$page_links_html[$start] = '<' . html($this->config['link_wrapper_element']) . ' class="pagination_page pagination_page_' . html($i) . ($c ? ' pagination_current' : '') . '" data-setsize="' . html($this->page_count) . '" data-posinset="' . html($start) . '">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
+						$page_links_html[$start] = '<' . html($this->config['link_wrapper_element']) . ' data-setsize="' . html($this->page_count) . '" data-posinset="' . html($start) . '" class="pagination_page pagination_page_' . html($i) . ($c ? ' pagination_current' : '') . '"' . ($c ? ' aria-current="step"' : '') . '>' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
 					}
 
