@@ -79,7 +79,7 @@
 				//--------------------------------------------------
 				// Defaults
 
-					$this->form_action = config::get('request.uri'); // The request.url includes the domain name, which isn't really necessary.
+					$this->form_action = config::get('request.url'); // Use the full domain name so a malicious "base" meta tag does not send data to a different website (so not request.uri).
 
 					if (isset($site_config['disabled'])) $this->disabled = isset($site_config['disabled']);
 					if (isset($site_config['readonly'])) $this->readonly = isset($site_config['readonly']);
