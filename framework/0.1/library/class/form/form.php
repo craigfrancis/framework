@@ -137,6 +137,9 @@
 			}
 
 			public function form_action_set($form_action) {
+				if (is_object($form_action) && is_a($form_action, 'url')) {
+					$form_action->format_set('full'); // We use full URL's, see comment about 'request.url' above.
+				}
 				$this->form_action = $form_action;
 			}
 
