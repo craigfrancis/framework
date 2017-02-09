@@ -569,6 +569,11 @@
 					$time_init = microtime(true);
 
 				//--------------------------------------------------
+				// Query tainted
+
+					$query_tainted = (extension_loaded('taint') && is_tainted($sql)); // Before preg_match, due to https://bugs.php.net/bug.php?id=74066
+
+				//--------------------------------------------------
 				// Query type
 
 					$select_query = preg_match('/^\W*SELECT.*FROM/is', $sql); // Check for "non-word" characters, as it may contain brackets, e.g. a UNION... And don't debug queries without a table, e.g. SELECT FOUND_ROWS();
@@ -648,6 +653,24 @@
 						if (isset($called_from['file']) && !prefix_match(FRAMEWORK_ROOT, $called_from['file'])) {
 							break;
 						}
+					}
+
+				//--------------------------------------------------
+				// Query tainted
+
+					if ($query_tainted) {
+
+						echo "\n";
+						echo '<div>' . "\n";
+						echo '	<h1>Error</h1>' . "\n";
+						echo '	<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>' . "\n";
+						echo '	<p>The following SQL has been tainted.</p>' . "\n";
+						echo '	<hr />' . "\n";
+						echo '	<p><pre>' . "\n\n" . $query_html . "\n\n" . '</pre></p>' . "\n";
+						echo '</div>' . "\n";
+
+						exit();
+
 					}
 
 				//--------------------------------------------------
