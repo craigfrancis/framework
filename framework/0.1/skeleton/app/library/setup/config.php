@@ -42,7 +42,7 @@
 			// $config['debug.level'] = 0;
 			// $config['debug.db_required_fields'] = array('deleted', 'cancelled');
 
-	} else if (prefix_match('/www/demo/', ROOT)) {
+	} else if (prefix_match('/mnt/files/www/demo/', ROOT)) {
 
 		//--------------------------------------------------
 		// Server
