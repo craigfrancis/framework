@@ -302,8 +302,8 @@
 							return $this->error('Missing host from requested url', $url);
 						}
 
-						$socket_host = ($https ? 'tls://' : 'tcp://') . $host . ':' . $port;
-						$fsock_host = ($https ? 'tls://' : '') . $host;
+						$socket_host = ($https ? 'ssl://' : 'tcp://') . $host . ':' . $port; // https://bugs.php.net/bug.php?id=69345 "the tls:// wrapper specifically used the TLSv1 handshake method"
+						$fsock_host = ($https ? 'ssl://' : '') . $host;
 
 					//--------------------------------------------------
 					// Return Path
