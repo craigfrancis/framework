@@ -34,7 +34,7 @@ If the source uses 'git' or 'svn', then you should checkout the project and fram
 
 The framework will then look at the **update** configuration:
 
-- **true** will run the respecitve 'git pull' or 'svn update'.
+- **true** will run the respective 'git pull' or 'svn update'.
 
 - **false** will not do anything (it assumes there is another process in place to update).
 

@@ -92,7 +92,7 @@
 		echo "Update project:";
 
 		if [[ "${DST_SOURCE}" == 'git' ]]; then
-			remote_cmd "cd ${DST_PATH} && git pull | awk '{ print \" \" \" \" \$0;}'";
+			remote_cmd "cd ${DST_PATH} && git pull | awk '{ print \" \" \" \" \$0;}' && git submodule update --init";
 		else
 			remote_cmd "svn update ${DST_PATH} | awk '{ print \" \" \" \" \$0;}'";
 		fi
