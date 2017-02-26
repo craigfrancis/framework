@@ -1620,6 +1620,10 @@
 								}
 							}
 
+							if (config::get('output.csp_disown_opener', true)) {
+								$output[] = 'disown-opener';
+							}
+
 							if (https_only()) {
 								$output[] = 'block-all-mixed-content';
 							}
