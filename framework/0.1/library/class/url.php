@@ -323,11 +323,12 @@
 										if (https_available()) {
 											$scheme = 'https'; // Use HTTPS whenever possible.
 										}
-									} else {
-										if (!https_available()) {
-											$scheme = 'http'; // Drop down to HTTP if HTTPS is not available.
-										}
 									}
+
+									// } else {
+									// 	if (!https_available()) {
+									// 		$scheme = 'http'; // Drop down to HTTP if HTTPS is not available.
+									// 	}
 
 								} else if ($scheme === '' || $scheme === NULL) {
 
