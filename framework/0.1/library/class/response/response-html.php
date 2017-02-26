@@ -1610,10 +1610,17 @@
 								$csp['report-uri'] = $report_uri;
 							}
 
+							$domain = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain');
+
 							$output = array();
 							foreach ($csp as $directive => $value) {
 								if ($value !== NULL) {
 									if (is_array($value)) {
+										foreach ($value as $k => $v) {
+											if (prefix_match('/', $v)) {
+												$value[$k] = $domain . $v;
+											}
+										}
 										$value = implode(' ', $value);
 									}
 									$output[] = $directive . ' ' . str_replace('"', "'", $value);
