@@ -1358,10 +1358,45 @@
 					$this->completed_send_init = true;
 
 				//--------------------------------------------------
+				// Mime type
+
+					$mime_type = $this->mime_get();
+
+				//--------------------------------------------------
 				// Debug
 
 					if (config::get('debug.level') >= 4) {
 						debug_progress('Template start send');
+					}
+
+					if (config::get('debug.level') > 0 && config::get('debug.show') && in_array($mime_type, array('text/html', 'application/xhtml+xml'))) {
+
+						$this->js_code_add("\n", 'defer'); // Add something so the file is included, and session is started. The rest will be added in debug_shutdown()
+
+						config::set('debug.js_code', $this->js_code_ref);
+
+						$css_path = gateway_url('framework-file', 'debug.css');
+
+						$this->css_add($css_path);
+
+						$this->csp_source_add('style-src', $css_path);
+
+						if (config::get('db.host') !== NULL) {
+
+							debug_require_db_table(DB_PREFIX . 'system_report', '
+									CREATE TABLE [TABLE] (
+										id int(11) NOT NULL auto_increment,
+										type tinytext NOT NULL,
+										created datetime NOT NULL,
+										message text NOT NULL,
+										request tinytext NOT NULL,
+										referrer tinytext NOT NULL,
+										ip tinytext NOT NULL,
+										PRIMARY KEY  (id)
+									);');
+
+						}
+
 					}
 
 				//--------------------------------------------------
@@ -1472,8 +1507,6 @@
 
 					//--------------------------------------------------
 					// Content type
-
-						$mime_type = $this->mime_get();
 
 						header('Content-Type: ' . head($mime_type) . '; charset=' . head($this->charset_get()));
 
@@ -1662,35 +1695,6 @@
 					// Sent
 
 						$this->headers_sent = true;
-
-				//--------------------------------------------------
-				// Debug
-
-					if (config::get('debug.level') > 0 && config::get('debug.show') && in_array($mime_type, array('text/html', 'application/xhtml+xml'))) {
-
-						$this->js_code_add("\n", 'defer'); // Add something so the file is included, and session is started. The rest will be added in debug_shutdown()
-
-						config::set('debug.js_code', $this->js_code_ref);
-
-						$this->css_add(gateway_url('framework-file', 'debug.css'));
-
-						if (config::get('db.host') !== NULL) {
-
-							debug_require_db_table(DB_PREFIX . 'system_report', '
-									CREATE TABLE [TABLE] (
-										id int(11) NOT NULL auto_increment,
-										type tinytext NOT NULL,
-										created datetime NOT NULL,
-										message text NOT NULL,
-										request tinytext NOT NULL,
-										referrer tinytext NOT NULL,
-										ip tinytext NOT NULL,
-										PRIMARY KEY  (id)
-									);');
-
-						}
-
-					}
 
 				//--------------------------------------------------
 				// XML Prolog

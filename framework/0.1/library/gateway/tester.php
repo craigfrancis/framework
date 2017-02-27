@@ -144,9 +144,12 @@
 					//--------------------------------------------------
 					// Response
 
+						$css_path = gateway_url('framework-file', 'tester.css');
+
 						$response = response_get('html');
 						$response->template_path_set(FRAMEWORK_ROOT . '/library/template/blank.ctp');
-						$response->css_add(gateway_url('framework-file', 'tester.css'));
+						$response->css_add($css_path);
+						$response->csp_source_add('style-src', $css_path);
 						$response->title_set(ucfirst($test));
 						$response->view_add_html($html);
 						$response->send();
