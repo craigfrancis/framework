@@ -44,7 +44,7 @@
 							'table_sql'    => DB_PREFIX . 'cms_text',
 							'where_sql'    => 'true',
 							'cacheable'    => true,
-							'cache_folder' => 'cms-text',
+							'cache_folder' => tmp_folder('cms-text'),
 							'editable'     => false,
 							'log_missing'  => true,
 							'path'         => config::get('request.path'),
@@ -113,7 +113,7 @@
 					if ($this->config['cacheable']) {
 
 						$cache_name = intval($this->config['revision']) . '-' . base64_encode($this->config['path']);
-						$cache_path = tmp_folder($this->config['cache_folder']) . '/' . $cache_name;
+						$cache_path = $this->config['cache_folder'] . '/' . $cache_name;
 
 						if (is_file($cache_path)) {
 							$this->content = unserialize(file_get_contents($cache_path));
@@ -275,7 +275,7 @@
 				$files = array();
 				$path_encoded = base64_encode($path);
 
-				$dir = tmp_folder('cms-text');
+				$dir = $this->config['cache_folder'];
 				if (is_dir($dir)) {
 					if ($dh = opendir($dir)) {
 						while (($file = readdir($dh)) !== false) {
