@@ -39,18 +39,19 @@
 				// Default config
 
 					$default_config = array(
-							'revision'    => 0,
-							'processor'   => 'markdown',
-							'table_sql'   => DB_PREFIX . 'cms_text',
-							'where_sql'   => 'true',
-							'cacheable'   => true,
-							'editable'    => false,
-							'log_missing' => true,
-							'path'        => config::get('request.path'),
-							'versions'    => array(),
-							'variables'   => array(),
-							'priority'    => array(),
-							'edit_url'    => '/admin/cms-text/edit/',
+							'revision'     => 0,
+							'processor'    => 'markdown',
+							'table_sql'    => DB_PREFIX . 'cms_text',
+							'where_sql'    => 'true',
+							'cacheable'    => true,
+							'cache_folder' => 'cms-text',
+							'editable'     => false,
+							'log_missing'  => true,
+							'path'         => config::get('request.path'),
+							'versions'     => array(),
+							'variables'    => array(),
+							'priority'     => array(),
+							'edit_url'     => '/admin/cms-text/edit/',
 						);
 
 					$default_config = array_merge($default_config, config::get_all('cms.default'));
@@ -112,7 +113,7 @@
 					if ($this->config['cacheable']) {
 
 						$cache_name = intval($this->config['revision']) . '-' . base64_encode($this->config['path']);
-						$cache_path = tmp_folder('cms-text') . '/' . $cache_name;
+						$cache_path = tmp_folder($this->config['cache_folder']) . '/' . $cache_name;
 
 						if (is_file($cache_path)) {
 							$this->content = unserialize(file_get_contents($cache_path));
