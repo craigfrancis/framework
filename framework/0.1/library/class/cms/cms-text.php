@@ -44,7 +44,7 @@
 							'table_sql'    => DB_PREFIX . 'cms_text',
 							'where_sql'    => 'true',
 							'cacheable'    => true,
-							'cache_folder' => tmp_folder('cms-text'),
+							'cache_folder' => NULL,
 							'editable'     => false,
 							'log_missing'  => true,
 							'path'         => config::get('request.path'),
@@ -112,8 +112,14 @@
 
 					if ($this->config['cacheable']) {
 
+						if ($this->config['cache_folder']) {
+							$cache_folder = $this->config['cache_folder'];
+						} else {
+							$cache_folder = cms_text::cache_folder_get();
+						}
+
 						$cache_name = intval($this->config['revision']) . '-' . base64_encode($this->config['path']);
-						$cache_path = $this->config['cache_folder'] . '/' . $cache_name;
+						$cache_path = $cache_folder . '/' . $cache_name;
 
 						if (is_file($cache_path)) {
 							$this->content = unserialize(file_get_contents($cache_path));
@@ -152,6 +158,14 @@
 					$this->db_link = db_get();
 				}
 				return $this->db_link;
+			}
+
+			public static function cache_folder_get() {
+				$folder = config::get('cms.default.cache_folder');
+				if (!$folder) {
+					$folder = tmp_folder('cms-text');
+				}
+				return $folder;
 			}
 
 			protected function processor_get() {
@@ -275,7 +289,7 @@
 				$files = array();
 				$path_encoded = base64_encode($path);
 
-				$dir = $this->config['cache_folder'];
+				$dir = cms_text::cache_folder_get();
 				if (is_dir($dir)) {
 					if ($dh = opendir($dir)) {
 						while (($file = readdir($dh)) !== false) {
