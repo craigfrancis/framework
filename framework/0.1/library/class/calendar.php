@@ -7,24 +7,25 @@
 
 			protected $config = array(); // Can be used when extending the calendar helper
 
-			private $current_year   = NULL;
-			private $current_week   = NULL;
-			private $current_month  = NULL;
-			private $selected_year  = NULL;
-			private $selected_week  = NULL;
-			private $selected_month = NULL;
+			private $current_year     = NULL;
+			private $current_week     = NULL;
+			private $current_month    = NULL;
+			private $selected_year    = NULL;
+			private $selected_week    = NULL;
+			private $selected_month   = NULL;
 
-			private $focus_start    = NULL;
-			private $focus_end      = NULL;
-			private $data_start     = NULL; // Used in 'range' mode - typically the previous, and following two weeks, are shown.
-			private $data_end       = NULL;
+			private $focus_start      = NULL;
+			private $focus_end        = NULL;
+			private $data_start       = NULL; // Used in 'range' mode - typically the previous, and following two weeks, are shown.
+			private $data_end         = NULL;
 
-			private $base_url       = NULL;
-			private $day_url_base   = NULL;
-			private $day_urls       = array();
-			private $day_events     = array();
-			private $day_class      = array();
-			private $day_data       = array();
+			private $base_url         = NULL;
+			private $day_url_base     = NULL;
+			private $day_urls         = array();
+			private $day_heading_html = array();
+			private $day_events       = array();
+			private $day_class        = array();
+			private $day_data         = array();
 
 		//--------------------------------------------------
 		// Setup
@@ -221,6 +222,17 @@
 
 			public function day_data_set($date, $field, $value) {
 				$this->day_data[$date][$field] = $value;
+			}
+
+		//--------------------------------------------------
+		// Heading
+
+			public function day_heading_set($date, $text) {
+				$this->day_heading_set_html($date, nl2br(html(trim($text))));
+			}
+
+			public function day_heading_set_html($date, $html) {
+				$this->day_heading_html[$date] = $html;
 			}
 
 		//--------------------------------------------------
@@ -545,13 +557,21 @@
 
 			protected function html_day_heading($date, $timestamp, $url) {
 
-				$html = $timestamp->html($this->config['mode'] == 'week' ? 'l jS M' : 'jS M');
+				if (isset($this->day_heading_html[$date])) {
 
-				if ($url) {
-					$html = '<a href="' . html($url) . '">' . $html . '</a>';
+					return $this->day_heading_html[$date];
+
+				} else {
+
+					$html = $timestamp->html($this->config['mode'] == 'week' ? 'l jS M' : 'jS M');
+
+					if ($url) {
+						$html = '<a href="' . html($url) . '">' . $html . '</a>';
+					}
+
+					return '<h3 class="day" id="' . html($date) . '">' . $html . '</h3>';
+
 				}
-
-				return '<h3 class="day" id="' . html($date) . '">' . $html . '</h3>';
 
 			}
 
