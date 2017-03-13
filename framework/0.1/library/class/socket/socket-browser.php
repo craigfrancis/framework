@@ -695,9 +695,14 @@
 								$encoding = strtolower(trim($this->socket->response_header_get('Content-Encoding')));
 								if ($encoding == 'gzip') {
 									if (function_exists('gzdecode')) {
-										$this->current_data = gzdecode($this->current_data);
+										$decoded = @gzdecode($this->current_data);
 									} else {
-										$this->current_data = gzinflate(substr($this->current_data, 10, -8));
+										$decoded = @gzinflate(substr($this->current_data, 10, -8));
+									}
+									if ($decoded === false) {
+										$this->error('Unable to gzdecode the response.', $this->current_url);
+									} else {
+										$this->current_data = $decoded;
 									}
 								}
 
