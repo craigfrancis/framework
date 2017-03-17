@@ -105,7 +105,10 @@
 		//--------------------------------------------------
 		// Config
 
-			$contact_email = config::get('email.error');
+			$contact_email = config::get('email.error_display');
+			if (!$contact_email) {
+				$contact_email = config::get('email.error');
+			}
 			if (is_array($contact_email)) {
 				$contact_email = reset($contact_email);
 			}
