@@ -5,11 +5,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			public static $db_timezone = 'UTC';
-
 			protected $null = false;
-			protected $formats = array(
-				);
 
 		//--------------------------------------------------
 		// Setup
@@ -19,7 +15,7 @@
 					if ($time === NULL || $time === '0000-00-00 00:00:00' || $time === '0000-00-00') {
 						$this->null = ($time === NULL ? true : $time);
 					} else if ($timezone == 'db') {
-						parent::__construct($time, new DateTimeZone(self::$db_timezone));
+						parent::__construct($time, new DateTimeZone(self::getDbTimezone()));
 						parent::setTimezone(new DateTimeZone(config::get('output.timezone')));
 					} else {
 						if ($timezone === NULL) {
@@ -49,15 +45,12 @@
 					return $null_value;
 				} else if ($format == 'db' || $format == 'db-date') {
 					$timezone = parent::getTimezone();
-					parent::setTimezone(new DateTimeZone(self::$db_timezone));
+					parent::setTimezone(new DateTimeZone(self::getDbTimezone()));
 					$output = parent::format($format == 'db' ? 'Y-m-d H:i:s' : 'Y-m-d');
 					@parent::setTimezone($timezone); // Avoid PHP 5.3 bug 45543 (can not set timezones without ID)
 					return $output;
 				} else {
-					if (isset($this->formats[$format])) {
-						$format = $this->formats[$format];
-					}
-					return parent::format($format);
+					return parent::format(config::array_get('timestamp.formats', $format, $format));
 				}
 			}
 
@@ -104,11 +97,15 @@
 				}
 				$parsed = parent::createFromFormat($format, $time, new DateTimeZone($timezone));
 				if ($parsed) {
-					$parsed->setTimezone(new DateTimeZone(self::$db_timezone));
+					$parsed->setTimezone(new DateTimeZone(self::getDbTimezone()));
 					return new timestamp($parsed->format('Y-m-d H:i:s'), 'db');
 				} else {
 					return false;
 				}
+			}
+
+			static function getDbTimezone() { // Match formatting of getTimezone
+				return config::get('timestamp.db_timezone', 'UTC');
 			}
 
 		//--------------------------------------------------
@@ -274,13 +271,12 @@
 
 	if (false) {
 
-		class timestamp extends timestamp_base {
-
-			protected $formats = array(
+		config::set('timestamp.formats', array(
 					'iso' => 'Y-m-d H:i:s',
 					'human' => 'l jS F Y, g:i:sa',
-				);
+				));
 
+		class timestamp extends timestamp_base {
 		}
 
 		$timestamp = new timestamp();
