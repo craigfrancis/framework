@@ -1025,7 +1025,7 @@
 						if ($canonical_url == 'full' || count($params) > 0) {
 
 							$vars_used = config::get('request.vars_used', array());
-							$vars_ignore = array('js', 'style');
+							$vars_ignore = config::get('request.vars_ignored', array('js', 'style'));
 
 							foreach ($params as $name => $value) {
 								if (!isset($vars_used[$name]) || in_array($name, $vars_ignore)) {
