@@ -142,16 +142,13 @@
 
 			public function wrapper_class_get() {
 
-				$class = 'row ';
-				$class .= $this->type . ' ';
-				$class .= $this->wrapper_class . ' ';
-				$class .= $this->name . ' ';
+				$class = array('row', $this->type, $this->wrapper_class, $this->name);
 
 				if (!$this->valid()) {
-					$class .= 'error ';
+					$class[] = 'error';
 				}
 
-				return trim($class);
+				return implode(' ', array_filter($class));
 
 			}
 
