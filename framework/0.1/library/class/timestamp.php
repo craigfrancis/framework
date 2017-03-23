@@ -68,7 +68,7 @@
 
 			public function modify($modify) {
 				if (!$this->null) {
-					parent::modify($modify);
+					return parent::modify($modify);
 				}
 			}
 
