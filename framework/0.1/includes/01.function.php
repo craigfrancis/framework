@@ -1257,7 +1257,9 @@
 		//--------------------------------------------------
 		// Disable mod_gzip or mod_deflate, to end connection
 
-			apache_setenv('no-gzip', 1);
+			if (function_exists('apache_setenv')) {
+				apache_setenv('no-gzip', 1);
+			}
 
 		//--------------------------------------------------
 		// Extra
@@ -1286,6 +1288,10 @@
 			echo $output_html; // If you get the error "Cannot modify header information", check that exit_with_error was not called afterwards.
 
 			flush();
+
+			if (function_exists('fastcgi_finish_request')) {
+				fastcgi_finish_request();
+			}
 
 		//--------------------------------------------------
 		// From the end users point of view, we are done!

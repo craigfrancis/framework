@@ -1131,7 +1131,9 @@
 
 					$output = str_pad($output, 1024);
 
-					apache_setenv('no-gzip', 1);
+					if (function_exists('apache_setenv')) {
+						apache_setenv('no-gzip', 1);
+					}
 
 					echo $output;
 
