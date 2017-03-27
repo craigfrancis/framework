@@ -208,9 +208,10 @@
 					$opcache_socket->exit_on_error_set(false);
 
 					$opcache_time = new timestamp();
-					$opcache_key = hash('sha256', (ENCRYPTION_KEY . $opcache_time->format('Y-m-d H:i:s')));
+					$opcache_iso = $opcache_time->format('Y-m-d H:i:s');
+					$opcache_key = hash('sha256', (ENCRYPTION_KEY . $opcache_iso));
 
-					if ($opcache_socket->post($opcache_url, array('key' => $opcache_key))) {
+					if ($opcache_socket->post($opcache_url, array('key' => $opcache_key, 'timestamp' => $opcache_iso))) {
 						$opcache_data = $opcache_socket->response_data_get();
 						if ($opcache_data !== 'Success') {
 							$opcache_error = $opcache_data;

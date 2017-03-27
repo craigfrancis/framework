@@ -34,9 +34,10 @@
 						$diff_socket->exit_on_error_set(false);
 
 						$diff_time = new timestamp();
-						$diff_key = hash('sha256', (ENCRYPTION_KEY . $diff_time->format('Y-m-d H:i:s')));
+						$diff_iso = $diff_time->format('Y-m-d H:i:s');
+						$diff_key = hash('sha256', (ENCRYPTION_KEY . $diff_iso));
 
-						if ($diff_socket->post($diff_url, array('key' => $diff_key, 'upload' => ($upload ? 'true' : 'false')))) {
+						if ($diff_socket->post($diff_url, array('key' => $diff_key, 'timestamp' => $diff_iso, 'upload' => ($upload ? 'true' : 'false')))) {
 
 							echo $diff_socket->response_data_get();
 
