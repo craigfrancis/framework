@@ -258,6 +258,19 @@
 		config::set_default('output.csp_enforced', (SERVER == 'stage'));
 		config::set_default('output.csp_report', false);
 		config::set_default('output.csp_directives', array('default-src' => array("'self'")));
+		config::set_default('output.fp_enabled', false);
+		config::set_default('output.fp_directives', array(
+				'camera' => array(),
+				'eme' => array(),
+				'fullscreen' => array(),
+				'geolocation' => array(),
+				'microphone' => array(),
+				'midi' => array(),
+				'payment' => array(),
+				'speaker' => array(),
+				'vibrate' => array(),
+			));
+
 		config::set_default('output.block_browsers', array(
 				'/MSIE [1-5]\./',
 				'/MSIE.*; Mac_PowerPC/',

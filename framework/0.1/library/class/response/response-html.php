@@ -395,6 +395,31 @@
 			}
 
 		//--------------------------------------------------
+		// Feature policy
+
+			public function fp_source_add($directive, $sources) {
+
+				if ($this->headers_sent) {
+					exit_with_error('Cannot add to the "' . $directive . '" Feature Policy (header already sent).');
+				}
+
+				if (!is_array($sources)) {
+					$sources = array($sources);
+				}
+
+				$fp = config::get('output.fp_directives');
+
+				if (!isset($fp[$directive])) {
+					exit_with_error('Unrecognised "' . $directive . '" Feature Policy.');
+				}
+
+				$fp[$directive] = array_merge($fp[$directive], $sources);
+
+				config::set('output.fp_directives', $fp);
+
+			}
+
+		//--------------------------------------------------
 		// JavaScript
 
 			public function js_add($path, $attributes = array(), $position = 'foot') { // Could be $this->js_add('/path.js', 'defer');
@@ -1613,6 +1638,28 @@
 										);');
 
 							}
+
+						}
+
+					//--------------------------------------------------
+					// Feature policy
+
+						if (config::get('output.fp_enabled') === true) {
+
+								// https://crbug.com/623682
+								//
+								// Chrome to first implement:
+								// - fullscreen
+								// - payments
+								// - vibration
+								// https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/uKO1CwiY3ts
+								//
+								// document.querySelector(".row.submit input").onclick = function() { document.documentElement.requestFullscreen(); return false };
+								// document.querySelector(".row.submit input").onclick = function() { document.documentElement.webkitRequestFullscreen(); return false };
+								//
+								// navigator.geolocation.getCurrentPosition(function(position){console.log(position.coords)});
+
+							header('Feature-Policy: ' . head(json_encode(config::get('output.fp_directives'))));
 
 						}
 
