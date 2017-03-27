@@ -87,8 +87,8 @@
 // Security
 
 	// $config['output.framing'] = 'DENY'; // or SAMEORIGIN
-
 	$config['output.xss_reflected'] = 'block';
+	$config['output.referrer_policy'] = 'same-origin';
 
 	$config['output.fp_enabled'] = true;
 
