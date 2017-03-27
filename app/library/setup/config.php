@@ -84,17 +84,16 @@
 	$config['output.timestamp_url'] = true;
 
 //--------------------------------------------------
-// Tracking
+// Security
 
-	$config['tracking.ga_code'] = 'UA-309730-8';
-	// $config['tracking.js_path'] = '/a/js/analytics.js';
+	// $config['output.framing'] = 'DENY'; // or SAMEORIGIN
 
-//--------------------------------------------------
-// Content security policy
+	$config['output.xss_reflected'] = 'block';
+
+	$config['output.fp_enabled'] = true;
 
 	$config['output.csp_enabled'] = true;
 	$config['output.csp_enforced'] = true;
-
 	$config['output.csp_directives'] = array(
 			'default-src'  => array("'none'"),
 			'base-uri'     => array("'none'"),
@@ -104,6 +103,12 @@
 			'img-src'      => array("'self'"),
 			'script-src'   => array("'self'"),
 		);
+
+//--------------------------------------------------
+// Tracking
+
+	$config['tracking.ga_code'] = 'UA-309730-8';
+	// $config['tracking.js_path'] = '/a/js/analytics.js';
 
 //--------------------------------------------------
 // Pagination
