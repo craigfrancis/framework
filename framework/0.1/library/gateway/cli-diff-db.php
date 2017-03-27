@@ -1,6 +1,6 @@
 <?php
 
-	$now = new timestamp();
+	$now = new timestamp('now', 'UTC');
 
 	$key_valid = false;
 	$key_request = request('key', 'POST');

@@ -33,7 +33,7 @@
 						$diff_socket = new socket();
 						$diff_socket->exit_on_error_set(false);
 
-						$diff_time = new timestamp();
+						$diff_time = new timestamp('now', 'UTC');
 						$diff_iso = $diff_time->format('Y-m-d H:i:s');
 						$diff_key = hash('sha256', (ENCRYPTION_KEY . $diff_iso));
 
