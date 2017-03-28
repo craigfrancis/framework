@@ -307,6 +307,7 @@
 			protected $mode = NULL;
 			protected $last_run = NULL;
 			protected $halt_maintenance_run = false;
+			protected $error_message = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -390,6 +391,8 @@
 						echo ' ' . $error . "\n\n";
 					}
 
+					$this->error_message = $error;
+
 				}
 				return false;
 			}
@@ -403,6 +406,8 @@
 						echo ucfirst($this->job_name) . ' - Harmless Error:' . "\n";
 						echo ' ' . $error . "\n\n";
 					}
+
+					$this->error_message = $error;
 
 				}
 				return false;
@@ -514,24 +519,6 @@
 					}
 
 				//--------------------------------------------------
-				// Log
-
-					if ($this->run_id !== NULL && $this->halt_maintenance_run === false) {
-
-						$db = db_get();
-
-						$now = new timestamp();
-
-						$db->insert(DB_PREFIX . 'system_maintenance_job', array(
-								'job'     => $this->job_name,
-								'run_id'  => $this->run_id,
-								'output'  => $job_output_html,
-								'created' => $now,
-							));
-
-					}
-
-				//--------------------------------------------------
 				// Send
 
 					if ($this->run_id !== NULL && $job_output_html != '') {
@@ -552,6 +539,28 @@
 							echo $job_output_html;
 
 						}
+					}
+
+				//--------------------------------------------------
+				// Log
+
+					if ($this->run_id !== NULL && $this->halt_maintenance_run === false) {
+
+						$db = db_get();
+
+						if ($this->error_message) {
+							$job_output_html = trim(html($this->error_message) . "\n\n" . $job_output_html);
+						}
+
+						$now = new timestamp();
+
+						$db->insert(DB_PREFIX . 'system_maintenance_job', array(
+								'job'     => $this->job_name,
+								'run_id'  => $this->run_id,
+								'output'  => $job_output_html,
+								'created' => $now,
+							));
+
 					}
 
 				//--------------------------------------------------
