@@ -307,6 +307,7 @@
 			protected $mode = NULL;
 			protected $last_run = NULL;
 			protected $halt_maintenance_run = false;
+			protected $error_type = NULL;
 			protected $error_message = NULL;
 
 		//--------------------------------------------------
@@ -386,12 +387,8 @@
 
 					report_add($error, 'error');
 
-					if (REQUEST_MODE == 'cli' || config::get('debug.level') > 0) {
-						echo ucfirst($this->job_name) . ' - Fatal Error:' . "\n";
-						echo ' ' . $error . "\n\n";
-					} else {
-						$this->error_message = $error;
-					}
+					$this->error_type = 'Fatal';
+					$this->error_message = $error;
 
 				}
 				return false;
@@ -402,19 +399,19 @@
 
 					report_add($error, 'error');
 
-					if (REQUEST_MODE == 'cli' || config::get('debug.level') > 0) {
-						echo ucfirst($this->job_name) . ' - Harmless Error:' . "\n";
-						echo ' ' . $error . "\n\n";
-					} else {
-						$this->error_message = $error;
-					}
+					$this->error_type = 'Harmless';
+					$this->error_message = $error;
 
 				}
 				return false;
 			}
 
-			public function error_message_get() {
-				return $this->error_message;
+			public function error_get() {
+				if ($this->error_type) {
+					return array($this->error_type, $this->error_message);
+				} else {
+					return NULL;
+				}
 			}
 
 		//--------------------------------------------------
@@ -502,9 +499,24 @@
 						//--------------------------------------------------
 						// Error, if it hasn't been printed already.
 
-							$error_message = $job->error_message_get();
-							if ($error_message) {
-								$job_output_html = rtrim('<p class="error">' . html($error_message) . '</p>' . "\n\n" . $job_output_html);
+							$error = $job->error_get();
+							if ($error) {
+
+								$error_type = $error[0] . ' Error [' . $this->job_name . ']:';
+
+								$error_text = $error_type . "\n" . ' ' . $error[1] . "\n\n";
+								$error_html = '<p class="error"><strong>' . html($error_type) . '</strong><br />' . html($error[1]) . '</p>' . "\n\n";
+
+								if (REQUEST_MODE == 'cli' && config::get('debug.level') > 0) {
+									if (config::get('output.mime') == 'text/plain') {
+										echo $error_text;
+									} else {
+										echo $error_html;
+									}
+								}
+
+								$job_output_html = rtrim($error_html . $job_output_html);
+
 							}
 
 						//--------------------------------------------------
@@ -533,24 +545,18 @@
 				//--------------------------------------------------
 				// Send
 
-					if ($this->run_id !== NULL && $job_output_html != '') {
-						if ($this->halt_maintenance_run === false) {
+					if ($this->run_id !== NULL && $this->halt_maintenance_run === false && $job_output_html != '') {
 
-							if (isset($email_addresses[SERVER])) {
-								$email_addresses = $email_addresses[SERVER];
-							}
-
-							$email = new email();
-							$email->default_style_set(NULL);
-							$email->subject_set($email_title);
-							$email->body_html_add($job_output_html); // Assume HTML
-							$email->send($email_addresses);
-
-						} else if (REQUEST_MODE == 'cli' || config::get('debug.level') > 0) {
-
-							echo $job_output_html;
-
+						if (isset($email_addresses[SERVER])) {
+							$email_addresses = $email_addresses[SERVER];
 						}
+
+						$email = new email();
+						$email->default_style_set(NULL);
+						$email->subject_set($email_title);
+						$email->body_html_add($job_output_html); // Assume HTML
+						$email->send($email_addresses);
+
 					}
 
 				//--------------------------------------------------
