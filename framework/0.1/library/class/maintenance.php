@@ -389,9 +389,9 @@
 					if (REQUEST_MODE == 'cli' || config::get('debug.level') > 0) {
 						echo ucfirst($this->job_name) . ' - Fatal Error:' . "\n";
 						echo ' ' . $error . "\n\n";
+					} else {
+						$this->error_message = $error;
 					}
-
-					$this->error_message = $error;
 
 				}
 				return false;
@@ -405,12 +405,16 @@
 					if (REQUEST_MODE == 'cli' || config::get('debug.level') > 0) {
 						echo ucfirst($this->job_name) . ' - Harmless Error:' . "\n";
 						echo ' ' . $error . "\n\n";
+					} else {
+						$this->error_message = $error;
 					}
-
-					$this->error_message = $error;
 
 				}
 				return false;
+			}
+
+			public function error_message_get() {
+				return $this->error_message;
 			}
 
 		//--------------------------------------------------
@@ -496,6 +500,14 @@
 							$job_output_html = ob_get_clean() . $job_output_html;
 
 						//--------------------------------------------------
+						// Error, if it hasn't been printed already.
+
+							$error_message = $job->error_message_get();
+							if ($error_message) {
+								$job_output_html = rtrim('<p class="error">' . html($error_message) . '</p>' . "\n\n" . $job_output_html);
+							}
+
+						//--------------------------------------------------
 						// Email
 
 							$email_title = $job->email_title_get();
@@ -547,10 +559,6 @@
 					if ($this->run_id !== NULL && $this->halt_maintenance_run === false) {
 
 						$db = db_get();
-
-						if ($this->error_message) {
-							$job_output_html = trim(html($this->error_message) . "\n\n" . $job_output_html);
-						}
 
 						$now = new timestamp();
 
