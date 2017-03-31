@@ -195,7 +195,7 @@
 
 				if ($domain == '') {
 
-					echo 'Cannot clear OpCache without "output.domain" config.' . "\n";
+					echo '  Cannot clear OpCache without "output.domain" config.' . "\n";
 
 				} else {
 
