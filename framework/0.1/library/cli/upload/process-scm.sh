@@ -112,11 +112,16 @@
 # Run install
 #--------------------------------------------------
 
+	echo;
+	echo 'Run install script...';
+
+	remote_cmd "${CLI_PATH} --install";
+
+	echo '  Done';
+
 	# USER_OWNER=`remote_cmd "ls -ld '${DST_PATH}' | awk '{print \\\$3}'"`;
 	# USER_NAME=`remote_cmd "whoami"`;
-
-	# remote_cmd "${CLI_PATH} --install";
-
+	#
 	# Can't really run 'install', as the scm post-commit hook will be under
 	# a different user (probably apache), so won't be able to create or
 	# change permissions on any files.
