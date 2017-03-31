@@ -175,7 +175,7 @@
 				mkdir($temp_folder, 0777);
 			}
 
-			chmod($temp_folder, 0777);
+			@chmod($temp_folder, 0777);
 
 			if (is_dir(PRIVATE_ROOT . '/.svn')) {
 				$output = command_run('svn propget svn:ignore ' . escapeshellarg(PRIVATE_ROOT), false);
