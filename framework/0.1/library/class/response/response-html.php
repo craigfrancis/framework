@@ -1642,6 +1642,27 @@
 						}
 
 					//--------------------------------------------------
+					// Certificate Transparency
+
+						if (config::get('output.ct_enabled') === true) {
+
+							$ct_values = array();
+							$ct_values[] = 'max-age=' . config::get('output.ct_max_age', 0);
+
+							if (config::get('output.ct_enforced', false) === true) {
+								$ct_values[] = 'enforce';
+							}
+
+							$report_uri = config::get('output.ct_report', false);
+							if ($report_uri) {
+								$ct_values[] = 'report-uri="' . $report_uri . '"';
+							}
+
+							header('Expect-CT: ' . head(implode('; ', $ct_values)));
+
+						}
+
+					//--------------------------------------------------
 					// Feature policy
 
 						if (config::get('output.fp_enabled') === true) {

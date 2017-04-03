@@ -251,13 +251,21 @@
 		config::set_default('output.page_id', 'route');
 		config::set_default('output.framing', 'DENY');
 		config::set_default('output.xss_reflected', 'block');
+
 		config::set_default('output.pkp_pins', array());
 		config::set_default('output.pkp_enforced', false);
 		config::set_default('output.pkp_report', false);
+
+		config::set_default('output.ct_enabled', false);
+		config::set_default('output.ct_enforced', false);
+		config::set_default('output.ct_max_age', 3); // Not 0, so we can also check resources (e.g. images)
+		config::set_default('output.ct_report', false);
+
 		config::set_default('output.csp_enabled', true);
 		config::set_default('output.csp_enforced', (SERVER == 'stage'));
 		config::set_default('output.csp_report', false);
 		config::set_default('output.csp_directives', array('default-src' => array("'self'")));
+
 		config::set_default('output.fp_enabled', false);
 		config::set_default('output.fp_directives', array(
 				'camera' => array(),
