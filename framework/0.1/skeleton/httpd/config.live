@@ -4,7 +4,7 @@
 		ServerName www.example.com
 		DocumentRoot /www/live/company.project/app/public/
 
-		LogFormat "%h %l %u [%{LOG_INFO}n] [%{%Y-%m-%d %H:%M:%S}t] \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" inc_info
+		LogFormat "%h %l %u [%{LOG_INFO}n] [%{%Y-%m-%d %H:%M:%S}t] [%D/%{TIME_INFO}n] \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" inc_info
 
 		CustomLog /www/live/company.project/logs/access_log inc_info
 		ErrorLog /www/live/company.project/logs/error_log

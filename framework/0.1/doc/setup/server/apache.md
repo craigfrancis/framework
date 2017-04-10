@@ -104,7 +104,7 @@ Which maps automatically to the appropriate websites folder, then use something 
 		DocumentRoot /Volumes/WebServer/Projects/craig.homepage/public
 		UseCanonicalName off
 
-		LogFormat "%h %l %u [%{SESSION}n] [%{LOG_INFO}n] [%{%Y-%m-%d %H:%M:%S}t] \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" inc_info
+		LogFormat "%h %l %u [%{LOG_INFO}n] [%{%Y-%m-%d %H:%M:%S}t] [%D/%{TIME_INFO}n] \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" inc_info
 		CustomLog /private/var/log/apache2/access_log inc_info
 		ErrorLog /private/var/log/apache2/error_log
 
