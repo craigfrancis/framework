@@ -72,11 +72,7 @@
 		// Base support
 
 			if (!$base_mode && !class_exists($class_name) && class_exists($class_name . '_base')) {
-				if (function_exists('class_alias')) {
-					class_alias($class_name . '_base', $class_name);
-				} else {
-					eval('class ' . $class_name . ' extends ' . $class_name . '_base {}');
-				}
+				class_alias($class_name . '_base', $class_name); // Since 5.3.0
 				return true;
 			}
 
