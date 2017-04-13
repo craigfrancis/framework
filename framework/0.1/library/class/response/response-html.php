@@ -625,10 +625,7 @@
 					if (is_string($this->error)) { // True is a generic error (e.g. form validation), whereas a string is an error page (e.g. 'page-not-found')
 						$route_array = array('error');
 					} else {
-						$route_array = path_to_array(config::get('route.path'));
-						if (count($route_array) == 0) {
-							$route_array[] = 'home';
-						}
+						$route_array = route_folders(config::get('route.path'));
 					}
 
 					foreach ($route_array as $f) {

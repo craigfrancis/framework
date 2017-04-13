@@ -176,35 +176,46 @@
 					}
 
 				//--------------------------------------------------
-				// Change
+				// Create a function to cleanup the URL
 
-						// Note: We don't know if the destination is valid,
-						// as while we could do the check when loading the
-						// controller, it wouldn't work for 'view' only urls,
-						// and would also add more processing time.
+					if (!function_exists('url_cleanup')) {
+						function url_cleanup($route_path, $new_path, $new_url) {
+
+							list($folders, $controller, $method, $arguments) = controller_get($route_path);
+							if ($controller !== NULL) {
+								return $new_url; // A controller would handle this.
+							}
+
+							if (is_file(view_path(route_folders($route_path)))) {
+								return $new_url; // There is a view file for this.
+							}
+
+							return NULL; // Give up, it's really a 404
+
+						}
+					}
+
+				//--------------------------------------------------
+				// Change
 
 					$new_url = new url();
 					$new_url->format_set('full');
 					$new_url->path_set($url_prefix . $new_path);
 					$new_url = $new_url->get();
 
-					if (function_exists('url_cleanup')) {
+					$clean_url = url_cleanup($route_path, $new_path, $new_url);
 
-						url_cleanup($route_path, $new_path, $new_url);
-
-					} else if (SERVER == 'stage') {
-
-						exit('<p>URL Cleanup: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
-
-					} else {
-
-						redirect($new_url, 301);
-
+					if ($clean_url !== NULL) {
+						if (SERVER == 'stage') {
+							exit('<p>URL Cleanup: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
+						} else {
+							redirect($clean_url, 301);
+						}
 					}
 
 			}
 
-			unset($new_path);
+			unset($new_path, $clean_url);
 
 		}
 

@@ -93,12 +93,6 @@
 			}
 
 		//--------------------------------------------------
-		// Controller and Routes
-
-			require_once(FRAMEWORK_ROOT . '/includes/06.controller.php');
-			require_once(FRAMEWORK_ROOT . '/includes/07.routes.php');
-
-		//--------------------------------------------------
 		// Page setup
 
 			//--------------------------------------------------
@@ -117,6 +111,16 @@
 				if (is_file($include_path)) {
 					script_run_once($include_path);
 				}
+
+			//--------------------------------------------------
+			// Controller and Routes
+
+				if (config::get('debug.level') >= 4) {
+					debug_progress('Before routes');
+				}
+
+				require_once(FRAMEWORK_ROOT . '/includes/06.controller.php');
+				require_once(FRAMEWORK_ROOT . '/includes/07.routes.php');
 
 			//--------------------------------------------------
 			// Process

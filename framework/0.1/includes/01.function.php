@@ -1455,6 +1455,14 @@
 //--------------------------------------------------
 // Path processing
 
+	function route_folders($path) {
+		$route_folders = path_to_array($path);
+		if (count($route_folders) == 0) {
+			$route_folders[] = 'home';
+		}
+		return $route_folders;
+	}
+
 	function template_path($template) {
 		return APP_ROOT . '/template/' . safe_file_name($template) . '.ctp';
 	}

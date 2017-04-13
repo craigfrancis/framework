@@ -3,10 +3,7 @@
 //--------------------------------------------------
 // Get controller
 
-	$route_folders = path_to_array(config::get('route.path'));
-	if (count($route_folders) == 0) {
-		$route_folders[] = 'home';
-	}
+	$route_folders = route_folders(config::get('route.path'));
 
 	list($folders, $controller, $method, $arguments) = controller_get($route_folders);
 
