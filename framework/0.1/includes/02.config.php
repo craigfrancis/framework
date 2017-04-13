@@ -90,6 +90,11 @@
 				}
 			}
 
+			public static function set_all($variables) { // Only really used once, during setup
+				$obj = config::instance_get();
+				$obj->store = $variables;
+			}
+
 			public static function get($variable, $default = NULL) {
 				$obj = config::instance_get();
 				if (isset($obj->store[$variable])) {
@@ -176,11 +181,9 @@
 //--------------------------------------------------
 // Add values to object
 
-	foreach ($config as $key => $value) { // Using an array so any project can include the config file.
-		config::set($key, $value);
-	}
+	config::set_all($config);
 
-	unset($config, $key, $value);
+	unset($config);
 
 //--------------------------------------------------
 // Post app specified defaults
