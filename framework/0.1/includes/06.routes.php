@@ -167,7 +167,7 @@
 					}
 
 				//--------------------------------------------------
-				// Website override, can either do everythign itself,
+				// Website override, can either do everything itself,
 				// or provide the function url_cleanup()
 
 					$include_path = APP_ROOT . '/library/setup/url-cleanup.php';
