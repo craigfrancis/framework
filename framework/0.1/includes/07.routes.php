@@ -170,13 +170,18 @@
 				// Website override, can either do everything itself,
 				// or provide the function url_cleanup()
 
+					$include_path = APP_ROOT . '/library/setup/setup.php';
+					if (is_file($include_path)) {
+						script_run_once($include_path);
+					}
+
 					$include_path = APP_ROOT . '/library/setup/url-cleanup.php';
 					if (is_file($include_path)) {
 						script_run_once($include_path);
 					}
 
 				//--------------------------------------------------
-				// Create a function to cleanup the URL
+				// Function to do the URL cleanup
 
 					if (!function_exists('url_cleanup')) {
 						function url_cleanup($route_path, $new_path, $new_url) {
@@ -190,7 +195,7 @@
 								return $new_url; // There is a view file for this.
 							}
 
-							return NULL; // Give up, it's really a 404
+							return NULL; // Give up, it's probably a 404
 
 						}
 					}
