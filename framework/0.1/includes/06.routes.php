@@ -204,6 +204,8 @@
 
 			}
 
+			unset($new_path);
+
 		}
 
 	//--------------------------------------------------
@@ -476,6 +478,8 @@
 		unset($route_dir, $route_mtime, $route_file, $route_ext, $route_files, $path, $files_realpath, $realpath);
 
 	}
+
+	unset($route_asset);
 
 //--------------------------------------------------
 // NewRelic

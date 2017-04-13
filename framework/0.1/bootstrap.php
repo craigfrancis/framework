@@ -89,6 +89,7 @@
 				if ($output != '') {
 					exit('Pre framework output "' . $output . '"');
 				}
+				unset($output);
 			}
 
 		//--------------------------------------------------
@@ -143,6 +144,8 @@
 
 					debug_note_html($note_html, 'H');
 
+					unset($note_html, $units, $unit);
+
 				}
 
 			//--------------------------------------------------
@@ -152,7 +155,10 @@
 				$response->setup_output_set(ob_get_clean());
 				$response->send();
 
-				unset($response);
+		//--------------------------------------------------
+		// Cleanup
+
+			unset($include_path, $response);
 
 		//--------------------------------------------------
 		// Debug
@@ -188,11 +194,6 @@
 					debug_progress('End');
 
 			}
-
-		//--------------------------------------------------
-		// Cleanup
-
-			unset($include_path);
 
 	}
 

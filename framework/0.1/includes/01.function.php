@@ -874,13 +874,6 @@
 	}
 
 //--------------------------------------------------
-// Controller
-
-	function controller_get($name) {
-		// TODO
-	}
-
-//--------------------------------------------------
 // Get a unit object
 
 	function unit_add($unit_name, $config = array()) {
