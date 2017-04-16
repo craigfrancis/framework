@@ -283,6 +283,10 @@
 
 			}
 
+// TODO: Support 2 Factor Authentication, via TOTP (Time based, one time password).
+// Ensure there is a "remember this browser feature", which creates a record in the database (so these can be easily listed/reset).
+// Add a 2FA disable and recovery options... for recovery, provide them with a random key during setup, which can be used to disable 2FA... both use a reset email and 'r' cookie (similar to password reset process).
+
 			public function login_complete() {
 
 				//--------------------------------------------------
@@ -1204,6 +1208,7 @@
 				}
 
 				public function reset_request_complete($change_url = NULL) {
+					// Set an 'r' cookie with a long random key... this is stored in the db, and checked on 'reset_process_active'.
 					// Return
 					//   false = invalid_user
 					//   $change_url = url($request_url, array('t' => $request_id . '-' . $request_pass));
@@ -1216,13 +1221,13 @@
 			// Process
 
 				public function reset_process_active() {
-					return false; // Still a valid token?
+					return false; // Still a valid token? either as a timeout, or the 'r' cookie not matching.
 				}
 
 				public function reset_process_validate() {
-
 					$this->validate_password_complexity();
-					// Repeat password is the same
+					// New password is not the same as old password???
+					// New password matches Repeat new password.
 				}
 
 				public function reset_process_complete() {
