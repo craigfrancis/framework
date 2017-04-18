@@ -1310,7 +1310,7 @@
 
 		mime_set($mime);
 
-		header('Content-Disposition: ' . head($mode) . '; filename="' . head($name) . '"');
+		header('Content-Disposition: ' . head($mode) . '; filename="' . head(safe_file_name($name, true)) . '"');
 		header('Content-Length: ' . head(filesize($path)));
 
 		if ($mode !== 'inline') {
