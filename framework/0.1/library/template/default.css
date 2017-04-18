@@ -257,11 +257,11 @@
 /*--------------------------------------------------*/
 /* Basic Form                                       */
 
-	.basic_form fieldset {
-		margin: 0 10px 1em 0;
+	.basic_form {
+		margin: 0 0 1em 0;
 	}
 
-	.basic_form fieldset h2 {
+	.basic_form fieldset > h2 {
 		font-size: 1em;
 		margin: 0;
 		padding: 1em 0 0 1em;
@@ -277,7 +277,7 @@
 
 	.basic_form .error_list,
 	.basic_form .error {
-		color: red;
+		color: #D00;
 		background: inherit;
 		font-weight: bold;
 	}
@@ -372,7 +372,7 @@
 /*--------------------------------------------------*/
 /* Search form                                      */
 
-	.search_form fieldset {
+	.search_form {
 		margin: 0 0 1em 0;
 	}
 
@@ -383,13 +383,13 @@
 /*--------------------------------------------------*/
 /* Delete form                                      */
 
-	.delete_form fieldset {
+	.delete_form {
 		margin: 0 0 1em 0;
 	}
 
 	.delete_form .error_list,
 	.delete_form .error {
-		color: red;
+		color: #D00;
 		background: inherit;
 		font-weight: bold;
 	}
@@ -398,16 +398,7 @@
 /* Basic Table                                      */
 
 	.basic_table {
-		padding-right: 10px;
-	}
-
-	.basic_table table {
 		margin: 0 0 1em 0;
-		color: inherit;
-		border-top: 1px solid #000;
-		border-right: 0;
-		border-bottom: 0;
-		border-left: 1px solid #000;
 	}
 
 	.basic_table.full_width table {
@@ -429,17 +420,14 @@
 	.basic_table th,
 	.basic_table th a {
 		color: inherit;
-		background: #AAA;
+		background: #EEE;
 		text-decoration: none;
 	}
 
 	.basic_table th,
 	.basic_table td {
 		padding: 2px 4px;
-		border-top: 0;
-		border-right: 1px solid #000;
-		border-bottom: 1px solid #000;
-		border-left: 0;
+		border: 1px;
 	}
 
 	.basic_table td.no_results {
