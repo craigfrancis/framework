@@ -616,6 +616,6 @@
 
 	config::set('route.path', $route_path);
 
-	unset($route_path, $url_prefix, $routes, $route, $id, $path, $method, $preg_path, $matches, $var_name, $var_id, $old_path);
+	unset($route_path, $url_prefix, $routes, $route, $id, $path, $method, $preg_path, $matches, $old_path);
 
 ?>
