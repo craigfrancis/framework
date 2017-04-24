@@ -73,24 +73,25 @@
 	config::set('debug.time_init', debug_time_elapsed());
 
 	if (config::get('debug.level') >= 4) {
+
 		debug_progress('Init');
+
+		if (SERVER != 'live') { // Used by NewRelic
+
+			$output = ob_get_clean_all();
+			if ($output != '') {
+				exit('Pre framework output "' . $output . '"');
+			}
+			unset($output);
+
+		}
+
 	}
 
 //--------------------------------------------------
 // Process request
 
 	if (!defined('FRAMEWORK_INIT_ONLY') || FRAMEWORK_INIT_ONLY !== true) {
-
-		//--------------------------------------------------
-		// Disable output buffers - which NewRelic uses
-
-			if (SERVER != 'live') {
-				$output = ob_get_clean_all();
-				if ($output != '') {
-					exit('Pre framework output "' . $output . '"');
-				}
-				unset($output);
-			}
 
 		//--------------------------------------------------
 		// Page setup
