@@ -199,9 +199,12 @@
 							FROM
 								' . DB_PREFIX . 'system_holiday AS sh
 							WHERE
-								sh.date >= "' . $db->escape(date('Y-m-d', $earliest)) . '"';
+								sh.date >= ?';
 
-					foreach ($db->fetch_all($sql) as $row) {
+					$parameters = array();
+					$parameters[] = array('s', date('Y-m-d', $earliest));
+
+					foreach ($db->fetch_all($sql, $parameters) as $row) {
 						unset($holidays[$row['country']][$row['date']]);
 					}
 

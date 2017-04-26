@@ -65,21 +65,63 @@ Where the "--" converts the rest into a comment, and they have just found the us
 
 ---
 
-## The basic solution
+## The solution
 
-To get around this problem for MySQL you basically add a backslash to escape the character e.g.
+To get around this problem you use parameterised queries.
 
-	SELECT
-		`title`,
-		`body`
-	FROM
-		`news`
-	WHERE
-		`id` = "0\" UNION SELECT username, password FROM admin; --"
+This means you start by creating an SQL statement like:
 
-An automated feature that was attempted with [magic quotes](https://php.net/magic_quotes) before PHP 5.4, but has fortunately now been removed (it caused more problems than it solved).
+	$sql = 'SELECT
+				`title`,
+				`body`
+			FROM
+				`news`
+			WHERE
+				`id` = ?';
 
-Below we can discuss a few different options.
+That string is sent to the database first.
+
+Then, in a second step, you tell the database the parameters.
+
+In this case, we would say the first (and only) parameter, represented by the "?", is 123.
+
+This means that the SQL string is never tainted with user supplied values.
+
+---
+
+## PHP Prime
+
+This framework provides a simple database abstraction for the `mysqli` extension:
+
+	$db = db_get();
+
+	$sql = 'SELECT
+				`title`,
+				`body`
+			FROM
+				`news`
+			WHERE
+				`id` = ?';
+
+	$parameters = array();
+	$parameters[] = array('i', $var);
+
+	foreach ($db->fetch_all($sql, $parameters) as $row) {
+	}
+
+	if ($row = $db->fetch_row($sql, $parameters)) {
+	}
+
+Notice that the $parameters array takes 2 values, the type and the value itself.
+
+The types include:
+
+- 'i' = Integer
+- 'd' = Double
+- 's' = String
+- 'b' = Blob
+
+See the notes about the [database helper](../../../doc/system/database.md) to find out about the $db helper.
 
 ---
 
@@ -90,20 +132,14 @@ Below we can discuss a few different options.
 	$q = $db->prepare('SELECT id FROM user WHERE name = ? AND pass = ?');
 	$q->execute(array($name, $pass));
 
-Where you have the fun job of parameter counting (not fun if you're using 10 or more variables), and is the same reason I dislike the standard INSERT statement.
-
-The alternative is to use named parameters:
+Or named parameters:
 
 	$q = $db->prepare('SELECT id FROM user WHERE name = :name AND pass = :pass');
 	$q->execute(array(':name' => $name, ':pass' => $pass));
 
-But have you noticed the word "name" appears 4 times now? I find the amount of repetition annoying.
-
-And the main point of this is to stop inexperienced developers making a mistake with the variable escaping, but it doesn't, those same developers still do things like:
+You still have to be careful of inexperienced developers not understanding the problem, and making a mistake like:
 
 	$db->prepare("SELECT id FROM user WHERE name = '$name' AND...
-
-Please note I'm not a fan of double quotes, as the variables can be easily hidden in the string (e.g. with syntax highlighting).
 
 ---
 
@@ -111,9 +147,9 @@ Please note I'm not a fan of double quotes, as the variables can be easily hidde
 
 There are several types of database abstractions available which try to hide the SQL being generated.
 
-Often these come in the form of ORM's (object-relational mapping), which try to represent the database records as objects (can more easily be used in code).
+Often these come in the form of ORM's (Object-Relational Mapping), which try to represent the database records as objects (can more easily be used in code).
 
-Some believe this setup is always a good thing, but you should still check every query. They often make bad assumptions, ridiculously inefficient queries (e.g. returning too much data), and can open security holes without you realising (e.g. [not escaping identifiers](http://www.codeyellow.nl/identifier-sqli.html)).
+Some believe this setup is always a good thing, but I believe you should still check every query. They often make bad assumptions, ridiculously inefficient queries (e.g. returning too much data), and can open security holes without you realising (e.g. [not escaping identifiers](http://www.codeyellow.nl/identifier-sqli.html)).
 
 Then, with the case of [CakePHP](http://book.cakephp.org/2.0/en/models/retrieving-your-data.html), you start getting code like the following:
 
@@ -147,50 +183,3 @@ There are alternatives to SQL, often under the category of "NoSQL".
 These have their own advantages, and can avoid the SQL injection and scaling issues, however they have their own problems.
 
 They are basically a different approach to data storage, each with their own merits. In the same way that you could store tabular data as a CSV file - it works in some situations, but you have to evaluate which is the best one for your project.
-
----
-
-## Raw SQL
-
-This is still my preferred method, and yes, that does mean every variable has to be escaped properly... like how you have to escape variables for [html](../../../doc/security/strings/html-injection.md), [urls](../../../doc/security/strings/url-manipulation.md), [command line arguments](../../../doc/security/strings/cli-injection.md), [regular expressions](../../../doc/security/strings/regexp-injection.md), etc.
-
-I believe all developers should be educated about the issues, and taught how to overcome them.
-
-So for reference, I use code like the following:
-
-	$sql = 'SELECT
-				`id`
-			FROM
-				`table`
-			WHERE
-				`field` = "' . $db->escape($value) . '"';
-
-	if ($row = $db->fetch_row($sql)) {
-	}
-
-And if the query needs to be constructed in code, then I use a [simple naming convention](../../../doc/security/strings.md) of using "_sql" suffix to any SQL variables.
-
-	$where_sql = array(
-			'`id` = "' . $db->escape($id) . '"',
-		);
-
-	if (condition) {
-		$where_sql[] = '`field` = "' . $db->escape($value) . '"';
-	}
-
-	$where_sql = '(' . implode(') AND (', $where_sql) . ')';
-
-	$from_sql = '`user`'; // Could be extended to include a JOIN, and be passed to multiple queries.
-
-	$sql = 'SELECT
-				`id`
-			FROM
-				' . $from_sql . '
-			WHERE
-				' . $where_sql;
-
-	$db->query($sql);
-
-See the notes about the [database helper](../../../doc/system/database.md) to find out about the $db object.
-
-And I will continue to look forward to a day that either SQL is replaced, abstracted perfectly, or there is a better way of handling variables in strings.

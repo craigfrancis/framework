@@ -129,13 +129,17 @@
 						FROM
 							' . DB_PREFIX . 'cms_block AS cb
 						WHERE
-							cb.parent_type = "' . $db->escape($this->parent_type) . '" AND
-							cb.parent_id = "' . $db->escape($this->parent_id) . '" AND
+							cb.parent_type = ? AND
+							cb.parent_id = ? AND
 							cb.deleted = "0000-00-00 00:00:00"
 						ORDER BY
 							cb.sort';
 
-				foreach ($db->fetch_all($sql) as $row) {
+				$parameters = array();
+				$parameters[] = array('s', $this->parent_type);
+				$parameters[] = array('i', $this->parent_id);
+
+				foreach ($db->fetch_all($sql, $parameters) as $row) {
 
 					$class = 'cms_blocks_' . $row['type'];
 
@@ -180,13 +184,17 @@
 								FROM
 									' . DB_PREFIX . 'cms_block AS cb
 								WHERE
-									cb.parent_type = "' . $db->escape($this->parent_type) . '" AND
-									cb.parent_id = "' . $db->escape($this->parent_id) . '" AND
+									cb.parent_type = ? AND
+									cb.parent_id = ? AND
 									cb.deleted = "0000-00-00 00:00:00"
 								ORDER BY
 									cb.sort';
 
-						foreach ($db->fetch_all($sql) as $row) {
+						$parameters = array();
+						$parameters[] = array('s', $this->parent_type);
+						$parameters[] = array('i', $this->parent_id);
+
+						foreach ($db->fetch_all($sql, $parameters) as $row) {
 							$db_fields[$row['id']] = array(
 									'type' => $row['type'],
 									'sort_old' => $row['sort'],
@@ -337,14 +345,21 @@
 
 							if ($info['sort_new'] != $info['sort_old']) {
 
-								$db->query('UPDATE
-												' . DB_PREFIX . 'cms_block AS cb
-											SET
-												cb.sort = "' . $db->escape($info['sort_new']) . '",
-												cb.edited = "' . $db->escape($now) . '"
-											WHERE
-												cb.id = "' . $db->escape($id) . '" AND
-												cb.deleted = "0000-00-00 00:00:00"');
+								$sql = 'UPDATE
+											' . DB_PREFIX . 'cms_block AS cb
+										SET
+											cb.sort = ?,
+											cb.edited = ?
+										WHERE
+											cb.id = ? AND
+											cb.deleted = "0000-00-00 00:00:00"';
+
+								$parameters = array();
+								$parameters[] = array('s', $info['sort_new']);
+								$parameters[] = array('s', $now);
+								$parameters[] = array('i', $id);
+
+								$db->query($sql, $parameters);
 
 							}
 
@@ -361,11 +376,15 @@
 								FROM
 									' . DB_PREFIX . 'cms_block AS cb
 								WHERE
-									cb.parent_type = "' . $db->escape($this->parent_type) . '" AND
-									cb.parent_id = "' . $db->escape($this->parent_id) . '" AND
+									cb.parent_type = ? AND
+									cb.parent_id = ? AND
 									cb.deleted = "0000-00-00 00:00:00"';
 
-						if ($row = $db->fetch_row($sql)) {
+						$parameters = array();
+						$parameters[] = array('s', $this->parent_type);
+						$parameters[] = array('i', $this->parent_id);
+
+						if ($row = $db->fetch_row($sql, $parameters)) {
 							$add_sort = (intval($row['sort']) + 1);
 						} else {
 							$add_sort = 1;

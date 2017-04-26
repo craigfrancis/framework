@@ -80,38 +80,56 @@
 
 					$archive_date = new timestamp('-2 months'); // Some jobs only run once a month, so needs some overlap
 
-					$db->query('DELETE FROM
+					$sql = 'DELETE FROM
 									' . DB_PREFIX . 'system_maintenance
 								WHERE
 									run_end != "0000-00-00 00:00:00" AND
-									run_end < "' . $db->escape($archive_date) . '"');
+									run_end < ?';
 
-					$db->query('DELETE FROM
+					$parameters = array();
+					$parameters[] = array('s', $archive_date);
+
+					$db->query($sql, $parameters);
+
+					$sql = 'DELETE FROM
 									' . DB_PREFIX . 'system_maintenance_job
 								WHERE
-									created < "' . $db->escape($archive_date) . '"');
+									created < ?';
+
+					$parameters = array();
+					$parameters[] = array('s', $archive_date);
+
+					$db->query($sql, $parameters);
 
 				//--------------------------------------------------
 				// Clear old (but still open) run records
 
 					$clear_date = new timestamp('-2 hours');
 
-					$db->query('SELECT
+					$sql = 'SELECT
 									id,
 									run_start
 								FROM
 									' . DB_PREFIX . 'system_maintenance
 								WHERE
 									run_end = "0000-00-00 00:00:00" AND
-									run_start < "' . $db->escape($clear_date) . '"');
+									run_start < ?';
 
-					if ($row = $db->fetch_row()) {
+					$parameters = array();
+					$parameters[] = array('s', $clear_date);
 
-						$db->query('DELETE FROM
-										' . DB_PREFIX . 'system_maintenance
-									WHERE
-										id = "' . $db->escape($row['id']) . '" AND
-										run_end = "0000-00-00 00:00:00"');
+					if ($row = $db->fetch_row($sql, $parameters)) {
+
+						$sql = 'DELETE FROM
+									' . DB_PREFIX . 'system_maintenance
+								WHERE
+									id = ? AND
+									run_end = "0000-00-00 00:00:00"';
+
+						$parameters = array();
+						$parameters[] = array('i', $row['id']);
+
+						$db->query($sql, $parameters);
 
 						report_add('Deleted old maintenance run record (' . $row['id'] . ' / ' . $row['run_start'] . ')');
 
@@ -155,8 +173,18 @@
 				//--------------------------------------------------
 				// Quick db check, incase lock file has been deleted
 
-					$db->query('SELECT 1 FROM ' . DB_PREFIX . 'system_maintenance WHERE run_end = "0000-00-00 00:00:00" OR run_end = "' . $db->escape($now) . '"');
-					if ($db->num_rows() > 0) {
+					$sql = 'SELECT
+								1
+							FROM
+								' . DB_PREFIX . 'system_maintenance
+							WHERE
+								run_end = "0000-00-00 00:00:00" OR
+								run_end = ?';
+
+					$parameters = array();
+					$parameters[] = array('s', $now);
+
+					if ($db->num_rows($sql, $parameters) > 0) {
 						if ($this->result_url) {
 
 							$this->result_url->param_set('state', 'locked');
@@ -234,14 +262,19 @@
 				//--------------------------------------------------
 				// Mark as done
 
-					$db->query('UPDATE
+					$sql = 'UPDATE
 									' . DB_PREFIX . 'system_maintenance
 								SET
-									run_end = "' . $db->escape($now) . '"
+									run_end = ?
 								WHERE
 									run_end = "0000-00-00 00:00:00"
 								LIMIT
-									1');
+									1';
+
+					$parameters = array();
+					$parameters[] = array('s', $now);
+
+					$db->query($sql, $parameters);
 
 				//--------------------------------------------------
 				// Close lock
@@ -330,18 +363,21 @@
 
 					if ($this->run_id !== NULL) {
 
-						$db->query('SELECT
-										created
-									FROM
-										' . DB_PREFIX . 'system_maintenance_job
-									WHERE
-										job = "' . $db->escape($this->job_name) . '"
-									ORDER BY
-										created DESC
-									LIMIT
-										1');
+						$sql = 'SELECT
+									created
+								FROM
+									' . DB_PREFIX . 'system_maintenance_job
+								WHERE
+									job = ?
+								ORDER BY
+									created DESC
+								LIMIT
+									1';
 
-						if ($row = $db->fetch_row()) {
+						$parameters = array();
+						$parameters[] = array('s', $this->job_name);
+
+						if ($row = $db->fetch_row($sql, $parameters)) {
 							$this->last_run = new timestamp($row['created'], 'db');
 						}
 

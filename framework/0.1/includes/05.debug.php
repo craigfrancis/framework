@@ -544,7 +544,7 @@
 
 				$db = db_get();
 
-				$db->query('SHOW TABLES LIKE "' . $db->escape($table) . '"', NULL, false); // No debug
+				$db->query('SHOW TABLES LIKE "' . $db->escape($table) . '"', NULL, false); // No debug, and parameters are not supported in "SHOW TABLES" (MySQL 5.7)
 				if ($db->num_rows() == 0) {
 					if (php_sapi_name() == 'cli' || config::get('output.mime') == 'text/plain') {
 						exit('Missing table "' . $table . '":' . "\n\n" . str_replace('[TABLE]', $table, $sql) . "\n\n");

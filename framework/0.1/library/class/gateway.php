@@ -191,22 +191,33 @@
 
 					if ($gateway_log) {
 
-						$db = db_get();
+						//--------------------------------------------------
+						// Cleanup
 
-						$db->query('DELETE FROM
+							$db = db_get();
+
+							$sql = 'DELETE FROM
 										' . DB_PREFIX . 'gateway_log
 									WHERE
-										request_date < "' . $db->escape(date('Y-m-d H:i:s', strtotime('-1 month'))) . '"');
+										request_date < ?';
 
-						$db->insert(DB_PREFIX . 'gateway_log', array(
-								'id'           => '',
-								'gateway'      => $gateway_name,
-								'request_url'  => $gateway_url,
-								'request_data' => debug_dump($data),
-								'request_date' => $now,
-							));
+							$parameters = array();
+							$parameters[] = array('s', date('Y-m-d H:i:s', strtotime('-1 month')));
 
-						$log_id = $db->insert_id();
+							$db->query($sql, $parameters);
+
+						//--------------------------------------------------
+						// Add
+
+							$db->insert(DB_PREFIX . 'gateway_log', array(
+									'id'           => '',
+									'gateway'      => $gateway_name,
+									'request_url'  => $gateway_url,
+									'request_data' => debug_dump($data),
+									'request_date' => $now,
+								));
+
+							$log_id = $db->insert_id();
 
 					}
 
@@ -328,15 +339,24 @@
 
 					if ($log_id !== NULL) {
 
-						$db->query('UPDATE
+						$sql = 'UPDATE
 										' . DB_PREFIX . 'gateway_log
 									SET
-										response_code = "' . $db->escape($this->response_code) . '",
-										response_mime = "' . $db->escape($this->response_mime) . '",
-										response_data = "' . $db->escape($this->response_data) . '",
-										response_date = "' . $db->escape($now) . '"
+										response_code = ?,
+										response_mime = ?,
+										response_data = ?,
+										response_date = ?
 									WHERE
-										id = "' . $db->escape($log_id) . '"');
+										id = ?';
+
+						$parameters = array();
+						$parameters[] = array('s', $this->response_code);
+						$parameters[] = array('s', $this->response_mime);
+						$parameters[] = array('s', $this->response_data);
+						$parameters[] = array('s', $now);
+						$parameters[] = array('i', $log_id);
+
+						$db->query($sql, $parameters);
 
 					}
 
@@ -629,10 +649,15 @@
 
 					$db = db_get();
 
-					$db->query('DELETE FROM
-									' . DB_PREFIX . 'gateway_pass
-								WHERE
-									created < "' . $db->escape(date('Y-m-d H:i:s', strtotime('-3 days'))) . '"');
+					$sql = 'DELETE FROM
+								' . DB_PREFIX . 'gateway_pass
+							WHERE
+								created < ?';
+
+					$parameters = array();
+					$parameters[] = array('s', date('Y-m-d H:i:s', strtotime('-3 days')));
+
+					$db->query($sql, $parameters);
 
 				//--------------------------------------------------
 				// If no password is supplied
@@ -681,17 +706,25 @@
 				//--------------------------------------------------
 				// Test the password
 
-					$db->query('UPDATE
-									' . DB_PREFIX . 'gateway_pass
-								SET
-									used = "' . $db->escape($now) . '"
-								WHERE
-									client = "' . $db->escape($client) . '" AND
-									pass = "' . $db->escape($pass) . '" AND
-									gateway = "' . $db->escape($this->api) . '" AND
-									used = "0000-00-00 00:00:00"
-								LIMIT
-									1');
+					$sql = 'UPDATE
+								' . DB_PREFIX . 'gateway_pass
+							SET
+								used = ?
+							WHERE
+								client = ? AND
+								pass = ? AND
+								gateway = ? AND
+								used = "0000-00-00 00:00:00"
+							LIMIT
+								1';
+
+					$parameters = array();
+					$parameters[] = array('s', $now);
+					$parameters[] = array('s', $client);
+					$parameters[] = array('s', $pass);
+					$parameters[] = array('s', $this->api);
+
+					$db->query($sql, $parameters);
 
 					if ($db->affected_rows() != 1) {
 						$this->return_error('Invalid Password');

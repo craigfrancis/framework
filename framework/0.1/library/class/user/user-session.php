@@ -62,23 +62,34 @@
 				if ($this->allow_concurrent !== true) {
 					if ($this->history_length == 0) {
 
-						$db->query('DELETE FROM
-										' . $db->escape_table($this->user_obj->db_table_session) . '
-									WHERE
-										' . $this->db_where_sql . ' AND
-										user_id = "' . $db->escape($user_id) . '" AND
-										deleted = "0000-00-00 00:00:00"');
+						$sql = 'DELETE FROM
+									' . $db->escape_table($this->user_obj->db_table_session) . '
+								WHERE
+									' . $this->db_where_sql . ' AND
+									user_id = ? AND
+									deleted = "0000-00-00 00:00:00"';
+
+						$parameters = array();
+						$parameters[] = array('i', $user_id);
+
+						$db->query($sql, $parameters);
 
 					} else {
 
-						$db->query('UPDATE
-										' . $db->escape_table($this->user_obj->db_table_session) . '
-									SET
-										deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
-									WHERE
-										' . $this->db_where_sql . ' AND
-										user_id = "' . $db->escape($user_id) . '" AND
-										deleted = "0000-00-00 00:00:00"');
+						$sql = 'UPDATE
+									' . $db->escape_table($this->user_obj->db_table_session) . '
+								SET
+									deleted = ?
+								WHERE
+									' . $this->db_where_sql . ' AND
+									user_id = ? AND
+									deleted = "0000-00-00 00:00:00"';
+
+						$parameters = array();
+						$parameters[] = array('s', date('Y-m-d H:i:s'));
+						$parameters[] = array('i', $user_id);
+
+						$db->query($sql, $parameters);
 
 					}
 				}
@@ -88,21 +99,31 @@
 
 				if ($this->history_length >= 0) {
 
-					$db->query('DELETE FROM
-									' . $db->escape_table($this->user_obj->db_table_session) . '
-								WHERE
-									' . $this->db_where_sql . ' AND
-									deleted != "0000-00-00 00:00:00" AND
-									deleted < "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->history_length))) . '"');
+					$sql = 'DELETE FROM
+								' . $db->escape_table($this->user_obj->db_table_session) . '
+							WHERE
+								' . $this->db_where_sql . ' AND
+								deleted != "0000-00-00 00:00:00" AND
+								deleted < ?';
+
+					$parameters = array();
+					$parameters[] = array('s', date('Y-m-d H:i:s', (time() - $this->history_length)));
+
+					$db->query($sql, $parameters);
 
 					if ($this->length > 0) {
 
-						$db->query('DELETE FROM
-										' . $db->escape_table($this->user_obj->db_table_session) . '
-									WHERE
-										' . $this->db_where_sql . ' AND
-										deleted = "0000-00-00 00:00:00" AND
-										last_used < "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->length - $this->history_length))) . '"');
+						$sql = 'DELETE FROM
+									' . $db->escape_table($this->user_obj->db_table_session) . '
+								WHERE
+									' . $this->db_where_sql . ' AND
+									deleted = "0000-00-00 00:00:00" AND
+									last_used < ?';
+
+						$parameters = array();
+						$parameters[] = array('s', date('Y-m-d H:i:s', (time() - $this->length - $this->history_length)));
+
+						$db->query($sql, $parameters);
 
 					}
 
@@ -237,24 +258,28 @@
 					$db = $this->user_obj->db_get();
 
 					$where_sql = $this->db_where_sql . ' AND
-									pass != "" AND
-									id = "' . $db->escape($session_id) . '" AND
-									deleted = "0000-00-00 00:00:00"';
+						pass != "" AND
+						id = ? AND
+						deleted = "0000-00-00 00:00:00"';
+
+					$parameters = array();
+					$parameters[] = array('i', $session_id);
 
 					if ($this->length > 0) {
-						$where_sql .= ' AND' . "\n\t\t\t\t\t\t\t\t\t" . 'last_used > "' . $db->escape(date('Y-m-d H:i:s', (time() - $this->length))) . '"';
+						$where_sql .= ' AND' . "\n\t\t\t\t\t\t\t\t\t" . 'last_used > ?';
+						$parameters[] = array('s', date('Y-m-d H:i:s', (time() - $this->length)));
 					}
 
-					$db->query('SELECT
-									user_id,
-									pass,
-									ip
-								FROM
-									' . $db->escape_table($this->user_obj->db_table_session) . '
-								WHERE
-									' . $where_sql);
+					$sql = 'SELECT
+								user_id,
+								pass,
+								ip
+							FROM
+								' . $db->escape_table($this->user_obj->db_table_session) . '
+							WHERE
+								' . $where_sql;
 
-					if ($row = $db->fetch_row()) {
+					if ($row = $db->fetch_row($sql, $parameters)) {
 
 						$ip_test = ($this->lock_to_ip == false || config::get('request.ip') == $row['ip']);
 
@@ -263,14 +288,20 @@
 							//--------------------------------------------------
 							// Update the session - keep active
 
-								$db->query('UPDATE
-												' . $db->escape_table($this->user_obj->db_table_session) . '
-											SET
-												last_used = "' . $db->escape(date('Y-m-d H:i:s')) . '"
-											WHERE
-												' . $this->db_where_sql . ' AND
-												id = "' . $db->escape($session_id) . '" AND
-												deleted = "0000-00-00 00:00:00"');
+								$sql = 'UPDATE
+											' . $db->escape_table($this->user_obj->db_table_session) . '
+										SET
+											last_used = ?
+										WHERE
+											' . $this->db_where_sql . ' AND
+											id = ? AND
+											deleted = "0000-00-00 00:00:00"';
+
+								$parameters = array();
+								$parameters[] = array('s', date('Y-m-d H:i:s'));
+								$parameters[] = array('i', $session_id);
+
+								$db->query($sql, $parameters);
 
 							//--------------------------------------------------
 							// Update the cookies - if used
@@ -328,23 +359,34 @@
 
 					if ($this->history_length == 0) {
 
-						$db->query('DELETE FROM
-										' . $db->escape_table($this->user_obj->db_table_session) . '
-									WHERE
-										' . $this->db_where_sql . ' AND
-										id = "' . $db->escape($this->session_id) . '" AND
-										deleted = "0000-00-00 00:00:00"');
+						$sql = 'DELETE FROM
+									' . $db->escape_table($this->user_obj->db_table_session) . '
+								WHERE
+									' . $this->db_where_sql . ' AND
+									id = ? AND
+									deleted = "0000-00-00 00:00:00"';
+
+						$parameters = array();
+						$parameters[] = array('i', $this->session_id);
+
+						$db->query($sql, $parameters);
 
 					} else {
 
-						$db->query('UPDATE
-										' . $db->escape_table($this->user_obj->db_table_session) . '
-									SET
-										deleted = "' . $db->escape(date('Y-m-d H:i:s')) . '"
-									WHERE
-										' . $this->db_where_sql . ' AND
-										id = "' . $db->escape($this->session_id) . '" AND
-										deleted = "0000-00-00 00:00:00"');
+						$sql = 'UPDATE
+									' . $db->escape_table($this->user_obj->db_table_session) . '
+								SET
+									deleted = ?
+								WHERE
+									' . $this->db_where_sql . ' AND
+									id = ? AND
+									deleted = "0000-00-00 00:00:00"';
+
+						$parameters = array();
+						$parameters[] = array('s', date('Y-m-d H:i:s'));
+						$parameters[] = array('i', $this->session_id);
+
+						$db->query($sql, $parameters);
 
 					}
 

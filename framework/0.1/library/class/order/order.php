@@ -228,11 +228,15 @@
 				$db = $this->db_get();
 
 				$where_sql = '
-					id = "' . $db->escape($id) . '" AND
+					id = ? AND
 					deleted = "0000-00-00 00:00:00"';
 
+				$parameters = array();
+				$parameters[] = array('i', $id);
+
 				if ($pass !== NULL || config::get('order.user_privileged', false) !== true) {
-					$where_sql .= ' AND pass = "' . $db->escape($pass) . '"';
+					$where_sql .= ' AND pass = ?';
+					$parameters[] = array('s', $pass);
 				}
 
 				$fields_sql = array();
@@ -240,14 +244,14 @@
 					$fields_sql[] = $db->escape_field($field);
 				}
 
-				$db->query('SELECT
-								' . implode(', ', $fields_sql) . '
-							FROM
-								' . $db->escape_table($this->db_table_main) . '
-							WHERE
-								' . $where_sql);
+				$sql = 'SELECT
+							' . implode(', ', $fields_sql) . '
+						FROM
+							' . $db->escape_table($this->db_table_main) . '
+						WHERE
+							' . $where_sql;
 
-				if ($row = $db->fetch_row()) {
+				if ($row = $db->fetch_row($sql, $parameters)) {
 					$this->order_id = $id;
 					$this->order_data = $row;
 				} else {
@@ -330,13 +334,23 @@
 
 					$db = $this->db_get();
 
-					$where_sql = '
-						id = "' . $db->escape($this->order_id) . '" AND
-						deleted = "0000-00-00 00:00:00"';
+					$fields_sql = array();
+					foreach ($fields as $field) {
+						$fields_sql[] = $db->escape_field($field);
+					}
 
-					$db->select($this->db_table_main, $fields, $where_sql);
+					$sql = 'SELECT
+								' . implode(', ', $fields_sql) . '
+							FROM
+								' . $db->escape_table($this->db_table_main) . '
+							WHERE
+								id = ? AND
+								deleted = "0000-00-00 00:00:00"';
 
-					if ($row = $db->fetch_row()) {
+					$parameters = array();
+					$parameters[] = array('i', $this->order_id);
+
+					if ($row = $db->fetch_row($sql, $parameters)) {
 						return $row;
 					} else {
 						return false;
@@ -626,12 +640,16 @@
 								FROM
 									' . $db->escape_table($this->db_table_item) . ' AS oi
 								WHERE
-									oi.id = "' . $db->escape($item_id) . '" AND
-									oi.order_id = "' . $db->escape($this->order_id) . '" AND
+									oi.id = ? AND
+									oi.order_id = ? AND
 									oi.type = "item" AND
 									oi.deleted = "0000-00-00 00:00:00"';
 
-						if ($row = $db->fetch_row($sql)) {
+						$parameters = array();
+						$parameters[] = array('i', $item_id);
+						$parameters[] = array('i', $this->order_id);
+
+						if ($row = $db->fetch_row($sql, $parameters)) {
 
 							if ($quantity === NULL) {
 								$quantity = $row['quantity'];
@@ -661,13 +679,22 @@
 				//--------------------------------------------------
 				// Delete old record
 
-					$where_sql = '
-						id = "' . $db->escape($item_id) . '" AND
-						order_id = "' . $db->escape($this->order_id) . '" AND
-						type = "item" AND
-						deleted = "0000-00-00 00:00:00"';
+					$sql = 'UPDATE
+								' . $db->escape_table($this->db_table_item) . ' AS oi
+							SET
+								oi.deleted = ?
+							WHERE
+								oi.id = ? AND
+								oi.order_id = ? AND
+								oi.type = "item" AND
+								oi.deleted = "0000-00-00 00:00:00"';
 
-					$db->update($this->db_table_item, array('deleted' => $now), $where_sql);
+					$parameters = array();
+					$parameters[] = array('s', $now);
+					$parameters[] = array('i', $item_id);
+					$parameters[] = array('i', $this->order_id);
+
+					$db->query($sql, $parameters);
 
 				//--------------------------------------------------
 				// New record
@@ -741,13 +768,16 @@
 							FROM
 								' . $db->escape_table($this->db_table_item) . ' AS oi
 							WHERE
-								oi.order_id = "' . $db->escape($this->order_id) . '" AND
+								oi.order_id = ? AND
 								oi.type = "item" AND
 								oi.deleted = "0000-00-00 00:00:00"
 							ORDER BY
 								oi.created';
 
-					foreach ($db->fetch_all($sql) as $row) {
+					$parameters = array();
+					$parameters[] = array('i', $this->order_id);
+
+					foreach ($db->fetch_all($sql, $parameters) as $row) {
 
 						//--------------------------------------------------
 						// Details
@@ -889,13 +919,16 @@
 							FROM
 								' . $db->escape_table($this->db_table_item) . ' AS oi
 							WHERE
-								oi.order_id = "' . $db->escape($this->order_id) . '" AND
+								oi.order_id = ? AND
 								oi.type != "item" AND
 								oi.deleted = "0000-00-00 00:00:00"
 							GROUP BY
 								oi.type';
 
-					foreach ($db->fetch_all($sql) as $row) {
+					$parameters = array();
+					$parameters[] = array('i', $this->order_id);
+
+					foreach ($db->fetch_all($sql, $parameters) as $row) {
 
 						$taxed = in_array($type, $tax_types);
 
@@ -1160,29 +1193,41 @@
 							FROM
 								' . $db->escape_table($this->db_table_item) . ' AS oi
 							WHERE
-								oi.order_id = "' . $db->escape($this->order_id) . '" AND
+								oi.order_id = ? AND
 								oi.type = "delivery" AND
 								oi.deleted = "0000-00-00 00:00:00"';
 
-					$delivery = $db->fetch_all($sql);
+					$parameters = array();
+					$parameters[] = array('i', $this->order_id);
+
+					$delivery = $db->fetch_all($sql, $parameters);
 
 					if (count($delivery) == 1 && round($delivery[0]['price'], 2) == round($delivery_price, 2)) {
 						return;
 					}
 
 				//--------------------------------------------------
-				// Replace delivery record
+				// Remove old delivery record
 
 					$now = new timestamp();
 
-					$db->query('UPDATE
-									' . $db->escape_table($this->db_table_item) . ' AS oi
-								SET
-									oi.deleted = "' . $db->escape($now) . '"
-								WHERE
-									oi.order_id = "' . $db->escape($this->order_id) . '" AND
-									oi.type = "delivery" AND
-									oi.deleted = "0000-00-00 00:00:00"');
+					$sql = 'UPDATE
+								' . $db->escape_table($this->db_table_item) . ' AS oi
+							SET
+								oi.deleted = ?
+							WHERE
+								oi.order_id = ? AND
+								oi.type = "delivery" AND
+								oi.deleted = "0000-00-00 00:00:00"';
+
+					$parameters = array();
+					$parameters[] = array('s', $now);
+					$parameters[] = array('i', $this->order_id);
+
+					$db->query($sql, $parameters);
+
+				//--------------------------------------------------
+				// Add new delivery record
 
 					$db->insert($this->db_table_item, array(
 							'order_id' => $this->order_id,

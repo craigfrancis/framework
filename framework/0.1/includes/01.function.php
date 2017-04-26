@@ -1164,21 +1164,40 @@
 
 			if ($url_dst != '') {
 
-				$db->query('UPDATE
+				//--------------------------------------------------
+				// Update old redirects linking to this source.
+
+					$sql = 'UPDATE
 								' . DB_PREFIX . 'system_redirect AS sr
 							SET
-								sr.url_dst = "' . $db->escape($url_dst) . '",
-								sr.edited = "' . $db->escape($now) . '"
+								sr.url_dst = ?,
+								sr.edited = ?
 							WHERE
-								sr.url_dst = "' . $db->escape($url_src) . '"'); // Update old redirects linking to this source.
+								sr.url_dst = ?';
 
-				$db->query('UPDATE
+					$parameters = array();
+					$parameters[] = array('s', $url_dst);
+					$parameters[] = array('s', $now);
+					$parameters[] = array('s', $url_src);
+
+					$db->query($sql, $parameters);
+
+				//--------------------------------------------------
+				// Disable redirect away from dest (should exist now).
+
+					$sql = 'UPDATE
 								' . DB_PREFIX . 'system_redirect AS sr
 							SET
 								sr.enabled = "false",
-								sr.edited = "' . $db->escape($now) . '"
+								sr.edited = ?
 							WHERE
-								sr.url_src = "' . $db->escape($url_dst) . '"'); // Disable redirect away from dest (should exist now).
+								sr.url_src = ?';
+
+					$parameters = array();
+					$parameters[] = array('s', $now);
+					$parameters[] = array('s', $url_dst);
+
+					$db->query($sql, $parameters);
 
 			}
 
@@ -1191,9 +1210,12 @@
 					FROM
 						' . DB_PREFIX . 'system_redirect
 					WHERE
-						url_src = "' . $db->escape($url_src) . '"';
+						url_src = ?';
 
-			if ($row = $db->fetch_row($sql)) {
+			$parameters = array();
+			$parameters[] = array('s', $url_src);
+
+			if ($row = $db->fetch_row($sql, $parameters)) {
 
 				$return = array(
 						'url' => $row['url_dst'],
@@ -1208,15 +1230,27 @@
 		if (($url_dst !== NULL || $return) && ($config['requested'] || $config['referrer'])) {
 
 			$set_sql = array();
-			if ($config['requested']) $set_sql[] = 'sr.requests = (sr.requests + 1)';
-			if ($config['referrer']) $set_sql[] = 'sr.referrer = "' . $db->escape($config['referrer']) . '"';
+			$parameters = array();
 
-			$db->query('UPDATE
-							' . DB_PREFIX . 'system_redirect AS sr
-						SET
-							' . implode(', ', $set_sql) . '
-						WHERE
-							url_src = "' . $db->escape($url_src) . '"');
+			if ($config['requested']) {
+				$set_sql[] = 'sr.requests = (sr.requests + 1)';
+			}
+
+			if ($config['referrer']) {
+				$set_sql[] = 'sr.referrer = ?';
+				$parameters[] = array('s', $config['referrer']);
+			}
+
+			$sql = 'UPDATE
+						' . DB_PREFIX . 'system_redirect AS sr
+					SET
+						' . implode(', ', $set_sql) . '
+					WHERE
+						url_src = ?';
+
+			$parameters[] = array('s', $url_src);
+
+			$db->query($sql, $parameters);
 
 		}
 

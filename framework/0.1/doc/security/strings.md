@@ -50,6 +50,5 @@ So to help track how the values are being escaped, we can use these suffixes for
 	$var = 'value';
 	$var_url = urlencode($var);
 	$var_html = htmlentities($var); // or $var_url if it's a link
-	$var_sql = $db->escape($var);
 
 You will notice this is a form of [Hungarian Notation](https://en.wikipedia.org/wiki/Hungarian_notation), but in a way that I believe to be very useful.

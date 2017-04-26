@@ -11,7 +11,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $lockout_attempts = 60; // Once every 30 seconds, for the 30 minutes
+			protected $lockout_attempts = 20;
 			protected $lockout_timeout = 1800; // 30 minutes
 			protected $lockout_mode = NULL;
 			protected $lockout_user_id = NULL;
@@ -688,12 +688,15 @@
 								FROM
 									' . $db->escape_table($this->db_table['register']) . ' AS r
 								WHERE
-									r.' . $db->escape_field($this->db_fields['register']['id']) . ' = "' . $db->escape($register_id) . '" AND
+									r.' . $db->escape_field($this->db_fields['register']['id']) . ' = ? AND
 									r.' . $db->escape_field($this->db_fields['register']['token']) . ' != "" AND
 									r.' . $db->escape_field($this->db_fields['register']['password']) . ' != "" AND
 									' . $this->db_where_sql['register'];
 
-						if ($row = $db->fetch_row($sql)) {
+						$parameters = array();
+						$parameters[] = array('i', $register_id);
+
+						if ($row = $db->fetch_row($sql, $parameters)) {
 
 							$token_field = $this->db_fields['register']['token'];
 							$identification_field = $this->db_fields['register']['identification'];
@@ -730,14 +733,20 @@
 								//--------------------------------------------------
 								// Delete registration
 
-									$db->query('UPDATE
-													' . $db->escape_table($this->db_table['register']) . ' AS r
-												SET
-													r.' . $db->escape_field($this->db_fields['register']['deleted']) . ' = "' . $db->escape($now) . '",
-													r.' . $db->escape_field($this->db_fields['register']['password']) . ' = ""
-												WHERE
-													r.' . $db->escape_field($this->db_fields['register']['id']) . ' = "' . $db->escape($register_id) . '" AND
-													' . $this->db_where_sql['register']);
+									$sql = 'UPDATE
+												' . $db->escape_table($this->db_table['register']) . ' AS r
+											SET
+												r.' . $db->escape_field($this->db_fields['register']['deleted']) . ' = ?,
+												r.' . $db->escape_field($this->db_fields['register']['password']) . ' = ""
+											WHERE
+												r.' . $db->escape_field($this->db_fields['register']['id']) . ' = ? AND
+												' . $this->db_where_sql['register'];
+
+									$parameters = array();
+									$parameters[] = array('s', $now);
+									$parameters[] = array('i', $register_id);
+
+									$db->query($sql, $parameters);
 
 								//--------------------------------------------------
 								// Start session
@@ -1112,11 +1121,14 @@
 								FROM
 									' . $db->escape_table($this->db_table['update']) . ' AS u
 								WHERE
-									u.id = "' . $db->escape($update_id) . '" AND
+									u.id = ? AND
 									u.token != "" AND
 									u.deleted = "0000-00-00 00:00:00"';
 
-						if ($row = $db->fetch_row($sql)) {
+						$parameters = array();
+						$parameters[] = array('i', $update_id);
+
+						if ($row = $db->fetch_row($sql, $parameters)) {
 							if (hash($this->quick_hash, $update_pass) == $row['token']) {
 
 								//--------------------------------------------------
@@ -1131,13 +1143,19 @@
 								//--------------------------------------------------
 								// Update
 
-									$db->query('UPDATE
-													' . $db->escape_table($this->db_table['update']) . ' AS u
-												SET
-													u.deleted = "' . $db->escape($now) . '"
-												WHERE
-													u.id = "' . $db->escape($update_id) . '" AND
-													u.deleted = "0000-00-00 00:00:00"');
+									$sql = 'UPDATE
+												' . $db->escape_table($this->db_table['update']) . ' AS u
+											SET
+												u.deleted = ?
+											WHERE
+												u.id = ? AND
+												u.deleted = "0000-00-00 00:00:00"';
+
+									$parameters = array();
+									$parameters[] = array('s', $now);
+									$parameters[] = array('i', $update_id);
+
+									$db->query($sql, $parameters);
 
 									if ($db->affected_rows() == 1) {
 
@@ -1289,14 +1307,18 @@
 							$fields_sql = implode(', ', $fields_sql);
 
 							$where_sql = '
-								s.id = "' . $db->escape($session_id) . '" AND
+								s.id = ? AND
 								s.pass != "" AND
 								s.deleted = "0000-00-00 00:00:00" AND
 								' . $this->db_where_sql['main'];
 
+							$parameters = array();
+							$parameters[] = array('i', $session_id);
+
 							if ($this->session_length > 0) {
 								$last_used = new timestamp((0 - $this->session_length) . ' seconds');
-								$where_sql .= ' AND' . "\n\t\t\t\t\t\t\t\t\t" . 's.last_used > "' . $db->escape($last_used) . '"';
+								$where_sql .= ' AND' . "\n\t\t\t\t\t\t\t\t\t" . 's.last_used > ?';
+								$parameters[] = array('s', $last_used);
 							}
 
 							$sql = 'SELECT
@@ -1308,7 +1330,7 @@
 									WHERE
 										' . $where_sql;
 
-							if ($row = $db->fetch_row($sql)) {
+							if ($row = $db->fetch_row($sql, $parameters)) {
 
 								$ip_test = ($this->session_ip_lock == false || config::get('request.ip') == $row['ip']);
 
@@ -1326,14 +1348,21 @@
 											$request_increment = 1;
 										}
 
-										$db->query('UPDATE
+										$sql = 'UPDATE
 														' . $db->escape_table($this->db_table['session']) . ' AS s
 													SET
-														s.last_used = "' . $db->escape($now) . '",
-														s.request_count = (s.request_count + ' . intval($request_increment) . ')
+														s.last_used = ?,
+														s.request_count = (s.request_count + ?)
 													WHERE
-														s.id = "' . $db->escape($session_id) . '" AND
-														s.deleted = "0000-00-00 00:00:00"');
+														s.id = ? AND
+														s.deleted = "0000-00-00 00:00:00"';
+
+										$parameters = array();
+										$parameters[] = array('s', $now);
+										$parameters[] = array('i', $request_increment);
+										$parameters[] = array('i', $session_id);
+
+										$db->query($sql, $parameters);
 
 									//--------------------------------------------------
 									// Update the cookies - if used
@@ -1428,13 +1457,19 @@
 
 					if ($this->session_concurrent !== true) {
 
-						$db->query('UPDATE
-										' . $db->escape_table($this->db_table['session']) . ' AS s
-									SET
-										s.deleted = "' . $db->escape($now) . '"
-									WHERE
-										s.user_id = "' . $db->escape($user_id) . '" AND
-										s.deleted = "0000-00-00 00:00:00"');
+						$sql = 'UPDATE
+									' . $db->escape_table($this->db_table['session']) . ' AS s
+								SET
+									s.deleted = ?
+								WHERE
+									s.user_id = ? AND
+									s.deleted = "0000-00-00 00:00:00"';
+
+						$parameters = array();
+						$parameters[] = array('s', $now);
+						$parameters[] = array('i', $user_id);
+
+						$db->query($sql, $parameters);
 
 					}
 
@@ -1495,13 +1530,19 @@
 
 						$now = new timestamp();
 
-						$db->query('UPDATE
-										' . $db->escape_table($this->db_table['session']) . ' AS s
-									SET
-										s.deleted = "' . $db->escape($now) . '"
-									WHERE
-										s.id = "' . $db->escape($session_id) . '" AND
-										s.deleted = "0000-00-00 00:00:00"');
+						$sql = 'UPDATE
+									' . $db->escape_table($this->db_table['session']) . ' AS s
+								SET
+									s.deleted = ?
+								WHERE
+									s.id = ? AND
+									s.deleted = "0000-00-00 00:00:00"';
+
+						$parameters = array();
+						$parameters[] = array('s', $now);
+						$parameters[] = array('i', $session_id);
+
+						$db->query($sql, $parameters);
 
 					}
 
@@ -1529,27 +1570,39 @@
 
 					if ($this->session_history >= 0) {
 
+						$db = db_get();
+
 						$deleted_before = new timestamp((0 - $this->session_history) . ' seconds');
 
-						$db->query('DELETE FROM
-										s
-									USING
-										' . $db->escape_table($this->db_table['session']) . ' AS s
-									WHERE
-										s.deleted != "0000-00-00 00:00:00" AND
-										s.deleted < "' . $db->escape($deleted_before) . '"');
+						$sql = 'DELETE FROM
+									s
+								USING
+									' . $db->escape_table($this->db_table['session']) . ' AS s
+								WHERE
+									s.deleted != "0000-00-00 00:00:00" AND
+									s.deleted < ?';
+
+						$parameters = array();
+						$parameters[] = array('s', $deleted_before);
+
+						$db->query($sql, $parameters);
 
 						if ($this->session_length > 0) {
 
 							$last_used = new timestamp((0 - $this->session_length - $this->session_history) . ' seconds');
 
-							$db->query('DELETE FROM
-											s
-										USING
-											' . $db->escape_table($this->db_table['session']) . ' AS s
-										WHERE
-											s.last_used < "' . $db->escape($last_used) . '" AND
-											s.deleted = "0000-00-00 00:00:00"');
+							$sql = 'DELETE FROM
+										s
+									USING
+										' . $db->escape_table($this->db_table['session']) . ' AS s
+									WHERE
+										s.last_used < ? AND
+										s.deleted = "0000-00-00 00:00:00"';
+
+							$parameters = array();
+							$parameters[] = array('s', $last_used);
+
+							$db->query($sql, $parameters);
 
 						}
 
@@ -1571,13 +1624,17 @@
 						FROM
 							' . $db->escape_table($this->db_table['main']) . ' AS m
 						WHERE
-							m.' . $db->escape_field($this->db_fields['main']['identification']) . ' = "' . $db->escape($identification) . '" AND
-							m.' . $db->escape_field($this->db_fields['main']['id']) . ' != "' . $db->escape($user_id) . '" AND
+							m.' . $db->escape_field($this->db_fields['main']['identification']) . ' = ? AND
+							m.' . $db->escape_field($this->db_fields['main']['id']) . ' != ? AND
 							' . $this->db_where_sql['main'] . '
 						LIMIT
 							1';
 
-				return ($db->num_rows($sql) == 0);
+				$parameters = array();
+				$parameters[] = array('s', $identification);
+				$parameters[] = array('i', $user_id);
+
+				return ($db->num_rows($sql, $parameters) == 0);
 
 			}
 
@@ -1599,10 +1656,14 @@
 				//--------------------------------------------------
 				// Account details
 
+					$parameters = array();
+
 					if ($identification === NULL) {
-						$where_sql = 'm.' . $db->escape_field($this->db_fields['main']['id']) . ' = "' . $db->escape($this->session_user_id_get()) . '"';
+						$where_sql = 'm.' . $db->escape_field($this->db_fields['main']['id']) . ' = ?';
+						$parameters[] = array('i', $this->session_user_id_get());
 					} else {
-						$where_sql = 'm.' . $db->escape_field($this->db_fields['main']['identification']) . ' = "' . $db->escape($identification) . '"';
+						$where_sql = 'm.' . $db->escape_field($this->db_fields['main']['identification']) . ' = ?';
+						$parameters[] = array('i', $identification);
 					}
 
 					$where_sql .= ' AND
@@ -1620,7 +1681,7 @@
 							LIMIT
 								1';
 
-					if ($row = $db->fetch_row($sql)) {
+					if ($row = $db->fetch_row($sql, $parameters)) {
 						$db_id = $row['id'];
 						$db_hash = $row['password']; // A blank password (disabled account) is excluded in the query.
 					} else {
@@ -1638,9 +1699,16 @@
 					if ($this->lockout_attempts > 0) {
 
 						$where_sql = array();
+						$parameters = array();
 
-						if ($this->lockout_mode === NULL || $this->lockout_mode == 'user') $where_sql[] = 's.user_id = "' . $db->escape($db_id) . '"';
-						if ($this->lockout_mode === NULL || $this->lockout_mode == 'ip')   $where_sql[] = 's.ip = "' . $db->escape(config::get('request.ip')) . '"';
+						if ($this->lockout_mode === NULL || $this->lockout_mode == 'user') {
+							$where_sql[] = 's.user_id = ?';
+							$parameters[] = array('i', $db_id);
+						}
+						if ($this->lockout_mode === NULL || $this->lockout_mode == 'ip') {
+							$where_sql[] = 's.ip = ?';
+							$parameters[] = array('s', config::get('request.ip'));
+						}
 
 						if (count($where_sql) == 0) {
 							exit_with_error('Unknown lockout mode (' . $this->lockout_mode . ')');
@@ -1648,19 +1716,21 @@
 
 						$created_after = new timestamp((0 - $this->lockout_timeout) . ' seconds');
 
-						$db->query('SELECT
-										1
-									FROM
-										' . $db->escape_table($this->db_table['session']) . ' AS s
-									WHERE
-										(
-											' . implode(' OR ', $where_sql) . '
-										) AND
-										s.pass = "" AND
-										s.created > "' . $db->escape($created_after) . '" AND
-										s.deleted = "0000-00-00 00:00:00"');
+						$sql = 'SELECT
+									1
+								FROM
+									' . $db->escape_table($this->db_table['session']) . ' AS s
+								WHERE
+									(
+										' . implode(' OR ', $where_sql) . '
+									) AND
+									s.pass = "" AND
+									s.created > ? AND
+									s.deleted = "0000-00-00 00:00:00"';
 
-						if ($db->num_rows() >= $this->lockout_attempts) { // Once every 30 seconds, for the 30 minutes
+						$parameters[] = array('s', $created_after);
+
+						if ($db->num_rows($sql, $parameters) >= $this->lockout_attempts) { // Once every 30 seconds, for the 30 minutes
 							$error = 'failure_repetition';
 						}
 
@@ -1696,19 +1766,25 @@
 
 									$new_hash = password::hash($password);
 
-									$db->query('UPDATE
-													' . $db->escape_table($this->db_table['main']) . ' AS m
-												SET
-													m.' . $db->escape_field($this->db_fields['main']['password']) . ' = "' . $db->escape($new_hash) . '"
-												WHERE
-													m.' . $db->escape_field($this->db_fields['main']['id']) . ' = "' . $db->escape($db_id) . '" AND
-													' . $this->db_where_sql['main'] . '
-												LIMIT
-													1');
+									$sql = 'UPDATE
+												' . $db->escape_table($this->db_table['main']) . ' AS m
+											SET
+												m.' . $db->escape_field($this->db_fields['main']['password']) . ' = ?
+											WHERE
+												m.' . $db->escape_field($this->db_fields['main']['id']) . ' = ? AND
+												' . $this->db_where_sql['main'] . '
+											LIMIT
+												1';
+
+									$parameters = array();
+									$parameters[] = array('s', $new_hash);
+									$parameters[] = array('i', $db_id);
+
+									$db->query($sql, $parameters);
 
 								}
 
-								return intval($db_id); // Succes, and must be an integer (not an error string).
+								return intval($db_id); // Success, and must be an integer (not an error string).
 
 							} else {
 

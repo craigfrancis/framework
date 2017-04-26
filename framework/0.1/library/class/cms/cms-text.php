@@ -244,13 +244,17 @@
 								' . $this->config['table_sql'] . '
 							WHERE
 								(
-									path = "' . $db->escape($this->config['path']) . '" OR
+									path = ? OR
 									global = "true"
 								) AND
-								revision = "' . $db->escape($this->config['revision']) . '" AND
+								revision = ? AND
 								' . $this->config['where_sql'];
 
-					foreach ($db->fetch_all($sql) as $row) {
+					$parameters = array();
+					$parameters[] = array('s', $this->config['path']);
+					$parameters[] = array('i', $this->config['revision']);
+
+					foreach ($db->fetch_all($sql, $parameters) as $row) {
 
 						//--------------------------------------------------
 						// HTML

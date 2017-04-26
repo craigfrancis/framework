@@ -29,13 +29,16 @@
 						FROM
 							' . DB_PREFIX . 'cms_page AS cp
 						WHERE
-							cp.parent_id = "' . $db->escape($folder_id) . '" AND
+							cp.parent_id = ? AND
 							cp.deleted = "0000-00-00 00:00:00"
 						ORDER BY
 							cp.sort,
 							cp.ref';
 
-				foreach ($db->fetch_all($sql) as $row) {
+				$parameters = array();
+				$parameters[] = array('i', $folder_id);
+
+				foreach ($db->fetch_all($sql, $parameters) as $row) {
 
 					$page_url = $folder_url . $row['ref'] . '/';
 
@@ -60,27 +63,30 @@
 
 				// $k = 0;
 				// $pageUrl = '/';
-
+				//
 				// do {
-
-				// 	$db->query('SELECT
-				// 					parent_id,
-				// 					ref
-				// 				FROM
-				// 					' . DB_T_PREFIX . 'page
-				// 				WHERE
-				// 					id = "' . $db->escape($pageId) . '" AND
-				// 					deleted = "0000-00-00 00:00:00"');
-
-				// 	if ($row = $db->fetchAssoc()) {
+				//
+				// 	$sql = 'SELECT
+				// 				parent_id,
+				// 				ref
+				// 			FROM
+				// 				' . DB_T_PREFIX . 'page
+				// 			WHERE
+				// 				id = ? AND
+				// 				deleted = "0000-00-00 00:00:00"';
+				//
+				// 	$parameters = array();
+				// 	$parameters[] = array('i', $pageId);
+				//
+				// 	if ($row = $db->fetch_row($sql, $parameters)) {
 				// 		$pageId = $row['parent_id'];
 				// 		$pageUrl = '/' . $row['ref'] . $pageUrl;
 				// 	} else {
 				// 		return NULL;
 				// 	}
-
+				//
 				// } while ($pageId > 0 && $k++ < 10);
-
+				//
 				// if ($pageUrl == '/home/') {
 				// 	return '/';
 				// } else {
@@ -116,11 +122,15 @@
 								FROM
 									' . DB_PREFIX . 'cms_page AS cp
 								WHERE
-									cp.parent_id = "' . $db->escape($page_id) . '" AND
-									cp.ref = "' . $db->escape($folder) . '" AND
+									cp.parent_id = ? AND
+									cp.ref = ? AND
 									cp.deleted = "0000-00-00 00:00:00"';
 
-						if ($row = $db->fetch_row($sql)) {
+						$parameters = array();
+						$parameters[] = array('i', $page_id);
+						$parameters[] = array('s', $folder);
+
+						if ($row = $db->fetch_row($sql, $parameters)) {
 							$page_id = $row['id'];
 						} else {
 							$page_id = NULL;

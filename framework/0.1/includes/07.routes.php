@@ -157,10 +157,13 @@
 								FROM
 									' . DB_PREFIX . 'system_redirect
 								WHERE
-									url_src = "' . $db->escape($route_path) . '" AND
+									url_src = ? AND
 									enabled = "true"';
 
-						if ($row = $db->fetch_row($sql)) {
+						$parameters = array();
+						$parameters[] = array('s', $route_path);
+
+						if ($row = $db->fetch_row($sql, $parameters)) {
 							redirect($row['url_dst'], ($row['permanent'] == 'true' ? 301 : 302));
 						}
 

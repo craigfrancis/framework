@@ -31,10 +31,13 @@
 						FROM
 							' . DB_PREFIX . 'cms_block_heading AS cbh
 						WHERE
-							cbh.block_id = "' . $db->escape($this->block_id) . '" AND
+							cbh.block_id = ? AND
 							cbh.deleted = "0000-00-00 00:00:00"';
 
-				if ($row = $db->fetch_row($sql)) {
+				$parameters = array();
+				$parameters[] = array('i', $this->block_id);
+
+				if ($row = $db->fetch_row($sql, $parameters)) {
 					return array(
 							'level' => $row['level'],
 							'text' => $row['text'],
@@ -139,13 +142,19 @@
 
 				if ($info['values_save'] == 'update') {
 
-					$db->query('UPDATE
+					$sql = 'UPDATE
 									' . DB_PREFIX . 'cms_block_heading AS cbh
-								SET
-									cbh.deleted = "' . $db->escape($now) . '"
-								WHERE
-									cbh.block_id = "' . $db->escape($this->block_id) . '" AND
-									cbh.deleted = "0000-00-00 00:00:00"');
+							SET
+								cbh.deleted = ?
+							WHERE
+								cbh.block_id = ? AND
+								cbh.deleted = "0000-00-00 00:00:00"';
+
+					$parameters = array();
+					$parameters[] = array('s', $now);
+					$parameters[] = array('i', $this->block_id);
+
+					$db->query($sql, $parameters);
 
 				}
 
