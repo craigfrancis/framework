@@ -492,6 +492,8 @@
 
 		private function _insert($table_sql, $values, $on_duplicate, $delayed) {
 
+			$parameters = array();
+
 			$fields_sql = implode(', ', array_map(array($this, 'escape_field'), array_keys($values)));
 
 			$values_sql = array();
@@ -499,10 +501,16 @@
 				if ($value === NULL) {
 					$values_sql[] = 'NULL';
 				} else {
-					$values_sql[] = $this->escape_string($value);
+					$values_sql[] = '?';
+					if (is_int($value)) {
+						$parameters[] = array('i', $value);
+					} else if (is_float($value)) {
+						$parameters[] = array('d', $value);
+					} else {
+						$parameters[] = array('s', $value);
+					}
 				}
 			}
-			$values_sql = implode(', ', $values_sql);
 
 			if ($delayed) {
 				$insert_sql = 'INSERT DELAYED';
@@ -510,14 +518,25 @@
 				$insert_sql = 'INSERT';
 			}
 
-			$insert_sql .= ' INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $values_sql . ')';
+			$insert_sql .= ' INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . implode(', ', $values_sql) . ')';
 
 			if ($on_duplicate !== NULL) {
 				if (is_array($on_duplicate)) {
 
 					$set_sql = array();
 					foreach ($on_duplicate as $field_name => $field_value) {
-						$set_sql[] = $this->escape_field($field_name) . ' = ' . $this->escape_string($field_value);
+						if ($field_value === NULL) {
+							$set_sql[] = $this->escape_field($field_name) . ' = NULL';
+						} else {
+							$set_sql[] = $this->escape_field($field_name) . ' = ?';
+							if (is_int($field_value)) {
+								$parameters[] = array('i', $field_value);
+							} else if (is_float($field_value)) {
+								$parameters[] = array('d', $field_value);
+							} else {
+								$parameters[] = array('s', $field_value);
+							}
+						}
 					}
 					$insert_sql .= ' ON DUPLICATE KEY UPDATE ' . implode(', ', $set_sql);
 
@@ -528,11 +547,13 @@
 				}
 			}
 
-			return $this->query($insert_sql);
+			return $this->query($insert_sql, $parameters);
 
 		}
 
 		public function insert_many($table_sql, $records) {
+
+			$parameters = array();
 
 			$fields = array_keys(reset($records));
 
@@ -545,14 +566,21 @@
 					if (!isset($values[$field]) || $values[$field] === NULL) {
 						$values_sql[] = 'NULL';
 					} else {
-						$values_sql[] = $this->escape_string($values[$field]);
+						$values_sql[] = '?';
+						if (is_int($values[$field])) {
+							$parameters[] = array('i', $values[$field]);
+						} else if (is_float($values[$field])) {
+							$parameters[] = array('d', $values[$field]);
+						} else {
+							$parameters[] = array('s', $values[$field]);
+						}
 					}
 				}
 				$records_sql[] = implode(', ', $values_sql);
 			}
 
 			if (count($records_sql) > 0) {
-				return $this->query('INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . implode('), (', $records_sql) . ')');
+				return $this->query('INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . implode('), (', $records_sql) . ')', $parameters);
 			}
 
 		}
