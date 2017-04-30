@@ -73,19 +73,7 @@
 	config::set('debug.time_init', debug_time_elapsed());
 
 	if (config::get('debug.level') >= 4) {
-
 		debug_progress('Init');
-
-		if (SERVER != 'live') { // Used by NewRelic
-
-			$output = ob_get_clean_all();
-			if ($output != '') {
-				exit('Pre framework output "' . $output . '"');
-			}
-			unset($output);
-
-		}
-
 	}
 
 //--------------------------------------------------
@@ -98,6 +86,16 @@
 
 			//--------------------------------------------------
 			// Buffer to catch output from setup/controller.
+
+				if (SERVER != 'live') { // Also used by NewRelic, so keep it's output buffer.
+
+					$output = ob_get_clean_all();
+					if ($output != '') {
+						exit('Pre framework output "' . $output . '"');
+					}
+					unset($output);
+
+				}
 
 				ob_start();
 
