@@ -108,7 +108,15 @@
 
 			}
 
+			public function encrypt_file($key_to, $path_source, $path_dest = NULL) {
+				return $this->_encrypt_file($key_to, $path_source, $path_dest);
+			}
+
 			public function encrypt_zip($key_to, $path_source, $path_dest = NULL) {
+				return $this->_encrypt_file($key_to, $path_source, $path_dest, true);
+			}
+
+			private function _encrypt_file($key_to, $path_source, $path_dest, $zip = false) {
 
 				if ($this->private_key_email === NULL) {
 					exit_with_error('You must call private_key_use() before encrypt()');
@@ -128,7 +136,13 @@
 
 				chdir(dirname($path_source));
 
-				$result = $this->_exec_zip('--encrypt --local-user ' . escapeshellarg($this->private_key_email) . ' --recipient ' . escapeshellarg($key_to) . ' --output ' . escapeshellarg($path_dest_new) . ' ' . escapeshellarg(basename($path_source)));
+				$arguments = '--encrypt --local-user ' . escapeshellarg($this->private_key_email) . ' --recipient ' . escapeshellarg($key_to) . ' --output ' . escapeshellarg($path_dest_new) . ' ' . escapeshellarg(basename($path_source));
+
+				if ($zip) {
+					$result = $this->_exec_zip($arguments);
+				} else {
+					$result = $this->_exec($arguments);
+				}
 
 				if (is_file($path_dest_new)) {
 
@@ -202,6 +216,8 @@
 				$key_exists = $this->_key_exists($key);
 				if (!$key_exists) {
 
+					$result = NULL;
+
 					$public_key_path = $this->public_key_path($key);
 					if ($public_key_path === NULL) {
 						exit_with_error('Invalid email address format for public key', $key);
@@ -212,7 +228,7 @@
 
 					$key_exists = $this->_key_exists($key);
 					if (!$key_exists) {
-						exit_with_error('The public key for "' . $key . '" has not been imported, nor found at: ' . $public_key_path);
+						exit_with_error('The public key for "' . $key . '" has not been imported, nor found at: ' . $public_key_path, debug_dump($result));
 					}
 
 				}
