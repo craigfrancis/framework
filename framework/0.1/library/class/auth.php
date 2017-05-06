@@ -25,6 +25,7 @@
 			protected $session_concurrent = false; // Close previous sessions on new session start
 			protected $session_cookies = false; // Use sessions by default
 			protected $session_history = 7776000; // Keep session data for X seconds (defaults to 90 days)
+			protected $session_previous = NULL;
 
 			private $session_info = NULL; // Please use $auth->session_info_get();
 			private $session_pass = NULL;
@@ -1364,6 +1365,8 @@
 
 										$db->query($sql, $parameters);
 
+										$row['last_used_new'] = $now;
+
 									//--------------------------------------------------
 									// Update the cookies - if used
 
@@ -1443,6 +1446,163 @@
 				}
 			}
 
+			private function _session_browser_tracker_get() {
+
+				$browser_tracker = cookie::get('b');
+
+				if (strlen($browser_tracker) != 40) {
+					$browser_tracker = random_key(40);
+				}
+
+				cookie::set('b', $browser_tracker, array('expires' => '+6 months', 'same_site' => 'Lax')); // Don't expose how long session_history is.
+
+				return $browser_tracker;
+
+			}
+
+			public function session_previous_get() {
+
+				if ($this->session_previous === NULL) {
+
+					$db = $this->db_get();
+
+					$parameters = array();
+					$parameters[] = array('i', $this->session_info['user_id']);
+					$parameters[] = array('s', $this->session_info['last_used_new']);
+
+					$sql = 'SELECT
+								s.last_used,
+								s.ip,
+								s.tracker
+							FROM
+								' . $db->escape_table($this->db_table['session']) . ' AS s
+							WHERE
+								s.user_id = ? AND
+								s.pass != "" AND
+								s.last_used < ? AND
+								s.deleted = s.deleted
+							ORDER BY
+								s.last_used DESC
+							LIMIT
+								1';
+
+					if ($row = $db->fetch_row($sql, $parameters)) {
+
+						$this->session_previous = array(
+								'last_used' => new timestamp($row['last_used'], 'db'),
+								'location_changed' => ($row['ip'] != config::get('request.ip')),
+								'browser_changed' => ($row['tracker'] != $this->_session_browser_tracker_get()), // Don't use UA string, it changes too often.
+							);
+
+					} else {
+
+						$this->session_previous = false;
+
+					}
+
+				}
+
+				return $this->session_previous;
+
+			}
+
+			public function session_previous_message_get() {
+
+				$now = new timestamp();
+
+				$session_previous = $this->session_previous_get();
+
+				$warning = true;
+
+				if ($session_previous) {
+
+					$message_html = 'You last logged in on ' . $session_previous['last_used']->html('l jS F Y \a\t g:ia');
+
+					if (!$session_previous['browser_changed']) {
+
+						$message_html .= ', using this browser.';
+
+						$warning = false;
+
+					} else if (!$session_previous['location_changed']) {
+
+						$message_html .= ', using this internet connection.';
+
+						$warning = false;
+
+					} else {
+
+						$message_html .= ', using a <strong>different</strong> browser.';
+
+					}
+
+				} else {
+
+					$session_history = new timestamp((0 - $this->session_history) . ' seconds');
+
+					$db = $this->db_get();
+
+					$sql = 'SELECT
+								1
+							FROM
+								' . $db->escape_table($this->db_table['main']) . ' AS m
+							WHERE
+								m.' . $db->escape_field($this->db_fields['main']['id']) . ' = ? AND
+								m.' . $db->escape_field($this->db_fields['main']['created']) . ' > ? AND
+								' . $this->db_where_sql['main'];
+
+					$parameters = array();
+					$parameters[] = array('i', $this->session_info['user_id']);
+					$parameters[] = array('s', $session_history);
+
+					if ($row = $db->fetch_row($sql, $parameters)) {
+
+						$message_html = 'You have not logged in to this website before.';
+
+						$warning = false;
+
+					} else {
+
+						$diff = $now->diff($session_history);
+
+						$d = $diff->d;
+						$m = $diff->m;
+						$y = $diff->y;
+
+						if (($d >= 28) || ($m >= 1 && $d > 15)) {
+							$m++;
+						}
+
+						if ($y > 1) {
+							$time = $y . ' years';
+						} else if ($y == 1) {
+							$time = 'year';
+						} else if ($m > 1) {
+							$time = $m . ' months';
+						} else if ($m == 1) {
+							$time = 'month';
+						} else if ($d > 1) {
+							$time = $d . ' days';
+						} else if ($d == 1) {
+							$time = 'day';
+						} else {
+							exit_with_error('Cannot determine how long the auth session history is', $this->session_history);
+						}
+
+						$message_html = 'You have not logged in within the last <strong>' . html($time) . '</strong>.';
+
+					}
+
+				}
+
+				return array(
+						'message' => strip_tags($message_html), // We just created the HTML, this is fine
+						'message_html' => $message_html,
+						'warning' => $warning,
+					);
+
+			}
+
 			protected function session_start($user_id, $identification) { // See the login_* or register_* functions (do not call directly)
 
 				//--------------------------------------------------
@@ -1486,6 +1646,7 @@
 							'user_id'       => $user_id,
 							'ip'            => config::get('request.ip'),
 							'browser'       => config::get('request.browser'),
+							'tracker'       => $this->_session_browser_tracker_get(),
 							'logout_csrf'   => random_key(15), // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
 							'created'       => $now,
 							'last_used'     => $now,
@@ -1815,6 +1976,7 @@
 								'user_id'   => $this->lockout_user_id,
 								'ip'        => $request_ip,
 								'browser'   => config::get('request.browser'),
+								'tracker'   => $this->_session_browser_tracker_get(),
 								'created'   => $now,
 								'last_used' => $now,
 								'deleted'   => '0000-00-00 00:00:00',

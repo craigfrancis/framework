@@ -86,6 +86,10 @@
 		padding: 0;
 	}
 
+	.warning {
+		color: #D00;
+	}
+
 /*--------------------------------------------------*/
 /* Page Frame                                       */
 
@@ -294,6 +298,7 @@
 
 	.basic_form .row .label abbr.required {
 		border: 0;
+		text-decoration: none;
 	}
 
 	.basic_form .row .input sub {
