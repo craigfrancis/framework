@@ -72,7 +72,6 @@
 						notes = document.createElement('div');
 						notes.className = 'debug_notes';
 						notes.id = 'debug_notes_' + ref;
-						notes.style.display = 'none';
 
 						for (j in debug_types[k].notes) {
 
@@ -144,13 +143,13 @@
 	function debug_open_link() {
 
 		if (debug_open && debug_open !== this) {
-			debug_open.debugOutput.style.display = 'none';
-			debug_open.style.color = '#767676';
+			debug_open.debugOutput.className = 'debug_notes';
+			debug_open.className = 'debug_link';
 		}
 
-		var open = (this.debugOutput.style.display === 'block');
-		this.style.color = (open ? '#767676' : '#00F');
-		this.debugOutput.style.display = (open ? 'none' : 'block');
+		var o = (this.debugOutput.className.indexOf('debug_notes_open') > -1);
+		this.className = (o ? 'debug_link' : 'debug_link debug_link_open');
+		this.debugOutput.className = (o ? 'debug_notes' : 'debug_notes debug_notes_open');
 		this.debugOutput.style.minHeight = (window.innerHeight - debug_links.offsetHeight) + 'px';
 		this.scrollIntoView();
 		debug_open = this;

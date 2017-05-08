@@ -38,6 +38,10 @@
 		font-family: helvetica;
 	}
 
+	#debug_output #debug_links a.debug_link.debug_link_open {
+		color: #00F;
+	}
+
 	#debug_output #debug_links span.debug_time.debug_slow {
 		color: #A00;
 		font-weight: bold;
@@ -60,6 +64,11 @@
 		padding: 0 5px;
 		clear: both;
 		text-align: left;
+		display: none;
+	}
+
+	#debug_output .debug_notes.debug_notes_open {
+		display: block;
 	}
 
 	#debug_output .debug_notes .note {
