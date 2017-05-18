@@ -430,7 +430,7 @@
 		//--------------------------------------------------
 		// String shorthand
 
-			public function __toString() { // (PHP 5.2)
+			public function __toString() {
 				return $this->get();
 			}
 

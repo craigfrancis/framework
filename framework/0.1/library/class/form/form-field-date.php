@@ -248,9 +248,6 @@
 					$timestamp = false;
 				} else {
 					$timestamp = mktime(0, 0, 0, $this->value['M'], ($this->input_day ? $this->value['D'] : 1), $this->value['Y']);
-					if ($timestamp === -1) {
-						$timestamp = false; // If the arguments are invalid, the function returns FALSE (before PHP 5.1 it returned -1).
-					}
 				}
 				return $timestamp;
 			}

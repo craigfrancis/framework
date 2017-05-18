@@ -852,7 +852,7 @@
 
 			}
 
-			public function __toString() { // (PHP 5.2)
+			public function __toString() {
 				$build = $this->_build();
 				return $this->_build_headers($build['headers']) . "\n\n" . $build['content'];
 			}

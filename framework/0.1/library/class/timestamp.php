@@ -80,7 +80,7 @@
 				}
 			}
 
-			public function __toString() { // (PHP 5.2)
+			public function __toString() {
 				if ($this->null) {
 					return ($this->null === true ? '0000-00-00 00:00:00' : $this->null); // Cannot return NULL, but try to return the original NULL-ish value (e.g. "0000-00-00")
 				} else {

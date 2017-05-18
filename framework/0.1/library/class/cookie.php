@@ -39,7 +39,7 @@
 					), $config);
 
 				if (is_object($config['expires']) && is_a($config['expires'], 'timestamp')) {
-					$config['expires'] = $config['expires']->format('U'); // or getTimestamp() in PHP 5.3
+					$config['expires'] = $config['expires']->getTimestamp();
 				} else if (is_string($config['expires'])) {
 					$config['expires'] = strtotime($config['expires']);
 				}
