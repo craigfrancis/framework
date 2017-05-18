@@ -354,7 +354,7 @@
 						$cookies = array();
 
 						foreach ($this->cookies as $name => $value) {
-							$cookies[] = urlencode($name) . '=' . urlencode($value);
+							$cookies[] = rawurlencode($name) . '=' . rawurlencode($value);
 						}
 
 						if (count($cookies) > 0) {
@@ -376,7 +376,7 @@
 											$name = $value[0];
 											$value = $value[1];
 										}
-										$data_encoded[] = urlencode($name) . '=' . urlencode($value);
+										$data_encoded[] = urlencode($name) . '=' . urlencode($value); // urlencode not rawurlencode to match mime-type
 									}
 								}
 

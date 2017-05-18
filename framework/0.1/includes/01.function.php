@@ -855,7 +855,7 @@
 
 	function gateway_url($api_name, $parameters = NULL) {
 
-		$api_path = config::get('gateway.url') . '/' . urlencode($api_name) . '/';
+		$api_path = config::get('gateway.url') . '/' . rawurlencode($api_name) . '/';
 
 		if (is_array($parameters)) {
 
@@ -864,7 +864,7 @@
 		} else {
 
 			if (is_string($parameters)) {
-				$api_path .= urlencode($parameters) . (strpos($parameters, '.') === false ? '/' : ''); // Don't add trailing slash if it looks like a filename (ref 'framework-file')
+				$api_path .= rawurlencode($parameters) . (strpos($parameters, '.') === false ? '/' : ''); // Don't add trailing slash if it looks like a filename (ref 'framework-file')
 			}
 
 			return url($api_path);

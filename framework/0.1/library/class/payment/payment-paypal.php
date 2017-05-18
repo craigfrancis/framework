@@ -250,7 +250,7 @@
 						// Checkout URL
 
 							$checkout_url .= '&useraction=commit'; // Use "Pay Now" button, not "Continue" with message about confirming the order on the merchant website.
-							$checkout_url .= '&token=' . urlencode($checkout_token); // Not a normally encoded url (missing question mark)
+							$checkout_url .= '&token=' . rawurlencode($checkout_token); // Not a normally encoded url (missing question mark)
 
 							redirect($checkout_url);
 
@@ -273,7 +273,7 @@
 
 									report_add('Failure from PayPal' . "\n-----\n" . $debug_info);
 
-									$checkout_url .= '&token=' . urlencode($details['TOKEN']);
+									$checkout_url .= '&token=' . rawurlencode($details['TOKEN']);
 
 									redirect($checkout_url);
 

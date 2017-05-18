@@ -175,7 +175,7 @@
 					$host_domain = $this->_host_config($gateway_host, 'domain');
 					$host_port = $this->_host_config($gateway_host, 'port');
 
-					$gateway_url = ($host_port == 80 ? 'http://' : 'https://') . $host_domain . ':' . $host_port . '/a/api/' . urlencode($gateway_name) . '/?client=' . urlencode($client_name);
+					$gateway_url = ($host_port == 80 ? 'http://' : 'https://') . $host_domain . ':' . $host_port . '/a/api/' . rawurlencode($gateway_name) . '/?client=' . rawurlencode($client_name);
 
 				//--------------------------------------------------
 				// Debug
@@ -291,7 +291,7 @@
 
 					$pass = hash('sha256', ($service_pass . $client_key)); // Needs to be a fast hash
 
-					$gateway_url_pass = $gateway_url . '&pass=' . urlencode($pass);
+					$gateway_url_pass = $gateway_url . '&pass=' . rawurlencode($pass);
 
 				//--------------------------------------------------
 				// Send request to gateway
@@ -569,15 +569,8 @@
 		// Return values to client
 
 			protected function return_array($data) {
-
 				mime_set('application/x-www-form-urlencoded');
-
-				$output = array();
-				foreach ($data as $key => $value) {
-					$output[] = urlencode($key) . '=' . urlencode($value);
-				}
-				exit(implode('&', $output));
-
+				exit(http_build_query($data));
 			}
 
 			protected function return_xml($xml) {

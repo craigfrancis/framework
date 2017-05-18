@@ -37,7 +37,7 @@
 					//--------------------------------------------------
 					// Details
 
-						$path = 'https://checkout.google.com/api/checkout/v2/merchantCheckout/Merchant/' . urlencode($GLOBALS['googleMerchantId']);
+						$path = 'https://checkout.google.com/api/checkout/v2/merchantCheckout/Merchant/' . rawurlencode($GLOBALS['googleMerchantId']);
 
 						$url_parts = parse_url($path);
 

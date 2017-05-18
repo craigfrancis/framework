@@ -898,7 +898,7 @@
 
 									$files[] = array(
 											'path' => NULL,
-											'url' => $prefix . $last_modified . urlencode('{') . implode(',', array_unique($paths)) . urlencode('}') . ($minify ? '.min' : '') . '.js',
+											'url' => $prefix . $last_modified . rawurlencode('{') . implode(',', array_unique($paths)) . rawurlencode('}') . ($minify ? '.min' : '') . '.js',
 											'attributes' => array(),
 										);
 

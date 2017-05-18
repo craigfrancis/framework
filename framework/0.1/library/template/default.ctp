@@ -61,7 +61,7 @@
 
 		foreach ($root_folders as $root_folder => $root_url) {
 
-			$root_url = config::get('url.prefix') . '/' . urlencode($root_url) . '/';
+			$root_url = config::get('url.prefix') . '/' . rawurlencode($root_url) . '/';
 
 			if (count($sub_pages[$root_folder]) > 0) {
 

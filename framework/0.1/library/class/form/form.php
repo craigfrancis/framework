@@ -1107,7 +1107,7 @@
 
 					foreach ($this->hidden_values as $name => $value) {
 						if (!isset($input_fields[$name])) {
-							$input_fields[$name] = urlencode($value); // URL encode allows newline characters to exist in hidden (one line) input fields.
+							$input_fields[$name] = rawurlencode($value); // URL encode allows newline characters to exist in hidden (one line) input fields.
 						} else {
 							exit_with_error('The hidden field "' . $name . '" already exists.');
 						}

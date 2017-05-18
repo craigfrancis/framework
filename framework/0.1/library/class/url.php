@@ -161,7 +161,7 @@
 					foreach ($query as $name => $value) {
 						$pos = strpos($output, '/:' . $name . '/');
 						if ($pos !== false) {
-							$output = substr($output, 0, ($pos + 1)) . urlencode($value) . ($value === NULL ? '' : '/') . substr($output, $pos + strlen($name) + 3);
+							$output = substr($output, 0, ($pos + 1)) . rawurlencode($value) . ($value === NULL ? '' : '/') . substr($output, $pos + strlen($name) + 3);
 							unset($query[$name]);
 						} else if ($value === NULL) {
 							unset($query[$name]);
@@ -186,7 +186,7 @@
 				// Fragment
 
 					if ($this->fragment !== NULL) {
-						$output .= '#' . urlencode($this->fragment);
+						$output .= '#' . rawurlencode($this->fragment);
 					}
 
 				//--------------------------------------------------
@@ -223,7 +223,7 @@
 
 					if ($scheme === 'mailto') {
 
-						$this->path_cache = 'mailto:' . (isset($this->path_data['path']) ? urlencode($this->path_data['path']) : '');
+						$this->path_cache = 'mailto:' . (isset($this->path_data['path']) ? rawurlencode($this->path_data['path']) : '');
 
 						return;
 

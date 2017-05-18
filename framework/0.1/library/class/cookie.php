@@ -113,13 +113,13 @@
 
 					if ($delete) {
 
-						$header = urlencode($variable_full) . '=deleted'; // MSIE doesn't delete a cookie when you set it to a null value.
+						$header = rawurlencode($variable_full) . '=deleted'; // MSIE doesn't delete a cookie when you set it to a null value.
 						$header .= '; Expires=Thu, 01-Jan-1970 00:00:01 GMT';
 						$header .= '; Max-Age=0';
 
 					} else {
 
-						$header = urlencode($variable_full) . '=' . urlencode($value);
+						$header = rawurlencode($variable_full) . '=' . rawurlencode($value);
 
 						if ($config['expires'])   $header .= '; Expires=' . gmdate('D, d-M-Y H:i:s', $config['expires']) . ' GMT';
 						if ($config['expires'])   $header .= '; Max-Age=' . ($config['expires'] - time());
