@@ -1,13 +1,6 @@
 <?php
 
 //--------------------------------------------------
-// PHP 5.3 support
-
-	if (!defined('OPENSSL_RAW_DATA')) {
-		define('OPENSSL_RAW_DATA', 1);
-	}
-
-//--------------------------------------------------
 // Main authentication handlers
 
 	class payment_sagepay_base extends payment {

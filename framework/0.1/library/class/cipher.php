@@ -1,9 +1,5 @@
 <?php
 
-	if (!defined('OPENSSL_RAW_DATA')) {
-		define('OPENSSL_RAW_DATA', 1); // PHP 5.3 support
-	}
-
 	class cipher_base extends check {
 
 		private $key;
