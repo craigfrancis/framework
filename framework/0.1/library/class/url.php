@@ -174,9 +174,6 @@
 
 					if (count($query) > 0) {
 						$query = $this->_query_build($query);
-						if (substr($output, 0, 7) === 'mailto:') {
-							$query = str_replace('+', '%20', $query); // RFC1738 to RFC3986, not possible with http_build_query on PHP 5.3
-						}
 						if ($query != '') {
 							$output .= '?' . $query;
 						}
@@ -196,8 +193,9 @@
 
 			}
 
-			private function _query_build($query) {
-				return http_build_query(array_filter($query, array($this, '_query_filter')));
+			private function _query_build($values) {
+				$values = array_filter($values, array($this, '_query_filter'));
+				return http_build_query($values, NULL, '&', PHP_QUERY_RFC3986);
 			}
 
 			private function _query_filter($value) {
@@ -457,11 +455,11 @@
 		echo '&#xA0; ' . html(url('../news/')) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('/news/')) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url(array('id' => 6, 'empty' => '', 'blank' => NULL))) . '<br />' . "\n";
-		echo '&#xA0; ' . html(url('/news/', 'id', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
-		echo '&#xA0; ' . html(url('/folder/#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('/news/', 'id', array('id' => 5, 'test' => 't=r&u e'))) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('/folder/#anchor', array('id' => 5, 'test' => 't=r&u e'))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('/folder/', 'id', '/view/', 'detail')->get(array('id' => 54))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('https://www.example.com')) . '<br />' . "\n";
-		echo '&#xA0; ' . html(url('https://user:pass@www.example.com:80/about/folder/?id=example#anchor', array('id' => 5, 'test' => 'tr=u&e'))) . '<br />' . "\n";
+		echo '&#xA0; ' . html(url('https://user:pass@www.example.com:80/about/folder/?id=example#anchor', array('id' => 5, 'test' => 't=r&u e'))) . '<br />' . "\n";
 		echo '&#xA0; ' . html(http_url('./thank-you/')) . '<br />' . "\n";
 		echo '&#xA0; ' . html(url('mailto:user@example.com', array('subject' => 'My Subject'))) . '<br />' . "\n";
 
