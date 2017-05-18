@@ -142,7 +142,7 @@
 	if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
 
 		function html($text) {
-			return htmlspecialchars($text, (ENT_QUOTES | ENT_HTML5), config::get('output.charset')); // htmlentities does not work for HTML5+XML
+			return htmlspecialchars($text, (ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE), config::get('output.charset')); // htmlentities does not work for HTML5+XML
 		}
 
 		function html_decode($html) {

@@ -262,7 +262,7 @@
 		// Output
 
 			if (ini_get('display_errors')) {
-				echo "\n<br />\n<b>" . error_handler_html($error_type) . '</b>: ' . error_handler_html($err_str) . ' in <b>' . error_handler_html($err_file) . '</b> on line <b>' . error_handler_html($err_line) . '</b>';
+				echo "\n<br />\n<b>" . html($error_type) . '</b>: ' . html($err_str) . ' in <b>' . html($err_file) . '</b> on line <b>' . html($err_line) . '</b>';
 				echo "<br /><br />\n";
 			}
 
@@ -278,10 +278,6 @@
 
 			return true;
 
-	}
-
-	function error_handler_html($text) { // Ignores bad characters
-		return htmlspecialchars($text, ENT_QUOTES + ENT_IGNORE, config::get('output.charset'));
 	}
 
 	set_error_handler('error_handler');
