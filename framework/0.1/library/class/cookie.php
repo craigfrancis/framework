@@ -10,7 +10,7 @@
 
 		public static function init() {
 
-			if (config::get('cookie.check', false) !== true) {
+			if (config::get('cookie.check', NULL) === NULL) { // If set to 'false', this becomes disabled, if set to 'true', it has already been sent.
 				config::set('cookie.check', true);
 				self::set('c', '1', array('same_site' => 'Lax')); // cookie_check
 			}
