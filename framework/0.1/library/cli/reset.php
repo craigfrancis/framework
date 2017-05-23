@@ -219,6 +219,8 @@
 										$value = '$this->helper->value_get(\'timestamp\', array(\'from\' => \'-2 years\', \'to\' => \'now\')),';
 									} else if (substr($field_name, -8) == 'postcode') {
 										$value = '$this->helper->value_get(\'postcode\', array(\'country\' => \'UK\')),';
+									} else if (substr($field_name, -5) == 'phone' || substr($field_name, -6) == 'mobile') {
+										$value = '$this->helper->value_get(\'telephone\'),';
 									} else if (in_array($field_name, $auto_types)) {
 										$value = '$this->helper->value_get(\'' . ($field_name == 'name' ? 'name_first' : $field_name) . '\'),';
 									} else {

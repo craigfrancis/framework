@@ -78,7 +78,7 @@
 						$this->list_length[$type] = (count($this->list_data[$type]) - 1);
 					}
 
-					$value = $this->list_data[$type][mt_rand(0, $this->list_length[$type])]; // array_rand returns a key, and isn't particualry random anyway.
+					$value = $this->list_data[$type][mt_rand(0, $this->list_length[$type])]; // array_rand returns a key, and isn't particularly random anyway.
 
 					if ($type == 'address_1') {
 						$value = rand(1, 120) . ' ' . $value;
@@ -105,6 +105,35 @@
 						return $this->list_postcode[array_rand($this->list_postcode)] . rand(1, 20) . ' ' . rand(1, 9) . substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 2);
 					} else {
 						return '';
+					}
+
+				} else if ($type == 'telephone') {
+
+					$rand = rand(0, 100);
+					if ($rand < 75) {
+						return '0' . rand(1000000000, 9999999999);
+					} else if ($rand < 76) {
+						return '0' . rand(1000000000, 9999999999) . ' (work, 9am-5pm)';
+					} else if ($rand < 77) {
+						return '07' . rand(100000000, 999999999) . ' (txt only)';
+					} else if ($rand < 78) {
+						return '07' . rand(100000000, 999999999) . ' Ex Directory';
+					} else if ($rand < 85) {
+						return '+' . rand(1, 99) . rand(1000000000, 9999999999);
+					} else if ($rand < 86) {
+						return '00' . rand(1, 99) . rand(1000000000, 9999999999);
+					} else if ($rand < 87) {
+						return '00 ' . rand(1, 99) . ' ' . rand(1000000000, 9999999999);
+					} else if ($rand < 88) {
+						return '+' . rand(1, 99) . ' (0)' . rand(100, 999) . ' ' . rand(100, 999) . ' ' . rand(1000, 9999);
+					} else if ($rand < 89) {
+						return '+' . rand(1, 99) . ' 0' . rand(100, 999) . ' ' . rand(100000, 999999) . ' (ext: ' . rand(10000, 99999) . ')';
+					} else if ($rand < 98) {
+						return '(0' . rand(100, 999) . ') ' . rand(1000000, 9999999);
+					} else if ($rand < 99) {
+						return '0' . rand(1000, 9999) . ' ' . rand(100000, 999999) . ' option ' . rand(1, 9);
+					} else {
+						return '0' . rand(1000, 9999) . ' ' . rand(100000, 999999) . ' Ext. ' . rand(100, 999);
 					}
 
 				}
