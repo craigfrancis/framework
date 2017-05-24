@@ -136,7 +136,13 @@
 
 			if (config::get('output.sent') !== true) { // e.g. the loading helper has already sent the response.
 
-				if (php_sapi_name() == 'cli' || config::get('output.mime') == 'text/plain') {
+				$cli = (php_sapi_name() == 'cli');
+
+				if ($cli || config::get('output.mime') == 'text/plain') {
+
+					if (!$cli) {
+						http_response_code(500);
+					}
 
 					echo "\n" . '--------------------------------------------------' . "\n\n";
 					echo 'System Error:' . "\n\n";
