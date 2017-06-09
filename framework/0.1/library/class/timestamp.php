@@ -237,12 +237,12 @@
 
 					$db = db_get();
 
-					$db->query('SELECT
-									sh.date
-								FROM
-									' . DB_PREFIX . 'system_holiday AS sh');
+					$sql = 'SELECT
+								sh.date
+							FROM
+								' . DB_PREFIX . 'system_holiday AS sh';
 
-					while ($row = $db->fetch_row()) {
+					foreach ($db->fetch_all($sql) as $row) {
 						$holidays[] = $row['date'];
 					}
 

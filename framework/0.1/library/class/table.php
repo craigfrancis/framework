@@ -1026,13 +1026,11 @@
 				//--------------------------------------------------
 				// Get output
 
+					$csv_length = (ftell($fp) - 1);
+
 					rewind($fp);
 
-					$csv_output = '';
-
-					while (!feof($fp)) {
-						$csv_output .= fgets($fp);
-					}
+					$csv_output = fread($fp, $csv_length);
 
 					fclose($fp);
 
