@@ -212,8 +212,8 @@
 
 					$this->run_id = $db->insert_id();
 
-					$db->query('SELECT 1 FROM ' . DB_PREFIX . 'system_maintenance WHERE run_end = "0000-00-00 00:00:00"');
-					if ($db->num_rows() != 1) {
+					$sql = 'SELECT 1 FROM ' . DB_PREFIX . 'system_maintenance WHERE run_end = "0000-00-00 00:00:00"';
+					if ($db->num_rows($sql) != 1) {
 						exit_with_error('Maintenance script is already running, after lock file opening.');
 					}
 

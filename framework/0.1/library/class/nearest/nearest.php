@@ -402,8 +402,8 @@
 
 					if ($latitude === NULL) {
 
-						$db->query('SELECT 1 FROM ' . DB_PREFIX . 'system_nearest_outcode LIMIT 1');
-						if ($db->num_rows() == 0) {
+						$sql = 'SELECT 1 FROM ' . DB_PREFIX . 'system_nearest_outcode LIMIT 1';
+						if ($db->num_rows($sql) == 0) {
 
 							$fields = array('outcode', 'latitude', 'longitude');
 							$field_count = count($fields);
