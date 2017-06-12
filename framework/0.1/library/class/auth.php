@@ -612,7 +612,7 @@
 
 							if ($this->register_details['identification_unique']) {
 								$register_pass = random_key(15);
-								$register_hash = hash($this->quick_hash, $register_pass);
+								$register_hash = $this->_quick_hash_create($register_pass);
 							}
 
 							$record->value_set($this->db_fields['register']['ip'], config::get('request.ip'));
@@ -709,7 +709,7 @@
 							$token_field = $this->db_fields['register']['token'];
 							$identification_field = $this->db_fields['register']['identification'];
 
-							if (hash($this->quick_hash, $register_pass) == $row[$token_field]) {
+							if ($this->_quick_hash_verify($register_pass, $row[$token_field])) {
 
 								//--------------------------------------------------
 								// Identification
@@ -1071,7 +1071,7 @@
 
 							if ($this->update_details['identification_unique']) {
 								$update_pass = random_key(15);
-								$update_hash = hash($this->quick_hash, $update_pass);
+								$update_hash = $this->_quick_hash_create($update_pass);
 							} else {
 								$update_pass = NULL;
 								$update_hash = '';
@@ -1150,7 +1150,8 @@
 						$parameters[] = array('i', $update_id);
 
 						if ($row = $db->fetch_row($sql, $parameters)) {
-							if (hash($this->quick_hash, $update_pass) == $row['token']) {
+
+							if ($this->_quick_hash_verify($update_pass, $row['token'])) {
 
 								//--------------------------------------------------
 								// Still unique
@@ -1196,6 +1197,7 @@
 									return true;
 
 							}
+
 						}
 
 					//--------------------------------------------------
@@ -1355,7 +1357,7 @@
 
 								$ip_test = ($this->session_ip_lock == false || config::get('request.ip') == $row['ip']);
 
-								if ($ip_test && $row['pass'] != '' && hash($this->quick_hash, $session_pass) == $row['pass']) {
+								if ($ip_test && $this->_quick_hash_verify($session_pass, $row['pass'])) {
 
 									//--------------------------------------------------
 									// Update the session - keep active
@@ -1470,20 +1472,6 @@
 				}
 			}
 
-			private function _browser_tracker_get() {
-
-				$browser_tracker = cookie::get('b');
-
-				if (strlen($browser_tracker) != 40) {
-					$browser_tracker = random_key(40);
-				}
-
-				cookie::set('b', $browser_tracker, array('expires' => '+6 months', 'same_site' => 'Lax')); // Don't expose how long session_history is.
-
-				return $browser_tracker;
-
-			}
-
 			public function session_previous_get() {
 
 				if ($this->session_previous === NULL) {
@@ -1581,7 +1569,7 @@
 
 					if ($row = $db->fetch_row($sql, $parameters)) {
 
-						$message_html = 'You have not logged in to this website before.';
+						$message_html = 'This is the first time you have logged in to this website.';
 
 						$warning = false;
 
@@ -1666,7 +1654,7 @@
 				// Create a new session
 
 					$db->insert($this->db_table['session'], array(
-							'pass'          => hash($this->quick_hash, $session_pass), // Must be a quick hash for fast page loading time.
+							'pass'          => $this->_quick_hash_create($session_pass), // Must be a quick hash for fast page loading time.
 							'user_id'       => $user_id,
 							'ip'            => config::get('request.ip'),
 							'browser'       => config::get('request.browser'),
@@ -1848,7 +1836,7 @@
 						$parameters[] = array('i', $this->session_user_id_get());
 					} else {
 						$where_sql = 'm.' . $db->escape_field($this->db_fields['main']['identification']) . ' = ?';
-						$parameters[] = array('i', $identification);
+						$parameters[] = array('s', $identification);
 					}
 
 					$where_sql .= ' AND
@@ -2012,6 +2000,48 @@
 				// Return error string
 
 					return $error;
+
+			}
+
+		//--------------------------------------------------
+		// Extra
+
+			private function _browser_tracker_get() {
+
+				$browser_tracker = cookie::get('b');
+
+				if (strlen($browser_tracker) != 40) {
+					$browser_tracker = random_key(40);
+				}
+
+				cookie::set('b', $browser_tracker, array('expires' => '+6 months', 'same_site' => 'Lax')); // Don't expose how long session_history is.
+
+				return $browser_tracker;
+
+			}
+
+			private function _quick_hash_create($value) {
+				return $this->quick_hash . '-' . hash($this->quick_hash, $value);
+			}
+
+			private function _quick_hash_verify($value, $hash) {
+
+				if (trim($value) == '') {
+					return false;
+				}
+
+				if (($pos = strpos($hash, '-')) !== false) {
+					$algorithm = substr($hash, 0, $pos);
+					$hash = substr($hash, ($pos + 1));
+				} else {
+					$algorithm = $this->quick_hash;
+				}
+
+				if (!in_array($algorithm, array($this->quick_hash, 'sha256'))) {
+					return false; // Don't allow anyone to set a weak hash.
+				}
+
+				return (hash($algorithm, $value) === $hash);
 
 			}
 
