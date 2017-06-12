@@ -1742,6 +1742,8 @@
 
 						$deleted_before = new timestamp((0 - $this->session_history) . ' seconds');
 
+// TODO: Can we keep at least 1 record for each user (e.g. someone who returns 1 year later can still see when they last logged in).
+
 						$sql = 'DELETE FROM
 									s
 								USING
