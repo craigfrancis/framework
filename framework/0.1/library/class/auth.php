@@ -505,7 +505,7 @@
 
 							exit_with_error('Invalid response from auth::validate_identification_complexity()', $identification_complexity);
 
-						} else if ((!$identification_unique) && (!$confirm || $this->identification_type == 'username')) {
+						} else if (!$identification_unique && ($this->identification_type == 'username' || !$confirm)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
 
 							$errors['identification'] = $this->text['failure_identification_current'];
 
@@ -563,7 +563,6 @@
 
 						$config = array_merge(array(
 								'login'   => true,
-								'confirm' => false,
 								'form'    => NULL,
 								'record'  => NULL,
 							), $config);
@@ -585,10 +584,6 @@
 							$record = $config['record'];
 						} else {
 							exit_with_error('You must pass a record to auth::register_complete(array(\'record\' => $record))');
-						}
-
-						if ($config['confirm'] === true) {
-							$this->register_details['confirm'] = $config['confirm'];
 						}
 
 					//--------------------------------------------------
@@ -719,7 +714,7 @@
 									$identification_unique = $this->validate_identification_unique($identification_value, NULL);
 
 									if (!$identification_unique) {
-										return false;
+										return false; // e.g. Someone registered twice, and followed both links (should be fine to show normal 'link expired' message).
 									}
 
 								//--------------------------------------------------
@@ -869,7 +864,7 @@
 
 								exit_with_error('Invalid response from auth::validate_identification_complexity()', $identification_complexity);
 
-							} else if ((!$identification_unique) && (!$confirm || $this->identification_type == 'username')) {
+							} else if (!$identification_unique && ($this->identification_type == 'username' || !$confirm)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
 
 								$errors['identification'] = $this->text['failure_identification_current'];
 
@@ -1805,7 +1800,7 @@
 
 				$parameters = array();
 				$parameters[] = array('s', $identification);
-				$parameters[] = array('i', $user_id);
+				$parameters[] = array('i', ($user_id === NULL ? 0 : $user_id));
 
 				return ($db->num_rows($sql, $parameters) == 0);
 
