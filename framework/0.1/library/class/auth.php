@@ -161,7 +161,8 @@
 							'id'             => 'id',
 							'token'          => 'token',
 							'ip'             => 'ip',
-							'browser'        => 'browser', // Other fields copied from 'main'
+							'browser'        => 'browser',
+							'tracker'        => 'tracker', // Other fields copied from 'main'
 						), $this->db_fields['register']);
 
 					if ($this->identification_max_length === NULL) {
@@ -457,6 +458,7 @@
 									' . $db->escape_field($this->db_fields['register']['token']) . ' tinytext NOT NULL,
 									' . $db->escape_field($this->db_fields['register']['ip']) . ' tinytext NOT NULL,
 									' . $db->escape_field($this->db_fields['register']['browser']) . ' tinytext NOT NULL,
+									' . $db->escape_field($this->db_fields['register']['tracker']) . ' tinytext NOT NULL,
 									' . $db->escape_field($this->db_fields['register']['identification']) . ' tinytext NOT NULL,
 									' . $db->escape_field($this->db_fields['register']['password']) . ' tinytext NOT NULL,
 									' . $db->escape_field($this->db_fields['register']['created']) . ' datetime NOT NULL,
@@ -615,6 +617,7 @@
 
 							$record->value_set($this->db_fields['register']['ip'], config::get('request.ip'));
 							$record->value_set($this->db_fields['register']['browser'], config::get('request.browser'));
+							$record->value_set($this->db_fields['register']['tracker'], $this->_browser_tracker_get());
 							$record->value_set($this->db_fields['register']['token'], $register_hash);
 
 						}
@@ -662,10 +665,14 @@
 
 				}
 
-				public function register_confirm($register_token) {
+				public function register_confirm($register_token, $config = array()) {
 
 					//--------------------------------------------------
 					// Config
+
+						$config = array_merge(array(
+								'login' => true,
+							), $config);
 
 						$db = $this->db_get();
 
@@ -723,6 +730,7 @@
 									unset($values[$this->db_fields['register']['token']]);
 									unset($values[$this->db_fields['register']['ip']]);
 									unset($values[$this->db_fields['register']['browser']]);
+									unset($values[$this->db_fields['register']['tracker']]);
 
 									$values[$this->db_fields['register']['created']] = $now;
 									$values[$this->db_fields['register']['edited']] = $now;
@@ -752,7 +760,19 @@
 								//--------------------------------------------------
 								// Start session
 
-									$this->session_start($user_id, $identification_value);
+										// Only do this if they are still using the same browser.
+										// We don't want an evil actor creating an account, and putting the
+										// registration link on their page (e.g. an image), as that would
+										// cause the victims browser to trigger the registration, and log
+										// them into an account the attacker controls.
+
+									if ($row[$this->db_fields['register']['tracker']] != $this->_browser_tracker_get()) {
+										$config['login'] = false;
+									}
+
+									if ($config['login']) {
+										$this->session_start($user_id, $identification_value);
+									}
 
 								//--------------------------------------------------
 								// Return
@@ -1404,6 +1424,10 @@
 				return $this->session_info;
 			}
 
+			public function session_open() {
+				return ($this->session_info !== NULL);
+			}
+
 			public function session_required($login_url) {
 				if ($this->session_info === NULL) {
 					save_request_redirect($login_url, $this->login_last_get());
@@ -1446,7 +1470,7 @@
 				}
 			}
 
-			private function _session_browser_tracker_get() {
+			private function _browser_tracker_get() {
 
 				$browser_tracker = cookie::get('b');
 
@@ -1491,7 +1515,7 @@
 						$this->session_previous = array(
 								'last_used' => new timestamp($row['last_used'], 'db'),
 								'location_changed' => ($row['ip'] != config::get('request.ip')),
-								'browser_changed' => ($row['tracker'] != $this->_session_browser_tracker_get()), // Don't use UA string, it changes too often.
+								'browser_changed' => ($row['tracker'] != $this->_browser_tracker_get()), // Don't use UA string, it changes too often.
 							);
 
 					} else {
@@ -1646,7 +1670,7 @@
 							'user_id'       => $user_id,
 							'ip'            => config::get('request.ip'),
 							'browser'       => config::get('request.browser'),
-							'tracker'       => $this->_session_browser_tracker_get(),
+							'tracker'       => $this->_browser_tracker_get(),
 							'logout_csrf'   => random_key(15), // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
 							'created'       => $now,
 							'last_used'     => $now,
@@ -1976,7 +2000,7 @@
 								'user_id'   => $this->lockout_user_id,
 								'ip'        => $request_ip,
 								'browser'   => config::get('request.browser'),
-								'tracker'   => $this->_session_browser_tracker_get(),
+								'tracker'   => $this->_browser_tracker_get(),
 								'created'   => $now,
 								'last_used' => $now,
 								'deleted'   => '0000-00-00 00:00:00',
