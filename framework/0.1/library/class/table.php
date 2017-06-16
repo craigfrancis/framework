@@ -698,6 +698,15 @@
 								}
 
 							//--------------------------------------------------
+							// Attributes - data
+
+								if ($cell_info['data'] !== NULL) {
+									foreach ($cell_info['data'] as $name => $value) {
+										$attributes_html .= ' data-' . html($name) . '="' . html($value) . '"';
+									}
+								}
+
+							//--------------------------------------------------
 							// HTML
 
 								if ($cell_info['html'] !== NULL) {
@@ -1157,6 +1166,7 @@
 					'class_name' => $class_name,
 					'colspan' => 1,
 					'title' => NULL,
+					'data' => NULL,
 				), $config);
 
 		}
