@@ -26,6 +26,17 @@ TODO: add notes about the [tester helper](../../doc/system/tester.md), and maint
 
 ---
 
+## Future directions
+
+Look at the suggestion by ParagonIE, which is using LibSodium:
+
+	https://paragonie.com/blog/2017/06/hardening-your-php-powered-apis-with-sapient
+	https://github.com/paragonie/sapient
+
+And possibly use client certificates (via CURLOPT_SSLCERT).
+
+---
+
 ## Notes on oAuth:
 
 Might be issues:
