@@ -6,6 +6,30 @@
 		// http://blog.alejandrocelaya.com/2016/02/09/how-to-properly-implement-persistent-login/ - Remember me feature (replace token on use)
 		// https://github.com/paragonie/password_lock - Encryption instead of a pepper (probably adding unnecessary complications)
 
+
+/*--------------------------------------------------
+
+TODO: Use an 'auth' field in the DB with the JSON encoded values:
+
+	{
+		'ph': 'password-hash',
+		'pv': 1, // version
+		'ips': [], // IP's allowed to login from
+		'totp': 'random-value',
+	}
+
+Then encrypt this with libsodium, using the sha256(user_id + ENCRYPTION_KEY) as the key (so the value cannot be used for other users).
+The password-hash would go though sha384 before hashing (avoids 72 character limit, or null bytes).
+The password would not allowed to be one of the most commonly used passwords.
+
+Possibly use helper methods (static, as $auth typically points to the current user):
+
+	auth::config_get($user_id, $auth_value = NULL); // If the auth value isn't provided, get from the database.
+	auth::config_set($user_id, $field, $value); // e.g. (123, 'totp', 'xxxx')
+	auth::config_set($user_id, $config);
+
+--------------------------------------------------*/
+
 	class auth_base extends check {
 
 		//--------------------------------------------------
