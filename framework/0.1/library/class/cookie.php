@@ -89,7 +89,7 @@
 				if ($config['same_site'] !== NULL) {
 					$native = false;
 				}
-$native = false;
+
 				if ($native) {
 
 					return setcookie($variable_full, $value, $config['expires'], $config['path'], $config['domain'], $config['secure'], $config['http_only']);
