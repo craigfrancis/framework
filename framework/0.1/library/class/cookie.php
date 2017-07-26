@@ -89,7 +89,7 @@
 				if ($config['same_site'] !== NULL) {
 					$native = false;
 				}
-
+$native = false;
 				if ($native) {
 
 					return setcookie($variable_full, $value, $config['expires'], $config['path'], $config['domain'], $config['secure'], $config['http_only']);
@@ -114,14 +114,14 @@
 					if ($delete) {
 
 						$header = rawurlencode($variable_full) . '=deleted'; // MSIE doesn't delete a cookie when you set it to a null value.
-						$header .= '; Expires=Thu, 01-Jan-1970 00:00:01 GMT';
+						$header .= '; Expires=Thu, 01 Jan 1970 00:00:01 GMT';
 						$header .= '; Max-Age=0';
 
 					} else {
 
 						$header = rawurlencode($variable_full) . '=' . rawurlencode($value);
 
-						if ($config['expires'])   $header .= '; Expires=' . gmdate('D, d-M-Y H:i:s', $config['expires']) . ' GMT';
+						if ($config['expires'])   $header .= '; Expires=' . gmdate('D, d M Y H:i:s', $config['expires']) . ' GMT';
 						if ($config['expires'])   $header .= '; Max-Age=' . ($config['expires'] - time());
 
 					}
