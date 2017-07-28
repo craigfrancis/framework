@@ -218,8 +218,8 @@
 					return ($this->sort_preserved_order == 'A' ? 'ASC' : 'DESC');
 				}
 
-				if ($this->sort_default_order == 'ASC' || $this->sort_default_order == 'DESC') {
-					return $this->sort_default_order;
+				if ($this->sort_default_order == 'DESC') {
+					return 'DESC'; // Don't return sort_default_order, just in case it is tainted.
 				}
 
 				return 'ASC';
