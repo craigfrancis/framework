@@ -2,31 +2,49 @@
 
 		// Notes:
 		// http://www.troyhunt.com/2015/01/introducing-secure-account-management.html
-		// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence - Remember me feature
-		// http://blog.alejandrocelaya.com/2016/02/09/how-to-properly-implement-persistent-login/ - Remember me feature (replace token on use)
-		// https://github.com/paragonie/password_lock - Encryption instead of a pepper (probably adding unnecessary complications)
-
+		//
+		// Remember me:
+		// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
+		// http://blog.alejandrocelaya.com/2016/02/09/how-to-properly-implement-persistent-login/ - Replace token on use
+		//
+		// https://github.com/paragonie/password_lock - SHA384 + base64 + bcrypt + encrypt (Random IV, AES-256-CTR, SHA256 HMAC)
+		// https://blogs.dropbox.com/tech/2016/09/how-dropbox-securely-stores-your-passwords/ - SHA512 + bcrypt + AES256 (with pepper).
 
 /*--------------------------------------------------
 
 TODO: Use an 'auth' field in the DB with the JSON encoded values:
 
 	{
-		'ph': 'password-hash',
 		'pv': 1, // version
+		'pc': 1501236011, // Changed timestamp
+		'ph': 'password-hash',
 		'ips': [], // IP's allowed to login from
 		'totp': 'random-value',
 	}
 
 Then encrypt this with libsodium, using the sha256(user_id + ENCRYPTION_KEY) as the key (so the value cannot be used for other users).
-The password-hash would go though sha384 before hashing (avoids 72 character limit, or null bytes).
+The password-hash would go though sha384(raw)+base64 before hashing (producing a 64 character hash, to keep below 72 character limit, and avoid null bytes).
 The password would not allowed to be one of the most commonly used passwords.
 
 Possibly use helper methods (static, as $auth typically points to the current user):
 
-	auth::config_get($user_id, $auth_value = NULL); // If the auth value isn't provided, get from the database.
-	auth::config_set($user_id, $field, $value); // e.g. (123, 'totp', 'xxxx')
-	auth::config_set($user_id, $config);
+	auth::value_get($user_id, $auth_value = NULL); // If the auth value isn't provided, get from the database.
+	auth::value_set($user_id, $field, $value); // e.g. (123, 'totp', 'xxxx')
+	auth::value_set($user_id, $config);
+
+Comparison of hashes
+
+	hash($hash, 'a', false)
+
+		sha256 - 64 - ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
+		sha384 - 96 - 54a59b9f22b0b80880d8427e548b7c23abd873486e1f035dce9cd697e85175033caa88e6d57bc35efae0b5afd3145f31
+		sha512 - 128 - 1f40fc92da241694750979ee6cf582f2d5d7d28e18335de05abc54d0560e0f5302860c652bf08d560252aa5e74210546f369fbbbce8c12cfc7957b2652fe9a75
+
+	base64_encode(hash($hash, 'a', true))
+
+		sha256 - 44 - ypeBEsobvcr6wjGzmiPcTaeG7/gUfE5yuYB3ha/uSLs=
+		sha384 - 64 - VKWbnyKwuAiA2EJ+VIt8I6vYc0huHwNdzpzWl+hRdQM8qojm1XvDXvrgta/TFF8x
+		sha512 - 88 - H0D8ktokFpR1CXnubPWC8tXX0o4YM13gWrxU0FYOD1MChgxlK/CNVgJSql50IQVG82n7u86MEs/HlXsmUv6adQ==
 
 --------------------------------------------------*/
 
