@@ -17,7 +17,7 @@
 
 	class password_base extends check {
 
-		public static function hash($password, $record_id = 0) {
+		public static function hash($password) {
 
 			if (function_exists('password_hash')) {
 
@@ -63,9 +63,7 @@
 
 			} else {
 
-				$hash_salt = random_key(10);
-
-				return md5(md5($record_id) . md5($password) . md5($hash_salt)) . '-' . $hash_salt; // Old hashing method, no longer used
+				exit_with_error('No longer supporting the old hashing method');
 
 			}
 
@@ -73,22 +71,7 @@
 
 		public static function verify($password, $hash, $record_id = 0) {
 
-//--------------------------------------------------
-//
-// TODO: Support a versioned approach, maybe with a JSON string?
-//
-// bcrypt only supports 72 characters, and it's a little unhappy with NULL bytes.
-// If a hash is found to be weak, then a versioning system could allow a proactive update of everything in the db (chaining).
-//
-// https://news.ycombinator.com/item?id=10865068
-//   "md5|sha256$<salt>|bcrypt$<iterations>$<salt>|argon$<iterations>$<salt>|$<hash>"
-//
-// https://paragonie.com/blog/2016/02/how-safely-store-password-in-2016
-//   "base64_encode(hash('sha384', $password, true)) is 64 characters, which nearly fills up the 72 character keyspace"
-//
-//--------------------------------------------------
-
-			if (preg_match('/^([a-z0-9]{32})-([a-z0-9]{10})$/i', $hash, $matches)) { // Old hashing method
+			if ($record_id > 0 && preg_match('/^([a-z0-9]{32})-([a-z0-9]{10})$/i', $hash, $matches)) { // Old hashing method
 
 				$part_hash = $matches[1];
 				$part_salt = $matches[2];
