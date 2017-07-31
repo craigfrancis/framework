@@ -78,11 +78,11 @@
 
 					$result = parent::login_validate($identification, $password);
 
-					if (is_int($result)) {
+					if (is_array($result)) {
 
 						$this->login_details['form'] = $form;
 
-						return $result; // The user id
+						return $result;
 
 					} else {
 

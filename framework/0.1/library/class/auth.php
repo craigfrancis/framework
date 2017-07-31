@@ -10,44 +10,6 @@
 		// https://github.com/paragonie/password_lock - SHA384 + base64 + bcrypt + encrypt (Random IV, AES-256-CTR, SHA256 HMAC)
 		// https://blogs.dropbox.com/tech/2016/09/how-dropbox-securely-stores-your-passwords/ - SHA512 + bcrypt + AES256 (with pepper).
 
-/*--------------------------------------------------
-
-TODO: Use an 'auth' field in the DB with the JSON encoded values:
-
-	{
-		'pv': 1, // version
-		'pc': 1501236011, // Changed timestamp
-		'ph': 'password-hash',
-		'ips': [], // IP's allowed to login from
-		'totp': 'random-value',
-	}
-
-Then encrypt this with libsodium, using the sha256(user_id + ENCRYPTION_KEY) as the key (so the value cannot be used for other users).
-The password-hash would go though sha384(raw)+base64 before hashing (producing a 64 character hash, to keep below 72 character limit, and avoid null bytes).
-The password would not allowed to be one of the most commonly used passwords.
-
-Possibly use helper methods (static, as $auth typically points to the current user):
-
-	auth::value_get($user_id, $auth_value = NULL); // If the auth value isn't provided, get from the database.
-	auth::value_set($user_id, $field, $value); // e.g. (123, 'totp', 'xxxx')
-	auth::value_set($user_id, $config);
-
-Comparison of hashes
-
-	hash($hash, 'a', false)
-
-		sha256 - 64 - ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
-		sha384 - 96 - 54a59b9f22b0b80880d8427e548b7c23abd873486e1f035dce9cd697e85175033caa88e6d57bc35efae0b5afd3145f31
-		sha512 - 128 - 1f40fc92da241694750979ee6cf582f2d5d7d28e18335de05abc54d0560e0f5302860c652bf08d560252aa5e74210546f369fbbbce8c12cfc7957b2652fe9a75
-
-	base64_encode(hash($hash, 'a', true))
-
-		sha256 - 44 - ypeBEsobvcr6wjGzmiPcTaeG7/gUfE5yuYB3ha/uSLs=
-		sha384 - 64 - VKWbnyKwuAiA2EJ+VIt8I6vYc0huHwNdzpzWl+hRdQM8qojm1XvDXvrgta/TFF8x
-		sha512 - 88 - H0D8ktokFpR1CXnubPWC8tXX0o4YM13gWrxU0FYOD1MChgxlK/CNVgJSql50IQVG82n7u86MEs/HlXsmUv6adQ==
-
---------------------------------------------------*/
-
 	class auth_base extends check {
 
 		//--------------------------------------------------
@@ -56,7 +18,6 @@ Comparison of hashes
 			protected $lockout_attempts = 20;
 			protected $lockout_timeout = 1800; // 30 minutes
 			protected $lockout_mode = NULL;
-			protected $lockout_user_id = NULL;
 
 			protected $user_id = NULL; // Only used when editing a user, see $auth->user_set()
 			protected $user_identification = NULL;
@@ -98,6 +59,8 @@ Comparison of hashes
 			protected $register_details = NULL;
 			protected $update_details = NULL;
 			protected $reset_details = NULL;
+
+			public static $auth_version = 1;
 
 		//--------------------------------------------------
 		// Setup
@@ -141,6 +104,7 @@ Comparison of hashes
 							'failure_login_details'          => 'Incorrect log-in details.',
 							'failure_login_identification'   => NULL, // Do not use, except for very special situations (e.g. low security and overly user friendly websites).
 							'failure_login_password'         => NULL,
+							'failure_login_decryption'       => NULL,
 							'failure_login_repetition'       => 'Too many login attempts (try again later).',
 							'failure_identification_current' => 'The email address supplied is already in use.',
 							'failure_password_current'       => 'Your current password is incorrect.', // Used on profile page
@@ -159,6 +123,7 @@ Comparison of hashes
 
 					if (!$default_text['failure_login_identification']) $default_text['failure_login_identification'] = $default_text['failure_login_details'];
 					if (!$default_text['failure_login_password'])       $default_text['failure_login_password']       = $default_text['failure_login_details'];
+					if (!$default_text['failure_login_decryption'])     $default_text['failure_login_decryption']     = $default_text['failure_login_details'];
 
 					if ($this->identification_type == 'username') {
 
@@ -194,6 +159,7 @@ Comparison of hashes
 							'id'             => 'id',
 							'identification' => ($this->identification_type == 'username' ? 'username' : 'email'),
 							'password'       => 'pass',
+							'auth'           => 'auth',
 							'created'        => 'created',
 							'edited'         => 'edited',
 							'deleted'        => 'deleted',
@@ -220,6 +186,7 @@ Comparison of hashes
 									' . $db->escape_field($this->db_fields['main']['id']) . ' int(11) NOT NULL AUTO_INCREMENT,
 									' . $db->escape_field($this->db_fields['main']['identification']) . ' varchar(' . $this->identification_max_length . ') NOT NULL,
 									' . $db->escape_field($this->db_fields['main']['password']) . ' tinytext NOT NULL,
+									' . $db->escape_field($this->db_fields['main']['auth']) . ' text NOT NULL,
 									' . $db->escape_field($this->db_fields['main']['created']) . ' datetime NOT NULL,
 									' . $db->escape_field($this->db_fields['main']['edited']) . ' datetime NOT NULL,
 									' . $db->escape_field($this->db_fields['main']['deleted']) . ' datetime NOT NULL,
@@ -289,14 +256,11 @@ Comparison of hashes
 				//--------------------------------------------------
 				// Success
 
-					if (is_int($result)) {
+					if (is_array($result)) {
 
-						$this->login_details = array(
-								'id' => $result,
-								'identification' => $identification,
-							);
+						$this->login_details = $result;
 
-						return $result; // User ID
+						return $result;
 
 					}
 
@@ -310,6 +274,10 @@ Comparison of hashes
 					} else if ($result === 'failure_password') {
 
 						return $this->text['failure_login_password'];
+
+					} else if ($result === 'failure_decryption') {
+
+						return $this->text['failure_login_decryption'];
 
 					} else if ($result === 'failure_repetition') {
 
@@ -943,6 +911,10 @@ Comparison of hashes
 
 								$errors['password_old'] = $this->text['failure_login_password'];
 
+							} else if ($result === 'failure_decryption') {
+
+								$errors['password_old'] = $this->text['failure_login_decryption'];
+
 							} else if ($result === 'failure_repetition') {
 
 								$errors['password_old'] = $this->text['failure_login_repetition'];
@@ -951,7 +923,7 @@ Comparison of hashes
 
 								$errors['password_old'] = $result; // Custom (project specific) error message.
 
-							} else if (!is_int($result)) {
+							} else if (!is_array($result)) {
 
 								exit_with_error('Invalid response from auth::validate_login()', $result);
 
@@ -1855,6 +1827,7 @@ Comparison of hashes
 			}
 
 			protected function validate_password_complexity($password) {
+				// TODO: The password should not allowed to be one of the most commonly used passwords (maybe separate function validate_password_common?)
 				return true; // Could set additional complexity requirements (e.g. must contain numbers/letters/etc, to make the password harder to remember)
 			}
 
@@ -1864,6 +1837,8 @@ Comparison of hashes
 				// Config
 
 					$db = $this->db_get();
+
+					$error = '';
 
 				//--------------------------------------------------
 				// Account details
@@ -1879,13 +1854,13 @@ Comparison of hashes
 					}
 
 					$where_sql .= ' AND
-								m.' . $db->escape_field($this->db_fields['main']['password']) . ' != "" AND
 								' . $this->db_where_sql['main'] . ' AND
 								' . $this->db_where_sql['main_login'];
 
 					$sql = 'SELECT
 								m.' . $db->escape_field($this->db_fields['main']['id']) . ' AS id,
-								m.' . $db->escape_field($this->db_fields['main']['password']) . ' AS password
+								m.' . $db->escape_field($this->db_fields['main']['password']) . ' AS password,
+								m.' . $db->escape_field($this->db_fields['main']['auth']) . ' AS auth
 							FROM
 								' . $db->escape_table($this->db_table['main']) . ' AS m
 							WHERE
@@ -1893,17 +1868,23 @@ Comparison of hashes
 							LIMIT
 								1';
 
+					$db_id = 0;
+					$db_pass = '';
+					$db_auth = '';
+
 					if ($row = $db->fetch_row($sql, $parameters)) {
+
 						$db_id = $row['id'];
-						$db_hash = $row['password']; // A blank password (disabled account) is excluded in the query.
-					} else {
-						$db_id = 0;
-						$db_hash = '';
+						$db_pass = $row['password'];
+
+						if ($row['auth']) {
+							$db_auth = auth::value_parse($db_id, $row['auth']); // Returns NULL on failure
+							if (!$db_auth) {
+								$error = 'failure_decryption';
+							}
+						}
+
 					}
-
-					$this->lockout_user_id = $db_id;
-
-					$error = '';
 
 				//--------------------------------------------------
 				// Too many failed logins?
@@ -1956,13 +1937,33 @@ Comparison of hashes
 				// the account exists... but don't run for frequent
 				// failures, as this could help towards a DOS attack
 
-					if ($error == '') {
+					$needs_rehash = true;
+
+					if ($error != 'failure_repetition') { // Anti denial of service.
 
 						if (extension_loaded('newrelic')) {
 							newrelic_ignore_transaction(); // This will be slow!
 						}
 
-						$valid = password::verify($password, $db_hash, $db_id);
+						if ($db_auth) {
+
+							$valid = password::verify(base64_encode(hash('sha384', $password, true)), $db_auth['ph']); // see auth::value_encode() for details on sha384
+
+							if ($db_auth['v'] == auth::$auth_version && !password::needs_rehash($db_auth['ph'])) {
+								$needs_rehash = false;
+							}
+
+						} else {
+
+							$valid = password::verify($password, $db_pass, $db_id);
+
+							if (!$valid && substr($db_pass, 0, 1) != '$') { // Plain text password import, where the password field does not contain a password_hash.
+								if ($password === $db_pass) {
+									$valid = true;
+								}
+							}
+
+						}
 
 					}
 
@@ -1974,14 +1975,23 @@ Comparison of hashes
 
 							if ($valid) {
 
-								if (password::needs_rehash($db_hash)) {
+								if ($needs_rehash) {
 
-									$new_hash = password::hash($password);
+									if (!is_array($db_auth)) {
+										$db_auth = array();
+									}
+
+									$db_auth = array_merge($db_auth, array(
+											'pv' => $password,
+										));
+
+									$db_auth_encoded = auth::value_encode($db_id, $db_auth);
 
 									$sql = 'UPDATE
 												' . $db->escape_table($this->db_table['main']) . ' AS m
 											SET
-												m.' . $db->escape_field($this->db_fields['main']['password']) . ' = ?
+												m.' . $db->escape_field($this->db_fields['main']['password']) . ' = "",
+												m.' . $db->escape_field($this->db_fields['main']['auth']) . ' = ?
 											WHERE
 												m.' . $db->escape_field($this->db_fields['main']['id']) . ' = ? AND
 												' . $this->db_where_sql['main'] . '
@@ -1989,14 +1999,20 @@ Comparison of hashes
 												1';
 
 									$parameters = array();
-									$parameters[] = array('s', $new_hash);
+									$parameters[] = array('s', $db_auth_encoded);
 									$parameters[] = array('i', $db_id);
 
 									$db->query($sql, $parameters);
 
 								}
 
-								return intval($db_id); // Success, and must be an integer (not an error string).
+								$db_auth['ph'] = NULL;
+
+								return array(
+										'id' => intval($db_id),
+										'identification' => $identification,
+										'auth' => $db_auth,
+									);
 
 							} else {
 
@@ -2024,7 +2040,7 @@ Comparison of hashes
 
 						$db->insert($this->db_table['session'], array(
 								'pass'      => '', // Will remain blank to record failure
-								'user_id'   => $this->lockout_user_id,
+								'user_id'   => $db_id,
 								'ip'        => $request_ip,
 								'browser'   => config::get('request.browser'),
 								'tracker'   => $this->_browser_tracker_get(),
@@ -2081,6 +2097,90 @@ Comparison of hashes
 				}
 
 				return (hash($algorithm, $value) === $hash);
+
+			}
+
+		//--------------------------------------------------
+		// Value parsing
+
+			public static function value_parse($user_id, $auth) {
+
+				if (($pos = strpos($auth, '-')) !== false) {
+					$version = intval(substr($auth, 0, $pos));
+					$auth = substr($auth, ($pos + 1));
+				} else {
+					$version = 0;
+				}
+
+				$auth_values = json_decode($auth, true);
+
+				if (is_array($auth_values)) { // or not NULL
+
+					return array_merge(array(
+							'ph'   => '',      // Password Hash
+							'pc'   => NULL,    // Password Changed timestamp
+							'ips'  => array(), // IP's allowed to login from
+							'totp' => NULL,    // Time-based One Time Password
+						), $auth_values, array(
+							'v' => $version, // Version
+						));
+
+				} else {
+
+					return NULL;
+
+				}
+
+			}
+
+			public static function value_encode($user_id, $auth_values) {
+
+				$auth_values = array_merge(array(
+						'ph'   => '',
+						'pc'   => time(),
+						'ips'  => array(),
+						'totp' => NULL,
+					), $auth_values);
+
+				if (isset($auth_values['pv'])) { // Ignore if NULL, so don't use array_key_exists()
+
+					$auth_values['ph'] = password::hash(base64_encode(hash('sha384', $auth_values['pv'], true)));
+
+						//--------------------------------------------------
+						// BCrypt truncates the value to the first 72 bytes,
+						// and truncates on the NULL character.
+						//
+						// So use a sha384 hash, with base64 encoding (6 bits
+						// per character, or 64 characters long); rather than
+						// using Hex (base 16, or 4 bits per character, or 96
+						// characters long, which bcrypt would truncate to 72).
+						//
+						//   var_dump(password_verify("abc", password_hash("abc\0defghijklmnop", PASSWORD_DEFAULT)));
+						//
+						// hash($hash, 'a', false)
+						//
+						// 	 sha256 - 64 - ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
+						// 	 sha384 - 96 - 54a59b9f22b0b80880d8427e548b7c23abd873486e1f035dce9cd697e85175033caa88e6d57bc35efae0b5afd3145f31
+						// 	 sha512 - 128 - 1f40fc92da241694750979ee6cf582f2d5d7d28e18335de05abc54d0560e0f5302860c652bf08d560252aa5e74210546f369fbbbce8c12cfc7957b2652fe9a75
+						//
+						// base64_encode(hash($hash, 'a', true))
+						//
+						// 	 sha256 - 44 - ypeBEsobvcr6wjGzmiPcTaeG7/gUfE5yuYB3ha/uSLs=
+						// 	 sha384 - 64 - VKWbnyKwuAiA2EJ+VIt8I6vYc0huHwNdzpzWl+hRdQM8qojm1XvDXvrgta/TFF8x
+						// 	 sha512 - 88 - H0D8ktokFpR1CXnubPWC8tXX0o4YM13gWrxU0FYOD1MChgxlK/CNVgJSql50IQVG82n7u86MEs/HlXsmUv6adQ==
+						//
+						//--------------------------------------------------
+
+				}
+
+				unset($auth_values['v']);
+				unset($auth_values['pv']);
+
+				$auth = json_encode($auth_values);
+
+				// TODO: Encrypt auth value with libsodium, using the sha256(user_id + ENCRYPTION_KEY) as the key (so the value cannot be used for other users).
+
+				return intval(auth::$auth_version) . '-' . $auth;
 
 			}
 
