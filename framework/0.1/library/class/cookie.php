@@ -22,8 +22,6 @@
 			//--------------------------------------------------
 			// Config
 
-				$variable_full = config::get('cookie.prefix', '') . $variable;
-
 				if (!is_array($config)) {
 					$config = array('expires' => $config);
 				}
@@ -36,6 +34,7 @@
 						'http_only' => true,
 						'same_site' => NULL,
 						'update'    => false,
+						'prefix'    => config::get('cookie.prefix', ''),
 					), $config);
 
 				if (is_object($config['expires']) && is_a($config['expires'], 'timestamp')) {
@@ -43,6 +42,8 @@
 				} else if (is_string($config['expires'])) {
 					$config['expires'] = strtotime($config['expires']);
 				}
+
+				$variable_full = $config['prefix'] . $variable;
 
 			//--------------------------------------------------
 			// Value
@@ -121,8 +122,8 @@
 
 						$header = rawurlencode($variable_full) . '=' . rawurlencode($value);
 
-						if ($config['expires'])   $header .= '; Expires=' . gmdate('D, d M Y H:i:s', $config['expires']) . ' GMT';
-						if ($config['expires'])   $header .= '; Max-Age=' . ($config['expires'] - time());
+						if ($config['expires']) $header .= '; Expires=' . gmdate('D, d M Y H:i:s', $config['expires']) . ' GMT';
+						if ($config['expires']) $header .= '; Max-Age=' . ($config['expires'] - time());
 
 					}
 
