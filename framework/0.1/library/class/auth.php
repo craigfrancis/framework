@@ -2179,6 +2179,8 @@
 				$auth = json_encode($auth_values);
 
 				// TODO: Encrypt auth value with libsodium, using the sha256(user_id + ENCRYPTION_KEY) as the key (so the value cannot be used for other users).
+				// https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use
+				// https://download.libsodium.org/doc/
 
 				return intval(auth::$auth_version) . '-' . $auth;
 
