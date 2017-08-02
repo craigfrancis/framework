@@ -157,7 +157,9 @@
 				} else {
 
 					if (!headers_sent()) {
-						http_response_code(500);
+						if ($type != 'notice') {
+							http_response_code(500);
+						}
 						mime_set('text/html');
 					}
 
