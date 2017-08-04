@@ -39,12 +39,12 @@ Still a work in progress...
 		access_log /www/live/test.project/logs/nginx.access_log inc_info;
 		error_log /www/live/test.project/logs/nginx.error_log warn;
 
-		ssl_certificate /etc/apache2/ssl/www.example.com.pem;
-		ssl_certificate_key /etc/apache2/ssl/www.example.com.key;
+		ssl_certificate /etc/apache2/tls/www.example.com.pem;
+		ssl_certificate_key /etc/apache2/tls/www.example.com.key;
 
 		ssl_stapling on;
 		ssl_stapling_verify on;
-		ssl_trusted_certificate /etc/apache2/ssl/www.example.com.ca;
+		ssl_trusted_certificate /etc/apache2/tls/www.example.com.ca;
 		resolver 8.8.8.8;
 
 		add_header 'X-Frame-Options' 'deny';

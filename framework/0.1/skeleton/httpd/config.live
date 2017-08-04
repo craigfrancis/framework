@@ -20,6 +20,8 @@
 
 		# RewriteRule ^/phpMyAdmin/(.*) /opt/server/web_apache/phpMyAdmin/$1 [L]
 
+		RewriteRule ^/\.well-known/acme-challenge/(.*)$ /etc/acme/public/$1 [L]
+
 		RewriteRule ^/a/files/(.*) /www/live/company.project/files/$1 [S=1]
 		RewriteRule ^(.*)$ %{DOCUMENT_ROOT}$1
 
@@ -32,9 +34,9 @@
 		RewriteRule ^(.*)$ %{DOCUMENT_ROOT}/index.php [L]
 
 		SSLEngine on
-		SSLCertificateFile /etc/apache2/ssl/www.example.com.crt
-		SSLCertificateKeyFile /etc/apache2/ssl/www.example.com.key
-		SSLCertificateChainFile /etc/apache2/ssl/www.example.com.chn
+		SSLCertificateFile /etc/apache2/tls/www.example.com.crt
+		SSLCertificateKeyFile /etc/apache2/tls/www.example.com.key
+		SSLCertificateChainFile /etc/apache2/tls/www.example.com.chn
 
 		AddDefaultCharset UTF-8
 		AddCharset UTF-8 .css
