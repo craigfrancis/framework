@@ -11,7 +11,7 @@
 		// https://blogs.dropbox.com/tech/2016/09/how-dropbox-securely-stores-your-passwords/ - SHA512 + bcrypt + AES256 (with pepper).
 		//
 		// Can the browser do sha384 of the password before sending?
-		// https://github.com/kjur/jsrsasign/blob/master/README.md
+		// https://github.com/kjur/jsrsasign/
 
 	class auth_base extends check {
 
