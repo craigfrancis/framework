@@ -1827,7 +1827,7 @@
 			}
 
 			protected function validate_password_complexity($password) {
-				// TODO: The password should not allowed to be one of the most commonly used passwords (maybe separate function validate_password_common?)
+				// TODO: The password should not allowed to be one of the most commonly used passwords (maybe separate function validate_password_common?) - ref https://haveibeenpwned.com/Passwords
 				return true; // Could set additional complexity requirements (e.g. must contain numbers/letters/etc, to make the password harder to remember)
 			}
 
