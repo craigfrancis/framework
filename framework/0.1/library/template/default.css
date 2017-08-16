@@ -38,6 +38,11 @@
 		border: 0;
 	}
 
+	abbr {
+		border: 0;
+		text-decoration: none;
+	}
+
 	p,
 	h1,
 	h2,
@@ -294,11 +299,6 @@
 	.basic_form .row .label {
 		display: block;
 		font-weight: normal;
-	}
-
-	.basic_form .row .label abbr.required {
-		border: 0;
-		text-decoration: none;
 	}
 
 	.basic_form .row .input sub {
