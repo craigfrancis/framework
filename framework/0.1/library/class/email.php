@@ -579,7 +579,7 @@
 
 						$content = $content_html;
 
-					} else if ($content_text != '') {
+					} else {
 
 						$headers['Content-Type'] = 'text/plain; charset="' . addslashes(config::get('output.charset')) . '"';
 
