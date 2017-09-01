@@ -1033,6 +1033,35 @@
 					}
 
 				//--------------------------------------------------
+				// Cleanup
+
+					if (method_exists($this, 'csv_cleanup')) {
+
+							//--------------------------------------------------
+							// Could support filtering to basic ASCII characters:
+							//
+							//   $text = iconv($this->charset_input, 'ASCII//TRANSLIT', $text);
+							//   $text = preg_replace('/[^a-z0-9 \-]/i', '', $text);
+							//
+							// If doing this, make sure `locale -a` lists the
+							// locale in use (e.g. en_GB.UTF-8)
+							//--------------------------------------------------
+
+						rewind($fp);
+
+						$fp_clean = fopen('php://temp', 'r+');
+
+						while (($data = fgetcsv($fp, 0, ',')) !== false) {
+							fputcsv($fp_clean, array_map(array($this, 'csv_cleanup'), $data));
+						}
+
+						fclose($fp);
+
+						$fp = $fp_clean;
+
+					}
+
+				//--------------------------------------------------
 				// Get output
 
 					$csv_length = (ftell($fp) - 1);
