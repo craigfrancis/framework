@@ -43,7 +43,7 @@
 
 			$default_setup = array(
 					'engine' => config::get('db.engine', 'MyISAM'), // InnoDB is a newer engine, but I don't use enforced relationships or transactions (yet).
-					'collation' => config::get('db.collation', 'utf8_unicode_ci'), // Avoid general, is faster, but more error prone.
+					'collation' => config::get('db.collation', 'utf8mb4_unicode_ci'), // Avoid general, is faster, but more error prone.
 					'fields' => array(),
 				);
 
