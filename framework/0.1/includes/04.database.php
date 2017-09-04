@@ -168,7 +168,7 @@
 			}
 
 			if (!$this->result && $exit_on_error) {
-				$this->_error($sql);
+				$this->_error($sql, $parameters, true);
 			}
 
 			return $this->result;
@@ -427,7 +427,7 @@
 						$options = str_getcsv($info, ',', "'");
 						$length = count($options);
 					} else {
-						$this->_error('Unknown type "' . $row['Type'] . '" for field "' . $row['Field'] . '"', true);
+						$this->_error('Unknown type "' . $row['Type'] . '" for field "' . $row['Field'] . '"');
 					}
 
 					$details[$row['Field']] = array(
@@ -446,7 +446,7 @@
 				if ($field !== NULL) {
 
 					if (!isset($details[$field])) {
-						$this->_error('Cannot find field "' . $field . '" in table "' . $table_sql . '"', true);
+						$this->_error('Cannot find field "' . $field . '" in table "' . $table_sql . '"');
 					}
 
 					$this->structure_field_cache[$table_sql][$field] = $details[$field];
@@ -665,22 +665,22 @@
 					$pass = trim(file_get_contents($password_path));
 				} else {
 					if (is_file($password_path)) {
-						$this->_error('Cannot read database password file', true);
+						$this->_error('Cannot read database password file');
 					} else {
-						$this->_error('Unknown database password (config "' . $prefix . 'pass")', true);
+						$this->_error('Unknown database password (config "' . $prefix . 'pass")');
 					}
 				}
 			}
 
 			if (!function_exists('mysqli_connect')) {
-				$this->_error('PHP does not have MySQLi support - https://php.net/mysqli_connect', true);
+				$this->_error('PHP does not have MySQLi support - https://php.net/mysqli_connect');
 			}
 
 			$start = microtime(true);
 
 			$this->link = @mysqli_connect($host, $user, $pass, $name);
 			if (!$this->link) {
-				$this->_error('Database connection error: ' . mysqli_connect_error() . ' (' . mysqli_connect_errno() . ')', true);
+				$this->_error('Database connection error: ' . mysqli_connect_error() . ' (' . mysqli_connect_errno() . ')');
 			}
 
 			if (function_exists('debug_log_time')) {
@@ -707,7 +707,7 @@
 
 			if ($charset !== NULL) {
 				if (!mysqli_set_charset($this->link, $charset)) {
-					$this->_error('Database charset error, when loading ' . $charset, true);
+					$this->_error('Database charset error, when loading ' . $charset);
 				}
 			}
 
@@ -723,18 +723,31 @@
 			}
 		}
 
-		public function _error($query = 'N/A', $use_query_as_error = false) { // Public so debug script can call
+		private function _error($error = 'N/A', $parameters = NULL, $show_db_error = false) {
 
-			$extra = $this->error_get();
+			$info = $this->error_get();
 
 			if (function_exists('exit_with_error') && config::get('db.error_thrown') !== true) {
+
 				config::set('db.error_thrown', true);
-				exit_with_error('An error has occurred with the database.', $query . "\n\n" . $extra);
+
+				$hidden_info = $info . "\n\n" . $error;
+				if ($parameters) {
+					$hidden_info .= "\n\n" . debug_dump(array_column($parameters, 1));
+					$hidden_info .= "\n\n" . debug_dump(array_column($parameters, 0));
+				}
+
+				exit_with_error('An error has occurred with the database.', $hidden_info);
+
 			} else if (REQUEST_MODE == 'cli') {
-				exit('I have a problem: ' . ($use_query_as_error ? $query : $extra) . "\n");
+
+				exit('I have a problem: ' . ($show_db_error ? $info : $error) . "\n");
+
 			} else {
+
 				http_response_code(500);
-				exit('<p>I have a problem: <br />' . htmlentities($use_query_as_error ? $query : $extra) . '</p>');
+				exit('<p>I have a problem: <br />' . htmlentities($show_db_error ? $info : $error) . '</p>');
+
 			}
 
 		}
