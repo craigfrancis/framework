@@ -1371,16 +1371,28 @@
 //--------------------------------------------------
 // Cache headers
 
-	function http_cache_headers($expires, $last_modified = NULL, $etag = NULL) {
+	function http_cache_headers($expires, $last_modified = NULL, $etag = NULL, $pragma = NULL) {
 
-		if ($expires > 0) {
+		if ($expires <= 0 && $expires !== NULL) {
 
-			$pragma = (session::open() ? 'private' : 'public');
+			header('Pragma: no-cache');
+			header('Cache-Control: private, no-cache, no-store, must-revalidate');
+			header('Expires: Sat, 01 Jan 2000 01:00:00 GMT');
+
+		} else {
+
+			if ($pragma === NULL) {
+				$pragma = (session::open() ? 'private' : 'public');
+			}
 
 			header('Pragma: ' . head($pragma)); // For HTTP/1.0 compatibility
-			header('Cache-Control: ' . head($pragma) . ', max-age=' . head($expires)); // https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
-			header('Expires: ' . head(gmdate('D, d M Y H:i:s', time() + $expires)) . ' GMT');
-			// header('Vary: User-Agent'); // Fixed in IE9 ... https://blogs.msdn.com/b/ieinternals/archive/2009/06/17/vary-header-prevents-caching-in-ie.aspx
+
+			if ($expires > 0) {
+
+				header('Cache-Control: ' . head($pragma) . ', max-age=' . head($expires)); // https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
+				header('Expires: ' . head(gmdate('D, d M Y H:i:s', time() + $expires)) . ' GMT');
+
+			}
 
 			if ($last_modified !== NULL) {
 
@@ -1403,12 +1415,6 @@
 				}
 
 			}
-
-		} else {
-
-			header('Pragma: no-cache');
-			header('Cache-Control: private, no-cache, no-store, must-revalidate');
-			header('Expires: Sat, 01 Jan 2000 01:00:00 GMT');
 
 		}
 
