@@ -308,7 +308,7 @@
 				//--------------------------------------------------
 				// Content
 
-					$this->body_html .= '<table cellspacing="0" cellpadding="3" border="1">' . "\n";
+					$this->body_html .= '<table cellspacing="0" cellpadding="3" border="1" style="font-size: 1em;">' . "\n"; // font-size is not inherited into the table in Outlook (IE)
 
 					foreach ($values as $name => $value) {
 

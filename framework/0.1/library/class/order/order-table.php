@@ -217,7 +217,7 @@
 				// Start
 
 					$html = '
-						<table class="order_table"' . ($this->config['email_mode'] ? ' cellspacing="0" cellpadding="1" border="1"' : '') . '>
+						<table class="order_table"' . ($this->config['email_mode'] ? ' cellspacing="0" cellpadding="1" border="1" style="font-size: 1em;"' : '') . '>
 							<thead>
 								<tr>
 									<th scope="col" class="item"' . ($show_image ? ' colspan="2"' : '') . '>Item</th>
