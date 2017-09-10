@@ -183,7 +183,11 @@
 					command_run('svn propset svn:ignore "tmp" ' . escapeshellarg(PRIVATE_ROOT), true);
 				}
 			} else if (is_dir(ROOT . '/.git')) {
-				file_put_contents(PRIVATE_ROOT . '/.gitignore', 'tmp');
+				$ignore_path = PRIVATE_ROOT . '/.gitignore';
+				$ignore_content = trim(is_file($ignore_path) ? file_get_contents($ignore_path) : '');
+				if (!preg_match('/^tmp$/m', $ignore_content)) {
+					file_put_contents($ignore_path, 'tmp' . "\n" . $ignore_content);
+				}
 			}
 
 		//--------------------------------------------------
