@@ -415,7 +415,18 @@
 
 			}
 
+			protected function send_prep() { // e.g. if the attachments should be processed before sending (password protected zip?)
+			}
+
+			protected function send_done() {
+			}
+
 			protected function _send($recipients, $build = NULL) {
+
+				//--------------------------------------------------
+				// Prep
+
+					$this->send_prep();
 
 				//--------------------------------------------------
 				// Testing support
@@ -462,6 +473,11 @@
 					foreach ($recipients as $recipient) {
 						$this->_send_mail($recipient, $subject, $build['content'], $headers);
 					}
+
+				//--------------------------------------------------
+				// Done
+
+					$this->send_done();
 
 			}
 
