@@ -1533,7 +1533,7 @@
 				}
 
 				if (function_exists('mcrypt_create_iv')) {
-					$input[] = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM); // PHP 5.6 defaults to /dev/random due to low entropy on some servers (e.g Amazon EC2 servers can take over 1 minute).
+					$input[] = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM); // PHP 5.6 defaults to /dev/random, which can be a problem - low entropy on some servers (e.g Amazon EC2) can make this take over 1 minute.
 				}
 
 				$input = implode('', $input); // Many different sources of entropy, the more the better (even if predictable or broken).
