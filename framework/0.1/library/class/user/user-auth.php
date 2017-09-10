@@ -10,8 +10,8 @@
 		protected $db_table_fields;
 		protected $db_where_sql;
 		protected $db_where_login_sql;
-		protected $lockout_attempts = 60; // Once every 30 seconds, for the 30 minutes
-		protected $lockout_timeout = 1800;
+		protected $lockout_attempts = 20;
+		protected $lockout_timeout = 1800; // 30 minutes
 		protected $lockout_mode = NULL;
 		protected $password_reset_timeout = '-90 minutes';
 
