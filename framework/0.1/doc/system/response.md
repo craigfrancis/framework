@@ -96,6 +96,7 @@ This will start sending your `<head>` to the browser so it can start downloading
 
 	output.canonical
 	output.links
+	output.meta
 
 ---
 

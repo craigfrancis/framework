@@ -1080,13 +1080,6 @@
 					$html .= "\n\n\t" . '<title>' . html($this->title_get()) . '</title>';
 
 				//--------------------------------------------------
-				// Page description
-
-					if ($this->description) {
-						$html .= "\n\n\t" . '<meta name="description" content="' . html($this->description) . '" />';
-					}
-
-				//--------------------------------------------------
 				// Favicon
 
 					$favicon_url = config::get('output.favicon_url');
@@ -1113,6 +1106,22 @@
 				// Javascript
 
 					$html .= $this->_js_get_html('head');
+
+				//--------------------------------------------------
+				// Meta
+
+					$meta = config::get('output.meta', array());
+
+					if ($this->description) {
+						$meta['description'] = $this->description;
+					}
+
+					if ($meta) {
+						$html .= "\n";
+						foreach ($meta as $name => $content) {
+							$html .= "\n\t" . '<meta name="' . html($name) . '" content="' . html($content) . '" />';
+						}
+					}
 
 				//--------------------------------------------------
 				// Extra head HTML
@@ -1489,6 +1498,13 @@
 
 							}
 
+						}
+
+					//--------------------------------------------------
+					// Twitter DNT
+
+						if (!config::get('output.tracking')) {
+							config::array_set('output.meta', 'twitter:dnt', 'on'); // https://support.twitter.com/articles/20169453
 						}
 
 					//--------------------------------------------------
