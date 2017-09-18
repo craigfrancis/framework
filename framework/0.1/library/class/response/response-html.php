@@ -1693,7 +1693,9 @@
 								//
 								// navigator.geolocation.getCurrentPosition(function(position){console.log(position.coords)});
 
-							header('Feature-Policy: ' . head(json_encode(config::get('output.fp_directives'))));
+							$policies = $this->_build_policy_sources(config::get('output.fp_directives'));
+
+							header('Feature-Policy: ' . head(implode('; ', $policies)));
 
 						}
 
@@ -1726,32 +1728,17 @@
 								$csp['report-uri'] = $report_uri;
 							}
 
-							$domain = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain');
-
-							$output = array();
-							foreach ($csp as $directive => $value) {
-								if ($value !== NULL) {
-									if (is_array($value)) {
-										foreach ($value as $k => $v) {
-											if (prefix_match('/', $v)) {
-												$value[$k] = $domain . $v;
-											}
-										}
-										$value = implode(' ', $value);
-									}
-									$output[] = $directive . ' ' . str_replace('"', "'", $value);
-								}
-							}
+							$csp = $this->_build_policy_sources($csp);
 
 							if (config::get('output.csp_disown_opener', true)) {
-								$output[] = 'disown-opener';
+								$csp[] = 'disown-opener';
 							}
 
 							if (https_only()) {
-								$output[] = 'block-all-mixed-content';
+								$csp[] = 'block-all-mixed-content';
 							}
 
-							header($header . ': ' . head(implode('; ', $output)));
+							header($header . ': ' . head(implode('; ', $csp)));
 
 							if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
 
@@ -1791,6 +1778,36 @@
 
 		//--------------------------------------------------
 		// Support functions
+
+			private function _build_policy_sources($policies) {
+
+				$output = array();
+				$domain = NULL;
+
+				foreach ($policies as $directive => $value) {
+					if ($value !== NULL) {
+						if (is_array($value)) {
+							foreach ($value as $k => $v) {
+								if (prefix_match('/', $v)) {
+									if (!$domain) {
+										$domain = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain');
+									}
+									$value[$k] = $domain . $v;
+								}
+							}
+							$value = implode(' ', $value);
+						}
+						if ($value == '') {
+							$output[] = $directive . " 'none'";
+						} else {
+							$output[] = $directive . ' ' . str_replace('"', "'", $value);
+						}
+					}
+				}
+
+				return $output;
+
+			}
 
 			private function _js_code_save($code, $position = 'foot') { // Don't call directly, use js_code_add()
 

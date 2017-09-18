@@ -271,16 +271,25 @@
 
 		config::set_default('output.fp_enabled', false);
 		config::set_default('output.fp_directives', array(
-				'camera' => array(),
-				'eme' => array(),
-				'fullscreen' => array(),
-				'geolocation' => array(),
-				'microphone' => array(),
-				'midi' => array(),
-				'payment' => array(),
-				'speaker' => array(),
-				'vibrate' => array(),
+				'camera'          => array(),
+				'encrypted-media' => array(),
+				'fullscreen'      => array(),
+				'geolocation'     => array(),
+				'microphone'      => array(),
+				'midi'            => array(),
+				'payment'         => array(),
+				'speaker'         => array(),
+				'usb'             => array(),
+				'vr'              => array(),
+				// 'vibrate'         => array(), // Disabled in Chrome 62 (FeaturePolicyExperimentalFeaturesEnabled)
+				// 'cookie'          => array(),
+				// 'domain'          => array(),
+				// 'docwrite'        => array(),
+				// 'sync-script'     => array(),
+				// 'sync-xhr'        => array(),
 			));
+
+				// https://cs.chromium.org/chromium/src/third_party/WebKit/Source/platform/feature_policy/FeaturePolicy.cpp?type=cs&q=GetDefaultFeatureNameMap&l=206
 
 		config::set_default('output.block_browsers', array(
 				'/MSIE [1-5]\./',
