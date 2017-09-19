@@ -241,6 +241,40 @@
 			}
 
 		//--------------------------------------------------
+		// Setup watch script
+
+			if (SERVER == 'stage') {
+
+				if (preg_match('/.*\/([^\/]+)\/*$/', ROOT, $matches)) {
+					$project = 'com.phpprime.watch.' . safe_file_name($matches[1]);
+				} else {
+					exit_with_error('Could not determine project name from root folder', ROOT);
+				}
+
+				$watch_plist = file_get_contents(FRAMEWORK_ROOT . '/library/cli/watch/watch.plist');
+				$watch_plist = str_replace('[ROOT]', ROOT, $watch_plist);
+				$watch_plist = str_replace('[FRAMEWORK_ROOT]', FRAMEWORK_ROOT, $watch_plist);
+				$watch_plist = str_replace('[PROJECT]', $project, $watch_plist);
+
+				$watch_folder = ROOT . '/private/watch';
+				$watch_path = $watch_folder . '/watch.plist';
+
+				if (!is_dir($watch_folder)) {
+					mkdir($watch_folder, 0755, true); // Writable for user only
+				}
+				file_put_contents($watch_path, $watch_plist);
+
+				if (is_dir(ROOT . '/.git')) {
+					$ignore_path = ROOT . '/private/watch/.gitignore';
+					$ignore_content = 'files.txt' . "\n" . 'log.txt' . "\n";
+					file_put_contents($ignore_path, $ignore_content);
+				}
+
+				echo command_run(FRAMEWORK_ROOT . '/library/cli/watch/install.sh ' . escapeshellarg($project) . ' ' . escapeshellarg($watch_path));
+
+			}
+
+		//--------------------------------------------------
 		// Run install scripts
 
 			$install_path = APP_ROOT . '/library/setup/install.php';

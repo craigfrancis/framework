@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>[PROJECT]</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>[FRAMEWORK_ROOT]/cli/watch.sh</string>
+        <string>[FRAMEWORK_ROOT]</string>
+        <string>[ROOT]</string>
+    </array>
+    <key>WatchPaths</key>
+    <array>
+        <string>[ROOT]/app/</string>
+    </array>
+    <key>ThrottleInterval</key>
+    <integer>1</integer>
+</dict>
+</plist>
