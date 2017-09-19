@@ -75,7 +75,7 @@
 					$file_contents = file_get_contents(ROOT . $path);
 					$file_contents = jsmin::minify($file_contents);
 
-					$file_dest = ROOT . str_replace('/js/', '/js-min/', $path);
+					$file_dest = ROOT . str_replace('/js/', '/min/js/', $path);
 
 					$result = 'Framework JS Min';
 
@@ -89,7 +89,7 @@
 					$file_contents = preg_replace('/^[ \t]+/m', '', $file_contents); // Remove whitespace at the start
 					$file_contents = str_replace(';}', '}', $file_contents); // Remove unnecessary ;'s
 
-					$file_dest = ROOT . str_replace('/css/', '/css-min/', $path);
+					$file_dest = ROOT . str_replace('/css/', '/min/css/', $path);
 
 					$result = 'Framework CSS Min';
 
