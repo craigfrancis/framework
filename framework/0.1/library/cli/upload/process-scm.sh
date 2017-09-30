@@ -129,7 +129,12 @@
 # Check database
 #--------------------------------------------------
 
-	remote_cmd "${CLI_PATH} --diff";
+	echo;
+	echo 'Check database...';
+
+	remote_cmd "${CLI_PATH} --diff" | awk '{ print "    " $0;}';
+
+	echo -e "  \033[1;34mDone\033[0m";
 
 #--------------------------------------------------
 # Clean up
