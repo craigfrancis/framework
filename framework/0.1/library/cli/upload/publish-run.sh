@@ -83,7 +83,7 @@
 
 	if [[ "${KEY}" == 'c' ]]; then
 		rm -rf "${DST_PATH}/upload/";
-		echo '  Canceled';
+		echo 'Canceled';
 		echo;
 		exit 0;
 	fi
