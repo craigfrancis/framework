@@ -90,9 +90,3 @@
 	echo;
 
 	${FRAMEWORK_ROOT}/library/cli/upload/publish-run.sh 'local' "${DST_PATH}";
-
-#--------------------------------------------------
-# Clean up
-#--------------------------------------------------
-
-	echo;
