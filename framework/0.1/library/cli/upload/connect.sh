@@ -25,7 +25,7 @@
 
 	echo "Connecting [${SERVER}] to ${SRC_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${SRC_HOST}";
-	echo -e "  \033[1;34mDone\033[0m";
+	echo -e "  \033[1;34m" . 'Done' . "\033[0m";
 
 	function remote_cmd {
 		ssh -t -o 'LogLevel=QUIET' -S "${SSH_CONTROL}" "${SRC_HOST}" $@;
