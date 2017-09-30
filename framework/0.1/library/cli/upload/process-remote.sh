@@ -29,10 +29,10 @@
 	echo "Connecting [${SERVER}] to ${DST_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${DST_HOST}";
 	if [ "$?" != "0" ]; then
-		echo '  Error';
+		echo -e "  \033[1;31mError\033[0m";
 		exit;
 	else
-		echo '  Done';
+		echo -e "  \033[1;34mDone\033[0m";
 	fi
 
 	function remote_cmd {
@@ -109,7 +109,7 @@
 	remote_scp "${FRAMEWORK_ROOT}/library/cli/upload/publish-run.sh" "${DST_PATH}/upload/publish-run.sh";
 	remote_cmd "chmod 755 ${DST_PATH}/upload/publish-{prep,run}.sh";
 
-	echo '  Done';
+	echo -e "  \033[1;34mDone\033[0m";
 
 #--------------------------------------------------
 # Execute prep script
@@ -138,7 +138,7 @@
 
 	fi
 
-	echo '  Done';
+	echo -e "  \033[1;34mDone\033[0m";
 
 #--------------------------------------------------
 # Execute run script

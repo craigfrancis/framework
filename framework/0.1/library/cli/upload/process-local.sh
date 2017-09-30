@@ -81,7 +81,7 @@
 	rsync --delete -a --exclude=.svn "${SRC_PATH}/httpd/"           "${DST_PATH}/upload/files/httpd/";
 	rsync --delete -a --exclude=.svn "`dirname ${FRAMEWORK_ROOT}`/" "${DST_PATH}/upload/files/framework/";
 
-	echo '  Done';
+	echo -e "  \033[1;34mDone\033[0m";
 
 #--------------------------------------------------
 # Execute run script
