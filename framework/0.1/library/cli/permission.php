@@ -61,7 +61,7 @@
 					command_run('find ' . escapeshellarg($info['path']) . ' -mindepth 1 -type ' . escapeshellarg($info['type']) . ' ! -path \'*/\.*\' -exec chmod ' . escapeshellarg($info['permission']) . ' {} \\; 2>&1', $show_output);
 				} else {
 					if ($show_output) {
-						echo $name . " - \033[1;37m\033[41mMISSING\033[0m\n";
+						echo $name . " - \033[1;37m\033[41m" . 'MISSING' . "\033[0m\n";
 					}
 				}
 			}
@@ -84,7 +84,7 @@
 					command_run('chmod ' . escapeshellarg($info['permission']) . ' ' . escapeshellarg($info['path']) . ' 2>&1', $show_output);
 				} else {
 					if ($show_output) {
-						echo $name . " - \033[1;37m\033[41mMISSING\033[0m\n";
+						echo $name . " - \033[1;37m\033[41m" . 'MISSING' . "\033[0m\n";
 					}
 				}
 			}
