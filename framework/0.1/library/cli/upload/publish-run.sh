@@ -78,7 +78,7 @@
 # Wait until the user is ready
 #--------------------------------------------------
 
-	echo 'Press enter to continue...';
+	echo 'Press [enter] to continue, or [c] to cancel...';
 	read KEY;
 
 	if [[ "${KEY}" == 'c' ]]; then
