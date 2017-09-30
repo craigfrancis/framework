@@ -63,7 +63,9 @@
 		read KEY;
 
 		if [[ "${KEY}" != 'y' ]]; then
-			echo 'Canceled';
+			echo '  Canceled';
+			echo;
+			exit 0;
 			remote_close;
 			exit 0;
 		fi
