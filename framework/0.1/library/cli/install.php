@@ -152,7 +152,7 @@
 							$old = umask(0); // chmod won't work for recursive operation
 							@mkdir($path, 0777, true); // Writable by webserver and user
 							if (!is_dir($path)) {
-								echo '  Cannot create folder: ' . $path . "\n";
+								echo "  \033[1;31mError:\033[0m" . ' Cannot create the folder "' . $path . '"' . "\n";
 							} else {
 								umask($old);
 							}
@@ -203,7 +203,7 @@
 
 				if ($domain == '') {
 
-					echo '  Cannot clear OpCache without "output.domain" config.' . "\n";
+					echo "  \033[1;31mError:\033[0m" . ' Cannot clear OpCache without "output.domain" config.' . "\n";
 
 				} else {
 
