@@ -245,39 +245,60 @@
 
 			if (SERVER == 'stage') {
 
-				if (preg_match('/.*\/([^\/]+)\/*$/', ROOT, $matches)) {
-					$project_safe = 'com.phpprime.watch.' . safe_file_name($matches[1]);
-				} else {
-					exit_with_error('Could not determine project name from root folder', ROOT);
-				}
+				//--------------------------------------------------
+				// Project name (filename safe)
 
-				$watch_plist = file_get_contents(FRAMEWORK_ROOT . '/library/cli/watch/watch.plist');
-				$watch_plist = str_replace('[ROOT]', ROOT, $watch_plist);
-				$watch_plist = str_replace('[FRAMEWORK_ROOT]', FRAMEWORK_ROOT, $watch_plist);
-				$watch_plist = str_replace('[PROJECT]', $project_safe, $watch_plist);
+					if (preg_match('/.*\/([^\/]+)\/*$/', ROOT, $matches)) {
+						$project_safe = 'com.phpprime.watch.' . safe_file_name($matches[1]);
+					} else {
+						exit_with_error('Could not determine project name from root folder', ROOT);
+					}
 
-				$agents_folder = getenv('HOME', true);
-				$agents_folder = ($agents_folder ? $agents_folder : '~') . '/Library/LaunchAgents';
-				if (!is_dir($agents_folder)) {
-					exit_with_error('Cannot find the LaunchAgents folder', $agents_folder);
-				}
-				$agents_path = $agents_folder . '/' . $project_safe . '.plist';
+				//--------------------------------------------------
+				// Watch folder
 
-				$watch_folder = ROOT . '/private/watch';
-				$watch_path = $watch_folder . '/watch.plist';
+					$watch_folder = ROOT . '/private/watch';
+					$watch_path = $watch_folder . '/watch.plist';
 
-				if (!is_dir($watch_folder)) {
-					mkdir($watch_folder, 0755, true); // Writable for user only
-				}
-				file_put_contents($watch_path, $watch_plist);
+					if (!is_dir($watch_folder)) {
+						mkdir($watch_folder, 0755, true); // Writable for user only
+					}
 
-				if (is_dir(ROOT . '/.git')) {
-					$ignore_path = ROOT . '/private/watch/.gitignore';
-					$ignore_content = 'files.txt' . "\n" . 'log.txt' . "\n" . 'watch.plist' . "\n";
-					file_put_contents($ignore_path, $ignore_content);
-				}
+					if (is_dir(ROOT . '/.git')) {
+						$ignore_path = $watch_folder . '/.gitignore';
+						$ignore_content = 'files.txt' . "\n" . 'log.txt' . "\n" . 'watch.plist' . "\n";
+						file_put_contents($ignore_path, $ignore_content);
+					}
 
-				echo command_run(FRAMEWORK_ROOT . '/library/cli/watch/install.sh ' . escapeshellarg($project_safe) . ' ' . escapeshellarg($agents_path) . ' ' . escapeshellarg($watch_path));
+				//--------------------------------------------------
+				// LaunchAgents plist file (cannot be a symlink)
+
+					$agents_plist = file_get_contents(FRAMEWORK_ROOT . '/library/cli/watch/watch.plist');
+					$agents_plist = str_replace('[ROOT]', ROOT, $agents_plist);
+					$agents_plist = str_replace('[FRAMEWORK_ROOT]', FRAMEWORK_ROOT, $agents_plist);
+					$agents_plist = str_replace('[PROJECT]', $project_safe, $agents_plist);
+
+					$agents_folder = getenv('HOME', true);
+					$agents_folder = ($agents_folder ? $agents_folder : '~') . '/Library/LaunchAgents';
+					if (!is_dir($agents_folder)) {
+						exit_with_error('Cannot find the LaunchAgents folder', $agents_folder);
+					}
+					$agents_path = $agents_folder . '/' . $project_safe . '.plist';
+
+					file_put_contents($agents_path, $agents_plist);
+
+				//--------------------------------------------------
+				// Watch symlink (to show where it's installed)
+
+					if (is_file($watch_path) || is_link($watch_path)) {
+						unlink($watch_path);
+					}
+					symlink($agents_path, $watch_path);
+
+				//--------------------------------------------------
+				// Install
+
+					echo command_run(FRAMEWORK_ROOT . '/library/cli/watch/install.sh ' . escapeshellarg($project_safe) . ' ' . escapeshellarg($agents_path));
 
 			}
 
