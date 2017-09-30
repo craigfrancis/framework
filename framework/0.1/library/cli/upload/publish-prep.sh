@@ -19,10 +19,9 @@
 # Ensure all folders exist on live
 #--------------------------------------------------
 
-	echo;
-
 	if [[ ! -d "${DST_PATH}" ]]; then
 		echo "Missing root path: ${DST_PATH}";
+		echo;
 		exit 0;
 	fi
 

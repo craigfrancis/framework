@@ -22,14 +22,16 @@
 
 	if [[ ! -d "${DST_PATH}" ]]; then
 
-		echo;
 		echo "This project is not on '${DST_PATH}', press [y] to continue...";
 		read KEY;
 
 		if [[ "${KEY}" != 'y' ]]; then
-			echo 'Canceled';
+			echo '  Canceled';
+			echo;
 			exit 0;
 		fi
+
+		echo;
 
 	fi
 
@@ -39,7 +41,6 @@
 
 	if [[ -f "${DST_PATH}/upload/block.txt" ]]; then
 
-		echo;
 		echo 'ERROR: An upload block has been created for this project.';
 		echo;
 		echo '--------------------------------';
@@ -74,7 +75,6 @@
 # Upload files
 #--------------------------------------------------
 
-	echo;
 	echo 'Uploading files:';
 
 	rsync --delete -a --exclude=.svn "${SRC_PATH}/app/"             "${DST_PATH}/upload/files/app/";

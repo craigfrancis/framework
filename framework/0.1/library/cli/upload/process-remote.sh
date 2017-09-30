@@ -25,7 +25,6 @@
 
 	SSH_CONTROL='~/.ssh/master-%r@%h:%p';
 
-	echo;
 	echo "Connecting [${SERVER}] to ${DST_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${DST_HOST}";
 	if [ "$?" != "0" ]; then

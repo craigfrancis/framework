@@ -23,7 +23,6 @@
 
 	SSH_CONTROL='~/.ssh/master-%r@%h:%p';
 
-	echo;
 	echo "Connecting [${SERVER}] to ${SRC_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${SRC_HOST}";
 	echo -e "  \033[1;34mDone\033[0m";

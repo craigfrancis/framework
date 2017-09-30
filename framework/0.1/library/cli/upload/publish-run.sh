@@ -22,8 +22,6 @@
 # Checking
 #--------------------------------------------------
 
-	echo;
-
 	cd "${DST_PATH}/upload/files/";
 	rm -f "./cli";
 	ln -s "./framework/0.1/cli/run.sh" "./cli";
