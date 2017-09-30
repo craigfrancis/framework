@@ -60,7 +60,7 @@
 
 							foreach (diff_db($stored_db, dump_db()) as $table_name => $table_details) {
 								if (count($table_details) > 0) {
-									$output .= "  \033[1;31m" . $table_name . ':' . "\033[0m" . "\n";
+									$output .= "\033[1;31m" . $table_name . ':' . "\033[0m" . "\n";
 									foreach ($table_details as $table_detail) {
 										$output .= '  ' . $table_detail . "\n";
 									}
