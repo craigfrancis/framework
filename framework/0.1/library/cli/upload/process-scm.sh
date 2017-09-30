@@ -27,7 +27,7 @@
 
 	echo "Connecting [${SERVER}] to ${DST_HOST}:";
 	ssh -fN -M -S "${SSH_CONTROL}" "${DST_HOST}";
-	echo -e "  \033[1;34m" . 'Done' . "\033[0m";
+	echo -e "  \033[1;34mDone\033[0m";
 
 	function remote_cmd {
 		ssh -t -o 'LogLevel=QUIET' -S "${SSH_CONTROL}" "${DST_HOST}" $@;
@@ -116,7 +116,7 @@
 
 	remote_cmd "${CLI_PATH} --install";
 
-	echo -e "  \033[1;34m" . 'Done' . "\033[0m";
+	echo -e "  \033[1;34mDone\033[0m";
 
 	# USER_OWNER=`remote_cmd "ls -ld '${DST_PATH}' | awk '{print \\\$3}'"`;
 	# USER_NAME=`remote_cmd "whoami"`;
@@ -134,7 +134,7 @@
 
 	remote_cmd "${CLI_PATH} --diff" | awk '{ print "    " $0;}';
 
-	echo -e "  \033[1;34m" . 'Done' . "\033[0m";
+	echo -e "  \033[1;34mDone\033[0m";
 
 #--------------------------------------------------
 # Clean up
