@@ -150,9 +150,9 @@
 						$path = $folder_path . $path;
 						if (!is_dir($path)) {
 							$old = umask(0); // chmod won't work for recursive operation
-							mkdir($path, 0777, true); // Writable by webserver and user
+							@mkdir($path, 0777, true); // Writable by webserver and user
 							if (!is_dir($path)) {
-								echo 'Cannot create folder: ' . $path . "\n";
+								echo '  Cannot create folder: ' . $path . "\n";
 							} else {
 								umask($old);
 							}
