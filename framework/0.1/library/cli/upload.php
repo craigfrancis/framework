@@ -82,7 +82,7 @@
 						} else {
 							$update = 'false';
 						}
-echo "##### process-scm \n";
+
 						upload_exec('process-scm', array(
 								SERVER,
 								ROOT,
@@ -105,7 +105,7 @@ echo "##### process-scm \n";
 				// Upload processing
 
 					if ($config_dst['source'] != SERVER) {
-echo "##### connect \n";
+
 						upload_exec('connect', array(
 								SERVER,
 								$server,
@@ -114,7 +114,7 @@ echo "##### connect \n";
 							));
 
 					} else if ($config_dst['location_host'] == $config_src['location_host']) {
-echo "##### process-local \n";
+
 						upload_exec('process-local', array(
 								FRAMEWORK_ROOT,
 								$config_src['location_path'],
@@ -126,7 +126,7 @@ echo "##### process-local \n";
 						if (!isset($config_dst['method'])) {
 							$config_dst['method'] = 'rsync';
 						}
-echo "##### process-remote \n";
+
 						upload_exec('process-remote', array(
 								SERVER,
 								FRAMEWORK_ROOT,
