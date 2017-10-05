@@ -1,6 +1,6 @@
-test-gif
-test-gif/100x100
-test-gif/original
 test-png
-test-png/100x100
 test-png/original
+test-png/100x100
+test-gif
+test-gif/original
+test-gif/100x100
