@@ -98,12 +98,14 @@
 
 			$shell_scripts = array(
 					FRAMEWORK_ROOT . '/cli/run.sh',
+					FRAMEWORK_ROOT . '/cli/watch.sh',
 					FRAMEWORK_ROOT . '/library/cli/upload/connect.sh',
 					FRAMEWORK_ROOT . '/library/cli/upload/process-local.sh',
 					FRAMEWORK_ROOT . '/library/cli/upload/process-remote.sh',
 					FRAMEWORK_ROOT . '/library/cli/upload/process-scm.sh',
 					FRAMEWORK_ROOT . '/library/cli/upload/publish-prep.sh',
 					FRAMEWORK_ROOT . '/library/cli/upload/publish-run.sh',
+					FRAMEWORK_ROOT . '/library/cli/watch/install.sh',
 					APP_ROOT . '/library/setup/install.sh',
 				);
 
