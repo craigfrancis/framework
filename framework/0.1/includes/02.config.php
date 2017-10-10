@@ -85,7 +85,7 @@
 
 			public static function set_default($variable, $value) {
 				$obj = config::instance_get();
-				if (!isset($obj->store[$variable])) {
+				if (!array_key_exists($variable, $obj->store)) { // Can be set to NULL
 					$obj->store[$variable] = $value;
 				}
 			}
