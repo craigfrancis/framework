@@ -1077,7 +1077,7 @@
 				//--------------------------------------------------
 				// Page title
 
-					$html .= "\n\n\t" . '<title>' . html($this->title_get()) . '</title>';
+					$html .= "\n\n\t" . '<title>' . html($this->title_get()) . '</title>' . "\n";
 
 				//--------------------------------------------------
 				// Favicon
@@ -1085,7 +1085,7 @@
 					$favicon_url = config::get('output.favicon_url');
 
 					if ($favicon_url !== NULL) {
-						$html .= "\n\n\t" . '<link rel="shortcut icon" type="image/x-icon" href="' . html($favicon_url) . '" />';
+						$html .= "\n\t" . '<link rel="shortcut icon" type="image/x-icon" href="' . html($favicon_url) . '" />';
 					}
 
 				//--------------------------------------------------
