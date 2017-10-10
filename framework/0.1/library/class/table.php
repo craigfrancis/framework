@@ -953,6 +953,13 @@
 					$fp = fopen('php://temp', 'r+');
 
 				//--------------------------------------------------
+				// UTF-8 BOM, for Excel
+
+					if ($this->charset_output === NULL || $this->charset_output === 'UTF-8') {
+						fputs($fp, "\xEF\xBB\xBF");
+					}
+
+				//--------------------------------------------------
 				// Headings
 
 					foreach ($this->headings as $row_id => $heading_row) {
