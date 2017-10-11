@@ -968,7 +968,7 @@
 
 						foreach ($heading_row as $heading_info) {
 
-							$csv_output[] = $this->_html_to_text($heading_info['html']);
+							$csv_output[] = $this->csv_cleanup($this->_html_to_text($heading_info['html']));
 
 							for ($k = 1; $k < $heading_info['colspan']; $k++) { // This is faster than ... $row = array_pad(array($heading_info['html']), $heading_info['colspan'], '');
 								$csv_output[] = '';
@@ -989,11 +989,7 @@
 
 						foreach ($this->rows[$row_key]['row']->data as $cell_info) {
 
-							if ($cell_info['text']) {
-								$csv_output[] = $cell_info['text'];
-							} else {
-								$csv_output[] = $this->_html_to_text($cell_info['html']);
-							}
+							$csv_output[] = $this->csv_cleanup($cell_info['text'] ? $cell_info['text'] : $this->_html_to_text($cell_info['html']));
 
 							for ($k = 1; $k < $cell_info['colspan']; $k++) {
 								$csv_output[] = '';
@@ -1010,7 +1006,7 @@
 
 					if (count($this->rows) == 0) {
 
-						fputcsv($fp, array($this->_html_to_text($this->no_records_html)));
+						fputcsv($fp, array($this->csv_cleanup($this->_html_to_text($this->no_records_html))));
 
 					}
 
@@ -1025,7 +1021,7 @@
 
 							foreach ($footer_row as $footer_info) {
 
-								$csv_output[] = $this->_html_to_text($footer_info['html']);
+								$csv_output[] = $this->csv_cleanup($this->_html_to_text($footer_info['html']));
 
 								for ($k = 1; $k < $footer_info['colspan']; $k++) {
 									$csv_output[] = '';
@@ -1036,35 +1032,6 @@
 							fputcsv($fp, $csv_output);
 
 						}
-
-					}
-
-				//--------------------------------------------------
-				// Cleanup
-
-					if (method_exists($this, 'csv_cleanup')) {
-
-							//--------------------------------------------------
-							// Could support filtering to basic ASCII characters:
-							//
-							//   $text = iconv($this->charset_input, 'ASCII//TRANSLIT', $text);
-							//   $text = preg_replace('/[^a-z0-9 \-]/i', '', $text);
-							//
-							// If doing this, make sure `locale -a` lists the
-							// locale in use (e.g. en_GB.UTF-8)
-							//--------------------------------------------------
-
-						rewind($fp);
-
-						$fp_clean = fopen('php://temp', 'r+');
-
-						while (($data = fgetcsv($fp, 0, ',')) !== false) {
-							fputcsv($fp_clean, array_map(array($this, 'csv_cleanup'), $data));
-						}
-
-						fclose($fp);
-
-						$fp = $fp_clean;
 
 					}
 
@@ -1158,6 +1125,29 @@
 					http_download_content($this->csv(), $mime, $file_name, $mode);
 
 			}
+
+			protected function csv_cleanup($value) {
+				if (in_array(substr($value, 0, 1), array('=', '-', '+', '@'))) { // 1,000,000 iterations ~0.12s / with a foreach and strpos or strncmp ~0.32s / using a property for the array, no difference.
+					$value = "'" . $value;
+				}
+				return $value;
+			}
+
+			//--------------------------------------------------
+			// To support filtering to basic ASCII characters:
+			//
+			// 	protected function csv_cleanup($value) {
+			// 		$value = parent::csv_cleanup($value);
+			// 		if ($this->safe_chars) {
+			// 			$value = iconv($this->charset_input, 'ASCII//TRANSLIT', $value);
+			// 			$value = preg_replace('/[^a-z0-9 \-]/i', '', $value);
+			// 		}
+			// 		return $value;
+			// 	}
+			//
+			// If doing this, make sure `locale -a` lists the
+			// locale in use (e.g. en_GB.UTF-8)
+			//--------------------------------------------------
 
 		//--------------------------------------------------
 		// Support functions
