@@ -212,7 +212,7 @@
 						$table_sql = $this->table_sql . ($this->config['table_alias'] === NULL ? '' : ' AS ' . $this->config['table_alias']);
 
 						$fields = $this->config['fields'];
-						if ($this->config['deleted'] && !in_array('deleted', $fields)) {
+						if ($this->config['deleted'] && is_array($fields) && !in_array('deleted', $fields)) {
 							$fields[] = 'deleted';
 						}
 
