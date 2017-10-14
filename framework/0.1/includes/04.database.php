@@ -35,20 +35,7 @@
 		}
 
 		public function escape_match_boolean_all($field, $search) {
-			$search_query = array();
-			foreach (split_words($search) as $word) {
-				$char = substr($word, 0, 1);
-				if ($char == '-' || $char == '+') {
-					$search_query[] = $word;
-				} else {
-					$search_query[] = '+' . $word; // Default to an AND in BOOLEAN MATCH, otherwise it's seen as an OR
-				}
-			}
-			if (count($search_query) > 0) {
-				return 'MATCH (' . $this->escape_field($field) . ') AGAINST ("' . $this->escape(implode(' ', $search_query)) . '" IN BOOLEAN MODE)';
-			} else {
-				return 'false';
-			}
+			return $this->_match_boolean_all($field, $search);
 		}
 
 		public function escape_field($field) {
@@ -65,6 +52,10 @@
 			$val = str_replace('_', '\_', $val);
 			$val = str_replace('%', '\%', $val);
 			$parameters = array_merge($parameters, array_fill(0, $count, array('s', '%' . $val . '%')));
+		}
+
+		public function parameter_match_boolean_all(&$parameters, $field, $search) {
+			return $this->_match_boolean_all($field, $search, $parameters);
 		}
 
 		public function parameter_in(&$parameters, $type, $values) { // $in_sql = $db->parameter_in($parameters, 'i', $ids);
@@ -631,6 +622,29 @@
 
 			return $this->query('DELETE FROM ' . $table_sql . ' WHERE ' . $where_sql);
 
+		}
+
+		private function _match_boolean_all($field, $search, &$parameters = NULL) {
+			$search_query = array();
+			foreach (split_words($search) as $word) {
+				$char = substr($word, 0, 1);
+				if ($char == '-' || $char == '+') {
+					$search_query[] = $word;
+				} else {
+					$search_query[] = '+' . $word; // Default to an AND in BOOLEAN MATCH, otherwise it's seen as an OR
+				}
+			}
+			$search_query = implode(' ', $search_query);
+			if ($search_query) {
+				if ($parameters !== NULL) {
+					$parameters[] = array('s', $search_query);
+					return 'MATCH (' . $this->escape_field($field) . ') AGAINST (? IN BOOLEAN MODE)';
+				} else {
+					return 'MATCH (' . $this->escape_field($field) . ') AGAINST ("' . $this->escape($search_query) . '" IN BOOLEAN MODE)';
+				}
+			} else {
+				return 'false';
+			}
 		}
 
 		public function link_get() {
