@@ -384,18 +384,14 @@
 				// If this field is required, try to get a required
 				// mark of some form
 
-					if ($this->required) {
-
-						$required_mark_html = $this->required_mark_html;
-
-						if ($required_mark_html === NULL) {
+					if ($this->required || $this->required_mark_html !== NULL) {
+						if ($this->required_mark_html !== NULL && $this->required_mark_html !== true) {
+							$required_mark_html = $this->required_mark_html;
+						} else {
 							$required_mark_html = $this->form->required_mark_get_html($required_mark_position);
 						}
-
 					} else {
-
 						$required_mark_html = NULL;
-
 					}
 
 				//--------------------------------------------------
