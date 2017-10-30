@@ -1565,7 +1565,7 @@
 					//--------------------------------------------------
 					// Referrer policy
 
-						$output_referrer_policy = config::get('output.referrer_policy', 'origin-when-cross-origin'); // Chrome 61.0.3130.0 supports "strict-origin-when-cross-origin" (currently Canary).
+						$output_referrer_policy = config::get('output.referrer_policy', 'strict-origin-when-cross-origin'); // Added in Chrome 61.0.3130.0
 
 						if ($output_referrer_policy) {
 							header('Referrer-Policy: ' . head($output_referrer_policy));
