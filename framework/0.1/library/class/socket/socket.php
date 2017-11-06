@@ -12,6 +12,7 @@
 			private $values = array();
 			private $headers = array();
 			private $cookies = array();
+			private $cookies_raw = array();
 			private $login_username = '';
 			private $login_password = '';
 
@@ -44,6 +45,7 @@
 				$this->values = array();
 				$this->headers = array();
 				$this->cookies = array();
+				$this->cookies_raw = array();
 				$this->login_username = '';
 				$this->login_password = '';
 
@@ -69,12 +71,20 @@
 				$this->headers[$name] = $value;
 			}
 
+			public function header_get($name) {
+				return (isset($this->headers[$name]) ? $this->headers[$name] : NULL);
+			}
+
 			public function cookie_set($name, $value) {
 				$this->cookies[$name] = $value;
 			}
 
 			public function cookies_set($cookies) {
 				$this->cookies = $cookies;
+			}
+
+			public function cookies_raw_set($cookies_raw) {
+				$this->cookies_raw = $cookies_raw;
 			}
 
 			public function login_set($username, $password) {
@@ -355,6 +365,10 @@
 
 						foreach ($this->cookies as $name => $value) {
 							$cookies[] = rawurlencode($name) . '=' . rawurlencode($value);
+						}
+
+						foreach ($this->cookies_raw as $name => $value) {
+							$cookies[] = $name . '=' . $value;
 						}
 
 						if (count($cookies) > 0) {

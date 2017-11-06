@@ -17,7 +17,7 @@
 			protected $current_data = NULL;
 			protected $current_code = NULL;
 			protected $current_url = NULL;
-			protected $cookies = array();
+			protected $cookies_raw = array();
 			protected $form = NULL;
 			protected $exit_on_error = true;
 			protected $error_message = NULL;
@@ -40,7 +40,7 @@
 				$this->current_data = NULL;
 				$this->current_code = NULL;
 				$this->current_url = NULL;
-				$this->cookies = array();
+				$this->cookies_raw = array();
 				$this->form = NULL;
 
 				$this->error_message = NULL;
@@ -68,7 +68,75 @@
 			}
 
 			public function cookie_set($name, $value, $domain = NULL, $path = '/') {
-				$this->cookies[$domain][$path][$name] = $value;
+				if ($value === NULL) {
+					unset($this->cookies_raw[$domain][$path][$name]);
+				} else {
+					$this->cookies_raw[$domain][$path][$name] = rawurlencode($value);
+				}
+			}
+
+			public function cookie_get($name, $domain = NULL, $path = '/') {
+				$value = $this->cookie_raw_get($name, $domain, $path);
+				if ($value !== NULL) {
+					$value = urldecode($value);
+				}
+				return $value;
+			}
+
+			public function cookie_raw_get($name, $domain = NULL, $path = '/') {
+				if ($domain !== NULL) {
+					$cookies = $this->cookies_raw_get($domain, $path);
+					if (isset($cookies[$name])) {
+						return $cookies[$name];
+					}
+				} else {
+					foreach ($this->cookies_raw as $domain => $domain_cookies) {
+						foreach ($domain_cookies as $domain_path => $path_cookies) {
+							if (isset($path_cookies[$name])) {
+								return $path_cookies[$name];
+							}
+						}
+					}
+				}
+				return NULL;
+			}
+
+			public function cookies_raw_get($search_domain = NULL, $search_path = '/') {
+
+				if ($search_domain === NULL) {
+
+					return $this->cookies_raw;
+
+				} else {
+
+					$cookies = array();
+
+					foreach ($this->cookies_raw as $domain => $domain_cookies) {
+
+						if ($domain == NULL) { // Not specified domain, include on all requests.
+							$match = true;
+						} else if (substr($domain, 0, 1) == '.') { // So "www.example.com" and "example.com" matches ".example.com"
+							$match = (substr('.' . $search_domain, (0 - strlen($domain))) == $domain);
+						} else {
+							$match = ($domain == $search_domain);
+						}
+
+						if ($match) {
+							foreach ($domain_cookies as $domain_path => $path_cookies) {
+								if (prefix_match($domain_path, $search_path)) {
+									foreach ($path_cookies as $name => $value) {
+										$cookies[$name] = $value;
+									}
+								}
+							}
+						}
+
+					}
+
+					return $cookies;
+
+				}
+
 			}
 
 			public function header_set($name, $value) {
@@ -386,7 +454,11 @@
 					return $this->error('Cannot use the value "' . $value . '" in the select field "' . $name . '" (' . implode('/', array_keys($field['options'])) . ')', $this->current_url);
 				}
 
-				$this->form['fields'][$name]['value'] = $value;
+				if ($value === NULL) {
+					unset($this->form['fields'][$name]);
+				} else {
+					$this->form['fields'][$name]['value'] = $value;
+				}
 
 			}
 
@@ -531,7 +603,16 @@
 				//--------------------------------------------------
 				// Get page
 
+					$k = 0;
+
 					do {
+
+						//--------------------------------------------------
+						// Not too many redirects
+
+							if (++$k >= 10) {
+								return $this->error('Too many redirects (' . $k . ')');
+							}
 
 						//--------------------------------------------------
 						// Check it is a full url
@@ -630,27 +711,15 @@
 						//--------------------------------------------------
 						// Cookies
 
-							$cookies = array();
+							$cookies = $this->cookies_raw_get($url_host, $url_path);
 
-							foreach (array($url_host, NULL) as $domain) { // NULL to match all domains
-								if (isset($this->cookies[$domain])) {
-									foreach ($this->cookies[$domain] as $host_path => $host_cookies) {
-										if (prefix_match($host_path, $url_path)) {
-											foreach ($host_cookies as $name => $value) {
-												$cookies[$name] = $value;
-											}
-										}
-									}
-								}
-							}
-
-							$this->socket->cookies_set($cookies);
+							$this->socket->cookies_raw_set($cookies);
 
 						//--------------------------------------------------
 						// Debug
 
 							if ($this->debug) {
-								debug(array('url' => $url, 'method' => $method, 'data' => $data, 'cookies' => $cookies));
+								debug(array('url' => $url, 'method' => $method, 'data' => $data, 'cookies' => $cookies, 'referrer' => $this->socket->header_get('Referer')));
 							}
 
 						//--------------------------------------------------
@@ -685,7 +754,9 @@
 							$this->current_data = $this->socket->response_data_get();
 							$this->current_code = $this->socket->response_code_get();
 
-							$this->socket->header_set('Referer', $url);
+							// if ($this->debug) {
+							// 	debug($this->socket->response_full_get());
+							// }
 
 						//--------------------------------------------------
 						// Accept encoding
@@ -712,17 +783,36 @@
 						// Cookies
 
 							foreach ($this->socket->response_header_get_all('Set-Cookie') as $header_cookie) {
-								if (preg_match('/^([^=]+)=([^;\n]+)([^\n]*?path=([^;\n]+))?/i', $header_cookie, $matches)) {
+								if (preg_match('/^([^=]+)=([^;\n]*)(;[^\n]*)?/i', $header_cookie, $matches)) {
 
-									$path = (isset($matches[4]) ? $matches[4] : '/');
+									$cookie_name = trim($matches[1]);
+									$cookie_value = trim($matches[2]);
+									$cookie_attributes = array();
 
-									$this->cookies[$url_host][$path][$matches[1]] = urldecode($matches[2]);
+									if (isset($matches[3])) {
+										foreach (explode(';', $matches[3]) as $attribute) {
+											if (preg_match('/^([^=]+)=([^;\n]*)/', $attribute, $matches)) {
+												$cookie_attributes[strtolower(trim($matches[1]))] = trim($matches[2]);
+											}
+										}
+									}
+
+									$domain = (isset($cookie_attributes['domain']) ? $cookie_attributes['domain'] : $url_host);
+									$path = (isset($cookie_attributes['path']) ? $cookie_attributes['path'] : '/');
+
+									$expired = false;
+									if (isset($cookie_attributes['expires']) && strtotime($cookie_attributes['expires']) < time()) $expired = true;
+									if (isset($cookie_attributes['max-age']) && $cookie_attributes['max-age'] <= 0) $expired = true;
+
+									if (!$expired) {
+										$this->cookies_raw[$domain][$path][$cookie_name] = $cookie_value;
+									}
 
 								}
 							}
 
-							if (isset($this->cookies[$url_host])) {
-								ksort($this->cookies[$url_host]); // If there are two cookies with the same name, one for "/" and one for "/path/", the latter should take precedence.
+							if (isset($this->cookies_raw[$url_host])) {
+								ksort($this->cookies_raw[$url_host]); // If there are two cookies with the same name, one for "/" and one for "/path/", the latter should take precedence.
 							}
 
 						//--------------------------------------------------
@@ -732,6 +822,11 @@
 							$data = '';
 
 					} while (($url = $this->socket->response_header_get('Location')) !== NULL);
+
+				//--------------------------------------------------
+				// Referrer
+
+					$this->socket->header_set('Referer', $this->current_url);
 
 				//--------------------------------------------------
 				// Success
