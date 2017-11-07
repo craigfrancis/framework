@@ -10,6 +10,7 @@
 		// Variables
 
 			protected $table_id = NULL;
+			protected $wrapper_class = NULL;
 			protected $caption_text = NULL;
 			protected $caption_html = NULL;
 			protected $headings = array();
@@ -86,6 +87,10 @@
 
 			public function id_set($id) {
 				$this->id_value = $id;
+			}
+
+			public function wrapper_class_set($class) {
+				$this->wrapper_class = $class;
 			}
 
 			public function caption_set($caption) {
@@ -431,21 +436,27 @@
 
 					$col_class = array();
 					$col_count = 0;
+					$output_html = '';
 
-						// Yes, the @roles are not really necessary, but still required
-						// to validate, and begrudgingly show screen readers we are
-						// not using the table for layout purposes.
-						// https://stackoverflow.com/q/24863531
+					if ($this->caption_text || $this->caption_html) {
+						$caption_id = 'table_' . $this->table_id . '_caption';
+					} else {
+						$caption_id = NULL;
+					}
 
-					$output_html = '
+					if ($this->wrapper_class) {
+						$output_html .= "\n\t\t\t\t\t" . '<div class="' . html($this->wrapper_class) . '" role="region" tabindex="0"' . ($caption_id ? ' aria-labelledby="' . html($caption_id) . '"' : ' aria-label="Table ' . html($this->table_id) . '"') . '>';
+					}
+
+					$output_html .= '
 						<table' . ($this->id_value != '' ? ' id="' . html($this->id_value) . '"' : '') . ($this->class_name != '' ? ' class="' . html($this->class_name) . '"' : '') . '>';
 
 					if ($this->caption_text) {
 						$output_html .= '
-							<caption>' . html($this->caption_text) . '</caption>';
+							<caption id="' . html($caption_id) . '">' . html($this->caption_text) . '</caption>';
 					} else if ($this->caption_html) {
 						$output_html .= '
-							<caption>' . $this->caption_html . '</caption>';
+							<caption id="' . html($caption_id) . '">' . $this->caption_html . '</caption>';
 					}
 
 					$output_html .= '
@@ -783,6 +794,10 @@
 					$output_html .= '
 							</tbody>
 						</table>';
+
+					if ($this->wrapper_class) {
+						$output_html .= "\n\t\t\t\t\t" . '</div>';
+					}
 
 				//--------------------------------------------------
 				// Return

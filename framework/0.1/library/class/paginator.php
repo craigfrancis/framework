@@ -36,7 +36,7 @@
 							'mode' => 'link', // or 'form', or 'form_redirect'
 							'variable' => 'page',
 							'elements' => array('<p class="pagination" role="navigation">', 'hidden', 'first', 'back', 'links', 'next', 'last', 'extra', '</p>' . "\n"),
-							'indent_html' => "\n\t\t\t\t",
+							'indent_html' => "\n\t\t\t\t\t",
 							'first_html' => NULL,
 							'back_html' => '<span aria-label="Previous page">[«]</span>',
 							'next_html' => '<span aria-label="Next page">[»]</span>',
