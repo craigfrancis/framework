@@ -4,6 +4,15 @@
 // http://www.phpprime.com/doc/helpers/table/
 //--------------------------------------------------
 
+		//--------------------------------------------------
+		// Use the following RegExp to check every "new table()" sets the following attributes:
+		// - caption_set
+		// - wrapper_class_set(table_wrapper...)
+		// - class_set(...duplicate_caption...)
+		//
+		//  new table\(\);(?!\n(\s|/)+\$[^-]+->caption_set\([^\n]+?\);\n(\s|/)+\$[^-]+->wrapper_class_set\('table_wrapper[^']*'\);\n(\s|/)+\$[^-]+->class_set\([^\n]+\bduplicate_caption\b[^\n]+;)
+		//--------------------------------------------------
+
 	class table_base extends check {
 
 		//--------------------------------------------------
