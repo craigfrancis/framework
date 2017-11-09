@@ -1730,9 +1730,9 @@
 
 							$csp = $this->_build_policy_sources($csp);
 
-							if (config::get('output.csp_disown_opener', true)) {
-								$csp[] = 'disown-opener';
-							}
+							// if (config::get('output.csp_disown_opener', true)) {
+							// 	$csp[] = 'disown-opener';
+							// }
 
 							if (https_only()) {
 								$csp[] = 'block-all-mixed-content';
