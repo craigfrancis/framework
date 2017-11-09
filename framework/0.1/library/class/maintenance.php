@@ -433,7 +433,7 @@
 			protected function error_harmless($error = NULL) {
 				if ($error !== NULL) {
 
-					report_add($error, 'error');
+					report_add($error, 'notice');
 
 					$this->error_type = 'Harmless';
 					$this->error_message = $error;
