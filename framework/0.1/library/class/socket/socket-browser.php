@@ -20,6 +20,7 @@
 			protected $cookies_raw = array();
 			protected $form = NULL;
 			protected $exit_on_error = true;
+			protected $error_function = NULL;
 			protected $error_message = NULL;
 			protected $error_details = NULL;
 
@@ -150,6 +151,10 @@
 				$this->exit_on_error = $exit_on_error;
 			}
 
+			public function error_function_set($function) {
+				$this->error_function = $function;
+			}
+
 			public function error_message_get() {
 				return $this->error_message;
 			}
@@ -159,13 +164,18 @@
 			}
 
 			private function error($message, $hidden_info = NULL) {
-				if ($this->exit_on_error) {
+
+				$this->error_message = $message;
+				$this->error_details = $hidden_info;
+
+				if ($this->error_function !== NULL) {
+					return call_user_func($this->error_function, $message, $hidden_info);
+				} else if ($this->exit_on_error) {
 					exit_with_error($message, $hidden_info);
 				} else {
-					$this->error_message = $message;
-					$this->error_details = $hidden_info;
+					return false;
 				}
-				return false;
+
 			}
 
 		//--------------------------------------------------

@@ -26,6 +26,7 @@
 			private $response_data = '';
 
 			private $exit_on_error = true;
+			private $error_function = NULL;
 			private $error_message = NULL;
 			private $error_details = NULL;
 			private $error_connect = array();
@@ -103,6 +104,10 @@
 				$this->exit_on_error = $exit_on_error;
 			}
 
+			public function error_function_set($function) {
+				$this->error_function = $function;
+			}
+
 			public function error_message_get() {
 				return $this->error_message;
 			}
@@ -112,13 +117,18 @@
 			}
 
 			private function error($message, $hidden_info = NULL) {
-				if ($this->exit_on_error) {
+
+				$this->error_message = $message;
+				$this->error_details = $hidden_info;
+
+				if ($this->error_function !== NULL) {
+					return call_user_func($this->error_function, $message, $hidden_info);
+				} else if ($this->exit_on_error) {
 					exit_with_error($message, $hidden_info);
 				} else {
-					$this->error_message = $message;
-					$this->error_details = $hidden_info;
+					return false;
 				}
-				return false;
+
 			}
 
 			private function error_connect($err_no, $err_str, $err_file, $err_line, $err_context) {
