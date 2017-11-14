@@ -251,10 +251,12 @@
 
 				$nodes = $this->nodes_get($query);
 
-				if ($nodes->length == 1) {
-					return $nodes->item(0);
-				} else {
+				if ($nodes === false) {
+					return false; // Error already called (no content returned).
+				} else if ($nodes->length != 1) {
 					return $this->error('There were ' . $nodes->length . ' nodes with the XPath "' . $query . '"', $this->current_url);
+				} else {
+					return $nodes->item(0);
 				}
 
 			}
@@ -311,6 +313,10 @@
 
 					$link_node = $this->node_get($xpath);
 
+					if ($link_node === false) {
+						return false; // Error already called (no content returned).
+					}
+
 				//--------------------------------------------------
 				// Return
 
@@ -337,6 +343,15 @@
 					}
 
 					$form_node = $this->node_get($query);
+
+					if ($form_node === false) {
+
+						$this->form = false; // This function has been called, but it didn't work.
+
+						return false; // Error already called (no content returned).
+
+					}
+
 					$form_dom = $this->_node_as_dom($form_node);
 
 				//--------------------------------------------------
@@ -460,8 +475,14 @@
 
 				$field = $this->_form_field_get($name);
 
-				if ($field['type'] == 'select' && !isset($field['options'][$value])) {
+				if ($field === false) {
+
+					return $this->error('The field "' . $name . '" does not exist', $this->current_url);
+
+				} else if ($field['type'] == 'select' && !isset($field['options'][$value])) {
+
 					return $this->error('Cannot use the value "' . $value . '" in the select field "' . $name . '" (' . implode('/', array_keys($field['options'])) . ')', $this->current_url);
+
 				}
 
 				if ($value === NULL) {
@@ -476,10 +497,12 @@
 
 				$field = $this->_form_field_get($name);
 
-				if ($field['type'] == 'select') {
-					return $field['options'];
-				} else {
+				if ($field === false) {
+					return $this->error('The field "' . $name . '" does not exist', $this->current_url);
+				} else if ($field['type'] != 'select') {
 					return $this->error('The field "' . $name . '" is not a select field', $this->current_url);
+				} else {
+					return $field['options'];
 				}
 
 			}
@@ -487,22 +510,32 @@
 			private function _form_field_get($name) {
 
 				if ($this->form === NULL) {
+
 					exit_with_error('Cannot set the form field "' . $name . '" until you have called form_select()', $this->current_url);
-				}
 
-				if (!isset($this->form['fields'][$name])) {
-					return $this->error('Cannot find the form field "' . $name . '"', $this->current_url);
-				}
+				} else if ($this->form === false) {
 
-				return $this->form['fields'][$name];
+					return false;
+
+				} else {
+
+					if (!isset($this->form['fields'][$name])) {
+						return $this->error('Cannot find the form field "' . $name . '"', $this->current_url);
+					}
+
+					return $this->form['fields'][$name];
+
+				}
 
 			}
 
 			public function form_fields_get() {
 				$fields = array();
-				foreach ($this->form['fields'] as $name => $info) {
-					if ($info['value'] !== NULL) { // Removed value, e.g. a checkbox
-						$fields[$name] = $info['value'];
+				if ($this->form) {
+					foreach ($this->form['fields'] as $name => $info) {
+						if ($info['value'] !== NULL) { // Removed value, e.g. a checkbox
+							$fields[$name] = $info['value'];
+						}
 					}
 				}
 				return $fields;
@@ -515,6 +548,8 @@
 
 					if ($this->form === NULL) {
 						exit_with_error('Cannot submit the form until you have called form_select()', $this->current_url);
+					} else if ($this->form === false) {
+						return $this->error('A form was not found with form_select(), so cannot be submitted', $this->current_url);
 					}
 
 				//--------------------------------------------------
