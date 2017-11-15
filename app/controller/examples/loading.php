@@ -32,13 +32,16 @@
 
 					if ($form->valid()) {
 
-						sleep(3);
+						sleep(2);
 
 						$loading->update('Updating');
 
-						sleep(5);
+						sleep(2);
 
-						$loading->done();
+						// $loading->done();
+
+						$loading->done(url(array('done' => time())));
+
 						exit();
 
 					}
