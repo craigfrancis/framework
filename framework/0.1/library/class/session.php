@@ -149,6 +149,7 @@
 					$ignore_errors = (headers_sent() && config::get('session.started') === true);
 
 					if ($ignore_errors) {
+						session_cache_limiter(''); // The session has been opened before (headers sent), where "setting the cache limiter to '' will turn off automatic sending of cache headers"
 						$error_reporting = error_reporting(0); // Don't show warnings about headers, which happens in 'loading' helper.
 					}
 
@@ -196,7 +197,7 @@
 
 							session::set('session.key', $config_key);
 
-							$send_cookie = false;
+							$send_cookie = false; // Regenerate would have sent the cookie.
 
 						} else {
 
@@ -236,7 +237,7 @@
 
 								session::regenerate();
 
-								$send_cookie = false;
+								$send_cookie = false; // Regenerate would have sent the cookie.
 
 							}
 
