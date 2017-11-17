@@ -713,7 +713,7 @@
 
 			if ($charset === NULL) {
 				if (config::get('output.charset') == 'UTF-8') {
-					$charset = 'utf8'; // Maybe one day change to utf8mb4?
+					$charset = 'utf8mb4';
 				} else if (config::get('output.charset') == 'ISO-8859-1') {
 					$charset = 'latin1';
 				}

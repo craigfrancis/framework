@@ -32,9 +32,9 @@
 			// $config['db.setup'] = array(
 			// 		'image' => array(
 			// 				'engine' => 'MyISAM',
-			// 				'collation' => 'utf8_unicode_ci',
+			// 				'collation' => 'utf8mb4_unicode_ci',
 			// 				'fields' => array(
-			// 						'ref' => array('collation' => 'utf8_bin'),
+			// 						'ref' => array('collation' => 'utf8mb4_bin'),
 			// 					),
 			// 			),
 			// 	);
