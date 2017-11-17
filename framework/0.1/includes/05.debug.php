@@ -18,14 +18,14 @@
 //--------------------------------------------------
 // Error reporting
 
-	function report_add($message, $type = 'notice') {
+	function report_add($message, $type = 'notice', $send_email = true) {
 
 		//--------------------------------------------------
 		// Send an email to the admin, if necessary
 
 			$error_email = config::get('email.error');
 
-			if (($type == 'error' || $type == 'notice') && $error_email !== NULL) {
+			if ($send_email && ($type == 'error' || $type == 'notice') && $error_email !== NULL) {
 
 				$email_values = config::get('debug.values', array());
 				$email_values = array_merge($email_values, array('Message' => $message));

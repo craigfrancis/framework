@@ -421,7 +421,7 @@
 				$this->halt_maintenance_run = true;
 				if ($error !== NULL) {
 
-					report_add($error, 'error');
+					report_add($error, 'error', false); // Don't send the email, will be done later
 
 					$this->error_type = 'Fatal';
 					$this->error_message = $error;
@@ -433,7 +433,7 @@
 			protected function error_harmless($error = NULL) {
 				if ($error !== NULL) {
 
-					report_add($error, 'notice');
+					report_add($error, 'notice', false); // Don't send the email, will be done later
 
 					$this->error_type = 'Harmless';
 					$this->error_message = $error;
@@ -497,6 +497,8 @@
 				//--------------------------------------------------
 				// Object mode support
 
+					$error = false;
+
 					if (class_exists($job_object)) {
 
 						//--------------------------------------------------
@@ -533,7 +535,7 @@
 							$job_output_html = ob_get_clean() . $job_output_html;
 
 						//--------------------------------------------------
-						// Error, if it hasn't been printed already.
+						// Error
 
 							$error = $job->error_get();
 							if ($error) {
@@ -543,7 +545,7 @@
 								$error_text = $error_type . "\n" . ' ' . $error[1] . "\n\n";
 								$error_html = '<p class="error"><strong>' . html($error_type) . '</strong><br />' . html($error[1]) . '</p>' . "\n\n";
 
-								if (REQUEST_MODE == 'cli' && config::get('debug.level') > 0) {
+								if (REQUEST_MODE == 'cli' && config::get('debug.level') > 0) { // Only run from the CLI, in Debug mode.
 									if (config::get('output.mime') == 'text/plain') {
 										echo $error_text;
 									} else {
@@ -581,7 +583,7 @@
 				//--------------------------------------------------
 				// Send
 
-					if ($this->run_id !== NULL && $this->halt_maintenance_run === false && $job_output_html != '') {
+					if ($this->run_id !== NULL && $job_output_html != '') {
 
 						if (isset($email_addresses[SERVER])) {
 							$email_addresses = $email_addresses[SERVER];
@@ -598,7 +600,7 @@
 				//--------------------------------------------------
 				// Log
 
-					if ($this->run_id !== NULL && $this->halt_maintenance_run === false) {
+					if ($this->run_id !== NULL && !$error) { // We only record successes, report_add() handles the errors.
 
 						$db = db_get();
 
