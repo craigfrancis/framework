@@ -327,7 +327,7 @@
 
 				$realpath = realpath($path);
 
-				if (prefix_match(PUBLIC_ROOT, $realpath) && is_file($realpath)) {
+				if (prefix_match(ASSET_ROOT, $realpath) && is_file($realpath)) { // Must be in the assets folder.
 
 					if (!is_readable($realpath)) {
 						exit_with_error('Cannot access: ' . str_replace(PUBLIC_ROOT, '', $realpath));
@@ -405,23 +405,37 @@
 							}
 
 							$files_contents = '';
+							$files_minified = NULL;
 							foreach ($files_realpath as $realpath) {
-								$files_contents .= file_get_contents($realpath) . "\n";
+								$min_path = prefix_replace(ASSET_ROOT, ASSET_ROOT . '/min', $realpath);
+								if (is_file($min_path)) {
+									$files_contents .= file_get_contents($min_path) . "\n";
+									if ($files_minified === NULL) {
+										$files_minified = true;
+									}
+								} else {
+									$files_contents .= file_get_contents($realpath) . "\n";
+									if ($files_minified === NULL) {
+										$files_minified = false;
+									}
+								}
 							}
 
-							if ($route_ext == 'js') {
+							if ($files_minified !== true) {
+								if ($route_ext == 'js') {
 
-								$files_contents = jsmin::minify($files_contents);
+									$files_contents = jsmin::minify($files_contents);
 
-							} else {
+								} else {
 
-								// https://stackoverflow.com/a/1379487/6632
+									// https://stackoverflow.com/a/1379487/6632
 
-								$files_contents = preg_replace('#/\*.*?\*/#s', '', $files_contents); // Remove comments
-								$files_contents = preg_replace('/[ \t]*([{}|:;,])[ \t]+/', '$1', $files_contents); // Remove whitespace (keeping newlines)
-								$files_contents = preg_replace('/^[ \t]+/m', '', $files_contents); // Remove whitespace at the start
-								$files_contents = str_replace(';}', '}', $files_contents); // Remove unnecessary ;'s
+									$files_contents = preg_replace('#/\*.*?\*/#s', '', $files_contents); // Remove comments
+									$files_contents = preg_replace('/[ \t]*([{}|:;,])[ \t]+/', '$1', $files_contents); // Remove whitespace (keeping newlines)
+									$files_contents = preg_replace('/^[ \t]+/m', '', $files_contents); // Remove whitespace at the start
+									$files_contents = str_replace(';}', '}', $files_contents); // Remove unnecessary ;'s
 
+								}
 							}
 
 							file_put_contents($cache_file_time, $files_contents);
