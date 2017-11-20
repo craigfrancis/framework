@@ -1721,28 +1721,22 @@
 							}
 
 							$report_uri = config::get('output.csp_report', false);
-							$report_sample = false;
 							if (($report_uri || !$enforced) && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
 								if ($report_uri === true) {
 									$report_uri = gateway_url('csp-report');
 								}
 								$csp['report-uri'] = $report_uri;
-								$report_sample = true;
 							}
 
 							$csp = $this->_build_policy_sources($csp);
 
-							if ($report_sample) {
-								$csp[] = 'report-sample';
-							}
+							// if (config::get('output.csp_disown_opener', true)) {
+							// 	$csp[] = 'disown-opener';
+							// }
 
 							if (https_only()) {
 								$csp[] = 'block-all-mixed-content';
 							}
-
-							// if (config::get('output.csp_disown_opener', true)) {
-							// 	$csp[] = 'disown-opener';
-							// }
 
 							header($header . ': ' . head(implode('; ', $csp)));
 
