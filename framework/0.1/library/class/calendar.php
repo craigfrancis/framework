@@ -380,9 +380,14 @@
 				//--------------------------------------------------
 				// HTML
 
+						// Previous and Next links go first, for smaller screens
+						// where you want to float left/right, then have the
+						// select field below.
+
 					$html = '
 						<div class="week_select">
 							<div class="prev"><a href="' . html($back_link_url) . '">&#171; <em>' . html($back_link_text) . '</em></a></div>
+							<div class="next"><a href="' . html($next_link_url) . '"><em>' . html($next_link_text) . '</em> &#187;</a></div>
 							<div class="select">
 
 								<label for="calendar_unit">' . html($select_unit_label) . ':</label>
@@ -410,7 +415,6 @@
 								<input type="submit" value="Go" />
 
 							</div>
-							<div class="next"><a href="' . html($next_link_url) . '"><em>' . html($next_link_text) . '</em> &#187;</a></div>
 						</div>';
 
 				//--------------------------------------------------
