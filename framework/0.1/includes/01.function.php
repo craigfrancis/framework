@@ -262,47 +262,6 @@
 		}
 
 	//--------------------------------------------------
-	// Extra "to human" functions
-
-		function format_bytes($size) { // like format_currency(), format_postcode(), format_telephone_number() ... and number_format(), date_format(), money_format()
-
-			$units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
-			foreach ($units as $unit) {
-				if ($size >= 1024 && $unit != 'YB') {
-					$size = ($size / 1024);
-				} else {
-					return round($size, 0) . $unit;
-				}
-			}
-
-		}
-
-		function parse_bytes($size) { // Like parse_url(), parse_str(), date_parse(), xml_parse()... inspired by the function get_real_size(), from Moodle (http://moodle.org) by Martin Dougiamas
-
-			$size = trim($size);
-
-			if (strtoupper(substr($size, -1)) == 'B') {
-				$size = substr($size, 0, -1); // Drop the B, as in 10B or 10KB
-			}
-
-			$units = array(
-					'P' => 1125899906842624,
-					'T' => 1099511627776,
-					'G' => 1073741824,
-					'M' => 1048576,
-					'K' => 1024,
-				);
-
-			$unit = strtoupper(substr($size, -1));
-			if (isset($units[$unit])) {
-				$size = (substr($size, 0, -1) * $units[$unit]);
-			}
-
-			return intval($size);
-
-		}
-
-	//--------------------------------------------------
 	// Timestamp to human
 
 		function timestamp_to_human($input_seconds, $accuracy = 0) {
@@ -535,6 +494,50 @@
 		// 	echo ($number === NULL ? 'NULL' : '"' . $number . '"') . ' = ' . ($result === NULL ? 'NULL' : $result) . '<br />' . "\n";
 		// }
 		// exit();
+
+//--------------------------------------------------
+// Parse bytes
+
+	function parse_bytes($size) { // Like parse_number() ... and parse_url(), parse_str(), date_parse(), xml_parse() - inspired by the function get_real_size(), from Moodle (http://moodle.org) by Martin Dougiamas
+
+		$size = trim($size);
+
+		if (strtoupper(substr($size, -1)) == 'B') {
+			$size = substr($size, 0, -1); // Drop the B, as in 10B or 10KB
+		}
+
+		$units = array(
+				'P' => 1125899906842624,
+				'T' => 1099511627776,
+				'G' => 1073741824,
+				'M' => 1048576,
+				'K' => 1024,
+			);
+
+		$unit = strtoupper(substr($size, -1));
+		if (isset($units[$unit])) {
+			$size = (substr($size, 0, -1) * $units[$unit]);
+		}
+
+		return intval($size);
+
+	}
+
+//--------------------------------------------------
+// Format bytes
+
+	function format_bytes($size) { // like format_currency(), format_postcode(), format_telephone_number() ... and number_format(), date_format(), money_format()
+
+		$units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+		foreach ($units as $unit) {
+			if ($size >= 1024 && $unit != 'YB') {
+				$size = ($size / 1024);
+			} else {
+				return round($size, 0) . $unit;
+			}
+		}
+
+	}
 
 //--------------------------------------------------
 // Format currency

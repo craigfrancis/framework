@@ -189,12 +189,21 @@ These are the main text based conversion functions, the results of which can be 
 
 And the other conversion functions:
 
-	format_bytes($size); // 261512 = 255KB
-	parse_bytes($size); // 255KB = 261120
-
 	timestamp_to_human($input_seconds);
 		// timestamp_to_human(235);
 		// '3 minutes, and 55 seconds'
+
+	parse_number($number);
+		// parse_number('#7,000.01');
+		// 7000.01
+
+	parse_bytes($size);
+		// parse_bytes('255KB');
+		// 261120
+
+	format_bytes($size);
+		// format_bytes(261512);
+		// 255KB
 
 	format_currency($value, $currency_char, $decimal_places);
 		// output.currency_char = '£'
