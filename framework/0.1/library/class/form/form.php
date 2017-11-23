@@ -751,7 +751,7 @@
 						}
 					} else if ($field_type == 'file' || $field_type == 'image') {
 						if ($field->uploaded()) {
-							$value = $field->file_name_get() . ' (' . file_size_to_human($field->file_size_get()) . ')';
+							$value = $field->file_name_get() . ' (' . format_bytes($field->file_size_get()) . ')';
 						} else {
 							$value = 'N/A';
 						}

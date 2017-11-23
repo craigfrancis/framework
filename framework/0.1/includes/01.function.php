@@ -264,7 +264,7 @@
 	//--------------------------------------------------
 	// Extra "to human" functions
 
-		function file_size_to_human($size) {
+		function format_bytes($size) { // like format_currency(), format_postcode(), format_telephone_number() ... and number_format(), date_format(), money_format()
 
 			$units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
 			foreach ($units as $unit) {
@@ -277,7 +277,7 @@
 
 		}
 
-		function file_size_to_bytes($size) { // Inspired by the function get_real_size(), from Moodle (http://moodle.org) by Martin Dougiamas
+		function parse_bytes($size) { // Like parse_url(), parse_str(), date_parse(), xml_parse()... inspired by the function get_real_size(), from Moodle (http://moodle.org) by Martin Dougiamas
 
 			$size = trim($size);
 
@@ -301,6 +301,9 @@
 			return intval($size);
 
 		}
+
+	//--------------------------------------------------
+	// Timestamp to human
 
 		function timestamp_to_human($input_seconds, $accuracy = 0) {
 
@@ -469,6 +472,14 @@
 	if (!function_exists('http_response_code')) require_once(FRAMEWORK_ROOT . '/library/function/http-response-code.php'); // 5.4+
 	if (!function_exists('array_column'))       require_once(FRAMEWORK_ROOT . '/library/function/array-column.php'); // 5.5+
 	if (!function_exists('random_bytes'))       require_once(FRAMEWORK_ROOT . '/library/function/random-bytes.php'); // 7.0+
+
+	function file_size_to_human($size) {
+		return format_bytes($size);
+	}
+
+	function file_size_to_bytes($size) {
+		return parse_bytes($size);
+	}
 
 //--------------------------------------------------
 // Check that an email address is valid

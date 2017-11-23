@@ -281,7 +281,7 @@
 						if ($server_max == 0 || $size <= $server_max) {
 							$this->max_size = intval($size);
 						} else {
-							exit_with_error('The maximum file size the server accepts is "' . file_size_to_human($server_max) . '" (' . $server_max . '), not "' . file_size_to_human($size) . '" (' . $size . ')', 'upload_max_filesize = ' . ini_get('upload_max_filesize') . "\n" . 'post_max_size = ' . ini_get('post_max_size'));
+							exit_with_error('The maximum file size the server accepts is "' . format_bytes($server_max) . '" (' . $server_max . '), not "' . format_bytes($size) . '" (' . $size . ')', 'upload_max_filesize = ' . ini_get('upload_max_filesize') . "\n" . 'post_max_size = ' . ini_get('post_max_size'));
 						}
 					}
 
@@ -290,7 +290,7 @@
 
 					if ($this->uploaded) {
 
-						$error_html = str_replace('XXX', file_size_to_human($this->max_size), $error_html);
+						$error_html = str_replace('XXX', format_bytes($this->max_size), $error_html);
 
 						foreach ($this->files as $id => $file) {
 
@@ -325,7 +325,7 @@
 
 						if ($limit = ini_get($ini)) {
 
-							$limit = file_size_to_bytes($limit);
+							$limit = parse_bytes($limit);
 
 							if (($limit > 0) && ($size == 0 || $size > $limit)) {
 								$size = $limit;

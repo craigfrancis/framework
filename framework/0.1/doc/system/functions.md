@@ -189,8 +189,8 @@ These are the main text based conversion functions, the results of which can be 
 
 And the other conversion functions:
 
-	file_size_to_human($size); // 261512 = 255KB
-	file_size_to_bytes($size); // 255KB = 261120
+	format_bytes($size); // 261512 = 255KB
+	parse_bytes($size); // 255KB = 261120
 
 	timestamp_to_human($input_seconds);
 		// timestamp_to_human(235);
