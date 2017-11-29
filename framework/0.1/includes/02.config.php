@@ -408,6 +408,12 @@
 	setlocale(LC_ALL, str_replace('-', '_', config::get('output.lang')) . '.' . config::get('output.charset'));
 
 //--------------------------------------------------
+// Extra protection against XXE - not that anyone
+// should be using LIBXML_NOENT.
+
+	libxml_disable_entity_loader(true);
+
+//--------------------------------------------------
 // Extra
 
 	if (!defined('JSON_PRETTY_PRINT')) {

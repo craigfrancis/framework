@@ -168,7 +168,8 @@
 				//--------------------------------------------------
 				// New
 
-					$xml = simplexml_load_file('https://www.devcf.com/a/api/holidays/');
+					$xml = file_get_contents('https://www.devcf.com/a/api/holidays/');
+					$xml = simplexml_load_string($xml); // simplexml_load_file is blocked by libxml_disable_entity_loader()
 
 					$holidays = array();
 					$earliest = NULL;
