@@ -1151,10 +1151,15 @@
 			}
 
 			protected function csv_cleanup($value) {
-				if (in_array(substr($value, 0, 1), array('=', '-', '+', '@'))) { // 1,000,000 iterations ~0.12s / with a foreach and strpos or strncmp ~0.32s / using a property for the array, no difference.
+
+				// if (in_array(substr($value, 0, 1), array('=', '-', '+', '@'))) { // 1,000,000 iterations ~0.12s / with a foreach and strpos or strncmp ~0.32s / using a property for the array, no difference.
+
+				if (substr($value, 0, 1) == '=') { // Apple Numbers still shows the single quote for "'-£1"
 					$value = "'" . $value;
 				}
+
 				return $value;
+
 			}
 
 			//--------------------------------------------------
