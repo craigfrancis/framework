@@ -1981,58 +1981,54 @@
 				// Result
 
 					if ($error == '') {
-						if ($db_id > 0) {
+						if ($db_id == 0) {
 
-							if ($valid) {
+							$error = 'failure_identification';
 
-								if ($rehash) {
+						} else if (!$valid) {
 
-									if (!is_array($db_auth)) {
-										$db_auth = array();
-									}
-
-									$db_auth = array_merge($db_auth, array(
-											'pv' => $password,
-										));
-
-									$db_auth_encoded = auth::value_encode($db_id, $db_auth);
-
-									$sql = 'UPDATE
-												' . $db->escape_table($this->db_table['main']) . ' AS m
-											SET
-												m.' . $db->escape_field($this->db_fields['main']['password']) . ' = "",
-												m.' . $db->escape_field($this->db_fields['main']['auth']) . ' = ?
-											WHERE
-												m.' . $db->escape_field($this->db_fields['main']['id']) . ' = ? AND
-												' . $this->db_where_sql['main'] . '
-											LIMIT
-												1';
-
-									$parameters = array();
-									$parameters[] = array('s', $db_auth_encoded);
-									$parameters[] = array('i', $db_id);
-
-									$db->query($sql, $parameters);
-
-								}
-
-								$db_auth['ph'] = NULL;
-
-								return array(
-										'id' => intval($db_id),
-										'identification' => $identification,
-										'auth' => $db_auth,
-									);
-
-							} else {
-
-								$error = 'failure_password';
-
-							}
+							$error = 'failure_password';
 
 						} else {
 
-							$error = 'failure_identification';
+							if ($rehash) {
+
+								if (!is_array($db_auth)) {
+									$db_auth = array();
+								}
+
+								$db_auth = array_merge($db_auth, array(
+										'pv' => $password,
+									));
+
+								$db_auth_encoded = auth::value_encode($db_id, $db_auth);
+
+								$sql = 'UPDATE
+											' . $db->escape_table($this->db_table['main']) . ' AS m
+										SET
+											m.' . $db->escape_field($this->db_fields['main']['password']) . ' = "",
+											m.' . $db->escape_field($this->db_fields['main']['auth']) . ' = ?
+										WHERE
+											m.' . $db->escape_field($this->db_fields['main']['id']) . ' = ? AND
+											' . $this->db_where_sql['main'] . '
+										LIMIT
+											1';
+
+								$parameters = array();
+								$parameters[] = array('s', $db_auth_encoded);
+								$parameters[] = array('i', $db_id);
+
+								$db->query($sql, $parameters);
+
+							}
+
+							$db_auth['ph'] = NULL;
+
+							return array(
+									'id' => intval($db_id),
+									'identification' => $identification,
+									'auth' => $db_auth,
+								);
 
 						}
 					}
