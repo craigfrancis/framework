@@ -36,6 +36,8 @@
 			private $session_info = NULL; // Please use $auth->session_info_get();
 			private $session_pass = NULL;
 
+			private $hash_time = NULL;
+
 			protected $identification_type = 'email'; // Or 'username'
 			protected $identification_max_length = NULL;
 
@@ -1671,6 +1673,7 @@
 							'ip'            => config::get('request.ip'),
 							'browser'       => config::get('request.browser'),
 							'tracker'       => $this->_browser_tracker_get(),
+							'hash_time'     => $this->hash_time,
 							'logout_csrf'   => random_key(15), // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
 							'created'       => $now,
 							'last_used'     => $now,
@@ -1933,35 +1936,43 @@
 					}
 
 				//--------------------------------------------------
-				// Hash the users password - always run, so timing
-				// will always be about the same... taking that the
-				// hashing process is computationally expensive we
-				// don't want to return early, as that would show
-				// the account exists... but don't run for frequent
-				// failures, as this could help towards a DOS attack
+				// Check the users password.
 
-					$needs_rehash = true;
+					$valid = false; // Always assume this password is not valid.
+					$rehash = true; // Always assume a rehash is needed.
+					$start = microtime(true);
 
-					if ($error != 'failure_repetition') { // Anti denial of service.
+					if ($error != 'failure_repetition') { // Anti denial of service (get rid of them as soon as possible, don't even sleep).
 
-						if ($db_auth) {
+						if ($db_auth) { // If we have an 'auth' value, we only use that.
 
 							$valid = password::verify(base64_encode(hash('sha384', $password, true)), $db_auth['ph']); // see auth::value_encode() for details on sha384+base64
 
-							if ($db_auth['v'] == auth::$auth_version && !password::needs_rehash($db_auth['ph'])) {
-								$needs_rehash = false;
+							if ($db_pass != '') {
+
+								// Shouldn't have a 'pass' value now, if it does, get rid of it (with a re-hash).
+
+							} else if ($db_auth['v'] == auth::$auth_version && !password::needs_rehash($db_auth['ph'])) {
+
+								$rehash = false; // All looks good, no need to re-hash.
+
 							}
 
-						} else {
+						} else if (substr($db_pass, 0, 1) === '$') { // The password field looks like it contains a simple hashed password.
 
 							$valid = password::verify($password, $db_pass, $db_id);
 
-							if (!$valid && substr($db_pass, 0, 1) != '$') { // Plain text password import, where the password field does not contain a password_hash.
-								if ($password === $db_pass) {
-									$valid = true;
-								}
-							}
+						} else if ($db_pass && $password === $db_pass) { // The password field is not empty, nor does it start with a "$"... maybe it's a plain text password, waiting to be hashed?
 
+							$valid = true;
+
+						}
+
+						$this->hash_time = round((microtime(true) - $start), 4);
+
+						$hash_sleep = (0.1 - $this->hash_time); // Should always take at least 0.1 seconds (100ms)... NOTE: password_verify() will return fast if the hash is unrecognised/invalid.
+						if ($hash_sleep > 0) {
+							usleep($hash_sleep * 1000000);
 						}
 
 					}
@@ -1974,7 +1985,7 @@
 
 							if ($valid) {
 
-								if ($needs_rehash) {
+								if ($rehash) {
 
 									if (!is_array($db_auth)) {
 										$db_auth = array();
@@ -2043,6 +2054,7 @@
 								'ip'        => $request_ip,
 								'browser'   => config::get('request.browser'),
 								'tracker'   => $this->_browser_tracker_get(),
+								'hash_time' => $this->hash_time,
 								'created'   => $now,
 								'last_used' => $now,
 								'deleted'   => '0000-00-00 00:00:00',
