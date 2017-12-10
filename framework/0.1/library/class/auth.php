@@ -1873,9 +1873,9 @@
 
 				// Could set additional complexity requirements (e.g. must contain numbers/letters/etc, to make the password harder to remember)
 
-				if ($updated < strtotime('-1 second')) {
-					return 'Your password has not been changed for over 1 year.';
-				}
+				// if ($updated < strtotime('-1 year')) {
+				// 	return 'failure_password_old';
+				// }
 
 				return true; // or return error message, or a 'failure_password_xxx'
 
