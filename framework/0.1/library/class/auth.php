@@ -319,29 +319,30 @@
 
 				//--------------------------------------------------
 				// State
-debug($this->login_details);
+
+					$state_ref = true; // All good
+					$state_extra = NULL;
+
 					if (count($this->login_details['auth']['ips']) > 0 && !in_array(config::get('request.ip'), $this->login_details['auth']['ips'])) {
 
-						$state = 'ip';
+						$state_ref = 'ip';
+						$state_extra = $this->login_details['auth']['ips'];
 
-					} else if ($this->login_details['auth']['totp'] !== NULL) { // Must be able to pass TOTP before password.
+					} else if ($this->login_details['auth']['totp'] !== NULL) { // They must be able to pass TOTP, before checking their password quality.
 
-						$state = 'totp';
+						$state_ref = 'totp';
 
-					} else if (!$this->login_details['auth']['pv']) {
+					} else if ($this->login_details['password_validation'] !== true) {
 
-						$state = 'password';
-
-					} else {
-
-						$state = true; // All good
+						$state_ref = 'password';
+						$state_extra = $this->login_details['password_validation'];
 
 					}
 
 				//--------------------------------------------------
 				// Start session
 
-					$this->session_start($this->login_details['id'], $this->login_details['identification'], $state);
+					$this->session_start($this->login_details['id'], $this->login_details['identification'], $state_ref);
 
 				//--------------------------------------------------
 				// Change the CSRF token, invalidating forms open in
@@ -357,7 +358,7 @@ debug($this->login_details);
 				//--------------------------------------------------
 				// Return
 
-					return array($this->login_details['id'], $state);
+					return array($this->login_details['id'], $state_ref, $state_extra);
 
 			}
 
@@ -530,18 +531,18 @@ debug($this->login_details);
 					//--------------------------------------------------
 					// Validate identification
 
-						$identification_complexity = $this->validate_identification_complexity($identification, NULL);
-						$identification_unique = $this->validate_identification_unique($identification, NULL);
+						$result = $this->validate_identification($identification, NULL);
+						$unique = $this->validate_identification_unique($identification, NULL);
 
-						if (is_string($identification_complexity)) {
+						if (is_string($result)) { // Custom (project specific) error message
 
-							$errors['identification'] = $identification_complexity; // Custom (project specific) error message
+							$errors['identification'] = (isset($this->text[$result]) ? $this->text[$result] : $result);
 
-						} else if ($identification_complexity !== true) {
+						} else if ($result !== true) {
 
-							exit_with_error('Invalid response from auth::validate_identification_complexity()', $identification_complexity);
+							exit_with_error('Invalid response from auth::validate_identification()', $result);
 
-						} else if (!$identification_unique && ($this->identification_type == 'username' || !$confirm)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
+						} else if (!$unique && ($this->identification_type == 'username' || !$confirm)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
 
 							$errors['identification'] = $this->text['failure_identification_current'];
 
@@ -550,19 +551,19 @@ debug($this->login_details);
 					//--------------------------------------------------
 					// Validate password
 
-						$result = $this->validate_password_complexity($password_1);
+						$result = $this->validate_password($password_1);
 
 						if ($password_1 != '' && strlen($password_1) < $this->password_min_length) { // When the field is not 'required', the min length is not checked by the form helper.
 
 							$errors['password_1'] = str_replace('XXX', $this->password_min_length, $this->text['password_min_length']);
 
-						} else if (is_string($result)) {
+						} else if (is_string($result)) { // Custom (project specific) error message
 
-							$errors['password_1'] = $result; // Custom (project specific) error message
+							$errors['password_1'] = (isset($this->text[$result]) ? $this->text[$result] : $result);
 
 						} else if ($result !== true) {
 
-							exit_with_error('Invalid response from auth::validate_password_complexity()', $result);
+							exit_with_error('Invalid response from auth::validate_password()', $result);
 
 						} else if ($password_1 != $password_2) {
 
@@ -577,7 +578,7 @@ debug($this->login_details);
 
 							$this->register_details = array(
 									'identification' => $identification,
-									'identification_unique' => $identification_unique,
+									'identification_unique' => $unique,
 									'password' => $password_1,
 									'confirm' => $confirm,
 								);
@@ -747,9 +748,7 @@ debug($this->login_details);
 
 									$identification_value = $row[$identification_field];
 
-									$identification_unique = $this->validate_identification_unique($identification_value, NULL);
-
-									if (!$identification_unique) {
+									if (!$this->validate_identification_unique($identification_value, NULL)) {
 										return false; // e.g. Someone registered twice, and followed both links (should be fine to show normal 'link expired' message).
 									}
 
@@ -889,18 +888,18 @@ debug($this->login_details);
 
 							$confirm = ($this->db_table['update'] !== NULL);
 
-							$identification_complexity = $this->validate_identification_complexity($values['identification'], $user_id);
-							$identification_unique = $this->validate_identification_unique($values['identification'], $user_id);
+							$result = $this->validate_identification($values['identification'], $user_id);
+							$unique = $this->validate_identification_unique($values['identification'], $user_id);
 
-							if (is_string($identification_complexity)) {
+							if (is_string($result)) { // Custom (project specific) error message
 
-								$errors['identification'] = $identification_complexity; // Custom (project specific) error message
+								$errors['identification'] = (isset($this->text[$result]) ? $this->text[$result] : $result);
 
-							} else if ($identification_complexity !== true) {
+							} else if ($result !== true) {
 
-								exit_with_error('Invalid response from auth::validate_identification_complexity()', $identification_complexity);
+								exit_with_error('Invalid response from auth::validate_identification()', $result);
 
-							} else if (!$identification_unique && ($this->identification_type == 'username' || !$confirm)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
+							} else if (!$unique && ($this->identification_type == 'username' || !$confirm)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
 
 								$errors['identification'] = $this->text['failure_identification_current'];
 
@@ -917,6 +916,8 @@ debug($this->login_details);
 								}
 
 							}
+
+							$identification_unique = $unique;
 
 						}
 
@@ -971,19 +972,19 @@ debug($this->login_details);
 							$password_1 = $values['password_new_1'];
 							$password_2 = $values['password_new_2'];
 
-							$result = $this->validate_password_complexity($password_1);
+							$result = $this->validate_password($password_1);
 
 							if ($password_1 != '' && strlen($password_1) < $this->password_min_length) { // When the field is not 'required', the min length is not checked by the form helper.
 
 								$errors['password_new_1'] = str_replace('XXX', $this->password_min_length, $this->text['password_new_min_length']);
 
-							} else if (is_string($result)) {
+							} else if (is_string($result)) { // Custom (project specific) error message
 
-								$errors['password_new_1'] = $result; // Custom (project specific) error message
+								$errors['password_new_1'] = (isset($this->text[$result]) ? $this->text[$result] : $result);
 
 							} else if ($result !== true) {
 
-								exit_with_error('Invalid response from auth::validate_password_complexity()', $result);
+								exit_with_error('Invalid response from auth::validate_password()', $result);
 
 							} else if ($password_1 != $password_2) {
 
@@ -1191,9 +1192,7 @@ debug($this->login_details);
 								//--------------------------------------------------
 								// Still unique
 
-									$identification_unique = $this->validate_identification_unique($row['email'], $row['user_id']);
-
-									if (!$identification_unique) {
+									if (!$this->validate_identification_unique($row['email'], $row['user_id'])) {
 										return false;
 									}
 
@@ -1301,7 +1300,7 @@ debug($this->login_details);
 				}
 
 				public function reset_process_validate() {
-					$this->validate_password_complexity();
+					$this->validate_password();
 					// New password is not the same as old password???
 					// New password matches Repeat new password.
 				}
@@ -1858,13 +1857,34 @@ debug($this->login_details);
 
 			}
 
-			protected function validate_identification_complexity($identification, $user_id) {
-				return true; // Could set additional complexity requirements (e.g. username must only contain letters)
+			protected function validate_identification($identification, $user_id) {
+
+				// Could set additional complexity requirements (e.g. username must only contain letters)
+
+				return true; // or return error message, or a 'failure_identification_xxx'
+
 			}
 
-			protected function validate_password_complexity($password) {
-				// TODO: The password should not allowed to be one of the most commonly used passwords (maybe separate function validate_password_common?) - ref https://haveibeenpwned.com/Passwords
-				return true; // Could set additional complexity requirements (e.g. must contain numbers/letters/etc, to make the password harder to remember)
+			protected function validate_password($password, $updated = NULL) {
+
+				// if ($this->validate_password_common($password)) {
+				// 	return 'failure_password_common';
+				// }
+
+				// Could set additional complexity requirements (e.g. must contain numbers/letters/etc, to make the password harder to remember)
+
+				if ($updated < strtotime('-1 second')) {
+					return 'Your password has not been changed for over 1 year.';
+				}
+
+				return true; // or return error message, or a 'failure_password_xxx'
+
+			}
+
+			protected function validate_password_common($password) {
+
+				// TODO: This is a commonly used password - ref https://haveibeenpwned.com/Passwords
+
 			}
 
 			protected function validate_login($identification, $password) {
@@ -2052,11 +2072,10 @@ debug($this->login_details);
 
 							unset($db_auth['ph']);
 
-							$db_auth['pv'] = $this->validate_password_complexity($password);
-
 							return array(
 									'id' => intval($db_id),
 									'identification' => $identification,
+									'password_validation' => $this->validate_password($password, $db_auth['pu']),
 									'auth' => $db_auth,
 								);
 
@@ -2156,7 +2175,6 @@ debug($this->login_details);
 					return array_merge(array(
 							'ph'   => '',      // Password Hash
 							'pu'   => NULL,    // Password Updated
-							'pv'   => NULL,    // Password Validated
 							'ips'  => array(), // IP's allowed to login from
 							'totp' => NULL,    // Time-based One Time Password
 						), $auth_values, array(
@@ -2176,7 +2194,6 @@ debug($this->login_details);
 				$auth_values = array_merge(array(
 						'ph'   => '',
 						'pu'   => time(),
-						'pv'   => NULL,
 						'ips'  => array(),
 						'totp' => NULL,
 					), $auth_values);
