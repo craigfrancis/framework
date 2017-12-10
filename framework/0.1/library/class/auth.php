@@ -1950,7 +1950,7 @@
 
 						if ($db_auth) {
 
-							$valid = password::verify(base64_encode(hash('sha384', $password, true)), $db_auth['ph']); // see auth::value_encode() for details on sha384
+							$valid = password::verify(base64_encode(hash('sha384', $password, true)), $db_auth['ph']); // see auth::value_encode() for details on sha384+base64
 
 							if ($db_auth['v'] == auth::$auth_version && !password::needs_rehash($db_auth['ph'])) {
 								$needs_rehash = false;
@@ -2150,27 +2150,49 @@
 					$auth_values['ph'] = password::hash(base64_encode(hash('sha384', $auth_values['pv'], true)));
 
 						//--------------------------------------------------
-						// BCrypt truncates the value to the first 72 bytes,
-						// and truncates on the NULL character.
-						//
-						// So use a sha384 hash, with base64 encoding (6 bits
-						// per character, or 64 characters long); rather than
-						// using Hex (base 16, or 4 bits per character, or 96
-						// characters long, which bcrypt would truncate to 72).
+						// BCrypt truncates on the NULL character, and
+						// some implementations truncate the value to
+						// the first 72 bytes.
 						//
 						//   var_dump(password_verify("abc", password_hash("abc\0defghijklmnop", PASSWORD_DEFAULT)));
 						//
+						// A sha384 hash, with base64 encoding (6 bits
+						// per character, or 64 characters long), would
+						// avoid both of these issues - ref ParagonIE:
+						//
+						//   https://github.com/paragonie/password_lock - SHA384 + base64 + bcrypt + encrypt (Random IV, AES-256-CTR, SHA256 HMAC)
+						//
+						// This is better than than using Hex, which is
+						// a base 16 (only 4 bits per character), resulting
+						// in 96 characters, which bcrypt might truncate).
+						//
 						// hash($hash, 'a', false)
 						//
-						// 	 sha256 - 64 - ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
-						// 	 sha384 - 96 - 54a59b9f22b0b80880d8427e548b7c23abd873486e1f035dce9cd697e85175033caa88e6d57bc35efae0b5afd3145f31
-						// 	 sha512 - 128 - 1f40fc92da241694750979ee6cf582f2d5d7d28e18335de05abc54d0560e0f5302860c652bf08d560252aa5e74210546f369fbbbce8c12cfc7957b2652fe9a75
+						//   sha256 - 64 - ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
+						//   sha384 - 96 - 54a59b9f22b0b80880d8427e548b7c23abd873486e1f035dce9cd697e85175033caa88e6d57bc35efae0b5afd3145f31
+						//   sha512 - 128 - 1f40fc92da241694750979ee6cf582f2d5d7d28e18335de05abc54d0560e0f5302860c652bf08d560252aa5e74210546f369fbbbce8c12cfc7957b2652fe9a75
 						//
 						// base64_encode(hash($hash, 'a', true))
 						//
-						// 	 sha256 - 44 - ypeBEsobvcr6wjGzmiPcTaeG7/gUfE5yuYB3ha/uSLs=
-						// 	 sha384 - 64 - VKWbnyKwuAiA2EJ+VIt8I6vYc0huHwNdzpzWl+hRdQM8qojm1XvDXvrgta/TFF8x
-						// 	 sha512 - 88 - H0D8ktokFpR1CXnubPWC8tXX0o4YM13gWrxU0FYOD1MChgxlK/CNVgJSql50IQVG82n7u86MEs/HlXsmUv6adQ==
+						//   sha256 - 44 - ypeBEsobvcr6wjGzmiPcTaeG7/gUfE5yuYB3ha/uSLs=
+						//   sha384 - 64 - VKWbnyKwuAiA2EJ+VIt8I6vYc0huHwNdzpzWl+hRdQM8qojm1XvDXvrgta/TFF8x
+						//   sha512 - 88 - H0D8ktokFpR1CXnubPWC8tXX0o4YM13gWrxU0FYOD1MChgxlK/CNVgJSql50IQVG82n7u86MEs/HlXsmUv6adQ==
+						//
+						// A similar approach is used by DropBox, who use
+						// SHA-512 and base64 encoding, which relies on
+						// consistency of their bcrypt implementation to
+						// always or never truncate to 72 characters.
+						//
+						//   https://blogs.dropbox.com/tech/2016/09/how-dropbox-securely-stores-your-passwords/
+						//
+						// It also looks like all variations in the SHA-2
+						// family can be implemented in the browser, so the
+						// raw password isn't sent to the server:
+						//
+						//   buffer = new TextEncoder('utf-8').encode('a');
+						//   crypto.subtle.digest('SHA-256', buffer).then(function (hash) {
+						//       console.log(btoa(String.fromCharCode.apply(null, new Uint8Array(hash))));
+						//     });
 						//
 						//--------------------------------------------------
 
