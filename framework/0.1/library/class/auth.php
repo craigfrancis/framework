@@ -1377,7 +1377,7 @@
 										$now = new timestamp();
 
 										$request_mode = config::get('output.mode');
-										if (($request_mode === 'asset') || ($request_mode === 'gateway' && in_array(config::get('output.gateway'), array('framework-file', 'js-code', 'js-newrelic')))) {
+										if (($request_mode === 'asset') || ($request_mode === 'gateway' && in_array(config::get('output.gateway'), array('framework-file', 'js-code')))) {
 											$request_increment = 0;
 										} else {
 											$request_increment = 1;
@@ -1943,10 +1943,6 @@
 					$needs_rehash = true;
 
 					if ($error != 'failure_repetition') { // Anti denial of service.
-
-						if (extension_loaded('newrelic')) {
-							newrelic_ignore_transaction(); // This will be slow!
-						}
 
 						if ($db_auth) {
 

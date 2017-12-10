@@ -515,13 +515,6 @@
 	unset($route_asset);
 
 //--------------------------------------------------
-// NewRelic
-
-	if (extension_loaded('newrelic')) {
-		newrelic_name_transaction($route_path);
-	}
-
-//--------------------------------------------------
 // Configuration debug
 
 	if (config::get('debug.level') >= 3 && REQUEST_MODE != 'cli') { // In CLI mode, use the "-c" option

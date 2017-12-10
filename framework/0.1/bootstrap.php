@@ -87,7 +87,7 @@
 			//--------------------------------------------------
 			// Buffer to catch output from setup/controller.
 
-				if (SERVER != 'live') { // Also used by NewRelic, so keep it's output buffer.
+				if (SERVER != 'live') {
 
 					$output = ob_get_clean_all();
 					if ($output != '') {

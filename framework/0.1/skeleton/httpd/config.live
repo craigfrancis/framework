@@ -51,10 +51,6 @@
 		ExpiresByType application/javascript "access plus 12 months"
 		ExpiresByType application/font-woff "access plus 12 months"
 
-		# <IfModule php5_module>
-		# 	php_value newrelic.appname "Company: Website"
-		# </IfModule>
-
 	</VirtualHost>
 
 	<VirtualHost *:80>

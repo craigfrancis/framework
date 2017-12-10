@@ -1507,34 +1507,6 @@
 							config::array_set('output.meta', 'twitter:dnt', 'on'); // https://support.twitter.com/articles/20169453
 						}
 
-					//--------------------------------------------------
-					// NewRelic
-
-						if (extension_loaded('newrelic')) {
-
-							if (config::get('output.tracking')) {
-
-								$head_js = newrelic_get_browser_timing_header(false);
-
-								if ($head_js != '') { // Is working
-
-									$this->js_add(gateway_url('js-newrelic', 'head.js'), NULL, 'head'); // Can be cached
-
-									$this->js_code_add(newrelic_get_browser_timing_footer(false), 'defer', 'foot');
-
-									$this->csp_source_add('img-src', array('*.newrelic.com'));
-									$this->csp_source_add('script-src', array('*.newrelic.com', 'bam.nr-data.net'));
-
-								}
-
-							} else {
-
-								newrelic_disable_autorum();
-
-							}
-
-						}
-
 				//--------------------------------------------------
 				// Headers
 

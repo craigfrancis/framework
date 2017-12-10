@@ -70,7 +70,7 @@
 						'app' => APP_ROOT . '/gateway/',
 					);
 
-				$gateway_hide = array('framework-file', 'js-code', 'js-newrelic', 'payment');
+				$gateway_hide = array('framework-file', 'js-code', 'payment');
 
 				foreach ($gateway_dirs as $gateway_source => $gateway_dir) {
 					if ($handle = opendir($gateway_dir)) {

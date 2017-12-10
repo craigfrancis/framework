@@ -79,7 +79,6 @@ Still a work in progress...
 			include /etc/nginx/fastcgi_params;
 			fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;
 			fastcgi_param SCRIPT_FILENAME $document_root/index.php;
-			fastcgi_param PHP_VALUE "newrelic.appname='Test: Website'";
 		}
 
 		location ~* (/\.|\.php$) {
