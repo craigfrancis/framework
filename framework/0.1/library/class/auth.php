@@ -318,9 +318,30 @@
 					}
 
 				//--------------------------------------------------
+				// State
+debug($this->login_details);
+					if (count($this->login_details['auth']['ips']) > 0 && !in_array(config::get('request.ip'), $this->login_details['auth']['ips'])) {
+
+						$state = 'ip';
+
+					} else if ($this->login_details['auth']['totp'] !== NULL) { // Must be able to pass TOTP before password.
+
+						$state = 'totp';
+
+					} else if (!$this->login_details['auth']['pv']) {
+
+						$state = 'password';
+
+					} else {
+
+						$state = true; // All good
+
+					}
+
+				//--------------------------------------------------
 				// Start session
 
-					$this->session_start($this->login_details['id'], $this->login_details['identification']);
+					$this->session_start($this->login_details['id'], $this->login_details['identification'], $state);
 
 				//--------------------------------------------------
 				// Change the CSRF token, invalidating forms open in
@@ -336,7 +357,7 @@
 				//--------------------------------------------------
 				// Return
 
-					return $this->login_details['id'];
+					return array($this->login_details['id'], $state);
 
 			}
 
@@ -1301,6 +1322,7 @@
 						$config = array_merge(array(
 								'fields' => array(),
 								'auth_token' => NULL,
+								'state' => NULL,
 							), $config);
 
 					//--------------------------------------------------
@@ -1351,6 +1373,13 @@
 
 							$parameters = array();
 							$parameters[] = array('i', $session_id);
+
+							if ($config['state']) {
+								$where_sql .= ' AND s.state = ?';
+								$parameters[] = array('s', $config['state']);
+							} else {
+								$where_sql .= ' AND s.state = ""';
+							}
 
 							if ($this->session_length > 0) {
 								$last_used = new timestamp((0 - $this->session_length) . ' seconds');
@@ -1629,7 +1658,7 @@
 
 			}
 
-			protected function session_start($user_id, $identification) { // See the login_* or register_* functions (do not call directly)
+			protected function session_start($user_id, $identification, $state = '') { // See the login_* or register_* functions (do not call directly)
 
 				//--------------------------------------------------
 				// Config
@@ -1674,6 +1703,7 @@
 							'browser'       => config::get('request.browser'),
 							'tracker'       => $this->_browser_tracker_get(),
 							'hash_time'     => $this->hash_time,
+							'state'         => ($state === true ? '' : $state),
 							'logout_csrf'   => random_key(15), // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
 							'created'       => $now,
 							'last_used'     => $now,
@@ -1997,11 +2027,7 @@
 									$db_auth = array();
 								}
 
-								$db_auth = array_merge($db_auth, array(
-										'pv' => $password,
-									));
-
-								$db_auth_encoded = auth::value_encode($db_id, $db_auth);
+								$db_auth_encoded = auth::value_encode($db_id, $db_auth, $password);
 
 								$sql = 'UPDATE
 											' . $db->escape_table($this->db_table['main']) . ' AS m
@@ -2020,9 +2046,13 @@
 
 								$db->query($sql, $parameters);
 
+								$db_auth = auth::value_parse($db_id, $db_auth_encoded); // So all the fields are present (e.g. 'ips')
+
 							}
 
-							$db_auth['ph'] = NULL;
+							unset($db_auth['ph']);
+
+							$db_auth['pv'] = $this->validate_password_complexity($password);
 
 							return array(
 									'id' => intval($db_id),
@@ -2125,7 +2155,8 @@
 
 					return array_merge(array(
 							'ph'   => '',      // Password Hash
-							'pc'   => NULL,    // Password Changed timestamp
+							'pu'   => NULL,    // Password Updated
+							'pv'   => NULL,    // Password Validated
 							'ips'  => array(), // IP's allowed to login from
 							'totp' => NULL,    // Time-based One Time Password
 						), $auth_values, array(
@@ -2140,18 +2171,19 @@
 
 			}
 
-			public static function value_encode($user_id, $auth_values) {
+			public static function value_encode($user_id, $auth_values, $new_password = NULL) {
 
 				$auth_values = array_merge(array(
 						'ph'   => '',
-						'pc'   => time(),
+						'pu'   => time(),
+						'pv'   => NULL,
 						'ips'  => array(),
 						'totp' => NULL,
 					), $auth_values);
 
-				if (isset($auth_values['pv'])) { // Ignore if NULL, so don't use array_key_exists()
+				if ($new_password) {
 
-					$auth_values['ph'] = password::hash(base64_encode(hash('sha384', $auth_values['pv'], true)));
+					$auth_values['ph'] = password::hash(base64_encode(hash('sha384', $new_password, true)));
 
 						//--------------------------------------------------
 						// BCrypt truncates on the NULL character, and
@@ -2203,7 +2235,6 @@
 				}
 
 				unset($auth_values['v']);
-				unset($auth_values['pv']);
 
 				$auth = json_encode($auth_values);
 
