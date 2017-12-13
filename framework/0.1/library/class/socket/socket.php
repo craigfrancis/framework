@@ -633,17 +633,25 @@
 				//--------------------------------------------------
 				// Close connection
 
+					$connection_md = stream_get_meta_data($connection);
+
 					fclose($connection);
 
 				//--------------------------------------------------
 				// Store
 
-					if ($response_data !== NULL) {
+					if ($response_data !== NULL && !$connection_md['timed_out']) {
 
 						$this->response_headers = str_replace("\r\n", "\n", $response_headers);
 						$this->response_data = $response_data;
 
 					} else {
+
+						if ($connection_md['timed_out']) {
+							$error = 'Connection timed out';
+						} else {
+							$error = 'Cannot extract headers from response';
+						}
 
 						$debug = '';
 
@@ -657,7 +665,7 @@
 						$debug .= $this->response_full . "\n\n";
 						$debug .= '--------------------------------------------------' . "\n";
 
-						return $this->error('Cannot extract headers from response (host: "' . $this->request_host . '", path: "' . $this->request_path . '")', $debug);
+						return $this->error($error . ' (host: "' . $this->request_host . '", path: "' . $this->request_path . '")', $debug);
 
 					}
 
