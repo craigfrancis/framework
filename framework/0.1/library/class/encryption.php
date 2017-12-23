@@ -28,7 +28,7 @@
 
 		public static function key_symmetric_create() {
 
-			return 'KS1-' . base64_encode(sodium_crypto_aead_chacha20poly1305_ietf_keygen());
+			return 'KS2-' . base64_encode(sodium_crypto_aead_chacha20poly1305_ietf_keygen());
 
 		}
 
@@ -37,8 +37,8 @@
 			$keypair = sodium_crypto_box_keypair();
 
 			return [
-					'KA1P-' . base64_encode(sodium_crypto_box_publickey($keypair)),
-					'KA1S-' . base64_encode(sodium_crypto_box_secretkey($keypair)),
+					'KA2P-' . base64_encode(sodium_crypto_box_publickey($keypair)),
+					'KA2S-' . base64_encode(sodium_crypto_box_secretkey($keypair)),
 				];
 
 		}
@@ -52,7 +52,7 @@
 			list($key1_type, $key1_value) = array_pad(explode('-', $key1), 2, NULL);
 			list($key2_type, $key2_value) = array_pad(explode('-', $key2), 2, NULL);
 
-			if ($key1_type === 'KS1' && $key2_type === '' && $key2_value === NULL) { // Key1 only ... https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use#crypto-aead-sample-php
+			if ($key1_type === 'KS2' && $key2_type === '' && $key2_value === NULL) { // Key1 only ... https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use#crypto-aead-sample-php
 
 				$key1 = base64_decode($key1_value);
 
@@ -65,17 +65,17 @@
 						$key1
 					);
 
-				return 'ES1-' . base64_encode($encrypted) . '-' . base64_encode($nonce);
+				return 'ES2-' . base64_encode($encrypted) . '-' . base64_encode($nonce);
 
-			} else if ($key1_type === 'KA1P' && $key2_type === '' && $key2_value === NULL) { // One key - Key1 public ... https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use#crypto-box-seal-sample-php
+			} else if ($key1_type === 'KA2P' && $key2_type === '' && $key2_value === NULL) { // One key - Key1 public ... https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use#crypto-box-seal-sample-php
 
 				$key1 = base64_decode($key1_value);
 
 				$encrypted = sodium_crypto_box_seal($input, $key1);
 
-				return 'EAO1-' . base64_encode($encrypted);
+				return 'EAO2-' . base64_encode($encrypted);
 
-			} else if ($key1_type === 'KA1S' && $key2_type === 'KA1P') { // Two keys - Key1 secret, Key2 public ... https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use#crypto-box-sample-php
+			} else if ($key1_type === 'KA2S' && $key2_type === 'KA2P') { // Two keys - Key1 secret, Key2 public ... https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use#crypto-box-sample-php
 
 				$key1 = base64_decode($key1_value);
 				$key2 = base64_decode($key2_value);
@@ -88,7 +88,7 @@
 						$key1 . $key2
 					);
 
-				return 'EAT1-' . base64_encode($encrypted) . '-' . base64_encode($nonce);
+				return 'EAT2-' . base64_encode($encrypted) . '-' . base64_encode($nonce);
 
 			} else {
 
@@ -105,7 +105,7 @@
 
 			list($input_type, $input_value, $input_nonce) = array_pad(explode('-', $input), 3, NULL);
 
-			if ($input_type === 'ES1' && $key1_type === 'KS1' && $key2_type === '' && $key2_value === NULL) {
+			if ($input_type === 'ES2' && $key1_type === 'KS2' && $key2_type === '' && $key2_value === NULL) {
 
 				$key = base64_decode($key1_value);
 				$cipher = base64_decode($input_value);
@@ -118,7 +118,7 @@
 						$key
 					);
 
-			} else if ($input_type === 'EAO1' && $key1_type === 'KA1S' && $key2_type === '' && $key2_value === NULL) { // One key - Key1 secret
+			} else if ($input_type === 'EAO2' && $key1_type === 'KA2S' && $key2_type === '' && $key2_value === NULL) { // One key - Key1 secret
 
 				$key1_secret = base64_decode($key1_value);
 				$key1_public = sodium_crypto_box_publickey_from_secretkey($key1_secret);
@@ -127,7 +127,7 @@
 
 				$plaintext = sodium_crypto_box_seal_open($cipher, $key1_secret . $key1_public);
 
-			} else if ($input_type === 'EAT1' && $key1_type === 'KA1S' && $key2_type === 'KA1P') { // Two keys - Key1 secret, Key2 public
+			} else if ($input_type === 'EAT2' && $key1_type === 'KA2S' && $key2_type === 'KA2P') { // Two keys - Key1 secret, Key2 public
 
 				$key1 = base64_decode($key1_value);
 				$key2 = base64_decode($key2_value);
