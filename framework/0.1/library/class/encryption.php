@@ -427,8 +427,8 @@
 
 		private static function _decode_asymmetric_two_openssl($recipient_key_secret, $sender_key_public, $data_encrypted, $keys_encrypted, $hmac_encrypted) {
 
-			$recipient_key_res = openssl_pkey_get_private($recipient_key_secret);
-			$recipient_key_public = openssl_pkey_get_details($recipient_key_res);
+			// $recipient_key_res = openssl_pkey_get_private($recipient_key_secret);
+			// $recipient_key_public = openssl_pkey_get_details($recipient_key_res);
 
 			$data_info = '';
 			$result = openssl_public_decrypt($hmac_encrypted, $data_info, $sender_key_public, OPENSSL_PKCS1_PADDING);
