@@ -324,10 +324,10 @@
 
 		private static function _encode_asymmetric_one_openssl($key_public, $input) { // Public key only LEGACY ... https://paragonie.com/blog/2016/10/do-it-yourself-hand-crafted-boutique-artisinal-cryptosystems
 
+			$data_key = openssl_random_pseudo_bytes(256/8);
+
 			$nonce_size = openssl_cipher_iv_length('AES-256-CTR');
 			$nonce = openssl_random_pseudo_bytes($nonce_size);
-
-			$data_key = openssl_random_pseudo_bytes(256/8);
 
 			$data_encrypted = openssl_encrypt($input, 'AES-256-CTR', $data_key, OPENSSL_RAW_DATA, $nonce);
 
@@ -397,10 +397,10 @@
 
 		private static function _encode_asymmetric_two_openssl($recipient_key_public, $sender_key_secret, $input) { // Two keys LEGACY ... https://paragonie.com/blog/2016/10/do-it-yourself-hand-crafted-boutique-artisinal-cryptosystems
 
+			$data_key = openssl_random_pseudo_bytes(256/8);
+
 			$nonce_size = openssl_cipher_iv_length('AES-256-CTR');
 			$nonce = openssl_random_pseudo_bytes($nonce_size); // 16-bytes, 128-bits
-
-			$data_key = openssl_random_pseudo_bytes(256/8);
 
 			$data_encrypted = openssl_encrypt($input, 'AES-256-CTR', $data_key, OPENSSL_RAW_DATA, $nonce);
 
