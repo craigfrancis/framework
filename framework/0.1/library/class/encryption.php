@@ -34,7 +34,7 @@
 
 		public static function key_symmetric_create() {
 
-			if (function_exists('XXX-sodium_crypto_aead_chacha20poly1305_ietf_encrypt')) {
+			if (function_exists('sodium_crypto_aead_chacha20poly1305_ietf_encrypt')) {
 
 				return 'KS2-' . base64_encode(sodium_crypto_aead_chacha20poly1305_ietf_keygen());
 
@@ -48,7 +48,7 @@
 
 		public static function key_asymmetric_create() {
 
-			if (function_exists('XXX-sodium_crypto_box')) {
+			if (function_exists('sodium_crypto_box')) {
 
 				$keypair = sodium_crypto_box_keypair();
 
@@ -298,11 +298,11 @@
 
 			$check_hmac = hash_hmac('sha256', $nonce . $encrypted, $key, true);
 
-			if (hash_equals($check_hmac, $hmac)) {
-				return openssl_decrypt($encrypted, 'AES-256-CTR', $key, OPENSSL_RAW_DATA, $nonce);
-			} else {
+			if (!hash_equals($check_hmac, $hmac)) {
 				exit_with_error('Could not verify HMAC of the encrypted data');
 			}
+
+			return openssl_decrypt($encrypted, 'AES-256-CTR', $key, OPENSSL_RAW_DATA, $nonce);
 
 		}
 
@@ -338,7 +338,7 @@
 			$keys_encrypted = '';
 			$result = openssl_public_encrypt($keys_encoded, $keys_encrypted, $key_public, OPENSSL_PKCS1_OAEP_PADDING);
 			if ($result !== true) {
-				exit_with_error('Could not encrypt with recipients public key', openssl_error_string());
+				exit_with_error('Could not encrypt with public key', openssl_error_string());
 			}
 
 			return [$data_encrypted, $keys_encrypted, $hmac_value];
@@ -353,7 +353,7 @@
 			$data_keys = '';
 			$result = openssl_private_decrypt($keys_encrypted, $data_keys, $key_secret, OPENSSL_PKCS1_OAEP_PADDING);
 			if ($result !== true) {
-				exit_with_error('Could not decrypt the AES keys with the recipients secret key', openssl_error_string());
+				exit_with_error('Could not decrypt the AES keys with the secret key', openssl_error_string());
 			} else {
 				list($data_key, $hmac_key, $nonce) = array_pad(explode('-', $data_keys), 3, NULL);
 				$data_key = base64_decode($data_key);
@@ -363,11 +363,11 @@
 
 			$check_hmac = hash_hmac('sha256', $nonce . $data_encrypted, $hmac_key, true);
 
-			if (hash_equals($check_hmac, $hmac_value)) {
-				return openssl_decrypt($data_encrypted, 'AES-256-CTR', $data_key, OPENSSL_RAW_DATA, $nonce);
-			} else {
+			if (!hash_equals($check_hmac, $hmac_value)) {
 				exit_with_error('Could not verify HMAC of the encrypted data');
 			}
+
+			return openssl_decrypt($data_encrypted, 'AES-256-CTR', $data_key, OPENSSL_RAW_DATA, $nonce);
 
 		}
 
@@ -452,11 +452,11 @@
 
 			$check_hmac = hash_hmac('sha256', $nonce . $data_encrypted, $hmac_key, true);
 
-			if (hash_equals($check_hmac, $hmac_value)) {
-				return openssl_decrypt($data_encrypted, 'AES-256-CTR', $data_key, OPENSSL_RAW_DATA, $nonce);
-			} else {
+			if (!hash_equals($check_hmac, $hmac_value)) {
 				exit_with_error('Could not verify HMAC of the encrypted data');
 			}
+
+			return openssl_decrypt($data_encrypted, 'AES-256-CTR', $data_key, OPENSSL_RAW_DATA, $nonce);
 
 		}
 
