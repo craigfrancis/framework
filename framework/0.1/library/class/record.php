@@ -11,6 +11,7 @@
 
 			private $table_sql = NULL;
 			private $where_sql = NULL;
+			private $where_id = NULL;
 
 			private $fields = NULL;
 			private $values = NULL;
@@ -134,12 +135,21 @@
 			}
 
 			public function where_set_id($id) {
+
 				$db = $this->db_get();
+
+				$this->where_id = $id;
+
 				if ($this->config['deleted']) {
 					$this->where_set_sql('id = "' . $db->escape($id) . '" AND deleted = deleted');
 				} else {
 					$this->where_set_sql('id = "' . $db->escape($id) . '" AND deleted = "0000-00-00 00:00:00"');
 				}
+
+			}
+
+			public function id_get() {
+				return $this->where_id;
 			}
 
 			public function config_set($key, $value) {
@@ -342,6 +352,8 @@
 					if ($insert_mode) {
 
 						$db->insert($this->table_sql, $new_values);
+
+						$this->where_set_id($db->insert_id());
 
 					} else if (count($new_values) > 0) { // No new values when a user does not have permission to view/edit any db related fields.
 
