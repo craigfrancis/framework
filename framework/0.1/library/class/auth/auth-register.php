@@ -320,18 +320,7 @@
 
 					$record->value_set($this->db_fields['identification'], $this->details['identification']);
 					$record->value_set($this->db_fields['password'], '');
-
-					if ($this->details['password'] != '' && $this->details['confirm_valid']) { // Only store the auth (password) if the confirmation will succeed (account does not already exist).
-
-						$auth_config = [];
-
-						// Only enable if this is needed...
-						// if ($config['auth_ips'])  $auth_config['ips'] = $config['auth_ips'];
-						// if ($config['auth_totp']) $auth_config['totp'] = $config['auth_totp'];
-
-						$record->value_set($this->db_fields['auth'], auth::value_encode($auth_config, $this->details['password']));
-
-					}
+					$record->value_set($this->db_fields['auth'], '');
 
 				//--------------------------------------------------
 				// Register token
@@ -365,6 +354,37 @@
 						$record->save();
 
 						$record_id = $record->id_get();
+
+					}
+
+				//--------------------------------------------------
+				// Set auth, now we know the $record_id
+
+					if ($this->details['password'] != '' && $this->details['confirm_valid']) { // Only store the auth (password) if the confirmation will succeed (account does not already exist).
+
+						$db = db_get();
+
+						$auth_config = [];
+
+						// Only enable if this is needed...
+						// if ($config['auth_ips'])  $auth_config['ips'] = $config['auth_ips'];
+						// if ($config['auth_totp']) $auth_config['totp'] = $config['auth_totp'];
+
+						$auth_value = auth::value_encode($record_id, $auth_config, $this->details['password']);
+
+						$sql = 'UPDATE
+									' . $db->escape_table($this->db_table) . ' AS r
+								SET
+									r.' . $db->escape_field($this->db_fields['auth']) . ' = ?
+								WHERE
+									r.' . $db->escape_field($this->db_fields['id']) . ' = ? AND
+									' . $this->db_where_sql;
+
+						$parameters = array();
+						$parameters[] = array('s', $auth_value);
+						$parameters[] = array('i', $record_id);
+
+						$db->query($sql, $parameters);
 
 					}
 
@@ -453,7 +473,7 @@
 								}
 
 							//--------------------------------------------------
-							// Delete registration
+							// Delete registration record
 
 								$sql = 'UPDATE
 											' . $db->escape_table($this->db_table) . ' AS r

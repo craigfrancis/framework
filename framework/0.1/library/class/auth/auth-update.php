@@ -452,8 +452,10 @@
 						// if ($config['auth_ips'])  $auth_config['ips'] = $config['auth_ips'];
 						// if ($config['auth_totp']) $auth_config['totp'] = $config['auth_totp'];
 
+						$auth_value = auth::value_encode($this->details['user_id'], $auth_config, $this->details['password']);
+
 						$record->value_set($this->db_main_fields['password'], '');
-						$record->value_set($this->db_main_fields['auth'], auth::value_encode($auth_config, $this->details['password']));
+						$record->value_set($this->db_main_fields['auth'], $auth_value);
 
 // TODO: Delete all active sessions for the user (see reset_process_complete as well).
 

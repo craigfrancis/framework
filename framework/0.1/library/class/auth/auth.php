@@ -748,7 +748,7 @@
 							'ip'            => config::get('request.ip'),
 							'browser'       => config::get('request.browser'),
 							'tracker'       => $this->_browser_tracker_get(),
-							'hash_time'     => $this->hash_time,
+							'hash_time'     => floatval($this->hash_time),
 							'state'         => ($state === true ? '' : $state),
 							'logout_csrf'   => $session_logout_csrf, // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
 							'created'       => $now,
@@ -1001,7 +1001,7 @@
 						$db_pass = $row['password'];
 
 						if ($row['auth']) {
-							$db_auth = auth::value_parse($row['auth']); // Returns NULL on failure
+							$db_auth = auth::value_parse($db_id, $row['auth']); // Returns NULL on failure
 							if (!$db_auth) {
 								$error = 'failure_decryption';
 							}
@@ -1114,7 +1114,7 @@
 									$db_auth = array();
 								}
 
-								$db_auth_encoded = auth::value_encode($db_auth, $password);
+								$db_auth_encoded = auth::value_encode($db_id, $db_auth, $password);
 
 								$sql = 'UPDATE
 											' . $db->escape_table($db_main_table) . ' AS m
@@ -1133,7 +1133,7 @@
 
 								$db->query($sql, $parameters);
 
-								$db_auth = auth::value_parse($db_auth_encoded); // So all the fields are present (e.g. 'ips')
+								$db_auth = auth::value_parse($db_id, $db_auth_encoded); // So all the fields are present (e.g. 'ips')
 
 							}
 
@@ -1166,7 +1166,7 @@
 								'ip'        => $request_ip,
 								'browser'   => config::get('request.browser'),
 								'tracker'   => $this->_browser_tracker_get(),
-								'hash_time' => $this->hash_time,
+								'hash_time' => floatval($this->hash_time),
 								'state'     => 'error',
 								'created'   => $now,
 								'last_used' => $now,
@@ -1305,7 +1305,7 @@
 		//--------------------------------------------------
 		// Value parsing
 
-			public static function value_parse($auth) {
+			public static function value_parse($user_id, $auth) {
 
 				if (($pos = strpos($auth, '-')) !== false) {
 					$version = intval(substr($auth, 0, $pos));
@@ -1335,7 +1335,7 @@
 
 			}
 
-			public static function value_encode($auth_values, $new_password = NULL) {
+			public static function value_encode($user_id, $auth_values, $new_password = NULL) {
 
 				$auth_values = array_merge(array(
 						'ph'   => '',
@@ -1401,7 +1401,7 @@
 
 				$auth = json_encode($auth_values);
 
-				// TODO: Encrypt auth value with libsodium, using the sha256(user_id + ENCRYPTION_KEY) as the key (so the value cannot be used for other users).
+				// TODO: Encrypt auth value with libsodium, using the sha256($user_id + ENCRYPTION_KEY) as the key (so the value cannot be used for other users).
 				// https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use
 				// https://download.libsodium.org/doc/
 
