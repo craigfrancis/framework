@@ -97,8 +97,8 @@
 
 				} else {
 
-						// https://github.com/zendframework/zend-http/blob/master/src/Header/SetCookie.php#L230
-						// https://github.com/php/php-src/blob/master/ext/standard/head.c#L80
+						// https://github.com/zendframework/zend-http/blob/83bcfc149b3796b9bd101d63868cf7462f4b33e6/src/Header/SetCookie.php#L230
+						// https://github.com/php/php-src/blob/ed35de784f4ea53927e906ba4af335778de4d16a/ext/standard/head.c#L80
 
 						// cookie::set('session', 'aaa');
 						// cookie::set('zero', 'bbb', 0);

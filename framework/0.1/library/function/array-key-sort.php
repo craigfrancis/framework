@@ -2,7 +2,7 @@
 
 	function array_key_sort(&$array, $key, $sort_flags = SORT_STRING, $sort_order = SORT_ASC) { // Sort an array by a key (https://bugs.php.net/bug.php?id=68622)
 		$array_key_sort = new array_key_sort($key);
-		switch ($sort_flags & ~SORT_FLAG_CASE) { // ref https://github.com/php/php-src/blob/master/ext/standard/array.c#L144
+		switch ($sort_flags & ~SORT_FLAG_CASE) { // ref https://github.com/php/php-src/blob/107ae86ca6baf2b79d8ddb32b54676a28269ba1f/ext/standard/array.c#L144
 			case SORT_NUMERIC:
 				$type = 'numeric';
 				break;

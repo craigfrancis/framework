@@ -61,13 +61,11 @@
 
 			} else {
 
-					// https://github.com/zendframework/zend-crypt/blob/master/src/PublicKey/RsaOptions.php#L219
-
 				$res = openssl_pkey_new([
 						'private_key_bits' => 2048,
 						'private_key_type' => OPENSSL_KEYTYPE_RSA,
 						'digest_alg' => 'sha256',
-					]);
+					]); // https://github.com/zendframework/zend-crypt/blob/9df0ef551ac28ec0d18f667c0f45612e1da49a84/src/PublicKey/RsaOptions.php#L219
 
 				$result = openssl_pkey_export($res, $secret_key);
 				if ($result !== true) {
