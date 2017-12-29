@@ -18,7 +18,7 @@
 		//--------------------------------------------------
 		// Fields
 
-			public function field_password_new_1_get($form, $config = array()) {
+			public function field_password_1_get($form, $config = array()) {
 
 				$this->form = $form;
 
@@ -31,7 +31,7 @@
 
 			}
 
-			public function field_password_new_2_get($form, $config = array()) {
+			public function field_password_2_get($form, $config = array()) {
 
 				$this->form = $form;
 
@@ -47,7 +47,11 @@
 
 			public function active() {
 
-					return false; // Still a valid token? either as a timeout, or the 'r' cookie not matching.
+ // Still a valid token? either as a timeout, or the tracker cookie not matching.
+
+// $this->auth->text_get('failure_reset_token')            => 'The link to reset your password is incorrect or has expired.',
+
+				return false;
 
 			}
 
@@ -56,6 +60,8 @@
 				$this->validate_password();
 				// New password is not the same as old password???
 				// New password matches Repeat new password.
+
+// Must have called auth_reset_complete::active... maybe it starts by setting $this->details?
 
 			}
 
@@ -69,7 +75,11 @@
 							'login' => NULL,
 						), $config);
 
-				// Delete all active sessions for the user (see update_complete as well).
+// Delete all active sessions for the user (see update_complete as well).
+
+// Reset all tokens for this "user_id" on complete (keeping in mind there may be more than one account with this email address)
+
+
 
 			}
 

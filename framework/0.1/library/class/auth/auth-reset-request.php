@@ -6,10 +6,11 @@
 		// Variables
 
 			protected $auth = NULL;
-			protected $db_reset_table = NULL;
-			protected $db_reset_fields = NULL;
 			protected $db_main_table = NULL;
 			protected $db_main_fields = NULL;
+			protected $db_main_where_sql = NULL;
+			protected $db_reset_table = NULL;
+			protected $db_reset_fields = NULL;
 			protected $details = NULL;
 			protected $form = NULL;
 			protected $field_email = NULL;
@@ -18,26 +19,28 @@
 
 				$this->auth = $auth;
 
-				list($this->db_main_table, $this->db_main_fields) = $this->auth->db_table_get('main');
+				list($this->db_main_table, $this->db_main_fields, $this->db_main_where_sql) = $this->auth->db_table_get('main');
 				list($this->db_reset_table, $this->db_reset_fields) = $this->auth->db_table_get('reset');
-
-			}
-
-			public function table_get() {
 
 				if (config::get('debug.level') > 0) {
 
-					debug_require_db_table($this->db_table['reset'], '
+					$db = $this->auth->db_get();
+
+					debug_require_db_table($this->db_reset_table, '
 							CREATE TABLE [TABLE] (
 								id int(11) NOT NULL AUTO_INCREMENT,
+								token tinytext NOT NULL,
+								ip tinytext NOT NULL,
+								browser tinytext NOT NULL,
+								tracker tinytext NOT NULL,
+								user_id int(11) NOT NULL,
+								email tinytext NOT NULL,
 								created datetime NOT NULL,
 								deleted datetime NOT NULL,
 								PRIMARY KEY (id)
 							);');
 
 				}
-
-				return $this->db_table['reset'];
 
 			}
 
@@ -68,10 +71,130 @@
 		//--------------------------------------------------
 		// Actions
 
-			public function validate() {
+			public function validate($email = NULL) {
 
-				// Too many attempts?
-				// What happens if there is more than one account?
+				//--------------------------------------------------
+				// Config
+
+					if ($this->auth->session_id_get() !== NULL) {
+						exit_with_error('Cannot call auth_reset_request::validate() when the user is logged in.');
+					}
+
+					$this->details = false;
+
+					$errors = array();
+
+					$db = $this->auth->db_get();
+
+				//--------------------------------------------------
+				// Values
+
+					if ($email !== NULL) {
+
+						$this->form = NULL;
+
+					} else if ($this->form === NULL) {
+
+						exit_with_error('Cannot call auth_reset_request::validate() without using any form fields, or providing an email address.');
+
+					} else if (!$this->form->valid()) { // Basic checks such as required fields, and CSRF
+
+						return false;
+
+					} else {
+
+						if (isset($this->field_email)) {
+							$email = strval($this->field_email->value_get());
+						} else {
+							exit_with_error('You must call auth_reset_request::field_email_get() before auth_reset_request::validate().');
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Validate
+
+					//--------------------------------------------------
+					// Too many attempts for this IP
+
+						$created_after = new timestamp('-1 hour');
+
+						$sql = 'SELECT
+									1
+								FROM
+									' . $db->escape_table($this->db_reset_table) . ' AS r
+								WHERE
+									r.ip = ? AND
+									r.created > ? AND
+									r.deleted = "0000-00-00 00:00:00"'; // Don't GROUP BY r.created, if we find more than 1 account, they probably won't try again... if we did this, then it opens a race condition (how many requests can be made in a second?).
+
+						$parameters = array();
+						$parameters[] = array('s', config::get('request.ip'));
+						$parameters[] = array('s', $created_after);
+
+						if ($db->num_rows($sql, $parameters) >= 5) {
+							$errors[] = $this->auth->text_get('failure_reset_repetition_ip');
+						}
+
+					//--------------------------------------------------
+					// Too many attempts for this email address
+
+						if (count($errors) == 0) {
+
+							$created_after = new timestamp('-1 hour');
+
+							$sql = 'SELECT
+										1
+									FROM
+										' . $db->escape_table($this->db_reset_table) . ' AS r
+									WHERE
+										r.email = ? AND
+										r.created > ? AND
+										r.deleted = "0000-00-00 00:00:00"';
+
+							$parameters = array();
+							$parameters[] = array('s', $email);
+							$parameters[] = array('s', $created_after);
+
+							if ($db->num_rows($sql, $parameters) >= 1) {
+								$errors[] = $this->auth->text_get('failure_reset_repetition_email');
+							}
+
+						}
+
+					//--------------------------------------------------
+					// Password changed recently
+
+						if (count($errors) == 0) {
+
+// TODO: 'failure_reset_changed'          => 'Your account has already had its password changed recently.',
+
+						}
+
+				//--------------------------------------------------
+				// Return
+
+					if (count($errors) == 0) {
+
+						$this->details = array(
+								'email' => $email,
+							);
+
+						return true;
+
+					} else if ($this->form) {
+
+						foreach ($errors as $field => $error) {
+							$this->form->error_add($error);
+						}
+
+						return false;
+
+					} else {
+
+						return $errors;
+
+					}
 
 			}
 
@@ -85,13 +208,113 @@
 							'change_url' => NULL,
 						), $config);
 
-					// Set an 'r' cookie with a long random key... this is stored in the db, and checked on 'reset_process_active'.
-					// Return
-					//   false = invalid_user
-					//   $change_url = url($request_url, array('t' => $request_id . '-' . $request_pass));
-					//   $change_url->format_set('full');
-					//
-					// Store users email address in user_password
+					if ($this->details === NULL) {
+						exit_with_error('You must call auth_reset_request::validate() before auth_reset_request::complete().');
+					}
+
+					if (!is_array($this->details)) {
+						exit_with_error('The login details are not valid, so why has auth_reset_request::complete() been called?');
+					}
+
+					if ($config['form']) {
+						$this->form = $config['form'];
+					}
+
+					if ($this->form && !$this->form->valid()) {
+						exit_with_error('The form is not valid, so why has auth_reset_request::complete() been called?');
+					}
+
+					$now = new timestamp();
+
+					$db = $this->auth->db_get();
+
+				//--------------------------------------------------
+				// Email field
+
+					$identification_username = ($this->auth->identification_type_get() == 'username');
+
+					if (!$identification_username) {
+						$db_main_field_email = $this->db_main_fields['identification'];
+					} else if (isset($this->db_main_fields['email'])) {
+						$db_main_field_email = $this->db_main_fields['email'];
+					} else {
+						exit_with_error('Need to specify auth::db_fields[\'main\'][\'email\']', debug_dump($this->db_main_fields));
+					}
+
+				//--------------------------------------------------
+				// Resets, one per account.
+
+					$resets = [];
+
+					$sql = 'SELECT
+								m.' . $db->escape_field($this->db_main_fields['id']) . ' AS id,
+								m.' . $db->escape_field($this->db_main_fields['identification']) . ' AS identification
+							FROM
+								' . $db->escape_table($this->db_main_table) . ' AS m
+							WHERE
+								m.' . $db->escape_field($db_main_field_email) . ' = ? AND
+								' . $this->db_main_where_sql;
+
+					$parameters = array();
+					$parameters[] = array('s', $this->details['email']);
+
+					foreach ($db->fetch_all($sql, $parameters) as $row) {
+
+						$resets[] = [
+								'user_id' => $row['id'],
+								'identification' => $row['identification'],
+							];
+
+					}
+
+				//--------------------------------------------------
+				// Tokens
+
+					if (count($resets) == 0) {
+
+						$resets[-1] = [
+								'user_id' => NULL,
+								'identification' => NULL,
+							];
+
+					}
+
+					foreach ($resets as $id => $reset) {
+
+						if ($reset['identification']) {
+							$reset_pass = random_key(15);
+							$reset_hash = $this->auth->_quick_hash_create($reset_pass);
+						} else {
+							$reset_pass = NULL;
+							$reset_hash = '';
+						}
+
+						$db->insert($this->db_reset_table, array(
+								'id'      => '',
+								'token'   => $reset_hash,
+								'ip'      => config::get('request.ip'),
+								'browser' => config::get('request.browser'),
+								'tracker' => $this->auth->_browser_tracker_get(),
+								'user_id' => $reset['user_id'],
+								'email'   => $this->details['email'], // Not $reset['email'], as that can be found by the user_id.
+								'created' => $now,
+								'deleted' => '0000-00-00 00:00:00',
+							));
+
+						$reset_id = $db->insert_id();
+
+						if ($reset_pass) {
+							$resets[$id]['token'] = $reset_id . '-' . $reset_pass; // Token to use with auth_reset_complete
+						} else {
+							unset($resets[$id]);
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return [$this->details['email'], $resets];
 
 			}
 

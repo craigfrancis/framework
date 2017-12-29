@@ -96,12 +96,13 @@
 							'failure_login_password'         => NULL,
 							'failure_login_decryption'       => NULL,
 							'failure_login_repetition'       => 'Too many login attempts (try again later).',
-							'failure_identification_current' => 'The email address supplied is already in use.',
-							'failure_password_current'       => 'Your current password is incorrect.', // Used on profile page
+							'failure_identification_current' => 'The email address supplied is already in use.', // Register and profile pages
+							'failure_password_current'       => 'Your current password is incorrect.', // Profile page
+							'failure_password_repetition'    => 'Too many attempts to enter your current password.', // Profile page
 							'failure_password_repeat'        => 'Your new passwords do not match.', // Register and profile pages
-							'failure_reset_identification'   => 'Your email address has not been recognised.',
 							'failure_reset_changed'          => 'Your account has already had its password changed recently.',
-							'failure_reset_requested'        => 'You have recently requested a password reset.',
+							'failure_reset_repetition_email' => 'You have recently requested a password reset.',
+							'failure_reset_repetition_ip'    => 'You have requested too many password resets.',
 							'failure_reset_token'            => 'The link to reset your password is incorrect or has expired.',
 
 						);
@@ -124,7 +125,6 @@
 						$default_text['identification_max_length'] = 'Your username cannot be longer than XXX characters.';
 
 						$default_text['failure_identification_current'] = 'The username supplied is already in use.';
-						$default_text['failure_reset_identification'] = 'Your username has not been recognised.';
 
 					}
 
@@ -313,7 +313,7 @@
 					//--------------------------------------------------
 					// Table
 
-						list($db_main_table, $db_main_fields, $db_main_where) = $this->db_table_get('main');
+						list($db_main_table, $db_main_fields, $db_main_where_sql) = $this->db_table_get('main');
 						list($db_session_table) = $this->db_table_get('session');
 
 						if (config::get('debug.level') > 0) {
@@ -391,7 +391,7 @@
 								s.id = ? AND
 								s.pass != "" AND
 								s.deleted = "0000-00-00 00:00:00" AND
-								' . $db_main_where;
+								' . $db_main_where_sql;
 
 							$parameters = array();
 							$parameters[] = array('i', $session_id);
@@ -621,7 +621,7 @@
 
 					$db = $this->db_get();
 
-					list($db_main_table, $db_main_fields, $db_main_where) = $this->db_table_get('main');
+					list($db_main_table, $db_main_fields, $db_main_where_sql) = $this->db_table_get('main');
 
 					$sql = 'SELECT
 								1
@@ -630,7 +630,7 @@
 							WHERE
 								m.' . $db->escape_field($db_main_fields['id']) . ' = ? AND
 								m.' . $db->escape_field($db_main_fields['created']) . ' > ? AND
-								' . $db_main_where;
+								' . $db_main_where_sql;
 
 					$parameters = array();
 					$parameters[] = array('i', $this->session_info['user_id']);
@@ -837,7 +837,7 @@
 
 					if ($this->session_history >= 0) {
 
-						$db = db_get();
+						$db = $this->db_get();
 
 						list($db_session_table) = $this->db_table_get('session');
 
@@ -890,7 +890,7 @@
 
 				$db = $this->db_get();
 
-				list($db_main_table, $db_main_fields, $db_main_where) = $this->db_table_get('main');
+				list($db_main_table, $db_main_fields, $db_main_where_sql) = $this->db_table_get('main');
 
 				$sql = 'SELECT
 							1
@@ -899,7 +899,7 @@
 						WHERE
 							m.' . $db->escape_field($db_main_fields['identification']) . ' = ? AND
 							m.' . $db->escape_field($db_main_fields['id']) . ' != ? AND
-							' . $db_main_where . '
+							' . $db_main_where_sql . '
 						LIMIT
 							1';
 
@@ -948,7 +948,7 @@
 
 					$db = $this->db_get();
 
-					list($db_main_table, $db_main_fields, $db_main_where) = $this->db_table_get('main');
+					list($db_main_table, $db_main_fields, $db_main_where_sql) = $this->db_table_get('main');
 					list($db_session_table) = $this->db_table_get('session');
 
 					$error = '';
@@ -967,7 +967,7 @@
 					}
 
 					$where_sql .= ' AND
-								' . $db_main_where . ' AND
+								' . $db_main_where_sql . ' AND
 								' . $this->db_where_sql['main_login'];
 
 					$sql = 'SELECT
@@ -1113,7 +1113,7 @@
 											m.' . $db->escape_field($db_main_fields['auth']) . ' = ?
 										WHERE
 											m.' . $db->escape_field($db_main_fields['id']) . ' = ? AND
-											' . $db_main_where . '
+											' . $db_main_where_sql . '
 										LIMIT
 											1';
 

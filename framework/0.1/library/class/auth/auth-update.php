@@ -7,10 +7,10 @@
 
 			protected $auth = NULL;
 			protected $confirm = false;
-			protected $db_update_table = NULL;
-			protected $db_update_fields = NULL;
 			protected $db_main_table = NULL;
 			protected $db_main_fields = NULL;
+			protected $db_update_table = NULL;
+			protected $db_update_fields = NULL;
 			protected $details = NULL;
 			protected $form = NULL;
 			protected $field_identification = NULL;
@@ -42,6 +42,7 @@
 								token tinytext NOT NULL,
 								ip tinytext NOT NULL,
 								browser tinytext NOT NULL,
+								tracker tinytext NOT NULL,
 								user_id int(11) NOT NULL,
 								email tinytext NOT NULL,
 								created datetime NOT NULL,
@@ -136,9 +137,9 @@
 				//--------------------------------------------------
 				// Config
 
-					$errors = array();
-
 					$this->details = false;
+
+					$errors = array();
 
 					$confirm = false;
 					$confirm_valid = true;
@@ -242,15 +243,15 @@
 
 							} else if ($result === 'failure_password') {
 
-								$errors['password_old'] = $this->auth->text_get('failure_login_password');
+								$errors['password_old'] = $this->auth->text_get('failure_password_current');
 
 							} else if ($result === 'failure_decryption') {
 
-								$errors['password_old'] = $this->auth->text_get('failure_login_decryption');
+								$errors['password_old'] = $this->auth->text_get('failure_password_current');
 
 							} else if ($result === 'failure_repetition') {
 
-								$errors['password_old'] = $this->auth->text_get('failure_login_repetition');
+								$errors['password_old'] = $this->auth->text_get('failure_password_repetition');
 
 							} else if (is_string($result)) {
 
@@ -306,6 +307,13 @@
 							}
 
 						}
+
+					//--------------------------------------------------
+					// Too many confirmations sent
+
+
+// TODO: Check $this->db_update_table
+
 
 				//--------------------------------------------------
 				// Return
@@ -484,6 +492,7 @@
 								'token'   => $update_hash,
 								'ip'      => config::get('request.ip'),
 								'browser' => config::get('request.browser'),
+								'tracker' => $this->auth->_browser_tracker_get(),
 								'user_id' => $this->details['user_id'],
 								'email'   => $this->details['confirm'],
 								'created' => $now,

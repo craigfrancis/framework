@@ -356,7 +356,7 @@
 
 					if ($this->details['password'] != '' && $this->details['confirm_valid']) { // Only store the auth (password) if the confirmation will succeed (account does not already exist).
 
-						$db = db_get();
+						$db = $this->auth->db_get();
 
 						$auth_config = [];
 
