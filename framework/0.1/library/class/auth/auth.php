@@ -50,11 +50,6 @@
 					'register' => array(),
 				);
 
-			protected $logout_details = NULL;
-			protected $register_details = NULL;
-			protected $update_details = NULL;
-			protected $reset_details = NULL;
-
 			public static $auth_version = 1;
 
 		//--------------------------------------------------
@@ -141,9 +136,9 @@
 					$this->db_table = array_merge(array(
 							'main'     => DB_PREFIX . 'user',
 							'session'  => DB_PREFIX . 'user_auth_session',
-							'password' => DB_PREFIX . 'user_auth_password',
 							'register' => DB_PREFIX . 'user_auth_register', // Can be set to NULL to skip email verification (and help attackers identify active accounts).
 							'update'   => DB_PREFIX . 'user_auth_update',
+							'reset'    => DB_PREFIX . 'user_auth_reset',
 						), $this->db_table);
 
 					$this->db_where_sql = array_merge(array(
@@ -197,12 +192,12 @@
 				return (isset($this->text[$ref]) ? $this->text[$ref] : $default);
 			}
 
-			public function identification_max_length_get() {
-				return $this->identification_max_length;
-			}
-
 			public function identification_type_get() {
 				return $this->identification_type;
+			}
+
+			public function identification_max_length_get() {
+				return $this->identification_max_length;
 			}
 
 			public function password_min_length_get() {
@@ -214,19 +209,33 @@
 			}
 
 		//--------------------------------------------------
-		// Editing
+		// User
 
 			public function user_set($user_id, $user_identification) { // Typically for admin use only
 				$this->user_id = $user_id;
 				$this->user_identification = $user_identification;
 			}
 
-			public function user_id_get() {
-				return $this->user_id;
+			public function user_get() {
+				if ($this->user_id) {
+					return [$this->user_id, $this->user_identification, 'set'];
+				} else {
+					return [$this->session_user_id_get(), $this->user_identification_get(), 'session'];
+				}
 			}
 
 			public function user_identification_get() {
-				return $this->user_identification;
+				if ($this->user_id) {
+
+					return $this->user_identification;
+
+				} else {
+
+					list($db_main_table, $db_main_fields) = $this->db_table_get('main');
+
+					return $this->session_info_get($db_main_fields['identification']);
+
+				}
 			}
 
 		//--------------------------------------------------
@@ -239,10 +248,8 @@
 						'remember_identification' => false,
 					), $config);
 
-				$user_id = $this->user_id_get();
-
-				if ($user_id === NULL) {
-					exit_with_error('You must call auth::user_id_set() before auth::login_forced().');
+				if ($this->user_id === NULL) {
+					exit_with_error('You must call auth::user_set() before auth::login_forced().');
 				}
 
 				if ($config['session_concurrent'] !== false && $config['session_concurrent'] !== true) {
@@ -253,7 +260,7 @@
 
 				$this->session_concurrent = $config['session_concurrent'];
 
-				$this->session_start($user_id, ($config['remember_identification'] === true ? $this->user_identification_get() : NULL));
+				$this->session_start($this->user_id, ($config['remember_identification'] === true ? $this->user_identification_get() : NULL));
 
 				$this->session_concurrent = $system_session_concurrent;
 
@@ -1197,7 +1204,7 @@
 
 			}
 
-			public function _field_password_get($form, $config) { // Used in login, register, update (x2), reset.
+			public function _field_password_get($form, $config) { // Used in login, register, update (x2).
 
 				config::set('output.tracking', false);
 

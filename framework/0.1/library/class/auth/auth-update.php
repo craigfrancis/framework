@@ -70,15 +70,7 @@
 					), $config));
 
 				if ($form->initial()) {
-
-					$user_identification = $this->auth->user_identification_get();
-
-					if (!$user_identification) {
-						$user_identification = $this->auth->session_info_get($this->db_main_fields['identification']);
-					}
-
-					$this->field_identification->value_set($user_identification);
-
+					$this->field_identification->value_set($this->auth->user_identification_get());
 				}
 
 				return $this->field_identification;
@@ -158,18 +150,10 @@
 				//--------------------------------------------------
 				// User
 
-					$user_id = $this->auth->user_id_get();
-					$user_identification = $this->auth->user_identification_get();
+					list($current_user_id, $current_identification, $current_source) = $this->auth->user_get();
 
-					$user_edit = ($user_id !== NULL); // i.e. was set by the admin.
-
-					if (!$user_edit) {
-						$user_id = $this->auth->session_user_id_get();
-						$user_identification = $this->auth->session_info_get($this->db_main_fields['identification']);
-					}
-
-					if ($user_id === NULL) {
-						exit_with_error('Cannot call auth_update::validate() when the user is not selected or logged in.');
+					if ($current_user_id === NULL) {
+						exit_with_error('Cannot call auth_update::validate() when the user is not logged in, or auth::user_set() has not been used.');
 					}
 
 				//--------------------------------------------------
@@ -219,8 +203,8 @@
 
 						if (array_key_exists('identification', $values)) {
 
-							$result = $this->auth->validate_identification($values['identification'], $user_id);
-							$unique = $this->auth->validate_identification_unique($values['identification'], $user_id);
+							$result = $this->auth->validate_identification($values['identification'], $current_user_id);
+							$unique = $this->auth->validate_identification_unique($values['identification'], $current_user_id);
 
 							if (is_string($result)) { // Custom (project specific) error message
 
@@ -238,7 +222,7 @@
 
 								$identification_new = $values['identification']; // No confirmation needed, or the username that has changed... if an email address field exists, has changed, and needs confirming, use $auth_register->complete(['email_new' => $email])
 
-							} else if ($values['identification'] != $user_identification) {
+							} else if ($values['identification'] != $current_identification) {
 
 								$confirm = $values['identification']; // New email address, to be confirmed.
 								$confirm_valid = ($unique === true);
@@ -258,7 +242,7 @@
 
 							if ($result === 'failure_identification') {
 
-								exit_with_error('Could not find details for user id "' . $user_id . '"');
+								exit_with_error('Could not find details for user id "' . $current_user_id . '"');
 
 							} else if ($result === 'failure_password') {
 
@@ -337,8 +321,8 @@
 								'password' => $password_new,
 								'confirm' => $confirm,
 								'confirm_valid' => $confirm_valid,
-								'user_edit' => $user_edit,
-								'user_id' => $user_id,
+								'user_set' => ($current_source == 'set'),
+								'user_id' => $current_user_id,
 							);
 
 						return true;
@@ -432,7 +416,7 @@
 					}
 
 					if ($config['remember_identification'] === NULL) {
-						$config['remember_identification'] = ($this->details['user_edit'] == false); // Default to remembering login details when user is editing their own profile, not the admin using $auth->user_set();
+						$config['remember_identification'] = ($this->details['user_set'] == false); // Default to remembering login details when user is editing their own profile, not the admin using $auth->user_set();
 					}
 
 				//--------------------------------------------------
@@ -443,7 +427,7 @@
 						$record->value_set($this->db_main_fields['identification'], $this->details['identification']);
 
 						if ($config['remember_identification'] === true) {
-							$this->last_identification_set($this->details['identification']);
+							$this->auth->last_identification_set($this->details['identification']);
 						}
 
 					}
