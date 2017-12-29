@@ -1,15 +1,47 @@
 <?php
 
-	class auth_reset_process_base extends check {
+	class auth_reset_complete_base extends check {
 
 		//--------------------------------------------------
 		// Variables
 
 			protected $auth = NULL;
 			protected $details = NULL;
+			protected $form = NULL;
+			protected $field_password_1 = NULL;
+			protected $field_password_2 = NULL;
 
 			public function __construct($auth) {
 				$this->auth = $auth;
+			}
+
+		//--------------------------------------------------
+		// Fields
+
+			public function field_password_new_1_get($form, $config = array()) {
+
+				$this->form = $form;
+
+				// $config = array_merge(array(
+				// 		'label' => $this->auth->text_get('password_label'), - New Password
+				// 		'name' => 'password',
+				// 		'max_length' => 250,
+				// 	), $config);
+
+				// Required
+
+			}
+
+			public function field_password_new_2_get($form, $config = array()) {
+
+				$this->form = $form;
+
+				// $config = array_merge(array(
+				// 		'label' => $this->auth->text_get('password_label'), - Repeat Password
+				// 		'name' => 'password',
+				// 		'max_length' => 250,
+				// 	), $config);
+
 			}
 
 		//--------------------------------------------------

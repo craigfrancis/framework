@@ -6,21 +6,28 @@
 		// Variables
 
 			protected $auth = NULL;
+			protected $db_reset_table = NULL;
+			protected $db_reset_fields = NULL;
+			protected $db_main_table = NULL;
+			protected $db_main_fields = NULL;
 			protected $details = NULL;
 			protected $form = NULL;
 			protected $field_email = NULL;
-			protected $field_password_1 = NULL;
-			protected $field_password_2 = NULL;
 
 			public function __construct($auth) {
+
 				$this->auth = $auth;
+
+				list($this->db_main_table, $this->db_main_fields) = $this->auth->db_table_get('main');
+				list($this->db_reset_table, $this->db_reset_fields) = $this->auth->db_table_get('reset');
+
 			}
 
 			public function table_get() {
 
 				if (config::get('debug.level') > 0) {
 
-					debug_require_db_table($this->db_table['password'], '
+					debug_require_db_table($this->db_table['reset'], '
 							CREATE TABLE [TABLE] (
 								id int(11) NOT NULL AUTO_INCREMENT,
 								created datetime NOT NULL,
@@ -30,7 +37,7 @@
 
 				}
 
-				return $this->db_table['password'];
+				return $this->db_table['reset'];
 
 			}
 
@@ -56,32 +63,6 @@
 				// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
 
 				return $this->field_email = $field;
-
-			}
-
-			public function field_password_new_1_get($form, $config = array()) {
-
-				$this->form = $form;
-
-				// $config = array_merge(array(
-				// 		'label' => $this->auth->text_get('password_label'), - New Password
-				// 		'name' => 'password',
-				// 		'max_length' => 250,
-				// 	), $config);
-
-				// Required
-
-			}
-
-			public function field_password_new_2_get($form, $config = array()) {
-
-				$this->form = $form;
-
-				// $config = array_merge(array(
-				// 		'label' => $this->auth->text_get('password_label'), - Repeat Password
-				// 		'name' => 'password',
-				// 		'max_length' => 250,
-				// 	), $config);
 
 			}
 
