@@ -273,7 +273,7 @@
 					if (count($resets) == 0) {
 
 						$resets[-1] = [
-								'user_id' => NULL,
+								'user_id' => 0,
 								'identification' => NULL,
 							];
 
