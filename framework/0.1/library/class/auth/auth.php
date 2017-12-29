@@ -6,9 +6,6 @@
 		// Remember me:
 		// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
 		// http://blog.alejandrocelaya.com/2016/02/09/how-to-properly-implement-persistent-login/ - Replace token on use
-		//
-		// https://github.com/paragonie/password_lock - SHA384 + base64 + bcrypt + encrypt (Random IV, AES-256-CTR, SHA256 HMAC)
-		// https://blogs.dropbox.com/tech/2016/09/how-dropbox-securely-stores-your-passwords/ - SHA512 + bcrypt + AES256 (with pepper).
 
 	class auth_base extends check {
 
@@ -1308,7 +1305,7 @@
 					//
 					//   var_dump(password_verify("abc", password_hash("abc\0defghijklmnop", PASSWORD_DEFAULT)));
 					//
-					// A sha384 hash, with base64 encoding (6 bits
+					// A SHA384 hash, with base64 encoding (6 bits
 					// per character, or 64 characters long), would
 					// avoid both of these issues - ref ParagonIE:
 					//
@@ -1338,7 +1335,7 @@
 					// consistency of their bcrypt implementation to
 					// always or never truncate to 72 characters.
 					//
-					//   https://blogs.dropbox.com/tech/2016/09/how-dropbox-securely-stores-your-passwords/
+					//   https://blogs.dropbox.com/tech/2016/09/how-dropbox-securely-stores-your-passwords/ - SHA512 + bcrypt + AES256 (with pepper).
 					//
 					// It also looks like all variations in the SHA-2
 					// family can be implemented in the browser, so the
