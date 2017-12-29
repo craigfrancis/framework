@@ -65,7 +65,6 @@
 				$this->field_identification = $this->auth->_field_identification_get($form, array_merge(array(
 						'label' => $this->auth->text_get('identification_label'),
 						'name' => 'identification',
-						'max_length' => $this->auth->identification_max_length_get(),
 						'check_domain' => true,
 					), $config));
 
@@ -85,7 +84,6 @@
 						'label' => $this->auth->text_get('password_old_label'),
 						'name' => 'password',
 						'min_length' => 1, // Field is simply required (supporting old/short passwords).
-						'max_length' => $this->auth->password_max_length_get(),
 					), $config, array(
 						'required' => true,
 						'autocomplete' => 'current-password',
@@ -105,7 +103,6 @@
 						'label' => $this->auth->text_get('password_new_label'),
 						'name' => 'password_new',
 						'min_length' => $this->auth->password_min_length_get(),
-						'max_length' => $this->auth->password_max_length_get(),
 					), $config, array(
 						'required' => $this->field_password_new_required,
 						'autocomplete' => 'new-password',
@@ -123,7 +120,6 @@
 						'label' => $this->auth->text_get('password_repeat_label'),
 						'name' => 'password_repeat',
 						'min_length' => 1, // Field is simply required (min length checked on 1st field).
-						'max_length' => $this->auth->password_max_length_get(),
 					), $config, array(
 						'required' => $this->field_password_new_required,
 					)));

@@ -196,16 +196,8 @@
 				return $this->identification_type;
 			}
 
-			public function identification_max_length_get() {
-				return $this->identification_max_length;
-			}
-
 			public function password_min_length_get() {
 				return $this->password_min_length;
-			}
-
-			public function password_max_length_get() {
-				return $this->password_max_length;
 			}
 
 		//--------------------------------------------------
@@ -1185,6 +1177,8 @@
 
 			public function _field_identification_get($form, $config) {
 
+				$max_length = (isset($config['max_length']) ? $config['max_length'] : $this->identification_max_length);
+
 				if ($this->identification_type_get() == 'username') {
 					$field = new form_field_text($form, $config['label'], $config['name']);
 				} else {
@@ -1194,11 +1188,24 @@
 				}
 
 				$field->min_length_set($this->text_get('identification_min_length'));
-				$field->max_length_set($this->text_get('identification_max_length'), $config['max_length']);
+				$field->max_length_set($this->text_get('identification_max_length'), $max_length);
 				$field->autocapitalize_set(false);
 				$field->autocomplete_set('username');
 
-				// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
+				return $field;
+
+			}
+
+			public function _field_email_get($form, $config) { // Used in reset.
+
+				$max_length = (isset($config['max_length']) ? $config['max_length'] : $this->email_max_length);
+
+				$field = new form_field_email($form, $config['label'], $config['name']);
+				$field->check_domain_set($config['check_domain']);
+				$field->format_error_set($this->text_get('email_format'));
+				$field->min_length_set($this->text_get('email_min_length'));
+				$field->max_length_set($this->text_get('email_max_length'), $max_length);
+				$field->autocomplete_set($config['autocomplete']);
 
 				return $field;
 
@@ -1208,15 +1215,15 @@
 
 				config::set('output.tracking', false);
 
+				$max_length = (isset($config['max_length']) ? $config['max_length'] : $this->password_max_length);
+
 				$field = new form_field_password($form, $config['label'], $config['name']);
-				$field->max_length_set($this->text_get('password_max_length'), $config['max_length']);
+				$field->max_length_set($this->text_get('password_max_length'), $max_length);
 				$field->autocomplete_set($config['autocomplete']);
 
 				if ($config['required']) {
 					$field->min_length_set($this->text_get('password_min_length'), $config['min_length']);
 				}
-
-				// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
 
 				return $field;
 
@@ -1226,15 +1233,15 @@
 
 				config::set('output.tracking', false);
 
+				$max_length = (isset($config['max_length']) ? $config['max_length'] : $this->password_max_length);
+
 				$field = new form_field_password($form, $config['label'], $config['name']);
-				$field->max_length_set($this->text_get('password_new_max_length'), $config['max_length']);
+				$field->max_length_set($this->text_get('password_new_max_length'), $max_length);
 				$field->autocomplete_set($config['autocomplete']);
 
 				if ($config['required']) {
 					$field->min_length_set($this->text_get('password_new_min_length'), $config['min_length']);
 				}
-
-				// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
 
 				return $field;
 
@@ -1244,15 +1251,15 @@
 
 				config::set('output.tracking', false);
 
+				$max_length = (isset($config['max_length']) ? $config['max_length'] : $this->password_max_length);
+
 				$field = new form_field_password($form, $config['label'], $config['name']);
-				$field->max_length_set($this->text_get('password_repeat_max_length'), $config['max_length']);
+				$field->max_length_set($this->text_get('password_repeat_max_length'), $max_length);
 				$field->autocomplete_set('new-password');
 
 				if ($config['required']) {
 					$field->min_length_set($this->text_get('password_repeat_min_length'), $config['min_length']);
 				}
-
-				// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
 
 				return $field;
 

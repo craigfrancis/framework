@@ -46,23 +46,22 @@
 
 			public function field_email_get($form, $config = array()) { // Must be email, username will be known and can be used to spam.
 
+				$identification_username = ($this->auth->identification_type_get() == 'username');
+
 				$this->form = $form;
 
-				$config = array_merge(array(
+				$this->field_email = $this->auth->_field_email_get($form, array_merge(array(
 						'label' => $this->auth->text_get('email_label'),
-						'name' => 'email',
-						'max_length' => $this->email_max_length,
-					), $config);
+						'name' => ($identification_username ? 'email' : 'identification'), // We reset by 'email' address, even when they login by username; but keep calling the field 'identification' for email based logins (for consistency with other forms).
+						'check_domain' => true,
+						'autocomplete' => ($identification_username ? 'email' : 'username'), // When logging in via email address, we use the autocomplete value "username".
+					), $config));
 
-				$field = new form_field_email($form, $config['label'], $config['name']);
-				$field->format_error_set($this->auth->text_get('email_format'));
-				$field->min_length_set($this->auth->text_get('email_min_length'));
-				$field->max_length_set($this->auth->text_get('email_max_length'), $config['max_length']);
-				$field->autocomplete_set('email');
+				if ($form->initial() && !$identification_username) {
+					$this->field_email->value_set($this->auth->last_identification_get());
+				}
 
-				// $field->info_set($field->type_get() . ' / ' . $field->input_name_get() . ' / ' . $field->autocomplete_get());
-
-				return $this->field_email = $field;
+				return $this->field_email;
 
 			}
 
@@ -93,7 +92,6 @@
 					//   $change_url->format_set('full');
 					//
 					// Store users email address in user_password
-
 
 			}
 

@@ -25,7 +25,6 @@
 				// $config = array_merge(array(
 				// 		'label' => $this->auth->text_get('password_label'), - New Password
 				// 		'name' => 'password',
-				// 		'max_length' => 250,
 				// 	), $config);
 
 				// Required
@@ -39,7 +38,6 @@
 				// $config = array_merge(array(
 				// 		'label' => $this->auth->text_get('password_label'), - Repeat Password
 				// 		'name' => 'password',
-				// 		'max_length' => 250,
 				// 	), $config);
 
 			}
