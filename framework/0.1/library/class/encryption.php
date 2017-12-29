@@ -32,7 +32,7 @@
 
 	class encryption_base extends check {
 
-		public static $openssl_cipher = 'AES-256-CTR'; // AES-GCM (or more precisely aes-256-gcm) is listed in openssl_get_cipher_methods(), but not supported in openssl_encrypt() before PHP 7.1
+		public static $openssl_cipher = 'AES-256-CTR'; // Can't do AES-GCM (or more precisely aes-256-gcm), while it is listed in openssl_get_cipher_methods(), it's not supported in openssl_encrypt() before PHP 7.1
 
 		public static function key_symmetric_create() {
 
@@ -42,7 +42,7 @@
 
 			} else {
 
-				return 'KS1-' . base64_encode(openssl_random_pseudo_bytes(256/8));
+				return 'KS1-' . base64_encode(openssl_random_pseudo_bytes(256/8)); // Recommended 256 bit key... https://gist.github.com/atoponce/07d8d4c833873be2f68c34f9afc5a78a
 
 			}
 
