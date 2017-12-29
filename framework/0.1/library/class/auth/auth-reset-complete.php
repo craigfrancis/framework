@@ -18,16 +18,21 @@
 		//--------------------------------------------------
 		// Fields
 
+
 			public function field_password_1_get($form, $config = array()) {
 
 				$this->form = $form;
 
-				// $config = array_merge(array(
-				// 		'label' => $this->auth->text_get('password_label'), - New Password
-				// 		'name' => 'password',
-				// 	), $config);
+				$this->field_password_1 = $this->auth->_field_password_new_get($form, array_merge(array(
+						'label' => $this->auth->text_get('password_new_label'),
+						'name' => 'password',
+						'min_length' => $this->auth->password_min_length_get(),
+					), $config, array(
+						'required' => true,
+						'autocomplete' => 'new-password',
+					)));
 
-				// Required
+				return $this->field_password_1;
 
 			}
 
@@ -35,21 +40,30 @@
 
 				$this->form = $form;
 
-				// $config = array_merge(array(
-				// 		'label' => $this->auth->text_get('password_label'), - Repeat Password
-				// 		'name' => 'password',
-				// 	), $config);
+				$this->field_password_2 = $this->auth->_field_password_repeat_get($form, array_merge(array(
+						'label' => $this->auth->text_get('password_repeat_label'),
+						'name' => 'password_repeat',
+						'min_length' => 1, // Field is simply required (min length checked on 1st field).
+					), $config, array(
+						'required' => true,
+					)));
+
+				return $this->field_password_2;
 
 			}
 
 		//--------------------------------------------------
 		// Actions
 
-			public function active() {
+			public function active($reset_token, $config = array()) {
 
  // Still a valid token? either as a timeout, or the tracker cookie not matching.
 
 // $this->auth->text_get('failure_reset_token')            => 'The link to reset your password is incorrect or has expired.',
+
+// $valid = true or false (expired, non-existent, etc)... $identification only returned if $valid (not when it has expired).
+
+// return [$valid, $identification];
 
 				return false;
 
