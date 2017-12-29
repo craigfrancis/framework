@@ -295,7 +295,8 @@
 
 								exit_with_error('Invalid response from auth::validate_password()', $result);
 
-// Check register helper... $password_1 and 2 can be NULL to skip .... } else if ($password_2 !== NULL && $password_1 != $password_2) {
+// Check register helper... $password_1 and 2 can be NULL to skip .... } else if ($password_2 !== NULL && $password_1 !== $password_2) {
+
 							} else if ($password_2 !== NULL && $password_1 !== $password_2) {
 
 								$errors['password_new_2'] = $this->auth->text_get('failure_password_repeat');
