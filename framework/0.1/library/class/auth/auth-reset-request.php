@@ -89,19 +89,22 @@
 		// Actions
 
 			public function validate() {
+
+				// Too many attempts?
+				// What happens if there is more than one account?
+
 			}
 
-			public function complete($change_url = NULL) {
-			}
+			public function complete($config = array()) {
 
-				public function reset_request_validate() {
+				//--------------------------------------------------
+				// Config
 
-					// Too many attempts?
-					// What happens if there is more than one account?
+					$config = array_merge(array(
+							'form'       => NULL,
+							'change_url' => NULL,
+						), $config);
 
-				}
-
-				public function reset_request_complete($change_url = NULL) {
 					// Set an 'r' cookie with a long random key... this is stored in the db, and checked on 'reset_process_active'.
 					// Return
 					//   false = invalid_user
@@ -109,9 +112,10 @@
 					//   $change_url->format_set('full');
 					//
 					// Store users email address in user_password
-				}
+
+
+			}
 
 	}
-
 
 ?>

@@ -38,7 +38,7 @@
 					}
 
 				//--------------------------------------------------
-				// Validate
+				// Return
 
 					if ($this->auth->session_info_get('logout_csrf') == $csrf) {
 
@@ -48,16 +48,15 @@
 
 						return true;
 
+					} else {
+
+						return false;
+
 					}
-
-				//--------------------------------------------------
-				// Failure
-
-					return false;
 
 			}
 
-			public function complete() {
+			public function complete($config = array()) {
 
 				//--------------------------------------------------
 				// Config

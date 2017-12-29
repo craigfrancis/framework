@@ -16,27 +16,32 @@
 		// Actions
 
 			public function active() {
+
+					return false; // Still a valid token? either as a timeout, or the 'r' cookie not matching.
+
 			}
 
 			public function validate() {
+
+				$this->validate_password();
+				// New password is not the same as old password???
+				// New password matches Repeat new password.
+
 			}
 
-			public function complete() {
+			public function complete($config = array()) {
+
+				//--------------------------------------------------
+				// Config
+
+					$config = array_merge(array(
+							'form'  => NULL,
+							'login' => NULL,
+						), $config);
+
+				// Delete all active sessions for the user (see update_complete as well).
+
 			}
-
-				public function reset_process_active() {
-					return false; // Still a valid token? either as a timeout, or the 'r' cookie not matching.
-				}
-
-				public function reset_process_validate() {
-					$this->validate_password();
-					// New password is not the same as old password???
-					// New password matches Repeat new password.
-				}
-
-				public function reset_process_complete() {
-					// Delete all active sessions for the user (see update_complete as well).
-				}
 
 	}
 

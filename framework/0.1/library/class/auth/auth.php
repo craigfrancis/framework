@@ -2,10 +2,7 @@
 
 		// Notes:
 		// http://www.troyhunt.com/2015/01/introducing-secure-account-management.html
-		//
-		// Remember me:
-		// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
-		// http://blog.alejandrocelaya.com/2016/02/09/how-to-properly-implement-persistent-login/ - Replace token on use
+
 
 	class auth_base extends check {
 
@@ -239,7 +236,7 @@
 
 				$config = array_merge(array(
 						'session_concurrent' => NULL,
-						'remember_login'     => false,
+						'remember_identification' => false,
 					), $config);
 
 				$user_id = $this->user_id_get();
@@ -256,7 +253,7 @@
 
 				$this->session_concurrent = $config['session_concurrent'];
 
-				$this->session_start($user_id, ($config['remember_login'] === true ? $this->user_identification_get() : NULL));
+				$this->session_start($user_id, ($config['remember_identification'] === true ? $this->user_identification_get() : NULL));
 
 				$this->session_concurrent = $system_session_concurrent;
 

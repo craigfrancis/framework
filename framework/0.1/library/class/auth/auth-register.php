@@ -120,11 +120,17 @@
 			public function validate($identification = NULL, $password_1 = NULL, $password_2 = NULL) {
 
 				//--------------------------------------------------
-				// User
+				// Config
 
 					if ($this->auth->session_id_get() !== NULL) {
 						exit_with_error('Cannot call auth_register::validate() when the user is logged in.');
 					}
+
+					$this->details = false;
+
+					$errors = array();
+
+					$confirm_valid = true;
 
 				//--------------------------------------------------
 				// Values
@@ -170,15 +176,6 @@
 
 				//--------------------------------------------------
 				// Validate
-
-					//--------------------------------------------------
-					// Config
-
-						$errors = array();
-
-						$this->details = false;
-
-						$confirm_valid = true;
 
 					//--------------------------------------------------
 					// Validate identification
@@ -280,9 +277,9 @@
 				// Config
 
 					$config = array_merge(array(
-							'login'     => true,
-							'form'      => NULL,
-							'record'    => NULL,
+							'form'   => NULL,
+							'record' => NULL,
+							'login'  => true,
 						), $config);
 
 					if ($this->details === NULL) {

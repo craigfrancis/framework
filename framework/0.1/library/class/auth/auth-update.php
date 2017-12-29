@@ -146,6 +146,16 @@
 			public function validate($values = NULL) {
 
 				//--------------------------------------------------
+				// Config
+
+					$errors = array();
+
+					$this->details = false;
+
+					$confirm = false;
+					$confirm_valid = true;
+
+				//--------------------------------------------------
 				// User
 
 					$user_id = $this->auth->user_id_get();
@@ -201,16 +211,6 @@
 				// Validate
 
 					//--------------------------------------------------
-					// Config
-
-						$errors = array();
-
-						$this->details = false;
-
-						$confirm = false;
-						$confirm_valid = true;
-
-					//--------------------------------------------------
 					// Identification
 
 						$identification_new = NULL;
@@ -258,7 +258,7 @@
 
 							if ($result === 'failure_identification') {
 
-								exit_with_error('Could not return details about user id "' . $user_id . '"');
+								exit_with_error('Could not find details for user id "' . $user_id . '"');
 
 							} else if ($result === 'failure_password') {
 
@@ -375,11 +375,11 @@
 				// Config
 
 					$config = array_merge(array(
-							'login'          => true,
-							'email_new'      => NULL, // Set to an email address if it changes (and identification via username).
-							'form'           => NULL,
-							'record'         => NULL,
-							'remember_login' => NULL,
+							'form'                    => NULL,
+							'record'                  => NULL,
+							'login'                   => true,
+							'email_new'               => NULL, // Set to an email address if it changes (and identification via username).
+							'remember_identification' => NULL,
 						), $config);
 
 					if ($this->details === NULL) {
@@ -388,6 +388,10 @@
 
 					if (!is_array($this->details)) {
 						exit_with_error('The update details are not valid, so why has auth_update::complete() been called?');
+					}
+
+					if ($config['form']) {
+						$this->form = $config['form'];
 					}
 
 					if ($this->form) {
@@ -427,8 +431,8 @@
 						}
 					}
 
-					if (isset($config['remember_login'])) {
-						$config['remember_login'] = ($this->details['user_edit'] == false); // Default to remembering login details when user is editing their own profile, not the admin using $auth->user_set();
+					if ($config['remember_identification'] === NULL) {
+						$config['remember_identification'] = ($this->details['user_edit'] == false); // Default to remembering login details when user is editing their own profile, not the admin using $auth->user_set();
 					}
 
 				//--------------------------------------------------
@@ -438,7 +442,7 @@
 
 						$record->value_set($this->db_main_fields['identification'], $this->details['identification']);
 
-						if ($config['remember_login'] === true) {
+						if ($config['remember_identification'] === true) {
 							$this->last_identification_set($this->details['identification']);
 						}
 
@@ -523,10 +527,13 @@
 
 			}
 
-			public function confirm($update_token) {
+			public function confirm($update_token, $config = array()) {
 
 				//--------------------------------------------------
 				// Config
+
+					$config = array_merge(array(
+						), $config);
 
 					$db = $this->auth->db_get();
 

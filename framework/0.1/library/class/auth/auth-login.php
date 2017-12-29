@@ -61,6 +61,11 @@
 			public function validate($identification = NULL, $password = NULL) {
 
 				//--------------------------------------------------
+				// Config
+
+					$this->details = false;
+
+				//--------------------------------------------------
 				// Values
 
 					if ($identification !== NULL) {
@@ -94,8 +99,6 @@
 				//--------------------------------------------------
 				// Validate
 
-					$this->details = false;
-
 					$result = $this->auth->validate_login($identification, $password);
 
 				//--------------------------------------------------
@@ -105,7 +108,7 @@
 
 						$this->details = $result;
 
-						return $result;
+						return true;
 
 					} else if ($this->form) {
 
@@ -141,20 +144,29 @@
 
 					} else {
 
-						return $result;
+						return [$result]; // All validate functions return true, false (for forms mode), or an array of errors.
 
 					}
 
 			}
 
+// TODO: Remember me
+// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
+// http://blog.alejandrocelaya.com/2016/02/09/how-to-properly-implement-persistent-login/ - Replace token on use
+
 // TODO: Support 2 Factor Authentication, via TOTP (Time based, one time password).
-// Ensure there is a "remember this browser feature", which creates a record in the database (so these can be easily listed/reset).
+// Ensure there is a "remember_browser" for 2FA, which creates a record in the database (so these can be easily listed/reset).
 // Add a 2FA disable and recovery options... for recovery, provide them with a random key during setup, which can be used to disable 2FA... both use a reset email and 'r' cookie (similar to password reset process).
 
-			public function complete() {
+			public function complete($config = array()) {
 
 				//--------------------------------------------------
 				// Config
+
+					$config = array_merge(array(
+							'form'          => NULL,
+							'remember_user' => true,
+						), $config);
 
 					if ($this->details === NULL) {
 						exit_with_error('You must call auth_login::validate() before auth_login::complete().');
@@ -162,6 +174,10 @@
 
 					if (!is_array($this->details)) {
 						exit_with_error('The login details are not valid, so why has auth_login::complete() been called?');
+					}
+
+					if ($config['form']) {
+						$this->form = $config['form'];
 					}
 
 					if ($this->form && !$this->form->valid()) {
@@ -209,11 +225,10 @@
 				//--------------------------------------------------
 				// Return
 
-					return array($this->details['id'], $state_ref, $state_extra);
+					return [$this->details['id'], $state_ref, $state_extra];
 
 			}
 
 	}
-
 
 ?>
