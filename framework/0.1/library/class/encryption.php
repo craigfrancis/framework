@@ -32,6 +32,8 @@
 
 	class encryption_base extends check {
 
+		public static $openssl_cipher = 'AES-256-CTR'; // AES-GCM (or more precisely aes-256-gcm) is listed in openssl_get_cipher_methods(), but not supported in openssl_encrypt() before PHP 7.1
+
 		public static function key_symmetric_create() {
 
 			if (function_exists('sodium_crypto_aead_chacha20poly1305_ietf_encrypt')) {
@@ -283,10 +285,10 @@
 
 		private static function _encode_symmetric_openssl($key, $input) { // Symmetric key LEGACY ... https://paragonie.com/blog/2015/05/if-you-re-typing-word-mcrypt-into-your-code-you-re-doing-it-wrong
 
-			$nonce_size = openssl_cipher_iv_length('AES-256-CTR');
+			$nonce_size = openssl_cipher_iv_length(self::$openssl_cipher);
 			$nonce = openssl_random_pseudo_bytes($nonce_size);
 
-			$encrypted = openssl_encrypt($input, 'AES-256-CTR', $key, OPENSSL_RAW_DATA, $nonce);
+			$encrypted = openssl_encrypt($input, self::$openssl_cipher, $key, OPENSSL_RAW_DATA, $nonce);
 
 			$hmac = hash_hmac('sha256', $nonce . $encrypted, $key, true);
 
@@ -302,7 +304,7 @@
 				exit_with_error('Could not verify HMAC of the encrypted data');
 			}
 
-			return openssl_decrypt($encrypted, 'AES-256-CTR', $key, OPENSSL_RAW_DATA, $nonce);
+			return openssl_decrypt($encrypted, self::$openssl_cipher, $key, OPENSSL_RAW_DATA, $nonce);
 
 		}
 
@@ -326,10 +328,10 @@
 
 			$data_key = openssl_random_pseudo_bytes(256/8);
 
-			$nonce_size = openssl_cipher_iv_length('AES-256-CTR');
+			$nonce_size = openssl_cipher_iv_length(self::$openssl_cipher);
 			$nonce = openssl_random_pseudo_bytes($nonce_size);
 
-			$data_encrypted = openssl_encrypt($input, 'AES-256-CTR', $data_key, OPENSSL_RAW_DATA, $nonce);
+			$data_encrypted = openssl_encrypt($input, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $nonce);
 
 			$hmac_key = openssl_random_pseudo_bytes(256/8);
 			$hmac_value = hash_hmac('sha256', $nonce . $data_encrypted, $hmac_key, true);
@@ -367,7 +369,7 @@
 				exit_with_error('Could not verify HMAC of the encrypted data');
 			}
 
-			return openssl_decrypt($data_encrypted, 'AES-256-CTR', $data_key, OPENSSL_RAW_DATA, $nonce);
+			return openssl_decrypt($data_encrypted, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $nonce);
 
 		}
 
@@ -399,10 +401,10 @@
 
 			$data_key = openssl_random_pseudo_bytes(256/8);
 
-			$nonce_size = openssl_cipher_iv_length('AES-256-CTR');
+			$nonce_size = openssl_cipher_iv_length(self::$openssl_cipher);
 			$nonce = openssl_random_pseudo_bytes($nonce_size); // 16-bytes, 128-bits
 
-			$data_encrypted = openssl_encrypt($input, 'AES-256-CTR', $data_key, OPENSSL_RAW_DATA, $nonce);
+			$data_encrypted = openssl_encrypt($input, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $nonce);
 
 			$hmac_key = openssl_random_pseudo_bytes(256/8);
 			$hmac_value = hash_hmac('sha256', $nonce . $data_encrypted, $hmac_key, true);
@@ -456,7 +458,7 @@
 				exit_with_error('Could not verify HMAC of the encrypted data');
 			}
 
-			return openssl_decrypt($data_encrypted, 'AES-256-CTR', $data_key, OPENSSL_RAW_DATA, $nonce);
+			return openssl_decrypt($data_encrypted, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $nonce);
 
 		}
 
