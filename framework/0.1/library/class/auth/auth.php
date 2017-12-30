@@ -494,7 +494,7 @@
 
 				}
 
-				if ($this->session_info_data && $this->session_info_data['limit'] == '') { // If the limit has been set, it will be for a limited session (e.g. missing 'totp'), so you now need to call $auth->session_limited_get('totp')
+				if (($this->session_info_data) && ($this->session_info_available || $this->session_info_data['limit'] == '')) { // If the limit has been set, it will be for a limited session (e.g. missing 'totp'), so you now need to call $auth->session_limited_get('totp')
 
 					$this->session_info_available = true;
 
