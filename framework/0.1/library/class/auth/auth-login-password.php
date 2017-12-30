@@ -1,6 +1,6 @@
 <?php
 
-	class auth_reset_complete_base extends check {
+	class auth_login_password_base extends check {
 
 		//--------------------------------------------------
 		// Variables
@@ -54,15 +54,12 @@
 		//--------------------------------------------------
 		// Actions
 
-			public function active($reset_token, $config = array()) {
+			public function active($config = array()) {
 
-// Still a valid token? either as a timeout, or the tracker cookie not matching.
+				$admin_info = $this->auth->session_limited_get('password');
+				debug($admin_info); // Maybe this should be called by a `auth_login_totp` class?
 
-// $this->auth->text_get('failure_reset_token')            => 'The link to reset your password is incorrect or has expired.',
-
-// $valid = true or false (expired, non-existent, etc)... $identification only returned if $valid (not when it has expired).
-
-// return [$valid, $identification];
+// See auth_reset_complete_base...
 
 				return false;
 
@@ -70,30 +67,11 @@
 
 			public function validate() {
 
-				$this->validate_password();
-				// New password is not the same as old password???
-				// New password matches Repeat new password.
-
-// Must have called $auth_reset_complete->active... maybe it starts by setting $this->details?
+// Must have called $auth_login_password->active... maybe it starts by setting $this->details?
 
 			}
 
 			public function complete($config = array()) {
-
-				//--------------------------------------------------
-				// Config
-
-					$config = array_merge(array(
-							'form'  => NULL,
-							'login' => NULL,
-						), $config);
-
-// Delete all active sessions for the user (see update_complete as well).
-
-// Reset all tokens for this "user_id" on complete (keeping in mind there may be more than one account with this email address)
-
-
-
 			}
 
 	}
