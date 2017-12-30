@@ -57,7 +57,7 @@
 			public function active($config = array()) {
 
 				$admin_info = $this->auth->session_limited_get('password');
-				debug($admin_info); // Maybe this should be called by a `auth_login_totp` class?
+				debug($admin_info);
 
 // See auth_reset_complete_base...
 
@@ -72,6 +72,9 @@
 			}
 
 			public function complete($config = array()) {
+
+// After a successful 'totp' or 'password' limited login, use save_request_restore().
+
 			}
 
 	}

@@ -10,6 +10,7 @@
 			protected $form = NULL;
 			protected $field_identification = NULL;
 			protected $field_password = NULL;
+			protected $field_remember_user = NULL;
 
 			public function __construct($auth) {
 				$this->auth = $auth;
@@ -51,6 +52,9 @@
 
 				return $this->field_password;
 
+			}
+
+			public function field_remember_user_get($form, $config = array()) {
 			}
 
 		//--------------------------------------------------
@@ -148,15 +152,6 @@
 
 			}
 
-// TODO: Remember me
-// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
-// http://blog.alejandrocelaya.com/2016/02/09/how-to-properly-implement-persistent-login/ - Replace token on use
-
-// TODO: Support 2 Factor Authentication, via TOTP (Time based, one time password).
-// Ensure there is a "remember_browser" for 2FA, which creates a record in the database (so these can be easily listed/reset).
-// Add a 2FA disable and recovery options... for recovery, provide them with a random key during setup, which can be used to disable 2FA... both use a reset email and 'r' cookie (similar to password reset process).
-// After a successful 'totp' or 'password' limited login, use save_request_restore().
-
 			public function complete($config = array()) {
 
 				//--------------------------------------------------
@@ -164,7 +159,7 @@
 
 					$config = array_merge(array(
 							'form'          => NULL,
-							'remember_user' => true,
+							'remember_user' => NULL,
 						), $config);
 
 					if ($this->details === NULL) {
@@ -215,6 +210,18 @@
 				// different browser tabs (or browser history).
 
 					// csrf_token_change(); - Most of the time the users session has expired
+
+				//--------------------------------------------------
+				// Remember user
+
+					if ($config['remember_user']) { // or $this->field_remember_user
+
+// TODO: remember_user
+//
+// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
+// http://blog.alejandrocelaya.com/2016/02/09/how-to-properly-implement-persistent-login/ - Replace token on use
+
+					}
 
 				//--------------------------------------------------
 				// Try to restore session, if everything is good.

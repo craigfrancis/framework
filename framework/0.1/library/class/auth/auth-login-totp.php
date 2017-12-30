@@ -29,8 +29,14 @@
 
 			public function active($config = array()) {
 
+// TODO: Support 2 Factor Authentication, via TOTP (Time based, one time password).
+// Ensure there is a "remember_browser" for 2FA, which creates a record in the database (so these can be easily listed/reset).
+// Add a 2FA disable and recovery options... for recovery, provide them with a random key during setup, which can be used to disable 2FA... both use a reset email and 'r' cookie (similar to password reset process).
+
+// If we can auto continue (remember_browser), then maybe reset browser token on use?
+
 				$admin_info = $this->auth->session_limited_get('totp');
-				debug($admin_info); // Maybe this should be called by a `auth_login_totp` class?
+				debug($admin_info);
 
 // See auth_reset_complete_base...
 
@@ -45,6 +51,9 @@
 			}
 
 			public function complete($config = array()) {
+
+// After a successful 'totp' or 'password' limited login, use save_request_restore().
+
 			}
 
 	}
