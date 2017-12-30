@@ -120,7 +120,7 @@
 				// Config
 
 					if ($this->auth->session_id_get() !== NULL) {
-						exit_with_error('Cannot call auth_register::validate() when the user is logged in.');
+						exit_with_error('Cannot call $auth_register->validate() when the user is logged in.');
 					}
 
 					$this->details = false;
@@ -138,7 +138,7 @@
 
 					} else if ($this->form === NULL) {
 
-						exit_with_error('Cannot call auth_register::validate() without using any form fields, or providing identification/passwords.');
+						exit_with_error('Cannot call $auth_register->validate() without using any form fields, or providing identification/passwords.');
 
 					} else if (!$this->form->valid()) { // Basic checks such as required fields, and CSRF
 
@@ -149,7 +149,7 @@
 						if (isset($this->field_identification)) {
 							$identification = strval($this->field_identification->value_get());
 						} else {
-							exit_with_error('You must call auth_register::field_identification_get() before auth_register::validate().');
+							exit_with_error('You must call $auth_register->field_identification_get() before $auth_register->validate().');
 						}
 
 						if (isset($this->field_password_1)) {
@@ -159,7 +159,7 @@
 							if (isset($this->field_password_2)) {
 								$password_2 = strval($this->field_password_2->value_get()); // Not NULL
 							} else {
-								exit_with_error('You must call auth_register::field_password_2_get() before auth_register::validate().');
+								exit_with_error('You must call $auth_register->field_password_2_get() before $auth_register->validate().');
 							}
 
 						} else {
@@ -188,7 +188,7 @@
 
 						} else if ($result !== true) {
 
-							exit_with_error('Invalid response from auth::validate_identification()', $result);
+							exit_with_error('Invalid response from $auth->validate_identification()', $result);
 
 						} else if ((!$unique) && ($identification_username || !$this->confirm)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
 
@@ -221,7 +221,7 @@
 
 							} else if ($result !== true) {
 
-								exit_with_error('Invalid response from auth::validate_password()', $result);
+								exit_with_error('Invalid response from $auth->validate_password()', $result);
 
 							} else if ($password_2 !== NULL && $password_1 !== $password_2) {
 
@@ -280,11 +280,11 @@
 						), $config);
 
 					if ($this->details === NULL) {
-						exit_with_error('You must call auth_register::validate() before auth_register::complete().');
+						exit_with_error('You must call $auth_register->validate() before $auth_register->complete().');
 					}
 
 					if (!is_array($this->details)) {
-						exit_with_error('The register details are not valid, so why has auth_register::complete() been called?');
+						exit_with_error('The register details are not valid, so why has $auth_register->complete() been called?');
 					}
 
 					if ($config['form']) {
@@ -294,7 +294,7 @@
 					if ($this->form) {
 
 						if (!$this->form->valid()) {
-							exit_with_error('The form is not valid, so why has auth_register::complete() been called?');
+							exit_with_error('The form is not valid, so why has $auth_register->complete() been called?');
 						}
 
 						$record = $this->form->db_record_get();
@@ -400,7 +400,7 @@
 
 					} else if ($register_pass) {
 
-						$register_token = $record_id . '-' . $register_pass; // Token to complete with auth_register::confirm()
+						$register_token = $record_id . '-' . $register_pass; // Token to complete with $auth_register->confirm()
 
 					} else {
 

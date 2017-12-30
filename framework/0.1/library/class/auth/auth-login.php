@@ -72,7 +72,7 @@
 
 					} else if ($this->form === NULL) {
 
-						exit_with_error('Cannot call auth_login::validate() without using any form fields, or providing an identification/password.');
+						exit_with_error('Cannot call $auth_login->validate() without using any form fields, or providing an identification/password.');
 
 					} else if (!$this->form->valid()) { // Basic checks such as required fields, and CSRF
 
@@ -83,13 +83,13 @@
 						if (isset($this->field_identification)) {
 							$identification = strval($this->field_identification->value_get());
 						} else {
-							exit_with_error('You must call auth_login::field_identification_get() before auth_login::validate().');
+							exit_with_error('You must call $auth_login->field_identification_get() before $auth_login->validate().');
 						}
 
 						if (isset($this->field_password)) {
 							$password = strval($this->field_password->value_get());
 						} else {
-							exit_with_error('You must call auth_login::field_password_get() before auth_login::validate().');
+							exit_with_error('You must call $auth_login->field_password_get() before $auth_login->validate().');
 						}
 
 					}
@@ -132,7 +132,7 @@
 
 						} else {
 
-							exit_with_error('Invalid response from auth::validate_login()', $result);
+							exit_with_error('Invalid response from $auth->validate_login()', $result);
 
 						}
 
@@ -167,11 +167,11 @@
 						), $config);
 
 					if ($this->details === NULL) {
-						exit_with_error('You must call auth_login::validate() before auth_login::complete().');
+						exit_with_error('You must call $auth_login->validate() before $auth_login->complete().');
 					}
 
 					if (!is_array($this->details)) {
-						exit_with_error('The login details are not valid, so why has auth_login::complete() been called?');
+						exit_with_error('The login details are not valid, so why has $auth_login->complete() been called?');
 					}
 
 					if ($config['form']) {
@@ -179,7 +179,7 @@
 					}
 
 					if ($this->form && !$this->form->valid()) {
-						exit_with_error('The form is not valid, so why has auth_login::complete() been called?');
+						exit_with_error('The form is not valid, so why has $auth_login->complete() been called?');
 					}
 
 				//--------------------------------------------------

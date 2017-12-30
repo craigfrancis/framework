@@ -62,11 +62,11 @@
 				// Config
 
 					if ($this->details === NULL) {
-						exit_with_error('You must call auth_logout::validate() before auth_logout::complete().');
+						exit_with_error('You must call $auth_logout->validate() before $auth_logout->complete().');
 					}
 
 					if (!is_array($this->details)) {
-						exit_with_error('The logout details are not valid, so why has auth_logout::complete() been called?');
+						exit_with_error('The logout details are not valid, so why has $auth_logout->complete() been called?');
 					}
 
 				//--------------------------------------------------

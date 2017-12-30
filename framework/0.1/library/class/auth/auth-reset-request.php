@@ -77,7 +77,7 @@
 				// Config
 
 					if ($this->auth->session_id_get() !== NULL) {
-						exit_with_error('Cannot call auth_reset_request::validate() when the user is logged in.');
+						exit_with_error('Cannot call $auth_reset_request->validate() when the user is logged in.');
 					}
 
 					$this->details = false;
@@ -95,7 +95,7 @@
 
 					} else if ($this->form === NULL) {
 
-						exit_with_error('Cannot call auth_reset_request::validate() without using any form fields, or providing an email address.');
+						exit_with_error('Cannot call $auth_reset_request->validate() without using any form fields, or providing an email address.');
 
 					} else if (!$this->form->valid()) { // Basic checks such as required fields, and CSRF
 
@@ -106,7 +106,7 @@
 						if (isset($this->field_email)) {
 							$email = strval($this->field_email->value_get());
 						} else {
-							exit_with_error('You must call auth_reset_request::field_email_get() before auth_reset_request::validate().');
+							exit_with_error('You must call $auth_reset_request->field_email_get() before $auth_reset_request->validate().');
 						}
 
 					}
@@ -209,11 +209,11 @@
 						), $config);
 
 					if ($this->details === NULL) {
-						exit_with_error('You must call auth_reset_request::validate() before auth_reset_request::complete().');
+						exit_with_error('You must call $auth_reset_request->validate() before $auth_reset_request->complete().');
 					}
 
 					if (!is_array($this->details)) {
-						exit_with_error('The login details are not valid, so why has auth_reset_request::complete() been called?');
+						exit_with_error('The login details are not valid, so why has $auth_reset_request->complete() been called?');
 					}
 
 					if ($config['form']) {
@@ -221,7 +221,7 @@
 					}
 
 					if ($this->form && !$this->form->valid()) {
-						exit_with_error('The form is not valid, so why has auth_reset_request::complete() been called?');
+						exit_with_error('The form is not valid, so why has $auth_reset_request->complete() been called?');
 					}
 
 					$now = new timestamp();
@@ -238,7 +238,7 @@
 					} else if (isset($this->db_main_fields['email'])) {
 						$db_main_field_email = $this->db_main_fields['email'];
 					} else {
-						exit_with_error('Need to specify auth::db_fields[\'main\'][\'email\']', debug_dump($this->db_main_fields));
+						exit_with_error('In the auth class, you need to specify $this->db_fields[\'main\'][\'email\']', debug_dump($this->db_main_fields));
 					}
 
 				//--------------------------------------------------

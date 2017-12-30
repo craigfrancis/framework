@@ -75,7 +75,7 @@
 				// New password is not the same as old password???
 				// New password matches Repeat new password.
 
-// Must have called auth_reset_complete::active... maybe it starts by setting $this->details?
+// Must have called $auth_reset_complete->active... maybe it starts by setting $this->details?
 
 			}
 

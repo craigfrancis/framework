@@ -150,7 +150,7 @@
 					list($current_user_id, $current_identification, $current_source) = $this->auth->user_get();
 
 					if ($current_user_id === NULL) {
-						exit_with_error('Cannot call auth_update::validate() when the user is not logged in, or auth::user_set() has not been used.');
+						exit_with_error('Cannot call $auth_update->validate() when the user is not logged in, or $auth->user_set() has not been used.');
 					}
 
 				//--------------------------------------------------
@@ -162,7 +162,7 @@
 
 					} else if ($this->form === NULL || $values !== NULL) {
 
-						exit_with_error('Cannot call auth_update::validate() without using any form fields, or providing an array of values.');
+						exit_with_error('Cannot call $auth_update->validate() without using any form fields, or providing an array of values.');
 
 					} else if (!$this->form->valid()) { // Basic checks such as required fields, and CSRF
 
@@ -183,7 +183,7 @@
 						}
 
 						if (count($values) == 0) {
-							exit_with_error('You must call one of the auth_login::field_*_get() methods before auth_update::validate().');
+							exit_with_error('You must call one of the $auth_update->field_*_get() methods before $auth_update->validate().');
 						}
 
 					}
@@ -209,7 +209,7 @@
 
 							} else if ($result !== true) {
 
-								exit_with_error('Invalid response from auth::validate_identification()', $result);
+								exit_with_error('Invalid response from $auth->validate_identification()', $result);
 
 							} else if ((!$unique) && ($identification_username || !$this->confirm)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
 
@@ -259,7 +259,7 @@
 
 							} else if (!is_array($result)) {
 
-								exit_with_error('Invalid response from auth::validate_login()', $result);
+								exit_with_error('Invalid response from $auth->validate_login()', $result);
 
 							}
 
@@ -273,7 +273,7 @@
 						if (array_key_exists('password_new_1', $values)) {
 
 							if (!array_key_exists('password_new_2', $values)) {
-								exit_with_error('Cannot call auth_update::validate() with new password 1, but not 2.');
+								exit_with_error('Cannot call $auth_update->validate() with new password 1, but not 2.');
 							}
 
 							$password_1 = $values['password_new_1'];
@@ -293,7 +293,7 @@
 
 							} else if ($result !== true) {
 
-								exit_with_error('Invalid response from auth::validate_password()', $result);
+								exit_with_error('Invalid response from $auth->validate_password()', $result);
 
 // Check register helper... $password_1 and 2 can be NULL to skip .... } else if ($password_2 !== NULL && $password_1 !== $password_2) {
 
@@ -372,11 +372,11 @@
 						), $config);
 
 					if ($this->details === NULL) {
-						exit_with_error('You must call auth_update::validate() before auth_update::complete().');
+						exit_with_error('You must call $auth_update->validate() before $auth_update->complete().');
 					}
 
 					if (!is_array($this->details)) {
-						exit_with_error('The update details are not valid, so why has auth_update::complete() been called?');
+						exit_with_error('The update details are not valid, so why has $auth_update->complete() been called?');
 					}
 
 					if ($config['form']) {
@@ -386,7 +386,7 @@
 					if ($this->form) {
 
 						if (!$this->form->valid()) {
-							exit_with_error('The form is not valid, so why has auth_update::complete() been called?');
+							exit_with_error('The form is not valid, so why has $auth_update->complete() been called?');
 						}
 
 						$record = $this->form->db_record_get();
@@ -503,7 +503,7 @@
 						$update_id = $db->insert_id();
 
 						if ($update_pass) {
-							$result = $update_id . '-' . $update_pass; // Token to complete with auth_update::confirm()
+							$result = $update_id . '-' . $update_pass; // Token to complete with $auth_update->confirm()
 						} else {
 							$result = false; // Could not update, send email telling end user?
 						}

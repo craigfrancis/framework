@@ -241,11 +241,11 @@
 					), $config);
 
 				if ($this->user_id === NULL) {
-					exit_with_error('You must call auth::user_set() before auth::login_forced().');
+					exit_with_error('You must call $auth->user_set() before $auth->login_forced().');
 				}
 
 				if ($config['session_concurrent'] !== false && $config['session_concurrent'] !== true) {
-					exit_with_error('You must specify "session_concurrent" when calling auth::login_forced().');
+					exit_with_error('You must specify "session_concurrent" when calling $auth->login_forced().');
 				}
 
 				$system_session_concurrent = $this->session_concurrent;
