@@ -155,6 +155,7 @@
 // TODO: Support 2 Factor Authentication, via TOTP (Time based, one time password).
 // Ensure there is a "remember_browser" for 2FA, which creates a record in the database (so these can be easily listed/reset).
 // Add a 2FA disable and recovery options... for recovery, provide them with a random key during setup, which can be used to disable 2FA... both use a reset email and 'r' cookie (similar to password reset process).
+// After a successful 'totp' or 'password' state login, use save_request_restore().
 
 			public function complete($config = array()) {
 
@@ -216,9 +217,11 @@
 					// csrf_token_change(); - Most of the time the users session has expired
 
 				//--------------------------------------------------
-				// Try to restore session
+				// Try to restore session, if everything is good.
 
-					save_request_restore($this->details['identification']);
+					if ($state_ref === true) {
+						save_request_restore($this->details['identification']);
+					}
 
 				//--------------------------------------------------
 				// Return
