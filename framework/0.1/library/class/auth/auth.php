@@ -393,7 +393,7 @@
 
 						if ($session_id > 0) {
 
-							$fields_sql = array('s.pass', 's.user_id', 's.ip', 's.state', 's.logout_csrf', 'm.' . $db->escape_field($db_main_fields['identification']));
+							$fields_sql = array('s.pass', 's.user_id', 's.ip', 's.limit', 's.logout_csrf', 'm.' . $db->escape_field($db_main_fields['identification']));
 							foreach ($config['fields'] as $field) {
 								$fields_sql[] = 'm.' . $db->escape_field($field);
 							}
@@ -494,7 +494,7 @@
 
 				}
 
-				if ($this->session_info_data && $this->session_info_data['state'] == '') { // If the state has been set, it will be for a limited session (e.g. missing 'totp'), so you now need to call $auth->session_limited_get('totp')
+				if ($this->session_info_data && $this->session_info_data['limit'] == '') { // If the limit has been set, it will be for a limited session (e.g. missing 'totp'), so you now need to call $auth->session_limited_get('totp')
 
 					$this->session_info_available = true;
 
@@ -508,13 +508,13 @@
 
 			}
 
-			public function session_limited_get($state) {
+			public function session_limited_get($limit) {
 
 				if ($this->session_info_data === NULL) {
 					exit_with_error('Cannot call $auth->session_limited_get() before $auth->session_get()');
 				}
 
-				if ($this->session_info_data && $this->session_info_data['state'] === $state) { // You need to know the state, which you would have received from $auth_login->complete();
+				if ($this->session_info_data && $this->session_info_data['limit'] === $limit) { // You need to know the limit, which you would have received from $auth_login->complete();
 
 					$this->session_info_available = true; // Can now use other $auth->session_*() functions.
 
@@ -535,7 +535,7 @@
 			}
 
 			public function session_required($login_url) {
-				if (!$this->session_info_available) { // Is not a blank state, or specified limited state - via $auth->session_limited_get()
+				if (!$this->session_info_available) { // Is no limit, or specified limit via $auth->session_limited_get()
 					save_request_redirect($login_url, $this->last_identification_get());
 				}
 			}
@@ -743,7 +743,7 @@
 
 			}
 
-			public function _session_start($user_id, $identification, $state = '') { // See auth_login or auth_register (do not call directly)
+			public function _session_start($user_id, $identification, $limit = '') { // See auth_login or auth_register (do not call directly)
 
 				//--------------------------------------------------
 				// Config
@@ -778,11 +778,11 @@
 				//--------------------------------------------------
 				// Session pass
 
-					if ($state === true) {
-						$state = '';
+					if ($limit === true) {
+						$limit = '';
 					}
 
-					if ($state === 'ip') {
+					if ($limit === 'ip') {
 						$session_pass = ''; // Will remain blank to record failure
 						$session_pass_hash = '';
 						$session_logout_csrf = '';
@@ -802,7 +802,7 @@
 							'browser'       => config::get('request.browser'),
 							'tracker'       => $this->_browser_tracker_get(),
 							'hash_time'     => floatval($this->hash_time),
-							'state'         => $state,
+							'limit'         => $limit,
 							'logout_csrf'   => $session_logout_csrf, // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
 							'created'       => $now,
 							'last_used'     => $now,
@@ -840,7 +840,7 @@
 						$this->session_info_data = [
 								'id' => $session_id,
 								'user_id' => $user_id,
-								'state' => $state,
+								'limit' => $limit,
 								'logout_csrf' => $session_logout_csrf,
 								'last_used_new' => $now,
 							];
@@ -1222,7 +1222,7 @@
 								'browser'   => config::get('request.browser'),
 								'tracker'   => $this->_browser_tracker_get(),
 								'hash_time' => floatval($this->hash_time),
-								'state'     => 'error',
+								'limit'     => 'error',
 								'created'   => $now,
 								'last_used' => $now,
 								'deleted'   => '0000-00-00 00:00:00',

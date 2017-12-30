@@ -155,7 +155,7 @@
 // TODO: Support 2 Factor Authentication, via TOTP (Time based, one time password).
 // Ensure there is a "remember_browser" for 2FA, which creates a record in the database (so these can be easily listed/reset).
 // Add a 2FA disable and recovery options... for recovery, provide them with a random key during setup, which can be used to disable 2FA... both use a reset email and 'r' cookie (similar to password reset process).
-// After a successful 'totp' or 'password' state login, use save_request_restore().
+// After a successful 'totp' or 'password' limited login, use save_request_restore().
 
 			public function complete($config = array()) {
 
@@ -184,31 +184,31 @@
 					}
 
 				//--------------------------------------------------
-				// State
+				// Limit
 
-					$state_ref = true; // All good
-					$state_extra = NULL;
+					$limit_ref = true; // All good
+					$limit_extra = NULL;
 
 					if (count($this->details['auth']['ips']) > 0 && !in_array(config::get('request.ip'), $this->details['auth']['ips'])) {
 
-						$state_ref = 'ip';
-						$state_extra = $this->details['auth']['ips'];
+						$limit_ref = 'ip';
+						$limit_extra = $this->details['auth']['ips'];
 
 					} else if ($this->details['auth']['totp'] !== NULL) { // They must be able to pass TOTP, before checking their password quality.
 
-						$state_ref = 'totp';
+						$limit_ref = 'totp';
 
 					} else if ($this->details['password_validation'] !== true) {
 
-						$state_ref = 'password';
-						$state_extra = $this->details['password_validation'];
+						$limit_ref = 'password';
+						$limit_extra = $this->details['password_validation'];
 
 					}
 
 				//--------------------------------------------------
 				// Start session
 
-					$this->auth->_session_start($this->details['id'], $this->details['identification'], $state_ref);
+					$this->auth->_session_start($this->details['id'], $this->details['identification'], $limit_ref);
 
 				//--------------------------------------------------
 				// Change the CSRF token, invalidating forms open in
@@ -219,14 +219,14 @@
 				//--------------------------------------------------
 				// Try to restore session, if everything is good.
 
-					if ($state_ref === true) {
+					if ($limit_ref === true) {
 						save_request_restore($this->details['identification']);
 					}
 
 				//--------------------------------------------------
 				// Return
 
-					return [$this->details['id'], $state_ref, $state_extra];
+					return [$this->details['id'], $limit_ref, $limit_extra];
 
 			}
 
