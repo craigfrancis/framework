@@ -40,7 +40,7 @@
 				//--------------------------------------------------
 				// Return
 
-					if ($this->auth->session_info_get('logout_csrf') == $csrf) {
+					if ($this->auth->logout_token_get() == $csrf) {
 
 						$this->details = array(
 								'csrf' => $csrf,

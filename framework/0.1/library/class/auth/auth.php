@@ -24,7 +24,8 @@
 			protected $session_history = 7776000; // Keep session data for X seconds (defaults to 90 days)
 			protected $session_previous = NULL;
 
-			private $session_info = NULL; // Please use $auth->session_info_get();
+			private $session_info_data = NULL; // Please use $auth->session_info_get();
+			private $session_info_available = false;
 			private $session_pass = NULL;
 
 			private $hash_time = NULL;
@@ -286,32 +287,43 @@
 		//--------------------------------------------------
 		// Logout
 
-			public function logout_url_get($logout_url = NULL) {
-				if ($this->session_info) {
-					$logout_url = url($logout_url, array('csrf' => $this->session_info['logout_csrf']));
+			public function logout_token_get() {
+				if ($this->session_info_data) {
+					return $this->session_info_data['logout_csrf'];
+				} else {
+					return NULL;
 				}
-				return $logout_url; // Never return NULL, the logout page should always be linked to (even it it only shows an error).
+			}
+
+			public function logout_url_get($logout_url = NULL) { // If not set, assume they are looking at the logout page (and just need the csrf token).
+				$token = $this->logout_token_get();
+				if ($token) {
+					$logout_url = url($logout_url, array('csrf' => $token));
+				}
+				return $logout_url; // Always link to the provided logout url, do not return NULL when not logged in (so users always go to the logout page, even if it shows an error).
 			}
 
 		//--------------------------------------------------
 		// Session
 
 			public function session_get($config = array()) {
-				if ($this->session_info === NULL) {
+				if ($this->session_info_data === NULL) {
 
 					//--------------------------------------------------
 					// Config
 
 						$config = array_merge(array(
-								'fields' => array(),
+								'fields'     => array(),
 								'auth_token' => NULL,
-								'state' => NULL,
 							), $config);
 
-						$db = $this->db_get();
+						$this->session_info_data = false;
+						$this->session_info_available = false;
 
 					//--------------------------------------------------
 					// Table
+
+						$db = $this->db_get();
 
 						list($db_main_table, $db_main_fields, $db_main_where_sql) = $this->db_table_get('main');
 						list($db_session_table) = $this->db_table_get('session');
@@ -381,7 +393,7 @@
 
 						if ($session_id > 0) {
 
-							$fields_sql = array('s.pass', 's.user_id', 's.ip', 's.logout_csrf', 'm.' . $db->escape_field($db_main_fields['identification']));
+							$fields_sql = array('s.pass', 's.user_id', 's.ip', 's.state', 's.logout_csrf', 'm.' . $db->escape_field($db_main_fields['identification']));
 							foreach ($config['fields'] as $field) {
 								$fields_sql[] = 'm.' . $db->escape_field($field);
 							}
@@ -395,13 +407,6 @@
 
 							$parameters = array();
 							$parameters[] = array('i', $session_id);
-
-							if ($config['state']) {
-								$where_sql .= ' AND s.state = ?';
-								$parameters[] = array('s', $config['state']);
-							} else {
-								$where_sql .= ' AND s.state = ""';
-							}
 
 							if ($this->session_length > 0) {
 								$last_used = new timestamp((0 - $this->session_length) . ' seconds');
@@ -474,70 +479,124 @@
 										unset($row['ip']);
 										unset($row['pass']); // The hashed version
 
-										$this->session_info = $row;
+										$this->session_info_data = $row;
 										$this->session_pass = $session_pass;
 
 								}
 
 							}
 
-							if ($this->session_info === NULL) { // Not in DB, or has invalid pass/ip
+							if (!$this->session_info_data) { // NULL or false... not in DB, or has invalid pass/ip.
 								$this->_session_end();
 							}
 
 						}
 
 				}
-				return $this->session_info;
+
+				if ($this->session_info_data && $this->session_info_data['state'] == '') { // If the state has been set, it will be for a limited session (e.g. missing 'totp'), so you now need to call $auth->session_limited_get('totp')
+
+					$this->session_info_available = true;
+
+					return $this->session_info_data;
+
+				} else {
+
+					return NULL;
+
+				}
+
+			}
+
+			public function session_limited_get($state) {
+
+				if ($this->session_info_data === NULL) {
+					exit_with_error('Cannot call $auth->session_limited_get() before $auth->session_get()');
+				}
+
+				if ($this->session_info_data && $this->session_info_data['state'] === $state) { // You need to know the state, which you would have received from $auth_login->complete();
+
+					$this->session_info_available = true; // Can now use other $auth->session_*() functions.
+
+					return $this->session_info_data;
+
+				} else {
+
+					return NULL;
+
+				}
 			}
 
 			public function session_open() {
-				return ($this->session_info !== NULL);
+				if (!$this->session_info_available) {
+					exit_with_error('Cannot call $auth->session_open() before $auth->session_get()');
+				}
+				return ($this->session_info_data !== false);
 			}
 
 			public function session_required($login_url) {
-				if ($this->session_info === NULL) {
+				if (!$this->session_info_available) { // Is not a blank state, or specified limited state - via $auth->session_limited_get()
 					save_request_redirect($login_url, $this->last_identification_get());
 				}
 			}
 
 			public function session_user_id_get() {
-				if ($this->session_info !== NULL) {
-					return $this->session_info['user_id'];
+				if (!$this->session_info_available) {
+					exit_with_error('Cannot call $auth->session_user_id_get() before $auth->session_get()');
+				}
+				if ($this->session_info_data) {
+					return $this->session_info_data['user_id'];
 				} else {
 					return NULL;
 				}
 			}
 
 			public function session_id_get() {
-				if ($this->session_info !== NULL) {
-					return $this->session_info['id'];
+				if (!$this->session_info_available) {
+					exit_with_error('Cannot call $auth->session_id_get() before $auth->session_get()');
+				}
+				if ($this->session_info_data) {
+					return $this->session_info_data['id'];
 				} else {
 					return NULL;
 				}
 			}
 
 			public function session_token_get() {
-				if ($this->session_info !== NULL) {
-					return $this->session_info['id'] . '-' . $this->session_pass;
+				if (!$this->session_info_available) {
+					exit_with_error('Cannot call $auth->session_token_get() before $auth->session_get()');
+				}
+				if ($this->session_info_data) {
+					return $this->session_info_data['id'] . '-' . $this->session_pass;
 				} else {
 					return NULL;
 				}
 			}
 
 			public function session_info_get($field) {
-				if ($this->session_info === NULL) {
+				if (!$this->session_info_available) {
+					exit_with_error('Cannot call $auth->session_info_get() before $auth->session_get()');
+				}
+				if (!$this->session_info_data) {
 					return NULL;
 				} else if ($field == 'id' || $field == 'user_id') {
 					exit_with_error('Use the appropriate $auth->session_' . $field . '_get().');
-				} else if (!isset($this->session_info[$field])) {
+				} else if (!isset($this->session_info_data[$field])) {
 					exit_with_error('The current session does not have a "' . $field . '" set.');
 				} else {
-					return $this->session_info[$field];
+					return $this->session_info_data[$field];
 				}
 			}
 
 			public function session_previous_get() {
+
+				if (!$this->session_info_available) {
+					exit_with_error('Cannot call $auth->session_previous_get() before $auth->session_get()');
+				}
+
+				if ($this->session_info_data === false) {
+					exit_with_error('Cannot call $auth->session_previous_get() when the user is not logged in.');
+				}
 
 				if ($this->session_previous === NULL) {
 
@@ -546,8 +605,8 @@
 					list($db_session_table) = $this->db_table_get('session');
 
 					$parameters = array();
-					$parameters[] = array('i', $this->session_info['user_id']);
-					$parameters[] = array('s', $this->session_info['last_used_new']);
+					$parameters[] = array('i', $this->session_info_data['user_id']);
+					$parameters[] = array('s', $this->session_info_data['last_used_new']);
 
 					$sql = 'SELECT
 								s.last_used,
@@ -633,7 +692,7 @@
 								' . $db_main_where_sql;
 
 					$parameters = array();
-					$parameters[] = array('i', $this->session_info['user_id']);
+					$parameters[] = array('i', $this->session_info_data['user_id']);
 					$parameters[] = array('s', $session_history);
 
 					if ($row = $db->fetch_row($sql, $parameters)) {
@@ -719,6 +778,10 @@
 				//--------------------------------------------------
 				// Session pass
 
+					if ($state === true) {
+						$state = '';
+					}
+
 					if ($state === 'ip') {
 						$session_pass = ''; // Will remain blank to record failure
 						$session_pass_hash = '';
@@ -739,7 +802,7 @@
 							'browser'       => config::get('request.browser'),
 							'tracker'       => $this->_browser_tracker_get(),
 							'hash_time'     => floatval($this->hash_time),
-							'state'         => ($state === true ? '' : $state),
+							'state'         => $state,
 							'logout_csrf'   => $session_logout_csrf, // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
 							'created'       => $now,
 							'last_used'     => $now,
@@ -773,9 +836,11 @@
 						}
 
 						$this->session_pass = $session_pass;
-						$this->session_info = [
+						$this->session_info_available = true;
+						$this->session_info_data = [
 								'id' => $session_id,
 								'user_id' => $user_id,
+								'state' => $state,
 								'logout_csrf' => $session_logout_csrf,
 								'last_used_new' => $now,
 							];
