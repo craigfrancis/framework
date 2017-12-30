@@ -9,6 +9,7 @@
 			protected $details = NULL;
 			protected $form = NULL;
 			protected $field_totp = NULL;
+			protected $field_remember_browser = NULL;
 
 			public function __construct($auth) {
 				$this->auth = $auth;
@@ -18,6 +19,9 @@
 		// Fields
 
 			public function field_totp_get($form, $config = array()) {
+			}
+
+			public function field_remember_browser_get($form, $config = array()) {
 			}
 
 		//--------------------------------------------------
