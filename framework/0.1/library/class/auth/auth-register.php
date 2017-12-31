@@ -175,7 +175,7 @@
 				// Validate
 
 					//--------------------------------------------------
-					// Validate identification
+					// Identification
 
 						$result = $this->auth->validate_identification($identification, NULL);
 						$unique = $this->auth->validate_identification_unique($identification, NULL);
@@ -203,7 +203,7 @@
 						}
 
 					//--------------------------------------------------
-					// Validate password
+					// Password
 
 						if ($password_1 !== NULL) {
 
@@ -364,7 +364,7 @@
 						// if ($config['auth_ips'])  $auth_config['ips'] = $config['auth_ips'];
 						// if ($config['auth_totp']) $auth_config['totp'] = $config['auth_totp'];
 
-						$auth_value = auth::value_encode($record_id, $auth_config, $this->details['password']);
+						$auth_encoded = auth::value_encode($record_id, $auth_config, $this->details['password']);
 
 						$sql = 'UPDATE
 									' . $db->escape_table($this->db_table) . ' AS r
@@ -375,10 +375,14 @@
 									' . $this->db_where_sql;
 
 						$parameters = array();
-						$parameters[] = array('s', $auth_value);
+						$parameters[] = array('s', $auth_encoded);
 						$parameters[] = array('i', $record_id);
 
 						$db->query($sql, $parameters);
+
+					} else {
+
+						$auth_encoded = NULL;
 
 					}
 
@@ -387,7 +391,13 @@
 
 					if (!$this->confirm && $config['login']) {
 
-						$this->auth->_session_start($record_id, $this->details['identification']);
+						$auth_config = auth::value_parse($record_id, $auth_encoded); // So all the fields are present (e.g. 'ips')
+
+debug($auth_config); // TODO: Check this is always an array... what happens if $auth_encoded is NULL?
+
+						$password_validation = true; // Has just passed $auth->validate_password()
+
+						list($limit_ref, $limit_extra) = $this->auth->_session_start($record_id, $this->details['identification'], $auth_config, $password_validation);
 
 					}
 
@@ -400,7 +410,7 @@
 
 					} else if ($register_pass) {
 
-						$register_token = $record_id . '-' . $register_pass; // Token to complete with $auth_register->confirm()
+						$register_token = $record_id . '-' . $register_pass; // Token to use with $auth_register->confirm()
 
 					} else {
 
@@ -436,7 +446,7 @@
 					$register_id = intval($register_id);
 
 				//--------------------------------------------------
-				// Complete if valid
+				// If valid
 
 					$sql = 'SELECT
 								*
@@ -527,14 +537,18 @@
 											// cause the victims browser to trigger the registration, and log
 											// them into an account the attacker controls.
 
-										$config['login'] = false;
-
 										$this->auth->last_identification_set(NULL); // Clear the last login cookie, just in case they have logged in before.
 
-									}
+									} else if ($config['login']) {
 
-									if ($config['login']) {
-										$this->auth->_session_start($user_id, $identification_value);
+										$auth_config = auth::value_parse($record_id, $row[$this->db_fields['auth']]); // So all the fields are present (e.g. 'ips')
+
+debug($auth_config); // TODO: Check this is always an array.
+
+										$password_validation = true; // Has just passed $auth->validate_password()
+
+										list($limit_ref, $limit_extra) = $this->auth->_session_start($user_id, $identification_value, $auth_config, $password_validation);
+
 									}
 
 								}

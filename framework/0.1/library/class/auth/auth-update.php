@@ -257,7 +257,11 @@
 
 								$errors['password_old'] = $result; // Custom (project specific) error message.
 
-							} else if (!is_array($result)) {
+							} else if (is_array($result)) {
+
+$auth_config = $result['auth'];
+
+							} else {
 
 								exit_with_error('Invalid response from $auth->validate_login()', $result);
 
@@ -439,16 +443,21 @@
 
 					if ($this->details['password']) { // could be NULL or blank (if not required)
 
-						$auth_config = [];
+$auth_config = []; // TODO: Get current config, so we do not reset 'ips' or 'totp'
+// If the old password is being used, we can get the 'auth' value from validate_login()
+// Ensure that $auth_config is not NULL, due to decoding issues?
 
-						// Only enable if this is needed...
-						// if ($config['auth_ips'])  $auth_config['ips'] = $config['auth_ips'];
-						// if ($config['auth_totp']) $auth_config['totp'] = $config['auth_totp'];
-
-						$auth_value = auth::value_encode($this->details['user_id'], $auth_config, $this->details['password']);
+						$auth_encoded = auth::value_encode($this->details['user_id'], $auth_config, $this->details['password']);
 
 						$record->value_set($this->db_main_fields['password'], '');
-						$record->value_set($this->db_main_fields['auth'], $auth_value);
+						$record->value_set($this->db_main_fields['auth'], $auth_encoded);
+
+					}
+
+				//--------------------------------------------------
+				// Delete active sessions
+
+					if ($this->details['password']) {
 
 // TODO: Delete all active sessions for the user (see reset_process_complete as well).
 
@@ -503,7 +512,7 @@
 						$update_id = $db->insert_id();
 
 						if ($update_pass) {
-							$result = $update_id . '-' . $update_pass; // Token to complete with $auth_update->confirm()
+							$result = $update_id . '-' . $update_pass; // Token to use with $auth_update->confirm()
 						} else {
 							$result = false; // Could not update, send email telling end user?
 						}
@@ -540,7 +549,7 @@
 					$update_id = intval($update_id);
 
 				//--------------------------------------------------
-				// Complete if valid
+				// If valid
 
 					$sql = 'SELECT
 								u.token,
@@ -600,7 +609,7 @@
 								}
 
 							//--------------------------------------------------
-							// Clear all other requests (might be more than one)
+							// Clear all other requests
 
 								if ($success) {
 

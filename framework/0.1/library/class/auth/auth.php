@@ -3,7 +3,6 @@
 		// Notes:
 		// http://www.troyhunt.com/2015/01/introducing-secure-account-management.html
 
-
 	class auth_base extends check {
 
 		//--------------------------------------------------
@@ -104,7 +103,6 @@
 							'failure_reset_changed'          => 'Your account has already had its password changed recently.',
 							'failure_reset_repetition_email' => 'You have recently requested a password reset.',
 							'failure_reset_repetition_ip'    => 'You have requested too many password resets.',
-							'failure_reset_token'            => 'The link to reset your password is incorrect or has expired.',
 
 						);
 
@@ -743,7 +741,7 @@
 
 			}
 
-			public function _session_start($user_id, $identification, $limit = '') { // See auth_login or auth_register (do not call directly)
+			public function _session_start($user_id, $identification, $auth, $password_validation) { // See auth_login or auth_register (do not call directly)
 
 				//--------------------------------------------------
 				// Config
@@ -776,11 +774,32 @@
 					}
 
 				//--------------------------------------------------
-				// Session pass
+				// Limit
 
-					if ($limit === true) {
-						$limit = '';
+					if (count($auth['ips']) > 0 && !in_array(config::get('request.ip'), $auth['ips'])) {
+
+						$limit_ref = 'ip';
+						$limit_extra = $auth['ips'];
+
+					} else if ($auth['totp'] !== NULL) { // They must be able to pass TOTP, before checking their password quality.
+
+						$limit_ref = 'totp';
+						$limit_extra = NULL;
+
+					} else if ($password_validation !== true) {
+
+						$limit_ref = 'password';
+						$limit_extra = $password_validation;
+
+					} else {
+
+						$limit_ref = ''; // All good
+						$limit_extra = NULL;
+
 					}
+
+				//--------------------------------------------------
+				// Session pass
 
 					if ($limit === 'ip') {
 						$session_pass = ''; // Will remain blank to record failure
@@ -1048,7 +1067,8 @@
 
 					$db_id = 0;
 					$db_pass = '';
-					$db_auth = '';
+
+					$auth_config = NULL;
 
 					if ($row = $db->fetch_row($sql, $parameters)) {
 
@@ -1056,8 +1076,8 @@
 						$db_pass = $row['password'];
 
 						if ($row['auth']) {
-							$db_auth = auth::value_parse($db_id, $row['auth']); // Returns NULL on failure
-							if (!$db_auth) {
+							$auth_config = auth::value_parse($db_id, $row['auth']); // Returns NULL on failure
+							if (!$auth_config) {
 								$error = 'failure_decryption';
 							}
 						}
@@ -1116,15 +1136,15 @@
 
 					if ($error != 'failure_repetition') { // Anti denial of service (get rid of them as soon as possible, don't even sleep).
 
-						if ($db_auth) { // If we have an 'auth' value, we only use that.
+						if ($auth_config) { // If we have an auth value, we only use that.
 
-							$valid = password::verify(auth::_password_prepare($password), $db_auth['ph']);
+							$valid = password::verify(auth::_password_prepare($password), $auth_config['ph']);
 
 							if ($db_pass != '') {
 
 								// Shouldn't have a 'pass' value now, if it does, get rid of it (with a re-hash).
 
-							} else if ($db_auth['v'] == auth::$auth_version && !password::needs_rehash($db_auth['ph'])) {
+							} else if ($auth_config['v'] == auth::$auth_version && !password::needs_rehash($auth_config['ph'])) {
 
 								$rehash = false; // All looks good, no need to re-hash.
 
@@ -1165,11 +1185,11 @@
 
 							if ($rehash) {
 
-								if (!is_array($db_auth)) {
-									$db_auth = array();
+								if (!is_array($auth_config)) {
+									$auth_config = array();
 								}
 
-								$db_auth_encoded = auth::value_encode($db_id, $db_auth, $password);
+								$auth_encoded = auth::value_encode($db_id, $auth_config, $password);
 
 								$sql = 'UPDATE
 											' . $db->escape_table($db_main_table) . ' AS m
@@ -1183,22 +1203,22 @@
 											1';
 
 								$parameters = array();
-								$parameters[] = array('s', $db_auth_encoded);
+								$parameters[] = array('s', $auth_encoded);
 								$parameters[] = array('i', $db_id);
 
 								$db->query($sql, $parameters);
 
-								$db_auth = auth::value_parse($db_id, $db_auth_encoded); // So all the fields are present (e.g. 'ips')
+								$auth_config = auth::value_parse($db_id, $auth_encoded); // So all the fields are present (e.g. 'ips')
 
 							}
 
-							unset($db_auth['ph']);
+							unset($auth_config['ph']);
 
 							return array(
 									'id' => intval($db_id),
 									'identification' => $identification,
-									'password_validation' => $this->validate_password($password, $db_auth['pu']),
-									'auth' => $db_auth,
+									'password_validation' => $this->validate_password($password, $auth_config['pu']),
+									'auth' => $auth_config,
 								);
 
 						}
@@ -1472,6 +1492,7 @@
 
 				if ($new_password) {
 					$auth_values['ph'] = password::hash(auth::_password_prepare($new_password));
+					$auth_values['pu'] = time();
 				}
 
 				unset($auth_values['v']);

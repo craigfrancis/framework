@@ -179,31 +179,9 @@
 					}
 
 				//--------------------------------------------------
-				// Limit
-
-					$limit_ref = true; // All good
-					$limit_extra = NULL;
-
-					if (count($this->details['auth']['ips']) > 0 && !in_array(config::get('request.ip'), $this->details['auth']['ips'])) {
-
-						$limit_ref = 'ip';
-						$limit_extra = $this->details['auth']['ips'];
-
-					} else if ($this->details['auth']['totp'] !== NULL) { // They must be able to pass TOTP, before checking their password quality.
-
-						$limit_ref = 'totp';
-
-					} else if ($this->details['password_validation'] !== true) {
-
-						$limit_ref = 'password';
-						$limit_extra = $this->details['password_validation'];
-
-					}
-
-				//--------------------------------------------------
 				// Start session
 
-					$this->auth->_session_start($this->details['id'], $this->details['identification'], $limit_ref);
+					list($limit_ref, $limit_extra) = $this->auth->_session_start($this->details['id'], $this->details['identification'], $this->details['auth'], $this->details['password_validation']);
 
 				//--------------------------------------------------
 				// Change the CSRF token, invalidating forms open in
@@ -224,9 +202,9 @@
 					}
 
 				//--------------------------------------------------
-				// Try to restore session, if everything is good.
+				// Try to restore session, if there are no limits
 
-					if ($limit_ref === true) {
+					if ($limit_ref === '') {
 						save_request_restore($this->details['identification']);
 					}
 

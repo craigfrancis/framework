@@ -1,18 +1,29 @@
 <?php
 
-	class auth_reset_complete_base extends check {
+	class auth_reset_change_base extends check {
 
 		//--------------------------------------------------
 		// Variables
 
 			protected $auth = NULL;
+			protected $db_main_table = NULL;
+			protected $db_main_fields = NULL;
+			protected $db_main_where_sql = NULL;
+			protected $db_reset_table = NULL;
+			protected $db_reset_fields = NULL;
 			protected $details = NULL;
+			protected $record = NULL;
 			protected $form = NULL;
 			protected $field_password_1 = NULL;
 			protected $field_password_2 = NULL;
 
 			public function __construct($auth) {
+
 				$this->auth = $auth;
+
+				list($this->db_main_table, $this->db_main_fields, $this->db_main_where_sql) = $this->auth->db_table_get('main');
+				list($this->db_reset_table, $this->db_reset_fields) = $this->auth->db_table_get('reset');
+
 			}
 
 		//--------------------------------------------------
@@ -56,25 +67,200 @@
 
 			public function active($reset_token, $config = array()) {
 
-// Still a valid token? either as a timeout, or the tracker cookie not matching.
+				//--------------------------------------------------
+				// Config
 
-// $this->auth->text_get('failure_reset_token')            => 'The link to reset your password is incorrect or has expired.',
+					if ($this->auth->session_get() !== NULL) {
+						exit_with_error('Cannot call $auth_reset_change->active() when the user is logged in.');
+					}
 
-// $valid = true or false (expired, non-existent, etc)... $identification only returned if $valid (not when it has expired).
+					$this->details = false;
+					$this->record = NULL;
 
-// return [$valid, $identification];
+				//--------------------------------------------------
+				// Reset ID
 
-				return false;
+					if (preg_match('/^([0-9]+)-(.+)$/', $reset_token, $matches)) {
+						$reset_id = $matches[1];
+						$reset_pass = $matches[2];
+					} else {
+						$reset_id = 0;
+						$reset_pass = '';
+					}
+
+					$reset_id = intval($reset_id);
+
+				//--------------------------------------------------
+				// Record
+
+					$db = $this->auth->db_get();
+
+					$created_after = new timestamp('-2 day');
+
+$created_after = new timestamp('-1 week');
+
+					$sql = 'SELECT
+								r.id,
+								r.token,
+								r.tracker,
+								r.user_id
+							FROM
+								' . $db->escape_table($this->db_reset_table) . ' AS r
+							WHERE
+								r.id = ? AND
+								r.token != "" AND
+								r.user_id > 0 AND
+								r.created > ? AND
+								r.deleted = "0000-00-00 00:00:00"';
+
+					$parameters = array();
+					$parameters[] = array('i', $reset_id);
+					$parameters[] = array('s', $created_after);
+
+					if ($row = $db->fetch_row($sql, $parameters)) {
+
+						if ($this->auth->_quick_hash_verify($reset_pass, $row['token'])) {
+
+							$row['browser_changed'] = ($row['tracker'] != $this->auth->_browser_tracker_get()); // Don't use UA string, it changes too often.
+							$row['valid'] = NULL; // Not checked yet
+
+							unset($row['tracker']);
+							unset($row['token']);
+
+							$this->details = $row;
+
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Current account
+
+					if ($this->details) {
+
+						$this->record = record_get($this->db_main_table, $this->details['user_id'], [
+								$this->db_main_fields['identification'],
+								$this->db_main_fields['password'],
+								$this->db_main_fields['auth'],
+							]);
+
+						$row = $this->record->values_get();
+
+						$this->details['auth'] = auth::value_parse($this->details['user_id'], $row[$this->db_main_fields['auth']]);
+						$this->details['identification'] = $row[$this->db_main_fields['identification']];
+
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return ($this->details !== false);
 
 			}
 
-			public function validate() {
+			public function validate($password_1 = NULL, $password_2 = NULL) {
 
-				$this->validate_password();
-				// New password is not the same as old password???
-				// New password matches Repeat new password.
+				//--------------------------------------------------
+				// Config
 
-// Must have called $auth_reset_complete->active... maybe it starts by setting $this->details?
+					if ($this->details === NULL) {
+						exit_with_error('You must call $auth_reset_change->active() before $auth_reset_change->validate().');
+					}
+
+					if (!is_array($this->details)) {
+						exit_with_error('The reset token is not valid, so why has $auth_reset_change->validate() been called?');
+					}
+
+					$errors = array();
+
+				//--------------------------------------------------
+				// Values
+
+					if ($password_1 !== NULL) {
+
+						$this->form = NULL;
+
+					} else if ($this->form === NULL) {
+
+						exit_with_error('Cannot call $auth_reset_change->validate() without using any form fields, or providing two passwords.');
+
+					} else if (!$this->form->valid()) { // Basic checks such as required fields, and CSRF
+
+						return false;
+
+					} else {
+
+						if (isset($this->field_password_1)) {
+							$password_1 = strval($this->field_password_1->value_get());
+						} else {
+							exit_with_error('You must call $auth_reset_change->field_password_1_get() before $auth_reset_change->validate().');
+						}
+
+						if (isset($this->field_password_2)) {
+							$password_2 = strval($this->field_password_2->value_get()); // Not NULL
+						} else {
+							exit_with_error('You must call $auth_reset_change->field_password_2_get() before $auth_reset_change->validate().');
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Validate
+
+					//--------------------------------------------------
+					// Password
+
+						$result = $this->auth->validate_password($password_1);
+
+						if (is_string($result)) { // Custom (project specific) error message
+
+							$errors['password_1'] = $this->auth->text_get($result, $result);
+
+						} else if ($result !== true) {
+
+							exit_with_error('Invalid response from $auth->validate_password()', $result);
+
+						} else if ($password_2 !== NULL && $password_1 !== $password_2) {
+
+							$errors['password_2'] = $this->auth->text_get('failure_password_repeat');
+
+						}
+
+					//--------------------------------------------------
+					// Old password
+
+						// Could stop them re-using the same/old password;
+						// but is it worth the processing time?
+
+				//--------------------------------------------------
+				// Return
+
+					$this->details['password'] = $password_1;
+					$this->details['valid'] = (count($errors) == 0);
+
+					if ($this->details['valid']) {
+
+						return true;
+
+					} else if ($this->form) {
+
+						foreach ($errors as $field => $error) {
+							if ($field == 'password_1') {
+								$this->field_password_1->error_add($error);
+							} else if ($field == 'password_2') {
+								$this->field_password_2->error_add($error);
+							} else {
+								exit_with_error('Unknown error field "' . $field . '"');
+							}
+						}
+
+						return false;
+
+					} else {
+
+						return $errors;
+
+					}
 
 			}
 
@@ -85,14 +271,127 @@
 
 					$config = array_merge(array(
 							'form'  => NULL,
-							'login' => NULL,
+							'login' => true,
 						), $config);
 
-// Delete all active sessions for the user (see update_complete as well).
+					if ($this->details === NULL) {
+						exit_with_error('You must call $auth_reset_change->active() before $auth_reset_change->complete().');
+					}
 
-// Reset all tokens for this "user_id" on complete (keeping in mind there may be more than one account with this email address)
+					if (!is_array($this->details)) {
+						exit_with_error('The reset token is not valid, so why has $auth_reset_change->complete() been called?');
+					}
 
+					if ($this->details['valid'] === NULL) {
+						exit_with_error('You must call $auth_reset_change->validate() before $auth_reset_change->complete().');
+					}
 
+					if ($this->details['valid'] !== true) {
+						exit_with_error('The reset validation failed, so why has $auth_reset_change->complete() been called?');
+					}
+
+					if ($config['form']) {
+						$this->form = $config['form'];
+					}
+
+					if ($this->form && !$this->form->valid()) {
+						exit_with_error('The form is not valid, so why has $auth_reset_change->complete() been called?');
+					}
+
+					$now = new timestamp();
+
+					$db = $this->auth->db_get();
+
+				//--------------------------------------------------
+				// Mark as used
+
+					$sql = 'UPDATE
+								' . $db->escape_table($this->db_reset_table) . ' AS r
+							SET
+								r.deleted = ?
+							WHERE
+								r.id = ? AND
+								r.deleted = "0000-00-00 00:00:00"';
+
+					$parameters = array();
+					$parameters[] = array('s', $now);
+					$parameters[] = array('i', $this->details['id']);
+
+					$db->query($sql, $parameters);
+
+					$success = ($db->affected_rows() == 1);
+
+				//--------------------------------------------------
+				// Update
+
+					$auth_encoded = NULL;
+
+					if ($success) {
+
+// TODO: What happens if 'auth' is NULL, because it wasn't decoded correctly?
+
+						$auth_encoded = auth::value_encode($this->details['user_id'], $this->details['auth'], $this->details['password']);
+
+						$this->record->save([
+								$this->db_main_fields['password'] => '',
+								$this->db_main_fields['auth'] => $auth_encoded,
+							]);
+
+					}
+
+				//--------------------------------------------------
+				// Clear all other requests
+
+					if ($success) {
+
+							// We only invalidate by user_id, as they
+							// might have more than one account.
+							// i.e. other reset links in their email
+							// should still work.
+
+						$sql = 'UPDATE
+									' . $db->escape_table($this->db_reset_table) . ' AS r
+								SET
+									r.deleted = ?
+								WHERE
+									r.token != "" AND
+									r.user_id = ? AND
+									r.deleted = "0000-00-00 00:00:00"';
+
+						$parameters = array();
+						$parameters[] = array('s', $now);
+						$parameters[] = array('i', $this->details['user_id']);
+
+						$db->query($sql, $parameters);
+
+					}
+
+				//--------------------------------------------------
+				// Login the user
+
+					if ($this->details['browser_changed']) {
+
+						$limit_ref = 'browser';
+						$limit_extra = NULL;
+
+						$this->auth->last_identification_set(NULL); // Clear the last login cookie, just in case they have logged in before.
+
+					} else if ($success && $config['login']) {
+
+						$auth_config = auth::value_parse($db_id, $auth_encoded); // So all the fields are present (e.g. 'ips')
+
+debug($auth_config); // TODO: Check this is always an array
+
+						$password_validation = true; // Has just passed $auth->validate_password()
+
+						list($limit_ref, $limit_extra) = $this->auth->_session_start($this->details['user_id'], $this->details['identification'], $auth_config, $password_validation);
+
+					}
+
+				//--------------------------------------------------
+				// Done
+
+					return [$this->details['user_id'], $limit_ref, $limit_extra];
 
 			}
 

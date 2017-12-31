@@ -59,7 +59,7 @@
 				$admin_info = $this->auth->session_limited_get('password');
 				debug($admin_info);
 
-// See auth_reset_complete_base...
+// See auth_reset_change_base...
 
 				return false;
 

@@ -304,7 +304,7 @@
 						$reset_id = $db->insert_id();
 
 						if ($reset_pass) {
-							$resets[$id]['token'] = $reset_id . '-' . $reset_pass; // Token to use with auth_reset_complete
+							$resets[$id]['token'] = $reset_id . '-' . $reset_pass; // Token to use with auth_reset_change
 						} else {
 							unset($resets[$id]);
 						}
