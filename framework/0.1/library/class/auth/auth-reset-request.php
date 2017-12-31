@@ -167,7 +167,7 @@
 
 						if (count($errors) == 0) {
 
-// TODO: 'failure_reset_changed'          => 'Your account has already had its password changed recently.',
+// TODO: $errors[] = $this->auth->text_get('failure_reset_changed'); ... Your account has already had its password changed recently.
 
 						}
 

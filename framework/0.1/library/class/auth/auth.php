@@ -801,15 +801,9 @@
 				//--------------------------------------------------
 				// Session pass
 
-					if ($limit === 'ip') {
-						$session_pass = ''; // Will remain blank to record failure
-						$session_pass_hash = '';
-						$session_logout_csrf = '';
-					} else {
-						$session_pass = random_key(40);
-						$session_pass_hash = $this->_quick_hash_create($session_pass); // Must be a quick hash for fast page loading time.
-						$session_logout_csrf = random_key(15);
-					}
+					$session_pass = random_key(40);
+					$session_pass_hash = $this->_quick_hash_create($session_pass); // Must be a quick hash for fast page loading time.
+					$session_logout_csrf = random_key(15);
 
 				//--------------------------------------------------
 				// Create session record
@@ -821,7 +815,7 @@
 							'browser'       => config::get('request.browser'),
 							'tracker'       => $this->_browser_tracker_get(),
 							'hash_time'     => floatval($this->hash_time),
-							'limit'         => $limit,
+							'limit'         => $limit_ref,
 							'logout_csrf'   => $session_logout_csrf, // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
 							'created'       => $now,
 							'last_used'     => $now,
@@ -833,38 +827,39 @@
 				//--------------------------------------------------
 				// Store
 
-					if ($session_pass) {
+					if ($this->session_cookies) {
 
-						if ($this->session_cookies) {
+						$cookie_age = new timestamp($this->session_length . ' seconds');
 
-							$cookie_age = new timestamp($this->session_length . ' seconds');
+						cookie::set($this->session_name . '_id',   $session_id,   array('expires' => $cookie_age, 'same_site' => 'Lax'));
+						cookie::set($this->session_name . '_pass', $session_pass, array('expires' => $cookie_age, 'same_site' => 'Lax'));
 
-							cookie::set($this->session_name . '_id',   $session_id,   array('expires' => $cookie_age, 'same_site' => 'Lax'));
-							cookie::set($this->session_name . '_pass', $session_pass, array('expires' => $cookie_age, 'same_site' => 'Lax'));
+					} else {
 
-						} else {
-
-							session::regenerate(); // State change, new session id (additional check against session fixation)
-							session::set($this->session_name . '_id', $session_id);
-							session::set($this->session_name . '_pass', $session_pass); // Password support still used so an "auth_token" can be passed to the user.
-
-						}
-
-						if ($identification !== NULL) {
-							$this->last_identification_set($identification);
-						}
-
-						$this->session_pass = $session_pass;
-						$this->session_info_available = true;
-						$this->session_info_data = [
-								'id' => $session_id,
-								'user_id' => $user_id,
-								'limit' => $limit,
-								'logout_csrf' => $session_logout_csrf,
-								'last_used_new' => $now,
-							];
+						session::regenerate(); // State change, new session id (additional check against session fixation)
+						session::set($this->session_name . '_id', $session_id);
+						session::set($this->session_name . '_pass', $session_pass); // Password support still used so an "auth_token" can be passed to the user.
 
 					}
+
+					if ($identification !== NULL) {
+						$this->last_identification_set($identification);
+					}
+
+					$this->session_pass = $session_pass;
+					$this->session_info_available = ($limit_ref === '');
+					$this->session_info_data = [
+							'id' => $session_id,
+							'user_id' => $user_id,
+							'limit' => $limit_ref,
+							'logout_csrf' => $session_logout_csrf,
+							'last_used_new' => $now,
+						];
+
+				//--------------------------------------------------
+				// Return
+
+					return [$limit_ref, $limit_extra];
 
 			}
 
@@ -964,6 +959,31 @@
 					}
 
 // TODO: Delete old password resets, and register/update tables,
+
+			}
+
+			public function cleanup_resets($user_id) {
+
+				$db = $this->db_get();
+
+				$now = new timestamp();
+
+				list($db_reset_table, $db_reset_fields) = $this->db_table_get('reset');
+
+				$sql = 'UPDATE
+							' . $db->escape_table($db_reset_table) . ' AS r
+						SET
+							r.deleted = ?
+						WHERE
+							r.token != "" AND
+							r.user_id = ? AND
+							r.deleted = "0000-00-00 00:00:00"';
+
+				$parameters = array();
+				$parameters[] = array('s', $now);
+				$parameters[] = array('i', $user_id);
+
+				$db->query($sql, $parameters);
 
 			}
 
@@ -1283,6 +1303,8 @@
 
 			public function _field_email_get($form, $config) { // Used in reset.
 
+// TODO: If this is only used in reset, should we move it to there... as we are going to need fields for "remember me", "remember browser", and "totp" as well
+
 				$max_length = (isset($config['max_length']) ? $config['max_length'] : $this->email_max_length);
 
 				$field = new form_field_email($form, $config['label'], $config['name']);
@@ -1499,9 +1521,7 @@
 
 				$auth = json_encode($auth_values);
 
-				// TODO: Encrypt auth value with libsodium, using the sha256($user_id + ENCRYPTION_KEY) as the key (so the value cannot be used for other users).
-				// https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use
-				// https://download.libsodium.org/doc/
+// TODO: Use encryption::encode() ... maybe with sha256($user_id + ENCRYPTION_KEY) as the key? (so the value cannot be used for other users)... also need to consider Key V1 vs V2 (openssl / lib sodium).
 
 				return intval(auth::$auth_version) . '-' . $auth;
 

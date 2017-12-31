@@ -299,7 +299,7 @@ $auth_config = $result['auth'];
 
 								exit_with_error('Invalid response from $auth->validate_password()', $result);
 
-// Check register helper... $password_1 and 2 can be NULL to skip .... } else if ($password_2 !== NULL && $password_1 !== $password_2) {
+// TODO: Check register helper... $password_1 and 2 can be NULL to skip .... } else if ($password_2 !== NULL && $password_1 !== $password_2) {
 
 							} else if ($password_2 !== NULL && $password_1 !== $password_2) {
 
@@ -459,7 +459,7 @@ $auth_config = []; // TODO: Get current config, so we do not reset 'ips' or 'tot
 
 					if ($this->details['password']) {
 
-// TODO: Delete all active sessions for the user (see reset_process_complete as well).
+// TODO: Delete all active sessions for the user (see reset_process_complete as well)... maybe an $auth->_session_end_all($user_id) method... like $auth->cleanup_reset()
 
 					}
 

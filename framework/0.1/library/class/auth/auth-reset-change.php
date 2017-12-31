@@ -95,9 +95,7 @@
 
 					$db = $this->auth->db_get();
 
-					$created_after = new timestamp('-2 day');
-
-$created_after = new timestamp('-1 week');
+					$created_after = new timestamp('-3 days');
 
 					$sql = 'SELECT
 								r.id,
@@ -349,20 +347,7 @@ $created_after = new timestamp('-1 week');
 							// i.e. other reset links in their email
 							// should still work.
 
-						$sql = 'UPDATE
-									' . $db->escape_table($this->db_reset_table) . ' AS r
-								SET
-									r.deleted = ?
-								WHERE
-									r.token != "" AND
-									r.user_id = ? AND
-									r.deleted = "0000-00-00 00:00:00"';
-
-						$parameters = array();
-						$parameters[] = array('s', $now);
-						$parameters[] = array('i', $this->details['user_id']);
-
-						$db->query($sql, $parameters);
+						$this->auth->cleanup_resets($this->details['user_id']);
 
 					}
 
@@ -378,7 +363,7 @@ $created_after = new timestamp('-1 week');
 
 					} else if ($success && $config['login']) {
 
-						$auth_config = auth::value_parse($db_id, $auth_encoded); // So all the fields are present (e.g. 'ips')
+						$auth_config = auth::value_parse($this->details['user_id'], $auth_encoded); // So all the fields are present (e.g. 'ips')
 
 debug($auth_config); // TODO: Check this is always an array
 
@@ -386,6 +371,13 @@ debug($auth_config); // TODO: Check this is always an array
 
 						list($limit_ref, $limit_extra) = $this->auth->_session_start($this->details['user_id'], $this->details['identification'], $auth_config, $password_validation);
 
+					}
+
+				//--------------------------------------------------
+				// Try to restore session, if there are no limits
+
+					if ($limit_ref === '') {
+						save_request_restore($this->details['identification']);
 					}
 
 				//--------------------------------------------------
