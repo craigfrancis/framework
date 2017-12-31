@@ -1363,8 +1363,6 @@
 
 			public function _field_email_get($form, $config) { // Used in reset.
 
-// TODO: If this is only used in reset, should we move it to there... as we are going to need fields for "remember me", "remember browser", and "totp" as well
-
 				$max_length = (isset($config['max_length']) ? $config['max_length'] : $this->email_max_length);
 
 				$field = new form_field_email($form, $config['label'], $config['name']);
