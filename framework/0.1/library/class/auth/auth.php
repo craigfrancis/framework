@@ -776,6 +776,10 @@
 				//--------------------------------------------------
 				// Limit
 
+					if (!is_array($auth)) {
+						exit_with_error('The "auth" value for user "' . $user_id . '" is damaged', debug_dump($auth)); // If it's NULL, then it's probably due to failing to parse.
+					}
+
 					if (count($auth['ips']) > 0 && !in_array(config::get('request.ip'), $auth['ips'])) {
 
 						$limit_ref = 'ip';
@@ -1504,6 +1508,10 @@
 			}
 
 			public static function value_encode($user_id, $auth_values, $new_password = NULL) {
+
+				if (!is_array($auth_values)) {
+					exit_with_error('The "auth" values for user "' . $user_id . '" are damaged', debug_dump($auth_values)); // If it's NULL, then it's probably due to failing to parse.
+				}
 
 				$auth_values = array_merge(array(
 						'ph'   => '',

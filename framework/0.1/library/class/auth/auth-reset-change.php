@@ -326,8 +326,6 @@
 
 					if ($success) {
 
-// TODO: What happens if 'auth' is NULL, because it wasn't decoded correctly?
-
 						$auth_encoded = auth::value_encode($this->details['user_id'], $this->details['auth'], $this->details['password']);
 
 						$this->record->save([
@@ -364,8 +362,6 @@
 					} else if ($success && $config['login']) {
 
 						$auth_config = auth::value_parse($this->details['user_id'], $auth_encoded); // So all the fields are present (e.g. 'ips')
-
-debug($auth_config); // TODO: Check this is always an array
 
 						$password_validation = true; // Has just passed $auth->validate_password()
 

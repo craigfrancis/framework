@@ -393,8 +393,6 @@
 
 						$auth_config = auth::value_parse($record_id, $auth_encoded); // So all the fields are present (e.g. 'ips')
 
-debug($auth_config); // TODO: Check this is always an array... what happens if $auth_encoded is NULL?
-
 						$password_validation = true; // Has just passed $auth->validate_password()
 
 						list($limit_ref, $limit_extra) = $this->auth->_session_start($record_id, $this->details['identification'], $auth_config, $password_validation);
@@ -542,8 +540,6 @@ debug($auth_config); // TODO: Check this is always an array... what happens if $
 									} else if ($config['login']) {
 
 										$auth_config = auth::value_parse($record_id, $row[$this->db_fields['auth']]); // So all the fields are present (e.g. 'ips')
-
-debug($auth_config); // TODO: Check this is always an array.
 
 										$password_validation = true; // Has just passed $auth->validate_password()
 

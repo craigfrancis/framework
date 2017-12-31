@@ -200,7 +200,6 @@
 					if ($config['remember_user']) { // or $this->field_remember_user
 
 // TODO: remember_user
-//
 // https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
 // http://blog.alejandrocelaya.com/2016/02/09/how-to-properly-implement-persistent-login/ - Replace token on use
 

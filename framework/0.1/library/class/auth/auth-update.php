@@ -9,6 +9,7 @@
 			protected $confirm = false;
 			protected $db_main_table = NULL;
 			protected $db_main_fields = NULL;
+			protected $db_main_where_sql = NULL;
 			protected $db_update_table = NULL;
 			protected $db_update_fields = NULL;
 			protected $details = NULL;
@@ -23,7 +24,7 @@
 
 				$this->auth = $auth;
 
-				list($this->db_main_table, $this->db_main_fields) = $this->auth->db_table_get('main');
+				list($this->db_main_table, $this->db_main_fields, $this->db_main_where_sql) = $this->auth->db_table_get('main');
 				list($this->db_update_table, $this->db_update_fields) = $this->auth->db_table_get('update');
 
 				$this->confirm = ($this->db_update_table !== NULL);
@@ -231,6 +232,8 @@
 					//--------------------------------------------------
 					// Old password
 
+						$auth_config = NULL;
+
 						if (array_key_exists('password_old', $values)) {
 
 							$old_password = $values['password_old'];
@@ -259,12 +262,33 @@
 
 							} else if (is_array($result)) {
 
-$auth_config = $result['auth'];
+								$auth_config = $result['auth'];
 
 							} else {
 
 								exit_with_error('Invalid response from $auth->validate_login()', $result);
 
+							}
+
+						} else {
+
+							$db = $this->auth->db_get();
+
+							$sql = 'SELECT
+										m.' . $db->escape_field($this->db_main_fields['auth']) . ' AS auth
+									FROM
+										' . $db->escape_table($this->db_main_table) . ' AS m
+									WHERE
+										m.' . $db->escape_field($this->db_main_fields['id']) . ' = ? AND
+										' . $this->db_main_where_sql . '
+									LIMIT
+										1';
+
+							$parameters = array();
+							$parameters[] = array('i', $current_user_id);
+
+							if ($row = $db->fetch_row($sql, $parameters)) {
+								$auth_config = auth::value_parse($current_user_id, $row['auth']);
 							}
 
 						}
@@ -332,6 +356,7 @@ $auth_config = $result['auth'];
 								'confirm_valid' => $confirm_valid,
 								'user_set' => ($current_source == 'set'),
 								'user_id' => $current_user_id,
+								'auth' => $auth_config,
 							);
 
 						return true;
@@ -443,11 +468,7 @@ $auth_config = $result['auth'];
 
 					if ($this->details['password']) { // could be NULL or blank (if not required)
 
-$auth_config = []; // TODO: Get current config, so we do not reset 'ips' or 'totp'
-// If the old password is being used, we can get the 'auth' value from validate_login()
-// Ensure that $auth_config is not NULL, due to decoding issues?
-
-						$auth_encoded = auth::value_encode($this->details['user_id'], $auth_config, $this->details['password']);
+						$auth_encoded = auth::value_encode($this->details['user_id'], $this->details['auth'], $this->details['password']);
 
 						$record->value_set($this->db_main_fields['password'], '');
 						$record->value_set($this->db_main_fields['auth'], $auth_encoded);
