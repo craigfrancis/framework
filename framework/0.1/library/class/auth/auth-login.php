@@ -184,9 +184,10 @@
 					list($limit_ref, $limit_extra) = $this->auth->_session_start($this->details['id'], $this->details['identification'], $this->details['auth'], $this->details['password_validation']);
 
 				//--------------------------------------------------
-				// Clear any password reset requests
+				// Expire any password reset requests, as they
+				// must know the password.
 
-					$this->auth->cleanup_resets($this->details['id']);
+					$this->auth->expire_resets($this->details['id']);
 
 				//--------------------------------------------------
 				// Change the CSRF token, invalidating forms open in

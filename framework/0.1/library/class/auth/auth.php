@@ -440,13 +440,13 @@
 										}
 
 										$sql = 'UPDATE
-														' . $db->escape_table($db_session_table) . ' AS s
-													SET
-														s.last_used = ?,
-														s.request_count = (s.request_count + ?)
-													WHERE
-														s.id = ? AND
-														s.deleted = "0000-00-00 00:00:00"';
+													' . $db->escape_table($db_session_table) . ' AS s
+												SET
+													s.last_used = ?,
+													s.request_count = (s.request_count + ?)
+												WHERE
+													s.id = ? AND
+													s.deleted = "0000-00-00 00:00:00"';
 
 										$parameters = array();
 										$parameters[] = array('s', $now);
@@ -753,24 +753,10 @@
 					list($db_session_table) = $this->db_table_get('session');
 
 				//--------------------------------------------------
-				// Process previous sessions
+				// Expire previous sessions
 
 					if ($this->session_concurrent !== true) {
-
-						$sql = 'UPDATE
-									' . $db->escape_table($db_session_table) . ' AS s
-								SET
-									s.deleted = ?
-								WHERE
-									s.user_id = ? AND
-									s.deleted = "0000-00-00 00:00:00"';
-
-						$parameters = array();
-						$parameters[] = array('s', $now);
-						$parameters[] = array('i', $user_id);
-
-						$db->query($sql, $parameters);
-
+						$this->expire_sessions($user_id);
 					}
 
 				//--------------------------------------------------
@@ -897,6 +883,15 @@
 					}
 
 				//--------------------------------------------------
+				// Expire other sessions as well ... disabled, as
+				// the admin might force a concurrent session, and
+				// when they logout, it should not logout the user.
+
+					// if ($this->session_concurrent !== true) {
+					// 	$this->expire_sessions($user_id);
+					// }
+
+				//--------------------------------------------------
 				// Delete cookies
 
 					if ($this->session_cookies) {
@@ -907,6 +902,92 @@
 						session::delete($this->session_name . '_id');
 						session::delete($this->session_name . '_pass');
 					}
+
+			}
+
+		//--------------------------------------------------
+		// Expiring
+
+			public function expire_sessions($user_id, $keep_current_session = false) {
+
+				$db = $this->db_get();
+
+				$now = new timestamp();
+
+				list($db_session_table) = $this->db_table_get('session');
+
+				$sql = 'UPDATE
+							' . $db->escape_table($db_session_table) . ' AS s
+						SET
+							s.deleted = ?
+						WHERE
+							s.user_id = ? AND
+							s.deleted = "0000-00-00 00:00:00"';
+
+				$parameters = array();
+				$parameters[] = array('s', $now);
+				$parameters[] = array('i', $user_id);
+
+				if ($keep_current_session) {
+
+					$sql .= ' AND
+						s.id != ?';
+
+					$parameters[] = array('i', $this->session_id_get());
+
+				}
+
+				$db->query($sql, $parameters);
+
+			}
+
+			public function expire_resets($user_id) {
+
+				$db = $this->db_get();
+
+				$now = new timestamp();
+
+				list($db_reset_table) = $this->db_table_get('reset');
+
+				$sql = 'UPDATE
+							' . $db->escape_table($db_reset_table) . ' AS r
+						SET
+							r.deleted = ?
+						WHERE
+							r.token != "" AND
+							r.user_id = ? AND
+							r.deleted = "0000-00-00 00:00:00"';
+
+				$parameters = array();
+				$parameters[] = array('s', $now);
+				$parameters[] = array('i', $user_id);
+
+				$db->query($sql, $parameters);
+
+			}
+
+			public function expire_updates($user_id) {
+
+				$db = $this->db_get();
+
+				$now = new timestamp();
+
+				list($db_update_table) = $this->db_table_get('update');
+
+				$sql = 'UPDATE
+							' . $db->escape_table($db_update_table) . ' AS u
+						SET
+							u.deleted = ?
+						WHERE
+							u.token != "" AND
+							u.user_id = ? AND
+							u.deleted = "0000-00-00 00:00:00"';
+
+				$parameters = array();
+				$parameters[] = array('s', $now);
+				$parameters[] = array('i', $user_id);
+
+				$db->query($sql, $parameters);
 
 			}
 
@@ -963,31 +1044,6 @@
 					}
 
 // TODO: Delete old password resets, and register/update tables,
-
-			}
-
-			public function cleanup_resets($user_id) {
-
-				$db = $this->db_get();
-
-				$now = new timestamp();
-
-				list($db_reset_table, $db_reset_fields) = $this->db_table_get('reset');
-
-				$sql = 'UPDATE
-							' . $db->escape_table($db_reset_table) . ' AS r
-						SET
-							r.deleted = ?
-						WHERE
-							r.token != "" AND
-							r.user_id = ? AND
-							r.deleted = "0000-00-00 00:00:00"';
-
-				$parameters = array();
-				$parameters[] = array('s', $now);
-				$parameters[] = array('i', $user_id);
-
-				$db->query($sql, $parameters);
 
 			}
 

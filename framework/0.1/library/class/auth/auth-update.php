@@ -476,15 +476,6 @@
 					}
 
 				//--------------------------------------------------
-				// Delete active sessions
-
-					if ($this->details['password']) {
-
-// TODO: Delete all active sessions for the user (see reset_process_complete as well)... maybe an $auth->_session_end_all($user_id) method... like $auth->cleanup_reset()
-
-					}
-
-				//--------------------------------------------------
 				// Save
 
 					if (isset($this->form)) {
@@ -495,6 +486,13 @@
 
 						$record->save();
 
+					}
+
+				//--------------------------------------------------
+				// Delete active sessions
+
+					if ($this->details['password']) {
+						$this->auth->expire_sessions($this->details['user_id'], true); // Only this session should remain be active.
 					}
 
 				//--------------------------------------------------
@@ -630,25 +628,10 @@
 								}
 
 							//--------------------------------------------------
-							// Clear all other requests
+							// Expire all other requests
 
 								if ($success) {
-
-									$sql = 'UPDATE
-												' . $db->escape_table($this->db_update_table) . ' AS u
-											SET
-												u.deleted = ?
-											WHERE
-												u.token != "" AND
-												u.user_id = ? AND
-												u.deleted = "0000-00-00 00:00:00"';
-
-									$parameters = array();
-									$parameters[] = array('s', $now);
-									$parameters[] = array('i', $row['user_id']);
-
-									$db->query($sql, $parameters);
-
+									$this->auth->expire_updates($row['user_id']);
 								}
 
 							//--------------------------------------------------

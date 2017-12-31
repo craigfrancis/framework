@@ -336,17 +336,11 @@
 					}
 
 				//--------------------------------------------------
-				// Clear all other requests
+				// Expire requests and sessions
 
 					if ($success) {
-
-							// We only invalidate by user_id, as they
-							// might have more than one account.
-							// i.e. other reset links in their email
-							// should still work.
-
-						$this->auth->cleanup_resets($this->details['user_id']);
-
+						$this->auth->expire_resets($this->details['user_id']); // By user_id, because they might have more than one account (giving them multiple reset links in the email)
+						$this->auth->expire_sessions($this->details['user_id']); // No other active sessions should exist.
 					}
 
 				//--------------------------------------------------
