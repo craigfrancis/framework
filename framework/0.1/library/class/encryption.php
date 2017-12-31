@@ -130,7 +130,7 @@
 
 			if ($key1_type === 'KS2' && $key2_type === '' && $key2_value === NULL) {
 
-				$key = base64_decode($key1_value);
+				$key = base64_decode($key1_value); // Base64 encoding is not "constant time", which might be an issue, but unlikely considering a network connection would introduce ~5ms delays ... https://twitter.com/CiPHPerCoder/status/947251405911412739 ... https://paragonie.com/blog/2016/06/constant-time-encoding-boring-cryptography-rfc-4648-and-you
 
 				$return_type = 'ES2';
 				$return_values = self::_encode_symmetric_sodium($key, $input);
