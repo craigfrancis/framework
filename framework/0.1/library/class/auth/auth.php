@@ -190,27 +190,6 @@
 				$fields    = (isset($this->db_fields[$table])    ? $this->db_fields[$table]    : NULL);
 				$where_sql = (isset($this->db_where_sql[$table]) ? $this->db_where_sql[$table] : NULL);
 
-				if (config::get('debug.level') > 0 && $name !== NULL) {
-
-					if ($table == 'remember') {
-
-						debug_require_db_table($name, '
-								CREATE TABLE [TABLE] (
-									id int(11) NOT NULL AUTO_INCREMENT,
-									token tinytext NOT NULL,
-									ip tinytext NOT NULL,
-									browser tinytext NOT NULL,
-									tracker tinytext NOT NULL,
-									user_id int(11) NOT NULL,
-									created datetime NOT NULL,
-									deleted datetime NOT NULL,
-									PRIMARY KEY (id)
-								);');
-
-					}
-
-				}
-
 				return [$name, $fields, $where_sql];
 
 			}
@@ -1050,6 +1029,23 @@ exit();
 
 					if ($db_table === NULL) {
 						return NULL;
+					}
+
+					if (config::get('debug.level') > 0) {
+
+						debug_require_db_table($db_table, '
+								CREATE TABLE [TABLE] (
+									id int(11) NOT NULL AUTO_INCREMENT,
+									token tinytext NOT NULL,
+									ip tinytext NOT NULL,
+									browser tinytext NOT NULL,
+									tracker tinytext NOT NULL,
+									user_id int(11) NOT NULL,
+									created datetime NOT NULL,
+									deleted datetime NOT NULL,
+									PRIMARY KEY (id)
+								);');
+
 					}
 
 					cookie::delete($this->remember_cookie_name);
