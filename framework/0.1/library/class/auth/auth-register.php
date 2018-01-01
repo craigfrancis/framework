@@ -391,7 +391,7 @@
 
 					if (!$this->confirm && $config['login']) {
 
-						$auth_config = auth::value_parse($record_id, $auth_encoded); // So all the fields are present (e.g. 'ips')
+						$auth_config = auth::value_parse($record_id, $auth_encoded); // So all fields are present (e.g. 'ips')
 
 						$password_validation = true; // Has just passed $auth->validate_password()
 
@@ -539,7 +539,7 @@
 
 									} else if ($config['login']) {
 
-										$auth_config = auth::value_parse($record_id, $row[$this->db_fields['auth']]); // So all the fields are present (e.g. 'ips')
+										$auth_config = auth::value_parse($record_id, $row[$this->db_fields['auth']]); // So all fields are present (e.g. 'ips')
 
 										$password_validation = true; // Has just passed $auth->validate_password()
 

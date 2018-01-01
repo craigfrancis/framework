@@ -597,7 +597,7 @@
 								}
 
 							//--------------------------------------------------
-							// Mark as used
+							// Mark as used (don't use expire function)
 
 								$sql = 'UPDATE
 											' . $db->escape_table($this->db_update_table) . ' AS u

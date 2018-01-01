@@ -355,7 +355,7 @@
 
 					} else if ($success && $config['login']) {
 
-						$auth_config = auth::value_parse($this->details['user_id'], $auth_encoded); // So all the fields are present (e.g. 'ips')
+						$auth_config = auth::value_parse($this->details['user_id'], $auth_encoded); // So all fields are present (e.g. 'ips')
 
 						$password_validation = true; // Has just passed $auth->validate_password()
 

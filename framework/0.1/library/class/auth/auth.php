@@ -1379,7 +1379,7 @@ exit();
 
 								$db->query($sql, $parameters);
 
-								$auth_config = auth::value_parse($db_id, $auth_encoded); // So all the fields are present (e.g. 'ips')
+								$auth_config = auth::value_parse($db_id, $auth_encoded); // So all fields are present (e.g. 'ips')
 
 							}
 
