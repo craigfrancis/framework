@@ -601,7 +601,7 @@ exit();
 
 							}
 
-// TODO: If not logged in, see if they have a 'remember_user' cookie... MUST ALSO remember to re-check 'limit'
+// TODO: If not logged in, see if they have a 'remember_user' cookie, that hasn't expired ($this->remember_timeout)... MUST ALSO remember to re-check 'limit'
 
 							if (!$this->session_info_data) { // NULL or false... not in DB, or has invalid pass/ip.
 								$this->_session_end();
