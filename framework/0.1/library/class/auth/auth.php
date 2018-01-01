@@ -1595,7 +1595,12 @@ exit();
 					//   sha512 - 88 - H0D8ktokFpR1CXnubPWC8tXX0o4YM13gWrxU0FYOD1MChgxlK/CNVgJSql50IQVG82n7u86MEs/HlXsmUv6adQ==
 					//
 					// SHA384 also avoids the "=" padding that is not
-					// always used with base64 encoding.
+					// always added with base64 encoding.
+					//
+					// And while not really relevant, SHA384 isn't
+					// vulnerable to length-extension attacks:
+					//
+					//   https://blog.skullsecurity.org/2012/everything-you-need-to-know-about-hash-length-extension-attacks
 					//
 					// A similar approach is used by DropBox, who use
 					// SHA512 and base64 encoding, which relies on
