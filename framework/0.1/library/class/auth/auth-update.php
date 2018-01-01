@@ -11,7 +11,6 @@
 			protected $db_main_fields = NULL;
 			protected $db_main_where_sql = NULL;
 			protected $db_update_table = NULL;
-			protected $db_update_fields = NULL;
 			protected $details = NULL;
 			protected $form = NULL;
 			protected $field_identification = NULL;
@@ -25,7 +24,7 @@
 				$this->auth = $auth;
 
 				list($this->db_main_table, $this->db_main_fields, $this->db_main_where_sql) = $this->auth->db_table_get('main');
-				list($this->db_update_table, $this->db_update_fields) = $this->auth->db_table_get('update');
+				list($this->db_update_table) = $this->auth->db_table_get('update');
 
 				$this->confirm = ($this->db_update_table !== NULL);
 

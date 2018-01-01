@@ -10,7 +10,6 @@
 			protected $db_main_fields = NULL;
 			protected $db_main_where_sql = NULL;
 			protected $db_reset_table = NULL;
-			protected $db_reset_fields = NULL;
 			protected $details = NULL;
 			protected $form = NULL;
 			protected $field_email = NULL;
@@ -20,7 +19,7 @@
 				$this->auth = $auth;
 
 				list($this->db_main_table, $this->db_main_fields, $this->db_main_where_sql) = $this->auth->db_table_get('main');
-				list($this->db_reset_table, $this->db_reset_fields) = $this->auth->db_table_get('reset');
+				list($this->db_reset_table) = $this->auth->db_table_get('reset');
 
 				if (config::get('debug.level') > 0) {
 

@@ -500,7 +500,7 @@
 
 								if ($success) {
 
-									list($db_main_table, $db_main_fields) = $this->auth->db_table_get('main');
+									list($db_main_table, $db_main_fields) = $this->auth->db_table_get('main'); // Must be explicitly 'main'
 
 									$values = $row;
 									unset($values[$this->db_fields['id']]);
