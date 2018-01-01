@@ -488,10 +488,12 @@
 					}
 
 				//--------------------------------------------------
-				// Delete active sessions
+				// Expire... on password change
 
 					if ($this->details['password']) {
-						$this->auth->expire_sessions($this->details['user_id'], true); // Only this session should remain be active.
+						$this->auth->expire('remember', $this->details['user_id']); // No remembered user records should exist (malicious user might own it)
+						$this->auth->expire('session', $this->details['user_id'], ['session_keep' => $this->auth->session_id_get()]); // Only this session should remain be active.
+						$this->auth->expire('reset', $this->details['user_id']); // No password resets should remain.
 					}
 
 				//--------------------------------------------------
@@ -627,10 +629,10 @@
 								}
 
 							//--------------------------------------------------
-							// Expire all other requests
+							// Expire... all other confirmations for this user
 
 								if ($success) {
-									$this->auth->expire_updates($row['user_id']);
+									$this->auth->expire('update', $row['user_id']);
 								}
 
 							//--------------------------------------------------

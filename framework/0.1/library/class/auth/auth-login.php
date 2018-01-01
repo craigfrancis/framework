@@ -55,6 +55,11 @@
 			}
 
 			public function field_remember_user_get($form, $config = array()) {
+
+				$this->form = $form;
+
+				$this->field_remember_user = new form_field_checkbox($form, $this->auth->text_get('remember_user_label'));
+
 			}
 
 		//--------------------------------------------------
@@ -184,10 +189,11 @@
 					list($limit_ref, $limit_extra) = $this->auth->_session_start($this->details['id'], $this->details['identification'], $this->details['auth'], $this->details['password_validation']);
 
 				//--------------------------------------------------
-				// Expire any password reset requests, as they
-				// must know the password.
+				// Expire
 
-					$this->auth->expire_resets($this->details['id']);
+					$this->auth->expire('reset', $this->details['id']); // They must know the password
+
+					// $this->auth->expire('remember', $this->details['id']); ... This is done during `session_start`
 
 				//--------------------------------------------------
 				// Change the CSRF token, invalidating forms open in
@@ -198,12 +204,12 @@
 				//--------------------------------------------------
 				// Remember user
 
-					if ($config['remember_user']) { // or $this->field_remember_user
+					if ($config['remember_user'] === NULL && isset($this->field_remember_user)) {
+						$config['remember_user'] = $this->field_remember_user->value_get();
+					}
 
-// TODO: remember_user
-// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
-// http://blog.alejandrocelaya.com/2016/02/09/how-to-properly-implement-persistent-login/ - Replace token on use
-
+					if ($config['remember_user']) {
+						$this->auth->login_remember();
 					}
 
 				//--------------------------------------------------

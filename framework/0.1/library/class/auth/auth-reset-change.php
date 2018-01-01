@@ -335,11 +335,12 @@
 					}
 
 				//--------------------------------------------------
-				// Expire requests and sessions
+				// Expire
 
 					if ($success) {
-						$this->auth->expire_resets($this->details['user_id']); // By user_id, because they might have more than one account (giving them multiple reset links in the email)
-						$this->auth->expire_sessions($this->details['user_id']); // No other active sessions should exist.
+						$this->auth->expire('remember', $this->details['user_id']); // No remembered user records should exist.
+						$this->auth->expire('session', $this->details['user_id']); // No other active sessions should exist.
+						$this->auth->expire('reset', $this->details['user_id']); // This must be by user_id, because they might have more than one account (giving them multiple reset links in the rest email)
 					}
 
 				//--------------------------------------------------

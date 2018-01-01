@@ -546,6 +546,10 @@
 
 			function debug_require_db_table($table, $sql) {
 
+				if ($table == '') {
+					exit('Missing table name when using debug_require_db_table()');
+				}
+
 				$db = db_get();
 
 				$db->query('SHOW TABLES LIKE "' . $db->escape($table) . '"', NULL, false); // No debug, and parameters are not supported in "SHOW TABLES" (MySQL 5.7)

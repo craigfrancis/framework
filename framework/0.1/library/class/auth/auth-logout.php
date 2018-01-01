@@ -72,7 +72,7 @@
 				//--------------------------------------------------
 				// End the current session
 
-					$this->auth->_session_end($this->auth->session_id_get());
+					$this->auth->_session_end($this->auth->session_user_id_get(), $this->auth->session_id_get());
 
 				//--------------------------------------------------
 				// Change the CSRF token, invalidating forms open in

@@ -38,6 +38,9 @@
 			protected $password_max_length = 250; // CRYPT_BLOWFISH truncates to 72 characters anyway.
 			protected $last_cookie_name = 'u'; // Or set to NULL to not remember.
 			protected $last_cookie_path = '/';
+			protected $remember_cookie_name = 'r';
+			protected $remember_cookie_path = '/';
+			protected $remember_timeout = 2592000; // 30 days (60*60*24*30)
 			protected $quick_hash = 'sha256'; // Using CRYPT_BLOWFISH for everything (e.g. session pass) would make page loading too slow (good for login though)
 
 			protected $text = array();
@@ -91,6 +94,8 @@
 							'password_repeat_min_length'     => 'Your password confirmation is required.',
 							'password_repeat_max_length'     => 'Your password confirmation cannot be longer than XXX characters.',
 
+							'remember_user_label'            => 'Remember me',
+
 							'failure_login_details'          => 'Incorrect log-in details.',
 							'failure_login_identification'   => NULL, // Do not use, except for very special situations (e.g. low security and overly user friendly websites).
 							'failure_login_password'         => NULL,
@@ -138,6 +143,8 @@
 							'register' => DB_PREFIX . 'user_auth_register', // Can be set to NULL to skip email verification (and help attackers identify active accounts).
 							'update'   => DB_PREFIX . 'user_auth_update',
 							'reset'    => DB_PREFIX . 'user_auth_reset',
+							'remember' => NULL,
+							'totp'     => NULL,
 						), $this->db_table);
 
 					$this->db_where_sql = array_merge(array(
@@ -182,6 +189,27 @@
 				$name      = (isset($this->db_table[$table])     ? $this->db_table[$table]     : NULL);
 				$fields    = (isset($this->db_fields[$table])    ? $this->db_fields[$table]    : NULL);
 				$where_sql = (isset($this->db_where_sql[$table]) ? $this->db_where_sql[$table] : NULL);
+
+				if (config::get('debug.level') > 0 && $name !== NULL) {
+
+					if ($table == 'remember') {
+
+						debug_require_db_table($name, '
+								CREATE TABLE [TABLE] (
+									id int(11) NOT NULL AUTO_INCREMENT,
+									token tinytext NOT NULL,
+									ip tinytext NOT NULL,
+									browser tinytext NOT NULL,
+									tracker tinytext NOT NULL,
+									user_id int(11) NOT NULL,
+									created datetime NOT NULL,
+									deleted datetime NOT NULL,
+									PRIMARY KEY (id)
+								);');
+
+					}
+
+				}
 
 				return [$name, $fields, $where_sql];
 
@@ -230,7 +258,7 @@
 			}
 
 		//--------------------------------------------------
-		// Force Login
+		// Login
 
 			public function login_forced($config = array()) {
 
@@ -251,9 +279,92 @@
 
 				$this->session_concurrent = $config['session_concurrent'];
 
-				$this->session_start($this->user_id, ($config['remember_identification'] === true ? $this->user_identification_get() : NULL));
+				$identification = ($config['remember_identification'] === true ? $this->user_identification_get() : NULL);
+				$auth_config = NULL;
+				$password_validation = true; // We aren't checking the password
+				$forced_login = true; // TODO: Check that this is stored, then $auth->_session_end() should NOT expire other sessions.
+
+debug($auth_config); // TODO: Setup a fake auth_config for a forced login
+exit();
+
+				$this->_session_start($this->user_id, $identification, $auth_config, $password_validation, $forced_login);
 
 				$this->session_concurrent = $system_session_concurrent;
+
+			}
+
+			public function login_remember($config = array()) {
+
+// TODO: Re-read articles on remember_user...
+// Must be removed on logout, password change (profile), password reset, and re-login.
+// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
+// http://blog.alejandrocelaya.com/2016/02/09/how-to-properly-implement-persistent-login/
+
+				//--------------------------------------------------
+				// Config
+
+					if ($this->user_id !== NULL) {
+						exit_with_error('Cannot call $auth->login_remember() after using $auth->user_set().');
+					}
+
+					if (!$this->session_info_data) { // NULL or false
+						exit_with_error('Cannot call $auth->login_remember() when the user is not logged in.');
+					}
+
+					if ($this->session_info_data['limit'] !== '') {
+						// Still allowed to be remembered... and when restoring, those limits must be re-checked/applied.
+					}
+
+					list($db_remember_table) = $this->db_table_get('remember');
+					if ($db_remember_table === NULL) {
+						return false;
+					}
+
+					$now = new timestamp();
+
+					$db = $this->db_get();
+
+				//--------------------------------------------------
+				// Expire
+
+					// $this->expire('remember', $this->session_info_data['user_id']); ... This is done during `session_start`
+
+				//--------------------------------------------------
+				// Add record
+
+					$remember_pass = random_key(40);
+					$remember_hash = $this->_quick_hash_create($remember_pass);
+
+					$db->insert($db_remember_table, array(
+							'id'      => '',
+							'token'   => $remember_hash,
+							'ip'      => config::get('request.ip'),
+							'browser' => config::get('request.browser'),
+							'tracker' => $this->_browser_tracker_get(),
+							'user_id' => $this->session_info_data['user_id'],
+							'created' => $now,
+							'deleted' => '0000-00-00 00:00:00',
+						));
+
+					$remember_id = $db->insert_id();
+
+					$remember_token = $remember_id . '-' . $remember_pass;
+
+				//--------------------------------------------------
+				// Cookie
+
+					$expires = new timestamp($this->remember_timeout . ' seconds');
+
+					cookie::set($this->remember_cookie_name, $remember_token, array(
+							'expires'   => $expires,
+							'path'      => $this->remember_cookie_path,
+							'same_site' => 'Lax',
+						));
+
+				//--------------------------------------------------
+				// Return
+
+					return true;
 
 			}
 
@@ -343,16 +454,20 @@
 
 							debug_require_db_table($db_session_table, '
 									CREATE TABLE [TABLE] (
-										id int(11) NOT NULL AUTO_INCREMENT,
-										pass tinytext NOT NULL,
-										user_id int(11) NOT NULL,
-										ip tinytext NOT NULL,
-										browser tinytext NOT NULL,
-										logout_csrf tinytext NOT NULL,
-										created datetime NOT NULL,
-										last_used datetime NOT NULL,
-										request_count int(11) NOT NULL,
-										deleted datetime NOT NULL,
+										`id` int(11) NOT NULL AUTO_INCREMENT,
+										`pass` tinytext NOT NULL,
+										`user_id` int(11) NOT NULL,
+										`ip` tinytext NOT NULL,
+										`browser` tinytext NOT NULL,
+										`tracker` tinytext NOT NULL,
+										`type` ENUM("normal", "forced") NOT NULL,
+										`hash_time` DECIMAL(5, 4) NOT NULL,
+										`limit` tinytext NOT NULL,
+										`logout_csrf` tinytext NOT NULL,
+										`created` datetime NOT NULL,
+										`last_used` datetime NOT NULL,
+										`request_count` int(11) NOT NULL,
+										`deleted` datetime NOT NULL,
 										PRIMARY KEY (id),
 										KEY user_id (user_id)
 									);');
@@ -360,7 +475,7 @@
 						}
 
 					//--------------------------------------------------
-					// Get session details
+					// Get session id / pass
 
 						if ($config['auth_token'] === NULL) {
 
@@ -387,11 +502,11 @@
 						$session_id = intval($session_id);
 
 					//--------------------------------------------------
-					// If set, test
+					// Get session details
 
 						if ($session_id > 0) {
 
-							$fields_sql = array('s.pass', 's.user_id', 's.ip', 's.limit', 's.logout_csrf', 'm.' . $db->escape_field($db_main_fields['identification']));
+							$fields_sql = array('s.pass', 's.user_id', 's.ip', 's.type', 's.limit', 's.logout_csrf', 'm.' . $db->escape_field($db_main_fields['identification']));
 							foreach ($config['fields'] as $field) {
 								$fields_sql[] = 'm.' . $db->escape_field($field);
 							}
@@ -464,6 +579,8 @@
 
 											$cookie_age = new timestamp($this->session_length . ' seconds');
 
+// TODO: Change to a single cookie 'ID-Pass'
+
 											cookie::set($this->session_name . '_id',   $session_id,   array('expires' => $cookie_age, 'same_site' => 'Lax'));
 											cookie::set($this->session_name . '_pass', $session_pass, array('expires' => $cookie_age, 'same_site' => 'Lax'));
 
@@ -483,6 +600,8 @@
 								}
 
 							}
+
+// TODO: If not logged in, see if they have a 'remember_user' cookie... MUST ALSO remember to re-check 'limit'
 
 							if (!$this->session_info_data) { // NULL or false... not in DB, or has invalid pass/ip.
 								$this->_session_end();
@@ -615,6 +734,7 @@
 							WHERE
 								s.user_id = ? AND
 								s.pass != "" AND
+								s.type != "forced" AND
 								s.last_used < ? AND
 								s.deleted = s.deleted
 							ORDER BY
@@ -741,7 +861,7 @@
 
 			}
 
-			public function _session_start($user_id, $identification, $auth, $password_validation) { // See auth_login or auth_register (do not call directly)
+			public function _session_start($user_id, $identification, $auth, $password_validation, $forced = false) { // See auth_login or auth_register (do not call directly)
 
 				//--------------------------------------------------
 				// Config
@@ -750,13 +870,12 @@
 
 					$now = new timestamp();
 
-					list($db_session_table) = $this->db_table_get('session');
-
 				//--------------------------------------------------
-				// Expire previous sessions
+				// Expire
 
 					if ($this->session_concurrent !== true) {
-						$this->expire_sessions($user_id);
+						$this->expire('session', $user_id);
+						$this->expire('remember', $user_id);
 					}
 
 				//--------------------------------------------------
@@ -798,13 +917,16 @@
 				//--------------------------------------------------
 				// Create session record
 
+					list($db_session_table) = $this->db_table_get('session');
+
 					$db->insert($db_session_table, array(
 							'pass'          => $session_pass_hash,
 							'user_id'       => $user_id,
 							'ip'            => config::get('request.ip'),
 							'browser'       => config::get('request.browser'),
 							'tracker'       => $this->_browser_tracker_get(),
-							'hash_time'     => floatval($this->hash_time),
+							'type'          => ($forced ? 'forced' : 'normal'),
+							'hash_time'     => floatval($this->hash_time), // TODO: Check that sha384 hides short vs long passwords.
 							'limit'         => $limit_ref,
 							'logout_csrf'   => $session_logout_csrf, // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
 							'created'       => $now,
@@ -853,43 +975,23 @@
 
 			}
 
-			public function _session_end($session_id = NULL) {
+			public function _session_end($user_id = NULL, $session_id = NULL) {
 
 				//--------------------------------------------------
-				// Delete record
+				// Expire
 
-					if ($session_id) {
+					if ($user_id) {
 
-						$now = new timestamp();
+// debug($this->session_info_data); // TODO: Check if a 'type' is set, and skip if it's 'forced' (admin logged in)
 
-						$db = $this->db_get();
-
-						list($db_session_table) = $this->db_table_get('session');
-
-						$sql = 'UPDATE
-									' . $db->escape_table($db_session_table) . ' AS s
-								SET
-									s.deleted = ?
-								WHERE
-									s.id = ? AND
-									s.deleted = "0000-00-00 00:00:00"';
-
-						$parameters = array();
-						$parameters[] = array('s', $now);
-						$parameters[] = array('i', $session_id);
-
-						$db->query($sql, $parameters);
+						if ($this->session_concurrent === true) {
+							$this->expire('session', $user_id, ['session_id' => $session_id]);
+						} else {
+							$this->expire('session', $user_id);
+							$this->expire('remember', $user_id);
+						}
 
 					}
-
-				//--------------------------------------------------
-				// Expire other sessions as well ... disabled, as
-				// the admin might force a concurrent session, and
-				// when they logout, it should not logout the user.
-
-					// if ($this->session_concurrent !== true) {
-					// 	$this->expire_sessions($user_id);
-					// }
 
 				//--------------------------------------------------
 				// Delete cookies
@@ -908,84 +1010,74 @@
 		//--------------------------------------------------
 		// Expiring
 
-			public function expire_sessions($user_id, $keep_current_session = false) {
+			public function expire($type, $user_id, $config = array()) {
 
 				$db = $this->db_get();
 
 				$now = new timestamp();
 
-				list($db_session_table) = $this->db_table_get('session');
-
-				$sql = 'UPDATE
-							' . $db->escape_table($db_session_table) . ' AS s
-						SET
-							s.deleted = ?
-						WHERE
-							s.user_id = ? AND
-							s.deleted = "0000-00-00 00:00:00"';
+				$where_sql = '
+					user_id = ? AND
+					deleted = "0000-00-00 00:00:00"';
 
 				$parameters = array();
 				$parameters[] = array('s', $now);
 				$parameters[] = array('i', $user_id);
 
-				if ($keep_current_session) {
+				if ($type == 'session') {
 
-					$sql .= ' AND
-						s.id != ?';
+					list($db_table) = $this->db_table_get('session');
 
-					$parameters[] = array('i', $this->session_id_get());
+					if (isset($config['session_id'])) {
+
+						$where_sql .= ' AND id = ?';
+
+						$parameters[] = array('i', $config['session_id']);
+
+					}
+
+					if (isset($config['session_keep'])) {
+
+						$where_sql .= ' AND id != ?';
+
+						$parameters[] = array('i', $config['session_keep']);
+
+					}
+
+				} else if ($type == 'remember') {
+
+					list($db_table) = $this->db_table_get('remember');
+
+					if ($db_table === NULL) {
+						return NULL;
+					}
+
+					cookie::delete($this->remember_cookie_name);
+
+				} else if ($type == 'reset') {
+
+					list($db_table) = $this->db_table_get('reset');
+
+					$where_sql .= 'AND token != ""';
+
+				} else if ($type == 'update') {
+
+					list($db_table) = $this->db_table_get('update');
+
+					$where_sql .= 'AND token != ""';
+
+				} else {
+
+					exit_with_error('Unknown expire type "' . $type . '"');
 
 				}
 
-				$db->query($sql, $parameters);
-
-			}
-
-			public function expire_resets($user_id) {
-
-				$db = $this->db_get();
-
-				$now = new timestamp();
-
-				list($db_reset_table) = $this->db_table_get('reset');
-
 				$sql = 'UPDATE
-							' . $db->escape_table($db_reset_table) . ' AS r
+							' . $db->escape_table($db_table) . '
 						SET
-							r.deleted = ?
+							deleted = ?
 						WHERE
-							r.token != "" AND
-							r.user_id = ? AND
-							r.deleted = "0000-00-00 00:00:00"';
-
-				$parameters = array();
-				$parameters[] = array('s', $now);
-				$parameters[] = array('i', $user_id);
-
-				$db->query($sql, $parameters);
-
-			}
-
-			public function expire_updates($user_id) {
-
-				$db = $this->db_get();
-
-				$now = new timestamp();
-
-				list($db_update_table) = $this->db_table_get('update');
-
-				$sql = 'UPDATE
-							' . $db->escape_table($db_update_table) . ' AS u
-						SET
-							u.deleted = ?
-						WHERE
-							u.token != "" AND
-							u.user_id = ? AND
-							u.deleted = "0000-00-00 00:00:00"';
-
-				$parameters = array();
-				$parameters[] = array('s', $now);
-				$parameters[] = array('i', $user_id);
+							' . $where_sql;
 
 				$db->query($sql, $parameters);
 
@@ -1113,7 +1205,6 @@
 					$db = $this->db_get();
 
 					list($db_main_table, $db_main_fields, $db_main_where_sql) = $this->db_table_get('main');
-					list($db_session_table) = $this->db_table_get('session');
 
 					$error = '';
 
@@ -1168,6 +1259,8 @@
 				// Too many failed logins?
 
 					if ($this->lockout_attempts > 0) {
+
+						list($db_session_table) = $this->db_table_get('session');
 
 						$where_sql = array();
 						$parameters = array();
