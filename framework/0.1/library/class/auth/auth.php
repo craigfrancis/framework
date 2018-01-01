@@ -905,7 +905,7 @@ exit();
 							'browser'       => config::get('request.browser'),
 							'tracker'       => $this->_browser_tracker_get(),
 							'type'          => ($forced ? 'forced' : 'normal'),
-							'hash_time'     => floatval($this->hash_time), // TODO: Check that sha384 hides short vs long passwords.
+							'hash_time'     => floatval($this->hash_time), // There is a risk this shows who has shorter passwords... however, a 1 vs 72 character password takes the same amount of time with bcrypt; AND we use base64 encoded sha384, so they will all be 64 characters long anyway.
 							'limit'         => $limit_ref,
 							'logout_csrf'   => $session_logout_csrf, // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
 							'created'       => $now,
@@ -1132,6 +1132,7 @@ exit();
 					}
 
 // TODO: Delete old password resets, and register/update tables,
+// TODO: Take a note of the average `hash_time`, and complain if it's too fast.
 
 			}
 
@@ -1301,9 +1302,10 @@ exit();
 
 					$valid = false; // Always assume this password is not valid.
 					$rehash = true; // Always assume a rehash is needed.
-					$start = microtime(true);
 
 					if ($error != 'failure_repetition') { // Anti denial of service (get rid of them as soon as possible, don't even sleep).
+
+						$start = microtime(true);
 
 						if ($auth_config) { // If we have an auth value, we only use that.
 
@@ -1331,7 +1333,7 @@ exit();
 
 						$this->hash_time = round((microtime(true) - $start), 4);
 
-						$hash_sleep = (0.1 - $this->hash_time); // Should always take at least 0.1 seconds (100ms)... NOTE: password_verify() will return fast if the hash is unrecognised/invalid.
+						$hash_sleep = (0.1 - $this->hash_time); // Should always take at least 0.1 seconds (100ms)... NOTE: the password_verify() function (from PHP) will return fast if the hash is unrecognised/invalid.
 						if ($hash_sleep > 0) {
 							usleep($hash_sleep * 1000000);
 						}
@@ -1410,7 +1412,7 @@ exit();
 								'ip'        => $request_ip,
 								'browser'   => config::get('request.browser'),
 								'tracker'   => $this->_browser_tracker_get(),
-								'hash_time' => floatval($this->hash_time),
+								'hash_time' => floatval($this->hash_time), // See notes in $auth->_session_start() as to why this is ok.
 								'limit'     => 'error',
 								'created'   => $now,
 								'last_used' => $now,
