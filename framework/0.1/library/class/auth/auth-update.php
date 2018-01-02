@@ -271,6 +271,8 @@
 
 						} else {
 
+// TODO: If the old password is not requested, then maybe we should do something like $auth_update->password_old_skip(true);
+
 							$db = $this->auth->db_get();
 
 							$sql = 'SELECT
@@ -337,7 +339,7 @@
 						}
 
 					//--------------------------------------------------
-					// Too many confirmations sent
+					// Too many confirmation emails sent
 
 
 // TODO: Check $this->db_update_table

@@ -581,7 +581,7 @@ exit();
 
 							}
 
-// TODO: If not logged in, see if they have a 'remember_user' cookie, that hasn't expired ($this->remember_timeout)... MUST ALSO remember to re-check 'limit'... and maybe drop the cookie if they have reset 3 times in the last hour (suspicious behaviour).
+// TODO: If not logged in, see if they have a 'remember_user' cookie, that hasn't expired ($this->remember_timeout)... MUST ALSO remember to re-check session 'limit'... generate a new 'remember_user' cookie (with the same expiry date/time)... and maybe drop the cookie if they have reset 3 times in the last hour (suspicious behaviour)... and maybe warn (or auto delete other records for this user) if they used a cookie that expired over 10 minutes ago (which might be abused).
 
 							if (!$this->session_info_data) { // NULL or false... not in DB, or has invalid pass/ip.
 								$this->_session_end();
@@ -959,10 +959,11 @@ exit();
 
 					if ($user_id) {
 
-// debug($this->session_info_data); // TODO: Check if a 'type' is set, and skip if it's 'forced' (admin logged in)
+// debug($this->session_info_data); // TODO: Check if a 'type' is set, and skip if it's 'forced' (admin logged in)... maybe change 'type' to a 'limit'?
 
 						if ($this->session_concurrent === true) {
 							$this->expire('session', $user_id, ['session_id' => $session_id]);
+// TODO: Remove the "remember" cookie for this browser (leave others open)... maybe with an option to invalidate all? ... could show something on the thank-you page to say "and would you like to logout 3 other browsers as well?"
 						} else {
 							$this->expire('session', $user_id);
 							$this->expire('remember', $user_id);
