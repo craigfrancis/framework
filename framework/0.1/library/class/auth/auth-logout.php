@@ -40,7 +40,7 @@
 				//--------------------------------------------------
 				// Return
 
-					if ($this->auth->logout_token_get() == $csrf) {
+					if (hash_equals($this->auth->logout_token_get(), $csrf)) {
 
 						$this->details = array(
 								'csrf' => $csrf,
