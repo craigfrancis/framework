@@ -118,7 +118,7 @@
 
 						if ($this->auth->_quick_hash_verify($reset_pass, $row['token'])) {
 
-							$row['browser_changed'] = ($row['tracker'] != $this->auth->_browser_tracker_get()); // Don't use UA string, it changes too often.
+							$row['browser_changed'] = $this->auth->_browser_tracker_changed($row['tracker']); // Don't use UA string, it changes too often.
 							$row['valid'] = NULL; // Not checked yet
 
 							unset($row['tracker']);

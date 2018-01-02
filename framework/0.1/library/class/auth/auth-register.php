@@ -527,7 +527,7 @@
 
 								if ($success && $user_id) {
 
-									if ($row[$this->db_fields['tracker']] != $this->auth->_browser_tracker_get()) {
+									if ($this->auth->_browser_tracker_changed($row[$this->db_fields['tracker']])) {
 
 											// Don't auto login if they are using a different browser.
 											// We don't want an evil actor creating an account, and putting the
@@ -539,7 +539,7 @@
 
 									} else if ($config['login']) {
 
-										$auth_config = auth::value_parse($record_id, $row[$this->db_fields['auth']]); // So all fields are present (e.g. 'ips')
+										$auth_config = auth::value_parse($user_id, $row[$this->db_fields['auth']]); // So all fields are present (e.g. 'ips')
 
 										$password_validation = true; // Has just passed $auth->validate_password()
 

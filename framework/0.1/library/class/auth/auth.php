@@ -27,6 +27,7 @@
 			private $session_info_available = false;
 			private $session_pass = NULL;
 
+			private $browser_tracker = NULL;
 			private $hash_time = NULL;
 
 			protected $identification_type = 'email'; // Or 'username'
@@ -580,7 +581,7 @@ exit();
 
 							}
 
-// TODO: If not logged in, see if they have a 'remember_user' cookie, that hasn't expired ($this->remember_timeout)... MUST ALSO remember to re-check 'limit'
+// TODO: If not logged in, see if they have a 'remember_user' cookie, that hasn't expired ($this->remember_timeout)... MUST ALSO remember to re-check 'limit'... and maybe drop the cookie if they have reset 3 times in the last hour (suspicious behaviour).
 
 							if (!$this->session_info_data) { // NULL or false... not in DB, or has invalid pass/ip.
 								$this->_session_end();
@@ -624,14 +625,11 @@ exit();
 			}
 
 			public function session_open() {
-				if (!$this->session_info_available) {
-					exit_with_error('Cannot call $auth->session_open() before $auth->session_get()');
-				}
-				return ($this->session_info_data !== false);
+				return is_array($this->session_info_data); // Not NULL (hasn't used $auth->session_get()), or false (not logged in).
 			}
 
 			public function session_required($login_url) {
-				if (!$this->session_info_available) { // Is no limit, or specified limit via $auth->session_limited_get()
+				if (!$this->session_info_available) { // There is no limit, or it was specified via $auth->session_limited_get().
 					save_request_redirect($login_url, $this->last_identification_get());
 				}
 			}
@@ -726,7 +724,7 @@ exit();
 						$this->session_previous = array(
 								'last_used' => new timestamp($row['last_used'], 'db'),
 								'location_changed' => ($row['ip'] != config::get('request.ip')),
-								'browser_changed' => ($row['tracker'] != $this->_browser_tracker_get()), // Don't use UA string, it changes too often.
+								'browser_changed' => $this->_browser_tracker_changed($row['tracker']), // Don't use UA string, it changes too often.
 							);
 
 					} else {
@@ -1525,17 +1523,22 @@ exit();
 		// Support functions
 
 			public function _browser_tracker_get() {
+				if ($this->browser_tracker === NULL) {
 
-				$browser_tracker = cookie::get('b');
+					$this->browser_tracker = cookie::get('b');
 
-				if (strlen($browser_tracker) != 40) {
-					$browser_tracker = random_key(40);
+					if (strlen($this->browser_tracker) != 40) {
+						$this->browser_tracker = random_key(40);
+					}
+
+					cookie::set('b', $this->browser_tracker, array('expires' => '+6 months', 'same_site' => 'Lax', 'update' => true)); // Always re-send with a long expiry (so it does not expire or expose how long session_history is).
+
 				}
+				return $this->browser_tracker;
+			}
 
-				cookie::set('b', $browser_tracker, array('expires' => '+6 months', 'same_site' => 'Lax')); // Don't expose how long session_history is.
-
-				return $browser_tracker;
-
+			public function _browser_tracker_changed($value) {
+				return (!hash_equals($this->_browser_tracker_get(), $value));
 			}
 
 			public function _quick_hash_create($value) {
@@ -1559,7 +1562,7 @@ exit();
 					return false; // Don't allow anyone to set a weak hash.
 				}
 
-				return (hash($algorithm, $value) === $hash);
+				return hash_equals($hash, hash($algorithm, $value));
 
 			}
 
