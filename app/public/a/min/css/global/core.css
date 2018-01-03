@@ -73,6 +73,18 @@ input {
 font-size:1em;
 }
 
+@media only screen and (max-width:36em) {
+input[type=text],
+input[type=search],
+input[type=tel],
+input[type=email],
+input[type=password],
+input[type=number],
+select {
+font-size:16px !important;
+}
+}
+
 
 
 
