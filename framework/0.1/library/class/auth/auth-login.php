@@ -222,7 +222,7 @@
 				//--------------------------------------------------
 				// Return
 
-					return [$this->details['id'], $limit_ref, $limit_extra];
+					return [$this->details['id'], $limit_ref, $limit_extra]; // The result from 'password_validation' will be in $limit_extra, when $limit_ref is 'password'
 
 			}
 

@@ -1173,9 +1173,9 @@ exit();
 
 			public function validate_password($password, $updated = NULL) {
 
-				// if ($this->validate_password_common($password)) {
-				// 	return 'failure_password_common';
-				// }
+				if ($this->validate_password_common($password)) {
+					return 'failure_password_common';
+				}
 
 				// Could set additional complexity requirements (e.g. must contain numbers/letters/etc, to make the password harder to remember)
 
@@ -1183,14 +1183,12 @@ exit();
 				// 	return 'failure_password_old';
 				// }
 
-				return true; // or return error message, or a 'failure_password_xxx'
+				return true;
 
 			}
 
 			protected function validate_password_common($password) {
-
-				// TODO: This is a commonly used password - ref https://haveibeenpwned.com/Passwords
-
+				return in_array(strtolower($password), file(FRAMEWORK_ROOT . '/library/lists/bad-passwords.txt', FILE_IGNORE_NEW_LINES)); // Could also consider https://haveibeenpwned.com/Passwords
 			}
 
 			public function validate_login($identification, $password) {
