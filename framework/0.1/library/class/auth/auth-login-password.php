@@ -56,8 +56,7 @@
 
 			public function active($config = array()) {
 
-				$admin_info = $this->auth->session_limited_get('password');
-				debug($admin_info);
+				debug($this->auth->session_limited_get('password'));
 
 // See auth_reset_change_base...
 

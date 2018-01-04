@@ -119,7 +119,7 @@
 				//--------------------------------------------------
 				// Config
 
-					if ($this->auth->session_get() !== NULL) {
+					if ($this->auth->session_get() !== false) {
 						exit_with_error('Cannot call $auth_register->validate() when the user is logged in.');
 					}
 
@@ -458,103 +458,97 @@
 					$parameters = array();
 					$parameters[] = array('i', $register_id);
 
-					if ($row = $db->fetch_row($sql, $parameters)) {
+					if (($row = $db->fetch_row($sql, $parameters)) && ($this->auth->_quick_hash_verify($register_pass, $row[$this->db_fields['token']]))) {
 
-						$token_field = $this->db_fields['token'];
-						$identification_field = $this->db_fields['identification'];
+						//--------------------------------------------------
+						// Identification
 
-						if ($this->auth->_quick_hash_verify($register_pass, $row[$token_field])) {
+							$identification_value = $row[$this->db_fields['identification']];
 
-							//--------------------------------------------------
-							// Identification
+							if (!$this->auth->validate_identification_unique($identification_value, NULL)) {
+								return false; // e.g. Someone registered twice, and followed both links (should be fine to show normal 'link expired' message).
+							}
 
-								$identification_value = $row[$identification_field];
+						//--------------------------------------------------
+						// Delete registration record
 
-								if (!$this->auth->validate_identification_unique($identification_value, NULL)) {
-									return false; // e.g. Someone registered twice, and followed both links (should be fine to show normal 'link expired' message).
-								}
+							$sql = 'UPDATE
+										' . $db->escape_table($this->db_table) . ' AS r
+									SET
+										r.' . $db->escape_field($this->db_fields['deleted']) . ' = ?,
+										r.' . $db->escape_field($this->db_fields['password']) . ' = "",
+										r.' . $db->escape_field($this->db_fields['auth']) . ' = ""
+									WHERE
+										r.' . $db->escape_field($this->db_fields['id']) . ' = ? AND
+										' . $this->db_where_sql;
 
-							//--------------------------------------------------
-							// Delete registration record
+							$parameters = array();
+							$parameters[] = array('s', $now);
+							$parameters[] = array('i', $register_id);
 
-								$sql = 'UPDATE
-											' . $db->escape_table($this->db_table) . ' AS r
-										SET
-											r.' . $db->escape_field($this->db_fields['deleted']) . ' = ?,
-											r.' . $db->escape_field($this->db_fields['password']) . ' = "",
-											r.' . $db->escape_field($this->db_fields['auth']) . ' = ""
-										WHERE
-											r.' . $db->escape_field($this->db_fields['id']) . ' = ? AND
-											' . $this->db_where_sql;
+							$db->query($sql, $parameters);
 
-								$parameters = array();
-								$parameters[] = array('s', $now);
-								$parameters[] = array('i', $register_id);
+							$success = ($db->affected_rows() == 1);
 
-								$db->query($sql, $parameters);
+						//--------------------------------------------------
+						// Copy record
 
-								$success = ($db->affected_rows() == 1);
+							if ($success) {
 
-							//--------------------------------------------------
-							// Copy record
+								list($db_main_table, $db_main_fields) = $this->auth->db_table_get('main'); // Must be explicitly 'main'
 
-								if ($success) {
+								$values = $row;
+								unset($values[$this->db_fields['id']]);
+								unset($values[$this->db_fields['token']]);
+								unset($values[$this->db_fields['ip']]);
+								unset($values[$this->db_fields['browser']]);
+								unset($values[$this->db_fields['tracker']]);
 
-									list($db_main_table, $db_main_fields) = $this->auth->db_table_get('main'); // Must be explicitly 'main'
+								$values[$db_main_fields['created']] = $now;
+								$values[$db_main_fields['edited']] = $now;
 
-									$values = $row;
-									unset($values[$this->db_fields['id']]);
-									unset($values[$this->db_fields['token']]);
-									unset($values[$this->db_fields['ip']]);
-									unset($values[$this->db_fields['browser']]);
-									unset($values[$this->db_fields['tracker']]);
+								$db->insert($db_main_table, $values);
 
-									$values[$db_main_fields['created']] = $now;
-									$values[$db_main_fields['edited']] = $now;
+								$user_id = $db->insert_id();
 
-									$db->insert($db_main_table, $values);
+							} else {
 
-									$user_id = $db->insert_id();
+								$user_id = false;
 
-								} else {
+							}
 
-									$user_id = false;
+						//--------------------------------------------------
+						// Start session
 
-								}
+							if ($success && $user_id) {
 
-							//--------------------------------------------------
-							// Start session
+								if ($this->auth->_browser_tracker_changed($row[$this->db_fields['tracker']])) {
 
-								if ($success && $user_id) {
+										// Don't auto login if they are using a different browser.
+										// We don't want an evil actor creating an account, and putting the
+										// registration link on their website (e.g. an image), as that would
+										// cause the victims browser to trigger the registration, and log
+										// them into an account the attacker controls.
 
-									if ($this->auth->_browser_tracker_changed($row[$this->db_fields['tracker']])) {
+									$this->auth->last_identification_set(NULL); // Clear the last login cookie, just in case they have logged in before.
 
-											// Don't auto login if they are using a different browser.
-											// We don't want an evil actor creating an account, and putting the
-											// registration link on their website (e.g. an image), as that would
-											// cause the victims browser to trigger the registration, and log
-											// them into an account the attacker controls.
+								} else if ($config['login']) {
 
-										$this->auth->last_identification_set(NULL); // Clear the last login cookie, just in case they have logged in before.
+									$auth_config = auth::value_parse($user_id, $row[$this->db_fields['auth']]); // So all fields are present (e.g. 'ips')
 
-									} else if ($config['login']) {
+									$password_validation = true; // Has just passed $auth->validate_password()
 
-										$auth_config = auth::value_parse($user_id, $row[$this->db_fields['auth']]); // So all fields are present (e.g. 'ips')
-
-										$password_validation = true; // Has just passed $auth->validate_password()
-
-										list($limit_ref, $limit_extra) = $this->auth->_session_start($user_id, $identification_value, $auth_config, $password_validation);
-
-									}
+									list($limit_ref, $limit_extra) = $this->auth->_session_start($user_id, $identification_value, $auth_config, $password_validation);
 
 								}
 
-							//--------------------------------------------------
-							// Return
+							}
 
-								return $user_id;
+						//--------------------------------------------------
+						// Return
 
-						}
+							return $user_id;
+
 					}
 
 				//--------------------------------------------------

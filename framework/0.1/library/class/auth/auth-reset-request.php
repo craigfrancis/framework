@@ -75,7 +75,7 @@
 				//--------------------------------------------------
 				// Config
 
-					if ($this->auth->session_get() !== NULL) {
+					if ($this->auth->session_get() !== false) {
 						exit_with_error('Cannot call $auth_reset_request->validate() when the user is logged in.');
 					}
 

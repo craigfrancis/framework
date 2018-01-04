@@ -35,8 +35,7 @@
 
 // If we can auto continue (remember_browser), then maybe reset browser token on use?
 
-				$admin_info = $this->auth->session_limited_get('totp');
-				debug($admin_info);
+				debug($this->auth->session_limited_get('totp'));
 
 // See auth_reset_change_base...
 

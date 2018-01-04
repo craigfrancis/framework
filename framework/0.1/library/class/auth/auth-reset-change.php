@@ -69,7 +69,7 @@
 				//--------------------------------------------------
 				// Config
 
-					if ($this->auth->session_get() !== NULL) {
+					if ($this->auth->session_get() !== false) {
 						exit_with_error('Cannot call $auth_reset_change->active() when the user is logged in.');
 					}
 
@@ -114,19 +114,15 @@
 					$parameters[] = array('i', $reset_id);
 					$parameters[] = array('s', $created_after);
 
-					if ($row = $db->fetch_row($sql, $parameters)) {
+					if (($row = $db->fetch_row($sql, $parameters)) && ($this->auth->_quick_hash_verify($reset_pass, $row['token']))) {
 
-						if ($this->auth->_quick_hash_verify($reset_pass, $row['token'])) {
+						$row['browser_changed'] = $this->auth->_browser_tracker_changed($row['tracker']); // Don't use UA string, it changes too often.
+						$row['valid'] = NULL; // Not checked yet
 
-							$row['browser_changed'] = $this->auth->_browser_tracker_changed($row['tracker']); // Don't use UA string, it changes too often.
-							$row['valid'] = NULL; // Not checked yet
+						unset($row['tracker']);
+						unset($row['token']);
 
-							unset($row['tracker']);
-							unset($row['token']);
-
-							$this->details = $row;
-
-						}
+						$this->details = $row;
 
 					}
 

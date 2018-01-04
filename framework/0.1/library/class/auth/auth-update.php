@@ -587,62 +587,58 @@
 					$parameters = array();
 					$parameters[] = array('i', $update_id);
 
-					if ($row = $db->fetch_row($sql, $parameters)) {
+					if (($row = $db->fetch_row($sql, $parameters)) && ($this->auth->_quick_hash_verify($update_pass, $row['token']))) {
 
-						if ($this->auth->_quick_hash_verify($update_pass, $row['token'])) {
+						//--------------------------------------------------
+						// Still unique
 
-							//--------------------------------------------------
-							// Still unique
+							if (!$this->auth->validate_identification_unique($row['email'], $row['user_id'])) {
+								return false;
+							}
 
-								if (!$this->auth->validate_identification_unique($row['email'], $row['user_id'])) {
-									return false;
-								}
+						//--------------------------------------------------
+						// Mark as used (don't use expire function)
 
-							//--------------------------------------------------
-							// Mark as used (don't use expire function)
+							$sql = 'UPDATE
+										' . $db->escape_table($this->db_update_table) . ' AS u
+									SET
+										u.deleted = ?
+									WHERE
+										u.id = ? AND
+										u.deleted = "0000-00-00 00:00:00"';
 
-								$sql = 'UPDATE
-											' . $db->escape_table($this->db_update_table) . ' AS u
-										SET
-											u.deleted = ?
-										WHERE
-											u.id = ? AND
-											u.deleted = "0000-00-00 00:00:00"';
+							$parameters = array();
+							$parameters[] = array('s', $now);
+							$parameters[] = array('i', $update_id);
 
-								$parameters = array();
-								$parameters[] = array('s', $now);
-								$parameters[] = array('i', $update_id);
+							$db->query($sql, $parameters);
 
-								$db->query($sql, $parameters);
+							$success = ($db->affected_rows() == 1);
 
-								$success = ($db->affected_rows() == 1);
+						//--------------------------------------------------
+						// Update
 
-							//--------------------------------------------------
-							// Update
+							if ($success) {
 
-								if ($success) {
+								$email_field = 'email';
 
-									$email_field = 'email';
+								$record = record_get($this->db_main_table, $row['user_id'], [$email_field]);
 
-									$record = record_get($this->db_main_table, $row['user_id'], [$email_field]);
+								$record->save([$email_field => $row['email']]);
 
-									$record->save([$email_field => $row['email']]);
+							}
 
-								}
+						//--------------------------------------------------
+						// Expire... all other confirmations for this user
 
-							//--------------------------------------------------
-							// Expire... all other confirmations for this user
+							if ($success) {
+								$this->auth->expire('update', $row['user_id']);
+							}
 
-								if ($success) {
-									$this->auth->expire('update', $row['user_id']);
-								}
+						//--------------------------------------------------
+						// Return
 
-							//--------------------------------------------------
-							// Return
-
-								return true;
-
-						}
+							return true;
 
 					}
 
