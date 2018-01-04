@@ -451,7 +451,7 @@ exit();
 							debug_require_db_table($db_session_table, '
 									CREATE TABLE [TABLE] (
 										`id` int(11) NOT NULL AUTO_INCREMENT,
-										`pass` tinytext NOT NULL,
+										`token` tinytext NOT NULL,
 										`user_id` int(11) NOT NULL,
 										`ip` tinytext NOT NULL,
 										`browser` tinytext NOT NULL,
@@ -501,10 +501,8 @@ exit();
 
 						if ($session_id > 0) {
 
-// TODO: Rename 'pass' to 'token', so it matches the other tables.
-
 							$sql = 'SELECT
-										s.pass,
+										s.token,
 										s.user_id,
 										s.ip,
 										s.limit,
@@ -524,7 +522,7 @@ exit();
 										' . $db->escape_table($db_main_table) . ' AS m ON m.' . $db->escape_field($db_main_fields['id']) . ' = s.user_id
 									WHERE
 										s.id = ? AND
-										s.pass != "" AND
+										s.token != "" AND
 										s.deleted = "0000-00-00 00:00:00" AND
 										' . $db_main_where_sql;
 
@@ -541,7 +539,7 @@ exit();
 
 								$ip_test = ($this->session_ip_lock == false || config::get('request.ip') == $row['ip']);
 
-								if ($ip_test && $this->_quick_hash_verify($session_pass, $row['pass'])) {
+								if ($ip_test && $this->_quick_hash_verify($session_pass, $row['token'])) {
 
 									//--------------------------------------------------
 									// Update the session - keep active
@@ -591,7 +589,7 @@ exit();
 
 										$this->session_pass = $session_pass;
 
-										$this->session_info_data = [ // Should not contain the hashed 'pass' or 'ip'
+										$this->session_info_data = [ // Should not contain the hashed 'token' or 'ip'
 												'id' => $session_id,
 												'user_id' => $row['user_id'],
 												'limit' => $row['limit'],
@@ -828,7 +826,7 @@ exit();
 								' . $db->escape_table($db_session_table) . ' AS s
 							WHERE
 								s.user_id = ? AND
-								s.pass != "" AND
+								s.token != "" AND
 								s.limit != "forced" AND
 								s.last_used < ? AND
 								s.deleted = s.deleted
@@ -990,7 +988,7 @@ exit();
 						$limit_ref = 'ip';
 						$limit_extra = $auth['ips'];
 
-					} else if ($auth['totp'] !== NULL) { // They must be able to pass TOTP, before checking their password quality.
+					} else if ($auth['totp'] !== NULL) { // Must run TOTP check before checking their password quality.
 
 						$limit_ref = 'totp';
 						$limit_extra = NULL;
@@ -1011,7 +1009,7 @@ exit();
 				// Session pass
 
 					$session_pass = random_key(40);
-					$session_pass_hash = $this->_quick_hash_create($session_pass); // Must be a quick hash for fast page loading time.
+					$session_hash = $this->_quick_hash_create($session_pass); // Must be a quick hash for fast page loading time.
 					$session_logout_token = random_key(15);
 
 				//--------------------------------------------------
@@ -1020,7 +1018,7 @@ exit();
 					list($db_session_table) = $this->db_table_get('session');
 
 					$db->insert($db_session_table, array(
-							'pass'          => $session_pass_hash,
+							'token'         => $session_hash,
 							'user_id'       => $user_id,
 							'ip'            => config::get('request.ip'),
 							'browser'       => config::get('request.browser'),
@@ -1405,7 +1403,7 @@ exit();
 									(
 										' . implode(' OR ', $where_sql) . '
 									) AND
-									s.pass = "" AND
+									s.token = "" AND
 									s.created > ? AND
 									s.deleted = "0000-00-00 00:00:00"';
 
@@ -1527,7 +1525,7 @@ exit();
 						$now = new timestamp();
 
 						$db->insert($db_session_table, array(
-								'pass'      => '', // Will remain blank to record failure
+								'token'     => '', // Will remain blank to record failure
 								'user_id'   => $db_id,
 								'ip'        => $request_ip,
 								'browser'   => config::get('request.browser'),
