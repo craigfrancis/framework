@@ -15,7 +15,7 @@
 			protected $user_id = NULL; // Only used when editing a user, see $auth->user_set()
 			protected $user_identification = NULL;
 
-			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
+			protected $session_ref = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $session_length = 1800; // 30 minutes, or set to 0 for indefinite length
 			protected $session_ip_lock = false; // By default this is disabled (AOL users)
 			protected $session_concurrent = false; // Close previous sessions on new session start
@@ -459,38 +459,39 @@ exit();
 						}
 
 					//--------------------------------------------------
-					// Get session id / pass
+					// Get session details
 
-						if ($config['auth_token'] === NULL) {
+						$session_data = NULL;
+						$session_store = NULL;
 
-							if ($this->session_cookies) {
-								$session_id = cookie::get($this->session_name . '_id');
-								$session_pass = cookie::get($this->session_name . '_pass');
-							} else {
-								$session_id = session::get($this->session_name . '_id');
-								$session_pass = session::get($this->session_name . '_pass');
-							}
+						if ($config['auth_token']) {
+
+							$session_token = $config['auth_token'];
+							$session_store = 'config';
+
+						} else if ($this->session_cookies) {
+
+							$session_token = cookie::get($this->session_ref);
+							$session_store = ($session_token ? 'cookie' : NULL);
 
 						} else {
 
-							if (preg_match('/^([0-9]+)-(.+)$/', $config['auth_token'], $matches)) {
-								$session_id = $matches[1];
-								$session_pass = $matches[2];
-							} else {
-								$session_id = 0;
-								$session_pass = '';
-							}
+							$session_token = session::get($this->session_ref);
+							$session_store = ($session_token ? 'session' : NULL);
 
 						}
 
-						$session_id = intval($session_id);
-
-					//--------------------------------------------------
-					// Get session details
+						if (($session_store) && ($pos = strpos($session_token, '-')) !== false) {
+							$session_id = intval(substr($session_token, 0, $pos));
+							$session_pass = substr($session_token, ($pos + 1));
+						} else {
+							$session_id = 0;
+							$session_pass = '';
+						}
 
 						if ($session_id > 0) {
 
-							$fields_sql = array('s.pass', 's.user_id', 's.ip', 's.type', 's.limit', 's.logout_csrf', 'm.' . $db->escape_field($db_main_fields['identification']));
+							$fields_sql = array('s.id', 's.pass', 's.user_id', 's.ip', 's.type', 's.limit', 's.logout_csrf', 'm.' . $db->escape_field($db_main_fields['identification']));
 							foreach ($config['fields'] as $field) {
 								$fields_sql[] = 'm.' . $db->escape_field($field);
 							}
@@ -520,70 +521,19 @@ exit();
 									WHERE
 										' . $where_sql;
 
-							if ($row = $db->fetch_row($sql, $parameters)) {
+							$session_data = $db->fetch_row($sql, $parameters);
 
-								$ip_test = ($this->session_ip_lock == false || config::get('request.ip') == $row['ip']);
+						}
 
-								if ($ip_test && $this->_quick_hash_verify($session_pass, $row['pass'])) {
+					//--------------------------------------------------
+					// Remember me
 
-									//--------------------------------------------------
-									// Update the session - keep active
+						$remember_token = cookie::get($this->remember_cookie_name);
 
-										$now = new timestamp();
+						if ($session_data === NULL && $remember_token) {
 
-										$request_mode = config::get('output.mode');
-										if (($request_mode === 'asset') || ($request_mode === 'gateway' && in_array(config::get('output.gateway'), array('framework-file', 'js-code')))) {
-											$request_increment = 0;
-										} else {
-											$request_increment = 1;
-										}
+							$session_store = ($this->session_cookies ? 'cookie' : 'session');
 
-										$sql = 'UPDATE
-													' . $db->escape_table($db_session_table) . ' AS s
-												SET
-													s.last_used = ?,
-													s.request_count = (s.request_count + ?)
-												WHERE
-													s.id = ? AND
-													s.deleted = "0000-00-00 00:00:00"';
-
-										$parameters = array();
-										$parameters[] = array('s', $now);
-										$parameters[] = array('i', $request_increment);
-										$parameters[] = array('i', $session_id);
-
-										$db->query($sql, $parameters);
-
-										$row['last_used_new'] = $now;
-
-									//--------------------------------------------------
-									// Update the cookies - if used
-
-										if ($config['auth_token'] === NULL && $this->session_cookies && config::get('output.mode') === NULL) { // Not a gateway/maintenance/asset script
-
-											$cookie_age = new timestamp($this->session_length . ' seconds');
-
-// TODO: Change to a single cookie 'ID-Pass'
-
-											cookie::set($this->session_name . '_id',   $session_id,   array('expires' => $cookie_age, 'same_site' => 'Lax'));
-											cookie::set($this->session_name . '_pass', $session_pass, array('expires' => $cookie_age, 'same_site' => 'Lax'));
-
-										}
-
-									//--------------------------------------------------
-									// Session info
-
-										$row['id'] = $session_id;
-
-										unset($row['ip']);
-										unset($row['pass']); // The hashed version
-
-										$this->session_info_data = $row;
-										$this->session_pass = $session_pass;
-
-								}
-
-							}
 
 // TODO: If not logged in, see if they have a 'remember_user' cookie.
 // - That hasn't been used, or expired ($this->remember_timeout).
@@ -593,10 +543,76 @@ exit();
 // - Maybe drop the cookie if they have reset 3 times in the last hour (suspicious behaviour).
 // - Maybe warn (or auto delete other records for this user) if they used a cookie that expired over 10 minutes ago (this might be abused).
 
-							if (!$this->session_info_data) { // NULL or false... not in DB, or has invalid pass/ip.
-								$this->_session_end();
+						}
+
+					//--------------------------------------------------
+					// Get session details
+
+						if ($session_data) {
+
+							$ip_test = ($this->session_ip_lock == false || config::get('request.ip') == $session_data['ip']);
+
+							if ($ip_test && $this->_quick_hash_verify($session_pass, $session_data['pass'])) {
+
+								//--------------------------------------------------
+								// Update the session - keep active
+
+									$now = new timestamp();
+
+									$request_mode = config::get('output.mode');
+									if (($request_mode === 'asset') || ($request_mode === 'gateway' && in_array(config::get('output.gateway'), array('framework-file', 'js-code')))) {
+										$request_increment = 0;
+									} else {
+										$request_increment = 1;
+									}
+
+									$sql = 'UPDATE
+												' . $db->escape_table($db_session_table) . ' AS s
+											SET
+												s.last_used = ?,
+												s.request_count = (s.request_count + ?)
+											WHERE
+												s.id = ? AND
+												s.deleted = "0000-00-00 00:00:00"';
+
+									$parameters = array();
+									$parameters[] = array('s', $now);
+									$parameters[] = array('i', $request_increment);
+									$parameters[] = array('i', $session_data['id']);
+
+									$db->query($sql, $parameters);
+
+									$session_data['last_used_new'] = $now;
+
+								//--------------------------------------------------
+								// Cookie update
+
+									if ($session_store == 'cookie' && config::get('output.mode') === NULL) { // Not a gateway/maintenance/asset script
+
+										$cookie_age = new timestamp($this->session_length . ' seconds');
+
+										cookie::set($this->session_ref, $session_token, array('expires' => $cookie_age, 'same_site' => 'Lax'));
+
+									}
+
+								//--------------------------------------------------
+								// Session info
+
+									unset($session_data['ip']); // You don't need to know this
+									unset($session_data['pass']); // The hashed version
+
+									$this->session_info_data = $session_data;
+									$this->session_pass = $session_pass;
+
 							}
 
+						}
+
+					//--------------------------------------------------
+					// Cleanup
+
+						if ($session_store !== NULL && !$this->session_info_data) { // NULL or false... not in DB, or has invalid pass/ip.
+							$this->_session_end();
 						}
 
 				}
@@ -930,14 +946,13 @@ exit();
 
 						$cookie_age = new timestamp($this->session_length . ' seconds');
 
-						cookie::set($this->session_name . '_id',   $session_id,   array('expires' => $cookie_age, 'same_site' => 'Lax'));
-						cookie::set($this->session_name . '_pass', $session_pass, array('expires' => $cookie_age, 'same_site' => 'Lax'));
+						cookie::set($this->session_ref, $session_id . '-' . $session_pass, array('expires' => $cookie_age, 'same_site' => 'Lax'));
 
 					} else {
 
 						session::regenerate(); // State change, new session id (additional check against session fixation)
-						session::set($this->session_name . '_id', $session_id);
-						session::set($this->session_name . '_pass', $session_pass); // Password support still used so an "auth_token" can be passed to the user.
+
+						session::set($this->session_ref, $session_id . '-' . $session_pass); // Should always be checking the password
 
 					}
 
@@ -985,12 +1000,11 @@ exit();
 				// Delete cookies
 
 					if ($this->session_cookies) {
-						cookie::delete($this->session_name . '_id');
-						cookie::delete($this->session_name . '_pass');
+						cookie::delete($this->session_ref);
 					} else {
+
+						session::delete($this->session_ref);
 						session::regenerate(); // State change, new session id
-						session::delete($this->session_name . '_id');
-						session::delete($this->session_name . '_pass');
 					}
 
 			}
