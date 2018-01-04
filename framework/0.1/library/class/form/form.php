@@ -524,7 +524,7 @@
 
 			private function saved_values_used() {
 
-				if ($this->saved_values_used === false) {
+				if ($this->saved_values_used === false && session::open()) {
 
 					$this->saved_values_used = true;
 
