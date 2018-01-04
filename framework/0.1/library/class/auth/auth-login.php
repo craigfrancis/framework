@@ -196,10 +196,9 @@
 					// $this->auth->expire('remember', $this->details['id']); ... This is done during `session_start`
 
 				//--------------------------------------------------
-				// Change the CSRF token, invalidating forms open in
-				// different browser tabs (or browser history).
+				// Change the CSRF token
 
-					// csrf_token_change(); - Most of the time the users session has expired
+					// csrf_token_change(); - Most of the time the users session has expired, and will be annoyed by this.
 
 				//--------------------------------------------------
 				// Remember user

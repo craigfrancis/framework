@@ -389,19 +389,18 @@ exit();
 		//--------------------------------------------------
 		// Logout
 
-			public function logout_token_get() {
+			public function logout_token_get() { // This is necessary to prevent a CSRF from logging out the user (denial of service).
 				if ($this->session_info_data) {
-					return $this->session_info_data['logout_csrf'];
-// TODO: Rename to logout_token
+					return $this->session_info_data['logout_token'];
 				} else {
 					return NULL;
 				}
 			}
 
-			public function logout_url_get($logout_url = NULL) { // If not set, assume they are looking at the logout page (and just need the csrf token).
+			public function logout_url_get($logout_url = NULL) { // If not set, assume they are looking at the logout page (and just need the logout token).
 				$token = $this->logout_token_get();
 				if ($token) {
-					$logout_url = url($logout_url, array('csrf' => $token));
+					$logout_url = url($logout_url, array('token' => $token));
 				}
 				return $logout_url; // Always link to the provided logout url, do not return NULL when not logged in (so users always go to the logout page, even if it shows an error).
 			}
@@ -459,7 +458,7 @@ exit();
 										`tracker` tinytext NOT NULL,
 										`hash_time` DECIMAL(5, 4) NOT NULL,
 										`limit` tinytext NOT NULL,
-										`logout_csrf` tinytext NOT NULL,
+										`logout_token` tinytext NOT NULL,
 										`created` datetime NOT NULL,
 										`last_used` datetime NOT NULL,
 										`request_count` int(11) NOT NULL,
@@ -509,7 +508,7 @@ exit();
 										s.user_id,
 										s.ip,
 										s.limit,
-										s.logout_csrf,
+										s.logout_token,
 										m.' . $db->escape_field($db_main_fields['identification']) . ' AS identification';
 
 							$k = 0;
@@ -596,7 +595,7 @@ exit();
 												'id' => $session_id,
 												'user_id' => $row['user_id'],
 												'limit' => $row['limit'],
-												'logout_csrf' => $row['logout_csrf'],
+												'logout_token' => $row['logout_token'],
 												'identification' => $row['identification'],
 												'last_used_new' => $now,
 												'extra' => $extra_data,
@@ -1013,7 +1012,7 @@ exit();
 
 					$session_pass = random_key(40);
 					$session_pass_hash = $this->_quick_hash_create($session_pass); // Must be a quick hash for fast page loading time.
-					$session_logout_csrf = random_key(15);
+					$session_logout_token = random_key(15);
 
 				//--------------------------------------------------
 				// Create session record
@@ -1028,7 +1027,7 @@ exit();
 							'tracker'       => $this->_browser_tracker_get(),
 							'hash_time'     => floatval($this->hash_time), // There is a risk this shows who has shorter passwords... however, a 1 vs 72 character password takes the same amount of time with bcrypt; AND we use base64 encoded sha384, so they will all be 64 characters long anyway.
 							'limit'         => $limit_ref,
-							'logout_csrf'   => $session_logout_csrf, // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
+							'logout_token'  => $session_logout_token, // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
 							'created'       => $now,
 							'last_used'     => $now,
 							'deleted'       => '0000-00-00 00:00:00',
@@ -1063,7 +1062,7 @@ exit();
 							'id' => $session_id,
 							'user_id' => $user_id,
 							'limit' => $limit_ref,
-							'logout_csrf' => $session_logout_csrf,
+							'logout_token' => $session_logout_token,
 							'identification' => $identification,
 							'last_used_new' => $now,
 							'extra' => $extra_data,

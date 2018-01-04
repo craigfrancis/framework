@@ -19,7 +19,7 @@
 		//--------------------------------------------------
 		// Actions
 
-			public function validate($csrf = NULL) {
+			public function validate($token = NULL) {
 
 				//--------------------------------------------------
 				// Config
@@ -29,21 +29,21 @@
 				//--------------------------------------------------
 				// Values
 
-					if ($csrf === NULL) {
-						$csrf = request('csrf', 'GET');
+					if ($token === NULL) {
+						$token = request('token', 'GET');
 					}
 
-					if ($csrf === NULL) {
-						return NULL; // Also a falsy value, as the csrf hasn't been set, so maybe try a confirm form/link before showing an error message.
+					if ($token === NULL) {
+						return NULL; // Also a falsy value, as the token hasn't been set, so maybe try a confirm form/link before showing an error message.
 					}
 
 				//--------------------------------------------------
 				// Return
 
-					if (hash_equals($this->auth->logout_token_get(), $csrf)) {
+					if (hash_equals($this->auth->logout_token_get(), $token)) {
 
 						$this->details = array(
-								'csrf' => $csrf,
+								'token' => $token,
 							);
 
 						return true;
@@ -75,8 +75,7 @@
 					$this->auth->_session_end($this->auth->session_user_id_get(), $this->auth->session_id_get());
 
 				//--------------------------------------------------
-				// Change the CSRF token, invalidating forms open in
-				// different browser tabs (or browser history).
+				// Change the CSRF token.
 
 					csrf_token_change();
 
