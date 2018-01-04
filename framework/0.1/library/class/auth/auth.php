@@ -276,10 +276,9 @@ exit();
 
 			public function login_remember($config = array()) {
 
-// TODO: Re-read articles on remember_user...
-// Must be removed on logout, password change (profile), password reset, and re-login.
-// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
-// http://blog.alejandrocelaya.com/2016/02/09/how-to-properly-implement-persistent-login/
+					// Must be removed on logout, password change (profile), password reset, and re-login.
+					// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
+					// http://blog.alejandrocelaya.com/2016/02/09/how-to-properly-implement-persistent-login/
 
 				//--------------------------------------------------
 				// Config
@@ -306,15 +305,20 @@ exit();
 					$db = $this->db_get();
 
 				//--------------------------------------------------
-				// Expire
+				// Expire... old records
 
-					// $this->expire('remember', $this->session_info_data['user_id']); ... This is done during `session_start`
+					// $this->expire('remember', $this->session_info_data['user_id']); ... This is done during $auth->_session_start(), ensuring it happens even if they don't tick "remember me".
 
 				//--------------------------------------------------
-				// Add record
+				// Details
 
 					$remember_pass = random_key(40);
 					$remember_hash = $this->_quick_hash_create($remember_pass);
+
+					$expires = new timestamp($this->remember_timeout . ' seconds');
+
+				//--------------------------------------------------
+				// Add record
 
 					$db->insert($db_remember_table, array(
 							'id'      => '',
@@ -324,6 +328,7 @@ exit();
 							'tracker' => $this->_browser_tracker_get(),
 							'user_id' => $this->session_info_data['user_id'],
 							'created' => $now,
+							'expired' => $expires,
 							'deleted' => '0000-00-00 00:00:00',
 						));
 
@@ -333,8 +338,6 @@ exit();
 
 				//--------------------------------------------------
 				// Cookie
-
-					$expires = new timestamp($this->remember_timeout . ' seconds');
 
 					cookie::set($this->remember_cookie_name, $remember_token, array(
 							'expires'   => $expires,
