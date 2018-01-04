@@ -585,7 +585,13 @@ exit();
 
 							}
 
-// TODO: If not logged in, see if they have a 'remember_user' cookie, that hasn't expired ($this->remember_timeout)... MUST ALSO remember to re-check session 'limit'... generate a new 'remember_user' cookie (with the same expiry date/time)... and maybe drop the cookie if they have reset 3 times in the last hour (suspicious behaviour)... and maybe warn (or auto delete other records for this user) if they used a cookie that expired over 10 minutes ago (which might be abused).
+// TODO: If not logged in, see if they have a 'remember_user' cookie.
+// - That hasn't been used, or expired ($this->remember_timeout).
+// - Check affected_rows = 1 after UPDATE remember SET deleted = now WHERE id = x AND deleted = "0000-00-00 00:00:00"
+// - Generate a new 'remember_user' cookie (with the same expiry timestamp).
+// - Must re-calculate and store the session 'limit' (and consider how would 'totp' would work).
+// - Maybe drop the cookie if they have reset 3 times in the last hour (suspicious behaviour).
+// - Maybe warn (or auto delete other records for this user) if they used a cookie that expired over 10 minutes ago (this might be abused).
 
 							if (!$this->session_info_data) { // NULL or false... not in DB, or has invalid pass/ip.
 								$this->_session_end();
