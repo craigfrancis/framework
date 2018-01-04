@@ -108,6 +108,7 @@
 								r.token != "" AND
 								r.user_id > 0 AND
 								r.created > ? AND
+								r.used = "0000-00-00 00:00:00" AND
 								r.deleted = "0000-00-00 00:00:00"';
 
 					$parameters = array();
@@ -301,12 +302,14 @@
 					$sql = 'UPDATE
 								' . $db->escape_table($this->db_reset_table) . ' AS r
 							SET
+								r.used = ?,
 								r.deleted = ?
 							WHERE
 								r.id = ? AND
 								r.deleted = "0000-00-00 00:00:00"';
 
 					$parameters = array();
+					$parameters[] = array('s', $now);
 					$parameters[] = array('s', $now);
 					$parameters[] = array('i', $this->details['id']);
 

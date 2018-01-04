@@ -107,9 +107,9 @@
 							'failure_password_repetition'    => 'Too many attempts to enter your current password.', // Profile page
 							'failure_password_repeat'        => 'Your new passwords do not match.', // Register and profile pages
 							'failure_password_common'        => 'This is a very common password, too many people use it.',
-							'failure_reset_changed'          => 'Your account has already had its password changed recently.',
-							'failure_reset_repetition_email' => 'You have recently requested a password reset.',
-							'failure_reset_repetition_ip'    => 'You have requested too many password resets.',
+							'failure_reset_recent_ip'        => 'You have requested too many password resets.',
+							'failure_reset_recent_email'     => 'You have recently requested a password reset.',
+							'failure_reset_recent_changed'   => 'You have recently reset your password.',
 
 						);
 

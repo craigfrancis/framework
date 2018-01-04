@@ -35,6 +35,7 @@
 								user_id int(11) NOT NULL,
 								email tinytext NOT NULL,
 								created datetime NOT NULL,
+								used datetime NOT NULL,
 								deleted datetime NOT NULL,
 								PRIMARY KEY (id)
 							);');
@@ -125,18 +126,18 @@
 								WHERE
 									r.ip = ? AND
 									r.created > ? AND
-									r.deleted = "0000-00-00 00:00:00"'; // Don't GROUP BY r.created, if we find more than 1 account, they probably won't try again... if we did this, then it opens a race condition (how many requests can be made in a second?).
+									r.deleted = r.deleted'; // Don't GROUP BY r.created, as it opens a race condition (how many requests can be made in a second?)... just hope that we don't have someone with 5+ accounts on a single email address, and they don't receive the reset email.
 
 						$parameters = array();
 						$parameters[] = array('s', config::get('request.ip'));
 						$parameters[] = array('s', $created_after);
 
 						if ($db->num_rows($sql, $parameters) >= 5) {
-							$errors[] = $this->auth->text_get('failure_reset_repetition_ip');
+							$errors[] = $this->auth->text_get('failure_reset_recent_ip');
 						}
 
 					//--------------------------------------------------
-					// Too many attempts for this email address
+					// Recently sent request - don't want to SPAM them.
 
 						if (count($errors) == 0) {
 
@@ -156,19 +157,40 @@
 							$parameters[] = array('s', $created_after);
 
 							if ($db->num_rows($sql, $parameters) >= 1) {
-								$errors[] = $this->auth->text_get('failure_reset_repetition_email');
+								$errors[] = $this->auth->text_get('failure_reset_recent_email');
 							}
 
 						}
 
 					//--------------------------------------------------
-					// Password changed recently
+					// Recently changed password
 
-						if (count($errors) == 0) {
+							// More likely to cause problems; e.g. someone malicious
+							// doing a password reset, the victim correcting access
+							// to their email address, then doing their own reset.
 
-// TODO: $errors[] = $this->auth->text_get('failure_reset_changed'); ... Your account has already had its password changed recently.
-
-						}
+						// if (count($errors) == 0) {
+						//
+						// 	$created_after = new timestamp('-1 hour');
+						//
+						// 	$sql = 'SELECT
+						// 				1
+						// 			FROM
+						// 				' . $db->escape_table($this->db_reset_table) . ' AS r
+						// 			WHERE
+						// 				r.email = ? AND
+						// 				r.used > ? AND
+						// 				r.deleted = r.deleted';
+						//
+						// 	$parameters = array();
+						// 	$parameters[] = array('s', $email);
+						// 	$parameters[] = array('s', $created_after);
+						//
+						// 	if ($db->num_rows($sql, $parameters) >= 1) {
+						// 		$errors[] = $this->auth->text_get('failure_reset_recent_changed');
+						// 	}
+						//
+						// }
 
 				//--------------------------------------------------
 				// Return
@@ -297,6 +319,7 @@
 								'user_id' => $reset['user_id'],
 								'email'   => $this->details['email'], // Not $reset['email'], as that can be found by the user_id.
 								'created' => $now,
+								'used'    => '0000-00-00 00:00:00',
 								'deleted' => '0000-00-00 00:00:00',
 							));
 
