@@ -339,7 +339,7 @@
 						}
 
 					//--------------------------------------------------
-					// Too many confirmation emails sent
+					// Recently sent confirmation - don't SPAM them.
 
 
 // TODO: Check $this->db_update_table

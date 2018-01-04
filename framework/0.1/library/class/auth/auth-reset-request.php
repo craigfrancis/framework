@@ -137,7 +137,7 @@
 						}
 
 					//--------------------------------------------------
-					// Recently sent request - don't want to SPAM them.
+					// Recently sent request - don't SPAM them.
 
 						if (count($errors) == 0) {
 
