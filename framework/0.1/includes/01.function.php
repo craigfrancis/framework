@@ -1520,70 +1520,46 @@
 
 		// https://stackoverflow.com/q/24515903/generating-random-characters-for-a-url-in-php
 
-		if ($safe === true) {
-			$safe = array_map('trim', explode("\n", file_get_contents(FRAMEWORK_ROOT . '/library/lists/bad-words.txt')));
+		if ($safe !== false) {
+			$bad_words = array_map('trim', file(FRAMEWORK_ROOT . '/library/lists/bad-words.txt', FILE_IGNORE_NEW_LINES));
+		} else {
+			$bad_words = NULL;
 		}
 
 		$j = 0;
 
 		do {
 
-			$key = '';
+			$bytes = (ceil($length / 4) * 3); // Must be divisible by 3, otherwise base64 encoding introduces padding characters, and the last character biases towards "0 4 8 A E I M Q U Y c g k o s w".
+			$bytes = ($bytes * 2); // Get even more, because some characters will be dropped.
 
-			do {
-
-				$input = array(
-						random_bytes(100),
-						getmypid(), // Process IDs are not unique, so a weak entropy source (not secure).
-						uniqid('', true), // Based on the current time in microseconds (not secure).
-						mt_rand(), // Mersenne Twister pseudorandom number generator (not secure).
-						lcg_value(), // Combined linear congruential generator (not secure).
-						config::get('request.ip'),
-						config::get('request.browser'),
-					);
-
-				if (function_exists('openssl_random_pseudo_bytes')) {
-					$input[] = openssl_random_pseudo_bytes($length); // Second argument shows if strong (or not), and it might not always be random (https://wiki.openssl.org/index.php/Random_fork-safety and https://github.com/paragonie/random_compat/issues/96)
-				}
-
-				if (function_exists('mcrypt_create_iv')) {
-					$input[] = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM); // PHP 5.6 defaults to /dev/random, which can be a problem - low entropy on some servers (e.g Amazon EC2) can make this take over 1 minute.
-				}
-
-				$input = implode('', $input); // Many different sources of entropy, the more the better (even if predictable or broken).
-				$input = hash('sha256', $input, true); // 256 bits of raw binary output, not in hexadecimal (a base 16 system, using [0-9a-f]).
-				$input = base64_encode($input); // Use printable characters, as a base64 system.
-				$input = str_replace(array('0', 'O', 'I', 'l', '/', '+'), '', $input); // Make URL safe (base58), and avoid similar looking characters.
-				$input = preg_replace('/[^a-zA-Z0-9]/', '', $input); // Make sure we don't have bad characters (e.g. "=").
-
-				$key .= $input;
-
-			} while (strlen($key) < $length);
-
+			$key = random_bytes($bytes);
+			$key = base64_encode($key);
+			$key = str_replace(array('0', 'O', 'I', 'l', '/', '+'), '', $key); // Make URL safe (base58), and drop similar looking characters (no substitutions, as we don't want to bias certain characters)
 			$key = substr($key, 0, $length);
 
-			if (strlen($key) != $length) {
-				exit_with_error('Cannot create a key of ' . $length . ' characters (' . $key . ')');
-			} else if (preg_match('/[^a-zA-Z0-9]/', $key)) {
+			if (preg_match('/[^a-zA-Z0-9]/', $key)) {
 				exit_with_error('Invalid characters detected in key "' . $key . '"');
 			}
 
-			$allowed = true;
-			if ($safe !== false) {
-				foreach ($safe as $bad_word) {
+			$valid = (strlen($key) == $length);
+
+			if ($bad_words) {
+				foreach ($bad_words as $bad_word) {
 					if (stripos($key, $bad_word) !== false) {
-						$allowed = false;
+						$valid = false;
 						break;
 					}
 				}
 			}
-			if ($allowed) {
+
+			if ($valid) {
 				return $key;
 			}
 
-		} while ($j++ < 100);
+		} while ($j++ < 10);
 
-		exit_with_error('Cannot generate a safe key after 100 attempts.');
+		exit_with_error('Cannot generate a safe key after 10 attempts.');
 
 	}
 
