@@ -1516,7 +1516,7 @@
 // hyphens, but special characters can raise a
 // usability problem, as well as mixing 0, O, I and l.
 
-	function random_key($length, $safe = false) {
+	function random_key($length, $safe = true) {
 
 		// https://stackoverflow.com/q/24515903/generating-random-characters-for-a-url-in-php
 
