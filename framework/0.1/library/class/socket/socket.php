@@ -250,6 +250,11 @@
 						$chunked_pos = ($pos_nl + 1);
 
 						$chunk_length = hexdec(rtrim($hex_length, "\r\n"));
+
+if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: substr() expects parameter 3 to be integer, float given... hexdec('ffffffffffffffff') == 1.844674407371E+19
+	report_add('Float chunk length' . "\n\n" . debug_dump($chunk_length) . "\n\n" . debug_dump($hex_length) . "\n\n" . debug_dump($this->request_full));
+}
+
 						$output .= substr($chunked_str, $chunked_pos, $chunk_length);
 						$chunked_pos = ($chunked_pos + $chunk_length);
 							// $chunked_pos = (strpos($chunked_str, "\n", $chunked_pos + $chunk_length) + 1);
