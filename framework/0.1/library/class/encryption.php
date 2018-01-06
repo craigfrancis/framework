@@ -216,11 +216,11 @@
 
 						$key = base64_decode($key1_value);
 						$encrypted = base64_decode($input_value);
-						$nonce = base64_decode($input_nonce);
+						$vi = base64_decode($input_nonce);
 						$hmac = base64_decode($input_hmac);
 						$salt = base64_decode($input_salt);
 
-						$plaintext = self::_decode_symmetric_openssl($key, $encrypted, $nonce, $hmac, $salt);
+						$plaintext = self::_decode_symmetric_openssl($key, $encrypted, $vi, $hmac, $salt);
 
 					} else if ($input_type === 'EAO2' && $key1_type === 'KA2S' && $key2_type === '' && $key2_value === NULL) {
 
