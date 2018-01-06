@@ -284,32 +284,32 @@
 
 		private static function _encode_symmetric_openssl($key, $input) { // Symmetric key LEGACY ... https://paragonie.com/blog/2015/05/if-you-re-typing-word-mcrypt-into-your-code-you-re-doing-it-wrong
 
-			$nonce_size = openssl_cipher_iv_length(self::$openssl_cipher);
-			$nonce = openssl_random_pseudo_bytes($nonce_size);
+			$iv_size = openssl_cipher_iv_length(self::$openssl_cipher);
+			$iv = openssl_random_pseudo_bytes($iv_size);
 
 			$salt = openssl_random_pseudo_bytes(32);
 
 			list($key_encrypt, $key_authenticate) = self::_openssl_hkdf_keys($key, $salt);
 
-			$encrypted = openssl_encrypt($input, self::$openssl_cipher, $key_encrypt, OPENSSL_RAW_DATA, $nonce);
+			$encrypted = openssl_encrypt($input, self::$openssl_cipher, $key_encrypt, OPENSSL_RAW_DATA, $iv);
 
-			$hmac = hash_hmac('sha256', $salt . $nonce . $encrypted, $key_authenticate, true);
+			$hmac = hash_hmac('sha256', $salt . $iv . $encrypted, $key_authenticate, true);
 
-			return [$encrypted, $nonce, $hmac, $salt];
+			return [$encrypted, $iv, $hmac, $salt];
 
 		}
 
-		private static function _decode_symmetric_openssl($key, $encrypted, $nonce, $hmac, $salt) {
+		private static function _decode_symmetric_openssl($key, $encrypted, $iv, $hmac, $salt) {
 
 			list($key_encrypt, $key_authenticate) = self::_openssl_hkdf_keys($key, $salt);
 
-			$check_hmac = hash_hmac('sha256', $salt . $nonce . $encrypted, $key_authenticate, true);
+			$check_hmac = hash_hmac('sha256', $salt . $iv . $encrypted, $key_authenticate, true);
 
 			if (!hash_equals($check_hmac, $hmac)) {
 				exit_with_error('Could not verify HMAC of the encrypted data');
 			}
 
-			return openssl_decrypt($encrypted, self::$openssl_cipher, $key_encrypt, OPENSSL_RAW_DATA, $nonce);
+			return openssl_decrypt($encrypted, self::$openssl_cipher, $key_encrypt, OPENSSL_RAW_DATA, $iv);
 
 		}
 
@@ -333,15 +333,15 @@
 
 			$data_key = openssl_random_pseudo_bytes(256/8);
 
-			$nonce_size = openssl_cipher_iv_length(self::$openssl_cipher);
-			$nonce = openssl_random_pseudo_bytes($nonce_size);
+			$iv_size = openssl_cipher_iv_length(self::$openssl_cipher);
+			$iv = openssl_random_pseudo_bytes($iv_size);
 
-			$data_encrypted = openssl_encrypt($input, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $nonce);
+			$data_encrypted = openssl_encrypt($input, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $iv);
 
 			$hmac_key = openssl_random_pseudo_bytes(256/8);
-			$hmac_value = hash_hmac('sha256', $nonce . $data_encrypted, $hmac_key, true);
+			$hmac_value = hash_hmac('sha256', $iv . $data_encrypted, $hmac_key, true);
 
-			$keys_encoded = base64_encode($data_key) . '-' . base64_encode($hmac_key) . '-' . base64_encode($nonce);
+			$keys_encoded = base64_encode($data_key) . '-' . base64_encode($hmac_key) . '-' . base64_encode($iv);
 			$keys_encrypted = '';
 			$result = openssl_public_encrypt($keys_encoded, $keys_encrypted, $key_public, OPENSSL_PKCS1_OAEP_PADDING);
 			if ($result !== true) {
@@ -362,19 +362,19 @@
 			if ($result !== true) {
 				exit_with_error('Could not decrypt the AES keys with the secret key', openssl_error_string());
 			} else {
-				list($data_key, $hmac_key, $nonce) = array_pad(explode('-', $data_keys), 3, NULL);
+				list($data_key, $hmac_key, $iv) = array_pad(explode('-', $data_keys), 3, NULL);
 				$data_key = base64_decode($data_key);
 				$hmac_key = base64_decode($hmac_key);
-				$nonce = base64_decode($nonce);
+				$iv = base64_decode($iv);
 			}
 
-			$check_hmac = hash_hmac('sha256', $nonce . $data_encrypted, $hmac_key, true);
+			$check_hmac = hash_hmac('sha256', $iv . $data_encrypted, $hmac_key, true);
 
 			if (!hash_equals($check_hmac, $hmac_value)) {
 				exit_with_error('Could not verify HMAC of the encrypted data');
 			}
 
-			return openssl_decrypt($data_encrypted, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $nonce);
+			return openssl_decrypt($data_encrypted, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $iv);
 
 		}
 
@@ -406,13 +406,13 @@
 
 			$data_key = openssl_random_pseudo_bytes(256/8);
 
-			$nonce_size = openssl_cipher_iv_length(self::$openssl_cipher);
-			$nonce = openssl_random_pseudo_bytes($nonce_size); // 16-bytes, 128-bits
+			$iv_size = openssl_cipher_iv_length(self::$openssl_cipher);
+			$iv = openssl_random_pseudo_bytes($iv_size); // 16-bytes, 128-bits
 
-			$data_encrypted = openssl_encrypt($input, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $nonce);
+			$data_encrypted = openssl_encrypt($input, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $iv);
 
 			$hmac_key = openssl_random_pseudo_bytes(256/8);
-			$hmac_value = hash_hmac('sha256', $nonce . $data_encrypted, $hmac_key, true);
+			$hmac_value = hash_hmac('sha256', $iv . $data_encrypted, $hmac_key, true);
 
 			$keys_encoded = base64_encode($data_key) . '-' . base64_encode($hmac_key); // 256 x 2 ... ceil(((256/3)*4)/8) = 43 x 2 characters (86) ... 86 + 5 (2 x '==' and 1 x '-') ... 91 < 214 byte limit with a 2048 bit key and PKCS1-OAEP padding (or 470 byte limit for 4096 bit key)
 			$keys_encrypted = '';
@@ -421,7 +421,7 @@
 				exit_with_error('Could not encrypt with recipients public key', openssl_error_string());
 			}
 
-			$hmac_encoded = base64_encode($hmac_value) . '-' . base64_encode($nonce); // The "signature", anyone who knows the senders public key will be able to see these values.
+			$hmac_encoded = base64_encode($hmac_value) . '-' . base64_encode($iv); // The "signature", anyone who knows the senders public key will be able to see these values.
 			$hmac_encrypted = '';
 			$result = openssl_private_encrypt($hmac_encoded, $hmac_encrypted, $sender_key_secret, OPENSSL_PKCS1_PADDING);
 			if ($result !== true) {
@@ -442,9 +442,9 @@
 			if ($result !== true) {
 				exit_with_error('Could not decrypt the HMAC with the senders public key', openssl_error_string());
 			} else {
-				list($hmac_value, $nonce) = array_pad(explode('-', $data_info), 2, NULL);
+				list($hmac_value, $iv) = array_pad(explode('-', $data_info), 2, NULL);
 				$hmac_value = base64_decode($hmac_value);
-				$nonce = base64_decode($nonce);
+				$iv = base64_decode($iv);
 			}
 
 			$data_info = '';
@@ -457,13 +457,13 @@
 				$hmac_key = base64_decode($hmac_key);
 			}
 
-			$check_hmac = hash_hmac('sha256', $nonce . $data_encrypted, $hmac_key, true);
+			$check_hmac = hash_hmac('sha256', $iv . $data_encrypted, $hmac_key, true);
 
 			if (!hash_equals($check_hmac, $hmac_value)) {
 				exit_with_error('Could not verify HMAC of the encrypted data');
 			}
 
-			return openssl_decrypt($data_encrypted, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $nonce);
+			return openssl_decrypt($data_encrypted, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $iv);
 
 		}
 
