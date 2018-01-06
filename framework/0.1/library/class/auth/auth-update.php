@@ -338,9 +338,7 @@
 										' . $db->escape_table($this->db_main_table) . ' AS m
 									WHERE
 										m.' . $db->escape_field($this->db_main_fields['id']) . ' = ? AND
-										' . $this->db_main_where_sql . '
-									LIMIT
-										1';
+										' . $this->db_main_where_sql;
 
 							$parameters = array();
 							$parameters[] = array('i', $current_user_id);
@@ -409,9 +407,7 @@
 									WHERE
 										u.user_id = ? AND
 										u.created > ? AND
-										u.deleted = u.deleted
-									LIMIT
-										1';
+										u.deleted = "0000-00-00 00:00:00"'; // Ignore those which have been accepted.
 
 							$parameters = array();
 							$parameters[] = array('i', $current_user_id);

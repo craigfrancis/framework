@@ -151,7 +151,7 @@
 									WHERE
 										r.email = ? AND
 										r.created > ? AND
-										r.deleted = "0000-00-00 00:00:00"';
+										r.deleted = "0000-00-00 00:00:00"'; // Ignore those which have been accepted.
 
 							$parameters = array();
 							$parameters[] = array('s', $email);
