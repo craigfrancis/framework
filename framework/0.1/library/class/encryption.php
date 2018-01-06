@@ -287,7 +287,7 @@
 			$iv_size = openssl_cipher_iv_length(self::$openssl_cipher);
 			$iv = openssl_random_pseudo_bytes($iv_size);
 
-			$salt = openssl_random_pseudo_bytes(32);
+			$salt = openssl_random_pseudo_bytes(32); // 256/8
 
 			list($key_encrypt, $key_authenticate) = self::_openssl_hkdf_keys($key, $salt);
 
@@ -331,14 +331,14 @@
 
 		private static function _encode_asymmetric_one_openssl($key_public, $input) { // Public key only LEGACY ... https://paragonie.com/blog/2016/10/do-it-yourself-hand-crafted-boutique-artisinal-cryptosystems
 
-			$data_key = openssl_random_pseudo_bytes(256/8);
+			$data_key = openssl_random_pseudo_bytes(32); // 256/8
 
 			$iv_size = openssl_cipher_iv_length(self::$openssl_cipher);
 			$iv = openssl_random_pseudo_bytes($iv_size);
 
 			$data_encrypted = openssl_encrypt($input, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $iv);
 
-			$hmac_key = openssl_random_pseudo_bytes(256/8);
+			$hmac_key = openssl_random_pseudo_bytes(32); // 256/8
 			$hmac_value = hash_hmac('sha256', $iv . $data_encrypted, $hmac_key, true);
 
 			$keys_encoded = base64_encode($data_key) . '-' . base64_encode($hmac_key) . '-' . base64_encode($iv);
@@ -404,14 +404,14 @@
 
 		private static function _encode_asymmetric_two_openssl($recipient_key_public, $sender_key_secret, $input) { // Two keys LEGACY ... https://paragonie.com/blog/2016/10/do-it-yourself-hand-crafted-boutique-artisinal-cryptosystems
 
-			$data_key = openssl_random_pseudo_bytes(256/8);
+			$data_key = openssl_random_pseudo_bytes(32); // 256/8
 
 			$iv_size = openssl_cipher_iv_length(self::$openssl_cipher);
 			$iv = openssl_random_pseudo_bytes($iv_size); // 16-bytes, 128-bits
 
 			$data_encrypted = openssl_encrypt($input, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $iv);
 
-			$hmac_key = openssl_random_pseudo_bytes(256/8);
+			$hmac_key = openssl_random_pseudo_bytes(32); // 256/8
 			$hmac_value = hash_hmac('sha256', $iv . $data_encrypted, $hmac_key, true);
 
 			$keys_encoded = base64_encode($data_key) . '-' . base64_encode($hmac_key); // 256 x 2 ... ceil(((256/3)*4)/8) = 43 x 2 characters (86) ... 86 + 5 (2 x '==' and 1 x '-') ... 91 < 214 byte limit with a 2048 bit key and PKCS1-OAEP padding (or 470 byte limit for 4096 bit key)
