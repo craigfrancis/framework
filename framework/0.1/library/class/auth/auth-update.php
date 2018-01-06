@@ -13,6 +13,7 @@
 			protected $db_update_table = NULL;
 			protected $details = NULL;
 			protected $password_old_check = true;
+			protected $record = NULL;
 			protected $form = NULL;
 			protected $field_identification = NULL;
 			protected $field_password_old = NULL;
@@ -29,6 +30,11 @@
 
 				$this->confirm = ($this->db_update_table !== NULL);
 
+			}
+
+			public function record_get($fields = NULL, $config_extra = array()) {
+				$this->record = record_get($this->table_get(), $this->auth->session_user_id_get(), $fields, $config_extra);
+				return $this->record;
 			}
 
 			public function table_get() {
@@ -476,13 +482,17 @@
 
 						$record = $this->form->db_record_get();
 
+					} else if ($this->record) {
+
+						$record = $this->record;
+
 					} else if (isset($config['record'])) {
 
 						$record = $config['record'];
 
 					} else {
 
-						$record = record_get($this->db_main_table);
+						$record = $this->record_get();
 
 					}
 

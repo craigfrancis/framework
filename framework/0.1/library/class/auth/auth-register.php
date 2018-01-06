@@ -11,6 +11,7 @@
 			protected $db_fields = NULL;
 			protected $db_where_sql = NULL;
 			protected $details = NULL;
+			protected $record = NULL;
 			protected $form = NULL;
 			protected $field_identification = NULL;
 			protected $field_password_1 = NULL;
@@ -29,6 +30,11 @@
 					list($this->db_table, $this->db_fields, $this->db_where_sql) = $this->auth->db_table_get('main');
 				}
 
+			}
+
+			public function record_get() {
+				$this->record = record_get($this->table_get());
+				return $this->record;
 			}
 
 			public function table_get() {
@@ -299,13 +305,17 @@
 
 						$record = $this->form->db_record_get();
 
+					} else if ($this->record) {
+
+						$record = $this->record;
+
 					} else if (isset($config['record'])) {
 
 						$record = $config['record'];
 
 					} else {
 
-						$record = record_get($this->db_table);
+						$record = $this->record_get();
 
 					}
 
