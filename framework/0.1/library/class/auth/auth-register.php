@@ -184,7 +184,7 @@
 
 						if (is_string($result)) { // Custom (project specific) error message
 
-							$errors['identification'] = $this->auth->text_get($result, $result);
+							$errors['identification'] = $this->auth->text_get($result);
 
 						} else if ($result !== true) {
 
@@ -217,7 +217,7 @@
 
 							} else if (is_string($result)) { // Custom (project specific) error message
 
-								$errors['password_1'] = $this->auth->text_get($result, $result);
+								$errors['password_1'] = $this->auth->text_get($result);
 
 							} else if ($result !== true) {
 

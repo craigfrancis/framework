@@ -208,7 +208,7 @@
 
 						if (is_string($result)) { // Custom (project specific) error message
 
-							$errors['password_1'] = $this->auth->text_get($result, $result);
+							$errors['password_1'] = $this->auth->text_get($result);
 
 						} else if ($result !== true) {
 

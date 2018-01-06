@@ -117,6 +117,7 @@
 					//--------------------------------------------------
 					// Too many attempts for this IP
 
+						$created_limit = 5;
 						$created_after = new timestamp('-1 hour');
 
 						$sql = 'SELECT
@@ -132,7 +133,7 @@
 						$parameters[] = array('s', config::get('request.ip'));
 						$parameters[] = array('s', $created_after);
 
-						if ($db->num_rows($sql, $parameters) >= 5) {
+						if ($db->num_rows($sql, $parameters) >= $created_limit) {
 							$errors[] = $this->auth->text_get('failure_reset_recent_ip');
 						}
 
