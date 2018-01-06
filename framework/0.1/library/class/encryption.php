@@ -352,7 +352,7 @@
 
 		}
 
-		private static function _encode_asymmetric_one_openssl($key_public, $input) { // Public key only LEGACY ... https://paragonie.com/blog/2016/10/do-it-yourself-hand-crafted-boutique-artisinal-cryptosystems
+		private static function _encode_asymmetric_one_openssl($key_public, $input) { // Public key only LEGACY ... https://github.com/defuse/php-encryption/blob/ca31794ef421a1c49b00cf89b9cf52a489dbab0f/src/Crypto.php#L251
 
 			$data_key = openssl_random_pseudo_bytes(32); // 256/8
 
@@ -491,10 +491,12 @@
 		}
 
 		private static function _openssl_hkdf_keys($key, $salt) {
+
 			return [
-					hash_hkdf('sha256', $key, 32, 'KeyForEncryption', $salt),
-					hash_hkdf('sha256', $key, 32, 'KeyForAuthentication', $salt),
+					hash_hkdf('sha256', $key, 32, 'Encryption', $salt),
+					hash_hkdf('sha256', $key, 32, 'Authentication', $salt),
 				];
+
 		}
 
 	}
