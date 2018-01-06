@@ -24,8 +24,12 @@
 	//
 	//--------------------------------------------------
 	//
-	// 	if (encryption::key_upgrade($key)) {
+	// 	if (encryption::upgradable($key)) {
 	// 		// Generate new key, and re-encrypt.
+	// 	}
+	//
+	// 	if (encryption::upgradable($encrypted)) {
+	// 		// Re-encrypt with new key.
 	// 	}
 	//
 	//--------------------------------------------------
@@ -83,37 +87,37 @@
 
 		}
 
-		public static function key_upgrade($key) {
+		public static function upgradable($thing) {
 
-			list($key_type) = explode('-', $key);
+			list($type) = explode('-', $thing);
 
-			if ($key_type === 'KS2') {
+			if ($type === 'KS2' || $type === 'ES2') {
 
-				return false; // Best symmetric key available.
+				return false; // Best available.
 
-			} else if ($key_type === 'KS1') {
+			} else if ($type === 'KS1' || $type === 'ES1') {
 
 				if (function_exists('sodium_crypto_aead_chacha20poly1305_ietf_encrypt')) {
 					return true;
 				} else {
-					return false; // It will do for now.
+					return false; // Will do for now.
 				}
 
-			} else if ($key_type === 'KA2P' || $key_type === 'KA2S') {
+			} else if ($type === 'KA2P' || $type === 'KA2S' || $type === 'EAO2' || $type === 'EAT2') {
 
-				return false; // Best asymmetric key available.
+				return false; // Best available.
 
-			} else if ($key_type === 'KA1P' || $key_type === 'KA1S') {
+			} else if ($type === 'KA1P' || $type === 'KA1S' || $type === 'EAO1' || $type === 'EAT1') {
 
 				if (function_exists('sodium_crypto_box')) {
 					return true;
 				} else {
-					return false; // It will do for now.
+					return false; // Will do for now.
 				}
 
 			} else {
 
-				exit_with_error('Unrecognised encryption key type "' . $key_type . '"');
+				exit_with_error('Unrecognised encryption type "' . $type . '"');
 
 			}
 
