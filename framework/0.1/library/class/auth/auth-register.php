@@ -6,7 +6,7 @@
 		// Variables
 
 			protected $auth = NULL;
-			protected $confirm = false;
+			protected $confirm_enabled = false;
 			protected $db_table = NULL;
 			protected $db_fields = NULL;
 			protected $db_where_sql = NULL;
@@ -24,9 +24,9 @@
 
 				list($this->db_table, $this->db_fields, $this->db_where_sql) = $this->auth->db_table_get('register');
 
-				$this->confirm = ($this->db_table !== NULL);
+				$this->confirm_enabled = ($this->db_table !== NULL);
 
-				if (!$this->confirm) {
+				if (!$this->confirm_enabled) {
 					list($this->db_table, $this->db_fields, $this->db_where_sql) = $this->auth->db_table_get('main');
 				}
 
@@ -39,7 +39,7 @@
 
 			public function table_get() {
 
-				if ($this->confirm && config::get('debug.level') > 0) {
+				if ($this->confirm_enabled && config::get('debug.level') > 0) {
 
 					$db = $this->auth->db_get();
 
@@ -196,7 +196,7 @@
 
 							exit_with_error('Invalid response from $auth->validate_identification()', $result);
 
-						} else if ((!$unique) && ($identification_username || !$this->confirm)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
+						} else if ((!$unique) && ($identification_username || !$this->confirm_enabled)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
 
 							$errors['identification'] = $this->auth->text_get('failure_identification_current');
 
@@ -332,7 +332,7 @@
 					$register_pass = NULL;
 					$register_hash = '';
 
-					if ($this->confirm) {
+					if ($this->confirm_enabled) {
 
 						if ($this->details['confirm_valid']) {
 							$register_pass = random_key(15);
@@ -399,7 +399,7 @@
 				//--------------------------------------------------
 				// Start session
 
-					if (!$this->confirm && $config['login']) {
+					if (!$this->confirm_enabled && $config['login']) {
 
 						$auth_config = auth::value_parse($record_id, $auth_encoded); // So all fields are present (e.g. 'ips')
 
@@ -412,7 +412,7 @@
 				//--------------------------------------------------
 				// Return
 
-					if (!$this->confirm) {
+					if (!$this->confirm_enabled) {
 
 						$register_token = NULL; // No confirmation step, just added to the main table.
 

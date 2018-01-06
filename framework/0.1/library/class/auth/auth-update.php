@@ -6,7 +6,9 @@
 		// Variables
 
 			protected $auth = NULL;
-			protected $confirm = false;
+			protected $confirm_enabled = false;
+			protected $confirm_email = NULL;
+			protected $confirm_field = NULL;
 			protected $db_main_table = NULL;
 			protected $db_main_fields = NULL;
 			protected $db_main_where_sql = NULL;
@@ -28,7 +30,7 @@
 				list($this->db_main_table, $this->db_main_fields, $this->db_main_where_sql) = $this->auth->db_table_get('main');
 				list($this->db_update_table) = $this->auth->db_table_get('update');
 
-				$this->confirm = ($this->db_update_table !== NULL);
+				$this->confirm_enabled = ($this->db_update_table !== NULL);
 
 			}
 
@@ -39,7 +41,7 @@
 
 			public function table_get() {
 
-				if ($this->confirm && config::get('debug.level') > 0) {
+				if ($this->confirm_enabled && config::get('debug.level') > 0) {
 
 					$db = $this->auth->db_get();
 
@@ -65,6 +67,40 @@
 
 			public function password_old_check($check) {
 				$this->password_old_check = $check;
+			}
+
+			public function confirm_email_set($email) {
+
+				if ($this->auth->identification_type_get() != 'username') {
+					exit_with_error('Cannot call $auth_update->confirm_email_set() when the email address is being used for identification.');
+				}
+
+				if ($this->confirm_enabled !== true) {
+					exit_with_error('Cannot call $auth_update->confirm_email_set() without $auth->db_table[\'update\'].');
+				}
+
+				if ($this->details !== NULL) {
+					exit_with_error('Cannot call $auth_update->confirm_email_set() after $auth_update->validate().');
+				}
+
+				if (!is_string($email)) {
+					exit_with_error('Must provide an email string to $auth_update->confirm_email_set(), or you should use $auth_update->confirm_email_field_set().');
+				}
+
+				$this->confirm_email = $email;
+
+			}
+
+			public function confirm_email_field_set($field) {
+
+				if (!is_object($field) || !is_a($field, 'form_field')) {
+					exit_with_error('Must provide a form field to $auth_update->confirm_email_field_set().');
+				}
+
+				$this->confirm_email_set($field->value_get());
+
+				$this->confirm_field = $field;
+
 			}
 
 		//--------------------------------------------------
@@ -154,8 +190,8 @@
 
 					$db = $this->auth->db_get();
 
-					$confirm = false;
 					$confirm_valid = true;
+					$confirm_email = $this->confirm_email;
 
 				//--------------------------------------------------
 				// User
@@ -224,42 +260,22 @@
 
 								exit_with_error('Invalid response from $auth->validate_identification()', $result);
 
-							} else if ((!$unique) && ($identification_username || !$this->confirm)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
+							} else if ((!$unique) && ($identification_username || !$this->confirm_enabled)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
 
 								$errors['identification'] = $this->auth->text_get('failure_identification_current');
 
-							} else if (!$this->confirm || $identification_username) {
+							} else if (!$this->confirm_enabled || $identification_username) {
 
-								$identification_new = $values['identification']; // No confirmation process used, or it's the username that has changed. If an email address does exists, has changed, and needs confirming...
+								$identification_new = $values['identification']; // No confirmation process used, or the identification is a username... If an email address field does exists, has changed, and needs confirming, then use $auth_update->confirm_email_set($email)
 
-// TODO: Don't use $auth_register->complete(['email_new' => $email]), as we can't do any validation (i.e. has too many update requests been sent?)... maybe provide an $auth_update->confirm_email_set($email)... that will exit_with_error() when ($this->auth->identification_type_get() == 'username') OR ($this->confirm !== true)
+							} else if ($confirm_email !== NULL) {
 
-// Code that was in complete()...
-///
-// if ($config['email_new'] !== NULL) {
-// 	if ($this->auth->identification_type_get() == 'username') {
-//
-// 		// $this->details['confirm'] = $config['email_new'];
-//
-// 		exit_with_error('TODO: Providing an email address to confirm via auth_update');
-//
-// 			// Probably using a form field, so that needs to be reset.
-// 			//   $field_email->db_field_set('email');
-// 			//
-// 			// When running the final UPDATE, it assumes an 'email' field (ref `$email_field`).
-//
-// 	} else {
-//
-// 		exit_with_error('Can only set "email_new" when using username logins.');
-//
-// 	}
-// }
-
+								exit_with_error('Cannot call $auth_update->confirm_email_set() when the email address is being used for identification.'); // Should not happen, but lets be sure.
 
 							} else if ($values['identification'] != $current_identification) {
 
-								$confirm = $values['identification']; // New email address, to be confirmed.
 								$confirm_valid = ($unique === true);
+								$confirm_email = $values['identification']; // New email address, to be confirmed.
 
 							}
 
@@ -382,7 +398,7 @@
 					//--------------------------------------------------
 					// Recently sent confirmation - don't SPAM them.
 
-						if ($confirm) {
+						if ($confirm_email) {
 
 							$created_after = new timestamp('-1 hour');
 
@@ -402,7 +418,7 @@
 							$parameters[] = array('s', $created_after);
 
 							if ($db->num_rows($sql, $parameters) >= 1) {
-								$errors[] = $this->auth->text_get('failure_update_recent');
+								$errors[$identification_username ? 'email' : 'identification'] = $this->auth->text_get('failure_update_recent');
 							}
 
 						}
@@ -415,8 +431,8 @@
 						$this->details = array(
 								'identification' => $identification_new,
 								'password' => $password_new,
-								'confirm' => $confirm,
 								'confirm_valid' => $confirm_valid,
+								'confirm_email' => $confirm_email,
 								'user_set' => ($current_source == 'set'),
 								'user_id' => $current_user_id,
 								'auth' => $auth_config,
@@ -435,6 +451,10 @@
 								$this->field_password_new_1->error_add($error);
 							} else if ($field == 'password_new_2') {
 								$this->field_password_new_2->error_add($error);
+							} else if ($field == 'email' && $this->confirm_field) {
+								$this->confirm_field->error_add($error);
+							} else if ($field == 'email') {
+								$this->form->error_add($error);
 							} else {
 								exit_with_error('Unknown error field "' . $field . '"');
 							}
@@ -523,6 +543,13 @@
 					}
 
 				//--------------------------------------------------
+				// Reset email field, now we know the form is valid.
+
+					if ($this->confirm_field) {
+						$this->confirm_field->value_set($this->confirm_field->db_field_value_get());
+					}
+
+				//--------------------------------------------------
 				// Save
 
 					if (isset($this->form)) {
@@ -547,7 +574,7 @@
 				//--------------------------------------------------
 				// Update token
 
-					if (!$this->details['confirm']) {
+					if (!$this->details['confirm_email']) {
 
 						$result = true; // All done, no need for confirmation email.
 
@@ -572,7 +599,7 @@
 								'browser' => config::get('request.browser'),
 								'tracker' => $this->auth->_browser_tracker_get(),
 								'user_id' => $this->details['user_id'],
-								'email'   => $this->details['confirm'],
+								'email'   => $this->details['confirm_email'],
 								'created' => $now,
 								'deleted' => '0000-00-00 00:00:00',
 							));
@@ -582,7 +609,7 @@
 						if ($update_pass) {
 							$result = $update_id . '-' . $update_pass; // Token to use with $auth_update->confirm()
 						} else {
-							$result = false; // Could not update, send email telling end user?
+							$result = false; // Could not update (email address already in use), so we send an email (to this new address) to tell them.
 						}
 
 					}
@@ -600,6 +627,7 @@
 				// Config
 
 					$config = array_merge(array(
+							'email_field' => 'email',
 						), $config);
 
 					$db = $this->auth->db_get();
@@ -666,7 +694,11 @@
 
 							if ($success) {
 
-								$email_field = 'email';
+								if ($this->auth->identification_type_get() == 'username') {
+									$email_field = $config['email_field'];
+								} else {
+									$email_field = $this->db_main_fields['identification'];
+								}
 
 								$record = record_get($this->db_main_table, $row['user_id'], [$email_field]);
 
