@@ -618,7 +618,7 @@
 				//--------------------------------------------------
 				// Return
 
-					return [$result]; // Might add more field later, like all auth_*::complete() functions.
+					return [$result, $this->details['confirm_email']]; // If there is one, the confirm_field would have been reset.
 
 			}
 
