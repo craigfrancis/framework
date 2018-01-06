@@ -97,9 +97,16 @@
 					exit_with_error('Must provide a form field to $auth_update->confirm_email_field_set().');
 				}
 
-				$this->confirm_email_set($field->value_get());
+				$value_old = $field->db_field_value_get();
+				$value_new = $field->value_get();
 
-				$this->confirm_field = $field;
+				if ($value_old != $value_new) {
+
+					$this->confirm_email_set($value_new);
+
+					$this->confirm_field = $field;
+
+				}
 
 			}
 
@@ -378,8 +385,6 @@
 							} else if ($result !== true) {
 
 								exit_with_error('Invalid response from $auth->validate_password()', $result);
-
-// TODO: Check register helper... $password_1 and 2 can be NULL to skip .... } else if ($password_2 !== NULL && $password_1 !== $password_2) {
 
 							} else if ($password_2 !== NULL && $password_1 !== $password_2) {
 
