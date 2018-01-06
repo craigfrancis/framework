@@ -184,68 +184,87 @@
 
 		public static function decode($input, $key1, $key2 = NULL) {
 
-			list($key1_type, $key1_value) = array_pad(explode('-', $key1), 2, NULL);
-			list($key2_type, $key2_value) = array_pad(explode('-', $key2), 2, NULL);
-
 			list($input_type, $input_value, $input_nonce, $input_hmac, $input_salt) = array_pad(explode('-', $input), 5, NULL);
 
-			if ($input_type === 'ES2' && $key1_type === 'KS2' && $key2_type === '' && $key2_value === NULL) {
+			$keys1 = (is_array($key1) ? $key1 : [$key1]);
+			$keys2 = (is_array($key2) ? $key2 : [$key2]);
 
-				$key = base64_decode($key1_value);
-				$encrypted = base64_decode($input_value);
-				$nonce = base64_decode($input_nonce);
+			$attempts = [];
+			$attempt_fails = 0;
 
-				$plaintext = self::_decode_symmetric_sodium($key, $encrypted, $nonce);
+			foreach ($keys1 as $key1) {
+				foreach ($keys2 as $key2) {
 
-			} else if ($input_type === 'ES1' && $key1_type === 'KS1' && $key2_type === '' && $key2_value === NULL) {
+					list($key1_type, $key1_value) = array_pad(explode('-', $key1), 2, NULL);
+					list($key2_type, $key2_value) = array_pad(explode('-', $key2), 2, NULL);
 
-				$key = base64_decode($key1_value);
-				$encrypted = base64_decode($input_value);
-				$nonce = base64_decode($input_nonce);
-				$hmac = base64_decode($input_hmac);
-				$salt = base64_decode($input_salt);
+					$attempts[] = $key1_type . '/' . $key2_type;
 
-				$plaintext = self::_decode_symmetric_openssl($key, $encrypted, $nonce, $hmac, $salt);
+					if ($input_type === 'ES2' && $key1_type === 'KS2' && $key2_type === '' && $key2_value === NULL) {
 
-			} else if ($input_type === 'EAO2' && $key1_type === 'KA2S' && $key2_type === '' && $key2_value === NULL) {
+						$key = base64_decode($key1_value);
+						$encrypted = base64_decode($input_value);
+						$nonce = base64_decode($input_nonce);
 
-				$key_secret = base64_decode($key1_value);
-				$encrypted = base64_decode($input_value);
+						$plaintext = self::_decode_symmetric_sodium($key, $encrypted, $nonce);
 
-				$plaintext = self::_decode_asymmetric_one_sodium($key_secret, $encrypted);
+					} else if ($input_type === 'ES1' && $key1_type === 'KS1' && $key2_type === '' && $key2_value === NULL) {
 
-			} else if ($input_type === 'EAO1' && $key1_type === 'KA1S' && $key2_type === '' && $key2_value === NULL) {
+						$key = base64_decode($key1_value);
+						$encrypted = base64_decode($input_value);
+						$nonce = base64_decode($input_nonce);
+						$hmac = base64_decode($input_hmac);
+						$salt = base64_decode($input_salt);
 
-				$key_secret = base64_decode($key1_value);
-				$data_encrypted = base64_decode($input_value);
-				$keys_encrypted = base64_decode($input_nonce);
-				$hmac_value = base64_decode($input_hmac);
+						$plaintext = self::_decode_symmetric_openssl($key, $encrypted, $nonce, $hmac, $salt);
 
-				$plaintext = self::_decode_asymmetric_one_openssl($key_secret, $data_encrypted, $keys_encrypted, $hmac_value);
+					} else if ($input_type === 'EAO2' && $key1_type === 'KA2S' && $key2_type === '' && $key2_value === NULL) {
 
-			} else if ($input_type === 'EAT2' && $key1_type === 'KA2S' && $key2_type === 'KA2P') {
+						$key_secret = base64_decode($key1_value);
+						$encrypted = base64_decode($input_value);
 
-				$recipient_key_secret = base64_decode($key1_value);
-				$sender_key_public = base64_decode($key2_value);
-				$encrypted = base64_decode($input_value);
-				$nonce = base64_decode($input_nonce);
+						$plaintext = self::_decode_asymmetric_one_sodium($key_secret, $encrypted);
 
-				$plaintext = self::_decode_asymmetric_two_sodium($recipient_key_secret, $sender_key_public, $encrypted, $nonce);
+					} else if ($input_type === 'EAO1' && $key1_type === 'KA1S' && $key2_type === '' && $key2_value === NULL) {
 
-			} else if ($input_type === 'EAT1' && $key1_type === 'KA1S' && $key2_type === 'KA1P') {
+						$key_secret = base64_decode($key1_value);
+						$data_encrypted = base64_decode($input_value);
+						$keys_encrypted = base64_decode($input_nonce);
+						$hmac_value = base64_decode($input_hmac);
 
-				$recipient_key_secret = base64_decode($key1_value);
-				$sender_key_public = base64_decode($key2_value);
-				$data_encrypted = base64_decode($input_value);
-				$keys_encrypted = base64_decode($input_nonce);
-				$hmac_encrypted = base64_decode($input_hmac);
+						$plaintext = self::_decode_asymmetric_one_openssl($key_secret, $data_encrypted, $keys_encrypted, $hmac_value);
 
-				$plaintext = self::_decode_asymmetric_two_openssl($recipient_key_secret, $sender_key_public, $data_encrypted, $keys_encrypted, $hmac_encrypted);
+					} else if ($input_type === 'EAT2' && $key1_type === 'KA2S' && $key2_type === 'KA2P') {
 
-			} else {
+						$recipient_key_secret = base64_decode($key1_value);
+						$sender_key_public = base64_decode($key2_value);
+						$encrypted = base64_decode($input_value);
+						$nonce = base64_decode($input_nonce);
 
-				exit_with_error('Unrecognised encryption key and input types "' . $key1_type . '/' . $key2_type . '/' . $input_type . '"');
+						$plaintext = self::_decode_asymmetric_two_sodium($recipient_key_secret, $sender_key_public, $encrypted, $nonce);
 
+					} else if ($input_type === 'EAT1' && $key1_type === 'KA1S' && $key2_type === 'KA1P') {
+
+						$recipient_key_secret = base64_decode($key1_value);
+						$sender_key_public = base64_decode($key2_value);
+						$data_encrypted = base64_decode($input_value);
+						$keys_encrypted = base64_decode($input_nonce);
+						$hmac_encrypted = base64_decode($input_hmac);
+
+						$plaintext = self::_decode_asymmetric_two_openssl($recipient_key_secret, $sender_key_public, $data_encrypted, $keys_encrypted, $hmac_encrypted);
+
+					} else {
+
+						$attempt_fails++;
+
+					}
+
+				}
+			}
+
+			$attempt_count = count($attempts);
+			if ($attempt_count == 0 || $attempt_count == $attempt_fails) {
+				exit_with_error('Unrecognised encryption key and input types "' . $input_type . '"', debug_dump($attempts));
 			}
 
 			if (is_string($plaintext)) { // i.e. did not return false.
