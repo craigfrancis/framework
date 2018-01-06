@@ -107,6 +107,7 @@
 							'failure_password_repetition'    => 'Too many attempts to enter your current password.', // Profile page
 							'failure_password_repeat'        => 'Your new passwords do not match.', // Register and profile pages
 							'failure_password_common'        => 'This is a very common password, too many people use it.',
+							'failure_update_recent'          => 'You have recently requested an update to your email address.',
 							'failure_reset_recent_ip'        => 'You have requested too many password resets.',
 							'failure_reset_recent_email'     => 'You have recently requested a password reset.',
 							'failure_reset_recent_changed'   => 'You have recently reset your password.',
@@ -197,7 +198,13 @@
 			}
 
 			public function text_get($ref, $default = NULL) {
-				return (isset($this->text[$ref]) ? $this->text[$ref] : $default);
+				if (isset($this->text[$ref])) {
+					return $this->text[$ref];
+				} else if ($default) {
+					return $default;
+				} else {
+					return $ref; // Better than nothing
+				}
 			}
 
 			public function identification_type_get() {
