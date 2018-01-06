@@ -146,6 +146,8 @@
 
 					$errors = array();
 
+					$db = $this->auth->db_get();
+
 					$confirm = false;
 					$confirm_valid = true;
 
@@ -284,8 +286,6 @@
 
 						} else {
 
-							$db = $this->auth->db_get();
-
 							$sql = 'SELECT
 										m.' . $db->escape_field($this->db_main_fields['auth']) . ' AS auth
 									FROM
@@ -352,9 +352,30 @@
 					//--------------------------------------------------
 					// Recently sent confirmation - don't SPAM them.
 
+						if ($confirm) {
 
-// TODO: Check $this->db_update_table
+							$created_after = new timestamp('-1 hour');
 
+							$sql = 'SELECT
+										1
+									FROM
+										' . $this->db_update_table . ' AS u
+									WHERE
+										u.user_id = ? AND
+										u.created > ? AND
+										u.deleted = u.deleted
+									LIMIT
+										1';
+
+							$parameters = array();
+							$parameters[] = array('i', $current_user_id);
+							$parameters[] = array('s', $created_after);
+
+							if ($db->num_rows($sql, $parameters) >= 1) {
+								$errors[] = $this->auth->text_get('failure_update_recent');
+							}
+
+						}
 
 				//--------------------------------------------------
 				// Return
