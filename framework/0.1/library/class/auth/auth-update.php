@@ -12,6 +12,7 @@
 			protected $db_main_where_sql = NULL;
 			protected $db_update_table = NULL;
 			protected $details = NULL;
+			protected $password_old_check = true;
 			protected $form = NULL;
 			protected $field_identification = NULL;
 			protected $field_password_old = NULL;
@@ -54,6 +55,10 @@
 
 				return $this->db_main_table;
 
+			}
+
+			public function password_old_check($check) {
+				$this->password_old_check = $check;
 			}
 
 		//--------------------------------------------------
@@ -269,9 +274,15 @@
 
 							}
 
-						} else {
+						} else if ($this->password_old_check !== false) {
 
-// TODO: If the old password is not requested, then maybe we should do something like $auth_update->password_old_skip(true);
+							if ($this->form) {
+								exit_with_error('Cannot call $auth_update->validate() without using $auth_update->field_password_old_get($form), or calling $auth_update->password_old_check(false).');
+							} else {
+								exit_with_error('Cannot call $auth_update->validate() without providing the old password, or calling $auth_update->password_old_check(false).');
+							}
+
+						} else {
 
 							$db = $this->auth->db_get();
 
