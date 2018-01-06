@@ -492,9 +492,11 @@
 
 		private static function _openssl_hkdf_keys($key, $salt) {
 
+			$key_length = strlen($key);
+
 			return [
-					hash_hkdf('sha256', $key, 32, 'Encryption', $salt),
-					hash_hkdf('sha256', $key, 32, 'Authentication', $salt),
+					hash_hkdf('sha256', $key, $key_length, 'Encryption', $salt),
+					hash_hkdf('sha256', $key, $key_length, 'Authentication', $salt),
 				];
 
 		}
