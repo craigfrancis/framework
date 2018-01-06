@@ -431,6 +431,7 @@
 	if (!function_exists('http_response_code')) require_once(FRAMEWORK_ROOT . '/library/function/http-response-code.php'); // 5.4+
 	if (!function_exists('array_column'))       require_once(FRAMEWORK_ROOT . '/library/function/array-column.php'); // 5.5+
 	if (!function_exists('random_bytes'))       require_once(FRAMEWORK_ROOT . '/library/function/random-bytes.php'); // 7.0+
+	if (!function_exists('hash_hkdf'))          require_once(FRAMEWORK_ROOT . '/library/function/hash-hkdf.php'); // 7.1.2+
 
 	function file_size_to_human($size) {
 		return format_bytes($size);

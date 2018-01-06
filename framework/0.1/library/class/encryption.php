@@ -187,7 +187,7 @@
 			list($key1_type, $key1_value) = array_pad(explode('-', $key1), 2, NULL);
 			list($key2_type, $key2_value) = array_pad(explode('-', $key2), 2, NULL);
 
-			list($input_type, $input_value, $input_nonce, $input_hmac) = array_pad(explode('-', $input), 4, NULL);
+			list($input_type, $input_value, $input_nonce, $input_hmac, $input_salt) = array_pad(explode('-', $input), 5, NULL);
 
 			if ($input_type === 'ES2' && $key1_type === 'KS2' && $key2_type === '' && $key2_value === NULL) {
 
@@ -203,8 +203,9 @@
 				$encrypted = base64_decode($input_value);
 				$nonce = base64_decode($input_nonce);
 				$hmac = base64_decode($input_hmac);
+				$salt = base64_decode($input_salt);
 
-				$plaintext = self::_decode_symmetric_openssl($key, $encrypted, $nonce, $hmac);
+				$plaintext = self::_decode_symmetric_openssl($key, $encrypted, $nonce, $hmac, $salt);
 
 			} else if ($input_type === 'EAO2' && $key1_type === 'KA2S' && $key2_type === '' && $key2_value === NULL) {
 
@@ -286,23 +287,29 @@
 			$nonce_size = openssl_cipher_iv_length(self::$openssl_cipher);
 			$nonce = openssl_random_pseudo_bytes($nonce_size);
 
-			$encrypted = openssl_encrypt($input, self::$openssl_cipher, $key, OPENSSL_RAW_DATA, $nonce);
+			$salt = openssl_random_pseudo_bytes(32);
 
-			$hmac = hash_hmac('sha256', $nonce . $encrypted, $key, true);
+			list($key_encrypt, $key_authenticate) = self::_openssl_hkdf_keys($key, $salt);
 
-			return [$encrypted, $nonce, $hmac];
+			$encrypted = openssl_encrypt($input, self::$openssl_cipher, $key_encrypt, OPENSSL_RAW_DATA, $nonce);
+
+			$hmac = hash_hmac('sha256', $salt . $nonce . $encrypted, $key_authenticate, true);
+
+			return [$encrypted, $nonce, $hmac, $salt];
 
 		}
 
-		private static function _decode_symmetric_openssl($key, $encrypted, $nonce, $hmac) {
+		private static function _decode_symmetric_openssl($key, $encrypted, $nonce, $hmac, $salt) {
 
-			$check_hmac = hash_hmac('sha256', $nonce . $encrypted, $key, true);
+			list($key_encrypt, $key_authenticate) = self::_openssl_hkdf_keys($key, $salt);
+
+			$check_hmac = hash_hmac('sha256', $salt . $nonce . $encrypted, $key_authenticate, true);
 
 			if (!hash_equals($check_hmac, $hmac)) {
 				exit_with_error('Could not verify HMAC of the encrypted data');
 			}
 
-			return openssl_decrypt($encrypted, self::$openssl_cipher, $key, OPENSSL_RAW_DATA, $nonce);
+			return openssl_decrypt($encrypted, self::$openssl_cipher, $key_encrypt, OPENSSL_RAW_DATA, $nonce);
 
 		}
 
@@ -458,6 +465,13 @@
 
 			return openssl_decrypt($data_encrypted, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $nonce);
 
+		}
+
+		private static function _openssl_hkdf_keys($key, $salt) {
+			return [
+					hash_hkdf('sha256', $key, 32, 'KeyForEncryption', $salt),
+					hash_hkdf('sha256', $key, 32, 'KeyForAuthentication', $salt),
+				];
 		}
 
 	}
