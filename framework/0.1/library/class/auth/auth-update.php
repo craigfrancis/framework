@@ -224,7 +224,31 @@
 
 							} else if (!$this->confirm || $identification_username) {
 
-								$identification_new = $values['identification']; // No confirmation needed, or the username that has changed... if an email address field exists, has changed, and needs confirming, use $auth_register->complete(['email_new' => $email])
+								$identification_new = $values['identification']; // No confirmation process used, or it's the username that has changed. If an email address does exists, has changed, and needs confirming...
+
+// TODO: Don't use $auth_register->complete(['email_new' => $email]), as we can't do any validation (i.e. has too many update requests been sent?)... maybe provide an $auth_update->confirm_email_set($email)... that will exit_with_error() when ($this->auth->identification_type_get() == 'username') OR ($this->confirm !== true)
+
+// Code that was in complete()...
+///
+// if ($config['email_new'] !== NULL) {
+// 	if ($this->auth->identification_type_get() == 'username') {
+//
+// 		// $this->details['confirm'] = $config['email_new'];
+//
+// 		exit_with_error('TODO: Providing an email address to confirm via auth_update');
+//
+// 			// Probably using a form field, so that needs to be reset.
+// 			//   $field_email->db_field_set('email');
+// 			//
+// 			// When running the final UPDATE, it assumes an 'email' field (ref `$email_field`).
+//
+// 	} else {
+//
+// 		exit_with_error('Can only set "email_new" when using username logins.');
+//
+// 	}
+// }
+
 
 							} else if ($values['identification'] != $current_identification) {
 
@@ -429,7 +453,6 @@
 							'form'                    => NULL,
 							'record'                  => NULL,
 							'login'                   => true,
-							'email_new'               => NULL, // Set to an email address if it changes (and identification via username).
 							'remember_identification' => NULL,
 						), $config);
 
@@ -461,25 +484,6 @@
 
 						$record = record_get($this->db_main_table);
 
-					}
-
-					if ($config['email_new'] !== NULL) {
-						if ($this->auth->identification_type_get() == 'username') {
-
-							// $this->details['confirm'] = $config['email_new'];
-
-							exit_with_error('TODO: Providing an email address to confirm via auth_update');
-
-								// Probably using a form field, so that needs to be reset.
-								//   $field_email->db_field_set('email');
-								//
-								// When running the final UPDATE, it assumes an 'email' field (ref `$email_field`).
-
-						} else {
-
-							exit_with_error('Can only set "email_new" when using username logins.');
-
-						}
 					}
 
 					if ($config['remember_identification'] === NULL) {
