@@ -46,13 +46,13 @@
 					debug_require_db_table($this->db_table, '
 							CREATE TABLE [TABLE] (
 								' . $db->escape_field($this->db_fields['id']) . ' int(11) NOT NULL AUTO_INCREMENT,
+								' . $db->escape_field($this->db_fields['identification']) . ' tinytext NOT NULL,
+								' . $db->escape_field($this->db_fields['password']) . ' tinytext NOT NULL,
+								' . $db->escape_field($this->db_fields['auth']) . ' text NOT NULL,
 								' . $db->escape_field($this->db_fields['token']) . ' tinytext NOT NULL,
 								' . $db->escape_field($this->db_fields['ip']) . ' tinytext NOT NULL,
 								' . $db->escape_field($this->db_fields['browser']) . ' tinytext NOT NULL,
 								' . $db->escape_field($this->db_fields['tracker']) . ' tinytext NOT NULL,
-								' . $db->escape_field($this->db_fields['identification']) . ' tinytext NOT NULL,
-								' . $db->escape_field($this->db_fields['password']) . ' tinytext NOT NULL,
-								' . $db->escape_field($this->db_fields['auth']) . ' text NOT NULL,
 								' . $db->escape_field($this->db_fields['created']) . ' datetime NOT NULL,
 								' . $db->escape_field($this->db_fields['edited']) . ' datetime NOT NULL,
 								' . $db->escape_field($this->db_fields['deleted']) . ' datetime NOT NULL,
@@ -203,8 +203,6 @@
 						} else {
 
 							$confirm_valid = ($unique === true);
-
-// TODO: Check what happens when $confirm_valid gets set to false... when in username identification mode.
 
 						}
 
@@ -376,19 +374,9 @@
 
 						$auth_encoded = auth::value_encode($record_id, $auth_config, $this->details['password']);
 
-						$sql = 'UPDATE
-									' . $db->escape_table($this->db_table) . ' AS r
-								SET
-									r.' . $db->escape_field($this->db_fields['auth']) . ' = ?
-								WHERE
-									r.' . $db->escape_field($this->db_fields['id']) . ' = ? AND
-									' . $this->db_where_sql;
-
-						$parameters = array();
-						$parameters[] = array('s', $auth_encoded);
-						$parameters[] = array('i', $record_id);
-
-						$db->query($sql, $parameters);
+						$record->save([
+								'auth' => $auth_encoded,
+							]);
 
 					} else {
 
@@ -426,7 +414,7 @@
 
 					}
 
-					return [$record_id, $register_token];
+					return [$record_id, $register_token, $this->details['identification']];
 
 			}
 
