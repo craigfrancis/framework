@@ -93,7 +93,7 @@
 								i.name_first LIKE ? OR
 								i.name_last LIKE ?';
 
-							$parameters = array_merge($parameters, $db->parameter_like($word, 2));
+							$db->parameter_like($parameters, $word, 6);
 
 						}
 
