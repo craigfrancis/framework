@@ -1579,7 +1579,7 @@ exit();
 				$field->min_length_set($this->text_get('identification_min_length'));
 				$field->max_length_set($this->text_get('identification_max_length'), $max_length);
 				$field->autocapitalize_set(false);
-				$field->autocomplete_set('username');
+				$field->autocomplete_set($this->user_id ? NULL : 'username');
 
 				return $field;
 
@@ -1594,7 +1594,7 @@ exit();
 				$field->format_error_set($this->text_get('email_format'));
 				$field->min_length_set($this->text_get('email_min_length'));
 				$field->max_length_set($this->text_get('email_max_length'), $max_length);
-				$field->autocomplete_set($config['autocomplete']);
+				$field->autocomplete_set($this->user_id ? NULL : $config['autocomplete']);
 
 				return $field;
 
@@ -1608,7 +1608,7 @@ exit();
 
 				$field = new form_field_password($form, $config['label'], $config['name']);
 				$field->max_length_set($this->text_get('password_max_length'), $max_length);
-				$field->autocomplete_set($config['autocomplete']);
+				$field->autocomplete_set($this->user_id ? NULL : $config['autocomplete']);
 
 				if ($config['required']) {
 					$field->min_length_set($this->text_get('password_min_length'), $config['min_length']);
@@ -1626,7 +1626,7 @@ exit();
 
 				$field = new form_field_password($form, $config['label'], $config['name']);
 				$field->max_length_set($this->text_get('password_new_max_length'), $max_length);
-				$field->autocomplete_set($config['autocomplete']);
+				$field->autocomplete_set($this->user_id ? NULL : $config['autocomplete']);
 
 				if ($config['required']) {
 					$field->min_length_set($this->text_get('password_new_min_length'), $config['min_length']);
@@ -1644,7 +1644,7 @@ exit();
 
 				$field = new form_field_password($form, $config['label'], $config['name']);
 				$field->max_length_set($this->text_get('password_repeat_max_length'), $max_length);
-				$field->autocomplete_set('new-password');
+				$field->autocomplete_set($this->user_id ? NULL : 'new-password');
 
 				if ($config['required']) {
 					$field->min_length_set($this->text_get('password_repeat_min_length'), $config['min_length']);
