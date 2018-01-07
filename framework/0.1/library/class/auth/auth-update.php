@@ -172,7 +172,7 @@
 						'min_length' => 1, // Field is simply required (supporting old/short passwords).
 					), $config, array(
 						'required' => true,
-						'autocomplete' => 'current-password', // TODO: When editing an account, autocomplete should not be used.
+						'autocomplete' => 'current-password',
 					)));
 
 				return $this->field_password_old;
