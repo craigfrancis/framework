@@ -790,7 +790,7 @@ exit();
 				}
 			}
 
-			public function session_info_get($field) {
+			public function session_info_get($field = NULL) {
 				if (!$this->session_info_available) {
 					exit_with_error('Cannot call $auth->session_info_get() before $auth->session_get()');
 				}
@@ -798,6 +798,8 @@ exit();
 					return NULL;
 				} else if ($field == 'id' || $field == 'user_id') {
 					exit_with_error('Use the appropriate $auth->session_' . $field . '_get().');
+				} else if ($field === NULL) {
+					return $this->session_info_data['extra'];
 				} else if (!isset($this->session_info_data['extra'][$field])) {
 					exit_with_error('The current session does not have a "' . $field . '" set.');
 				} else {
