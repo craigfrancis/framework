@@ -218,16 +218,42 @@
 		//--------------------------------------------------
 		// User
 
-			public function user_set($user_id, $user_identification) { // Typically for admin use only
-				$this->user_id = $user_id;
-				$this->user_identification = $user_identification;
+			public function user_set($user_id, $user_identification = NULL) { // Typically for admin use only
+
+				if ($this->session_info_data !== NULL) {
+					exit_with_error('Cannot call $auth->user_set() after using $auth->session_get().');
+				}
+
+				$this->user_id = intval($user_id);
+				$this->user_identification = $user_identification; // TODO: Do we need this?
+
 			}
 
 			public function user_get() {
 				if ($this->user_id) {
 					return [$this->user_id, $this->user_identification, 'set'];
 				} else {
-					return [$this->session_user_id_get(), $this->user_identification_get(), 'session'];
+					return [$this->user_id_get(), $this->user_identification_get(), 'session'];
+				}
+			}
+
+			public function user_id_get() {
+				if ($this->user_id) {
+
+					return $this->user_id;
+
+				} else if (!$this->session_info_available) {
+
+					exit_with_error('Cannot call $auth->user_id_get() before $auth->session_get()');
+
+				} else if ($this->session_info_data) {
+
+					return $this->session_info_data['user_id'];
+
+				} else {
+
+					return NULL;
+
 				}
 			}
 
@@ -251,7 +277,7 @@
 			public function login_forced($config = array()) {
 
 				$config = array_merge(array(
-						'session_concurrent' => NULL,
+						'session_concurrent' => true,
 						'remember_identification' => false,
 					), $config);
 
@@ -260,7 +286,7 @@
 				}
 
 				if ($config['session_concurrent'] !== false && $config['session_concurrent'] !== true) {
-					exit_with_error('You must specify "session_concurrent" when calling $auth->login_forced().');
+					exit_with_error('Invalid "session_concurrent" value when calling $auth->login_forced().');
 				}
 
 				$system_session_concurrent = $this->session_concurrent;
@@ -754,17 +780,6 @@ exit();
 			public function session_required($login_url) {
 				if (!$this->session_info_available) { // There is no limit, or it was specified via $auth->session_limited_get().
 					save_request_redirect($login_url, $this->last_identification_get());
-				}
-			}
-
-			public function session_user_id_get() {
-				if (!$this->session_info_available) {
-					exit_with_error('Cannot call $auth->session_user_id_get() before $auth->session_get()');
-				}
-				if ($this->session_info_data) {
-					return $this->session_info_data['user_id'];
-				} else {
-					return NULL;
 				}
 			}
 
@@ -1339,7 +1354,7 @@ exit();
 
 					if ($identification === NULL) {
 						$where_sql = 'm.' . $db->escape_field($db_main_fields['id']) . ' = ?';
-						$parameters[] = array('i', $this->session_user_id_get());
+						$parameters[] = array('i', $this->user_id_get());
 					} else {
 						$where_sql = 'm.' . $db->escape_field($db_main_fields['identification']) . ' = ?';
 						$parameters[] = array('s', $identification);

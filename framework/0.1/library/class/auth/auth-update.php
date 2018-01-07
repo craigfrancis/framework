@@ -35,7 +35,7 @@
 			}
 
 			public function record_get($fields = NULL, $config_extra = array()) {
-				$this->record = record_get($this->table_get(), $this->auth->session_user_id_get(), $fields, $config_extra);
+				$this->record = record_get($this->table_get(), $this->auth->user_id_get(), $fields, $config_extra);
 				return $this->record;
 			}
 
