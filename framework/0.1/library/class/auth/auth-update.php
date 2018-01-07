@@ -7,6 +7,7 @@
 
 			protected $auth = NULL;
 			protected $confirm_enabled = false;
+			protected $confirm_identification = false;
 			protected $confirm_email = NULL;
 			protected $confirm_field = NULL;
 			protected $db_main_table = NULL;
@@ -117,6 +118,22 @@
 
 			}
 
+			public function confirm_identification_set($confirm) {
+
+				if ($this->auth->identification_type_get() == 'username') {
+					exit_with_error('Cannot call $auth_update->confirm_identification_set() when a username is being used for identification.');
+				}
+
+				list($current_user_id, $current_identification, $current_source) = $this->auth->user_get();
+
+				if ($current_source !== 'set') {
+					exit_with_error('Cannot call $auth_update->confirm_identification_set() without using $auth->user_set().');
+				}
+
+				$this->confirm_identification = ($confirm === true);
+
+			}
+
 		//--------------------------------------------------
 		// Fields
 
@@ -221,8 +238,6 @@
 						exit_with_error('Cannot call $auth_update->validate() when the user is not logged in, or $auth->user_set() has not been used.');
 					}
 
-// TODO: When the admin is editing, should there be a way to confirm the email address? maybe via confirm_email_set()?
-
 				//--------------------------------------------------
 				// Values
 
@@ -281,16 +296,28 @@
 
 								exit_with_error('Invalid response from $auth->validate_identification()', $result);
 
-							} else if ($identification_username || $current_source === 'set' || !$this->confirm_enabled) { // Identification is a username, being 'set' by the admin, or no confirmation process used...
+							} else if ($identification_username || $current_source === 'set' || !$this->confirm_enabled) { // Identification is a username, or being 'set' by the admin, or no confirmation process used...
 
-									// If in username mode, and the user has changed their email
-									// address, and it needs confirming, then you should use
-									// $auth_update->confirm_email_set($email)
+									// If in username mode, and you want to confirm their email address:
+									//   $auth_update->confirm_email_set($email);
+									//   $auth_update->confirm_email_field_set($field);
+									//
+									// If in username AND admin mode, and want to confirm their email address:
+									//   $auth_update->confirm_identification_set(true);
 
-								if ($unique) {
-									$identification_new = $values['identification']; // ... we can save it straight to the main database table.
-								} else {
+								if (!$unique) {
+
 									$errors['identification'] = $this->auth->text_get('failure_identification_current'); // ... we can show an error message (DO NOT for 'users' changing their email address; send an email via the confirmation process).
+
+								} else if (!$this->confirm_identification) {
+
+									$identification_new = $values['identification']; // ... we can save it straight to the main database table.
+
+								} else if ($values['identification'] != $current_identification) { // ... we need to confirm the identification change.
+
+									$confirm_valid = ($unique === true);
+									$confirm_email = $values['identification']; // New email address, to be confirmed.
+
 								}
 
 							} else if ($confirm_email !== NULL) {
@@ -419,7 +446,7 @@
 					//--------------------------------------------------
 					// Recently sent confirmation - don't SPAM them.
 
-						if ($confirm_email) {
+						if ($confirm_email && $current_source !== 'set') { // This is fine for the admin to do.
 
 							$created_after = new timestamp('-1 hour');
 
