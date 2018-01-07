@@ -35,8 +35,15 @@
 			}
 
 			public function record_get($fields = NULL, $config_extra = array()) {
+
 				$this->record = record_get($this->table_get(), $this->auth->user_id_get(), $fields, $config_extra);
+
+				if ($this->auth->user_identification_get() === NULL) {
+					$this->auth->_user_identification_set($this->record->value_get($this->db_main_fields['identification']));
+				}
+
 				return $this->record;
+
 			}
 
 			public function table_get() {
@@ -124,7 +131,12 @@
 					), $config));
 
 				if ($form->initial()) {
-					$this->field_identification->value_set($this->auth->user_identification_get());
+					$identification = $this->auth->user_identification_get();
+					if ($identification) {
+						$this->field_identification->value_set($identification);
+					} else {
+						exit_with_error('Cannot pre-fill the identification field, as the value is not known. You probably need to call $auth_update->record_get([\'field_name\']);');
+					}
 				}
 
 				return $this->field_identification;
@@ -141,7 +153,7 @@
 						'min_length' => 1, // Field is simply required (supporting old/short passwords).
 					), $config, array(
 						'required' => true,
-						'autocomplete' => 'current-password',
+						'autocomplete' => 'current-password', // TODO: When editing an account, autocomplete should not be used.
 					)));
 
 				return $this->field_password_old;
@@ -209,6 +221,8 @@
 						exit_with_error('Cannot call $auth_update->validate() when the user is not logged in, or $auth->user_set() has not been used.');
 					}
 
+// TODO: When the admin is editing, should there be a way to confirm the email address? maybe via confirm_email_set()?
+
 				//--------------------------------------------------
 				// Values
 
@@ -267,13 +281,17 @@
 
 								exit_with_error('Invalid response from $auth->validate_identification()', $result);
 
-							} else if ((!$unique) && ($identification_username || !$this->confirm_enabled)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
+							} else if ($identification_username || $current_source === 'set' || !$this->confirm_enabled) { // Identification is a username, being 'set' by the admin, or no confirmation process used...
 
-								$errors['identification'] = $this->auth->text_get('failure_identification_current');
+									// If in username mode, and the user has changed their email
+									// address, and it needs confirming, then you should use
+									// $auth_update->confirm_email_set($email)
 
-							} else if (!$this->confirm_enabled || $identification_username) {
-
-								$identification_new = $values['identification']; // No confirmation process used, or the identification is a username... If an email address field does exists, has changed, and needs confirming, then use $auth_update->confirm_email_set($email)
+								if ($unique) {
+									$identification_new = $values['identification']; // ... we can save it straight to the main database table.
+								} else {
+									$errors['identification'] = $this->auth->text_get('failure_identification_current'); // ... we can show an error message (DO NOT for 'users' changing their email address; send an email via the confirmation process).
+								}
 
 							} else if ($confirm_email !== NULL) {
 
@@ -329,7 +347,7 @@
 
 							}
 
-						} else if ($this->password_old_check !== false) {
+						} else if ($current_source !== 'set' && $this->password_old_check !== false) { // If the user has been set (e.g. admin editing profile), they won't know the password... whereas the users should.
 
 							if ($this->form) {
 								exit_with_error('Cannot call $auth_update->validate() without using $auth_update->field_password_old_get($form), or calling $auth_update->password_old_check(false).');
@@ -564,12 +582,14 @@
 					}
 
 				//--------------------------------------------------
-				// Expire... on password change
+				// Expire... on user changing their password
 
-					if ($this->details['password']) {
+					if ($this->details['password'] && !$this->details['user_set']) {
+
 						$this->auth->expire('remember', $this->details['user_id']); // No remembered user records should exist (malicious user might own it)
 						$this->auth->expire('session', $this->details['user_id'], ['session_keep' => $this->auth->session_id_get()]); // Only this session should remain be active.
 						$this->auth->expire('reset', $this->details['user_id']); // No password resets should remain.
+
 					}
 
 				//--------------------------------------------------

@@ -259,7 +259,7 @@
 					if (array_key_exists($field, $values)) { // Value from db might be NULL
 						return $values[$field];
 					} else {
-						exit_with_error('The value "' . $field . '" was not returned from table "' . $this->table_sql . '"');
+						exit_with_error('The field "' . $field . '" was not returned from table "' . $this->table_sql . '"');
 					}
 				} else {
 					return NULL;

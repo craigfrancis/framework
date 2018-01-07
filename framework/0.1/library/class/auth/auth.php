@@ -218,57 +218,49 @@
 		//--------------------------------------------------
 		// User
 
-			public function user_set($user_id, $user_identification = NULL) { // Typically for admin use only
+			public function user_set($user_id) { // Typically for admin use only
 
 				if ($this->session_info_data !== NULL) {
 					exit_with_error('Cannot call $auth->user_set() after using $auth->session_get().');
 				}
 
 				$this->user_id = intval($user_id);
-				$this->user_identification = $user_identification; // TODO: Do we need this?
+				$this->user_identification = NULL; // TODO: Can we set this better than going via auth->_user_identification_set()?
 
 			}
 
 			public function user_get() {
 				if ($this->user_id) {
 					return [$this->user_id, $this->user_identification, 'set'];
+				} else if ($this->session_info_available) {
+					return [$this->session_info_data['user_id'], $this->session_info_data['identification'], 'session'];
 				} else {
-					return [$this->user_id_get(), $this->user_identification_get(), 'session'];
+					exit_with_error('Cannot call $auth->user_get() before $auth->session_get(), or $auth->user_set()');
 				}
 			}
 
 			public function user_id_get() {
 				if ($this->user_id) {
-
 					return $this->user_id;
-
-				} else if (!$this->session_info_available) {
-
-					exit_with_error('Cannot call $auth->user_id_get() before $auth->session_get()');
-
-				} else if ($this->session_info_data) {
-
+				} else if ($this->session_info_available) {
 					return $this->session_info_data['user_id'];
-
 				} else {
-
-					return NULL;
-
+					exit_with_error('Cannot call $auth->user_id_get() before $auth->session_get(), or $auth->user_set()');
 				}
 			}
 
 			public function user_identification_get() {
 				if ($this->user_id) {
-
 					return $this->user_identification;
-
-				} else {
-
-					list($db_main_table, $db_main_fields) = $this->db_table_get('main');
-
+				} else if ($this->session_info_available) {
 					return $this->session_info_data['identification'];
-
+				} else {
+					exit_with_error('Cannot call $auth->user_identification_get() before $auth->session_get(), or $auth->user_set()');
 				}
+			}
+
+			public function _user_identification_set($identification) {
+				$this->user_identification = $identification;
 			}
 
 		//--------------------------------------------------
@@ -278,7 +270,6 @@
 
 				$config = array_merge(array(
 						'session_concurrent' => true,
-						'remember_identification' => false,
 					), $config);
 
 				if ($this->user_id === NULL) {
@@ -293,7 +284,7 @@
 
 				$this->session_concurrent = $config['session_concurrent'];
 
-				$identification = ($config['remember_identification'] === true ? $this->user_identification_get() : NULL);
+				$identification = NULL; // Don't remember their identification.
 				$auth_config = NULL;
 				$password_validation = true; // We aren't checking the password
 				$extra_data = [];

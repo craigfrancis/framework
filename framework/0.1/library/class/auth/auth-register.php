@@ -196,6 +196,8 @@
 
 							exit_with_error('Invalid response from $auth->validate_identification()', $result);
 
+// TODO: When adding the admin 'set' mode, look at how auth-update will show them an error message (the admin can see that, but may still want a confirmation email... maybe via a confirm_email_set method?).
+
 						} else if ((!$unique) && ($identification_username || !$this->confirm_enabled)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
 
 							$errors['identification'] = $this->auth->text_get('failure_identification_current');
