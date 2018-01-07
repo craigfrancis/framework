@@ -61,6 +61,7 @@
 
 				$table = new table();
 				$table->caption_set('Item');
+				$table->wrapper_class_set('basic_table full_width duplicate_caption');
 				$table->no_records_set('No records found');
 				// $table->sort_default_set('i.created', 'desc');
 				// $table->sort_preserve_set(true);
