@@ -406,6 +406,12 @@
 		margin: 0 0 1em 0;
 	}
 
+	.basic_table[tabindex="0"] {
+		outline: 0; /* See focus alternative below */
+		overflow: auto;
+		white-space: nowrap;
+	}
+
 	.basic_table.full_width table {
 		width: 100%;
 	}
@@ -422,17 +428,29 @@
 		color: #CCC;
 	}
 
-	.basic_table th,
+	.basic_table th {
+		background: #EEE;
+	}
+
+	.basic_table[tabindex="0"]:focus thead th {
+		background: #E0E0E0;
+	}
+
 	.basic_table th a {
 		color: inherit;
-		background: #EEE;
 		text-decoration: none;
 	}
 
 	.basic_table th,
 	.basic_table td {
-		padding: 2px 4px;
+		padding: 0.3em 4px;
 		border: 1px;
+	}
+
+	.basic_table th {
+		padding-top: 0.5em;
+		padding-bottom: 0.5em;
+		text-align: left;
 	}
 
 	.basic_table td.no_results {
@@ -441,7 +459,7 @@
 	}
 
 	.basic_table tr.even {
-		background: #E0E0E0;
+		background: #F9F9F9;
 	}
 
 	.basic_table tr:hover {
