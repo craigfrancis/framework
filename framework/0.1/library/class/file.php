@@ -44,7 +44,7 @@
 							'file_missing_url' => NULL,
 							'image_type' => 'jpg',
 							'image_quality' => NULL,
-							'image_preserve_original' => false, // Ideally the image needs to be re-saved, ensuring no hacked files are uploaded and exposed on the website.
+							'image_preserve_original' => false, // Ideally the image needs to be re-saved, ensuring no hacked files are uploaded and exposed on the website, e.g. http://blog.portswigger.net/2016/12/bypassing-csp-using-polyglot-jpegs.html
 							'image_preserve_unsafe' => false,
 							'image_url_prefix' => '', // Could include the domain name (e.g. for email images).
 							'image_placeholder_url' => NULL, // If you want to show placeholder images, e.g. /a/img/place-holder/100x100.jpg
