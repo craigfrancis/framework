@@ -35,6 +35,8 @@
 
 // If we can auto continue (remember_browser), then maybe reset browser token on use?
 
+// https://github.com/enygma/gauth
+
 				debug($this->auth->session_limited_get('totp'));
 
 // See auth_reset_change_base...
