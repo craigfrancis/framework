@@ -293,7 +293,7 @@
 
 			}
 
-			protected function html_nav() {
+			public function html_nav() {
 
 				//--------------------------------------------------
 				// Back and next links.
@@ -356,7 +356,7 @@
 								$weekend = clone $jump_week;
 								$weekend->modify('+6 days');
 
-								$select_units[$week] = 'Week ' . $week . ' - ' . $jump_week->format('M jS') . ' to ' . $weekend->format('jS');
+								$select_units[$week] = $week . ' - ' . $jump_week->format('M jS') . ' to ' . $weekend->format('jS');
 
 								$jump_week->modify('+1 week');
 
