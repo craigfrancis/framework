@@ -348,7 +348,9 @@
 
 			$key_public = sodium_crypto_box_publickey_from_secretkey($key_secret);
 
-			return sodium_crypto_box_seal_open($encrypted, $key_secret . $key_public);
+			$key = sodium_crypto_box_keypair_from_secretkey_and_publickey($key_secret, $key_public);
+
+			return sodium_crypto_box_seal_open($encrypted, $key);
 
 		}
 
@@ -405,11 +407,9 @@
 
 			$nonce = random_bytes(SODIUM_CRYPTO_BOX_NONCEBYTES);
 
-			$encrypted = sodium_crypto_box(
-					$input,
-					$nonce,
-					$sender_key_secret . $recipient_key_public
-				);
+			$key = sodium_crypto_box_keypair_from_secretkey_and_publickey($sender_key_secret, $recipient_key_public);
+
+			$encrypted = sodium_crypto_box($input, $nonce, $key);
 
 			return [$encrypted, $nonce];
 
@@ -417,11 +417,9 @@
 
 		private static function _decode_asymmetric_two_sodium($recipient_key_secret, $sender_key_public, $encrypted, $nonce) {
 
-			return sodium_crypto_box_open(
-					$encrypted,
-					$nonce,
-					$recipient_key_secret . $sender_key_public
-				);
+			$key = sodium_crypto_box_keypair_from_secretkey_and_publickey($recipient_key_secret, $sender_key_public);
+
+			return sodium_crypto_box_open($encrypted, $nonce, $key);
 
 		}
 
