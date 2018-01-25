@@ -47,6 +47,8 @@
 							'select_year' => request('year'),
 							'select_week' => request('week'),
 							'select_month' => request('month'),
+							'select_preserve' => true,
+							'select_preserve_name' => 'calendar_selection',
 							'range_start' => '-1 week',
 							'range_end' => '+2 weeks',
 							'base_url' => NULL,
@@ -70,6 +72,24 @@
 					}
 
 					$this->config = array_merge($default_config, $config);
+
+				//--------------------------------------------------
+				// Select preserve
+
+					if ($this->config['select_preserve']) {
+
+						$select = array_filter(['year' => $this->config['select_year'], 'week' => $this->config['select_week'], 'month' => $this->config['select_month']]);
+
+						if (count($select) > 0) {
+							session::set($this->config['select_preserve_name'], $select);
+						} else {
+							$select = session::get($this->config['select_preserve_name']);
+							if (isset($select['year'])) $this->config['select_year'] = $select['year'];
+							if (isset($select['week'])) $this->config['select_week'] = $select['week'];
+							if (isset($select['month'])) $this->config['select_month'] = $select['month'];
+						}
+
+					}
 
 				//--------------------------------------------------
 				// Get the starting time-stamp for this week
