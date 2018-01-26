@@ -18,6 +18,7 @@
 		# Header always set X-XSS-Protection: "1; mode=block"
 		Header always set X-Content-Type-Options: nosniff
 		Header always set Strict-Transport-Security: "max-age=31536000; includeSubDomains; preload"
+		Header always set Cache-Control "immutable" env=immutable
 
 		RewriteEngine on
 
@@ -30,7 +31,7 @@
 		RewriteRule ^(.*)$ %{DOCUMENT_ROOT}$1
 
 		RewriteCond $1/$2 -f
-		RewriteRule ^(.*)/[0-9]+-([^/]+)$ $1/$2 [L]
+		RewriteRule ^(.*)/[0-9]+-([^/]+)$ $1/$2 [L,env=immutable]
 
 		RewriteCond %{REQUEST_FILENAME} !^/a/files/
 		RewriteCond %{REQUEST_FILENAME} !-d
