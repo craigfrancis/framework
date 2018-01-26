@@ -352,7 +352,7 @@
 	// Tracking
 
 		if (config::get('output.tracking') === NULL) {
-			config::set_default('output.tracking', (SERVER == 'live'));
+			config::set('output.tracking', (SERVER == 'live'));
 		}
 
 	//--------------------------------------------------
