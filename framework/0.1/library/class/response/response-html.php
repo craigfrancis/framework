@@ -1085,6 +1085,9 @@
 					$favicon_url = config::get('output.favicon_url');
 
 					if ($favicon_url !== NULL) {
+						if (config::get('output.timestamp_url', false)) {
+							$favicon_url = timestamp_url($favicon_url);
+						}
 						$html .= "\n\t" . '<link rel="shortcut icon" type="image/x-icon" href="' . html($favicon_url) . '" />';
 					}
 
