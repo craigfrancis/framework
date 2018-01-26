@@ -53,6 +53,25 @@
 		$config['url.default_format'] = 'absolute';
 
 	//--------------------------------------------------
+	// Tracking
+
+		$config['output.tracking'] = NULL;
+
+		if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
+
+			$config['output.tracking'] = false;
+
+		} else if (function_exists('getallheaders')) {
+
+			foreach (getallheaders() as $name => $value) {
+				if (strtolower($name) == 'dnt' && $value == 1) {
+					$config['output.tracking'] = false;
+				}
+			}
+
+		}
+
+	//--------------------------------------------------
 	// App config
 
 		$include_path = APP_ROOT . '/library/setup/config.php';
@@ -332,20 +351,8 @@
 	//--------------------------------------------------
 	// Tracking
 
-		config::set_default('output.tracking', (SERVER == 'live'));
-
-		if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
-
-			config::set('output.tracking', false);
-
-		} else if (function_exists('getallheaders')) {
-
-			foreach (getallheaders() as $name => $value) {
-				if (strtolower($name) == 'dnt' && $value == 1) {
-					config::set('output.tracking', false);
-				}
-			}
-
+		if (config::get('output.tracking') === NULL) {
+			config::set_default('output.tracking', (SERVER == 'live'));
 		}
 
 	//--------------------------------------------------
