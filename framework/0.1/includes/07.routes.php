@@ -366,7 +366,7 @@
 
 					mime_set($mime_types[$route_ext]);
 
-					http_cache_headers((60*60*24*365), $files_mtime, $files_mtime); // Will exit if browser cache has not modified since
+					http_cache_headers((60*60*24*365), $files_mtime, $files_mtime, NULL, true); // Will exit if browser cache has not modified since
 
 				//--------------------------------------------------
 				// Compression

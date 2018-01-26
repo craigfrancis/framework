@@ -1341,7 +1341,7 @@
 //--------------------------------------------------
 // Cache headers
 
-	function http_cache_headers($expires, $last_modified = NULL, $etag = NULL, $pragma = NULL) {
+	function http_cache_headers($expires, $last_modified = NULL, $etag = NULL, $pragma = NULL, $immutable = false) {
 
 		if ($expires <= 0 && $expires !== NULL) {
 
@@ -1359,7 +1359,7 @@
 
 			if ($expires > 0) {
 
-				header('Cache-Control: ' . head($pragma) . ', max-age=' . head($expires)); // https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
+				header('Cache-Control: ' . head($pragma) . ', max-age=' . head($expires) . ($immutable ? ', immutable' : '')); // https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
 				header('Expires: ' . head(gmdate('D, d M Y H:i:s', time() + $expires)) . ' GMT');
 
 			}
