@@ -188,6 +188,10 @@
 				}
 			}
 
+			public function form_button_name($name) {
+				$this->form_button_name = $name;
+			}
+
 			public function form_passive_set($passive, $method = NULL) { // Always considered as "submitted" and drops the "csrf" check... good for a search form.
 				$this->form_passive = ($passive == true);
 				$this->form_button_name = ($this->form_passive ? NULL : 'button'); // As passive we don't need to know which button is pressed (just adds cruft to url)
@@ -1097,10 +1101,12 @@
 
 						$input_fields['act'] = $this->form_id;
 
-						if ($this->form_method == 'POST') {
-							$input_fields['csrf'] = csrf_challenge_hash($this->form_action, $this->csrf_token);
-						} else {
-							$input_fields['csrf'] = $this->csrf_token;
+						if ($this->csrf_error_html != NULL) {
+							if ($this->form_method == 'POST') {
+								$input_fields['csrf'] = csrf_challenge_hash($this->form_action, $this->csrf_token);
+							} else {
+								$input_fields['csrf'] = $this->csrf_token;
+							}
 						}
 
 					}
