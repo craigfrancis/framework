@@ -83,6 +83,22 @@
 				}
 
 			//--------------------------------------------------
+			// Check it has been defined in "manifest.json"
+
+				if (config::get('debug.level') >= 3) {
+
+					$manifest_path = PUBLIC_ROOT . '/manifest.json';
+
+					if (is_file($manifest_path)) {
+						$manifest_data = json_decode(file_get_contents($manifest_path), true);
+						if (isset($manifest_data['cookies']) && !isset($manifest_data['cookies'][$variable])) {
+							exit_with_error('The "' . $variable . '" cookie has not been defined in the manifest.json file', $manifest_path);
+						}
+					}
+
+				}
+
+			//--------------------------------------------------
 			// Set
 
 				$native = (version_compare(PHP_VERSION, '5.2.0', '>=')); // The HttpOnly parameter was added in 5.2.0
