@@ -7,8 +7,6 @@
 	// 	$encrypted = encryption::encode($message, $key);
 	// 	$decrypted = encryption::decode($encrypted, $key);
 	//
-	// 	debug($decrypted);
-	//
 	// //--------------------------------------------------
 	//
 	// 	$key = encryption::key_symmetric_create();
@@ -17,16 +15,12 @@
 	// 	$encrypted = encryption::encode($message, $key, $associated_data);
 	// 	$decrypted = encryption::decode($encrypted, $key, $associated_data);
 	//
-	// 	debug($decrypted);
-	//
 	// //--------------------------------------------------
 	//
 	// 	list($key_public, $key_secret) = encryption::key_asymmetric_create();
 	//
 	// 	$encrypted = encryption::encode($message, $key_public);
 	// 	$decrypted = encryption::decode($encrypted, $key_secret);
-	//
-	// 	debug($decrypted);
 	//
 	// //--------------------------------------------------
 	//
@@ -35,8 +29,6 @@
 	//
 	// 	$encrypted = encryption::encode($message, $key2_public, $key1_secret);
 	// 	$decrypted = encryption::decode($encrypted, $key2_secret, $key1_public);
-	//
-	// 	debug($decrypted);
 	//
 	// //--------------------------------------------------
 	//
