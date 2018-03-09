@@ -396,6 +396,8 @@
 			if (!in_array($key, array('db.link', 'output.response', 'debug.time_init', 'debug.time_check', 'debug.time_query', 'debug.units'))) {
 				if (in_array($key, array('db.pass', 'debug.notes'))) {
 					$value_html = '???';
+				} else if (is_object($value)) {
+					$value_html = get_class($value) . '()';
 				} else {
 					$value_html = html(debug_dump($value, 1));
 				}
