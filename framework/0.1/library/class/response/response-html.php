@@ -1451,22 +1451,25 @@
 				// JavaScript enabled
 
 					$js_state = request('js', 'GET');
+					$js_cookie = cookie::get('js');
 
 					if ($js_state == 'disabled') {
 
-						cookie::set('js_disable', 'true');
+						cookie::set('js', 'false');
 
 						$this->js_enabled = false;
 
 					} else if ($js_state != '') {
 
-						cookie::delete('js_disable');
+						if ($js_cookie !== NULL) { // Only delete if set.
+							cookie::delete('js');
+						}
 
 						$this->js_enabled = true;
 
 					} else {
 
-						$this->js_enabled = (cookie::get('js_disable') != 'true');
+						$this->js_enabled = ($js_cookie != 'false');
 
 					}
 
