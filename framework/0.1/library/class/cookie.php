@@ -85,7 +85,7 @@
 			//--------------------------------------------------
 			// Check it has been defined in "manifest.json"
 
-				if (config::get('debug.level') >= 3) {
+				if (config::get('debug.level') >= 3 && $value !== NULL) { // Don't test when deleting the cookie
 
 					$manifest_path = PUBLIC_ROOT . '/manifest.json';
 
