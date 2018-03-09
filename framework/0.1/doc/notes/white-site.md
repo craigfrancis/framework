@@ -134,7 +134,7 @@ Set the [database config](../../doc/system/database.md):
 
 		$config['db.host'] = 'localhost';
 		$config['db.user'] = 'stage';
-		$config['db.pass'] = 'XXX';
+		$config['db.pass'] = 'password';
 		$config['db.name'] = 's-company-project';
 
 		$config['db.prefix'] = 'tbl_';

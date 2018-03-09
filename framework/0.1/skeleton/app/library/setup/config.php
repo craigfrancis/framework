@@ -20,7 +20,7 @@
 
 			// $config['db.host'] = 'localhost';
 			// $config['db.user'] = 'stage';
-			// $config['db.pass'] = 'st8ge';
+			// $config['db.pass'] = 'password';
 			// $config['db.name'] = 's-company-project';
 
 			$config['db.prefix'] = 'tpl_';
@@ -54,7 +54,7 @@
 
 			// $config['db.host'] = 'localhost';
 			// $config['db.user'] = 'demo';
-			// $config['db.pass'] = 'dem0';
+			// $config['db.pass'] = 'password';
 			// $config['db.name'] = 's-company-project';
 
 			$config['db.prefix'] = 'tpl_';
