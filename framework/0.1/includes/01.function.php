@@ -1500,7 +1500,7 @@
 		$path = PRIVATE_ROOT . '/tmp/' . safe_file_name($folder);
 
 		if (!is_dir($path)) {
-			@mkdir($path, 0777);
+			@mkdir($path, 0777, true);
 			@chmod($path, 0777); // Probably created with web server user, but needs to be edited/deleted with user account
 		}
 
