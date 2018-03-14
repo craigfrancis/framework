@@ -23,6 +23,7 @@
 
 					$this->type = 'url';
 					$this->input_type = 'text'; // Not "url", as it requires a "https?://" prefix, which most people don't bother with.
+					$this->input_mode = 'url';
 
 			}
 
@@ -83,17 +84,6 @@
 				}
 
 			}
-
-		//--------------------------------------------------
-		// Attributes
-
-			// protected function _input_attributes() {
-			// 	$attributes = parent::_input_attributes();
-			// 	$attributes['novalidate'] = 'novalidate'; // Only works on the <form>
-			// 	$attributes['pattern'] = '^.*$'; // Is ignored when type="url"
-			// 	$attributes['inputmode'] = 'url'; // Attribute inputmode not allowed on element input at this point.
-			// 	return $attributes;
-			// }
 
 	}
 

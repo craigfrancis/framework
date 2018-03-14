@@ -11,6 +11,7 @@
 			protected $max_length = NULL;
 			protected $placeholder = NULL;
 			protected $input_type = 'text';
+			protected $input_mode = NULL;
 			protected $input_size = NULL;
 			protected $input_list_id = NULL;
 			protected $input_list_options = NULL;
@@ -204,6 +205,10 @@
 
 				if ($this->input_type !== NULL) {
 					$attributes['type'] = $this->input_type;
+				}
+
+				if ($this->input_mode !== NULL) {
+					$attributes['inputmode'] = $this->input_mode; // https://html.spec.whatwg.org/multipage/interaction.html#input-modalities:-the-inputmode-attribute
 				}
 
 				if ($this->input_size !== NULL) {

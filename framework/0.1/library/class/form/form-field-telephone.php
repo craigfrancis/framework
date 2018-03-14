@@ -23,6 +23,7 @@
 
 					$this->type = 'telephone';
 					$this->input_type = 'tel'; // Still allow characters (e.g. "0000 000000 Ext 00")
+					$this->input_mode = 'tel';
 
 			}
 

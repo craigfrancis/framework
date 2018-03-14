@@ -40,6 +40,7 @@
 
 					$this->type = 'number';
 					$this->input_type = 'number';
+					$this->input_mode = 'decimal'; // Can be 'numeric' when using step_value_set().
 
 			}
 
@@ -130,6 +131,7 @@
 				}
 
 				$this->step_value = $step;
+				$this->input_mode = (floor($step) != $step ? 'decimal' : 'numeric');
 
 			}
 
