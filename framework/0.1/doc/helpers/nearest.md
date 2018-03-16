@@ -21,6 +21,8 @@ To find the records closest to a particular location, just call:
 
 	$results = $nearest->locations_nearest($postcode);
 
+	$results = $nearest->locations_nearest(['latitude' => $latitude, 'longitude' => $longitude]);
+
 By default this will use the Google Geocode service.
 
 Where the config could be something like:
