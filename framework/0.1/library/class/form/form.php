@@ -114,11 +114,13 @@
 
 						if ($dest == 'referrer') {
 							$referrer = config::get('request.referrer');
-							if (substr($referrer, 0, 1) == '/') { // Must have a value, and must be for the same site. Where a scheme-relative URL "//example.com" won't work, as the domain would be prefixed.
+							if (substr($referrer, 0, 1) == '/') { // Must have a value, and must be for this site. Where a scheme-relative URL "//example.com" won't work, as the domain would be prefixed.
 								$dest = url($referrer, array('dest' => NULL)); // If the previous page also had a "dest" value, drop it (stop loop)
 							} else {
 								$dest = NULL; // Not provided, e.g. user re-loaded page
 							}
+						} else if (substr($dest, 0, 3) == '%2F') {
+							$dest = urldecode($dest); // In a 'passive' form, the form isn't 'submitted', so hidden_value() isn't used, and the URL-encoded value (needed to overcome limits on hidden input fields), is not decoded.
 						}
 
 						$this->hidden_value_set('dest', $dest);
