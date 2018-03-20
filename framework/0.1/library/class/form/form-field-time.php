@@ -21,6 +21,7 @@
 									'pad_char' => '0',
 									'label_aria' => 'Hour',
 									'label' => '',
+									'input_required' => true,
 									'options' => NULL,
 								),
 							'I' => array(
@@ -29,6 +30,7 @@
 									'pad_char' => '0',
 									'label_aria' => 'Minute',
 									'label' => '',
+									'input_required' => false,
 									'options' => NULL,
 								),
 							'S' => array(
@@ -37,6 +39,7 @@
 									'pad_char' => '0',
 									'label_aria' => 'Second',
 									'label' => '',
+									'input_required' => false,
 									'options' => NULL,
 								));
 

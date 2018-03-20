@@ -29,6 +29,7 @@
 									'pad_char' => '0',
 									'label_aria' => 'Day',
 									'label' => '',
+									'input_required' => true,
 									'options' => NULL,
 								),
 							'M' => array(
@@ -37,6 +38,7 @@
 									'pad_char' => '0',
 									'label_aria' => 'Month',
 									'label' => '',
+									'input_required' => true,
 									'options' => NULL,
 								),
 							'Y' => array(
@@ -45,6 +47,7 @@
 									'pad_char' => '0',
 									'label_aria' => 'Year',
 									'label' => '',
+									'input_required' => true,
 									'options' => NULL,
 								));
 

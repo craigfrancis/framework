@@ -444,6 +444,10 @@
 					}
 				}
 
+				if ($input_config['input_required'] === false) { // So the Minute/Second time fields can be left blank, to be XX:00:00.
+					$attributes['required'] = NULL;
+				}
+
 				if ($this->type == 'date' && $this->autocomplete === 'bday') {
 					$field_name = array('D' => 'day', 'M' => 'month', 'Y' => 'year');
 					$attributes['autocomplete'] = 'bday-' . $field_name[$field];
