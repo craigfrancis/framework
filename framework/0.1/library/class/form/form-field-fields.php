@@ -457,8 +457,10 @@
 
 					$html = html_tag('select', array_merge($this->_input_attributes(), $attributes));
 
-					$html .= '
+					if ($input_config['label'] !== NULL) {
+						$html .= '
 									<option value="">' . html($input_config['label']) . '</option>';
+					}
 
 					foreach ($input_config['options'] as $option_value => $option_text) {
 
