@@ -10,6 +10,7 @@
 			protected $options_info_id = array();
 			protected $options_info_html = NULL;
 			protected $options_disabled = NULL;
+			protected $options_class = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -44,6 +45,10 @@
 
 			public function options_disabled_set($options_disabled) {
 				$this->options_disabled = $options_disabled;
+			}
+
+			public function options_class_set($options_class) {
+				$this->options_class = $options_class;
 			}
 
 		//--------------------------------------------------
@@ -196,6 +201,10 @@
 
 				if (isset($this->options_disabled[$key]) && $this->options_disabled[$key] === true) {
 					$attributes['disabled'] = 'disabled';
+				}
+
+				if (isset($this->options_class[$key])) {
+					$attributes['class'] = $this->options_class[$key];
 				}
 
 				if (in_array($attributes['value'], $this->value_print_cache)) {
