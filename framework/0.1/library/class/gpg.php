@@ -11,9 +11,9 @@
 
 			private $gpg_command;
 			private $gpg_zip_command;
-			private $default_pass_phrase = '12345';
 			private $private_key_name = NULL;
 			private $private_key_email = NULL;
+			private $config_path = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -42,6 +42,7 @@
 
 			public function config_path_set($path) {
 				if (is_dir($path)) {
+					$this->config_path = $path;
 					putenv('GNUPGHOME=' . $path);
 				} else {
 					exit_with_error('Cannot find GPG configuration folder: ' . $path);
@@ -79,6 +80,17 @@
 				} else {
 					return NULL;
 				}
+			}
+
+		//--------------------------------------------------
+		// Pass phrase
+
+			public function pass_phrase_path_get() {
+				$pass_phrase_path = $this->config_path . '/passphrase.txt';
+				if (!is_file($pass_phrase_path)) {
+					file_put_contents($pass_phrase_path, random_key(15));
+				}
+				return $pass_phrase_path;
 			}
 
 		//--------------------------------------------------
@@ -165,8 +177,8 @@
 
 				$result = $this->_exec('--list-keys ' . escapeshellarg($key));
 				foreach ($result['output'] as $line) {
-					if (preg_match('/^pub +[^\/]+\/([^ ]+) [0-9]{4}-[0-9]{2}-[0-9]{2}$/', $line, $matches)) {
-						return $matches[1];
+					if (preg_match('/^pub +([^\/]+\/)?([^ ]+) [0-9]{4}-[0-9]{2}-[0-9]{2}/', $line, $matches)) {
+						return true;
 					}
 				}
 
@@ -191,7 +203,7 @@
 					$key_config_content .= 'Name-Comment: N/A' . "\n";
 					$key_config_content .= 'Name-Email: ' . $key_email . "\n";
 					$key_config_content .= 'Expire-Date: 0' . "\n";
-					$key_config_content .= 'Passphrase: ' . $this->default_pass_phrase . "\n";
+					$key_config_content .= 'Passphrase: ' . trim(file_get_contents($this->pass_phrase_path_get())) . "\n";
 					$key_config_content .= '%commit' . "\n";
 
 					file_put_contents($key_config_path, $key_config_content);
@@ -220,10 +232,20 @@
 
 					$public_key_path = $this->public_key_path($key);
 					if ($public_key_path === NULL) {
+
 						exit_with_error('Invalid email address format for public key', $key);
+
 					} else if (is_file($public_key_path)) {
+
 						$result = $this->_exec('--import ' . escapeshellarg($public_key_path));
-						$result = $this->_exec('--batch --yes --passphrase ' . escapeshellarg($this->default_pass_phrase) . ' --local-user ' . escapeshellarg($this->private_key_email) . ' --sign-key ' . escapeshellarg($key));
+
+						$result = $this->_exec('--version | head -n 1 | grep \'^\\gpg.*1\\.[0-9]*\\.[0-9]*$\''); // Version 1 vs 2+
+						if (count($result['output']) > 0) {
+							$result = $this->_exec('--batch --yes --local-user ' . escapeshellarg($this->private_key_email) . ' --passphrase-file ' . escapeshellarg($this->pass_phrase_path_get()) . ' --sign-key ' . escapeshellarg($key));
+						} else {
+							$result = $this->_exec('--batch --yes --local-user ' . escapeshellarg($this->private_key_email) . ' --passphrase-file ' . escapeshellarg($this->pass_phrase_path_get()) . ' --pinentry-mode loopback --sign-key ' . escapeshellarg($key));
+						}
+
 					}
 
 					$key_exists = $this->_key_exists($key);
