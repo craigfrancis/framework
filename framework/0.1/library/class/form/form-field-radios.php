@@ -50,6 +50,10 @@
 					$attributes['disabled'] = 'disabled';
 				}
 
+				if (isset($this->options_class[$key])) {
+					$attributes['class'] = $this->options_class[$key];
+				}
+
 				$checked = in_array($attributes['value'], $this->value_print_cache); // Cannot be a strict check, as an ID from the db may be a string or int.
 
 				if ($key === NULL && count($this->value_print_cache) == 0) {
