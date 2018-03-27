@@ -228,7 +228,7 @@
 
 			public static function holidays_get() {
 
-				$holidays = config::get('cache.business_days');
+				$holidays = config::get('timestamp.holiday_cache');
 
 				if ($holidays === NULL) {
 
@@ -247,7 +247,7 @@
 						$holidays[] = $row['date'];
 					}
 
-					config::set('cache.business_days', $holidays);
+					config::set('timestamp.holiday_cache', $holidays);
 
 				}
 
