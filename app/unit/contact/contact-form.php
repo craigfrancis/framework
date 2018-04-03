@@ -17,6 +17,8 @@
 
 				$record = record_get(DB_PREFIX . 'log_contact');
 
+				$now = new timestamp();
+
 			//--------------------------------------------------
 			// Form setup
 
@@ -47,6 +49,16 @@
 			// Form submitted
 
 				if ($form->submitted()) {
+
+					//--------------------------------------------------
+					// Spam detection
+
+						if (is_spam_like($field_message->value_get())) {
+							$field_human = new form_field_checkbox($form, 'I am a Human', 'human_' . $now->format('Ymd'));
+							$field_human->db_field_set('human');
+							$field_human->text_values_set('true', 'false');
+							$field_human->required_error_set('This message looks like Spam, can you confirm you are human?');
+						}
 
 					//--------------------------------------------------
 					// Validation

@@ -37,6 +37,11 @@
 		border: 0;
 	}
 
+	abbr {
+		border: 0;
+		text-decoration: none;
+	}
+
 	p,
 	h1,
 	h2,
@@ -356,10 +361,6 @@
 		margin: 0 0 0 -11.5em;
 		padding: 3px 0 0 0;
 		text-align: right;
-	}
-
-	.basic_form .row .label abbr.required {
-		border: 0;
 	}
 
 	.basic_form .row.input_first .label {

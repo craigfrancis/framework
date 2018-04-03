@@ -706,6 +706,20 @@
                 "options": null,
                 "definition": "tinytext NOT NULL"
             },
+            "human": {
+                "type": "enum",
+                "length": 3,
+                "collation": "utf8_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": [
+                    "",
+                    "true",
+                    "false"
+                ],
+                "definition": "enum('','true','false') NOT NULL"
+            },
             "created": {
                 "type": "datetime",
                 "length": 19,
