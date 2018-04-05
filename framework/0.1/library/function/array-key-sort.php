@@ -17,7 +17,7 @@
 		}
 		uasort($array, array($array_key_sort, $type));
 		if ($sort_order == SORT_DESC) { // Sort type and order cannot be merged
-			$array = array_reverse($array);
+			$array = array_reverse($array, true);
 		}
 	}
 
