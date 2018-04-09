@@ -163,6 +163,7 @@
 							'pad_char' => '0',
 							'label' => '',
 							'label_aria' => '',
+							'input_required' => true,
 							'options' => NULL,
 						), $config);
 
