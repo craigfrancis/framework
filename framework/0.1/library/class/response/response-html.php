@@ -1564,10 +1564,25 @@
 
 						$output_xss_reflected = strtolower(config::get('output.xss_reflected', 'block'));
 
-						if ($output_xss_reflected == 'block') {
-							header('X-XSS-Protection: 1; mode=block');
-						} else if ($output_xss_reflected == 'filter') {
-							header('X-XSS-Protection: 1');
+						if ($output_xss_reflected == 'block' || $output_xss_reflected == 'filter') {
+
+							$header = 'X-XSS-Protection: 1';
+
+							if ($output_xss_reflected == 'block') {
+								$header .= '; mode=block';
+							}
+
+							$report_uri = config::get('output.xss_report', false);
+							if ($report_uri) {
+								if ($report_uri === true) {
+									$report_uri = gateway_url('xss-report');
+									$report_uri->scheme_set('https');
+								}
+								$header .= '; report=' . head($report_uri);
+							}
+
+							header($header);
+
 						}
 
 					//--------------------------------------------------
