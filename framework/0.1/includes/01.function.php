@@ -151,7 +151,12 @@
 		$html = '<' . html($tag);
 		foreach ($attributes as $name => $value) {
 			if ($value !== NULL) { // Allow numerical value 0 and empty string ""
-				$html .= ' ' . html(is_int($name) ? $value : $name) . '="' . html($value) . '"';
+				$name = (is_int($name) ? $value : $name);
+				if ($name == 'placeholder') {
+					$html .= ' ' . html($name) . '="' . preg_replace('/\r?\n/', '&#10;', html($value)) . '"'; // Support multi-line placeholder on textarea (not all attributes, as it's a slow RegExp, and Safari 11.1 does not support this).
+				} else {
+					$html .= ' ' . html($name) . '="' . html($value) . '"';
+				}
 			}
 		}
 		return $html . ($tag == 'input' || $tag == 'link' ? ' />' : '>');
