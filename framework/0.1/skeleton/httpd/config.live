@@ -75,4 +75,11 @@
 
 		php_admin_flag engine off
 
+		ForceType application/octet-stream
+		Header set Content-Dispositon attachment
+		<FilesMatch "\.(?i:gif|jpe?g|png)$">
+			ForceType none
+			Header unset Content-Disposition
+		</FilesMatch>
+
 	</Directory>
