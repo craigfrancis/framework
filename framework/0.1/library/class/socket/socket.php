@@ -665,7 +665,12 @@ if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: su
 							$debug .= '--------------------------------------------------' . "\n\n";
 						}
 
-						$debug .= $request . "\n\n";
+						$cut_request = substr($request, 0, 65000); // Request might include base64 encoded files, so could be quite large.
+						if (strlen($cut_request) < strlen($request)) {
+							$cut_request .= '...';
+						}
+
+						$debug .= $cut_request . "\n\n";
 						$debug .= '--------------------------------------------------' . "\n\n";
 						$debug .= $this->response_full . "\n\n";
 						$debug .= '--------------------------------------------------' . "\n";
