@@ -104,11 +104,16 @@
 			'script-src'   => array("'self'"),
 		);
 
+	if ($config['output.tracking'] !== false) {
+		$config['output.csp_directives']['script-src'][] = 'https://www.google-analytics.com';
+		$config['output.csp_directives']['connect-src'][] = 'https://www.google-analytics.com';
+	}
+
 //--------------------------------------------------
 // Tracking
 
-	$config['tracking.ga_code'] = 'UA-309730-8';
-	// $config['tracking.js_path'] = '/a/js/analytics.js';
+	// $config['tracking.ga_code'] = 'UA-000000-0';
+	$config['tracking.js_path'] = '/a/js/analytics.js';
 
 //--------------------------------------------------
 // Pagination
