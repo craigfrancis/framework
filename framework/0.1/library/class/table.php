@@ -364,6 +364,17 @@
 				$this->headings[$heading_ref[0]][$heading_ref[1]][$field] = $value;
 			}
 
+			public function heading_row_get($id = NULL) {
+				if ($id === NULL) {
+					$id = $this->heading_id;
+				}
+				if (isset($this->headings[$id])) {
+					return $this->headings[$id];
+				} else {
+					return NULL;
+				}
+			}
+
 			public function heading_row_end() {
 				$this->heading_id++;
 			}
