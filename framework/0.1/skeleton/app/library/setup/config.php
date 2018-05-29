@@ -95,10 +95,7 @@
 		//--------------------------------------------------
 		// General
 
-			$config['output.protocols'] = array('http', 'https');
 			$config['output.domain'] = 'www.example.com';
-
-			// $config['cookie.prefix'] = '__Host-'; // A `Secure` cookie, with no `Domain` attribute
 
 	}
 
@@ -113,7 +110,12 @@
 //--------------------------------------------------
 // Security
 
+	// $config['cookie.prefix'] = '__Host-'; // A `Secure` cookie, with no `Domain` attribute
+
+	$config['output.protocols'] = array('http', 'https');
+
 	$config['output.framing'] = 'DENY'; // SAMEORIGIN or ALLOW
+
 	$config['output.xss_reflected'] = 'block';
 
 	// $config['output.pkp_enforced'] = false;
@@ -136,8 +138,14 @@
 			'script-src'  => array("'self'"),
 		);
 
-			// 'script-src'  => array("'self'", 'https://www.google-analytics.com'),
-			// 'connect-src' => array("'self'", 'https://www.google-analytics.com'),
+	// if ($config['output.tracking'] !== false) {
+	// 	$config['output.csp_directives']['script-src'][] = 'https://www.google-analytics.com';
+	// 	$config['output.csp_directives']['connect-src'][] = 'https://www.google-analytics.com';
+	// }
+
+	if (SERVER != 'stage') {
+		$config['output.ct_enabled'] = true;
+	}
 
 //--------------------------------------------------
 // Tracking

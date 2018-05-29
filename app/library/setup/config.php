@@ -70,7 +70,6 @@
 		//--------------------------------------------------
 		// General
 
-			$config['output.protocols'] = array('https');
 			$config['output.domain'] = 'www.phpprime.com';
 
 	}
@@ -86,8 +85,16 @@
 //--------------------------------------------------
 // Security
 
-	// $config['output.framing'] = 'DENY'; // or SAMEORIGIN
-	// $config['output.referrer_policy'] = 'same-origin';
+	$config['cookie.prefix'] = '__Host-'; // A `Secure` cookie, with no `Domain` attribute
+
+	$config['output.protocols'] = array('https');
+
+	$config['output.framing'] = 'DENY'; // or SAMEORIGIN
+
+	$config['output.fp_enabled'] = true;
+
+	$config['output.referrer_policy'] = 'same-origin';
+
 	$config['output.xss_reflected'] = 'block';
 
 	$config['output.fp_enabled'] = true;
@@ -107,6 +114,10 @@
 	if ($config['output.tracking'] !== false) {
 		$config['output.csp_directives']['script-src'][] = 'https://www.google-analytics.com';
 		$config['output.csp_directives']['connect-src'][] = 'https://www.google-analytics.com';
+	}
+
+	if (SERVER != 'stage') {
+		$config['output.ct_enabled'] = true;
 	}
 
 //--------------------------------------------------
