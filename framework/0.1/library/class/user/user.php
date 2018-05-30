@@ -21,7 +21,7 @@
 			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $form_name = 'user_form';
 			protected $identification_type = 'email';
-			protected $cookie_login_last = 'user_last';
+			protected $cookie_login_last = 'u';
 			protected $remember_login = true;
 			protected $password_min_length = 5;
 			protected $password_reset_url = NULL;
