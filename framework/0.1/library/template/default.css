@@ -43,16 +43,19 @@
 		text-decoration: none;
 	}
 
-	p,
 	h1,
 	h2,
 	h3 {
 		margin: 0 0 1em 0;
 	}
 
+	p {
+		margin: 1em 0;
+	}
+
 	ul,
 	ol {
-		margin: 0 0 1em 2em;
+		margin: 1em 0 1em 2em;
 	}
 
 	p,
@@ -62,7 +65,7 @@
 	}
 
 	hr {
-		margin: 1em 0 1em 0;
+		margin: 1em 0;
 		border: 0;
 		border-bottom: 1px solid #000;
 	}
@@ -247,7 +250,7 @@
 
 	#page_message {
 		border: 1px solid #191D58;
-		margin: 1em 0 1em 0;
+		margin: 1em 0;
 		padding: 1em;
 		text-align: center;
 		color: #FFF;
