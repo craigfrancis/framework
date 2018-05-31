@@ -176,7 +176,10 @@
 					}
 				}
 			} else {
-				mkdir($temp_folder, 0777);
+				@mkdir($temp_folder, 0777);
+				if (!is_dir($path)) {
+					echo "  \033[1;31m" . 'Error:' . "\033[0m" . ' Cannot create the folder "' . $temp_folder . '"' . "\n";
+				}
 			}
 
 			@chmod($temp_folder, 0777);
