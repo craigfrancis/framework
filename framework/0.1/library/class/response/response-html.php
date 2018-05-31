@@ -1737,9 +1737,9 @@
 
 								debug_require_db_table(DB_PREFIX . 'system_report_csp', '
 										CREATE TABLE [TABLE] (
-											document_uri varchar(100) NOT NULL,
-											blocked_uri varchar(100) NOT NULL,
-											violated_directive varchar(100) NOT NULL,
+											document_uri varchar(80) NOT NULL,
+											blocked_uri varchar(80) NOT NULL,
+											violated_directive varchar(80) NOT NULL,
 											referrer tinytext NOT NULL,
 											original_policy text NOT NULL,
 											data_raw text NOT NULL,
