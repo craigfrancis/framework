@@ -112,30 +112,23 @@
 
 	// $config['cookie.prefix'] = '__Host-'; // A `Secure` cookie, with no `Domain` attribute
 
-	$config['output.protocols'] = array('http', 'https');
+	$config['output.protocols'] = array('http', 'https'); // If this only contains 'https', then https_only() returns true, and cookies get marked as "Secure"
 
 	$config['output.framing'] = 'DENY'; // SAMEORIGIN or ALLOW
 
 	$config['output.xss_reflected'] = 'block';
 
-	// $config['output.pkp_enforced'] = false;
-	// $config['output.pkp_report'] = true;
-	// $config['output.pkp_pins'] = array(
-	// 		'pin-sha256="XXX"',
-	// 		'pin-sha256="XXX"',
-	// 		'max-age=2592000',
-	// 		'includeSubDomains',
-	// 	);
-
 	$config['output.csp_enabled'] = true;
 	$config['output.csp_enforced'] = true;
 	$config['output.csp_directives'] = array(
-			'default-src' => array("'none'"),
-			'base-uri'    => array("'none'"),
-			'img-src'     => array("'self'"),
-			'style-src'   => array("'self'"),
-			'form-action' => array("'self'"),
-			'script-src'  => array("'self'"),
+			'default-src'  => array("'none'"),
+			'base-uri'     => array("'none'"),
+			'manifest-src' => array("'self'"),
+			'form-action'  => array("'self'"),
+			'img-src'      => array('/a/img/', 'data:'),
+			'style-src'    => array('/a/css/'),
+			'script-src'   => array('/a/js/', '/a/api/'),
+			'connect-src'  => array(),
 		);
 
 	// if ($config['output.tracking'] !== false) {
