@@ -47,10 +47,18 @@
 		ExpiresByType image/gif "access plus 12 months"
 		ExpiresByType image/jpeg "access plus 12 months"
 		ExpiresByType image/png "access plus 12 months"
+		ExpiresByType image/svg+xml "access plus 12 months"
 		ExpiresByType image/x-icon "access plus 12 months"
+		ExpiresByType video/webm "access plus 12 months"
+		ExpiresByType video/mp4 "access plus 12 months"
 		ExpiresByType text/css "access plus 12 months"
 		ExpiresByType application/javascript "access plus 12 months"
 		ExpiresByType application/font-woff "access plus 12 months"
+		ExpiresByType image/vnd.microsoft.icon "access plus 12 months"
+
+		<FilesMatch "manifest\.json$">
+			Header set Cache-Control "public, max-age=86400"
+		</FilesMatch>
 
 	</VirtualHost>
 
