@@ -9,6 +9,8 @@
 			private $message = NULL;
 			private $title = NULL;
 			private $description = NULL;
+			private $links = array();
+			private $meta = array();
 			private $page_id = NULL;
 			private $error = false;
 			private $variables = array();
@@ -352,6 +354,20 @@
 
 			public function description_get() {
 				return $this->description;
+			}
+
+		//--------------------------------------------------
+		// Link tags
+
+			public function link_set($rel, $href) {
+				$this->links[$rel] = $href;
+			}
+
+		//--------------------------------------------------
+		// Meta tags
+
+			public function meta_set($name, $content) {
+				$this->meta[$name] = $content;
 			}
 
 		//--------------------------------------------------
@@ -1066,7 +1082,7 @@
 					}
 
 					if ($canonical_url !== NULL) {
-						config::array_set('output.links', 'canonical', $canonical_url);
+						$this->link_set('canonical', $canonical_url);
 					}
 
 				//--------------------------------------------------
@@ -1094,8 +1110,10 @@
 				//--------------------------------------------------
 				// Output links (e.g. canonical/next/prev)
 
-					foreach (config::get('output.links', array()) as $name => $value) {
-						$html .= "\n\t" . '<link rel="' . html($name) . '" href="' . html($value) . '" />';
+					$links = array_merge(config::get('output.links', []), $this->links);
+
+					foreach ($links as $rel => $href) {
+						$html .= "\n\t" . '<link rel="' . html($rel) . '" href="' . html($href) . '" />';
 					}
 
 				//--------------------------------------------------
@@ -1113,10 +1131,15 @@
 				//--------------------------------------------------
 				// Meta
 
-					$meta = config::get('output.meta', array());
+					$meta = $this->meta;
 
 					if ($this->description) {
 						$meta['description'] = $this->description;
+					} else {
+						$description = config::get('output.description');
+						if ($description) {
+							$meta['description'] = $description;
+						}
 					}
 
 					if ($meta) {
@@ -1510,7 +1533,7 @@
 					// Twitter DNT
 
 						if (!config::get('output.tracking')) {
-							config::array_set('output.meta', 'twitter:dnt', 'on'); // https://support.twitter.com/articles/20169453
+							$this->meta_set('twitter:dnt', 'on'); // https://support.twitter.com/articles/20169453
 						}
 
 				//--------------------------------------------------
