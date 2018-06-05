@@ -47,3 +47,14 @@ Update or compare against the 2 configuration files that list the database struc
 	./cli --upload=demo
 	./cli --upload=live
 
+---
+
+The following can be useful to check all fields in all of your databases.
+
+In this case, looking for field names containing "ip", which have a length less than 50.
+
+	for F in */app/library/setup/database.txt; do
+	  echo;
+	  echo $F;
+	  php -r "\$tables = json_decode(file_get_contents('$F'), true); foreach (\$tables as \$name => \$table) { foreach (\$table['fields'] as \$field => \$info) { if (strpos(\$field, 'ip') !== false && \$info['length'] < 50) echo '  ' . \$name . '.' .  \$field . ' = ' . \$info['type'] . '(' . \$info['length'] . ')' . \"\n\"; }  }"
+	done
