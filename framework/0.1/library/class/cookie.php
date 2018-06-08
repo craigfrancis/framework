@@ -89,11 +89,10 @@
 if (SERVER != 'live' || config::get('debug.level') > 0) { // TODO: Cookie checks added 2018-06-08, use on Live when happy it's working as expected.
 
 				$invalid_characters = ",; \t\r\n\v\f"; // Vertical Tabulation "\v" == "\013" or "\u000b"; and Form Feed "\f" == "\014"
-				$invalid_characters_name = '=' . $invalid_characters;
 
 				if (strlen($variable) == 0) {
 					exit_with_error('Cannot set a cookie with a blank name', json_encode($value) . "\n\n" . debug_dump($config));
-				} else if (($char = strpbrk($variable, $invalid_characters_name)) !== false) {
+				} else if (($char = strpbrk($variable, '=' . $invalid_characters)) !== false) {
 					exit_with_error('Cookie name ' . json_encode($variable) . ' cannot contain ' . json_encode(substr($char, 0, 1)));
 				}
 
