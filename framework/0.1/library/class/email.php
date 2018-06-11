@@ -789,6 +789,7 @@
 							$template_html .= '<head>' . "\n";
 							$template_html .= '	<meta charset="' . html(config::get('output.charset')) . '" />' . "\n";
 							$template_html .= '	<meta name="viewport" content="width=device-width, initial-scale=1" />' . "\n";
+							$template_html .= '	<meta name="x-apple-disable-message-reformatting" />' . "\n";
 
 							if ($subject != '') {
 								$template_html .= '	<title>[SUBJECT]</title>' . "\n";
