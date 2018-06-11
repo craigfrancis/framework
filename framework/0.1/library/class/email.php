@@ -788,6 +788,7 @@
 							$template_html .= '<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">' . "\n";
 							$template_html .= '<head>' . "\n";
 							$template_html .= '	<meta charset="' . html(config::get('output.charset')) . '" />' . "\n";
+							$template_html .= '	<meta name="viewport" content="width=device-width, initial-scale=1" />' . "\n";
 
 							if ($subject != '') {
 								$template_html .= '	<title>[SUBJECT]</title>' . "\n";
