@@ -41,7 +41,6 @@
 		SSLEngine On
 		SSLCertificateFile /etc/apache2/tls/code-poets.co.uk.crt
 		SSLCertificateKeyFile /etc/apache2/tls/code-poets.co.uk.key
-		SSLCertificateChainFile /etc/apache2/tls/code-poets.co.uk.chn
 
 		AddDefaultCharset UTF-8
 		AddCharset UTF-8 .css
