@@ -80,8 +80,12 @@
 				//--------------------------------------------------
 				// Name
 
-					if ($name === NULL) {
+					if ($name == '') {
 						$name = substr(human_to_ref($label), 0, 30);
+						if ($name == '') {
+							report_add('Cannot have a field with no name.', 'error'); // TODO: Change to an exit_with_error
+							// exit_with_error('Cannot have a field with no name.');
+						}
 					}
 
 					$name_original = $name;
