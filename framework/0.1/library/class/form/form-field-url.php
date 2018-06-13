@@ -16,12 +16,11 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup_text($form, $label, $name);
+					$this->setup_text($form, $label, $name, 'url');
 
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->type = 'url';
 					$this->input_type = 'text'; // Not "url", as it requires a "https?://" prefix, which most people don't bother with.
 					$this->input_mode = 'url';
 

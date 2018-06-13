@@ -18,15 +18,15 @@
 		// Setup
 
 			public function __construct($form, $label, $name = NULL) {
-				$this->setup_number($form, $label, $name);
+				$this->setup_number($form, $label, $name, 'number');
 			}
 
-			protected function setup_number($form, $label, $name = NULL) {
+			protected function setup_number($form, $label, $name, $type) {
 
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup_text($form, $label, $name);
+					$this->setup_text($form, $label, $name, $type);
 
 				//--------------------------------------------------
 				// Clean input value
@@ -38,7 +38,6 @@
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->type = 'number';
 					$this->input_type = 'number';
 					$this->input_mode = 'decimal'; // Can be 'numeric' when using step_value_set().
 

@@ -10,12 +10,7 @@
 				//--------------------------------------------------
 				// Perform the select field setup
 
-					$this->setup_select($form, $label, $name);
-
-				//--------------------------------------------------
-				// Additional field configuration
-
-					$this->type = 'radios';
+					$this->setup_select($form, $label, $name, 'radios');
 
 			}
 

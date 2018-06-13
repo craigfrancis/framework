@@ -10,12 +10,11 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup_text($form, $label, $name);
+					$this->setup_text($form, $label, $name, 'password');
 
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->type = 'password';
 					$this->input_type = 'password';
 
 			}

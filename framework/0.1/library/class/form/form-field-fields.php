@@ -23,15 +23,15 @@
 		// Setup
 
 			public function __construct($form, $label, $name = NULL) {
-				$this->setup_fields($form, $label, $name);
+				$this->setup_fields($form, $label, $name, 'fields');
 			}
 
-			protected function setup_fields($form, $label, $name) {
+			protected function setup_fields($form, $label, $name, $type) {
 
 				//--------------------------------------------------
 				// General setup
 
-					$this->setup($form, $label, $name);
+					$this->setup($form, $label, $name, $type);
 
 				//--------------------------------------------------
 				// Value
@@ -63,11 +63,6 @@
 					}
 
 					$this->value_provided = NULL; // Reset after initial value_set (calling again will then be 'provided')... but date/time fields might change (via setup_fields), or NULL will worked out during required_error_set_html (after input_add).
-
-				//--------------------------------------------------
-				// Default configuration
-
-					$this->type = 'fields';
 
 			}
 

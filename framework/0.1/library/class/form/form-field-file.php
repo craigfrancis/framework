@@ -20,25 +20,20 @@
 		// Setup
 
 			public function __construct($form, $label, $name = NULL) {
-				$this->setup_file($form, $label, $name);
+				$this->setup_file($form, $label, $name, 'file');
 			}
 
-			protected function setup_file($form, $label, $name = NULL) {
+			protected function setup_file($form, $label, $name, $type) {
 
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup($form, $label, $name);
+					$this->setup($form, $label, $name, $type);
 
 				//--------------------------------------------------
 				// Form encoding
 
 					$this->form->form_attribute_set('enctype', 'multipart/form-data');
-
-				//--------------------------------------------------
-				// Additional field configuration
-
-					$this->type = 'file';
 
 				//--------------------------------------------------
 				// Newly uploaded files

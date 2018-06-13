@@ -43,7 +43,7 @@
 									'options' => NULL,
 								));
 
-					$this->setup_fields($form, $label, $name);
+					$this->setup_fields($form, $label, $name, 'time');
 
 					$this->input_order_set(config::get('form.time_input_order', array('H', 'I'))); // Could also be array('H', 'I', 'S')
 
@@ -60,11 +60,6 @@
 							}
 						}
 					}
-
-				//--------------------------------------------------
-				// Default configuration
-
-					$this->type = 'time';
 
 			}
 

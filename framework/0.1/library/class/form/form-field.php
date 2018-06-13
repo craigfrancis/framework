@@ -56,10 +56,10 @@
 		// Setup
 
 			public function __construct($form, $label, $name = NULL) {
-				$this->setup($form, $label, $name);
+				$this->setup($form, $label, $name, 'unknown');
 			}
 
-			protected function setup($form, $label, $name) {
+			protected function setup($form, $label, $name, $type) {
 
 				//--------------------------------------------------
 				// Add this field to the form, and return a "UID"
@@ -82,9 +82,12 @@
 
 					if ($name == '') {
 						$name = substr(human_to_ref($label), 0, 30);
-						if ($name == '') {
-							report_add('Cannot have a field with no name.', 'error'); // TODO: Change to an exit_with_error
-							// exit_with_error('Cannot have a field with no name.');
+						if ($name == '' && !in_array($type, ['info'])) {
+							if (SERVER == 'stage') {
+								exit_with_error('Cannot have a field with no name.', $type);
+							} else {
+								report_add('Cannot have a field with no name.', 'error'); // TODO: Change to an exit_with_error
+							}
 						}
 					}
 
@@ -105,6 +108,8 @@
 					$this->form_submitted = $form->submitted();
 
 					$this->id = 'fld_' . human_to_ref($this->name);
+
+					$this->type = $type;
 
 					$this->label_html = $label_html;
 					$this->label_prefix_html = $form->label_prefix_get_html();

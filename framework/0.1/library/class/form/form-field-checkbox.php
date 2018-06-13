@@ -16,7 +16,7 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup_text($form, $label, $name);
+					$this->setup_text($form, $label, $name, 'check');
 
 				//--------------------------------------------------
 				// Value
@@ -29,7 +29,6 @@
 				// Additional field configuration
 
 					$this->max_length = -1; // Bypass the _post_validation on the text field (not used)
-					$this->type = 'check';
 					$this->input_type = 'checkbox';
 
 			}

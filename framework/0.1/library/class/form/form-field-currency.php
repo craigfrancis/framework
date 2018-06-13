@@ -15,13 +15,12 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup_number($form, $label, $name);
+					$this->setup_number($form, $label, $name, 'currency');
 
 				//--------------------------------------------------
 				// Additional field configuration
 
 					$this->step_value = NULL;
-					$this->type = 'currency';
 					$this->input_type = 'text'; // Not type="number", from number field
 
 			}

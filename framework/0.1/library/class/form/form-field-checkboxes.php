@@ -20,12 +20,11 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup_select($form, $label, $name);
+					$this->setup_select($form, $label, $name, 'checkboxes');
 
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->type = 'checkboxes';
 					$this->multiple = true; // So functions like value_get will return all items
 
 			}

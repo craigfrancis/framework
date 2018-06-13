@@ -17,12 +17,11 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup_text($form, $label, $name);
+					$this->setup_text($form, $label, $name, 'email');
 
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->type = 'email';
 					$this->input_type = 'email';
 					$this->input_mode = 'email';
 					$this->autocapitalize = false;

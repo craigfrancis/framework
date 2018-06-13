@@ -17,13 +17,12 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup_text($form, $label, $name);
+					$this->setup_text($form, $label, $name, 'postcode');
 
 				//--------------------------------------------------
 				// Additional field configuration
 
 					$this->max_length = 8; // Bypass required "max_length_set" call, and to set the <input maxlength="" />
-					$this->type = 'postcode';
 
 			}
 

@@ -22,7 +22,7 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup_text($form, $label, $name);
+					$this->setup_text($form, $label, $name, 'datetime');
 
 				//--------------------------------------------------
 				// Clean input value
@@ -35,7 +35,6 @@
 				// Additional field configuration
 
 					$this->max_length = -1; // Bypass the _post_validation on the text field (not used)
-					$this->type = 'datetime';
 					$this->input_type = 'datetime-local';
 
 			}

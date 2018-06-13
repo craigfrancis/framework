@@ -11,25 +11,20 @@
 		// Setup
 
 			public function __construct($form, $label = 'html', $name = NULL) {
-				$this->setup_html($form, $label, $name);
+				$this->setup_html($form, $label, $name, 'html');
 			}
 
-			protected function setup_html($form, $label, $name = NULL) {
+			protected function setup_html($form, $label, $name, $type) {
 
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup($form, $label, $name);
+					$this->setup($form, $label, $name, $type);
 
 				//--------------------------------------------------
 				// Value
 
 					$this->value_html = '';
-
-				//--------------------------------------------------
-				// Additional field configuration
-
-					$this->type = 'html';
 
 			}
 

@@ -17,7 +17,6 @@
 				//--------------------------------------------------
 				// Fields setup
 
-					$this->type = 'date';
 					$this->fields = array('D', 'M', 'Y');
 					$this->format_html = array_merge(array('separator' => '/', 'D' => 'DD', 'M' => 'MM', 'Y' => 'YYYY'), config::get('form.date_format_html', array()));
 					$this->value_default = '0000-00-00';
@@ -51,7 +50,7 @@
 									'options' => NULL,
 								));
 
-					$this->setup_fields($form, $label, $name);
+					$this->setup_fields($form, $label, $name, 'date');
 
 					$this->input_single = config::get('form.date_input_single', false); // Use the standard 3 input fields by default, as most browsers still cannot do HTML5 type="date" fields.
 					$this->input_order_set(config::get('form.date_input_order', array('D', 'M', 'Y')));
@@ -67,11 +66,6 @@
 				// Value provided
 
 					$this->value_provided = (is_array($this->value) && ($this->value['D'] != 0 || $this->value['M'] != 0 || $this->value['Y'] != 0));
-
-				//--------------------------------------------------
-				// Default configuration
-
-					$this->type = 'date';
 
 			}
 

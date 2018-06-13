@@ -19,15 +19,15 @@
 		// Setup
 
 			public function __construct($form, $label, $name = NULL) {
-				$this->setup_select($form, $label, $name);
+				$this->setup_select($form, $label, $name, 'select');
 			}
 
-			protected function setup_select($form, $label, $name) {
+			protected function setup_select($form, $label, $name, $type) {
 
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup($form, $label, $name);
+					$this->setup($form, $label, $name, $type);
 
 				//--------------------------------------------------
 				// Value
@@ -64,11 +64,6 @@
 						}
 
 					}
-
-				//--------------------------------------------------
-				// Additional field configuration
-
-					$this->type = 'select';
 
 			}
 

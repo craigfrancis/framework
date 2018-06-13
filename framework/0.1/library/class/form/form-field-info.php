@@ -13,20 +13,19 @@
 		// Setup
 
 			public function __construct($form, $label = '', $name = NULL) {
-				$this->setup_info($form, $label, $name);
+				$this->setup_info($form, $label, $name, 'info');
 			}
 
-			protected function setup_info($form, $label, $name = NULL) {
+			protected function setup_info($form, $label, $name, $type) {
 
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup($form, $label, $name);
+					$this->setup($form, $label, $name, $type);
 
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->type = 'info';
 					$this->readonly = true; // Don't update if linked to a db field
 
 			}

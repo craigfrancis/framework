@@ -20,12 +20,7 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup_file($form, $label, $name);
-
-				//--------------------------------------------------
-				// Additional field configuration
-
-					$this->type = 'image';
+					$this->setup_file($form, $label, $name, 'image');
 
 				//--------------------------------------------------
 				// File values

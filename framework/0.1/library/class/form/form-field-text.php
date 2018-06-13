@@ -20,15 +20,15 @@
 		// Setup
 
 			public function __construct($form, $label, $name = NULL) {
-				$this->setup_text($form, $label, $name);
+				$this->setup_text($form, $label, $name, 'text');
 			}
 
-			protected function setup_text($form, $label, $name = NULL) {
+			protected function setup_text($form, $label, $name, $type) {
 
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup($form, $label, $name);
+					$this->setup($form, $label, $name, $type);
 
 				//--------------------------------------------------
 				// Value
@@ -61,7 +61,6 @@
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->type = 'text';
 					$this->input_type = 'text';
 
 			}

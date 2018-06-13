@@ -16,12 +16,11 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup_text($form, $label, $name);
+					$this->setup_text($form, $label, $name, 'telephone');
 
 				//--------------------------------------------------
 				// Additional field configuration
 
-					$this->type = 'telephone';
 					$this->input_type = 'tel'; // Still allow characters (e.g. "0000 000000 Ext 00")
 					$this->input_mode = 'tel';
 

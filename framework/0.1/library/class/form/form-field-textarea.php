@@ -16,12 +16,7 @@
 				//--------------------------------------------------
 				// Perform the standard field setup
 
-					$this->setup_text($form, $label, $name);
-
-				//--------------------------------------------------
-				// Additional field configuration
-
-					$this->type = 'textarea';
+					$this->setup_text($form, $label, $name, 'textarea');
 
 			}
 
