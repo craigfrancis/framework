@@ -82,7 +82,7 @@
 
 					if ($name == '') {
 						$name = substr(human_to_ref($label), 0, 30);
-						if ($name == '' && !in_array($type, ['info'])) {
+						if ($name == '' && !in_array($type, ['info', 'html'])) {
 							if (SERVER == 'stage') {
 								exit_with_error('Cannot have a field with no name.', $type);
 							} else {
