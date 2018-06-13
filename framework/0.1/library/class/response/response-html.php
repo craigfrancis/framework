@@ -1051,32 +1051,34 @@
 
 					$canonical_url = config::get('output.canonical');
 
-					if ($canonical_url == 'auto' || $canonical_url == 'full') {
+					if ($canonical_url === 'auto' || $canonical_url === 'full') {
 
 						$url = new url();
-						$params = $url->params_get();
+						$url->format_set('full');
 
-						if ($canonical_url == 'full') {
-							$url->format_set('full');
-						}
+						$param_values = $url->params_get();
+						$param_changed = false;
 
-						if ($canonical_url == 'full' || count($params) > 0) {
+						if (count($param_values) > 0) {
 
 							$vars_used = config::get('request.vars_used', array());
 							$vars_ignore = config::get('request.vars_ignored', array('js', 'style'));
 
-							foreach ($params as $name => $value) {
+							foreach ($param_values as $name => $value) {
 								if (!isset($vars_used[$name]) || in_array($name, $vars_ignore)) {
-									$url->param_set($name, NULL);
+									$param_values[$name] = NULL;
+									$param_changed = true;
 								}
 							}
 
+							$url->param_set($param_values);
+
+						}
+
+						if ($param_changed || $canonical_url == 'full') {
 							$canonical_url = $url;
-
 						} else {
-
 							$canonical_url = NULL;
-
 						}
 
 					}
