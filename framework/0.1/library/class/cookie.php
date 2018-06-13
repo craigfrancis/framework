@@ -86,8 +86,6 @@
 			// Sanity check cookie values, when not $native:
 			//   https://github.com/cmb69/php-src/blob/ddaf3e4845d4c3bdfcb314b725ed8ba23042a212/ext/standard/head.c#L89
 
-if (SERVER != 'live' || config::get('debug.level') > 0) { // TODO: Cookie checks added 2018-06-08, use on Live when happy it's working as expected.
-
 				$invalid_characters = ",; \t\r\n\v\f"; // Vertical Tabulation "\v" == "\013" or "\u000b"; and Form Feed "\f" == "\014"
 
 				if (strlen($variable) == 0) {
@@ -107,8 +105,6 @@ if (SERVER != 'live' || config::get('debug.level') > 0) { // TODO: Cookie checks
 				if ($config['domain'] && (($char = strpbrk($config['domain'], $invalid_characters)) !== false)) {
 					exit_with_error('Cookie domain ' . json_encode($config['domain']) . ' cannot contain ' . json_encode(substr($char, 0, 1)));
 				}
-
-}
 
 			//--------------------------------------------------
 			// Check it has been defined in "manifest.json"
