@@ -12,8 +12,7 @@ The timestamp helper is just an extended version of the base PHP [DateTime](http
 	$timestamp = new timestamp('2014W04-2');
 	$timestamp = new timestamp('2014-09-22 17:43:21', 'db');
 	$timestamp = new timestamp('2014-09-22 17:43:21', 'Europe/London');
-	$timestamp = new timestamp();
-	$timestamp = new timestamp(time());
+	$now = new timestamp();
 
 	debug($timestamp->format('l jS F Y, g:i:sa'));
 
