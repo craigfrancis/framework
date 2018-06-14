@@ -27,13 +27,11 @@ The timestamp helper is just an extended version of the base PHP [DateTime](http
 
 		2014-09-22 16:43:21
 
-You can modify its value as normal:
+You can clone (and modify) its value:
 
-	$timestamp->modify('+3 days');
+	$timestamp = $now->clone();
 
-	debug($timestamp->format('l jS F Y, g:i:sa'));
-
-		Thursday 25th September 2014, 5:43:21pm
+	$timestamp = $now->clone('+3 days');
 
 And you can return a HTML version, with the HTML5 `<time>` tag:
 
@@ -59,7 +57,7 @@ When using a value from the database:
 
 	echo $timestamp->format('l jS F Y, g:i:sa');
 
-The timestamp helper will parse the UTC value (due to the 'db' timezone), and the formatted output will then use "output.timezone".
+The timestamp helper will parse the UTC value (note the 'db' timezone), and the formatted output will then use "output.timezone".
 
 ---
 
@@ -152,6 +150,3 @@ For example:
 	debug($timestamp->business_days_diff($end));
 
 		6 days
-
-
-

@@ -144,14 +144,13 @@
 
 					$this->focus_start = new timestamp($this->selected_year . '-' . $this->selected_month . '-01');
 
-					$this->focus_end = clone $this->focus_start;
-					$this->focus_end->modify('+1 month');
+					$this->focus_end = $this->focus_start->clone('+1 month');
 
 				//--------------------------------------------------
 				// Date range
 
-					$this->data_start = clone $this->focus_start;
-					$this->data_end = clone $this->focus_end;
+					$this->data_start = $this->focus_start->clone();
+					$this->data_end = $this->focus_end->clone();
 
 			}
 
@@ -184,14 +183,13 @@
 
 					$this->focus_start = new timestamp($this->selected_year . 'W' . str_pad($this->selected_week, 2, '0', STR_PAD_LEFT) . '-1');
 
-					$this->focus_end = clone $this->focus_start;
-					$this->focus_end->modify('+1 week');
+					$this->focus_end = $this->focus_start->clone('+1 week');
 
 				//--------------------------------------------------
 				// Date range
 
-					$this->data_start = clone $this->focus_start;
-					$this->data_end = clone $this->focus_end;
+					$this->data_start = $this->focus_start->clone();
+					$this->data_end = $this->focus_end->clone();
 
 			}
 
@@ -205,8 +203,8 @@
 				//--------------------------------------------------
 				// Extend data range
 
-					if ($this->config['range_start'] !== NULL) $this->data_start->modify($this->config['range_start']);
-					if ($this->config['range_end']   !== NULL) $this->data_end->modify($this->config['range_end']);
+					if ($this->config['range_start'] !== NULL) $this->data_start = $this->data_start->clone($this->config['range_start']);
+					if ($this->config['range_end']   !== NULL) $this->data_end = $this->data_end->clone($this->config['range_end']);
 
 			}
 
@@ -318,26 +316,23 @@
 				//--------------------------------------------------
 				// Back and next links.
 
-					$back_link_timestamp = clone $this->focus_start;
-					$next_link_timestamp = clone $this->focus_start;
-
 					if ($this->config['mode'] == 'month') {
 
-						$back_link_timestamp->modify('-1 month');
+						$back_link_timestamp = $this->focus_start->clone('-1 month');
 						$back_link_url = $this->base_url->get(array('month' => $back_link_timestamp->format('n'), 'year' => $back_link_timestamp->format('o')));
 						$back_link_text = $back_link_timestamp->format('F');
 
-						$next_link_timestamp->modify('+1 month');
+						$next_link_timestamp = $this->focus_start->clone('+1 month');
 						$next_link_url = $this->base_url->get(array('month' => $next_link_timestamp->format('n'), 'year' => $next_link_timestamp->format('o')));
 						$next_link_text = $next_link_timestamp->format('F');
 
 					} else {
 
-						$back_link_timestamp->modify('-1 week');
+						$back_link_timestamp = $this->focus_start->clone('-1 week');
 						$back_link_url = $this->base_url->get(array('week' => $back_link_timestamp->format('W'), 'year' => $back_link_timestamp->format('o')));
 						$back_link_text = 'Week ' . $back_link_timestamp->format('W');
 
-						$next_link_timestamp->modify('+1 week');
+						$next_link_timestamp = $this->focus_start->clone('+1 week');
 						$next_link_url = $this->base_url->get(array('week' => $next_link_timestamp->format('W'), 'year' => $next_link_timestamp->format('o')));
 						$next_link_text = 'Week ' . $next_link_timestamp->format('W');
 
@@ -358,7 +353,7 @@
 							while ($jump_week->format('Y') == $this->selected_year) {
 								$month = $jump_week->format('n');
 								$select_units[$month] = $jump_week->format('F');
-								$jump_week->modify('+1 month');
+								$jump_week = $jump_week->clone('+1 month');
 							}
 
 							$select_unit_name = 'month';
@@ -373,12 +368,11 @@
 
 								$week = $jump_week->format('W');
 
-								$weekend = clone $jump_week;
-								$weekend->modify('+6 days');
+								$weekend = $jump_week->clone('+6 days');
 
 								$select_units[$week] = $week . ' - ' . $jump_week->format('M jS') . ' to ' . $weekend->format('jS');
 
-								$jump_week->modify('+1 week');
+								$jump_week = $jump_week->clone('+1 week');
 
 							}
 
@@ -551,7 +545,7 @@
 						//--------------------------------------------------
 						// Next day
 
-							$loop_timestamp->modify('+1 day');
+							$loop_timestamp = $loop_timestamp->clone('+1 day');
 
 					}
 

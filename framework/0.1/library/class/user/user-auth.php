@@ -216,8 +216,7 @@
 			//--------------------------------------------------
 			// Cleanup
 
-				$timestamp_old = new timestamp($this->password_reset_timeout);
-				$timestamp_old->modify('-1 week');
+				$timestamp_old = new timestamp($this->password_reset_timeout . ', -1 week');
 
 				$sql = 'DELETE FROM
 							' . $this->user_obj->db_table_reset . '

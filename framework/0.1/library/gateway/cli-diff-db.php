@@ -11,7 +11,7 @@
 			$key_valid = true;
 			break;
 		}
-		$key_time->modify('-1 second');
+		$key_time = $key_time->clone('-1 second');
 	}
 
 	if (!$key_valid) {
