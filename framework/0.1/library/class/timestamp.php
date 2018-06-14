@@ -122,21 +122,23 @@
 			public function business_days_add($business_days) {
 				$business_days = intval($business_days); // Decrement does not work on strings
 				$holidays = timestamp::holidays_get();
+				$timestamp = $this->clone();
 				while ($business_days != 0) {
-					$this->modify($business_days > 0 ? '+1 day' : '-1 day');
-					if ($this->format('N') < 6 && !in_array($this->format('Y-m-d'), $holidays)) {
+					$timestamp = $timestamp->clone($business_days > 0 ? '+1 day' : '-1 day');
+					if ($timestamp->format('N') < 6 && !in_array($timestamp->format('Y-m-d'), $holidays)) {
 						$business_days += ($business_days > 0 ? -1 : 1);
 					}
 				}
-				return $this;
+				return $timestamp;
 			}
 
-			public function business_day_select() {
+			public function business_day_next() {
 				$holidays = timestamp::holidays_get();
-				while ($this->format('N') >= 6 || in_array($this->format('Y-m-d'), $holidays)) {
-					$this->modify('+1 day');
+				$timestamp = $this->clone();
+				while ($timestamp->format('N') >= 6 || in_array($timestamp->format('Y-m-d'), $holidays)) {
+					$timestamp = $timestamp->clone('+1 day');
 				}
-				return $this;
+				return $timestamp;
 			}
 
 			public function business_days_diff($end) {
@@ -156,12 +158,13 @@
 
 				$business_days = 0;
 				$holidays = timestamp::holidays_get();
+				$timestamp = $this->clone();
 
-				while ($this < $end) {
-					if ($this->format('N') < 6 && !in_array($this->format('Y-m-d'), $holidays)) {
+				while ($timestamp < $end) {
+					if ($timestamp->format('N') < 6 && !in_array($timestamp->format('Y-m-d'), $holidays)) {
 						$business_days++;
 					}
-					$this->modify('+1 day');
+					$timestamp = $timestamp->clone('+1 day');
 				}
 
 				return $business_days;
@@ -301,7 +304,7 @@
 
 		$timestamp = new timestamp('2014W04-2');
 		debug($timestamp->format('human'));
-		$timestamp->modify('+3 days');
+		$timestamp = $timestamp->clone('+3 days');
 		debug($timestamp->format('human'));
 		debug($timestamp->html('l jS F Y'));
 

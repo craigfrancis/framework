@@ -122,30 +122,28 @@ You can store a list of holidays in a "system_holiday" table, returning them wit
 These dates are then used when calling:
 
 	$timestamp->business_days_add(5);
-		Add 5 business days.
+		Return a new timestamp, 5 business days later.
 
-	$timestamp->business_day_select();
-		Move forward to the next business day (rarely used).
+	$timestamp->business_day_next();
+		Return the next business day (rarely used).
 
 	$timestamp->business_days_diff($end);
-		Calculate the number of business days between two timestamps.
+		The number of business days between two timestamps.
 
 For example:
 
-	$timestamp = new timestamp('2014-09-20');
+	$start = new timestamp('2014-09-20');
 
 		Saturday 20th September 2014
 
-	$timestamp->business_day_select();
+	$day_1 = $start->business_day_next();
 
 		Monday 22nd September 2014
 
-	$timestamp->business_days_add(5);
+	$day_2 = $day_1->business_days_add(5);
 
 		Monday 29th September 2014
 
-	$end = new timestamp('2014-10-07'); // or just the string '2014-10-07'
-
-	debug($timestamp->business_days_diff($end));
+	debug($day_2->business_days_diff('2014-10-07'));
 
 		6 days
