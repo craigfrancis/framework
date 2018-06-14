@@ -69,12 +69,16 @@
 			public function clone($modify = NULL) {
 				$clone = clone $this;
 				if ($modify && !$this->null) {
-					$clone->modify($modify);
+					$clone->modify($modify, false);
 				}
 				return $clone;
 			}
 
-			public function modify($modify) {
+			public function modify($modify, $show_error = true) {
+				// if (SERVER == 'stage' && $show_error) {
+				// 	$called_from = debug_backtrace();
+				// 	exit_with_error('Please use $timestamp = $now->clone(xxx); instead of $timestamp->modify(xxx)'); // TODO: Enable when most sites have been converted (2018-06-14)
+				// }
 				if (!$this->null) {
 					return parent::modify($modify);
 				}
