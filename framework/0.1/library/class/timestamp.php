@@ -66,6 +66,16 @@
 				}
 			}
 
+			public function clone($modify = NULL) {
+				if (!$this->null) {
+					$clone = clone $this;
+					if ($modify) {
+						$clone->modify($modify);
+					}
+					return $clone;
+				}
+			}
+
 			public function modify($modify) {
 				if (!$this->null) {
 					return parent::modify($modify);
