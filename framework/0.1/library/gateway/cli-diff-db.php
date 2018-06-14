@@ -4,7 +4,7 @@
 
 	$key_valid = false;
 	$key_request = request('key', 'POST');
-	$key_time = clone $now;
+	$key_time = $now->clone();
 
 	for ($k = 0; $k <= 3; $k++) {
 		if (hash('sha256', (ENCRYPTION_KEY . $key_time->format('Y-m-d H:i:s'))) == $key_request) {
