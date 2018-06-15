@@ -66,7 +66,13 @@
 				}
 			}
 
-			public function clone($modify = NULL) {
+			function __call($method, $arguments) {
+				if ($method === 'clone') {
+					return call_user_func_array(array($this, '_clone'), $arguments);
+				}
+			}
+
+			public function _clone($modify = NULL) { // TODO: Rename to "clone", and remove the "__call" method when Steve isn't using PHP5
 				$clone = clone $this;
 				if ($modify && !$this->null) {
 					$clone->modify($modify, false);
