@@ -35,7 +35,6 @@
 					'type_datetime',
 					'type_time',
 					'type_year',
-					'type_timestamp',
 					'type_bool',
 					'type_float',
 					'type_double',
