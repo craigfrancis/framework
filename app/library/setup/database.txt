@@ -443,16 +443,6 @@
                 "options": null,
                 "definition": "year(4) NOT NULL"
             },
-            "type_timestamp": {
-                "type": "timestamp",
-                "length": 19,
-                "collation": null,
-                "null": false,
-                "default": "current_timestamp()",
-                "extra": "on update current_timestamp()",
-                "options": null,
-                "definition": "timestamp NOT NULL DEFAULT \"current_timestamp()\" on update current_timestamp()"
-            },
             "type_bool": {
                 "type": "tinyint",
                 "length": "1",
