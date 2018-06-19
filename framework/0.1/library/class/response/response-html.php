@@ -1575,6 +1575,15 @@
 						}
 
 					//--------------------------------------------------
+					// Window policy
+
+						$output_window_policy = config::get('output.window_policy', 'DENY');
+
+						if ($output_window_policy) {
+							header('Cross-Origin-Window-Policy: ' . head($output_window_policy));
+						}
+
+					//--------------------------------------------------
 					// Framing options
 
 						$output_framing = strtoupper(config::get('output.framing', 'DENY'));
