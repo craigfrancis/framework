@@ -1316,6 +1316,39 @@
 		header('Content-Disposition: ' . head($mode) . '; filename="' . head(safe_file_name($name, true)) . '"');
 		header('Content-Length: ' . head(filesize($path)));
 
+		if (config::get('output.csp_enabled') === true) {
+
+			$enforced = config::get('output.csp_enforced', false);
+
+			if ($enforced) {
+				$header = 'Content-Security-Policy: ';
+			} else {
+				$header = 'Content-Security-Policy-Report-Only: ';
+			}
+
+			$header .= "default-src 'none'; base-uri 'none'; form-action 'none'; style-src 'unsafe-inline'; object-src 'self'";
+
+			$output_framing = strtoupper(config::get('output.framing', 'DENY'));
+
+			if ($output_framing == 'DENY') {
+				$header .= "; frame-ancestors 'none'";
+			} else if ($output_framing == 'SAMEORIGIN') {
+				$header .= "; frame-ancestors 'self'";
+			}
+
+			$report_uri = config::get('output.csp_report', false);
+			if ($report_uri || !$enforced) {
+				$header .= '; report-uri ' . $report_uri;
+			}
+
+			if (https_only()) {
+				$header .= '; block-all-mixed-content';
+			}
+
+			header($header);
+
+		}
+
 		if ($mode !== 'inline') {
 			header('X-Download-Options: noopen');
 		}
@@ -1348,6 +1381,13 @@
 
 		echo $content;
 
+	}
+
+//--------------------------------------------------
+// CSP header
+
+	function http_csp_header($csp) {
+		// TODO: Common function so http_download_file() and response_html can share the same code.
 	}
 
 //--------------------------------------------------
