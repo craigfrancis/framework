@@ -1326,7 +1326,10 @@
 				$header = 'Content-Security-Policy-Report-Only: ';
 			}
 
-			$header .= "default-src 'none'; base-uri 'none'; form-action 'none'; style-src 'unsafe-inline'; object-src 'self'";
+			$header .= "default-src 'none'; base-uri 'none'; form-action 'none'; img-src 'self'; style-src 'unsafe-inline'; object-src 'self'";
+
+				// Img for the favicon
+				// Style and Object for Chrome inline PDF viewing
 
 			$output_framing = strtoupper(config::get('output.framing', 'DENY'));
 
