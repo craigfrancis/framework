@@ -293,7 +293,7 @@
 			}
 
 			public function info_set($info) {
-				$this->info_set_html(html($info));
+				$this->info_set_html($info === NULL ? NULL : html($info)); // An empty string can be used for the element to exist (e.g. for JS to populate)
 			}
 
 			public function info_set_html($info_html) {
@@ -697,7 +697,7 @@
 			}
 
 			public function html_info($indent = 0) {
-				if ($this->info_html == '') {
+				if ($this->info_html === NULL) {
 					return '';
 				} else {
 					$tag_id = $this->form->_field_tag_id_get();
