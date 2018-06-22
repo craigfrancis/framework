@@ -10,6 +10,7 @@
 			protected $label_option = NULL;
 			protected $option_values = array();
 			protected $option_groups = NULL;
+			protected $options_class = NULL;
 			protected $db_field_options = NULL;
 			protected $select_size = 1;
 			protected $required_error_set = false;
@@ -143,6 +144,10 @@
 
 			public function option_groups_set($option_groups) {
 				$this->option_groups = $option_groups;
+			}
+
+			public function options_class_set($options_class) {
+				$this->options_class = $options_class;
 			}
 
 			public function select_size_set($size) {
@@ -398,8 +403,16 @@
 
 									$value = $this->option_values[$key];
 
+									$attributes_html = ' value="' . html($key) . '"';
+									if (in_array($key, $print_values)) {
+										$attributes_html .= ' selected="selected"';
+									}
+									if (isset($this->options_class[$key])) {
+										$attributes_html .= ' class="' . html($this->options_class[$key]) . '"';
+									}
+
 									$group_html .= '
-											<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
+											<option' . $attributes_html . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 								}
 							}
@@ -423,8 +436,16 @@
 
 								// Cannot do strict check with in_array() as an ID from the db may be a string or int.
 
+							$attributes_html = ' value="' . html($key) . '"';
+							if (in_array($key, $print_values)) {
+								$attributes_html .= ' selected="selected"';
+							}
+							if (isset($this->options_class[$key])) {
+								$attributes_html .= ' class="' . html($this->options_class[$key]) . '"';
+							}
+
 							$html .= '
-										<option value="' . html($key) . '"' . (in_array($key, $print_values) ? ' selected="selected"' : '') . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
+										<option' . $attributes_html . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 						}
 					}
