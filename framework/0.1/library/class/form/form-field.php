@@ -454,6 +454,14 @@
 
 				}
 
+				if ($this->db_field_name !== NULL && $this->db_field_name != $field_name) {
+					if (SERVER == 'stage') {
+						exit_with_error('Changing the "' . $this->label_get_text() . '" db_field from "' . $this->db_field_name . '" to "' . $field_name . '"');
+					} else {
+						report_add('Changing the "' . $this->label_get_text() . '" db_field from "' . $this->db_field_name . '" to "' . $field_name . '"', 'error'); // TODO: Change to an exit_with_error
+					}
+				}
+
 				$this->db_record = $record;
 				$this->db_field_name = $field_name;
 				$this->db_field_key = ($field_type == 'key');
