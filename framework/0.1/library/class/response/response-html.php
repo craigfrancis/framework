@@ -1720,7 +1720,7 @@
 								//
 								// navigator.geolocation.getCurrentPosition(function(position){console.log(position.coords)});
 
-							$policies = $this->_build_policy_sources(config::get('output.fp_directives'));
+							$policies = http_policy_values(config::get('output.fp_directives'));
 
 							header('Feature-Policy: ' . head(implode('; ', $policies)));
 
@@ -1731,60 +1731,7 @@
 
 						if (config::get('output.csp_enabled') === true) {
 
-							$enforced = config::get('output.csp_enforced', false);
-
-							if ($enforced) {
-								$header = 'Content-Security-Policy';
-							} else {
-								$header = 'Content-Security-Policy-Report-Only';
-							}
-
-							$csp = config::get('output.csp_directives');
-
-							if ($output_framing == 'DENY') {
-								$csp['frame-ancestors'] = "'none'";
-							} else if ($output_framing == 'SAMEORIGIN') {
-								$csp['frame-ancestors'] = "'self'";
-							}
-
-							$report_uri = config::get('output.csp_report', false);
-							if (($report_uri || !$enforced) && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
-								if ($report_uri === true) {
-									$report_uri = gateway_url('csp-report');
-								}
-								$csp['report-uri'] = $report_uri;
-							}
-
-							$csp = $this->_build_policy_sources($csp);
-
-							// if (config::get('output.csp_disown_opener', true)) {
-							// 	$csp[] = 'disown-opener';
-							// }
-
-							if (https_only()) {
-								$csp[] = 'block-all-mixed-content';
-							}
-
-							header($header . ': ' . head(implode('; ', $csp)));
-
-							if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
-
-								debug_require_db_table(DB_PREFIX . 'system_report_csp', '
-										CREATE TABLE [TABLE] (
-											document_uri varchar(80) NOT NULL,
-											blocked_uri varchar(80) NOT NULL,
-											violated_directive varchar(80) NOT NULL,
-											referrer tinytext NOT NULL,
-											original_policy text NOT NULL,
-											data_raw text NOT NULL,
-											ip tinytext NOT NULL,
-											browser tinytext NOT NULL,
-											created datetime NOT NULL,
-											updated datetime NOT NULL,
-											PRIMARY KEY (document_uri,blocked_uri,violated_directive)
-										);');
-
-							}
+							http_csp_header(config::get('output.csp_directives'));
 
 						}
 
@@ -1805,36 +1752,6 @@
 
 		//--------------------------------------------------
 		// Support functions
-
-			private function _build_policy_sources($policies) {
-
-				$output = array();
-				$domain = NULL;
-
-				foreach ($policies as $directive => $value) {
-					if ($value !== NULL) {
-						if (is_array($value)) {
-							foreach ($value as $k => $v) {
-								if (prefix_match('/', $v)) {
-									if (!$domain) {
-										$domain = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain');
-									}
-									$value[$k] = $domain . $v;
-								}
-							}
-							$value = implode(' ', $value);
-						}
-						if ($value == '') {
-							$output[] = $directive . " 'none'";
-						} else {
-							$output[] = $directive . ' ' . str_replace('"', "'", $value);
-						}
-					}
-				}
-
-				return $output;
-
-			}
 
 			private function _js_code_save($code, $position = 'foot') { // Don't call directly, use js_code_add()
 

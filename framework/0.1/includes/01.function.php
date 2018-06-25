@@ -1318,37 +1318,17 @@
 
 		if (config::get('output.csp_enabled') === true) {
 
-			$enforced = config::get('output.csp_enforced', false);
-
-			if ($enforced) {
-				$header = 'Content-Security-Policy: ';
-			} else {
-				$header = 'Content-Security-Policy-Report-Only: ';
-			}
-
-			$header .= "default-src 'none'; base-uri 'none'; form-action 'none'; img-src 'self'; style-src 'unsafe-inline'; object-src 'self'";
-
 				// Img for the favicon
 				// Style and Object for Chrome inline PDF viewing
 
-			$output_framing = strtoupper(config::get('output.framing', 'DENY'));
-
-			if ($output_framing == 'DENY') {
-				$header .= "; frame-ancestors 'none'";
-			} else if ($output_framing == 'SAMEORIGIN') {
-				$header .= "; frame-ancestors 'self'";
-			}
-
-			$report_uri = config::get('output.csp_report', false);
-			if ($report_uri || !$enforced) {
-				$header .= '; report-uri ' . $report_uri;
-			}
-
-			if (https_only()) {
-				$header .= '; block-all-mixed-content';
-			}
-
-			header($header);
+			http_csp_header([
+					'default-src' => "'none'",
+					'base-uri'    => "'none'",
+					'form-action' => "'none'",
+					'object-src'  => "'self'",
+					'img-src'     => "'self'",
+					'style-src'   => "'unsafe-inline'",
+				]);
 
 		}
 
@@ -1387,10 +1367,102 @@
 	}
 
 //--------------------------------------------------
+// Policy header
+
+	function http_policy_values($policies) {
+
+		$output = array();
+		$domain = NULL;
+
+		foreach ($policies as $directive => $value) {
+			if ($value !== NULL) {
+				if (is_array($value)) {
+					foreach ($value as $k => $v) {
+						if (prefix_match('/', $v)) {
+							if (!$domain) {
+								$domain = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain');
+							}
+							$value[$k] = $domain . $v;
+						}
+					}
+					$value = implode(' ', $value);
+				}
+				if ($value == '') {
+					$output[] = $directive . " 'none'";
+				} else {
+					$output[] = $directive . ' ' . str_replace('"', "'", $value);
+				}
+			}
+		}
+
+		return $output;
+
+	}
+
+//--------------------------------------------------
 // CSP header
 
-	function http_csp_header($csp) {
-		// TODO: Common function so http_download_file() and response_html can share the same code.
+	function http_csp_header($csp = NULL, $config = []) {
+
+		$config = array_merge([
+				'enforced' => config::get('output.csp_enforced', false),
+				'report'   => config::get('output.csp_report', false),
+				'framing'  => config::get('output.framing', 'DENY'),
+			], $config);
+
+		if ($config['enforced']) {
+			$header = 'Content-Security-Policy';
+		} else {
+			$header = 'Content-Security-Policy-Report-Only';
+		}
+
+		if ($config['framing']) {
+			$framing = strtoupper($config['framing']);
+			if ($framing == 'DENY') {
+				$csp['frame-ancestors'] = "'none'";
+			} else if ($framing == 'SAMEORIGIN') {
+				$csp['frame-ancestors'] = "'self'";
+			}
+		}
+
+		if (($config['report'] || !$config['enforced']) && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
+			if ($config['report'] === true) {
+				$config['report'] = gateway_url('csp-report');
+			}
+			$csp['report-uri'] = $config['report'];
+		}
+
+		$csp = http_policy_values($csp);
+
+		// if (config::get('output.csp_disown_opener', true)) {
+		// 	$csp[] = 'disown-opener';
+		// }
+
+		if (https_only()) {
+			$csp[] = 'block-all-mixed-content';
+		}
+
+		exit($header . ': ' . head(implode('; ', $csp)));
+
+		if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
+
+			debug_require_db_table(DB_PREFIX . 'system_report_csp', '
+					CREATE TABLE [TABLE] (
+						document_uri varchar(80) NOT NULL,
+						blocked_uri varchar(80) NOT NULL,
+						violated_directive varchar(80) NOT NULL,
+						referrer tinytext NOT NULL,
+						original_policy text NOT NULL,
+						data_raw text NOT NULL,
+						ip tinytext NOT NULL,
+						browser tinytext NOT NULL,
+						created datetime NOT NULL,
+						updated datetime NOT NULL,
+						PRIMARY KEY (document_uri,blocked_uri,violated_directive)
+					);');
+
+		}
+
 	}
 
 //--------------------------------------------------
