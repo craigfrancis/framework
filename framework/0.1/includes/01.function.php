@@ -1442,7 +1442,7 @@
 			$csp[] = 'block-all-mixed-content';
 		}
 
-		exit($header . ': ' . head(implode('; ', $csp)));
+		header($header . ': ' . head(implode('; ', $csp)));
 
 		if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
 
