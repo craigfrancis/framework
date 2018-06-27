@@ -232,7 +232,7 @@
 			}
 
 			public function attachment_file_add($file, $id = NULL) {
-				$this->attachment_add(file_get_contents($file->file_path_get()), $file->file_mime_get(), $file->file_name_get(), $id);
+				$this->attachment_raw_add(file_get_contents($file->file_path_get()), $file->file_mime_get(), $file->file_name_get(), $id);
 			}
 
 			public function attachment_raw_add($content, $mime, $name = NULL, $id = NULL) {
