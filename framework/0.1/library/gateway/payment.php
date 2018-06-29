@@ -7,20 +7,7 @@
 			//--------------------------------------------------
 			// Payment method
 
-				$method = $this->sub_path_get();
-
-				while (true) {
-					if (substr($method, 0, 1) == '/') {
-						$method = substr($method, 1);
-					} else {
-						break;
-					}
-				}
-
-				$pos = strpos($method, '/');
-				if ($pos > 0) {
-					$method = substr($method, 0, $pos);
-				}
+				$method = trim($this->sub_path_get(), '/');
 
 			//--------------------------------------------------
 			// Object

@@ -3,20 +3,7 @@
 //--------------------------------------------------
 // Requested file
 
-	$file_name = $this->sub_path_get();
-
-	while (true) {
-		if (substr($file_name, 0, 1) == '/') {
-			$file_name = substr($file_name, 1);
-		} else {
-			break;
-		}
-	}
-
-	$pos = strpos($file_name, '/');
-	if ($pos > 0) {
-		$file_name = substr($file_name, 0, $pos);
-	}
+	$file_name = trim($this->sub_path_get(), '/');
 
 //--------------------------------------------------
 // Match

@@ -3,15 +3,7 @@
 //--------------------------------------------------
 // Reference
 
-	$js_ref = $this->sub_path_get();
-
-	while (true) {
-		if (substr($js_ref, 0, 1) == '/') {
-			$js_ref = substr($js_ref, 1);
-		} else {
-			break;
-		}
-	}
+	$js_ref = trim($this->sub_path_get(), '/');
 
 	$pos = strpos($js_ref, '.js');
 	if ($pos > 0) {
