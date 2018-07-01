@@ -1101,24 +1101,29 @@
 
 					if (!$this->form_passive) {
 
-						$input_fields['act'] = $this->form_id;
+						$input_fields['act'] = ['value' => $this->form_id];
 
 						if ($this->csrf_error_html != NULL) {
 							if ($this->form_method == 'POST') {
-								$input_fields['csrf'] = csrf_challenge_hash($this->form_action, $this->csrf_token);
+								$input_fields['csrf'] = ['value' => csrf_challenge_hash($this->form_action, $this->csrf_token)];
 							} else {
-								$input_fields['csrf'] = $this->csrf_token;
+								$input_fields['csrf'] = ['value' => $this->csrf_token];
 							}
 						}
 
 					}
 
-					foreach ($this->hidden_values as $name => $value) {
-						if (!isset($input_fields[$name])) {
-							$input_fields[$name] = rawurlencode($value); // URL encode allows newline characters to exist in hidden (one line) input fields.
-						} else {
+					foreach ($this->hidden_values as $name => $field) {
+						if (isset($input_fields[$name])) {
 							exit_with_error('The hidden field "' . $name . '" already exists.');
 						}
+						if (!is_array($field)) {
+							$field = ['value' => $field];
+						}
+						if (!isset($field['urlencode']) || $field['urlencode'] !== false) {
+							$field['value'] = rawurlencode($field['value']); // URL encode allows newline characters to exist in hidden (one line) input fields.
+						}
+						$input_fields[$name] = $field;
 					}
 
 					if ($this->form_method == 'GET') {
@@ -1127,7 +1132,7 @@
 							parse_str($form_action_query, $form_action_query);
 							foreach ($form_action_query as $name => $value) {
 								if (!isset($input_fields[$name]) && !in_array($name, $field_names) && !is_array($value)) { // Currently does not support ./?a[]=1&a[]=2&a[]=3
-									$input_fields[$name] = $value;
+									$input_fields[$name] = ['value' => $value];
 								}
 							}
 						}
@@ -1142,8 +1147,8 @@
 						$html .= '<' . html($config['wrapper']) . ' class="' . html($config['class']) . '">';
 					}
 
-					foreach ($input_fields as $name => $value) {
-						$html .= '<input type="hidden" name="' . html($name) . '" value="' . html($value) . '" />';
+					foreach ($input_fields as $name => $field) {
+						$html .= html_tag('input', array_merge(['name' => $name, 'value' => $field['value'], 'type' => 'hidden'], ($field['attributes'] ?? [])));
 					}
 
 					if ($config['wrapper'] !== NULL) {
