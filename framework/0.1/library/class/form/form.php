@@ -1148,7 +1148,7 @@
 					}
 
 					foreach ($input_fields as $name => $field) {
-						$html .= html_tag('input', array_merge(['name' => $name, 'value' => $field['value'], 'type' => 'hidden'], ($field['attributes'] ?? [])));
+						$html .= html_tag('input', array_merge(['type' => 'hidden', 'name' => $name, 'value' => $field['value']], ($field['attributes'] ?? [])));
 					}
 
 					if ($config['wrapper'] !== NULL) {
