@@ -1148,7 +1148,11 @@
 					}
 
 					foreach ($input_fields as $name => $field) {
-						$html .= html_tag('input', array_merge(['type' => 'hidden', 'name' => $name, 'value' => $field['value']], ($field['attributes'] ?? [])));
+						$attributes = ['type' => 'hidden', 'name' => $name, 'value' => $field['value']];
+						if (isset($field['attributes'])) {
+							$attributes = array_merge($attributes, $field['attributes']);
+						}
+						$html .= html_tag('input', $attributes);
 					}
 
 					if ($config['wrapper'] !== NULL) {
