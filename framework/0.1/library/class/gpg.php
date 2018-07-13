@@ -63,6 +63,8 @@
 
 			public function public_key_get() {
 
+				$this->_key_check_private($this->private_key_name, $this->private_key_email);
+
 				$result = $this->_exec('--armor --export ' . escapeshellarg($this->private_key_email), false);
 
 				return implode("\n", $result['output']);
@@ -195,12 +197,12 @@
 					$pubring_path = tempnam(sys_get_temp_dir(), 'gpg.pub');
 					$secring_path = tempnam(sys_get_temp_dir(), 'gpg.sec');
 
-					$key_config_content  = 'Key-Type: DSA' . "\n";
-					$key_config_content .= 'Key-Length: 2048' . "\n";
-					$key_config_content .= 'Subkey-Type: ELG-E' . "\n";
-					$key_config_content .= 'Subkey-Length: 2048' . "\n";
+					$key_config_content  = 'Key-Type: RSA' . "\n";
+					$key_config_content .= 'Key-Length: 3072' . "\n";
+					$key_config_content .= 'Subkey-Type: RSA' . "\n";
+					$key_config_content .= 'Subkey-Length: 3072' . "\n";
 					$key_config_content .= 'Name-Real: ' . $key_name . "\n";
-					$key_config_content .= 'Name-Comment: N/A' . "\n";
+					// $key_config_content .= 'Name-Comment: N/A' . "\n";
 					$key_config_content .= 'Name-Email: ' . $key_email . "\n";
 					$key_config_content .= 'Expire-Date: 0' . "\n";
 					$key_config_content .= 'Passphrase: ' . trim(file_get_contents($this->pass_phrase_path_get())) . "\n";
