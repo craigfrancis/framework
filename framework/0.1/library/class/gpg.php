@@ -97,7 +97,7 @@
 			}
 
 		//--------------------------------------------------
-		// Sign
+		// Encrypt
 
 			public function encrypt($key_to, $data_plain) {
 
@@ -146,12 +146,63 @@
 				$path_dest_new = $path_dest . '.new';
 
 				if (is_file($path_dest_new)) {
-					exit_with_error('When creating the GPG encrypted zip, the temporary "new" file already existed');
+					exit_with_error('When creating the GPG encrypted file, the temporary "new" file already existed');
 				}
 
 				chdir(dirname($path_source));
 
 				$arguments = '--encrypt --local-user ' . escapeshellarg($this->private_key_email) . ' --recipient ' . escapeshellarg($key_to) . ' --output ' . escapeshellarg($path_dest_new) . ' ' . escapeshellarg(basename($path_source));
+
+				if ($zip) {
+					$result = $this->_exec_zip($arguments);
+				} else {
+					$result = $this->_exec($arguments);
+				}
+
+				if (is_file($path_dest_new)) {
+
+					rename($path_dest_new, $path_dest);
+
+					return $path_dest;
+
+				} else {
+
+					exit_with_error('Cannot use GPG to zip the file', debug_dump($result));
+
+				}
+
+			}
+
+		//--------------------------------------------------
+		// Decrypt
+
+			public function decrypt_file($path_source, $path_dest = NULL) {
+				return $this->_decrypt_file($path_source, $path_dest);
+			}
+
+			public function decrypt_zip($path_source, $path_dest = NULL) {
+				return $this->_decrypt_file($path_source, $path_dest, true);
+			}
+
+			private function _decrypt_file($path_source, $path_dest, $zip = false) {
+
+				if ($this->private_key_email === NULL) {
+					exit_with_error('You must call private_key_use() before decrypt()');
+				}
+
+				if ($path_dest === NULL) {
+					$path_dest = tempnam(sys_get_temp_dir(), 'gpg.');
+				}
+
+				$path_dest_new = $path_dest . '.new';
+
+				if (is_file($path_dest_new)) {
+					exit_with_error('When creating the GPG decrypted file, the temporary "new" file already existed');
+				}
+
+				chdir(dirname($path_source));
+
+				$arguments = '--decrypt --local-user ' . escapeshellarg($this->private_key_email) . ' --output ' . escapeshellarg($path_dest_new) . ' ' . escapeshellarg(basename($path_source));
 
 				if ($zip) {
 					$result = $this->_exec_zip($arguments);
