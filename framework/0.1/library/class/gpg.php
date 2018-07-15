@@ -149,9 +149,12 @@
 					exit_with_error('When creating the GPG encrypted file, the temporary "new" file already existed');
 				}
 
-				chdir(dirname($path_source));
+				$source_dir = dirname($path_source);
+				$source_name = basename($path_source);
 
-				$arguments = '--encrypt --local-user ' . escapeshellarg($this->private_key_email) . ' --recipient ' . escapeshellarg($key_to) . ' --output ' . escapeshellarg($path_dest_new) . ' ' . escapeshellarg(basename($path_source));
+				chdir($source_dir);
+
+				$arguments = '--encrypt --local-user ' . escapeshellarg($this->private_key_email) . ' --recipient ' . escapeshellarg($key_to) . ' --output ' . escapeshellarg($path_dest_new) . ' ' . escapeshellarg($source_name);
 
 				if ($zip) {
 					$result = $this->_exec_zip($arguments);
@@ -167,7 +170,7 @@
 
 				} else {
 
-					exit_with_error('Cannot use GPG to zip the file', debug_dump($result));
+					exit_with_error('Cannot use GPG to encrypt the file', $source_dir . "\n\n" . debug_dump($result));
 
 				}
 
@@ -200,9 +203,12 @@
 					exit_with_error('When creating the GPG decrypted file, the temporary "new" file already existed');
 				}
 
-				chdir(dirname($path_source));
+				$source_dir = dirname($path_source);
+				$source_name = basename($path_source);
 
-				$arguments = '--decrypt --local-user ' . escapeshellarg($this->private_key_email) . ' --output ' . escapeshellarg($path_dest_new) . ' ' . escapeshellarg(basename($path_source));
+				chdir($source_dir);
+
+				$arguments = '--decrypt --local-user ' . escapeshellarg($this->private_key_email) . '  --passphrase-file ' . escapeshellarg($this->pass_phrase_path_get()) . ' --output ' . escapeshellarg($path_dest_new) . ' ' . escapeshellarg($source_name);
 
 				if ($zip) {
 					$result = $this->_exec_zip($arguments);
@@ -218,7 +224,7 @@
 
 				} else {
 
-					exit_with_error('Cannot use GPG to zip the file', debug_dump($result));
+					exit_with_error('Cannot use GPG to decrypt the file', $source_dir . "\n\n" . debug_dump($result));
 
 				}
 
