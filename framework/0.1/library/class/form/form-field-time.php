@@ -193,7 +193,9 @@
 
 				if ($minute === NULL && $second === NULL) {
 
-					if (is_array($value)) {
+					if (is_a($value, 'timestamp')) {
+						$value = $value->format('H:i:s');
+					} else if (is_array($value)) {
 						$return = array();
 						foreach ($this->fields as $field) {
 							$return[$field] = (isset($value[$field]) ? $value[$field] : '');
