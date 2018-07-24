@@ -543,7 +543,7 @@
 								$error_type = $error[0] . ' Error [' . $this->job_name . ']:';
 
 								$error_text = $error_type . "\n" . ' ' . $error[1] . "\n\n";
-								$error_html = '<p class="error"><strong>' . html($error_type) . '</strong><br />' . html($error[1]) . '</p>' . "\n\n";
+								$error_html = '<p class="error"><strong>' . html($error_type) . '</strong><br />' . nl2br(html($error[1])) . '</p>' . "\n\n";
 
 								if (REQUEST_MODE == 'cli' && config::get('debug.level') > 0) { // Only run from the CLI, in Debug mode.
 									if (config::get('output.mime') == 'text/plain') {
