@@ -33,7 +33,12 @@
 					$class_file_name = str_replace('_', '-', $class_name);
 				}
 
-				if (($pos = strpos($class_file_name, '-')) !== false) {
+				$class_file_name = strtolower($class_file_name);
+
+				if (($pos = strpos($class_file_name, '\\')) !== false) {
+					$folder = substr($class_file_name, 0, $pos);
+					$class_file_name = substr($class_file_name, ($pos + 1));
+				} else if (($pos = strpos($class_file_name, '-')) !== false) {
 					$folder = substr($class_file_name, 0, $pos);
 				} else {
 					$folder = $class_file_name;
