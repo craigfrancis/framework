@@ -125,18 +125,36 @@
 				//--------------------------------------------------
 				// Config
 
-					ini_set('session.use_cookies', false); // We set our own cookies, as PHP sends cookies more than once (due to our regenerate feature, and due to a bug https://bugs.php.net/bug.php?id=67736)
-					ini_set('session.use_only_cookies', true); // Prevent session fixation though the URL
-					ini_set('session.cookie_secure', https_only());
-					ini_set('session.cookie_httponly', true); // Not available to JS
-					ini_set('session.use_strict_mode', true); // Since PHP 5.5.2, but we also use the 'key' below to also do this.
-
 					$session_name = config::get('session.name');
 					$session_id = cookie::get($session_name);
 
-					session_name($session_name);
-					if ($session_id) {
-						session_id($session_id);
+					$already_configured = (config::get('session.configured', false) === true);
+
+					if (!$already_configured) { // Since PHP 7.2, the session ini values cannot be changed once headers have been sent, so don't try when re-opening a session.
+
+						ini_set('session.use_cookies', false); // We set our own cookies, as PHP sends cookies more than once (due to our regenerate feature, and due to a bug https://bugs.php.net/bug.php?id=67736)
+						ini_set('session.use_only_cookies', true); // Prevent session fixation though the URL
+						ini_set('session.cookie_secure', https_only());
+						ini_set('session.cookie_httponly', true); // Not available to JS
+						ini_set('session.use_strict_mode', true); // Since PHP 5.5.2, but we also use the 'key' below to also do this.
+
+						$cache_limiter = config::get('session.cache_limiter', session_cache_limiter());
+						if ($cache_limiter == 'nocache') {
+							header('Expires: Sat, 01 Jan 2000 01:00:00 GMT');
+							header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
+							header('Pragma: no-cache');
+						} else {
+							report_add('When starting session, did not handle the cache_limiter "' . $cache_limiter . '"', 'error');
+						}
+						session_cache_limiter(''); // Disable cache limiter now, as it cannot be changed after headers have been sent (since 7.2), where we need a way to re-open the session (e.g. loading helper)
+
+						session_name($session_name);
+						if ($session_id) {
+							session_id($session_id);
+						}
+
+						config::set('session.configured', true);
+
 					}
 
 				//--------------------------------------------------
@@ -146,23 +164,7 @@
 
 					$start = microtime(true);
 
-					$ignore_errors = (headers_sent() && config::get('session.started') === true);
-
-					if ($ignore_errors) {
-						session_cache_limiter(''); // The session has been opened before (headers sent), where "setting the cache limiter to '' will turn off automatic sending of cache headers"
-						$error_reporting = error_reporting(0); // Don't show warnings about headers, which happens in 'loading' helper.
-					}
-
 					$result = session_start();
-
-					if ($ignore_errors) {
-						error_reporting($error_reporting);
-						if (!$result) {
-							session_start(); // Try again, this time the error can appear in logs.
-						}
-					}
-
-					config::set('session.started', true);
 
 					if (function_exists('debug_log_time')) {
 						$time = round((microtime(true) - $start), 5);
