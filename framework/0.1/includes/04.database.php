@@ -576,15 +576,18 @@
 
 		}
 
-		public function update($table_sql, $values, $where_sql) {
+		public function update($table_sql, $values, $where_sql, $parameters = []) {
 
-			$set_sql = array();
+			$set_sql = [];
+			$set_parameters = [];
 			foreach ($values as $field_name => $field_value) {
-				$set_sql[] = $this->escape_field($field_name) . ' = ' . ($field_value === NULL ? 'NULL' : $this->escape_string($field_value));
+				$set_sql[] = $this->escape_field($field_name) . ' = ?';
+				$set_parameters[] = ['s', $field_value];
 			}
-			$set_sql = implode(', ', $set_sql);
 
-			return $this->query('UPDATE ' . $table_sql . ' SET ' . $set_sql . ' WHERE ' . $where_sql);
+			$sql = 'UPDATE ' . $table_sql . ' SET ' . implode(', ', $set_sql) . ' WHERE ' . $where_sql;
+
+			return $this->query($sql, array_merge($set_parameters, $parameters));
 
 		}
 
@@ -614,13 +617,15 @@
 			if (isset($options['order_sql'])) $sql .= ' ORDER BY ' . $options['order_sql'];
 			if (isset($options['limit_sql'])) $sql .= ' LIMIT '    . $options['limit_sql'];
 
-			return $this->query($sql);
+			return $this->query($sql, (isset($options['parameters']) ? $options['parameters'] : NULL));
 
 		}
 
-		public function delete($table_sql, $where_sql) {
+		public function delete($table_sql, $where_sql, $parameters = []) {
 
-			return $this->query('DELETE FROM ' . $table_sql . ' WHERE ' . $where_sql);
+			$sql = 'DELETE FROM ' . $table_sql . ' WHERE ' . $where_sql;
+
+			return $this->query($sql, $parameters);
 
 		}
 
