@@ -11,6 +11,7 @@
 
 			private $table_sql = NULL;
 			private $where_sql = NULL;
+			private $where_parameters = [];
 			private $where_id = NULL;
 
 			private $fields = NULL;
@@ -34,7 +35,9 @@
 
 						'where' => NULL, // Currently not available
 						'where_id' => NULL,
+						'where_extra_sql' => NULL, // e.g. 'cancelled = "0000-00-00 00:00:00"'
 						'where_sql' => NULL,
+						'where_parameters' => [],
 
 						'log_table' => NULL,
 						'log_values' => array(),
@@ -77,11 +80,11 @@
 
 					if ($this->config['where_id']) {
 
-						$this->where_set_id($this->config['where_id']);
+						$this->where_set_id($this->config['where_id'], $this->config['where_extra_sql'], $this->config['where_parameters']);
 
 					} else if ($this->config['where_sql']) {
 
-						$this->where_set_sql($this->config['where_sql']);
+						$this->where_set_sql($this->config['where_sql'], $this->config['where_parameters']);
 
 					} else if ($this->config['where']) {
 
@@ -128,23 +131,34 @@
 			//
 			// }
 
-			public function where_set_sql($where_sql) { // Can be an array (AND)
+			public function where_set_sql($where_sql, $where_parameters = NULL) { // Can be an array (AND)
 				$this->where_sql = $where_sql;
+				$this->where_parameters = $where_parameters;
 				$this->fields = NULL;
 				$this->values = NULL;
 			}
 
-			public function where_set_id($id) {
+			public function where_set_id($id, $extra_sql = NULL, $where_parameters = []) {
 
 				$db = $this->db_get();
 
 				$this->where_id = $id;
 
+				$where_sql = 'id = ?';
+
+				array_unshift($where_parameters, ['i', $id]);
+
 				if ($this->config['deleted']) {
-					$this->where_set_sql('id = "' . $db->escape($id) . '" AND deleted = deleted');
+					$where_sql .= ' AND deleted = deleted';
 				} else {
-					$this->where_set_sql('id = "' . $db->escape($id) . '" AND deleted = "0000-00-00 00:00:00"');
+					$where_sql .= ' AND deleted = "0000-00-00 00:00:00"';
 				}
+
+				if ($extra_sql) {
+					$where_sql .= ' AND ' . $extra_sql;
+				}
+
+				$this->where_set_sql($where_sql, $where_parameters);
 
 			}
 
@@ -230,6 +244,7 @@
 						if (isset($this->config['group_sql'])) $options['group_sql'] = $this->config['group_sql'];
 						if (isset($this->config['order_sql'])) $options['order_sql'] = $this->config['order_sql'];
 						if (isset($this->config['limit_sql'])) $options['limit_sql'] = $this->config['limit_sql'];
+						$options['parameters'] = $this->where_parameters;
 
 						$result = $db->select($table_sql, $fields, $this->where_sql, $options);
 
@@ -359,7 +374,7 @@
 
 						$table_sql = $this->table_sql . ($this->config['table_alias'] === NULL ? '' : ' AS ' . $this->config['table_alias']);
 
-						$db->update($table_sql, $new_values, $this->where_sql);
+						$db->update($table_sql, $new_values, $this->where_sql, $this->where_parameters);
 
 					}
 
@@ -396,7 +411,7 @@
 							'deleted' => new timestamp(),
 						);
 
-					$db->update($table_sql, $values, $this->where_sql);
+					$db->update($table_sql, $values, $this->where_sql, $this->where_parameters);
 
 			}
 
