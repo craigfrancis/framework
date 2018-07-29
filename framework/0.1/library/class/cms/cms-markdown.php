@@ -992,7 +992,7 @@ class cms_markdown_base extends check {
 		# trim leading newlines and trailing newlines
 		$codeblock = preg_replace('/\A\n+|\n+\z/', '', $codeblock);
 
-		$codeblock = "<pre><code>$codeblock\n</code></pre>";
+		$codeblock = "<blockquote><pre>$codeblock\n</pre></blockquote>";
 		return "\n\n".$this->hashBlock($codeblock)."\n\n";
 	}
 
