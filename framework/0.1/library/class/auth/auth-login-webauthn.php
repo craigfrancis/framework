@@ -32,6 +32,8 @@
 
 ?>
 
+	<p><input type="button" id="button" value="Create" /></p>
+
 	<script type="text/javascript">
 	//<![CDATA[
 
