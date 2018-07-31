@@ -485,6 +485,10 @@
 
 			$parameters = array();
 
+			if (!is_array($values)) {
+				exit_with_error('An array of field values needs to be provided to the database.', 'Value: ' . debug_dump($values));
+			}
+
 			$fields_sql = implode(', ', array_map(array($this, 'escape_field'), array_keys($values)));
 
 			$values_sql = array();
@@ -577,6 +581,10 @@
 		}
 
 		public function update($table_sql, $values, $where_sql, $parameters = []) {
+
+			if (!is_array($values)) {
+				exit_with_error('An array of field values needs to be provided to the database.', 'Value: ' . debug_dump($values));
+			}
 
 			$set_sql = [];
 			$set_parameters = [];
