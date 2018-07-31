@@ -10,6 +10,11 @@
 				$response = response_get();
 
 			//--------------------------------------------------
+			// Set the 'c' cookie, for the HTTP Observatory
+
+				cookie::init();
+
+			//--------------------------------------------------
 			// Response
 
 				$response->head_add_html("\n\n\t" . '<meta name="google-site-verification" content="4xz-gkRYk_S0uK9yw8UzhPDTy1EZEMtLmWr4pnkGoVs" />');
