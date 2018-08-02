@@ -1761,7 +1761,7 @@ exit();
 				// TODO: Normalise password?
 				//
 				// https://www.quora.com/Why-are-high-ANSI-characters-not-allowed-in-passwords/answer/Jeffrey-Goldberg
-				// https://twitter.com/craigfrancis/status/1024616220048404481
+				// https://twitter.com/craigfrancis/status/1024963204810780672
 				// http://www.unicode.org/reports/tr15/#Norm_Forms
 				//
 				// $string = "\u{1E9B}\u{0323}";
