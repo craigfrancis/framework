@@ -15,7 +15,7 @@
 //--------------------------------------------------
 // 3. Create a new key
 
-	encryption::key_symmetric_create('my-key');
+	$new_key_id = encryption::key_symmetric_create('my-key');
 
 //--------------------------------------------------
 // 4. Decrypt with old key
@@ -28,7 +28,12 @@
 	$encrypted_2 = encryption::encode($decrypted, 'my-key');
 
 //--------------------------------------------------
-// 6. Decrypt with new key
+// 6. Cleanup old keys (delete them)
+
+	// TODO: encryption::key_cleanup('my-key', [$new_key_id]);
+
+//--------------------------------------------------
+// 7. Decrypt with new key
 
 	$decrypted_2 = encryption::decode($encrypted_2, 'my-key');
 
