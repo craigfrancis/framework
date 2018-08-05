@@ -66,13 +66,15 @@
 
 			if (function_exists('sodium_crypto_aead_chacha20poly1305_ietf_encrypt') && config::get('encryption.version') !== 1) {
 
-				return 'KS2-' . base64_encode(sodium_crypto_aead_chacha20poly1305_ietf_keygen());
+				$key_value = 'KS2-' . base64_encode(sodium_crypto_aead_chacha20poly1305_ietf_keygen());
 
 			} else {
 
-				return 'KS1-' . base64_encode(openssl_random_pseudo_bytes(256/8)); // Recommended 256 bit key... https://gist.github.com/atoponce/07d8d4c833873be2f68c34f9afc5a78a
+				$key_value = 'KS1-' . base64_encode(openssl_random_pseudo_bytes(256/8)); // Recommended 256 bit key... https://gist.github.com/atoponce/07d8d4c833873be2f68c34f9afc5a78a
 
 			}
+
+			return $key_value;
 
 		}
 
@@ -82,7 +84,7 @@
 
 				$keypair = sodium_crypto_box_keypair();
 
-				return [
+				$key_value = [
 						'KA2P-' . base64_encode(sodium_crypto_box_publickey($keypair)),
 						'KA2S-' . base64_encode(sodium_crypto_box_secretkey($keypair)),
 					];
@@ -102,12 +104,14 @@
 
 				$public_key = openssl_pkey_get_details($res);
 
-				return [
+				$key_value = [
 						'KA1P-' . base64_encode($public_key['key']),
 						'KA1S-' . base64_encode($secret_key),
 					];
 
 			}
+
+			return $key_value;
 
 		}
 
