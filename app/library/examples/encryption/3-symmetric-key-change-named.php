@@ -43,6 +43,7 @@
 	echo debug_dump([
 			$encrypted,
 			$decrypted,
+			$new_key_id,
 			$encrypted_2,
 			$decrypted_2,
 		]);
