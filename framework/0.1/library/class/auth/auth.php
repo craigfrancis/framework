@@ -1704,6 +1704,34 @@ exit();
 			private static function _password_prepare($password) {
 
 					//--------------------------------------------------
+					// As certain unicode characters can be encoded in
+					// multiple ways (e.g. depending on keyboard, browser,
+					// operating system, etc), then they should be normalised.
+					//
+					// NF* vs NFK*, we use the latter, as per NIST guidelines.
+					// While it will reduce entropy (the "ﬀ" ligature is
+					// treated the same as the separate characters "ff"),
+					// it means users are less likely to have issues, e.g.
+					// a shared account, one user enters the password
+					// manually, the other doing a copy/paste.
+					//
+					// *D vs *C, we use the former, as we only care about
+					// decomposing for normalisation. *C includes this step,
+					// but also goes on to replace canonically equivalent
+					// characters, which isn't needed.
+					//
+					// NIST 800-63B:
+					// The verifier SHOULD apply the Normalization Process
+					// for Stabilized Strings using either the NFKC or NFKD.
+					//
+					// https://www.quora.com/Why-are-high-ANSI-characters-not-allowed-in-passwords/answer/Jeffrey-Goldberg
+					// https://twitter.com/craigfrancis/status/1024963204810780672
+					// http://www.unicode.org/reports/tr15/#Norm_Forms
+					//--------------------------------------------------
+
+				$password = normalizer_normalize($password, Normalizer::FORM_KD);
+
+					//--------------------------------------------------
 					// BCrypt truncates on the NULL character, and
 					// some implementations truncate the value to
 					// the first 72 bytes.
@@ -1757,24 +1785,6 @@ exit();
 					//     });
 					//
 					//--------------------------------------------------
-
-				// TODO: Normalise password?
-				//
-				// https://www.quora.com/Why-are-high-ANSI-characters-not-allowed-in-passwords/answer/Jeffrey-Goldberg
-				// https://twitter.com/craigfrancis/status/1024963204810780672
-				// http://www.unicode.org/reports/tr15/#Norm_Forms
-				//
-				// $string = "\u{1E9B}\u{0323}";
-				// function numeric_value($string) {
-				// 	return array_map('dechex', array_map('IntlChar::ord', preg_split('//u', $string, null, PREG_SPLIT_NO_EMPTY)));
-				// }
-				// $output = [
-				// 		$string,
-				// 		numeric_value(normalizer_normalize($string, Normalizer::FORM_D)),
-				// 		numeric_value(normalizer_normalize($string, Normalizer::FORM_C)),
-				// 		numeric_value(normalizer_normalize($string, Normalizer::FORM_KD)), // <-- Jeffrey Goldberg thinks it should be this one.
-				// 		numeric_value(normalizer_normalize($string, Normalizer::FORM_KC)),
-				// 	];
 
 				return base64_encode(hash('sha384', $password, true));
 
