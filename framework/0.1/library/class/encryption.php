@@ -106,11 +106,11 @@
 				return self::_key_get($name, $key_id, 'P');
 			}
 
-			// public static function key_get_secret($name, $key_id = NULL) {
+			// public static function key_get_secret($name, $key_id = NULL) { // Only enable if it's ever needed.
 			// 	return self::_key_get($name, $key_id, 'S');
 			// }
 
-			// public static function key_cleanup($name, $keep_ids) {
+			// public static function key_cleanup($name, $keep_ids) { // TODO
 			// }
 
 		//--------------------------------------------------
