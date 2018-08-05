@@ -545,3 +545,12 @@ background:#EEE;
 #p_examples_form_methods ul .parameters {
 color:#767676;
 }
+
+p.example {
+white-space:pre;
+tab-size:2;
+font-family:"Courier";
+border:1px solid #000;
+padding:0.5em;
+overflow:auto;
+}

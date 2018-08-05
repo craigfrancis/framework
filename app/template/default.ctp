@@ -177,6 +177,7 @@
 				$section_title = 'Examples';
 
 				$section_nav->link_add('/examples/form/', 'Form');
+				$section_nav->link_add('/examples/encryption/', 'Encryption');
 				$section_nav->link_add('/examples/image/', 'Image');
 				$section_nav->link_add('/examples/loading/', 'Loading');
 				$section_nav->link_add('/examples/table/', 'Table');

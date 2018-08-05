@@ -75,6 +75,7 @@
 
 				if (!is_file($type_path)) {
 					error_send('page-not-found');
+					exit();
 				}
 
 				$response->set('type_name', $type_name);
