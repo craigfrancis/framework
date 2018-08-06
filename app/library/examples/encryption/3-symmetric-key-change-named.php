@@ -30,7 +30,7 @@
 //--------------------------------------------------
 // 6. Cleanup old keys (delete them)
 
-	// TODO: encryption::key_cleanup('my-key', [$new_key_id]);
+	encryption::key_cleanup('my-key', [$new_key_id]);
 
 //--------------------------------------------------
 // 7. Decrypt with new key

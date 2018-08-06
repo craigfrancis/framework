@@ -172,8 +172,31 @@
 			// 	return self::_key_get($name, $key_id, 'S');
 			// }
 
-			// public static function key_cleanup($name, $keep_ids) { // TODO
-			// }
+			public static function key_cleanup($name, $keep_ids = NULL) {
+
+				if ($keep_ids === NULL) {
+
+					$keys = [];
+
+				} else {
+
+					$keys = self::_key_get($name, 'all');
+
+					foreach ($keys as $id => $value) {
+						if (!in_array($id, $keep_ids)) {
+							unset($keys[$id]);
+						}
+					}
+
+				}
+
+				$path = config::get('encryption.key_folder') . '/' . safe_file_name($name);
+
+				file_put_contents($path, json_encode($keys));
+
+				self::_key_cache_value($name, $keys);
+
+			}
 
 		//--------------------------------------------------
 		// Encode / decode interface

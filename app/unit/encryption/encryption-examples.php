@@ -94,6 +94,8 @@
 							}
 						}
 
+						$this->key_cleanup();
+
 						ksort($results);
 
 						$this->set('results', $results);
@@ -148,6 +150,8 @@
 
 					$this->set('example_output', $example_output);
 
+					$this->key_cleanup();
+
 				}
 
 			//--------------------------------------------------
@@ -159,6 +163,11 @@
 					$this->set('example_text', file_get_contents($text_path));
 				}
 
+		}
+
+		private function key_cleanup() {
+			encryption::key_cleanup('my-key');
+			encryption::key_cleanup('recipient-key');
 		}
 
 	}
