@@ -69,6 +69,42 @@
 				return [config::get('encryption.error_message'), config::get('encryption.error_extra')];
 			}
 
+			public static function upgradable($thing) {
+
+				list($type) = explode('-', $thing);
+
+				if ($type === 'KS2' || $type === 'ES2') {
+
+					return false; // Best available.
+
+				} else if ($type === 'KS1' || $type === 'ES1') {
+
+					if (function_exists('sodium_crypto_aead_chacha20poly1305_ietf_encrypt')) {
+						return true;
+					} else {
+						return false; // Will do for now.
+					}
+
+				} else if ($type === 'KA2P' || $type === 'KA2S' || $type === 'EAS2' || $type === 'EAP2' || $type === 'EAT2') {
+
+					return false; // Best available.
+
+				} else if ($type === 'KA1P' || $type === 'KA1S' || $type === 'EAS1' || $type === 'EAP1' || $type === 'EAT1') {
+
+					if (function_exists('sodium_crypto_box')) {
+						return true;
+					} else {
+						return false; // Will do for now.
+					}
+
+				} else {
+
+					exit_with_error('Unrecognised encryption type "' . $type . '"');
+
+				}
+
+			}
+
 		//--------------------------------------------------
 		// Create key
 
@@ -138,45 +174,6 @@
 
 			// public static function key_cleanup($name, $keep_ids) { // TODO
 			// }
-
-		//--------------------------------------------------
-		// Upgradable
-
-			public static function upgradable($thing) {
-
-				list($type) = explode('-', $thing);
-
-				if ($type === 'KS2' || $type === 'ES2') {
-
-					return false; // Best available.
-
-				} else if ($type === 'KS1' || $type === 'ES1') {
-
-					if (function_exists('sodium_crypto_aead_chacha20poly1305_ietf_encrypt')) {
-						return true;
-					} else {
-						return false; // Will do for now.
-					}
-
-				} else if ($type === 'KA2P' || $type === 'KA2S' || $type === 'EAS2' || $type === 'EAP2' || $type === 'EAT2') {
-
-					return false; // Best available.
-
-				} else if ($type === 'KA1P' || $type === 'KA1S' || $type === 'EAS1' || $type === 'EAP1' || $type === 'EAT1') {
-
-					if (function_exists('sodium_crypto_box')) {
-						return true;
-					} else {
-						return false; // Will do for now.
-					}
-
-				} else {
-
-					exit_with_error('Unrecognised encryption type "' . $type . '"');
-
-				}
-
-			}
 
 		//--------------------------------------------------
 		// Encode / decode interface
