@@ -40,10 +40,10 @@
 	//   EAS2: Asymmetric, needs Secret key to open, LibSodium
 	//   EAP1: Asymmetric, needs Public key to open, OpenSSL
 	//   EAP2: Asymmetric, needs Public key to open, LibSodium
-	//   EAT1: Asymmetric, needs receiver private key and sender public key to open, LibSodium
-	//   EAT2: Asymmetric, needs receiver private key and sender public key to open, LibSodium
+	//   EAT1: Asymmetric, needs Receiver Secret key and Sender Public key to open, LibSodium
+	//   EAT2: Asymmetric, needs Receiver Secret key and Sender Public key to open, LibSodium
 	//   -
-	//   [0-9]+ ... Key IDs, separated by a forward slash
+	//   [0-9]+ ... Key IDs, separated by a forward slash in asymmetric mode.
 	//
 	//--------------------------------------------------
 
@@ -168,26 +168,22 @@
 				return self::_key_get($name, $key_id, 'P');
 			}
 
-			// public static function key_get_secret($name, $key_id = NULL) { // Only enable if it's ever needed.
+			// public static function key_get_secret($name, $key_id = NULL) { // Only enable if it's needed.
 			// 	return self::_key_get($name, $key_id, 'S');
 			// }
 
 			public static function key_cleanup($name, $keep_ids = NULL) {
 
+				$keys = self::_key_get($name, 'all'); // Ensures the file already exists, even if we wipe them all out.
+
 				if ($keep_ids === NULL) {
-
 					$keys = [];
-
 				} else {
-
-					$keys = self::_key_get($name, 'all');
-
 					foreach ($keys as $id => $value) {
 						if (!in_array($id, $keep_ids)) {
 							unset($keys[$id]);
 						}
 					}
-
 				}
 
 				$path = config::get('encryption.key_folder') . '/' . safe_file_name($name);
