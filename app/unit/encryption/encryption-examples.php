@@ -87,7 +87,7 @@
 
 								ob_start();
 
-								require_once($example['path']);
+								script_run($example['path']);
 
 								$results[$ref . '-' . $type] = ob_get_clean();
 
@@ -142,7 +142,7 @@
 
 					ob_start();
 
-					require_once($example_path);
+					script_run($example_path);
 
 					$example_output = ob_get_clean();
 

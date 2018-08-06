@@ -555,12 +555,13 @@
 
 				$folder_perms = substr(sprintf('%o', fileperms($folder)), -4);
 				if ($folder_perms !== '0700') {
-					exit_with_error('The encryption keys folder must have a permission of 0700', 'Current permissions: ' . $folder_perms . "\n" . $folder);
+					exit_with_error('The encryption keys folder must have a permission of 0700.', $folder . "\n" . 'Current permissions: ' . $folder_perms);
 				}
 
 				if (!is_writable($folder)) {
-					$user = posix_getpwuid(posix_geteuid());
-					exit_with_error('The encryption keys folder must owned by the web-server process', 'Current owner: ' . $user['name'] . "\n" . $folder);
+					$account_owner = posix_getpwuid(fileowner($folder));
+					$account_process = posix_getpwuid(posix_geteuid());
+					exit_with_error('The encryption keys folder cannot be written to (check ownership).', $folder . "\n" . 'Current owner: ' . $account_owner['name'] . "\n" . 'Current process: ' . $account_process['name']);
 				}
 
 				if (is_file($path)) {
@@ -585,10 +586,10 @@
 			private static function _key_get($name, $key_id = NULL, $asymmetric_type = NULL) {
 
 				if (!is_string($name)) {
-					exit_with_error('Cannot use an array for an encryption key.', debug_dump($name));
+					exit_with_error('The encryption key must be a string, not an ' . gettype($name) . '.', debug_dump($name));
 				}
 
-				if (strlen($name) > self::$key_name_max_length) { // Quick way to identify key_name vs key_value
+				if (strlen($name) > self::$key_name_max_length) { // Quick way to identify key_name vs key_encoded
 
 					$key_encoded = $name;
 
@@ -630,7 +631,7 @@
 					}
 
 					if ($key_id === NULL || !isset($keys[$key_id])) {
-						exit_with_error('The encryption key does not contain the specified ID.', debug_dump($key_id));
+						exit_with_error('Cannot find the encryption key with the specified ID.', 'Key Name: ' . $name . "\n" . 'Key ID: ' . debug_dump($key_id));
 					}
 
 					$key_encoded = $keys[$key_id];
@@ -639,7 +640,7 @@
 
 						list($key_public, $key_secret) = $key_encoded;
 
-						$key_encoded = ($asymmetric_type === 'P' ? $key_public : $key_secret); // Internal functions will expect the secret key by default.
+						$key_encoded = ($asymmetric_type === 'P' ? $key_public : $key_secret); // Internal functions expect the secret key by default - external code should be using encryption::key_get_public('my-key')
 
 					}
 
@@ -647,17 +648,21 @@
 
 				list($key_type, $key_extracted_id, $key_value) = array_pad(explode('-', $key_encoded, 3), 3, NULL);
 
-				if ($key_id == 0) {
+				if ($key_id == 0) { // During asymmetric encoding, the provided public key specifies which ID to use.
 					$key_id = $key_extracted_id;
 				}
 
 				if ($asymmetric_type !== NULL) {
+
 					return $key_type . '-' . $key_id . '-' . $key_value;
+
+				} else {
+
+					$key_value = base64_decode($key_value); // Base64 encoding is not "constant time", which might be an issue, but unlikely considering a network connection would introduce ~5ms delays ... https://twitter.com/CiPHPerCoder/status/947251405911412739 ... https://paragonie.com/blog/2016/06/constant-time-encoding-boring-cryptography-rfc-4648-and-you
+
+					return [$key_type, $key_id, $key_value];
+
 				}
-
-				$key_value = base64_decode($key_value); // Base64 encoding is not "constant time", which might be an issue, but unlikely considering a network connection would introduce ~5ms delays ... https://twitter.com/CiPHPerCoder/status/947251405911412739 ... https://paragonie.com/blog/2016/06/constant-time-encoding-boring-cryptography-rfc-4648-and-you
-
-				return [$key_type, $key_id, $key_value];
 
 			}
 
