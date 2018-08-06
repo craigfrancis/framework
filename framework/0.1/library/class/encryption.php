@@ -4,7 +4,7 @@
 // https://www.phpprime.com/examples/encryption/
 //--------------------------------------------------
 
-	// //--------------------------------------------------
+	//--------------------------------------------------
 	//
 	// 	if (encryption::upgradable($key)) {
 	// 		// Generate new key, and re-encrypt.
@@ -14,12 +14,38 @@
 	// 		// Re-encrypt with new key.
 	// 	}
 	//
-	// //--------------------------------------------------
+	//--------------------------------------------------
 	//
 	// config::set('encryption.version', 2);
 	// config::set('encryption.error_return', false); // or could be NULL
 	//
-	// //--------------------------------------------------
+	//--------------------------------------------------
+	//
+	// Key prefixes
+	//
+	//   KS1: Symmetric, OpenSSL
+	//   KS2: Symmetric, LibSodium
+	//   KA1P: Asymmetric, OpenSSL, Public
+	//   KA1S: Asymmetric, OpenSSL, Secret
+	//   KA2P: Asymmetric, LibSodium, Public
+	//   KA2S: Asymmetric, LibSodium, Public
+	//   -
+	//   [0-9]+ ... Key ID, where 0 is undefined.
+	//
+	// Encrypted data prefixes
+	//
+	//   ES1: Symmetric, OpenSSL
+	//   ES2: Symmetric, LibSodium
+	//   EAS1: Asymmetric, needs Secret key to open, OpenSSL
+	//   EAS2: Asymmetric, needs Secret key to open, LibSodium
+	//   EAP1: Asymmetric, needs Public key to open, OpenSSL
+	//   EAP2: Asymmetric, needs Public key to open, LibSodium
+	//   EAT1: Asymmetric, needs receiver private key and sender public key to open, LibSodium
+	//   EAT2: Asymmetric, needs receiver private key and sender public key to open, LibSodium
+	//   -
+	//   [0-9]+ ... Key IDs, separated by a forward slash
+	//
+	//--------------------------------------------------
 
 	config::set_default('encryption.version', NULL);
 	config::set_default('encryption.error_return', -1);
@@ -132,11 +158,11 @@
 						return false; // Will do for now.
 					}
 
-				} else if ($type === 'KA2P' || $type === 'KA2S' || $type === 'EAO2' || $type === 'EAT2') {
+				} else if ($type === 'KA2P' || $type === 'KA2S' || $type === 'EAS2' || $type === 'EAP2' || $type === 'EAT2') {
 
 					return false; // Best available.
 
-				} else if ($type === 'KA1P' || $type === 'KA1S' || $type === 'EAO1' || $type === 'EAT1') {
+				} else if ($type === 'KA1P' || $type === 'KA1S' || $type === 'EAS1' || $type === 'EAP1' || $type === 'EAT1') {
 
 					if (function_exists('sodium_crypto_box')) {
 						return true;
@@ -183,8 +209,8 @@
 
 					if ($key2 === NULL) {
 
-						$return_type = 'EAO2';
-						$return_values = self::_encode_asymmetric_one_sodium($key1_value, $input);
+						$return_type = 'EAS2';
+						$return_values = self::_encode_asymmetric_to_secret_sodium($key1_value, $input);
 
 					} else {
 
@@ -199,12 +225,17 @@
 
 					}
 
+				} else if ($key1_type === 'KA2S' && $key2 === NULL) {
+
+					$return_type = 'EAP2';
+					$return_values = self::_encode_asymmetric_to_public_sodium($key1_value, $input);
+
 				} else if ($key1_type === 'KA1P') {
 
 					if ($key2 === NULL) {
 
-						$return_type = 'EAO1';
-						$return_values = self::_encode_asymmetric_one_openssl($key1_value, $input);
+						$return_type = 'EAS1';
+						$return_values = self::_encode_asymmetric_to_secret_openssl($key1_value, $input);
 
 					} else {
 
@@ -220,6 +251,11 @@
 						}
 
 					}
+
+				} else if ($key1_type === 'KA1S' && $key2 === NULL) {
+
+					$return_type = 'EAP1';
+					$return_values = self::_encode_asymmetric_to_public_openssl($key1_value, $input);
 
 				}
 
@@ -262,19 +298,31 @@
 
 					$return = self::_decode_symmetric_openssl($key1_value, $encrypted, $vi, $hmac, $salt, $key2);
 
-				} else if ($input_type === 'EAO2' && $key1_type === 'KA2S' && $key2 === NULL) {
+				} else if ($input_type === 'EAS2' && $key1_type === 'KA2S' && $key2 === NULL) {
 
 					$encrypted = base64_decode($input_value);
 
-					$return = self::_decode_asymmetric_one_sodium($key1_value, $encrypted);
+					$return = self::_decode_asymmetric_to_secret_sodium($key1_value, $encrypted);
 
-				} else if ($input_type === 'EAO1' && $key1_type === 'KA1S' && $key2 === NULL) {
+				} else if ($input_type === 'EAS1' && $key1_type === 'KA1S' && $key2 === NULL) {
 
 					$data_encrypted = base64_decode($input_value);
 					$keys_encrypted = base64_decode($input_nonce);
 					$hmac_value = base64_decode($input_hmac);
 
-					$return = self::_decode_asymmetric_one_openssl($key1_value, $data_encrypted, $keys_encrypted, $hmac_value);
+					$return = self::_decode_asymmetric_to_secret_openssl($key1_value, $data_encrypted, $keys_encrypted, $hmac_value);
+
+				} else if ($input_type === 'EAP2' && $key1_type === 'KA2P' && $key2 === NULL) {
+
+					$encrypted = base64_decode($input_value);
+
+					$return = self::_decode_asymmetric_to_public_sodium($key1_value, $encrypted);
+
+				} else if ($input_type === 'EAP1' && $key1_type === 'KA1P' && $key2 === NULL) {
+
+					$encrypted = base64_decode($input_value);
+
+					$return = self::_decode_asymmetric_to_public_openssl($key1_value, $encrypted);
 
 				} else if ($input_type === 'EAT2' && $key1_type === 'KA2S') {
 
@@ -382,7 +430,7 @@
 
 			}
 
-			private static function _encode_asymmetric_one_sodium($key_public, $input) { // Public key only ... https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use#crypto-box-seal-sample-php
+			private static function _encode_asymmetric_to_secret_sodium($key_public, $input) { // Public key only ... https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use#crypto-box-seal-sample-php
 
 				$encrypted = sodium_crypto_box_seal($input, $key_public);
 
@@ -390,7 +438,7 @@
 
 			}
 
-			private static function _decode_asymmetric_one_sodium($key_secret, $encrypted) {
+			private static function _decode_asymmetric_to_secret_sodium($key_secret, $encrypted) {
 
 				$key_public = sodium_crypto_box_publickey_from_secretkey($key_secret);
 
@@ -400,7 +448,7 @@
 
 			}
 
-			private static function _encode_asymmetric_one_openssl($key_public, $input) { // Public key only LEGACY ... https://github.com/defuse/php-encryption/blob/ca31794ef421a1c49b00cf89b9cf52a489dbab0f/src/Crypto.php#L251
+			private static function _encode_asymmetric_to_secret_openssl($key_public, $input) { // Public key only LEGACY ... https://github.com/defuse/php-encryption/blob/ca31794ef421a1c49b00cf89b9cf52a489dbab0f/src/Crypto.php#L251
 
 				$data_key = openssl_random_pseudo_bytes(32); // 256/8
 
@@ -423,7 +471,7 @@
 
 			}
 
-			private static function _decode_asymmetric_one_openssl($key_secret, $data_encrypted, $keys_encrypted, $hmac_value) {
+			private static function _decode_asymmetric_to_secret_openssl($key_secret, $data_encrypted, $keys_encrypted, $hmac_value) {
 
 				$key_res = openssl_pkey_get_private($key_secret);
 				$key_public = openssl_pkey_get_details($key_res);
@@ -446,6 +494,30 @@
 				}
 
 				return openssl_decrypt($data_encrypted, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $iv);
+
+			}
+
+			private static function _encode_asymmetric_to_public_sodium($key_secret, $input) {
+
+				return ['TODO'];
+
+			}
+
+			private static function _decode_asymmetric_to_public_sodium($key_public, $encrypted) {
+
+				return $encrypted;
+
+			}
+
+			private static function _encode_asymmetric_to_public_openssl($key_secret, $input) {
+
+				return ['TODO'];
+
+			}
+
+			private static function _decode_asymmetric_to_public_openssl($key_public, $encrypted) {
+
+				return $encrypted;
 
 			}
 

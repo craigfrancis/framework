@@ -12,16 +12,12 @@
 
 	$message = 'Hello';
 
-	// $encrypted = encryption::encode($message, 'my-key');
-
-	$encrypted = 'TODO';
+	$encrypted = encryption::encode($message, 'my-key');
 
 //--------------------------------------------------
 // 3. Decrypt
 
-	// $decrypted = encryption::decode($encrypted, $key_public);
-
-	$decrypted = 'TODO';
+	$decrypted = encryption::decode($encrypted, $key_public);
 
 //--------------------------------------------------
 // Results

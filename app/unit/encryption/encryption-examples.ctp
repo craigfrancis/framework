@@ -35,7 +35,7 @@
 		<p><?= html(ucfirst($example_type)) ?> example: <?= html($example_name) ?></p>
 
 		<?php if (isset($example_text)) { ?>
-			<p><?= html($example_text) ?></p>
+			<p><?= nl2br(html($example_text)) ?></p>
 		<?php } ?>
 
 		<p class="example"><?= html($example_content) ?></p>
