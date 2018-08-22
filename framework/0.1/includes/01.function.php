@@ -582,22 +582,30 @@
 
 	function format_postcode($postcode, $country = 'UK') {
 
-		// UK: https://en.wikipedia.org/wiki/UK_postcodes
-		// A9 9AA | A99 9AA | AA9 9AA | AA99 9AA | A9A 9AA | AA9A 9AA | BFPO 99
+		if ($country == 'UK') {
 
-		$postcode = preg_replace('/[^A-Z0-9]/', '', strtoupper($postcode));
+			// UK: https://en.wikipedia.org/wiki/UK_postcodes
+			// A9 9AA | A99 9AA | AA9 9AA | AA99 9AA | A9A 9AA | AA9A 9AA | BFPO 99
 
-		if (preg_match('/^([A-Z](?:\d[A-Z\d]?|[A-Z]\d[A-Z\d]?))(\d[A-Z]{2})$/', $postcode, $matches)) {
+			$postcode = preg_replace('/[^A-Z0-9]/', '', strtoupper($postcode));
 
-			return $matches[1] . ' ' . $matches[2];
+			if (preg_match('/^([A-Z](?:\d[A-Z\d]?|[A-Z]\d[A-Z\d]?))(\d[A-Z]{2})$/', $postcode, $matches)) {
 
-		} else if (preg_match('/^(BFPO) *([0-9]+)$/', $postcode, $matches)) { // British forces post office
+				return $matches[1] . ' ' . $matches[2];
 
-			return $matches[1] . ' ' . $matches[2];
+			} else if (preg_match('/^(BFPO) *([0-9]+)$/', $postcode, $matches)) { // British forces post office
+
+				return $matches[1] . ' ' . $matches[2];
+
+			} else {
+
+				return NULL;
+
+			}
 
 		} else {
 
-			return NULL;
+			return $postcode; // Unknown country, don't change
 
 		}
 
