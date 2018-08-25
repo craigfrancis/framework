@@ -515,7 +515,7 @@
 
 			private static function _encode_asymmetric_to_public_sodium($key_secret, $input) {
 
-				return ['TODO'];
+				exit_with_error('Cannot accept a public key via encryption::encode(), as that is for signing purposes');
 
 			}
 
@@ -527,7 +527,7 @@
 
 			private static function _encode_asymmetric_to_public_openssl($key_secret, $input) {
 
-				return ['TODO'];
+				exit_with_error('Cannot accept a public key via encryption::encode(), as that is for signing purposes');
 
 			}
 

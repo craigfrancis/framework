@@ -12,12 +12,16 @@
 
 	$message = 'Hello';
 
-	$encrypted = encryption::encode($message, 'my-key');
+	// $encrypted = encryption::encode($message, 'my-key');
+
+	$encrypted = 'Not supported';
 
 //--------------------------------------------------
 // 3. Decrypt
 
-	$decrypted = encryption::decode($encrypted, $key_public);
+	// $decrypted = encryption::decode($encrypted, $key_public);
+
+	$decrypted = $encrypted;
 
 //--------------------------------------------------
 // Results
