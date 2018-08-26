@@ -5,16 +5,11 @@
 		public function action_index() {
 
 			//--------------------------------------------------
-			// Disabled
-
-				if (version_compare(PHP_VERSION, '5.2.0', '<')) {
-					return;
-				}
-
-			//--------------------------------------------------
-			// Resources
+			// Config
 
 				$response = response_get();
+
+				$search_term = 'Craig';
 
 			//--------------------------------------------------
 			// Form setup
@@ -23,9 +18,8 @@
 				$form->form_class_set('basic_form');
 				$form->form_button_set('Search');
 
-				$field_search = new form_field_text($form, 'Search');
-				$field_search->min_length_set('Your search is required.');
-				$field_search->max_length_set('Your search cannot be longer than XXX characters.', 250);
+				$field_search = new form_field_info($form, 'Search');
+				$field_search->value_set($search_term);
 
 			//--------------------------------------------------
 			// Form submitted
@@ -51,15 +45,13 @@
 							//--------------------------------------------------
 							// First page
 
-								$browser->get('http://google.co.uk'); // Performs a redirect to www.google.co.uk
+								$browser->get('https://google.co.uk'); // Performs a redirect to www.google.co.uk
 
 							//--------------------------------------------------
 							// Search form
 
 								$browser->form_select();
-
-								$browser->form_field_set('q', $field_search->value_get());
-
+								$browser->form_field_set('q', $search_term);
 								$browser->form_submit();
 
 							//--------------------------------------------------
@@ -75,8 +67,12 @@
 							//--------------------------------------------------
 							// Print
 
-								debug($browser->url_get());
-								debug($browser->data_get());
+								config::set('debug.show', false);
+
+								mime_set('text/plain');
+
+								echo debug_dump($browser->url_get()) . "\n\n";
+								echo debug_dump($browser->data_get());
 
 								exit();
 
@@ -88,7 +84,6 @@
 			// Form defaults
 
 				if ($form->initial()) {
-					$field_search->value_set('Craig Francis');
 				}
 
 			//--------------------------------------------------

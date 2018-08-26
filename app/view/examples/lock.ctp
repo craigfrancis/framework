@@ -1,18 +1,19 @@
 
-	<?= $form->html(); ?>
+	<h1>Lock helper</h1>
+	<p>This is a simple example of the <a href="/doc/helpers/lock/">lock helper</a>.</p>
 
-	<?php if (isset($lock_open)) { ?>
+	<p><strong>State</strong>: <?= html($lock_open_message) ?></p>
 
-		<p><strong>Lock</strong>: <?= html($lock_open ? 'Open' : 'Closed') ?></p>
-
-		<?php if (isset($lock_error)) { ?>
-			<p><strong>Error</strong>: <?= html($lock_error) ?></p>
-		<?php } ?>
-
-		<?php if (isset($lock_name)) { ?>
-			<p><strong>Name</strong>: <?= html($lock_name) ?></p>
-		<?php } ?>
-
-		<?php debug($lock_data); ?>
-
+	<?php if (isset($lock_error)) { ?>
+		<p><strong>Error</strong>: <?= html($lock_error) ?></p>
 	<?php } ?>
+
+	<?php if (isset($lock_name)) { ?>
+		<p><strong>Name</strong>: <?= html($lock_name) ?></p>
+	<?php } ?>
+
+	<?php if (!is_array($lock_data) || count($lock_data) > 0) { ?>
+		<p><pre><?= html(debug_dump($lock_data)); ?></pre></p>
+	<?php } ?>
+
+	<?= $form->html(); ?>

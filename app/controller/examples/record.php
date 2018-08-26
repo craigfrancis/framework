@@ -9,6 +9,7 @@
 			}
 
 			config::set('debug.show', false);
+
 			mime_set('text/plain');
 
 			$record = record_get(DB_PREFIX . 'form_fields', 1, array(
@@ -42,34 +43,10 @@
 					'type_set',
 				));
 
-			debug($record->fields_get());
-			debug($record->field_get('type_tinyint'));
-			debug($record->values_get());
-			debug($record->value_get('type_tinyint'));
-
-			// Testing the fields_get method on records, which did try to use the
-			// information from the SELECT... but that does not return enum/set
-			// options or work when adding a record.
-
-				// $db = db_get();
-				// $old = array();
-				// foreach ($db->fetch_fields(DB_PREFIX . 'form_fields') as $field_name => $field_info) {
-				// 	unset($field_info['default']);
-				// 	unset($field_info['extra']);
-				// 	unset($field_info['options']);
-				// 	unset($field_info['definition']);
-				// 	$old[$field_name] = $field_info;
-				// }
-				//
-				// $changes = array();
-				// foreach ($record->fields_get() as $field_name => $field_info) {
-				// 	foreach ($field_info as $info_name => $info_value) {
-				// 		if ($old[$field_name][$info_name] != $info_value) {
-				// 			$changes[$field_name][$info_name] = array($old[$field_name][$info_name], $info_value);
-				// 		}
-				// 	}
-				// }
-				// debug($changes);
+			echo debug_dump($record->fields_get()) . "\n";
+			echo debug_dump($record->field_get('type_tinyint')) . "\n";
+			echo debug_dump($record->values_get()) . "\n";
+			echo debug_dump($record->value_get('type_tinyint')) . "\n";
 
 			exit();
 

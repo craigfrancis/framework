@@ -5,9 +5,17 @@
 		public function action_index() {
 
 			//--------------------------------------------------
-			// Resources
+			// Config
 
 				$response = response_get();
+
+				$lock_open_message = NULL;
+
+			//--------------------------------------------------
+			// Lock
+
+				$lock = new lock('example');
+				$lock->time_out_set(3);
 
 			//--------------------------------------------------
 			// Form
@@ -18,12 +26,9 @@
 
 				if ($form->submitted() && $form->valid()) {
 
-					$lock = new lock('example');
-					$lock->time_out_set(2);
-
 					if ($lock->open()) {
 
-						$response->set('lock_open', true);
+						$lock_open_message = 'Opened';
 
 						$lock->data_set('name', 'Craig');
 
@@ -33,7 +38,9 @@
 								'field_3' => 'CCC',
 							));
 
-						sleep(5);
+						session::close();
+
+						sleep(5); // If you use 2 browser tabs, start one, wait 3 seconds (to timeout), then submit the other... the following check will fail.
 
 						if (!$lock->check()) {
 
@@ -51,19 +58,24 @@
 
 					} else {
 
-						$response->set('lock_open', false);
+						$form->error_add('The lock has already been opened by someone else.');
 
 					}
 
-					$response->set('lock_name', $lock->data_get('name'));
-					$response->set('lock_data', $lock->data_get());
-
 				}
 
-			//--------------------------------------------------
-			// Variables
-
 				$response->set('form', $form);
+
+			//--------------------------------------------------
+			// State
+
+				if ($lock_open_message === NULL) {
+					$lock_open_message = ($lock->locked() ? 'Open' : 'Closed');
+				}
+
+				$response->set('lock_open_message', $lock_open_message);
+				$response->set('lock_name', $lock->data_get('name'));
+				$response->set('lock_data', $lock->data_get());
 
 		}
 

@@ -104,6 +104,37 @@
 		padding: 0;
 	}
 
+	.error_list:focus {
+		outline: none;
+	}
+
+	.error_list,
+	.error_list > li > a[href^="#"],
+	.basic_form .error,
+	.delete_form .error,
+	.linear_form .error > .label,
+	.linear_form .error > .multi_label {
+		color: #D00;
+		background: inherit;
+		font-weight: bold;
+		text-decoration: none;
+	}
+
+	.error_list > li > a[href^="#"]:hover,
+	.error_list > li > a[href^="#"]:active,
+	.error_list > li > a[href^="#"]:focus {
+		text-decoration: underline;
+	}
+
+	.error_list > li {
+		padding-top: 0.13em;
+		padding-bottom: 0.13em;
+	}
+
+	.warning {
+		color: #D00;
+	}
+
 /*--------------------------------------------------*/
 /* Page Frame                                       */
 
@@ -342,13 +373,6 @@
 		padding-top: 3px;
 	}
 
-	.basic_form .error_list,
-	.basic_form .error {
-		color: #D00;
-		background: inherit;
-		font-weight: bold;
-	}
-
 	.basic_form .row {
 		padding: 7px 0 0 11.5em;
 		clear: both;
@@ -399,13 +423,6 @@
 
 	.delete_form fieldset {
 		margin: 0 0 1em 0;
-	}
-
-	.delete_form .error_list,
-	.delete_form .error {
-		color: #D00;
-		background: inherit;
-		font-weight: bold;
 	}
 
 /*--------------------------------------------------*/

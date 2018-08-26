@@ -21,7 +21,6 @@
 						'name',
 						'email',
 						'type',
-						'items',
 					));
 
 			//--------------------------------------------------
@@ -70,10 +69,16 @@
 
 								//--------------------------------------------------
 								// Store
-//exit('#' . $field_name->value_get());
-exit('#' . $field_type->value_get());
-exit('Updated?');
-									$form->db_save();
+
+									// $form->db_save();
+
+									config::set('debug.show', false);
+
+									mime_set('text/plain');
+
+									echo debug_dump($form->data_array_get());
+
+									exit();
 
 								//--------------------------------------------------
 								// Thank you message
@@ -227,7 +232,7 @@ exit('Updated?');
 					$field_hear->options_set(array('Internet search', 'Friend', 'Advertising'));
 					// $field_hear->value_set('Friend');
 					// $field_hear->label_option_set('');
-					$field_hear->required_error_set('Where you heard about us is required.');
+					// $field_hear->required_error_set('Where you heard about us is required.');
 
 					$field_accept_terms = new form_field_checkbox($form, 'Accept terms');
 					$field_accept_terms->db_field_set('check');
@@ -237,8 +242,8 @@ exit('Updated?');
 
 					$field_items = new form_field_checkboxes($form, 'Items');
 					$field_items->db_field_set('items');
-					//$field_items->db_field_set('items', 'key');
-					//$field_items->options_set($opt_itemss);
+					// $field_items->db_field_set('items', 'key');
+					// $field_items->options_set($opt_itemss);
 
 					$field_selection = new form_field_radios($form, 'Selection');
 					$field_selection->db_field_set('selection');
@@ -301,18 +306,15 @@ exit('Updated?');
 									$email = new email();
 									$email->request_table_add($values);
 
-									exit($email);
-
-debug_note($values);
-debug_note('Hello');
-exit();
+									echo $email->html();
+									exit();
 
 								//--------------------------------------------------
 								// Store
 
-									$form->db_value_set('ip', config::get('request.ip'));
-
-									$record_id = $form->db_insert();
+									// $form->db_value_set('ip', config::get('request.ip'));
+									//
+									// $record_id = $form->db_insert();
 
 								//--------------------------------------------------
 								// Next page
@@ -340,10 +342,6 @@ exit();
 
 				$response->set('home_url', url('/'));
 
-		}
-
-		public function action_thank_you($sub_page) {
-			debug($sub_page);
 		}
 
 	}

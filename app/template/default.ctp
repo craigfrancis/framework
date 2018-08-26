@@ -180,16 +180,12 @@
 				$section_nav->link_add('/examples/encryption/', 'Encryption');
 				$section_nav->link_add('/examples/image/', 'Image');
 				$section_nav->link_add('/examples/loading/', 'Loading');
+				$section_nav->link_add('/examples/lock/', 'Lock');
 				$section_nav->link_add('/examples/table/', 'Table');
 				$section_nav->link_add('/examples/browser/', 'Browser');
 				$section_nav->link_add('/examples/conversions/', 'Conversions');
 
-		} else {
-
-
-
 		}
-
 
 ?>
 <!DOCTYPE html>
