@@ -31,7 +31,10 @@ This uses the [session helper](../../doc/helpers/session.md) to store the loadin
 
 	// $loading->template_test();
 
-	$loading->check(); // Will exit() with loading page if still running, return false if not running, or return the variables if there was a time-out.
+	$loading->check();
+		// Will exit() with loading page if still running,
+		// return the variables if there was a time-out,
+		// or return false if not running.
 
 	if ($form->submitted()) {
 		if ($form->valid()) {
@@ -40,8 +43,8 @@ This uses the [session helper](../../doc/helpers/session.md) to store the loadin
 				// If you need to change the url (e.g. adding an id)
 
 			$loading->start('Starting action');
-				// A string will replace [MESSAGE] in the template,
-				// or use an array for multiple tags.
+				// This string will replace [MESSAGE] in the template,
+				// or you can use an array for multiple tags.
 
 			sleep(5);
 
