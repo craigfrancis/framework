@@ -241,10 +241,18 @@
 
 					}
 
-				} else if ($key1_type === 'KA2S' && $key2 === NULL) {
+				} else if ($key1_type === 'KA2S') {
 
-					$return_type = 'EAP2';
-					$return_values = self::_encode_asymmetric_to_public_sodium($key1_value, $input);
+					if ($key2 === 'sign') {
+
+						$return_type = 'EAP2';
+						$return_values = self::_encode_asymmetric_to_public_sodium($key1_value, $input);
+
+					} else {
+
+						exit_with_error('If you only want to sign something, so anyone can read the contents, you need to specify that via encryption::encode($input, $secret_key, \'sign\')');
+
+					}
 
 				} else if ($key1_type === 'KA1P') {
 
@@ -268,10 +276,18 @@
 
 					}
 
-				} else if ($key1_type === 'KA1S' && $key2 === NULL) {
+				} else if ($key1_type === 'KA1S') {
 
-					$return_type = 'EAP1';
-					$return_values = self::_encode_asymmetric_to_public_openssl($key1_value, $input);
+					if ($key2 === 'sign') {
+
+						$return_type = 'EAP1';
+						$return_values = self::_encode_asymmetric_to_public_openssl($key1_value, $input);
+
+					} else {
+
+						exit_with_error('If you only want to sign something, so anyone can read the contents, you need to specify that via encryption::encode($input, $secret_key, \'sign\')');
+
+					}
 
 				}
 
@@ -288,7 +304,7 @@
 				config::set('encryption.error_message', NULL);
 				config::set('encryption.error_extra', NULL);
 
-				list($input_type, $input_keys, $input_value, $input_nonce, $input_hmac, $input_salt) = array_pad(explode('-', $input), 6, NULL);
+				list($input_type, $input_keys, $input_1, $input_2, $input_3, $input_4) = array_pad(explode('-', $input), 6, NULL);
 
 				list($key1_id, $key2_id) = array_pad(explode('/', $input_keys, 2), 2, -1);
 
@@ -300,45 +316,51 @@
 
 				if ($input_type === 'ES2' && $key1_type === 'KS2') {
 
-					$encrypted = base64_decode($input_value);
-					$nonce = base64_decode($input_nonce);
+					$encrypted = base64_decode($input_1);
+					$nonce = base64_decode($input_2);
 
 					$return = self::_decode_symmetric_sodium($key1_value, $encrypted, $nonce, $key2);
 
 				} else if ($input_type === 'ES1' && $key1_type === 'KS1') {
 
-					$encrypted = base64_decode($input_value);
-					$vi = base64_decode($input_nonce);
-					$hmac = base64_decode($input_hmac);
-					$salt = base64_decode($input_salt);
+					$encrypted = base64_decode($input_1);
+					$vi = base64_decode($input_2);
+					$hmac = base64_decode($input_3);
+					$salt = base64_decode($input_4);
 
 					$return = self::_decode_symmetric_openssl($key1_value, $encrypted, $vi, $hmac, $salt, $key2);
 
 				} else if ($input_type === 'EAS2' && $key1_type === 'KA2S' && $key2 === NULL) {
 
-					$encrypted = base64_decode($input_value);
+					$encrypted = base64_decode($input_1);
 
 					$return = self::_decode_asymmetric_to_secret_sodium($key1_value, $encrypted);
 
 				} else if ($input_type === 'EAS1' && $key1_type === 'KA1S' && $key2 === NULL) {
 
-					$data_encrypted = base64_decode($input_value);
-					$keys_encrypted = base64_decode($input_nonce);
-					$hmac_value = base64_decode($input_hmac);
+					$data_encrypted = base64_decode($input_1);
+					$keys_encrypted = base64_decode($input_2);
+					$hmac_value = base64_decode($input_3);
 
 					$return = self::_decode_asymmetric_to_secret_openssl($key1_value, $data_encrypted, $keys_encrypted, $hmac_value);
 
 				} else if ($input_type === 'EAP2' && $key1_type === 'KA2P' && $key2 === NULL) {
 
-					$encrypted = base64_decode($input_value);
+					$message = base64_decode($input_1);
+					$sign_box_nonce = base64_decode($input_2);
+					$sign_box_encrypted = base64_decode($input_3);
+					$sign_box_secret = base64_decode($input_4);
 
-					$return = self::_decode_asymmetric_to_public_sodium($key1_value, $encrypted);
+					$return = self::_decode_asymmetric_to_public_sodium($key1_value, $message, $sign_box_nonce, $sign_box_encrypted, $sign_box_secret);
 
 				} else if ($input_type === 'EAP1' && $key1_type === 'KA1P' && $key2 === NULL) {
 
-					$encrypted = base64_decode($input_value);
+					$message = base64_decode($input_1);
+					$keys_encrypted = base64_decode($input_2);
+					$hmac_encrypted = base64_decode($input_3);
+					$shared_secret = base64_decode($input_4);
 
-					$return = self::_decode_asymmetric_to_public_openssl($key1_value, $encrypted);
+					$return = self::_decode_asymmetric_to_public_openssl($key1_value, $message, $keys_encrypted, $hmac_encrypted, $shared_secret);
 
 				} else if ($input_type === 'EAT2' && $key1_type === 'KA2S') {
 
@@ -346,8 +368,8 @@
 
 					if ($key2_type === 'KA2P') {
 
-						$encrypted = base64_decode($input_value);
-						$nonce = base64_decode($input_nonce);
+						$encrypted = base64_decode($input_1);
+						$nonce = base64_decode($input_2);
 
 						$return = self::_decode_asymmetric_two_sodium($key1_value, $key2_value, $encrypted, $nonce);
 
@@ -359,9 +381,9 @@
 
 					if ($key2_type === 'KA1P') {
 
-						$data_encrypted = base64_decode($input_value);
-						$keys_encrypted = base64_decode($input_nonce);
-						$hmac_encrypted = base64_decode($input_hmac);
+						$data_encrypted = base64_decode($input_1);
+						$keys_encrypted = base64_decode($input_2);
+						$hmac_encrypted = base64_decode($input_3);
 
 						$return = self::_decode_asymmetric_two_openssl($key1_value, $key2_value, $data_encrypted, $keys_encrypted, $hmac_encrypted);
 
@@ -513,27 +535,41 @@
 
 			}
 
-			private static function _encode_asymmetric_to_public_sodium($key_secret, $input) {
+			private static function _encode_asymmetric_to_public_sodium($key_secret, $input) { // https://crypto.stackexchange.com/a/61778/32179
 
-				exit_with_error('Cannot accept a public key via encryption::encode(), as that is for signing purposes');
+				exit_with_error('Cannot accept a public key via encryption::encode(), as that would be for signing.');
+
+				list($shared_public, $shared_secret) = self::key_asymmetric_create();
+
+				list($shared_public_type, $shared_public_id, $shared_public_value) = self::_key_get($shared_public);
+				list($shared_secret_type, $shared_secret_id, $shared_secret_value) = self::_key_get($shared_secret);
+
+				return array_merge(self::_encode_asymmetric_two_sodium($shared_public_value, $key_secret, $input), [$shared_secret_value]); // The shared key is visible to everyone (it's not a secret).
 
 			}
 
-			private static function _decode_asymmetric_to_public_sodium($key_public, $encrypted) {
+			private static function _decode_asymmetric_to_public_sodium($key_public, $message, $nonce, $shared_secret) {
 
-				return $encrypted;
+				return self::_decode_asymmetric_two_sodium($shared_secret, $key_public, $message, $nonce);
 
 			}
 
 			private static function _encode_asymmetric_to_public_openssl($key_secret, $input) {
 
-				exit_with_error('Cannot accept a public key via encryption::encode(), as that is for signing purposes');
+				exit_with_error('Cannot accept a public key via encryption::encode(), as that would be for signing.');
+
+				list($shared_public, $shared_secret) = self::key_asymmetric_create();
+
+				list($shared_public_type, $shared_public_id, $shared_public_value) = self::_key_get($shared_public);
+				list($shared_secret_type, $shared_secret_id, $shared_secret_value) = self::_key_get($shared_secret);
+
+				return array_merge(self::_encode_asymmetric_two_openssl($shared_public_value, $key_secret, $input), [$shared_secret_value]); // The shared key is visible to everyone (it's not a secret).
 
 			}
 
-			private static function _decode_asymmetric_to_public_openssl($key_public, $encrypted) {
+			private static function _decode_asymmetric_to_public_openssl($key_public, $message, $keys_encrypted, $hmac_encrypted, $shared_secret) {
 
-				return $encrypted;
+				return self::_decode_asymmetric_two_openssl($shared_secret, $key_public, $message, $keys_encrypted, $hmac_encrypted);
 
 			}
 

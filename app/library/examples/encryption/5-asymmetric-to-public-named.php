@@ -12,7 +12,7 @@
 
 	$message = 'Hello';
 
-	// $encrypted = encryption::encode($message, 'my-key');
+	// $encrypted = encryption::encode($message, 'my-key', 'sign');
 
 	$encrypted = 'Not supported';
 
