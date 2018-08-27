@@ -138,7 +138,7 @@
 		// Value
 
 			public function value_set($value) {
-				if ($value === '') {
+				if ($value === '' || $value === NULL) { // A disabled input field won't be submitted (NULL)
 					$this->value_clean = 0;
 				} else {
 					$this->value_clean = parse_number($value);
