@@ -476,7 +476,8 @@
 // Looks like spam
 
 	function is_spam_like($message) {
-		return preg_match('/(\bcialis\b|\bviagra\b|unsubscribe here|on оur blоg|<a +href)/i', $message);
+		// return preg_match('/(\bcialis\b|\bviagra\b|unsubscribe here|on оur blоg|<a +href)/i', $message);
+		return preg_match('/https?:\/\//i', $message);
 	}
 
 //--------------------------------------------------
