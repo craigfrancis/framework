@@ -17,7 +17,12 @@
 
 				// $db = db_get();
 
+			//--------------------------------------------------
+			// Record
+
 				$record = record_get(DB_PREFIX . 'item');
+
+				// $record->value_set('ip', config::get('request.ip'));
 
 			//--------------------------------------------------
 			// Form setup
@@ -55,8 +60,6 @@
 
 							//--------------------------------------------------
 							// Save
-
-								// $record->value_set('ip', config::get('request.ip'));
 
 								$form->db_save();
 
