@@ -373,7 +373,7 @@
 		width: 90%;
 	}
 
-	.basic_form .submit {
+	.basic_form .row + .row.submit {
 		padding-bottom: 1em;
 	}
 
