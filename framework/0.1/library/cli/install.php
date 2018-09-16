@@ -29,7 +29,7 @@
 					$create_folder_count++;
 				}
 			}
-
+debug($create_folder_count);
 			if ($create_folder_count == count($create_folders)) { // Needs to create all required folders, so blank directory?
 
 				$create_folders = array_merge($create_folders, array(
@@ -58,6 +58,7 @@
 			foreach ($create_folders as $folder) {
 				$path = ROOT . $folder;
 				if (!is_dir($path)) {
+debug($path);
 					mkdir($path, 0755, true); // Writable for user only
 					$created_folders++;
 				}
@@ -150,6 +151,7 @@
 						$path = $folder_path . $path;
 						if (!is_dir($path)) {
 							$old = umask(0); // chmod won't work for recursive operation
+debug($path);
 							@mkdir($path, 0777, true); // Writable by webserver and user
 							if (!is_dir($path)) {
 								echo "  \033[1;31m" . 'Error:' . "\033[0m" . ' Cannot create the folder "' . $path . '"' . "\n";
@@ -176,6 +178,7 @@
 					}
 				}
 			} else {
+debug($temp_folder);
 				@mkdir($temp_folder, 0777);
 				if (!is_dir($path)) {
 					echo "  \033[1;31m" . 'Error:' . "\033[0m" . ' Cannot create the folder "' . $temp_folder . '"' . "\n";
