@@ -35,12 +35,14 @@
 
 	mkdir -p "${DST_PATH}/app/";
 	mkdir -p "${DST_PATH}/backup/";
-	mkdir -p "${DST_PATH}/files/";
 	mkdir -p "${DST_PATH}/framework/";
 	mkdir -p "${DST_PATH}/httpd/";
 	mkdir -p "${DST_PATH}/logs/";
-	mkdir -p "${DST_PATH}/private/";
 	mkdir -p "${DST_PATH}/upload/files/";
+
+	# Could be somewhere else, like a NOEXEC drive.
+	#  mkdir -p "${DST_PATH}/files/";
+	#  mkdir -p "${DST_PATH}/private/";
 
 	echo -e "  \033[1;34mDone\033[0m";
 
