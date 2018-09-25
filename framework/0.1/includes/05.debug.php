@@ -210,6 +210,24 @@
 	}
 
 //--------------------------------------------------
+// Error exception
+
+	class error_exception extends exception {
+
+		protected $hidden_info;
+
+		public function __construct($message, $hidden_info = '', $code = 0) {
+			$this->message = $message;
+			$this->hidden_info = $hidden_info;
+		}
+
+		public function getHiddenInfo() {
+			return $this->hidden_info;
+		}
+
+	}
+
+//--------------------------------------------------
 // Error handler
 
 	function error_handler($err_no, $err_str, $err_file, $err_line, $err_context) {

@@ -84,76 +84,84 @@
 		//--------------------------------------------------
 		// Page setup
 
-			//--------------------------------------------------
-			// Buffer to catch output from setup/controller.
+			try {
 
-				if (SERVER != 'live') {
+				//--------------------------------------------------
+				// Buffer to catch output from setup/controller.
 
-					$output = ob_get_clean_all();
-					if ($output != '') {
-						exit('Pre framework output "' . $output . '"');
-					}
-					unset($output);
+					if (SERVER != 'live') {
 
-				}
+						$output = ob_get_clean_all();
+						if ($output != '') {
+							exit('Pre framework output "' . $output . '"');
+						}
+						unset($output);
 
-				ob_start();
-
-			//--------------------------------------------------
-			// Controller and Routes
-
-				require_once(FRAMEWORK_ROOT . '/includes/06.controller.php');
-				require_once(FRAMEWORK_ROOT . '/includes/07.routes.php');
-
-			//--------------------------------------------------
-			// Include setup
-
-				if (config::get('debug.level') >= 4) {
-					debug_progress('Before setup');
-				}
-
-				$include_path = APP_ROOT . '/library/setup/setup.php';
-				if (is_file($include_path)) {
-					script_run_once($include_path);
-				}
-
-			//--------------------------------------------------
-			// Process
-
-				if (config::get('debug.level') >= 4) {
-					debug_progress('Before controller');
-				}
-
-				require_once(FRAMEWORK_ROOT . '/includes/08.process.php');
-
-			//--------------------------------------------------
-			// Units
-
-				if (config::get('debug.level') >= 3) {
-
-					$note_html  = '<strong>Units</strong>:<br />' . "\n";
-
-					$units = config::get('debug.units');
-
-					foreach ($units as $unit) {
-						$note_html .= '&#xA0; ' . html($unit) . '<br />' . "\n";
-					}
-					if (count($units) == 0) {
-						$note_html .= '&#xA0; <strong>none</strong>';
 					}
 
-					debug_note_html($note_html, 'H');
+					ob_start();
 
-					unset($note_html, $units, $unit);
+				//--------------------------------------------------
+				// Controller and Routes
 
-				}
+					require_once(FRAMEWORK_ROOT . '/includes/06.controller.php');
+					require_once(FRAMEWORK_ROOT . '/includes/07.routes.php');
 
-			//--------------------------------------------------
-			// Response
+				//--------------------------------------------------
+				// Include setup
 
-				$response = response_get();
-				$response->setup_output_set(ob_get_clean());
-				$response->send();
+					if (config::get('debug.level') >= 4) {
+						debug_progress('Before setup');
+					}
+
+					$include_path = APP_ROOT . '/library/setup/setup.php';
+					if (is_file($include_path)) {
+						script_run_once($include_path);
+					}
+
+				//--------------------------------------------------
+				// Process
+
+					if (config::get('debug.level') >= 4) {
+						debug_progress('Before controller');
+					}
+
+					require_once(FRAMEWORK_ROOT . '/includes/08.process.php');
+
+				//--------------------------------------------------
+				// Units
+
+					if (config::get('debug.level') >= 3) {
+
+						$note_html  = '<strong>Units</strong>:<br />' . "\n";
+
+						$units = config::get('debug.units');
+
+						foreach ($units as $unit) {
+							$note_html .= '&#xA0; ' . html($unit) . '<br />' . "\n";
+						}
+						if (count($units) == 0) {
+							$note_html .= '&#xA0; <strong>none</strong>';
+						}
+
+						debug_note_html($note_html, 'H');
+
+						unset($note_html, $units, $unit);
+
+					}
+
+				//--------------------------------------------------
+				// Response
+
+					$response = response_get();
+					$response->setup_output_set(ob_get_clean());
+					$response->send();
+
+			} catch (error_exception $e) {
+
+				exit_with_error($e->getMessage(), $e->getHiddenInfo());
+
+			}
 
 		//--------------------------------------------------
 		// Cleanup

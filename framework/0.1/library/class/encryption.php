@@ -17,7 +17,6 @@
 	//--------------------------------------------------
 	//
 	// config::set('encryption.version', 2);
-	// config::set('encryption.error_return', false); // or could be NULL
 	//
 	//--------------------------------------------------
 	//
@@ -48,7 +47,6 @@
 	//--------------------------------------------------
 
 	config::set_default('encryption.version', NULL);
-	config::set_default('encryption.error_return', -1);
 	config::set_default('encryption.key_folder', ROOT . '/private/keys');
 
 	class encryption_base extends check {
@@ -64,10 +62,6 @@
 
 		//--------------------------------------------------
 		// General
-
-			public static function error_get() {
-				return [config::get('encryption.error_message'), config::get('encryption.error_extra')];
-			}
 
 			public static function upgradable($thing) {
 
@@ -99,7 +93,7 @@
 
 				} else {
 
-					exit_with_error('Unrecognised encryption type "' . $type . '"');
+					throw new error_exception('Unrecognised encryption type "' . $type . '"');
 
 				}
 
@@ -145,7 +139,7 @@
 
 					$result = openssl_pkey_export($res, $secret_key);
 					if ($result !== true) {
-						exit_with_error('Could not create asymmetric key.', openssl_error_string());
+						throw new error_exception('Could not create asymmetric key.', openssl_error_string());
 					}
 
 					$public_key = openssl_pkey_get_details($res);
@@ -163,6 +157,22 @@
 
 		//--------------------------------------------------
 		// Get key
+
+			public static function key_exists($name, $key_id = NULL) {
+				$path = self::_key_path_get($name);
+				if (is_file($path)) {
+					if ($key_id === NULL) {
+						return true;
+					} else {
+						$keys = trim(file_get_contents($path));
+						$keys = json_decode($keys, true); // Associative array
+						if (isset($keys[$key_id])) {
+							return true;
+						}
+					}
+				}
+				return false;
+			}
 
 			public static function key_get_public($name, $key_id = NULL) {
 				return self::_key_get($name, $key_id, 'P');
@@ -186,7 +196,7 @@
 					}
 				}
 
-				$path = config::get('encryption.key_folder') . '/' . safe_file_name($name);
+				$path = self::_key_path_get($name);
 
 				file_put_contents($path, json_encode($keys));
 
@@ -200,7 +210,7 @@
 			public static function encode($input, $key1, $key2 = NULL) {
 
 				if (!is_string($input)) {
-					exit_with_error('Can only encrypt strings, maybe try base64_encode?', debug_dump($input));
+					throw new error_exception('Can only encrypt strings, maybe try base64_encode?', debug_dump($input));
 				}
 
 				list($key1_type, $key1_id, $key1_value) = self::_key_get($key1);
@@ -250,7 +260,7 @@
 
 					} else {
 
-						exit_with_error('If you only want to sign something, so anyone can read the contents, you need to specify that via encryption::encode($input, $secret_key, \'sign\')');
+						throw new error_exception('If you only want to sign something, so anyone can read the contents, you need to specify that via encryption::encode($input, $secret_key, \'sign\')');
 
 					}
 
@@ -285,14 +295,14 @@
 
 					} else {
 
-						exit_with_error('If you only want to sign something, so anyone can read the contents, you need to specify that via encryption::encode($input, $secret_key, \'sign\')');
+						throw new error_exception('If you only want to sign something, so anyone can read the contents, you need to specify that via encryption::encode($input, $secret_key, \'sign\')');
 
 					}
 
 				}
 
 				if ($return_type === NULL) {
-					exit_with_error('Unrecognised encryption key type', 'Key1: ' . $key1_type . "\n" . 'Key2: ' . $key2_type);
+					throw new error_exception('Unrecognised encryption key type', 'Key1: ' . $key1_type . "\n" . 'Key2: ' . $key2_type);
 				}
 
 				return $return_type . '-' . implode('/', $return_keys) . '-' . implode('-', array_map('base64_encode', $return_values));
@@ -300,9 +310,6 @@
 			}
 
 			public static function decode($input, $key1, $key2 = NULL) {
-
-				config::set('encryption.error_message', NULL);
-				config::set('encryption.error_extra', NULL);
 
 				list($input_type, $input_keys, $input_1, $input_2, $input_3, $input_4) = array_pad(explode('-', $input), 6, NULL);
 
@@ -314,91 +321,105 @@
 
 				$return = NULL;
 
-				if ($input_type === 'ES2' && $key1_type === 'KS2') {
+				$debug_notes = 'Input: ' . $input_type . "\n" . 'Key1: ' . $key1_type . "\n" . 'Key2: ' . $key2_type;
 
-					$encrypted = base64_decode($input_1);
-					$nonce = base64_decode($input_2);
+				try {
 
-					$return = self::_decode_symmetric_sodium($key1_value, $encrypted, $nonce, $key2);
-
-				} else if ($input_type === 'ES1' && $key1_type === 'KS1') {
-
-					$encrypted = base64_decode($input_1);
-					$vi = base64_decode($input_2);
-					$hmac = base64_decode($input_3);
-					$salt = base64_decode($input_4);
-
-					$return = self::_decode_symmetric_openssl($key1_value, $encrypted, $vi, $hmac, $salt, $key2);
-
-				} else if ($input_type === 'EAS2' && $key1_type === 'KA2S' && $key2 === NULL) {
-
-					$encrypted = base64_decode($input_1);
-
-					$return = self::_decode_asymmetric_to_secret_sodium($key1_value, $encrypted);
-
-				} else if ($input_type === 'EAS1' && $key1_type === 'KA1S' && $key2 === NULL) {
-
-					$data_encrypted = base64_decode($input_1);
-					$keys_encrypted = base64_decode($input_2);
-					$hmac_value = base64_decode($input_3);
-
-					$return = self::_decode_asymmetric_to_secret_openssl($key1_value, $data_encrypted, $keys_encrypted, $hmac_value);
-
-				} else if ($input_type === 'EAP2' && $key1_type === 'KA2P' && $key2 === NULL) {
-
-					$message = base64_decode($input_1);
-					$sign_box_nonce = base64_decode($input_2);
-					$sign_box_encrypted = base64_decode($input_3);
-					$sign_box_secret = base64_decode($input_4);
-
-					$return = self::_decode_asymmetric_to_public_sodium($key1_value, $message, $sign_box_nonce, $sign_box_encrypted, $sign_box_secret);
-
-				} else if ($input_type === 'EAP1' && $key1_type === 'KA1P' && $key2 === NULL) {
-
-					$message = base64_decode($input_1);
-					$keys_encrypted = base64_decode($input_2);
-					$hmac_encrypted = base64_decode($input_3);
-					$shared_secret = base64_decode($input_4);
-
-					$return = self::_decode_asymmetric_to_public_openssl($key1_value, $message, $keys_encrypted, $hmac_encrypted, $shared_secret);
-
-				} else if ($input_type === 'EAT2' && $key1_type === 'KA2S') {
-
-					list($key2_type, $key2_id, $key2_value) = self::_key_get($key2, $key2_id);
-
-					if ($key2_type === 'KA2P') {
+					if ($input_type === 'ES2' && $key1_type === 'KS2') {
 
 						$encrypted = base64_decode($input_1);
 						$nonce = base64_decode($input_2);
 
-						$return = self::_decode_asymmetric_two_sodium($key1_value, $key2_value, $encrypted, $nonce);
+						$return = self::_decode_symmetric_sodium($key1_value, $encrypted, $nonce, $key2);
 
-					}
+					} else if ($input_type === 'ES1' && $key1_type === 'KS1') {
 
-				} else if ($input_type === 'EAT1' && $key1_type === 'KA1S') {
+						$encrypted = base64_decode($input_1);
+						$vi = base64_decode($input_2);
+						$hmac = base64_decode($input_3);
+						$salt = base64_decode($input_4);
 
-					list($key2_type, $key2_id, $key2_value) = self::_key_get($key2, $key2_id);
+						$return = self::_decode_symmetric_openssl($key1_value, $encrypted, $vi, $hmac, $salt, $key2);
 
-					if ($key2_type === 'KA1P') {
+					} else if ($input_type === 'EAS2' && $key1_type === 'KA2S' && $key2 === NULL) {
+
+						$encrypted = base64_decode($input_1);
+
+						$return = self::_decode_asymmetric_to_secret_sodium($key1_value, $encrypted);
+
+					} else if ($input_type === 'EAS1' && $key1_type === 'KA1S' && $key2 === NULL) {
 
 						$data_encrypted = base64_decode($input_1);
 						$keys_encrypted = base64_decode($input_2);
-						$hmac_encrypted = base64_decode($input_3);
+						$hmac_value = base64_decode($input_3);
 
-						$return = self::_decode_asymmetric_two_openssl($key1_value, $key2_value, $data_encrypted, $keys_encrypted, $hmac_encrypted);
+						$return = self::_decode_asymmetric_to_secret_openssl($key1_value, $data_encrypted, $keys_encrypted, $hmac_value);
+
+					} else if ($input_type === 'EAP2' && $key1_type === 'KA2P' && $key2 === NULL) {
+
+						$message = base64_decode($input_1);
+						$sign_box_nonce = base64_decode($input_2);
+						$sign_box_encrypted = base64_decode($input_3);
+						$sign_box_secret = base64_decode($input_4);
+
+						$return = self::_decode_asymmetric_to_public_sodium($key1_value, $message, $sign_box_nonce, $sign_box_encrypted, $sign_box_secret);
+
+					} else if ($input_type === 'EAP1' && $key1_type === 'KA1P' && $key2 === NULL) {
+
+						$message = base64_decode($input_1);
+						$keys_encrypted = base64_decode($input_2);
+						$hmac_encrypted = base64_decode($input_3);
+						$shared_secret = base64_decode($input_4);
+
+						$return = self::_decode_asymmetric_to_public_openssl($key1_value, $message, $keys_encrypted, $hmac_encrypted, $shared_secret);
+
+					} else if ($input_type === 'EAT2' && $key1_type === 'KA2S') {
+
+						list($key2_type, $key2_id, $key2_value) = self::_key_get($key2, $key2_id);
+
+						if ($key2_type === 'KA2P') {
+
+							$encrypted = base64_decode($input_1);
+							$nonce = base64_decode($input_2);
+
+							$return = self::_decode_asymmetric_two_sodium($key1_value, $key2_value, $encrypted, $nonce);
+
+						}
+
+					} else if ($input_type === 'EAT1' && $key1_type === 'KA1S') {
+
+						list($key2_type, $key2_id, $key2_value) = self::_key_get($key2, $key2_id);
+
+						if ($key2_type === 'KA1P') {
+
+							$data_encrypted = base64_decode($input_1);
+							$keys_encrypted = base64_decode($input_2);
+							$hmac_encrypted = base64_decode($input_3);
+
+							$return = self::_decode_asymmetric_two_openssl($key1_value, $key2_value, $data_encrypted, $keys_encrypted, $hmac_encrypted);
+
+						}
 
 					}
+
+				} catch (exception $e) {
+
+					throw new error_exception('Invalid encrypted message', $debug_notes . "\n\n" . $e->getMessage());
 
 				}
 
 				if ($return === NULL) {
-					exit_with_error('Unrecognised encryption key and input types', 'Input: ' . $input_type . "\n" . 'Key1: ' . $key1_type . "\n" . 'Key2: ' . $key2_type);
-				}
 
-				if (is_string($return) || config::get('encryption.error_message') !== NULL) { // i.e. Either the plaintext (did not return false), or an error occurred.
+					throw new error_exception('Unrecognised encryption key and input types', $debug_notes);
+
+				} else if (is_string($return)) { // Can only encrypt strings, if it's not a string (e.g. false) then something has gone wrong.
+
 					return $return;
+
 				} else {
-					return self::_error_return('Invalid encrypted message', 'Input: ' . $input_type . "\n" . 'Key1: ' . $key1_type . "\n" . 'Key2: ' . $key2_type . "\n\n" . debug_dump($return));
+
+					throw new error_exception('Invalid encrypted message', $debug_notes . "\n\n" . debug_dump($return));
+
 				}
 
 			}
@@ -461,7 +482,7 @@
 				$check_hmac = hash_hmac('sha256', $salt . $iv . strval($associated_data) . $encrypted, $key_authenticate, true);
 
 				if (!hash_equals($check_hmac, $hmac)) {
-					return self::_error_return('Could not verify HMAC of the encrypted data');
+					throw new error_exception('Could not verify HMAC of the encrypted data');
 				}
 
 				return openssl_decrypt($encrypted, self::$openssl_cipher, $key_encrypt, OPENSSL_RAW_DATA, $iv);
@@ -502,7 +523,7 @@
 				$keys_encrypted = '';
 				$result = openssl_public_encrypt($keys_encoded, $keys_encrypted, $key_public, OPENSSL_PKCS1_OAEP_PADDING);
 				if ($result !== true) {
-					exit_with_error('Could not encrypt with public key', openssl_error_string());
+					throw new error_exception('Could not encrypt with public key', openssl_error_string());
 				}
 
 				return [$data_encrypted, $keys_encrypted, $hmac_value];
@@ -517,7 +538,7 @@
 				$data_keys = '';
 				$result = openssl_private_decrypt($keys_encrypted, $data_keys, $key_secret, OPENSSL_PKCS1_OAEP_PADDING);
 				if ($result !== true) {
-					return self::_error_return('Could not decrypt the AES keys with the secret key', openssl_error_string());
+					throw new error_exception('Could not decrypt the AES keys with the secret key', openssl_error_string());
 				} else {
 					list($data_key, $hmac_key, $iv) = array_pad(explode('-', $data_keys), 3, NULL);
 					$data_key = base64_decode($data_key);
@@ -528,7 +549,7 @@
 				$check_hmac = hash_hmac('sha256', $iv . $data_encrypted, $hmac_key, true);
 
 				if (!hash_equals($check_hmac, $hmac_value)) {
-					return self::_error_return('Could not verify HMAC of the encrypted data');
+					throw new error_exception('Could not verify HMAC of the encrypted data');
 				}
 
 				return openssl_decrypt($data_encrypted, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $iv);
@@ -609,14 +630,14 @@
 				$keys_encrypted = '';
 				$result = openssl_public_encrypt($keys_encoded, $keys_encrypted, $recipient_key_public, OPENSSL_PKCS1_OAEP_PADDING);
 				if ($result !== true) {
-					exit_with_error('Could not encrypt with recipients public key', openssl_error_string());
+					throw new error_exception('Could not encrypt with recipients public key', openssl_error_string());
 				}
 
 				$hmac_encoded = base64_encode($hmac_value) . '-' . base64_encode($iv); // The "signature", anyone who knows the senders public key will be able to see these values.
 				$hmac_encrypted = '';
 				$result = openssl_private_encrypt($hmac_encoded, $hmac_encrypted, $sender_key_secret, OPENSSL_PKCS1_PADDING);
 				if ($result !== true) {
-					exit_with_error('Could not encrypt with senders secret key', openssl_error_string());
+					throw new error_exception('Could not encrypt with senders secret key', openssl_error_string());
 				}
 
 				return [$data_encrypted, $keys_encrypted, $hmac_encrypted];
@@ -631,7 +652,7 @@
 				$data_info = '';
 				$result = openssl_public_decrypt($hmac_encrypted, $data_info, $sender_key_public, OPENSSL_PKCS1_PADDING);
 				if ($result !== true) {
-					return self::_error_return('Could not decrypt the HMAC with the senders public key', openssl_error_string());
+					throw new error_exception('Could not decrypt the HMAC with the senders public key', openssl_error_string());
 				} else {
 					list($hmac_value, $iv) = array_pad(explode('-', $data_info), 2, NULL);
 					$hmac_value = base64_decode($hmac_value);
@@ -641,7 +662,7 @@
 				$data_info = '';
 				$result = openssl_private_decrypt($keys_encrypted, $data_info, $recipient_key_secret, OPENSSL_PKCS1_OAEP_PADDING);
 				if ($result !== true) {
-					return self::_error_return('Could not decrypt the AES keys with the recipients secret key', openssl_error_string());
+					throw new error_exception('Could not decrypt the AES keys with the recipients secret key', openssl_error_string());
 				} else {
 					list($data_key, $hmac_key) = array_pad(explode('-', $data_info), 2, NULL);
 					$data_key = base64_decode($data_key);
@@ -651,7 +672,7 @@
 				$check_hmac = hash_hmac('sha256', $iv . $data_encrypted, $hmac_key, true);
 
 				if (!hash_equals($check_hmac, $hmac_value)) {
-					return self::_error_return('Could not verify HMAC of the encrypted data');
+					throw new error_exception('Could not verify HMAC of the encrypted data');
 				}
 
 				return openssl_decrypt($data_encrypted, self::$openssl_cipher, $data_key, OPENSSL_RAW_DATA, $iv);
@@ -664,28 +685,28 @@
 			private static function _key_store($name, $key_encoded) {
 
 				if (strlen($name) > self::$key_name_max_length) {
-					exit_with_error('The encryption keys name cannot be longer than ' . self::$key_name_max_length . ' characters', $name);
+					throw new error_exception('The encryption keys name cannot be longer than ' . self::$key_name_max_length . ' characters', $name);
 				}
 
-				$folder = config::get('encryption.key_folder');
-				$path = $folder . '/' . safe_file_name($name);
+				$path = self::_key_path_get($name);
+				$folder = dirname($path);
 
 				if (!is_dir($folder)) {
 					mkdir($folder, 0700);
 					if (!is_dir($folder)) {
-						exit_with_error('Could not create a folder for the encryption keys', $folder);
+						throw new error_exception('Could not create a folder for the encryption keys', $folder);
 					}
 				}
 
 				$folder_perms = substr(sprintf('%o', fileperms($folder)), -4);
 				if ($folder_perms !== '0700') {
-					exit_with_error('The encryption keys folder must have a permission of 0700.', $folder . "\n" . 'Current permissions: ' . $folder_perms);
+					throw new error_exception('The encryption keys folder must have a permission of 0700.', $folder . "\n" . 'Current permissions: ' . $folder_perms);
 				}
 
 				if (!is_writable($folder)) {
 					$account_owner = posix_getpwuid(fileowner($folder));
 					$account_process = posix_getpwuid(posix_geteuid());
-					exit_with_error('The encryption keys folder cannot be written to (check ownership).', $folder . "\n" . 'Current owner: ' . $account_owner['name'] . "\n" . 'Current process: ' . $account_process['name']);
+					throw new error_exception('The encryption keys folder cannot be written to (check ownership).', $folder . "\n" . 'Current owner: ' . $account_owner['name'] . "\n" . 'Current process: ' . $account_process['name']);
 				}
 
 				if (is_file($path)) {
@@ -710,7 +731,7 @@
 			private static function _key_get($name, $key_id = NULL, $asymmetric_type = NULL) {
 
 				if (!is_string($name)) {
-					exit_with_error('The encryption key must be a string, not an ' . gettype($name) . '.', debug_dump($name));
+					throw new error_exception('The encryption key must be a string, not an ' . gettype($name) . '.', debug_dump($name));
 				}
 
 				if (strlen($name) > self::$key_name_max_length) { // Quick way to identify key_name vs key_encoded
@@ -723,17 +744,17 @@
 
 					if ($keys === NULL) {
 
-						$path = config::get('encryption.key_folder') . '/' . safe_file_name($name);
+						$path = self::_key_path_get($name);
 
 						if (!is_file($path)) {
-							exit_with_error('The encryption key file does not exist.', $path);
+							throw new error_exception('The encryption key file does not exist.', $path);
 						}
 
 						$keys = trim(file_get_contents($path));
 
 						$keys = json_decode($keys, true); // Associative array
 						if ($keys === NULL) {
-							exit_with_error('The encryption key file does not contain JSON data.', $path);
+							throw new error_exception('The encryption key file does not contain JSON data.', $path);
 						}
 
 						ksort($keys);
@@ -755,7 +776,7 @@
 					}
 
 					if ($key_id === NULL || !isset($keys[$key_id])) {
-						exit_with_error('Cannot find the encryption key with the specified ID.', 'Key Name: ' . $name . "\n" . 'Key ID: ' . debug_dump($key_id));
+						throw new error_exception('Cannot find the encryption key with the specified ID.', 'Key Name: ' . $name . "\n" . 'Key ID: ' . debug_dump($key_id));
 					}
 
 					$key_encoded = $keys[$key_id];
@@ -790,6 +811,10 @@
 
 			}
 
+			private static function _key_path_get($name) {
+				return config::get('encryption.key_folder') . '/' . safe_file_name($name);
+			}
+
 			private static function _key_cache_value($name, $value = NULL) {
 
 				static $instance = NULL;
@@ -820,17 +845,6 @@
 						hash_hkdf('sha256', $key, $key_length, 'Authentication', $salt),
 					];
 
-			}
-
-			private static function _error_return($error, $extra_info = NULL) {
-				$error_return = config::get('encryption.error_return');
-				if ($error_return !== -1) {
-					config::set('encryption.error_message', $error);
-					config::set('encryption.error_extra', $extra_info);
-					return $error_return;
-				} else {
-					exit_with_error($error, $extra_info);
-				}
 			}
 
 		//--------------------------------------------------
