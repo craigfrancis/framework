@@ -29,7 +29,7 @@
 
 				$password = config::get('lolcat.pass', NULL);
 				if ($password === NULL) {
-					$password_file = ROOT . '/private/passwords/lolcat.txt';
+					$password_file = PRIVATE_ROOT . '/passwords/lolcat.txt';
 					if (is_file($password_file)) {
 						$password = trim(file_get_contents($password_file));
 					}

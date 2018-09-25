@@ -264,7 +264,7 @@
 				//--------------------------------------------------
 				// Watch folder
 
-					$watch_folder = ROOT . '/private/watch';
+					$watch_folder = PRIVATE_ROOT . '/watch';
 					$watch_path = $watch_folder . '/watch.plist';
 
 					if (!is_dir($watch_folder)) {

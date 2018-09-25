@@ -51,7 +51,7 @@
 // Changed files
 
 	$root_length = strlen(ROOT);
-	$files = file(ROOT . '/private/watch/files.txt');
+	$files = file(PRIVATE_ROOT . '/watch/files.txt');
 
 	foreach ($files as $file) {
 

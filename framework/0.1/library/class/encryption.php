@@ -47,7 +47,7 @@
 	//--------------------------------------------------
 
 	config::set_default('encryption.version', NULL);
-	config::set_default('encryption.key_folder', ROOT . '/private/keys');
+	config::set_default('encryption.key_folder', PRIVATE_ROOT . '/keys');
 
 	class encryption_base extends check {
 

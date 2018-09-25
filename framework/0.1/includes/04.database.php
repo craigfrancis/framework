@@ -687,7 +687,7 @@
 			$host = config::get($prefix . 'host');
 
 			if ($pass === NULL) {
-				$password_path = (defined('UPLOAD_ROOT') ? UPLOAD_ROOT : ROOT) . '/private/passwords/database.txt'; // Could also go into `/private/config/server.ini`, but this will appear in debug output (although it should show the value '???').
+				$password_path = PRIVATE_ROOT . '/passwords/database.txt'; // Could also go into `/private/config/server.ini`, but this will appear in debug output (although it should show the value '???').
 				if (is_readable($password_path)) {
 					$pass = trim(file_get_contents($password_path));
 				} else {
