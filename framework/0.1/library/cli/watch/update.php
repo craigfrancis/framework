@@ -51,7 +51,7 @@
 // Changed files
 
 	$root_length = strlen(ROOT);
-	$files = file(PRIVATE_ROOT . '/watch/files.txt');
+	$files = file(ROOT . '/private/watch/files.txt'); // PRIVATE_ROOT has not been set
 
 	foreach ($files as $file) {
 
