@@ -554,6 +554,19 @@
 	}
 
 //--------------------------------------------------
+// Format ordinal
+
+	function format_ordinal($number) { // https://stackoverflow.com/questions/3109978/display-numbers-with-ordinal-suffix-in-php
+		$mod = ($number % 100);
+		if (($mod >= 11) && ($mod <= 13)) {
+			return $number . 'th';
+		} else {
+			$ends = ['th','st','nd','rd','th','th','th','th','th','th'];
+			return $number . $ends[$number % 10];
+		}
+	}
+
+//--------------------------------------------------
 // Format currency
 
 	function format_currency($value, $currency_char = NULL, $decimal_places = 2, $zero_to_blank = false) {
