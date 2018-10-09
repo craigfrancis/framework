@@ -34,7 +34,7 @@
 
 			public function min_value_set_html($error_html, $value) {
 
-				if ($this->form_submitted && !$this->format_error_found && $this->value_clean !== NULL && $this->value_clean < $value) {
+				if ($this->form_submitted && !$this->format_error_found && $this->value !== '' && $this->value_clean < $value) {
 
 					if ($value < 0) {
 						$value_text = '-' . $this->currency_char . number_format(floatval(0 - $value), 2);
@@ -52,7 +52,7 @@
 
 			public function max_value_set_html($error_html, $value) {
 
-				if ($this->form_submitted && !$this->format_error_found && $this->value_clean !== NULL && $this->value_clean > $value) {
+				if ($this->form_submitted && !$this->format_error_found && $this->value !== '' && $this->value_clean > $value) {
 
 					if ($value < 0) {
 						$value_text = '-' . $this->currency_char . number_format(floatval(0 - $value), 2);

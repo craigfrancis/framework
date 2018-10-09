@@ -56,7 +56,7 @@
 
 			public function format_error_set_html($error_html) {
 
-				if ($this->form_submitted && $this->value !== '' && $this->value !== NULL && $this->value_clean === NULL) {
+				if ($this->form_submitted && $this->value !== '' && $this->value_clean === NULL) {
 
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 
@@ -82,7 +82,7 @@
 
 			public function min_value_set_html($error_html, $value) {
 
-				if ($this->form_submitted && !$this->format_error_found && $this->value_clean !== NULL && $this->value_clean < $value) {
+				if ($this->form_submitted && !$this->format_error_found && $this->value !== '' && $this->value_clean < $value) {
 					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $value, $error_html));
 				}
 
@@ -96,7 +96,7 @@
 
 			public function max_value_set_html($error_html, $value) {
 
-				if ($this->form_submitted && !$this->format_error_found && $this->value_clean !== NULL && $this->value_clean > $value) {
+				if ($this->form_submitted && !$this->format_error_found && $this->value !== '' && $this->value_clean > $value) {
 					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $value, $error_html));
 				}
 
@@ -115,7 +115,7 @@
 
 			public function step_value_set_html($error_html, $step = 1) {
 
-				if ($this->form_submitted && !$this->format_error_found && $this->value_clean !== NULL) {
+				if ($this->form_submitted && !$this->format_error_found && $this->value !== '') {
 
 					$value = $this->value_clean;
 
@@ -138,7 +138,10 @@
 		// Value
 
 			public function value_set($value) {
-				if ($value === '' || $value === NULL) { // A disabled input field won't be submitted (NULL)
+				if ($value === NULL) { // A disabled input field won't be submitted (NULL)
+					$value = '';
+				}
+				if ($value === '') {
 					$this->value_clean = 0;
 				} else {
 					$this->value_clean = parse_number($value);
