@@ -1577,11 +1577,15 @@
 					//--------------------------------------------------
 					// Window policy
 
-						$output_window_policy = config::get('output.window_policy', 'DENY');
+							// https://webkit.org/blog/8419/release-notes-for-safari-technology-preview-67/
+							// https://trac.webkit.org/changeset/236623/webkit/
+							// https://bugs.webkit.org/show_bug.cgi?id=190081
 
-						if ($output_window_policy) {
-							header('Cross-Origin-Window-Policy: ' . head($output_window_policy));
-						}
+						// $output_window_policy = config::get('output.window_policy', 'DENY');
+						//
+						// if ($output_window_policy) {
+						// 	header('Cross-Origin-Window-Policy: ' . head($output_window_policy));
+						// }
 
 					//--------------------------------------------------
 					// Framing options
