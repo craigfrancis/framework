@@ -120,16 +120,17 @@
 
 	$config['output.csp_enabled'] = true;
 	$config['output.csp_enforced'] = true;
-	$config['output.csp_directives'] = array(
-			'default-src'  => array("'none'"),
-			'base-uri'     => array("'none'"),
-			'manifest-src' => array("'self'"),
-			'form-action'  => array("'self'"),
-			'img-src'      => array('/a/img/', 'data:'),
-			'style-src'    => array('/a/css/'),
-			'script-src'   => array('/a/js/', '/a/api/'),
-			'connect-src'  => array(),
-		);
+	$config['output.csp_directives'] = [
+			'default-src'  => ["'none'"],
+			'base-uri'     => ["'none'"],
+			'manifest-src' => ["'self'"],
+			// 'navigate-to'  => ["'self'"],
+			'form-action'  => ["'self'"],
+			'img-src'      => ['/a/img/', 'data:'],
+			'style-src'    => ['/a/css/'],
+			'script-src'   => ['/a/js/', '/a/api/'],
+			'connect-src'  => [],
+		];
 
 	// if ($config['output.tracking'] !== false) {
 	// 	$config['output.csp_directives']['script-src'][] = 'https://www.google-analytics.com';
