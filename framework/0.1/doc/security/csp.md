@@ -13,13 +13,14 @@ Ideally a new website will start with:
 
 To customise the directives, start with something like:
 
-	$config['output.csp_directives'] = array(
-			'default-src'  => array("'none'"), // Ideal default
-			'form-action'  => array("'self'"),
-			'style-src'    => array("'self'"),
-			'img-src'      => array("'self'"),
-			'script-src'   => array("'self'"),
-		);
+	$config['output.csp_directives'] = [
+			'default-src'  => ["'none'"], // Ideal default
+			// 'navigate-to'  => ["'self'"],
+			'form-action'  => ["'self'"],
+			'style-src'    => ["'self'"],
+			'img-src'      => ["'self'"],
+			'script-src'   => ["'self'"],
+		];
 
 For additional resources (e.g. on a per-page basis) you can also call:
 
