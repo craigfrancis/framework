@@ -17,6 +17,11 @@ vertical-align:baseline;
 background:transparent;
 }
 
+html {
+-webkit-text-size-adjust:100%;
+font:-apple-system-body;
+}
+
 body {
 font-family:verdana,arial,helvetica,sans-serif;
 font-size:0.8em;

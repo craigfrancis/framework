@@ -22,6 +22,11 @@
 		display: block;
 	}
 
+	html {
+		-webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape while allowing user zoom */
+		font: -apple-system-body; /* Allow iOS system "larger text" to effect website */
+	}
+
 	body {
 		font-family: verdana, arial, helvetica, sans-serif;
 		font-size: 0.8em;
