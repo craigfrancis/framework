@@ -630,15 +630,14 @@
 
 			public function html_info($indent = 0) {
 
-				if ($this->info_html == '') {
-					$file_names = $this->value_file_names_get();
-					if (count($file_names) > 0) {
-						if ($this->multiple) {
-							$this->info_html = implode(', ', $file_names);
-						} else {
-							$this->info_html = array_shift($file_names);
-						}
+				$file_names = $this->value_file_names_get();
+				if (count($file_names) > 0) {
+					if ($this->multiple) {
+						$file_names = implode(', ', $file_names);
+					} else {
+						$file_names = array_shift($file_names);
 					}
+					$this->info_html = $file_names . ($this->info_html ? ' | ' . $this->info_html : '');
 				}
 
 				return parent::html_info($indent);
