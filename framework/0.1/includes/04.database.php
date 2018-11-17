@@ -699,22 +699,31 @@
 				}
 			}
 
-			if (!function_exists('mysqli_connect')) {
-				$this->_error('PHP does not have MySQLi support - https://php.net/mysqli_connect');
+			if (!function_exists('mysqli_real_connect')) {
+				$this->_error('PHP does not have MySQLi support');
 			}
 
 			$start = microtime(true);
 
-			$this->link = @mysqli_connect($host, $user, $pass, $name);
-			if (!$this->link) {
+			$this->link = mysqli_init();
+
+			$ca_file = config::get($prefix . 'ca_file');
+			if ($ca_file) {
+				mysqli_ssl_set($this->link, NULL, NULL, $ca_file, NULL, NULL);
+			}
+
+			$result = @mysqli_real_connect($this->link, $host, $user, $pass, $name);
+			if (!$result) {
+				$this->link = NULL;
 				$this->_error('Database connection error: ' . mysqli_connect_error() . ' (' . mysqli_connect_errno() . ')');
 			}
 
-			if (function_exists('debug_log_time')) {
+			if (config::get('debug.level') >= 4) {
 				$time = round((microtime(true) - $start), 5);
-				if ($time > 0.01) {
+				if (function_exists('debug_log_time') && $time > 0.01) {
 					debug_log_time('DBC', $time);
 				}
+				debug_progress('Database Connect ' . $time . ($ca_file ? ' +TLS' : ''));
 			}
 
 			$collation = config::get('db.collation');
