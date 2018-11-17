@@ -53,11 +53,12 @@
 		//--------------------------------------------------
 		// Database
 
-			$config['db.host'] = 'localhost';
-			$config['db.user'] = 'craig';
-			$config['db.pass'] = 'cr8ig';
+			$config['db.host'] = 'devcf-rds.cfbcmnc53kwh.eu-west-1.rds.amazonaws.com';
+			$config['db.user'] = 'craig-framework';
+			$config['db.pass'] = NULL; // see /private/passwords/database.txt
 			$config['db.name'] = 'l-craig-framework';
 
+			$config['db.ca_file'] = '/etc/mysql/tls.pem';
 			$config['db.prefix'] = 'tpl_';
 
 		//--------------------------------------------------
