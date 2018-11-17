@@ -111,7 +111,7 @@
 				// Include setup
 
 					if (config::get('debug.level') >= 4) {
-						debug_progress('Before setup');
+						debug_progress('Before Setup');
 					}
 
 					$include_path = APP_ROOT . '/library/setup/setup.php';
@@ -123,7 +123,7 @@
 				// Process
 
 					if (config::get('debug.level') >= 4) {
-						debug_progress('Before controller');
+						debug_progress('Before Controller');
 					}
 
 					require_once(FRAMEWORK_ROOT . '/includes/08.process.php');

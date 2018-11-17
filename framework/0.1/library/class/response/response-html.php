@@ -1255,7 +1255,7 @@
 				// Debug
 
 					if (config::get('debug.level') >= 4) {
-						debug_progress('Before view');
+						debug_progress('Before View');
 					}
 
 				//--------------------------------------------------
@@ -1427,7 +1427,7 @@
 				// Debug
 
 					if (config::get('debug.level') >= 4) {
-						debug_progress('Template start send');
+						debug_progress('Template Start Send');
 					}
 
 					if (config::get('debug.level') > 0 && config::get('debug.show') && in_array($mime_type, array('text/html', 'application/xhtml+xml'))) {
