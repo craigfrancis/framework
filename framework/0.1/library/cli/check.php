@@ -42,7 +42,7 @@
 			$database_setup = config::get('db.setup', array());
 
 			$default_setup = array(
-					'engine' => config::get('db.engine', 'MyISAM'), // InnoDB is a newer engine, but I don't use enforced relationships or transactions (yet).
+					'engine' => config::get('db.engine', 'MyISAM'), // or InnoDB... use MyISAM for FULLTEXT search before MySQL 5.6.4, faster COUNT(*) on the whole table (e.g. no WHERE), 'INSERT DELAYED' before MySQL 5.7 (now not supported), ability to 'ALTER TABLE table AUTO_INCREMENT=1'
 					'collation' => config::get('db.collation', 'utf8mb4_unicode_ci'), // Avoid general, is faster, but more error prone.
 					'fields' => array(),
 				);
