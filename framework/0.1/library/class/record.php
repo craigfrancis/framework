@@ -456,7 +456,7 @@
 
 					$log_values = $this->log_values_get($field, $old_value, $new_value);
 
-					$db->insert_delayed($log_table_sql, $log_values);
+					$db->insert($log_table_sql, $log_values);
 
 				}
 
