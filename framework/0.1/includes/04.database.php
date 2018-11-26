@@ -474,14 +474,14 @@
 		}
 
 		public function insert($table_sql, $values, $on_duplicate = NULL) {
-			$this->_insert($table_sql, $values, $on_duplicate, false);
+			$this->_insert($table_sql, $values, $on_duplicate);
 		}
 
 		public function insert_delayed($table_sql, $values, $on_duplicate = NULL) {
-			$this->_insert($table_sql, $values, $on_duplicate, true);
+			$this->_insert($table_sql, $values, $on_duplicate);
 		}
 
-		private function _insert($table_sql, $values, $on_duplicate, $delayed) {
+		private function _insert($table_sql, $values, $on_duplicate) {
 
 			$parameters = array();
 
@@ -507,13 +507,7 @@
 				}
 			}
 
-			if ($delayed) {
-				$insert_sql = 'INSERT DELAYED';
-			} else {
-				$insert_sql = 'INSERT';
-			}
-
-			$insert_sql .= ' INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . implode(', ', $values_sql) . ')';
+			$insert_sql = 'INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . implode(', ', $values_sql) . ')';
 
 			if ($on_duplicate !== NULL) {
 				if (is_array($on_duplicate)) {
