@@ -321,9 +321,9 @@
 				// 'unsized-media'        => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
 				// 'vertical-scroll'      => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
 
-				// 'cookie'               => [], // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0%5E%21/
-				// 'domain'               => [], // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0%5E%21/
-				// 'vibrate'              => [], // Removed: https://chromium.googlesource.com/chromium/src/+/6684fb7780bea4dacdcb12b14a9b56894e07cbfb%5E%21/
+				// 'cookie'               => [], // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
+				// 'domain'               => [], // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
+				// 'vibrate'              => [], // Removed: https://chromium.googlesource.com/chromium/src/+/6684fb7780bea4dacdcb12b14a9b56894e07cbfb
 
 			));
 
