@@ -291,39 +291,39 @@
 		config::set_default('output.fp_enabled', false);
 		config::set_default('output.fp_directives', array(
 
-				'accelerometer'         => array(),
-				'ambient-light-sensor'  => array(),
-				'autoplay'              => array(),
-				'camera'                => array(),
-				'encrypted-media'       => array(),
-				'fullscreen'            => array(),
-				'geolocation'           => array(),
-				'gyroscope'             => array(),
-				'magnetometer'          => array(),
-				'microphone'            => array(),
-				'midi'                  => array(),
-				'payment'               => array(),
-				'speaker'               => array(),
-				'usb'                   => array(),
-				'vr'                    => array(),
+				'accelerometer'        => [],
+				'ambient-light-sensor' => [],
+				'autoplay'             => [],
+				'camera'               => [],
+				'encrypted-media'      => [],
+				'fullscreen'           => [],
+				'geolocation'          => [],
+				'gyroscope'            => [],
+				'magnetometer'         => [],
+				'microphone'           => [],
+				'midi'                 => [],
+				'payment'              => [],
+				'speaker'              => [],
+				'usb'                  => [],
+				'vr'                   => [],
 
-				// 'sync-xhr'              => array(), // Disabled as potentially risky
-				// 'picture-in-picture'    => array(), // Disabled in Chrome 68 (PictureInPictureAPIEnabled)
+				// 'sync-xhr'             => [], // Disabled as potentially risky
+				// 'picture-in-picture'   => [], // Disabled in Chrome 71 (PictureInPictureAPIEnabled)
 
-				// 'document-domain'       => array(), // Disabled in Chrome 68 (ExperimentalProductivityFeaturesEnabled)
-				// 'document-write'        => array(), // Disabled in Chrome 68 (ExperimentalProductivityFeaturesEnabled)
-				// 'layout-animations'     => array(), // Disabled in Chrome 68 (ExperimentalProductivityFeaturesEnabled), was 'animations': https://chromium.googlesource.com/chromium/src/+/9024e95af4b609ab5ef86b9baca2a25449f3907c
-				// 'lazyload'              => array(), // Disabled in Chrome 68 (ExperimentalProductivityFeaturesEnabled)
-				// 'legacy-image-formats'  => array(), // Disabled in Chrome 68 (ExperimentalProductivityFeaturesEnabled)
-				// 'oversized-images'      => array(), // Disabled in Chrome 68 (ExperimentalProductivityFeaturesEnabled), was 'max-downscaling-image': https://chromium.googlesource.com/chromium/src/+/f91910eba0d6f1d81dc2ec39255b5ad348b39dc6
-				// 'sync-script'           => array(), // Disabled in Chrome 68 (ExperimentalProductivityFeaturesEnabled)
-				// 'unoptimized-images'    => array(), // Disabled in Chrome 68 (ExperimentalProductivityFeaturesEnabled), was 'image-compression': https://chromium.googlesource.com/chromium/src/+/f91910eba0d6f1d81dc2ec39255b5ad348b39dc6
-				// 'unsized-media'         => array(), // Disabled in Chrome 68 (ExperimentalProductivityFeaturesEnabled)
-				// 'vertical-scroll'       => array(), // Disabled in Chrome 68 (ExperimentalProductivityFeaturesEnabled)
+				// 'document-domain'      => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
+				// 'document-write'       => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
+				// 'layout-animations'    => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled), was 'animations': https://chromium.googlesource.com/chromium/src/+/9024e95af4b609ab5ef86b9baca2a25449f3907c
+				// 'lazyload'             => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
+				// 'legacy-image-formats' => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
+				// 'oversized-images'     => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled), was 'max-downscaling-image': https://chromium.googlesource.com/chromium/src/+/f91910eba0d6f1d81dc2ec39255b5ad348b39dc6
+				// 'sync-script'          => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
+				// 'unoptimized-images'   => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled), was 'image-compression': https://chromium.googlesource.com/chromium/src/+/f91910eba0d6f1d81dc2ec39255b5ad348b39dc6
+				// 'unsized-media'        => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
+				// 'vertical-scroll'      => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
 
-				// 'cookie'                => array(), // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0%5E%21/
-				// 'domain'                => array(), // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0%5E%21/
-				// 'vibrate'               => array(), // Removed: https://chromium.googlesource.com/chromium/src/+/6684fb7780bea4dacdcb12b14a9b56894e07cbfb%5E%21/
+				// 'cookie'               => [], // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0%5E%21/
+				// 'domain'               => [], // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0%5E%21/
+				// 'vibrate'              => [], // Removed: https://chromium.googlesource.com/chromium/src/+/6684fb7780bea4dacdcb12b14a9b56894e07cbfb%5E%21/
 
 			));
 
