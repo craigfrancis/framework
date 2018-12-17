@@ -709,15 +709,28 @@
 
 			$result = @mysqli_real_connect($this->link, $host, $user, $pass, $name);
 			if (!$result) {
-				$this->link = NULL;
-				$this->_error('Database connection error: ' . mysqli_connect_error() . ' (' . mysqli_connect_errno() . ')');
+				$error_number = mysqli_connect_errno();
+				$error_message = mysqli_connect_error() . ' (' . $error_number . ')';
+				if ($error_number == 2002) { // Connection error - e.g. "Temporary failure in name resolution" or "Can't connect to local MySQL server through socket"
+					sleep(1);
+					$result = @mysqli_real_connect($this->link, $host, $user, $pass, $name);
+					if (!$result) {
+						$error_message .= ' / ' . mysqli_connect_error() . ' (' . $error_number . ')';
+					}
+				}
+				if ($result) {
+					report_add('Temporary database connection error: ' . $error_message);
+				} else {
+					$this->link = NULL;
+					$this->_error('Database connection error: ' . $error_message);
+				}
 			}
 
+			$time = round((microtime(true) - $start), 5);
+			if (function_exists('debug_log_time') && $time > 0.01) {
+				debug_log_time('DBC', $time);
+			}
 			if (config::get('debug.level') >= 4) {
-				$time = round((microtime(true) - $start), 5);
-				if (function_exists('debug_log_time') && $time > 0.01) {
-					debug_log_time('DBC', $time);
-				}
 				debug_progress('Database Connect ' . $time . ($ca_file ? ' +TLS' : ''));
 			}
 
