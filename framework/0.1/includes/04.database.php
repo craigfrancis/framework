@@ -711,7 +711,7 @@
 			if (!$result) {
 				$error_number = mysqli_connect_errno();
 				$error_message = mysqli_connect_error() . ' (' . $error_number . ')';
-				if (SERVER == 'live' && $error_number == 2002) { // Connection error - e.g. "Temporary failure in name resolution" or "Can't connect to local MySQL server through socket"
+				if (SERVER != 'stage' && $error_number == 2002) { // Connection error - e.g. "Temporary failure in name resolution" or "Can't connect to local MySQL server through socket"
 					sleep(1);
 					$result = @mysqli_real_connect($this->link, $host, $user, $pass, $name);
 					if (!$result) {
