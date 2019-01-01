@@ -42,7 +42,7 @@
 		//--------------------------------------------------
 		// Add report to the database
 
-			if (config::get('db.host') !== NULL) {
+			if (config::get('db.host') !== NULL && config::get('db.error_connect') !== true) {
 
 				$db = db_get();
 
@@ -169,7 +169,7 @@
 						$response = NULL;
 					}
 
-					if ($response && $response->error_get() === false) { // Avoid looping
+					if ($response && $response->error_get() === false && config::get('db.error_connect') !== true) { // Avoid looping, or using default template with db connection error.
 
 						$response->set($error);
 						$response->error_send('system');

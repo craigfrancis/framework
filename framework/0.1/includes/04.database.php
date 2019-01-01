@@ -721,6 +721,7 @@
 				if ($result) {
 					report_add('Temporary database connection error: ' . $error_message);
 				} else {
+					config::set('db.error_connect', true);
 					$this->link = NULL;
 					$this->_error('Database connection error: ' . $error_message);
 				}
