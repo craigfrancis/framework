@@ -715,15 +715,15 @@
 					sleep(1);
 					$result = @mysqli_real_connect($this->link, $host, $user, $pass, $name);
 					if (!$result) {
-						$error_message .= ' / ' . mysqli_connect_error() . ' (' . $error_number . ')';
+						$error_message .= "\n\n" . mysqli_connect_error() . ' (' . mysqli_connect_errno() . ')';
 					}
 				}
 				if ($result) {
-					report_add('Temporary database connection error: ' . $error_message);
+					report_add('Temporary database connection error:' . "\n\n" . $error_message);
 				} else {
 					config::set('db.error_connect', true);
 					$this->link = NULL;
-					$this->_error('Database connection error: ' . $error_message);
+					$this->_error('Database connection error:' . "\n\n" . $error_message);
 				}
 			}
 
@@ -776,7 +776,7 @@
 
 				config::set('db.error_thrown', true);
 
-				$hidden_info = $info . "\n\n" . $error;
+				$hidden_info = trim($info . "\n\n" . $error);
 				if ($parameters) {
 					$hidden_info .= "\n\n" . debug_dump(array_column($parameters, 1));
 					$hidden_info .= "\n\n" . debug_dump(array_column($parameters, 0));
@@ -791,7 +791,7 @@
 			} else {
 
 				http_response_code(500);
-				exit('<p>I have a problem: <br />' . htmlentities($show_db_error ? $info : $error) . '</p>');
+				exit('<p>I have a problem.<br />' . nl2br(htmlentities($show_db_error ? $info : $error)) . '</p>');
 
 			}
 
