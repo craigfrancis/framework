@@ -667,94 +667,122 @@
 
 		private function connect() {
 
-			if ($this->link) {
-				return;
-			}
+			//--------------------------------------------------
+			// Connected
 
-			$prefix = 'db.';
-			if ($this->connection != 'default') {
-				$prefix .= $this->connection . '.';
-			}
+				if ($this->link) {
+					return;
+				}
 
-			$name = config::get($prefix . 'name');
-			$user = config::get($prefix . 'user');
-			$pass = config::get($prefix . 'pass');
-			$host = config::get($prefix . 'host');
+			//--------------------------------------------------
+			// Config
 
-			if ($pass === NULL) {
-				$password_path = PRIVATE_ROOT . '/passwords/database.txt'; // Could also go into `/private/config/server.ini`, but this will appear in debug output (although it should show the value '???').
-				if (is_readable($password_path)) {
-					$pass = trim(file_get_contents($password_path));
-				} else {
-					if (is_file($password_path)) {
-						$this->_error('Cannot read database password file');
+				$prefix = 'db.';
+				if ($this->connection != 'default') {
+					$prefix .= $this->connection . '.';
+				}
+
+				$name = config::get($prefix . 'name');
+				$user = config::get($prefix . 'user');
+				$pass = config::get($prefix . 'pass');
+				$host = config::get($prefix . 'host');
+
+				if ($pass === NULL) {
+					$password_path = PRIVATE_ROOT . '/passwords/database.txt'; // Could also go into `/private/config/server.ini`, but this will appear in debug output (although it should show the value '???').
+					if (is_readable($password_path)) {
+						$pass = trim(file_get_contents($password_path));
 					} else {
-						$this->_error('Unknown database password (config "' . $prefix . 'pass")');
+						if (is_file($password_path)) {
+							$this->_error('Cannot read database password file');
+						} else {
+							$this->_error('Unknown database password (config "' . $prefix . 'pass")');
+						}
 					}
 				}
-			}
 
-			if (!function_exists('mysqli_real_connect')) {
-				$this->_error('PHP does not have MySQLi support');
-			}
+				if (!function_exists('mysqli_real_connect')) {
+					$this->_error('PHP does not have MySQLi support');
+				}
 
-			$start = microtime(true);
+				$start = microtime(true);
 
-			$this->link = mysqli_init();
+			//--------------------------------------------------
+			// Link
 
-			$ca_file = config::get($prefix . 'ca_file');
-			if ($ca_file) {
-				mysqli_ssl_set($this->link, NULL, NULL, $ca_file, NULL, NULL);
-			}
+				$this->link = mysqli_init();
 
-			$result = @mysqli_real_connect($this->link, $host, $user, $pass, $name);
-			if (!$result) {
-				$error_number = mysqli_connect_errno();
-				$error_message = mysqli_connect_error() . ' (' . $error_number . ')';
-				if (SERVER != 'stage' && $error_number == 2002) { // Connection error - e.g. "Temporary failure in name resolution" or "Can't connect to local MySQL server through socket"
-					sleep(1);
+				$ca_file = config::get($prefix . 'ca_file');
+				if ($ca_file) {
+					mysqli_ssl_set($this->link, NULL, NULL, $ca_file, NULL, NULL);
+				}
+
+			//--------------------------------------------------
+			// Connect
+
+				$k = 0;
+				$error_number = NULL;
+				$error_messages = [];
+
+				do {
+
+					if ($k > 0) {
+						sleep(1);
+					}
+
 					$result = @mysqli_real_connect($this->link, $host, $user, $pass, $name);
 					if (!$result) {
-						$error_message .= "\n\n" . mysqli_connect_error() . ' (' . mysqli_connect_errno() . ')';
+						$error_number = mysqli_connect_errno();
+						$error_messages[] = mysqli_connect_error() . ' (' . $error_number . ')';
 					}
-				}
-				if ($result) {
-					report_add('Temporary database connection error:' . "\n\n" . $error_message);
-				} else {
+
+				} while (!$result && SERVER != 'stage' && $error_number == 2002 && (++$k < 3)); // 2002 connection error, e.g. "Temporary failure in name resolution" or "Can't connect to local MySQL server through socket"
+
+				if (!$result) {
+
 					config::set('db.error_connect', true);
 					$this->link = NULL;
-					$this->_error('Database connection error:' . "\n\n" . $error_message);
+					$this->_error('Database connection error:' . "\n\n" . implode("\n\n", $error_messages));
+
+				} else if ($error_messages) {
+
+					report_add('Temporary database connection error:' . "\n\n" . implode("\n\n", $error_messages));
+
 				}
-			}
 
-			$time = round((microtime(true) - $start), 5);
-			if (function_exists('debug_log_time') && $time > 0.01) {
-				debug_log_time('DBC', $time);
-			}
-			if (config::get('debug.level') >= 4) {
-				debug_progress('Database Connect ' . $time . ($ca_file ? ' +TLS' : ''));
-			}
+			//--------------------------------------------------
+			// Slow
 
-			$collation = config::get('db.collation');
-			if (($pos = strpos($collation, '_')) !== false) {
-				$charset = substr($collation, 0, $pos);
-			} else {
-				$charset = NULL;
-			}
-
-			if ($charset === NULL) {
-				if (config::get('output.charset') == 'UTF-8') {
-					$charset = 'utf8mb4';
-				} else if (config::get('output.charset') == 'ISO-8859-1') {
-					$charset = 'latin1';
+				$time = round((microtime(true) - $start), 5);
+				if (function_exists('debug_log_time') && $time > 0.01) {
+					debug_log_time('DBC', $time);
 				}
-			}
-
-			if ($charset !== NULL) {
-				if (!mysqli_set_charset($this->link, $charset)) {
-					$this->_error('Database charset error, when loading ' . $charset);
+				if (config::get('debug.level') >= 4) {
+					debug_progress('Database Connect ' . $time . ($ca_file ? ' +TLS' : ''));
 				}
-			}
+
+			//--------------------------------------------------
+			// Charset
+
+				$collation = config::get('db.collation');
+				if (($pos = strpos($collation, '_')) !== false) {
+					$charset = substr($collation, 0, $pos);
+				} else {
+					$charset = NULL;
+				}
+
+				if ($charset === NULL) {
+					if (config::get('output.charset') == 'UTF-8') {
+						$charset = 'utf8mb4';
+					} else if (config::get('output.charset') == 'ISO-8859-1') {
+						$charset = 'latin1';
+					}
+				}
+
+				if ($charset !== NULL) {
+					if (!mysqli_set_charset($this->link, $charset)) {
+						$this->_error('Database charset error, when loading ' . $charset);
+					}
+				}
 
 		}
 
