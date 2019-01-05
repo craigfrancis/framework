@@ -1582,6 +1582,21 @@
 	}
 
 //--------------------------------------------------
+// Delete old files
+
+	function unlink_old_files($folder, $max_age) {
+		foreach (glob($folder . '/*') as $file) {
+			$file_modified = @filemtime($file);
+			if ($file_modified !== false && $file_modified < $max_age) {
+				$result = @unlink($file);
+				if ($result === false && is_file($file)) { // Race condition, multiple users potentially cleaning up the tmp folder.
+					report_add('Could not delete the file: ' . $file, 'error');
+				}
+			}
+		}
+	}
+
+//--------------------------------------------------
 // Recursively delete a directory
 
 	function rrmdir($dir) {

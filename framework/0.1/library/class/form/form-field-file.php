@@ -218,16 +218,7 @@
 
 					$tmp_folder = tmp_folder('form-file');
 
-					$existing_max_age = strtotime('-1 hour');
-					foreach (glob($tmp_folder . '/*') as $existing_file) {
-						$file_modified = @filemtime($existing_file);
-						if ($file_modified !== false && $file_modified < $existing_max_age) {
-							$result = @unlink($existing_file);
-							if ($result === false && is_file($existing_file)) { // Race condition, multiple users potentially cleaning up the tmp folder.
-								report_add('Could not delete the file: ' . $existing_file, 'error');
-							}
-						}
-					}
+					unlink_old_files($tmp_folder, strtotime('-1 hour'));
 
 					config::set('form.file_tmp_folder', $tmp_folder);
 
