@@ -181,12 +181,21 @@
 
 		}
 
-		public static function get($variable, $default = NULL) {
+		public static function get($variable, $config = array()) {
 
-			$variable_full = config::get('cookie.prefix', '') . $variable;
+			if (!is_array($config)) {
+				$config = ['default' => $config];
+			}
+
+			$config = array_merge(array(
+					'default' => NULL,
+					'prefix'  => config::get('cookie.prefix', ''),
+				), $config);
+
+			$variable_full = $config['prefix'] . $variable;
 
 			if (!isset($_COOKIE[$variable_full])) {
-				return $default;
+				return $config['default'];
 			}
 
 			$cookie = $_COOKIE[$variable_full];
@@ -207,12 +216,16 @@
 
 			}
 
-			return $default;
+			return $config['default'];
 
 		}
 
-		public static function delete($variable) {
-			return self::set($variable, NULL, '-24 hours');
+		public static function delete($variable, $config = []) {
+
+			$config['expires'] = '-24 hours';
+
+			return self::set($variable, NULL, $config);
+
 		}
 
 		public static function salt($variable, $value) {
