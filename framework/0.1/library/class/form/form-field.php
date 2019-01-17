@@ -765,6 +765,8 @@
 					$value = '"' . $this->value . '"';
 				} else if (isset($this->values)) {
 					$value = debug_dump($this->values, 2);
+				} else if (method_exists($this, 'file_name_get')) {
+					$value = $this->file_name_get();
 				} else {
 					$value = 'NULL';
 				}
