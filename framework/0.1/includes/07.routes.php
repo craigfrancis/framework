@@ -125,6 +125,18 @@
 		}
 
 	//--------------------------------------------------
+	// Security txt
+
+		if ($route_path == '/.well-known/security.txt') {
+			$security_path = PUBLIC_ROOT . '/security.txt';
+			if (is_file($security_path)) {
+				header('Content-Type: text/plain; charset=' . head(config::get('output.charset')));
+				readfile($security_path);
+				exit();
+			}
+		}
+
+	//--------------------------------------------------
 	// Don't allow:
 	// - missing slash at the end... to reduce the
 	//   possibility of duplicate content issues.
