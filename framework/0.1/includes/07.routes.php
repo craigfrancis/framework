@@ -137,6 +137,20 @@
 		}
 
 	//--------------------------------------------------
+	// Asset Links
+
+		if ($route_path == '/.well-known/assetlinks.json') {
+			header('Content-Type: application/json; charset=' . head(config::get('output.charset')));
+			$asset_path = PUBLIC_ROOT . '/assetlinks.json';
+			if (is_file($asset_path)) {
+				readfile($asset_path);
+			} else {
+				echo '[]'; // We do *not* link to any apps or websites.
+			}
+			exit();
+		}
+
+	//--------------------------------------------------
 	// Don't allow:
 	// - missing slash at the end... to reduce the
 	//   possibility of duplicate content issues.
