@@ -1,0 +1,9 @@
+# humanstxt.org
+
+/* TEAM */
+
+	Developer: Craig Francis
+	Site: https://www.craigfrancis.co.uk/
+	Site: https://www.code-poets.co.uk/
+	Twitter: @craigfrancis
+	Location: Bristol, UK.

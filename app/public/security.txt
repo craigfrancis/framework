@@ -1,0 +1,3 @@
+Contact: https://www.craigfrancis.co.uk/contact/
+Encryption: https://www.craigfrancis.co.uk/contact/gpg.asc
+Preferred-Languages: en
