@@ -1442,6 +1442,10 @@
 
 						$this->csp_source_add('style-src', $css_path);
 
+						if ($this->csp_sources_get('trusted-types')) {
+							$this->csp_source_add('trusted-types', 'debug');
+						}
+
 						if (config::get('db.host') !== NULL) {
 
 							debug_require_db_table(DB_PREFIX . 'system_report', '

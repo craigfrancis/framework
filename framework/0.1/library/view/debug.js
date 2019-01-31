@@ -25,6 +25,26 @@
 				j;
 
 		//--------------------------------------------------
+		// Trusted types
+
+			var debugTrustedTypes = {
+					'createHTML': function (s) {
+							return s; // Unsafe
+						},
+					'createURL': function (s) {
+							if (['c','h','l'].indexOf(s) >= 0) { // Not -1
+								return '#debug_notes_' + s;
+							} else {
+								return '#';
+							}
+						}
+				};
+
+			if (window.TrustedTypes) {
+				debugTrustedTypes = TrustedTypes.createPolicy('debug', debugTrustedTypes);
+			}
+
+		//--------------------------------------------------
 		// Body reference
 
 			body = document.getElementsByTagName('body');
@@ -84,7 +104,7 @@
 							note_wrapper.style.background = note.colour;
 
 							note_content.className = 'note_body';
-							note_content.innerHTML = note.html;
+							note_content.innerHTML = debugTrustedTypes.createHTML(note.html);
 							note_wrapper.appendChild(note_content);
 
 							if (note.time !== null) {
@@ -97,7 +117,7 @@
 							if (note.extra_html && note.extra_html !== '') {
 								note_extra = document.createElement('div');
 								note_extra.className = 'note_extra';
-								note_extra.innerHTML = note.extra_html;
+								note_extra.innerHTML = debugTrustedTypes.createHTML(note.extra_html);
 								note_wrapper.appendChild(note_extra);
 							}
 
@@ -112,11 +132,11 @@
 
 						link = document.createElement('a');
 						link.appendChild(document.createTextNode(k));
-						link.className = 'debug_link';
-						link.title = debug_types[k].name;
-						link.href = '#debug_notes_' + ref;
 						link.debugOutput = notes;
-						link.onclick = debug_open_link;
+						link.setAttribute('class', 'debug_link');
+						link.setAttribute('title', debug_types[k].name);
+						link.setAttribute('href', debugTrustedTypes.createURL(ref));
+						link.addEventListener('click', debug_open_link);
 
 						debug_links.appendChild(link);
 
@@ -124,9 +144,9 @@
 			}
 
 			var time_text = document.createElement('span');
-			time_text.className = 'debug_time' + (debug_time > 0.1 ? ' debug_slow' : '');
+			time_text.setAttribute('class', 'debug_time' + (debug_time > 0.1 ? ' debug_slow' : ''));
+			time_text.addEventListener('dblclick', debug_close);
 			time_text.appendChild(document.createTextNode(' - ' + debug_time));
-			time_text.ondblclick = debug_close;
 			debug_links.appendChild(time_text);
 
 			debug_wrapper.appendChild(debug_links);
@@ -140,7 +160,7 @@
 		debug_wrapper.parentNode.removeChild(debug_wrapper);
 	}
 
-	function debug_open_link() {
+	function debug_open_link(e) {
 
 		if (debug_open && debug_open !== this) {
 			debug_open.debugOutput.className = 'debug_notes';
@@ -154,7 +174,7 @@
 		this.scrollIntoView();
 		debug_open = this;
 
-		return false;
+		e.preventDefault();
 
 	}
 
