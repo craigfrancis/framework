@@ -36,7 +36,7 @@
 
 			$config['gateway.tester'] = true;
 
-	} else if (prefix_match('/www/demo/', ROOT)) {
+	} else if (prefix_match('/mnt/www/demo/', ROOT)) {
 
 		//--------------------------------------------------
 		// Server
