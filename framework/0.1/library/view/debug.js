@@ -71,12 +71,12 @@
 		// Add to DOM
 
 			debug_wrapper = document.createElement('div');
-			debug_wrapper.id = 'debug_output';
+			debug_wrapper.setAttribute('id', 'debug_output');
 
 			output = document.createElement('div');
 
 			debug_links = document.createElement('p');
-			debug_links.id = 'debug_links';
+			debug_links.setAttribute('id', 'debug_links');
 
 			for (k in debug_types) {
 				if (debug_types[k].notes.length > 0) {
@@ -90,8 +90,8 @@
 					// Notes
 
 						notes = document.createElement('div');
-						notes.className = 'debug_notes';
-						notes.id = 'debug_notes_' + ref;
+						notes.setAttribute('class', 'debug_notes');
+						notes.setAttribute('id', 'debug_notes_' + ref);
 
 						for (j in debug_types[k].notes) {
 
@@ -100,23 +100,23 @@
 							note_wrapper = document.createElement('div');
 							note_content = document.createElement('div');
 
-							note_wrapper.className = 'note';
+							note_wrapper.setAttribute('class', 'note');
 							note_wrapper.style.background = note.colour;
 
-							note_content.className = 'note_body';
+							note_content.setAttribute('class', 'note_body');
 							note_content.innerHTML = debugTrustedTypes.createHTML(note.html);
 							note_wrapper.appendChild(note_content);
 
 							if (note.time !== null) {
 								note_time = document.createElement('div');
-								note_time.className = 'note_time';
+								note_time.setAttribute('class', 'note_time');
 								note_time.appendChild(document.createTextNode('Time: ' + note.time));
 								note_wrapper.appendChild(note_time);
 							}
 
 							if (note.extra_html && note.extra_html !== '') {
 								note_extra = document.createElement('div');
-								note_extra.className = 'note_extra';
+								note_extra.setAttribute('class', 'note_extra');
 								note_extra.innerHTML = debugTrustedTypes.createHTML(note.extra_html);
 								note_wrapper.appendChild(note_extra);
 							}
@@ -163,13 +163,13 @@
 	function debug_open_link(e) {
 
 		if (debug_open && debug_open !== this) {
-			debug_open.debugOutput.className = 'debug_notes';
-			debug_open.className = 'debug_link';
+			debug_open.debugOutput.setAttribute('class', 'debug_notes');
+			debug_open.setAttribute('class', 'debug_link');
 		}
 
-		var o = (this.debugOutput.className.indexOf('debug_notes_open') > -1);
-		this.className = (o ? 'debug_link' : 'debug_link debug_link_open');
-		this.debugOutput.className = (o ? 'debug_notes' : 'debug_notes debug_notes_open');
+		var o = (this.debugOutput.getAttribute('class').indexOf('debug_notes_open') > -1);
+		this.setAttribute('class', (o ? 'debug_link' : 'debug_link debug_link_open'));
+		this.debugOutput.setAttribute('class', (o ? 'debug_notes' : 'debug_notes debug_notes_open'));
 		this.debugOutput.style.minHeight = (window.innerHeight - debug_links.offsetHeight) + 'px';
 		this.scrollIntoView();
 		debug_open = this;
