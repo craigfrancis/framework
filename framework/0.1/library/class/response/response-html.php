@@ -1442,7 +1442,7 @@
 
 						$this->csp_source_add('style-src', $css_path);
 
-						if ($this->csp_sources_get('trusted-types')) {
+						if ($this->csp_sources_get('trusted-types') !== NULL) {
 							$this->csp_source_add('trusted-types', 'debug');
 						}
 
