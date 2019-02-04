@@ -1402,7 +1402,7 @@
 					foreach ($value as $k => $v) {
 						if (prefix_match('/', $v)) {
 							if (!$domain) {
-								$domain = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.csp_domain', config::get('output.domain'));
+								$domain = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain');
 							}
 							$value[$k] = $domain . $v;
 						}
