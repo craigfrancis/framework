@@ -171,80 +171,91 @@
 			if ($new_path != $route_path) {
 
 				//--------------------------------------------------
-				// Redirect table
-
-					if (config::get('db.host') !== NULL) {
-
-						$db = db_get();
-
-						$sql = 'SELECT
-									url_dst,
-									permanent
-								FROM
-									' . DB_PREFIX . 'system_redirect
-								WHERE
-									url_src = ? AND
-									enabled = "true"';
-
-						$parameters = array();
-						$parameters[] = array('s', $route_path);
-
-						if ($row = $db->fetch_row($sql, $parameters)) {
-							redirect($row['url_dst'], ($row['permanent'] == 'true' ? 301 : 302));
-						}
-
-					}
-
-				//--------------------------------------------------
 				// Website override, can either do everything itself,
 				// or provide the function url_cleanup()
 
-					$include_path = APP_ROOT . '/library/setup/setup.php';
-					if (is_file($include_path)) {
-						script_run_once($include_path);
-					}
-
 					$include_path = APP_ROOT . '/library/setup/url-cleanup.php';
 					if (is_file($include_path)) {
+
 						script_run_once($include_path);
+
+					} else {
+
+						$include_path = APP_ROOT . '/library/setup/setup.php';
+						if (is_file($include_path)) {
+							script_run_once($include_path);
+						}
+
 					}
 
 				//--------------------------------------------------
-				// Function to do the URL cleanup
+				// If still not valid
 
-					if (!function_exists('url_cleanup')) {
-						function url_cleanup($route_path, $new_path, $new_url) {
+					if (config::get('request.path_valid', false) !== true) {
 
-							list($folders, $controller, $method, $arguments) = controller_get($route_path);
-							if ($controller !== NULL) {
-								return $new_url; // A controller would handle this.
+						//--------------------------------------------------
+						// Redirect table
+
+							if (config::get('db.host') !== NULL) {
+
+								$db = db_get();
+
+								$sql = 'SELECT
+											url_dst,
+											permanent
+										FROM
+											' . DB_PREFIX . 'system_redirect
+										WHERE
+											url_src = ? AND
+											enabled = "true"';
+
+								$parameters = array();
+								$parameters[] = array('s', $route_path);
+
+								if ($row = $db->fetch_row($sql, $parameters)) {
+									redirect($row['url_dst'], ($row['permanent'] == 'true' ? 301 : 302));
+								}
+
 							}
 
-							if (is_file(view_path(route_folders($route_path)))) {
-								return $new_url; // There is a view file for this.
+						//--------------------------------------------------
+						// Function to do the URL cleanup
+
+							if (!function_exists('url_cleanup')) {
+								function url_cleanup($route_path, $new_path, $new_url) {
+
+									list($folders, $controller, $method, $arguments) = controller_get($route_path);
+									if ($controller !== NULL) {
+										return $new_url; // A controller would handle this.
+									}
+
+									if (is_file(view_path(route_folders($route_path)))) {
+										return $new_url; // There is a view file for this.
+									}
+
+									return NULL; // Give up, it's probably a 404
+
+								}
 							}
 
-							return NULL; // Give up, it's probably a 404
+						//--------------------------------------------------
+						// Change
 
-						}
-					}
+							$new_url = new url();
+							$new_url->format_set('full');
+							$new_url->path_set($url_prefix . $new_path);
+							$new_url = $new_url->get();
 
-				//--------------------------------------------------
-				// Change
+							$clean_url = url_cleanup($route_path, $new_path, $new_url);
 
-					$new_url = new url();
-					$new_url->format_set('full');
-					$new_url->path_set($url_prefix . $new_path);
-					$new_url = $new_url->get();
+							if ($clean_url !== NULL) {
+								if (SERVER == 'stage') {
+									exit('<p>URL Cleanup: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
+								} else {
+									redirect($clean_url, 301);
+								}
+							}
 
-					$clean_url = url_cleanup($route_path, $new_path, $new_url);
-
-					if ($clean_url !== NULL) {
-						if (SERVER == 'stage') {
-							exit('<p>URL Cleanup: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
-						} else {
-							redirect($clean_url, 301);
-						}
 					}
 
 			}
