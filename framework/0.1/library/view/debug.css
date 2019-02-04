@@ -77,6 +77,7 @@
 		border: 1px solid #000;
 		clear: both;
 		overflow: auto;
+		white-space: nowrap;
 	}
 
 	#debug_output .debug_notes .note a,
@@ -124,6 +125,7 @@
 	#debug_output .debug_notes .note .debug_keys {
 		margin: 0;
 		padding: 0 0 0 3em;
+		white-space: normal;
 	}
 
 	#debug_output .debug_notes .note .debug_keys p {
