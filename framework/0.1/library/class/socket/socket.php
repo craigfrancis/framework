@@ -415,7 +415,9 @@ if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: su
 
 								$data = implode('&', $data_encoded);
 
-								$headers[] = 'Content-Type: application/x-www-form-urlencoded';
+								if (!in_array('content-type', array_map('strtolower', array_keys($this->headers)))) {
+									$headers[] = 'Content-Type: application/x-www-form-urlencoded; charset=' . head(config::get('output.charset'));
+								}
 
 								$this->values = array();
 
