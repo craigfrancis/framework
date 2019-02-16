@@ -208,7 +208,7 @@
 
 				chdir($source_dir);
 
-				$arguments = '--decrypt --local-user ' . escapeshellarg($this->private_key_email) . '  --passphrase-file ' . escapeshellarg($this->pass_phrase_path_get()) . ' --output ' . escapeshellarg($path_dest_new) . ' ' . escapeshellarg($source_name);
+				$arguments = '--decrypt --local-user ' . escapeshellarg($this->private_key_email) . ' --passphrase-file ' . escapeshellarg($this->pass_phrase_path_get()) . ' --output ' . escapeshellarg($path_dest_new) . ' ' . escapeshellarg($source_name);
 
 				if ($zip) {
 					$result = $this->_exec_zip($arguments);
@@ -299,12 +299,7 @@
 
 						$result = $this->_exec('--import ' . escapeshellarg($public_key_path));
 
-						$result = $this->_exec('--version | head -n 1 | grep \'^\\gpg.*1\\.[0-9]*\\.[0-9]*$\''); // Version 1 vs 2+
-						if (count($result['output']) > 0) {
-							$result = $this->_exec('--batch --yes --local-user ' . escapeshellarg($this->private_key_email) . ' --passphrase-file ' . escapeshellarg($this->pass_phrase_path_get()) . ' --sign-key ' . escapeshellarg($key));
-						} else {
-							$result = $this->_exec('--batch --yes --local-user ' . escapeshellarg($this->private_key_email) . ' --passphrase-file ' . escapeshellarg($this->pass_phrase_path_get()) . ' --pinentry-mode loopback --sign-key ' . escapeshellarg($key));
-						}
+						$result = $this->_exec('--batch --yes --local-user ' . escapeshellarg($this->private_key_email) . ' --passphrase-file ' . escapeshellarg($this->pass_phrase_path_get()) . ' --sign-key ' . escapeshellarg($key));
 
 					}
 
@@ -324,6 +319,14 @@
 
 				if (!is_executable($this->gpg_command)) {
 					exit_with_error('Cannot find "gpg" command in /usr/bin/ or /usr/local/bin/');
+				}
+
+				if (($pos = strpos($command, '--passphrase-file')) !== false) {
+					$output = [];
+					exec($this->gpg_command . ' --version | head -n 1 | grep \'^\\gpg.*1\\.[0-9]*\\.[0-9]*$\'', $output, $result); // Version 1 vs 2+
+					if (count($output) == 0) {
+						$command = substr($command, 0, $pos) . '--pinentry-mode loopback ' . substr($command, ($pos));
+					}
 				}
 
 				$output = array();
