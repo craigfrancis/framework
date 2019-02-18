@@ -9,8 +9,9 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $gpg_command;
-			private $gpg_zip_command;
+			private $gpg_command = NULL;
+			private $gpg_zip_command = NULL;
+			private $gpg_v1 = NULL;
 			private $private_key_name = NULL;
 			private $private_key_email = NULL;
 			private $config_path = NULL;
@@ -322,9 +323,12 @@
 				}
 
 				if (($pos = strpos($command, '--passphrase-file')) !== false) {
-					$output = [];
-					exec($this->gpg_command . ' --version | head -n 1 | grep \'^\\gpg.*1\\.[0-9]*\\.[0-9]*$\'', $output, $result); // Version 1 vs 2+
-					if (count($output) == 0) {
+					if ($this->gpg_v1 === NULL) {
+						$output = [];
+						exec($this->gpg_command . ' --version | head -n 1 | grep \'^\\gpg.*1\\.[0-9]*\\.[0-9]*$\'', $output); // Version 1 vs 2+
+						$this->gpg_v1 = (count($output) == 1);
+					}
+					if (!$this->gpg_v1) {
 						$command = substr($command, 0, $pos) . '--pinentry-mode loopback ' . substr($command, ($pos));
 					}
 				}
