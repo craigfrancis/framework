@@ -87,6 +87,10 @@
 					$subject = config::get('email.from_name');
 				}
 
+				if (config::get('output.charset') == 'UTF-8') {
+					$subject = iconv('UTF-8', 'ASCII//TRANSLIT', $subject); // The subject sent to mail() cannot really contain UTF-8 characters (SMTPUTF8 support is poor).
+				}
+
 				return $subject;
 
 			}
