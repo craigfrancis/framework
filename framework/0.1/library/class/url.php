@@ -297,76 +297,56 @@
 
 						if ($format == 'full') {
 
-							//--------------------------------------------------
-							// Host
+							if (!isset($this->path_data['host'])) {
 
-								if (isset($this->path_data['host'])) {
-									$host = $this->path_data['host'];
-								} else {
-									$host = config::get('output.domain');
-									if ($host == '') {
-										$host = config::get('request.domain');
-										if ($host == '') {
-											exit_with_error('Cannot determine domain name for "full" url'); // Probably an email sent from the CLI, so we want to exit
-										}
-									}
-								}
+								//--------------------------------------------------
+								// Use current origin
 
-							//--------------------------------------------------
-							// Scheme
+									$output = config::get('output.origin');
 
-								if (($scheme == 'https' || $scheme == 'http') && ($host == config::get('output.domain'))) {
+							} else {
 
-									if ($scheme == 'http') {
-										if (https_available()) {
-											$scheme = 'https'; // Use HTTPS whenever possible.
+								//--------------------------------------------------
+								// Scheme
+
+									if ($scheme === '' || $scheme === NULL) {
+										if ($this->path_data['host'] == config::get('output.domain')) {
+											$scheme = (https_available() || config::get('request.https') ? 'https' : 'http'); // Go with HTTPS if possible
+										} else {
+											$scheme = 'http'; // Safe default
 										}
 									}
 
-									// } else {
-									// 	if (!https_available()) {
-									// 		$scheme = 'http'; // Drop down to HTTP if HTTPS is not available.
-									// 	}
-
-								} else if ($scheme === '' || $scheme === NULL) {
-
-									if ($host == config::get('output.domain')) {
-										$scheme = (https_available() || config::get('request.https') ? 'https' : 'http'); // Go with HTTPS if possible
-									} else {
-										$scheme = 'http'; // Safe default
+									if (!in_array($scheme, $this->schemes)) { // Projection against "javascript:xxx" type links.
+										exit_with_error('Invalid scheme "' . $scheme . '"', 'Allowed schemes: ' . implode(', ', $this->schemes));
 									}
 
-								}
+									$output .= $scheme . '://';
 
-								if (!in_array($scheme, $this->schemes)) { // Projection against "javascript:xxx" type links.
-									exit_with_error('Invalid scheme "' . $scheme . '"', 'Allowed schemes: ' . implode(', ', $this->schemes));
-								}
+								//--------------------------------------------------
+								// User
 
-								$output .= $scheme . '://';
-
-							//--------------------------------------------------
-							// User
-
-								if (isset($this->path_data['user'])) {
-									$output .= $this->path_data['user'];
-									if (isset($this->path_data['pass'])) {
-										$output .= ':' . $this->path_data['pass'];
+									if (isset($this->path_data['user'])) {
+										$output .= $this->path_data['user'];
+										if (isset($this->path_data['pass'])) {
+											$output .= ':' . $this->path_data['pass'];
+										}
+										$output .= '@';
 									}
-									$output .= '@';
-								}
 
-							//--------------------------------------------------
-							// Host
+								//--------------------------------------------------
+								// Host
 
-								$output .= $host;
+									$output .= $this->path_data['host'];
 
-							//--------------------------------------------------
-							// Port
+								//--------------------------------------------------
+								// Port
 
-								if (isset($this->path_data['port'])) {
-									$output .= ':' . $this->path_data['port'];
-								}
+									if (isset($this->path_data['port'])) {
+										$output .= ':' . $this->path_data['port'];
+									}
 
+							}
 						}
 
 					//--------------------------------------------------

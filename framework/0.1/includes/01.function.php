@@ -1091,7 +1091,7 @@
 			// Location must be an absoluteURI (rfc2616).
 			// Also covers the hack "?dest=//example.com"
 
-			$url = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain') . $url;
+			$url = config::get('output.origin') . $url;
 
 		}
 
@@ -1394,17 +1394,13 @@
 	function http_policy_values($policies) {
 
 		$output = array();
-		$domain = NULL;
 
 		foreach ($policies as $directive => $value) {
 			if ($value !== NULL) {
 				if (is_array($value)) {
 					foreach ($value as $k => $v) {
 						if (prefix_match('/', $v)) {
-							if (!$domain) {
-								$domain = (config::get('request.https') ? 'https://' : 'http://') . config::get('output.domain');
-							}
-							$value[$k] = $domain . $v;
+							$value[$k] = config::get('output.origin') . $v;
 						}
 					}
 					$value = implode(' ', $value);
