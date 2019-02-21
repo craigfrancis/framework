@@ -162,6 +162,14 @@
 		return $html . ($tag == 'input' || $tag == 'link' ? ' />' : '>');
 	}
 
+	function base64_encode_rfc4648($text) {
+		return rtrim(strtr(base64_encode($text), '+/', '-_'), '=');
+	}
+
+	function base64_decode_rfc4648($encoded) {
+		return base64_decode(strtr($encoded, '-_', '+/'));
+	}
+
 	function xml($text) {
 		return str_replace(array('&', '"', "'", '<', '>', "\0"), array('&amp;', '&quot;', '&apos;', '&lt;', '&gt;', ''), $text);
 	}
