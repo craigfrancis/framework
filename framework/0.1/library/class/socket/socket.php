@@ -69,7 +69,11 @@
 			}
 
 			public function header_set($name, $value) {
-				$this->headers[$name] = $value;
+				if ($value === NULL) {
+					unset($this->headers[$name]);
+				} else {
+					$this->headers[$name] = $value;
+				}
 			}
 
 			public function header_get($name) {
