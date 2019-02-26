@@ -61,11 +61,22 @@
 
 			public function user_agent_set($user_agent) {
 				$this->user_agent = $user_agent;
+				$this->socket->header_set('User-Agent', $user_agent);
+				$this->socket->header_set('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+				$this->socket->header_set('Accept-Language', 'en-GB,en-US;q=0.8,en;q=0.6');
+				$this->socket->header_set('Cache-Control', 'no-cache');
+				$this->socket->header_set('Pragma', 'no-cache');
 			}
 
 			public function encoding_accept_set($type, $decode = false) { // Currently supports gzip... maybe later deflate?
+
 				$this->encoding_accept_type = $type;
 				$this->encoding_accept_decode = $decode;
+
+				if ($type !== NULL) {
+					$this->socket->header_set('Accept-Encoding', $type);
+				}
+
 			}
 
 			public function cookie_set($name, $value, $domain = NULL, $path = '/') {
@@ -629,21 +640,6 @@
 				// Reset
 
 					$this->form = NULL;
-
-				//--------------------------------------------------
-				// Base headers
-
-					if ($this->user_agent !== NULL) {
-						$this->socket->header_set('User-Agent', $this->user_agent);
-						$this->socket->header_set('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
-						$this->socket->header_set('Accept-Language', 'en-GB,en-US;q=0.8,en;q=0.6');
-						$this->socket->header_set('Cache-Control', 'no-cache');
-						$this->socket->header_set('Pragma', 'no-cache');
-					}
-
-					if ($this->encoding_accept_type !== NULL) {
-						$this->socket->header_set('Accept-Encoding', $this->encoding_accept_type);
-					}
 
 				//--------------------------------------------------
 				// Get page
