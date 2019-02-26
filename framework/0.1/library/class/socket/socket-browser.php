@@ -768,7 +768,7 @@
 						// Debug
 
 							if ($this->debug) {
-								debug(array('url' => $url, 'method' => $method, 'data' => $data, 'cookies' => $cookies, 'referrer' => $this->socket->header_get('Referer')));
+								debug(array('url' => $url, 'method' => $method, 'data' => $data, 'cookies' => $cookies, 'headers' => $this->socket->headers_get()));
 							}
 
 						//--------------------------------------------------
