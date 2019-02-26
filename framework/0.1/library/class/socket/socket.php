@@ -76,6 +76,10 @@
 				return (isset($this->headers[$name]) ? $this->headers[$name] : NULL);
 			}
 
+			public function headers_get() {
+				return $this->headers;
+			}
+
 			public function cookie_set($name, $value) {
 				$this->cookies[$name] = $value;
 			}
