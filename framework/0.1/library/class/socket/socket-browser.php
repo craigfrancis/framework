@@ -200,6 +200,10 @@
 				return $this->_send($url);
 			}
 
+			public function post($url, $data = '') { // Before using this, look at form_select() and form_submit()
+				return $this->_send($url, $data, 'POST');
+			}
+
 		//--------------------------------------------------
 		// Current page
 
