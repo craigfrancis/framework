@@ -151,6 +151,10 @@
 
 			}
 
+			public function cookies_raw_set($cookies) {
+				$this->cookies_raw = $cookies;
+			}
+
 			public function header_set($name, $value) {
 				$this->socket->header_set($name, $value);
 			}
