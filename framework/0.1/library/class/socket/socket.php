@@ -619,7 +619,7 @@ if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: su
 					$response_headers = '';
 					$response_data = NULL;
 
-					while (($line = fgets($connection, 255))) {
+					while (($line = fgets($connection))) {
 						if ($response_data === NULL) {
 
 							$response_headers .= $line;
