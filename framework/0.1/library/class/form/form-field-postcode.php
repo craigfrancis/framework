@@ -76,6 +76,10 @@
 				return ($value === NULL ? '' : $value); // If the value is an empty string (or error), it should return an empty string, so changes can be detected with new_value !== old_value
 			}
 
+			public function value_raw_get() {
+				return $this->value;
+			}
+
 		//--------------------------------------------------
 		// Validation
 
