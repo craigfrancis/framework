@@ -286,6 +286,8 @@
 
 		if ($gateway_url !== NULL && prefix_match($gateway_url, $route_path)) {
 
+			config::set('output.page_id', 'request');
+
 			if (preg_match('/^[\/]*(v([0-9]+)\/+)?([^\/]+)[\/]*(.*)$/', substr($route_path, strlen($gateway_url)), $matches)) {
 
 				if ($matches[2] !== '') {
