@@ -644,11 +644,16 @@
 			}
 			$search_query = implode(' ', $search_query);
 			if ($search_query) {
+				if (is_array($field)) {
+					$fields_sql = implode(', ', array_map([$this, 'escape_field'], $field));
+				} else {
+					$fields_sql = $this->escape_field($field);
+				}
 				if ($parameters !== NULL) {
 					$parameters[] = array('s', $search_query);
-					return 'MATCH (' . $this->escape_field($field) . ') AGAINST (? IN BOOLEAN MODE)';
+					return 'MATCH (' . $fields_sql . ') AGAINST (? IN BOOLEAN MODE)';
 				} else {
-					return 'MATCH (' . $this->escape_field($field) . ') AGAINST ("' . $this->escape($search_query) . '" IN BOOLEAN MODE)';
+					return 'MATCH (' . $fields_sql . ') AGAINST ("' . $this->escape($search_query) . '" IN BOOLEAN MODE)';
 				}
 			} else {
 				return 'false';
