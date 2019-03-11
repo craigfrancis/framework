@@ -634,7 +634,10 @@
 
 		private function _match_boolean_all($field, $search, &$parameters = NULL) {
 			$search_query = array();
-			foreach (split_words($search) as $word) {
+			if (!is_array($search)) {
+				$search = split_words($search);
+			}
+			foreach ($search as $word) {
 				$char = substr($word, 0, 1);
 				if ($char == '-' || $char == '+') {
 					$search_query[] = $word;
