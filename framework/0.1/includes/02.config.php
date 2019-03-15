@@ -205,14 +205,31 @@
 	unset($config);
 
 //--------------------------------------------------
-// Post app specified defaults
+// Constants
 
-	//--------------------------------------------------
-	// Server
+	if (!defined('SERVER')) {
+		define('SERVER', 'live');
+	}
 
-		if (!defined('SERVER')) {
-			define('SERVER', 'live');
+	if (!defined('ASSET_URL'))    define('ASSET_URL',    '/a');
+	if (!defined('ASSET_ROOT'))   define('ASSET_ROOT',   PUBLIC_ROOT . '/a');
+	if (!defined('FILE_URL'))     define('FILE_URL',     '/a/files');
+	if (!defined('FILE_ROOT'))    define('FILE_ROOT',    ROOT . '/files');
+	if (!defined('PRIVATE_ROOT')) define('PRIVATE_ROOT', ROOT . '/private');
+
+//--------------------------------------------------
+// Private app config
+
+	$include_path = PRIVATE_ROOT . '/config/' . safe_file_name(SERVER) . '.ini';
+
+	if (is_file($include_path)) {
+		foreach (parse_ini_file($include_path) as $key => $value) {
+			config::set($key, $value);
 		}
+	}
+
+//--------------------------------------------------
+// Post app specified defaults
 
 	//--------------------------------------------------
 	// Encryption key
@@ -231,15 +248,6 @@
 	// Database
 
 		define('DB_PREFIX', config::get('db.prefix'));
-
-	//--------------------------------------------------
-	// Resources
-
-		if (!defined('ASSET_URL'))    define('ASSET_URL',    '/a');
-		if (!defined('ASSET_ROOT'))   define('ASSET_ROOT',   PUBLIC_ROOT . '/a');
-		if (!defined('FILE_URL'))     define('FILE_URL',     '/a/files');
-		if (!defined('FILE_ROOT'))    define('FILE_ROOT',    ROOT . '/files');
-		if (!defined('PRIVATE_ROOT')) define('PRIVATE_ROOT', ROOT . '/private');
 
 	//--------------------------------------------------
 	// Request
@@ -433,17 +441,6 @@
 		config::set_default('gateway.error_url', NULL);
 		config::set_default('gateway.maintenance', false);
 		config::set_default('gateway.tester', false);
-
-//--------------------------------------------------
-// Private app config
-
-	$include_path = PRIVATE_ROOT . '/config/' . safe_file_name(SERVER) . '.ini';
-
-	if (is_file($include_path)) {
-		foreach (parse_ini_file($include_path) as $key => $value) {
-			config::set($key, $value);
-		}
-	}
 
 //--------------------------------------------------
 // Character set
