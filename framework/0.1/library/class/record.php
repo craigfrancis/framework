@@ -42,7 +42,7 @@
 						'log_table' => NULL,
 						'log_values' => array(),
 
-						'deleted' => NULL,
+						'deleted' => false, // False, never allow deleted records; NULL, do not check; True/Array/etc, check and use error_send('deleted')
 
 						'db' => NULL,
 
@@ -150,7 +150,7 @@
 
 				if ($this->config['deleted']) {
 					$where_sql .= ' AND deleted = deleted';
-				} else {
+				} else if ($this->config['deleted'] === false) {
 					$where_sql .= ' AND deleted = "0000-00-00 00:00:00"';
 				}
 
@@ -256,10 +256,16 @@
 
 						} else if ($this->config['deleted'] && $this->values['deleted'] != '0000-00-00 00:00:00') {
 
-							error_send('deleted', array_merge(array(
+							$error_config = [
 									'record' => (array('config' => $this->config, 'values' => $this->values)),
 									'timestamp' => new timestamp($this->values['deleted'], 'db'),
-								), $this->config['deleted']));
+								];
+
+							if (is_array($this->config['deleted'])) {
+								$error_config = array_merge($error_config, $this->config['deleted']);
+							}
+
+							error_send('deleted', $error_config);
 
 						}
 
