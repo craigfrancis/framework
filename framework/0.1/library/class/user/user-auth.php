@@ -500,7 +500,7 @@
 					}
 
 					if (count($where_sql) == 0) {
-						exit_with_error('Unknown logout mode (' . $this->lockout_mode . ')');
+						exit_with_error('Unknown lockout mode (' . $this->lockout_mode . ')');
 					}
 
 					$sql = 'SELECT
