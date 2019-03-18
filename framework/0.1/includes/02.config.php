@@ -319,30 +319,30 @@
 				// 'sync-xhr'               => [], // Disabled as potentially risky
 				// 'picture-in-picture'     => [], // Disabled as potentially risky
 
-				// 'hid'                    => [], // Disabled in Chrome 71 (WebHIDEnabled) ... The WebHID API enables web applications to request access to HID devices,
-				// 'idle-detection'         => [], // Disabled in Chrome 71 (IdleDetectionEnabled)
-				// 'serial'                 => [], // Disabled in Chrome 71 (SerialEnabled)
+				// 'hid'                    => [], // Disabled in Chrome 73 (WebHIDEnabled) ... The WebHID API enables web applications to request access to HID devices,
+				// 'idle-detection'         => [], // Disabled in Chrome 73 (IdleDetectionEnabled)
+				// 'serial'                 => [], // Disabled in Chrome 73 (SerialEnabled)
 
-				// 'forms'                  => [], // Disabled in Chrome 71 (FeaturePolicyForSandboxEnabled)
-				// 'modals'                 => [], // Disabled in Chrome 71 (FeaturePolicyForSandboxEnabled)
-				// 'orientation-lock'       => [], // Disabled in Chrome 71 (FeaturePolicyForSandboxEnabled)
-				// 'pointer-lock'           => [], // Disabled in Chrome 71 (FeaturePolicyForSandboxEnabled)
-				// 'popups'                 => [], // Disabled in Chrome 71 (FeaturePolicyForSandboxEnabled)
-				// 'presentation'           => [], // Disabled in Chrome 71 (FeaturePolicyForSandboxEnabled)
-				// 'scripts'                => [], // Disabled in Chrome 71 (FeaturePolicyForSandboxEnabled)
-				// 'top-navigation'         => [], // Disabled in Chrome 71 (FeaturePolicyForSandboxEnabled)
+				// 'forms'                  => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
+				// 'modals'                 => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
+				// 'orientation-lock'       => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
+				// 'pointer-lock'           => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
+				// 'popups'                 => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
+				// 'presentation'           => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
+				// 'scripts'                => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
+				// 'top-navigation'         => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
 
-				// 'document-domain'        => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
-				// 'document-write'         => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
-				// 'font-display-late-swap' => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
-				// 'layout-animations'      => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled), was 'animations': https://chromium.googlesource.com/chromium/src/+/9024e95af4b609ab5ef86b9baca2a25449f3907c
-				// 'lazyload'               => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
-				// 'legacy-image-formats'   => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
-				// 'oversized-images'       => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled), was 'max-downscaling-image': https://chromium.googlesource.com/chromium/src/+/f91910eba0d6f1d81dc2ec39255b5ad348b39dc6
-				// 'sync-script'            => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
-				// 'unoptimized-images'     => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled), was 'image-compression': https://chromium.googlesource.com/chromium/src/+/f91910eba0d6f1d81dc2ec39255b5ad348b39dc6
-				// 'unsized-media'          => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
-				// 'vertical-scroll'        => [], // Disabled in Chrome 71 (ExperimentalProductivityFeaturesEnabled)
+				// 'document-domain'        => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
+				// 'document-write'         => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
+				// 'font-display-late-swap' => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
+				// 'layout-animations'      => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled), was 'animations': https://chromium.googlesource.com/chromium/src/+/9024e95af4b609ab5ef86b9baca2a25449f3907c
+				// 'lazyload'               => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
+				// 'legacy-image-formats'   => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
+				// 'oversized-images'       => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled), was 'max-downscaling-image': https://chromium.googlesource.com/chromium/src/+/f91910eba0d6f1d81dc2ec39255b5ad348b39dc6
+				// 'sync-script'            => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
+				// 'unoptimized-images'     => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled), was 'image-compression': https://chromium.googlesource.com/chromium/src/+/f91910eba0d6f1d81dc2ec39255b5ad348b39dc6
+				// 'unsized-media'          => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
+				// 'vertical-scroll'        => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
 
 				// 'cookie'                 => [], // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
 				// 'domain'                 => [], // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
