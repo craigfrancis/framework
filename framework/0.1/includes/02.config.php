@@ -314,7 +314,7 @@
 				'speaker'                => [],
 				'usb'                    => [],
 				'vr'                     => [],
-				'wake-lock'              => [],
+
 
 				// 'sync-xhr'               => [], // Disabled as potentially risky
 				// 'picture-in-picture'     => [], // Disabled as potentially risky
@@ -322,6 +322,7 @@
 				// 'hid'                    => [], // Disabled in Chrome 73 (WebHIDEnabled) ... The WebHID API enables web applications to request access to HID devices,
 				// 'idle-detection'         => [], // Disabled in Chrome 73 (IdleDetectionEnabled)
 				// 'serial'                 => [], // Disabled in Chrome 73 (SerialEnabled)
+				// 'wake-lock'              => [], // Disabled in Chrome 73 (WakeLockEnabled)
 
 				// 'forms'                  => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
 				// 'modals'                 => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
