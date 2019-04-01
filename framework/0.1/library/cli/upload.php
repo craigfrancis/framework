@@ -64,6 +64,11 @@
 
 			$config_dst = upload_config($server);
 
+			if (config::get('debug.level') > 0 && config::get('debug.show')) {
+				echo "\n" . 'Servers = [' . SERVER . '] to [' . $server . ']' . "\n";
+				echo "\n" . 'Config DST = ' . debug_dump($config_dst) . "\n";
+			}
+
 		//--------------------------------------------------
 		// Processing
 
@@ -100,6 +105,10 @@
 				// Upload config
 
 					$config_src = upload_config($config_dst['source']);
+
+					if (config::get('debug.level') > 0) {
+						echo "\n" . 'Config SRC = ' . debug_dump($config_src) . "\n";
+					}
 
 				//--------------------------------------------------
 				// Upload processing
@@ -143,6 +152,10 @@
 	}
 
 	function upload_exec($script, $exec_params) {
+
+		if (config::get('debug.level') > 0) {
+			echo "\n" . $script . ' = ' . debug_dump($exec_params) . "\n\n";
+		}
 
 		$exec_params = implode(' ', array_map('escapeshellarg', $exec_params));
 

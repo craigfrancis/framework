@@ -30,15 +30,15 @@
 	$debug_show = (isset($options['d']) || isset($options['debug'])); // Could be reset, e.g. when initialising maintenance
 
 	if ($debug_show) {
-
 		$debug_level = intval(isset($options['d']) ? $options['d'] : $options['debug']);
-
-		if ($debug_level > 0) {
-			define('DEBUG_LEVEL_DEFAULT', $debug_level);
+		if ($debug_level < 1) {
+			$debug_level = 1;
 		}
-
+	} else {
+		$debug_level = 0;
 	}
 
+	define('DEBUG_LEVEL_DEFAULT', $debug_level);
 	define('DEBUG_SHOW_DEFAULT', $debug_show);
 
 //--------------------------------------------------
