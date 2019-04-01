@@ -97,6 +97,10 @@
 								$update,
 							));
 
+					} else {
+
+						echo "\n" . "\033[1;31m" . 'TODO:' . "\033[0m" . ' SCM upload (' . $config_dst['source'] . ') that is not on stage server (' . SERVER . ')' . "\n\n";
+
 					}
 
 			} else {
