@@ -398,7 +398,7 @@
 							$parameters[] = array('i', $current_user_id);
 
 							if ($row = $db->fetch_row($sql, $parameters)) {
-								$auth_config = auth::value_parse($current_user_id, $row['auth']);
+								$auth_config = auth::secret_parse($current_user_id, $row['auth']);
 							}
 
 						}
@@ -583,7 +583,7 @@
 
 					if ($this->details['password']) { // could be NULL or blank (if not required)
 
-						$auth_encoded = auth::value_encode($this->details['user_id'], $this->details['auth'], $this->details['password']);
+						$auth_encoded = auth::secret_encode($this->details['user_id'], $this->details['auth'], $this->details['password']);
 
 						$record->value_set($this->db_main_fields['password'], '');
 						$record->value_set($this->db_main_fields['auth'], $auth_encoded);
@@ -632,7 +632,7 @@
 
 						if ($this->details['confirm_valid']) {
 							$update_pass = random_key(15);
-							$update_hash = $this->auth->_quick_hash_create($update_pass);
+							$update_hash = auth::quick_hash_create($update_pass);
 						} else {
 							$update_pass = NULL;
 							$update_hash = '';
@@ -647,7 +647,7 @@
 								'token'   => $update_hash,
 								'ip'      => config::get('request.ip'),
 								'browser' => config::get('request.browser'),
-								'tracker' => $this->auth->_browser_tracker_get(),
+								'tracker' => auth::browser_tracker_get(),
 								'user_id' => $this->details['user_id'],
 								'email'   => $this->details['confirm_email'],
 								'created' => $now,
@@ -711,7 +711,7 @@
 					$parameters = array();
 					$parameters[] = array('i', $update_id);
 
-					if (($row = $db->fetch_row($sql, $parameters)) && ($this->auth->_quick_hash_verify($update_pass, $row['token']))) {
+					if (($row = $db->fetch_row($sql, $parameters)) && (auth::quick_hash_verify($update_pass, $row['token']))) {
 
 						//--------------------------------------------------
 						// Still unique

@@ -115,9 +115,9 @@
 					$parameters[] = array('i', $reset_id);
 					$parameters[] = array('s', $created_after);
 
-					if (($row = $db->fetch_row($sql, $parameters)) && ($this->auth->_quick_hash_verify($reset_pass, $row['token']))) {
+					if (($row = $db->fetch_row($sql, $parameters)) && (auth::quick_hash_verify($reset_pass, $row['token']))) {
 
-						$row['browser_changed'] = $this->auth->_browser_tracker_changed($row['tracker']); // Don't use UA string, it changes too often.
+						$row['browser_changed'] = auth::browser_tracker_changed($row['tracker']); // Don't use UA string, it changes too often.
 						$row['valid'] = NULL; // Not checked yet
 
 						unset($row['tracker']);
@@ -140,7 +140,7 @@
 
 						$row = $this->record->values_get();
 
-						$this->details['auth'] = auth::value_parse($this->details['user_id'], $row[$this->db_main_fields['auth']]);
+						$this->details['auth'] = auth::secret_parse($this->details['user_id'], $row[$this->db_main_fields['auth']]);
 						$this->details['identification'] = $row[$this->db_main_fields['identification']];
 
 					}
@@ -324,7 +324,7 @@
 
 					if ($success) {
 
-						$auth_encoded = auth::value_encode($this->details['user_id'], $this->details['auth'], $this->details['password']);
+						$auth_encoded = auth::secret_encode($this->details['user_id'], $this->details['auth'], $this->details['password']);
 
 						$this->record->save([
 								$this->db_main_fields['password'] => '',
@@ -354,7 +354,7 @@
 
 					} else if ($success && $config['login']) {
 
-						$auth_config = auth::value_parse($this->details['user_id'], $auth_encoded); // So all fields are present (e.g. 'ips')
+						$auth_config = auth::secret_parse($this->details['user_id'], $auth_encoded); // So all fields are present (e.g. 'ips')
 
 						$password_validation = true; // Has just passed $auth->validate_password()
 

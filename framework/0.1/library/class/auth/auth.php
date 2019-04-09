@@ -27,7 +27,6 @@
 			private $session_info_available = false;
 			private $session_pass = NULL;
 
-			private $browser_tracker = NULL;
 			private $hash_time = NULL;
 
 			protected $identification_type = 'email'; // Or 'username'
@@ -42,7 +41,6 @@
 			protected $remember_cookie_name = NULL;
 			protected $remember_cookie_path = '/';
 			protected $remember_timeout = 2592000; // 30 days (60*60*24*30)
-			protected $quick_hash = 'sha256'; // Using CRYPT_BLOWFISH for everything (e.g. session pass) would make page loading too slow (good for login though)
 
 			protected $text = array();
 
@@ -54,7 +52,8 @@
 					'register' => array(),
 				);
 
-			public static $auth_version = 1;
+			public static $secret_version = 1;
+			public static $quick_hash = 'sha256'; // Using CRYPT_BLOWFISH for everything (e.g. session pass) would make page loading too slow (good for login though)
 
 		//--------------------------------------------------
 		// Setup
@@ -351,14 +350,14 @@ exit();
 				// Add record
 
 					$remember_pass = random_key(40);
-					$remember_hash = $this->_quick_hash_create($remember_pass);
+					$remember_hash = auth::quick_hash_create($remember_pass);
 
 					$db->insert($db_remember_table, array(
 							'id'      => '',
 							'token'   => $remember_hash,
 							'ip'      => config::get('request.ip'),
 							'browser' => config::get('request.browser'),
-							'tracker' => $this->_browser_tracker_get(),
+							'tracker' => auth::browser_tracker_get(),
 							'user_id' => $this->session_info_data['user_id'],
 							'created' => $now,
 							'expired' => $expires,
@@ -563,7 +562,7 @@ exit();
 
 								$ip_test = ($this->session_ip_lock == false || config::get('request.ip') == $row['ip']);
 
-								if ($ip_test && $this->_quick_hash_verify($session_pass, $row['token'])) {
+								if ($ip_test && auth::quick_hash_verify($session_pass, $row['token'])) {
 
 									//--------------------------------------------------
 									// Update the session - keep active
@@ -673,7 +672,7 @@ exit();
 								$parameters[] = array('i', $remember_id);
 								$parameters[] = array('s', $now);
 
-								if (($row = $db->fetch_row($sql, $parameters)) && ($this->_quick_hash_verify($remember_pass, $row['token']))) {
+								if (($row = $db->fetch_row($sql, $parameters)) && (auth::quick_hash_verify($remember_pass, $row['token']))) {
 
 									$sql = 'UPDATE
 												' . $db_remember_table . ' AS r
@@ -694,7 +693,7 @@ exit();
 										//--------------------------------------------------
 										// Start new session
 
-											$auth_config = auth::value_parse($row['user_id'], $row['auth']);
+											$auth_config = auth::secret_parse($row['user_id'], $row['auth']);
 
 											$password_validation = true; // We don't have a password to check with $auth->validate_password(), assume it's still ok.
 
@@ -855,7 +854,7 @@ exit();
 						$this->session_previous = array(
 								'last_used' => new timestamp($row['last_used'], 'db'),
 								'location_changed' => ($row['ip'] != config::get('request.ip')),
-								'browser_changed' => $this->_browser_tracker_changed($row['tracker']), // Don't use UA string, it changes too often.
+								'browser_changed' => auth::browser_tracker_changed($row['tracker']), // Don't use UA string, it changes too often.
 							);
 
 					} else {
@@ -1024,7 +1023,7 @@ exit();
 				// Session pass
 
 					$session_pass = random_key(40);
-					$session_hash = $this->_quick_hash_create($session_pass); // Must be a quick hash for fast page loading time.
+					$session_hash = auth::quick_hash_create($session_pass); // Must be a quick hash for fast page loading time.
 					$session_logout_token = random_key(15);
 
 				//--------------------------------------------------
@@ -1037,7 +1036,7 @@ exit();
 							'user_id'       => $user_id,
 							'ip'            => config::get('request.ip'),
 							'browser'       => config::get('request.browser'),
-							'tracker'       => $this->_browser_tracker_get(),
+							'tracker'       => auth::browser_tracker_get(),
 							'hash_time'     => floatval($this->hash_time), // There is a risk this shows who has shorter passwords... however, a 1 vs 72 character password takes the same amount of time with bcrypt; AND we use base64 encoded sha384, so they will all be 64 characters long anyway.
 							'limit'         => $limit_ref,
 							'logout_token'  => $session_logout_token, // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
@@ -1377,7 +1376,7 @@ exit();
 						$db_pass = $row['password'];
 
 						if ($row['auth']) {
-							$auth_config = auth::value_parse($db_id, $row['auth']); // Returns NULL on failure
+							$auth_config = auth::secret_parse($db_id, $row['auth']); // Returns NULL on failure
 							if (!$auth_config) {
 								$error = 'failure_decryption';
 							}
@@ -1442,13 +1441,13 @@ exit();
 
 						if ($auth_config) { // If we have an auth value, we only use that.
 
-							$valid = password::verify(auth::_password_prepare($password), $auth_config['ph']);
+							$valid = password::verify(auth::password_prepare($password), $auth_config['ph']);
 
 							if ($db_pass != '') {
 
 								// Shouldn't have a 'pass' value now, if it does, get rid of it (with a re-hash).
 
-							} else if ($auth_config['v'] == auth::$auth_version && !password::needs_rehash($auth_config['ph'])) {
+							} else if ($auth_config['v'] == auth::$secret_version && !password::needs_rehash($auth_config['ph'])) {
 
 								$rehash = false; // All looks good, no need to re-hash.
 
@@ -1493,7 +1492,7 @@ exit();
 									$auth_config = array();
 								}
 
-								$auth_encoded = auth::value_encode($db_id, $auth_config, $password);
+								$auth_encoded = auth::secret_encode($db_id, $auth_config, $password);
 
 								$sql = 'UPDATE
 											' . $db->escape_table($db_main_table) . ' AS m
@@ -1512,7 +1511,7 @@ exit();
 
 								$db->query($sql, $parameters);
 
-								$auth_config = auth::value_parse($db_id, $auth_encoded); // So all fields are present (e.g. 'ips')
+								$auth_config = auth::secret_parse($db_id, $auth_encoded); // So all fields are present (e.g. 'ips')
 
 							}
 
@@ -1544,7 +1543,7 @@ exit();
 								'user_id'   => $db_id,
 								'ip'        => $request_ip,
 								'browser'   => config::get('request.browser'),
-								'tracker'   => $this->_browser_tracker_get(),
+								'tracker'   => auth::browser_tracker_get(),
 								'hash_time' => floatval($this->hash_time), // See notes in $auth->_session_start() as to why this is ok.
 								'limit'     => 'error',
 								'created'   => $now,
@@ -1657,30 +1656,33 @@ exit();
 		//--------------------------------------------------
 		// Support functions
 
-			public function _browser_tracker_get() {
-				if ($this->browser_tracker === NULL) {
+			public static function browser_tracker_get() {
+				$browser_tracker = config::get('auth.browser_tracker');
+				if ($browser_tracker === NULL) {
 
-					$this->browser_tracker = cookie::get('b');
+					$browser_tracker = cookie::get('b');
 
-					if (strlen($this->browser_tracker) != 40) {
-						$this->browser_tracker = random_key(40);
+					if (strlen($browser_tracker) != 40) {
+						$browser_tracker = random_key(40);
 					}
 
-					cookie::set('b', $this->browser_tracker, array('expires' => '+6 months', 'same_site' => 'Lax', 'update' => true)); // Always re-send with a long expiry (so it does not expire or expose how long session_history is).
+					cookie::set('b', $browser_tracker, ['expires' => '+6 months', 'same_site' => 'Lax', 'update' => true]); // Always re-send with a long expiry (so it does not expire or expose how long session_history is).
+
+					config::set('auth.browser_tracker', $browser_tracker);
 
 				}
-				return $this->browser_tracker;
+				return $browser_tracker;
 			}
 
-			public function _browser_tracker_changed($value) {
-				return (!hash_equals($this->_browser_tracker_get(), $value));
+			public static function browser_tracker_changed($value) {
+				return (!hash_equals(auth::browser_tracker_get(), $value));
 			}
 
-			public function _quick_hash_create($value) {
-				return $this->quick_hash . '-' . hash($this->quick_hash, $value);
+			public static function quick_hash_create($value) {
+				return auth::$quick_hash . '-' . hash(auth::$quick_hash, $value);
 			}
 
-			public function _quick_hash_verify($value, $hash) {
+			public static function quick_hash_verify($value, $hash) {
 
 				if (trim($value) == '') {
 					return false;
@@ -1690,10 +1692,10 @@ exit();
 					$algorithm = substr($hash, 0, $pos);
 					$hash = substr($hash, ($pos + 1));
 				} else {
-					$algorithm = $this->quick_hash;
+					$algorithm = auth::$quick_hash;
 				}
 
-				if (!in_array($algorithm, array($this->quick_hash, 'sha256'))) {
+				if (!in_array($algorithm, array(auth::$quick_hash, 'sha256'))) {
 					return false; // Don't allow anyone to set a weak hash.
 				}
 
@@ -1701,7 +1703,7 @@ exit();
 
 			}
 
-			private static function _password_prepare($password) {
+			public static function password_prepare($password) {
 
 					//--------------------------------------------------
 					// As certain unicode characters can be encoded in
@@ -1791,27 +1793,27 @@ exit();
 			}
 
 		//--------------------------------------------------
-		// Value parsing
+		// Secret parsing
 
-			public static function value_parse($user_id, $auth) {
+			public static function secret_parse($user_id, $secret) {
 
-				if (($pos = strpos($auth, '-')) !== false) {
-					$version = intval(substr($auth, 0, $pos));
-					$auth = substr($auth, ($pos + 1));
+				if (($pos = strpos($secret, '-')) !== false) {
+					$version = intval(substr($secret, 0, $pos));
+					$secret = substr($secret, ($pos + 1));
 				} else {
 					$version = 0;
 				}
 
-				$auth_values = json_decode($auth, true);
+				$secret_values = json_decode($secret, true);
 
-				if (is_array($auth_values)) { // or not NULL
+				if (is_array($secret_values)) { // or not NULL
 
 					return array_merge(array(
 							'ph'   => '',      // Password Hash
 							'pu'   => NULL,    // Password Updated
 							'ips'  => array(), // IP's allowed to login from
 							'totp' => NULL,    // Time-based One Time Password
-						), $auth_values, array(
+						), $secret_values, array(
 							'v' => $version, // Version
 						));
 
@@ -1823,31 +1825,31 @@ exit();
 
 			}
 
-			public static function value_encode($user_id, $auth_values, $new_password = NULL) {
+			public static function secret_encode($user_id, $secret_values, $new_password = NULL) {
 
-				if (!is_array($auth_values)) {
-					exit_with_error('The "auth" values for user "' . $user_id . '" are damaged', debug_dump($auth_values)); // If it's NULL, then it's probably due to failing to parse.
+				if (!is_array($secret_values)) {
+					exit_with_error('The "auth" values for user "' . $user_id . '" are damaged', debug_dump($secret_values)); // If it's NULL, then it's probably due to failing to parse.
 				}
 
-				$auth_values = array_merge(array(
+				$secret_values = array_merge(array(
 						'ph'   => '',
 						'pu'   => time(),
 						'ips'  => array(),
 						'totp' => NULL,
-					), $auth_values);
+					), $secret_values);
 
 				if ($new_password) {
-					$auth_values['ph'] = password::hash(auth::_password_prepare($new_password));
-					$auth_values['pu'] = time();
+					$secret_values['ph'] = password::hash(auth::password_prepare($new_password));
+					$secret_values['pu'] = time();
 				}
 
-				unset($auth_values['v']);
+				unset($secret_values['v']);
 
-				$auth = json_encode($auth_values);
+				$secret = json_encode($secret_values);
 
 // TODO: Use encryption::encode() ... maybe with sha256($user_id + ENCRYPTION_KEY) as the key? (so the value cannot be used for other users)... also need to consider Key V1 vs V2 (openssl / lib sodium).
 
-				return intval(auth::$auth_version) . '-' . $auth;
+				return intval(auth::$secret_version) . '-' . $secret;
 
 			}
 

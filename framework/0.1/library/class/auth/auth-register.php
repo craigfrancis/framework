@@ -336,12 +336,12 @@
 
 						if ($this->details['confirm_valid']) {
 							$register_pass = random_key(15);
-							$register_hash = $this->auth->_quick_hash_create($register_pass);
+							$register_hash = auth::quick_hash_create($register_pass);
 						}
 
 						$record->value_set($this->db_fields['ip'], config::get('request.ip'));
 						$record->value_set($this->db_fields['browser'], config::get('request.browser'));
-						$record->value_set($this->db_fields['tracker'], $this->auth->_browser_tracker_get());
+						$record->value_set($this->db_fields['tracker'], auth::browser_tracker_get());
 						$record->value_set($this->db_fields['token'], $register_hash);
 
 					}
@@ -374,7 +374,7 @@
 						// if ($config['auth_ips'])  $auth_config['ips'] = $config['auth_ips'];
 						// if ($config['auth_totp']) $auth_config['totp'] = $config['auth_totp'];
 
-						$auth_encoded = auth::value_encode($record_id, $auth_config, $this->details['password']);
+						$auth_encoded = auth::secret_encode($record_id, $auth_config, $this->details['password']);
 
 						$record->save([
 								'auth' => $auth_encoded,
@@ -391,7 +391,7 @@
 
 					if (!$this->confirm_enabled && $config['login']) {
 
-						$auth_config = auth::value_parse($record_id, $auth_encoded); // So all fields are present (e.g. 'ips')
+						$auth_config = auth::secret_parse($record_id, $auth_encoded); // So all fields are present (e.g. 'ips')
 
 						$password_validation = true; // Has just passed $auth->validate_password()
 
@@ -458,7 +458,7 @@
 					$parameters = array();
 					$parameters[] = array('i', $register_id);
 
-					if (($row = $db->fetch_row($sql, $parameters)) && ($this->auth->_quick_hash_verify($register_pass, $row[$this->db_fields['token']]))) {
+					if (($row = $db->fetch_row($sql, $parameters)) && (auth::quick_hash_verify($register_pass, $row[$this->db_fields['token']]))) {
 
 						//--------------------------------------------------
 						// Identification
@@ -522,7 +522,7 @@
 
 							if ($success && $user_id) {
 
-								if ($this->auth->_browser_tracker_changed($row[$this->db_fields['tracker']])) {
+								if (auth::browser_tracker_changed($row[$this->db_fields['tracker']])) {
 
 										// Don't auto login if they are using a different browser.
 										// We don't want an evil actor creating an account, and putting the
@@ -534,7 +534,7 @@
 
 								} else if ($config['login']) {
 
-									$auth_config = auth::value_parse($user_id, $row[$this->db_fields['auth']]); // So all fields are present (e.g. 'ips')
+									$auth_config = auth::secret_parse($user_id, $row[$this->db_fields['auth']]); // So all fields are present (e.g. 'ips')
 
 									$password_validation = true; // Has just passed $auth->validate_password()
 
