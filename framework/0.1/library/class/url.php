@@ -107,6 +107,12 @@
 				$this->path_cache = NULL;
 			}
 
+			public function auth_set($user, $pass = NULL) {
+				$this->path_data['user'] = $user;
+				$this->path_data['pass'] = $pass;
+				$this->path_cache = NULL;
+			}
+
 			public function param_set($parameters, $value = '') {
 
 				if (!is_array($parameters)) {
