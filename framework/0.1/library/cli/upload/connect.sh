@@ -7,11 +7,12 @@
 	set -u;
 
 	SERVER="${1}";
-	UPLOAD_SERVER="${2}";
+	SRC_SERVER="${2}";
 	SRC_HOST="${3}";
 	SRC_PATH="${4}";
+	DST_SERVER="${5}";
 
-	if [[ -z "${UPLOAD_SERVER}" ]] || [[ -z "${SRC_HOST}" ]] || [[ -z "${SRC_PATH}" ]]; then
+	if [[ -z "${SERVER}" ]] || [[ -z "${SRC_SERVER}" ]] || [[ -z "${SRC_HOST}" ]] || [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_SERVER}" ]]; then
 		echo 'Missing parameters';
 		echo;
 		exit 0;
@@ -53,13 +54,15 @@
 # Run
 #--------------------------------------------------
 
-echo "Confirm Server: ${SRC_HOST}";
-echo "Confirm Server: ${SRC_PATH}";
-echo "Confirm Server: ${UPLOAD_SERVER}";
+echo "SERVER: ${SERVER}";
+echo "SRC_SERVER: ${SRC_SERVER}";
+echo "SRC_HOST: ${SRC_HOST}";
+echo "SRC_PATH: ${SRC_PATH}";
+echo "DST_SERVER: ${DST_SERVER}";
 
 	echo;
 
-	remote_cmd "${CLI_PATH} --confirm-server='${UPLOAD_SERVER}' --upload='${UPLOAD_SERVER}'";
+	remote_cmd "${CLI_PATH} --confirm-server='${SRC_SERVER}' --upload='${DST_SERVER}'";
 
 #--------------------------------------------------
 # Clean up
