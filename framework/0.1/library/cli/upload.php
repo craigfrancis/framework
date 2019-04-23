@@ -121,9 +121,10 @@
 
 						upload_exec('connect', array(
 								SERVER,
-								$server,
+								$config_dst['source'],
 								$config_src['location_host'],
 								$config_src['location_path'],
+								$server,
 							));
 
 					} else if ($config_dst['location_host'] == $config_src['location_host']) {
