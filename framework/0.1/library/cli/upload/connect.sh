@@ -53,6 +53,10 @@
 # Run
 #--------------------------------------------------
 
+echo "Confirm Server: ${SRC_HOST}";
+echo "Confirm Server: ${SRC_PATH}";
+echo "Confirm Server: ${UPLOAD_SERVER}";
+
 	echo;
 
 	remote_cmd "${CLI_PATH} --confirm-server='${UPLOAD_SERVER}' --upload='${UPLOAD_SERVER}'";
