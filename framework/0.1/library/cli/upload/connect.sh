@@ -55,7 +55,7 @@
 
 	echo;
 
-	remote_cmd "${CLI_PATH} --upload='${UPLOAD_SERVER}'";
+	remote_cmd "${CLI_PATH} --confirm-server='${UPLOAD_SERVER}' --upload='${UPLOAD_SERVER}'";
 
 #--------------------------------------------------
 # Clean up

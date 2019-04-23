@@ -20,6 +20,7 @@
 			'diff::',
 			'reset',
 			'upload:',
+			'confirm-server:',
 		);
 
 	$options = getopt(implode('', array_keys($main_parameters)), array_merge($main_parameters, $extra_parameters));
@@ -245,6 +246,15 @@
 					require_once(FRAMEWORK_ROOT . '/library/cli/upload.php');
 
 					upload_run($option_value);
+					break;
+
+				case 'confirm-server':
+
+					if ($option_value != SERVER) {
+						echo 'Tried connecting to "' . $option_value . '", but the config says this is "' . SERVER . '"' . "\n\n";
+						exit();
+					}
+
 					break;
 
 				default:
