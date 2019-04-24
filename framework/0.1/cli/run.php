@@ -251,7 +251,7 @@
 				case 'confirm-server':
 
 					if ($option_value != SERVER) {
-						echo 'Tried connecting to "' . $option_value . '", but the config says this is "' . SERVER . '"' . "\n\n";
+						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Just tried connecting to "' . $option_value . '", but the config says this is "' . SERVER . '"?' . "\n\n";
 						exit();
 					}
 

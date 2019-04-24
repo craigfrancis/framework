@@ -54,12 +54,6 @@
 # Run
 #--------------------------------------------------
 
-echo "SERVER: ${SERVER}";
-echo "SRC_SERVER: ${SRC_SERVER}";
-echo "SRC_HOST: ${SRC_HOST}";
-echo "SRC_PATH: ${SRC_PATH}";
-echo "DST_SERVER: ${DST_SERVER}";
-
 	echo;
 
 	remote_cmd "${CLI_PATH} --confirm-server='${SRC_SERVER}' --upload='${DST_SERVER}'";
