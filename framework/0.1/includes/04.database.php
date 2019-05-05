@@ -808,7 +808,7 @@
 
 			$info = $this->error_get();
 
-			if (function_exists('exit_with_error') && config::get('db.error_thrown') !== true) {
+			if (class_exists('error_exception') && config::get('db.error_thrown') !== true) {
 
 				config::set('db.error_thrown', true);
 
@@ -818,7 +818,7 @@
 					$hidden_info .= "\n\n" . debug_dump(array_column($parameters, 0));
 				}
 
-				exit_with_error('An error has occurred with the database.', $hidden_info);
+				throw new error_exception('An error has occurred with the database.', $hidden_info);
 
 			} else if (REQUEST_MODE == 'cli') {
 
