@@ -34,6 +34,14 @@
 	}
 
 //--------------------------------------------------
+// WebP
+
+	$webp_command = '/usr/local/bin/cwebp';
+	if (!is_executable($webp_command)) {
+		$webp_command = NULL;
+	}
+
+//--------------------------------------------------
 // Project specific watch function
 
 	$watch_path = ROOT . '/app/library/setup/watch.php';
@@ -68,7 +76,10 @@
 				$file_contents = NULL; // Only load if we are going to process
 				$file_dest = NULL;
 
-				if (substr($path, 0, 17) === '/app/public/a/js/' && substr($path, -3) == '.js') {
+				$file_ext = strrpos($path, '.');
+				$file_ext = ($file_ext !== false ? substr($path, ($file_ext + 1)) : NULL);
+
+				if (substr($path, 0, 17) === '/app/public/a/js/' && $file_ext == 'js') {
 
 					require_once(FRAMEWORK_ROOT . '/vendors/jsmin/jsmin.php');
 
@@ -79,7 +90,7 @@
 
 					$result = 'Framework JS Min';
 
-				} else if (substr($path, 0, 18) === '/app/public/a/css/' && substr($path, -4) == '.css') {
+				} else if (substr($path, 0, 18) === '/app/public/a/css/' && $file_ext == 'css') {
 
 					// https://stackoverflow.com/a/1379487/6632
 
@@ -92,6 +103,19 @@
 					$file_dest = ROOT . str_replace('/css/', '/min/css/', $path);
 
 					$result = 'Framework CSS Min';
+
+				} else if (substr($path, 0, 18) === '/app/public/a/img/' && $webp_command && ($file_ext == 'jpg' || $file_ext == 'png')) {
+
+					$webp_path = substr($path, 0, -3) . 'webp';
+
+					$command = escapeshellcmd($webp_command) . ' ' . escapeshellarg(ROOT . $path) . ' -o ' . escapeshellarg(ROOT . $webp_path);
+
+					$output = [];
+					$result = NULL;
+
+					exec($command, $output, $result);
+
+					$result = 'Framework WebP [' . $result . ']';
 
 				}
 
