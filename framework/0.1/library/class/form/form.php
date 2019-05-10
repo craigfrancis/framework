@@ -52,11 +52,25 @@
 			private $db_fields = NULL;
 			private $db_values = array();
 			private $db_save_disabled = false;
-			private $csrf_token = NULL;
-			private $csrf_error_html = 'The request did not appear to come from a trusted source, please try again.';
 			private $saved_values_data = NULL;
 			private $saved_values_used = NULL;
 			private $saved_message_html = 'Please submit this form again.';
+			private $csrf_token = NULL;
+			private $csrf_error_html = 'The request did not appear to come from a trusted source, please try again.';
+
+			private $fetch_allowed = [
+					'dest' => ['document'],
+					'mode' => ['navigate'],
+					'site' => ['same-origin', 'none'], // 'none' because a user can POST the form, see errors, and refresh the page.
+					'user' => ['?1'],
+				];
+
+			private $fetch_known = [
+					'dest' => ['audio', 'audioworklet', 'document', 'embed', 'empty', 'font', 'image', 'manifest', 'object', 'paintworklet', 'report', 'script', 'serviceworker', 'sharedworker', 'style', 'track', 'video', 'worker', 'xslt', 'nested-document'],
+					'mode' => ['cors', 'navigate', 'nested-navigate', 'no-cors', 'same-origin', 'websocket'],
+					'site' => ['cross-site', 'same-origin', 'same-site', 'none'],
+					'user' => ['?0', '?1'], // In HTTP/1 headers, a boolean is indicated with a leading "?"
+				];
 
 		//--------------------------------------------------
 		// Setup
@@ -100,6 +114,13 @@
 				// CSRF setup (set cookie)
 
 					$this->csrf_token = csrf_token_get();
+
+				//--------------------------------------------------
+				// Fetch limits
+
+					if (config::get('form.allowed_nested', false) === true) {
+						$this->fetch_allowed_nested();
+					}
 
 				//--------------------------------------------------
 				// Dest support
@@ -623,6 +644,31 @@
 			}
 
 		//--------------------------------------------------
+		// Fetch limits
+
+			public function fetch_allowed_nested() {
+				$this->fetch_allowed_add('dest', 'nested-document');
+				$this->fetch_allowed_add('mode', 'nested-navigate');
+			}
+
+			public function fetch_allowed_add($field, $value) {
+				$this->fetch_allowed_set($field, array_merge($this->fetch_allowed[$field], [$value]));
+			}
+
+			public function fetch_allowed_set($field, $values) {
+				$values = array_unique($values);
+				if (!isset($this->fetch_known[$field])) {
+					exit_with_error('Unknown fetch field "' . $field . '"');
+				} else {
+					$unknown = array_diff($values, $this->fetch_known[$field]);
+					if (count($unknown) > 0) {
+						exit_with_error('Unknown fetch value "' . reset($unknown) . '"');
+					}
+					$this->fetch_allowed[$field] = $values;
+				}
+			}
+
+		//--------------------------------------------------
 		// Error support
 
 			public function error_reset() {
@@ -687,6 +733,19 @@
 
 					if ($this->post_validation_done) {
 						return true;
+					}
+
+				//--------------------------------------------------
+				// Fetch check
+
+					$fetch = config::get('request.fetch');
+
+					if ($this->form_submitted) {
+						foreach ($this->fetch_allowed as $field => $allowed) {
+							if ($fetch[$field] != NULL && !in_array($fetch[$field], $allowed)) {
+								report_add('Form submitted with Sec-Fetch-' . ucfirst($field) . ' "' . $fetch[$field] . '" (' . (in_array($fetch[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ')', 'notice');
+							}
+						}
 					}
 
 				//--------------------------------------------------
