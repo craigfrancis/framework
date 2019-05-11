@@ -10,7 +10,7 @@
  * are best described HTMLPurifier_Strategy_MakeWellFormed->processToken()
  * documentation.
  *
- * @todo Allow injectors to request a re-run on their output. This
+ * @to-do Allow injectors to request a re-run on their output. This
  *       would help if an operation is recursive.
  */
 abstract class HTMLPurifier_Injector

@@ -5,7 +5,7 @@
  * caching and fallbacks.
  * @note Thanks to MediaWiki for the general logic, although this version
  *       has been entirely rewritten
- * @todo Serialized cache for languages
+ * @to-do Serialized cache for languages
  */
 class HTMLPurifier_LanguageFactory
 {

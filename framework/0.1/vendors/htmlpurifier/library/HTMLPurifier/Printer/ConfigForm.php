@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @todo Rewrite to use Interchange objects
+ * @to-do Rewrite to use Interchange objects
  */
 class HTMLPurifier_Printer_ConfigForm extends HTMLPurifier_Printer
 {
@@ -320,7 +320,7 @@ class HTMLPurifier_Printer_ConfigForm_default extends HTMLPurifier_Printer
                     foreach ($array as $val => $b) {
                         $value[] = $val;
                     }
-                    //TODO does this need a break?
+                    // @to-do does this need a break?
                 case HTMLPurifier_VarParser::ALIST:
                     $value = implode(PHP_EOL, $value);
                     break;

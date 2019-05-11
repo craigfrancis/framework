@@ -384,7 +384,7 @@ class HTMLPurifier_CSSDefinition extends HTMLPurifier_Definition
         $this->info['border-top-right-radius'] =
         $this->info['border-bottom-right-radius'] =
         $this->info['border-bottom-left-radius'] = new HTMLPurifier_AttrDef_CSS_Multiple($border_radius, 2);
-        // TODO: support SLASH syntax
+        // @to-do: support SLASH syntax
         $this->info['border-radius'] = new HTMLPurifier_AttrDef_CSS_Multiple($border_radius, 4);
 
     }
@@ -453,7 +453,7 @@ class HTMLPurifier_CSSDefinition extends HTMLPurifier_Definition
      * Performs extra config-based processing. Based off of
      * HTMLPurifier_HTMLDefinition.
      * @param HTMLPurifier_Config $config
-     * @todo Refactor duplicate elements into common class (probably using
+     * @to-do Refactor duplicate elements into common class (probably using
      *       composition, not inheritance).
      */
     protected function setupConfigStuff($config)
@@ -471,7 +471,7 @@ class HTMLPurifier_CSSDefinition extends HTMLPurifier_Definition
             }
             // emit errors
             foreach ($allowed_properties as $name => $d) {
-                // :TODO: Is this htmlspecialchars() call really necessary?
+                // @to-do: Is this htmlspecialchars() call really necessary?
                 $name = htmlspecialchars($name);
                 trigger_error("Style attribute '$name' is not supported $support", E_USER_WARNING);
             }

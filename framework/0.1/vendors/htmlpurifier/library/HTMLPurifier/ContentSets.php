@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @todo Unit test
+ * @to-do Unit test
  */
 class HTMLPurifier_ContentSets
 {

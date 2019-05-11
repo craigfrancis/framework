@@ -12,7 +12,7 @@
  *       otherwise, you run the risk of missing a parameter and then
  *       being stumped when a configuration directive doesn't work.
  *
- * @todo Reconsider some of the public member variables
+ * @to-do Reconsider some of the public member variables
  */
 class HTMLPurifier_Config
 {
