@@ -1582,10 +1582,13 @@
 						if (isset($_SERVER['HTTP_SEC_ORIGIN_POLICY'])) {
 							$policy_path = PUBLIC_ROOT . '/origin-policy.json';
 							if (is_file($policy_path)) {
-								// header('Sec-Origin-Policy: policy=policy-' . head(filemtime($policy_path)));
-								header('Sec-Origin-Policy: 0'); // Ensure it remains disabled for now.
-								header('Vary: sec-origin-policy');
+								// $policy = 'policy-' . filemtime($policy_path);
+								$policy = 0; // Ensure it remains disabled for now.
+							} else {
+								$policy = 0;
 							}
+							header('Sec-Origin-Policy: policy=' . head($policy));
+							header('Vary: sec-origin-policy');
 						}
 
 					//--------------------------------------------------
