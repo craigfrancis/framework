@@ -1411,6 +1411,11 @@
 							$value[$k] = config::get('output.origin') . $v;
 						}
 					}
+					if (config::get('debug.level') > 0) {
+						if (count($value) > count(array_unique($value))) {
+							exit_with_error('Duplicate policy values for "' . $directive . '"', debug_dump($value));
+						}
+					}
 					$value = implode(' ', $value);
 				}
 				if ($value == '') {
