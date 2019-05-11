@@ -287,6 +287,7 @@
 		config::set_default('output.page_id', 'route');
 		config::set_default('output.framing', 'DENY');
 		config::set_default('output.xss_reflected', 'block');
+		config::set_default('output.referrer_policy', 'strict-origin-when-cross-origin'); // Added in Chrome 61.0.3130.0
 
 		config::set_default('output.pkp_pins', array());
 		config::set_default('output.pkp_enforced', false);

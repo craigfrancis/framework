@@ -1570,11 +1570,20 @@
 						}
 
 					//--------------------------------------------------
+					// Origin policy
+
+						if (isset($_SERVER['HTTP_SEC_ORIGIN_POLICY'])) {
+							$policy_path = PUBLIC_ROOT . '/origin-policy.json';
+							if (is_file($policy_path)) {
+								header('Sec-Origin-Policy: "policy-' . head(filemtime($policy_path)) . '"');
+								header('Vary: sec-origin-policy');
+							}
+						}
+
+					//--------------------------------------------------
 					// Referrer policy
 
-						$output_referrer_policy = config::get('output.referrer_policy', 'strict-origin-when-cross-origin'); // Added in Chrome 61.0.3130.0
-
-						if ($output_referrer_policy) {
+						if (($output_referrer_policy = config::get('output.referrer_policy')) != '') { // Not NULL or blank.
 							header('Referrer-Policy: ' . head($output_referrer_policy));
 						}
 
