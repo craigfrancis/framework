@@ -1366,22 +1366,28 @@
 					//--------------------------------------------------
 					// Add HTML
 
+						$view_html = '';
+
 						if ($view_path !== NULL) {
 
 							ob_start();
 
 							script_run($view_path, array_merge($this->variables, array('response' => $this)));
 
-							$this->view_add_html(ob_get_clean());
+							$view_html = ob_get_clean();
 
 						} else if (count($this->units) > 0) {
 
-							$view_html = '';
 							foreach ($this->units as $unit) {
 								$view_html .= "\n" . $unit->html();
 							}
-							$this->view_add_html($view_html);
 
+						}
+
+						if (is_string($this->error)) {
+							$this->view_html = $view_html . $this->view_html; // Errors go before any content (e.g. page already build and added, but template causes an exit_with_error).
+						} else {
+							$this->view_html .= $view_html;
 						}
 
 				//--------------------------------------------------
