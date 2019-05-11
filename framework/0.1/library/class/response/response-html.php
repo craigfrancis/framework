@@ -1575,7 +1575,8 @@
 						if (isset($_SERVER['HTTP_SEC_ORIGIN_POLICY'])) {
 							$policy_path = PUBLIC_ROOT . '/origin-policy.json';
 							if (is_file($policy_path)) {
-								header('Sec-Origin-Policy: "policy-' . head(filemtime($policy_path)) . '"');
+								// header('Sec-Origin-Policy: policy=policy-' . head(filemtime($policy_path))); // TODO: Origin-Policy timestamp
+								header('Sec-Origin-Policy: policy=policy-1');
 								header('Vary: sec-origin-policy');
 							}
 						}

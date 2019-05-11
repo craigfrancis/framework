@@ -158,7 +158,8 @@
 			if (is_file($policy_path)) {
 
 				$request_suffix = substr($route_path, 26);
-				$current_suffix = '/policy-' . filemtime($policy_path);
+				// $current_suffix = '/policy-' . filemtime($policy_path); // TODO: Origin-Policy timestamp
+				$current_suffix = '/policy-1';
 				if ($request_suffix != $current_suffix) {
 					redirect('/.well-known/origin-policy' . $current_suffix, 302); // "Servers MUST respond to a GET request to /.well-known/origin-policy with a 302 redirect whose Location header points to the origin's current Origin Policy Manifest"
 				}
