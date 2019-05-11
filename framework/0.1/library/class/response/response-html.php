@@ -1579,13 +1579,14 @@
 							// - The response is not stored, so the request is always "Sec-Origin-Policy: 0".
 							// - The JSON file format is changing, currently: {"content-security-policy": [{"policy": "default-src 'none'"}]}
 
-						// if (isset($_SERVER['HTTP_SEC_ORIGIN_POLICY'])) {
-						// 	$policy_path = PUBLIC_ROOT . '/origin-policy.json';
-						// 	if (is_file($policy_path)) {
-						// 		header('Sec-Origin-Policy: policy=policy-' . head(filemtime($policy_path)));
-						// 		header('Vary: sec-origin-policy');
-						// 	}
-						// }
+						if (isset($_SERVER['HTTP_SEC_ORIGIN_POLICY'])) {
+							$policy_path = PUBLIC_ROOT . '/origin-policy.json';
+							if (is_file($policy_path)) {
+								// header('Sec-Origin-Policy: policy=policy-' . head(filemtime($policy_path)));
+								header('Sec-Origin-Policy: 0'); // Ensure it remains disabled for now.
+								header('Vary: sec-origin-policy');
+							}
+						}
 
 					//--------------------------------------------------
 					// Referrer policy
