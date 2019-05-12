@@ -458,6 +458,23 @@
 					);
 			}
 
+			public function js_add_async($path) {
+				$this->js_add($path, ['async', 'separate'], 'head');
+			}
+
+			public function js_add_trusted($path) {
+
+				$trusted_type = basename($path, '.js');
+				if ($trusted_type) {
+					config::array_push('output.js_trusted_types', $trusted_type);
+				} else {
+					exit_with_error('Could not determine the file name for trusted types on "' . $path . '"');
+				}
+
+				$this->js_add($path, ['async'], 'head');
+
+			}
+
 			public function js_code_add($code, $mode = 'inline', $position = 'foot') {
 
 				if ($this->js_code_ref === NULL) {
@@ -1448,9 +1465,7 @@
 
 						$this->csp_source_add('style-src', $css_path);
 
-						if ($this->csp_sources_get('trusted-types') !== NULL) {
-							$this->csp_source_add('trusted-types', 'debug');
-						}
+						config::array_push('output.js_trusted_types', 'debug');
 
 						if (config::get('db.host') !== NULL) {
 
@@ -1767,6 +1782,14 @@
 
 							http_csp_header(config::get('output.csp_directives'));
 
+						}
+
+					//--------------------------------------------------
+					// Trusted types
+
+						$trusted_types = config::get('output.js_trusted_types');
+						if (is_array($trusted_types) && count($trusted_types) > 0) {
+							header('Content-Security-Policy: trusted-types ' . implode(' ', $trusted_types), false);
 						}
 
 					//--------------------------------------------------
