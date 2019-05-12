@@ -466,7 +466,10 @@
 
 				$trusted_type = basename($path, '.js');
 				if ($trusted_type) {
-					config::array_push('output.js_trusted_types', $trusted_type);
+					$trusted_types = config::get('output.js_trusted_types');
+					if (is_array($trusted_types)) {
+						config::set('output.js_trusted_types', array_merge($trusted_types, [$trusted_type]));
+					}
 				} else {
 					exit_with_error('Could not determine the file name for trusted types on "' . $path . '"');
 				}
@@ -1465,7 +1468,10 @@
 
 						$this->csp_source_add('style-src', $css_path);
 
-						config::array_push('output.js_trusted_types', 'debug');
+						$trusted_types = config::get('output.js_trusted_types');
+						if (is_array($trusted_types)) {
+							config::set('output.js_trusted_types', array_merge($trusted_types, ['debug']));
+						}
 
 						if (config::get('db.host') !== NULL) {
 
