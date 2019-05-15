@@ -62,14 +62,14 @@
 					'dest' => ['document'],
 					'mode' => ['navigate'],
 					'site' => ['same-origin', 'none'], // 'none' because a user can POST the form, see errors, and refresh the page.
-					'user' => ['?1'],
+					'user' => ['?1', '?T'],
 				];
 
 			private $fetch_known = [
 					'dest' => ['audio', 'audioworklet', 'document', 'embed', 'empty', 'font', 'image', 'manifest', 'object', 'paintworklet', 'report', 'script', 'serviceworker', 'sharedworker', 'style', 'track', 'video', 'worker', 'xslt', 'nested-document'],
 					'mode' => ['cors', 'navigate', 'nested-navigate', 'no-cors', 'same-origin', 'websocket'],
 					'site' => ['cross-site', 'same-origin', 'same-site', 'none'],
-					'user' => ['?0', '?1'], // In HTTP/1 headers, a boolean is indicated with a leading "?"
+					'user' => ['?0', '?1', '?F', '?T'], // In HTTP/1 headers, a boolean is indicated with a leading "?"
 				];
 
 		//--------------------------------------------------
