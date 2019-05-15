@@ -116,14 +116,6 @@
 
 				$this->set('form', $form);
 
-			//--------------------------------------------------
-			// JavaScript
-
-				$response = response_get();
-
-				$response->js_add('/a/js/contact.js');
-				$response->js_code_add($form->validation_js());
-
 		}
 
 	}

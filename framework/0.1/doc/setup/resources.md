@@ -5,7 +5,8 @@ A typical [HTML response](../../doc/system/response.md) will add JavaScript and 
 	$response = response_get();
 
 	$response->js_add('/path/to/file.js');
-	$response->js_code_add('var x = ' . json_encode($x) . ';');
+	$response->js_async_add('/path/to/file.js');
+	$response->js_trusted_add('/path/to/file.js');
 
 	$response->css_auto();
 	$response->css_add('/path/to/file.css');
@@ -47,9 +48,22 @@ Sometimes you may need to set a JavaScript variable "inline", for example the cu
 
 So instead just add:
 
-	$response->js_code_add('var x = ' . json_encode($x) . ';');
+	$response->head_add_html("\n\t" .
+		'<meta name="js_data" content="' . html(json_encode($x)) . '" />');
 
-And the JavaScript code will be provided to the browser as though it was a separate file, which can only be requested once, and should not be cached by the browser (to avoid security issues).
+And the JavaScript can get that variable via:
+
+	my_data = document.querySelector('meta[name="js_data"]');
+	if (my_data) {
+		try {
+			my_data = JSON.parse(my_data.getAttribute('content'));
+		} catch (e) {
+			my_data = null;
+		}
+	}
+	if (!my_data) {
+		return;
+	}
 
 ---
 

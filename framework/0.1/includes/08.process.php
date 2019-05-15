@@ -71,7 +71,6 @@
 		$note_html .= '&#xA0; $response-&gt;<strong>link_set</strong>(\'rel\', \'href\');<br />' . "\n";
 		$note_html .= '&#xA0; $response-&gt;<strong>csp_source_add</strong>(\'frame-src\', \'https://www.example.com\');<br />' . "\n";
 		$note_html .= '&#xA0; $response-&gt;<strong>js_add</strong>(\'/path/to/file.js\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>js_code_add</strong>(\'var x = \' . json_encode($x) . \';\');<br />' . "\n";
 		$note_html .= '&#xA0; $response-&gt;<strong>css_auto</strong>();<br />' . "\n";
 		$note_html .= '&#xA0; $response-&gt;<strong>css_add</strong>(\'/path/to/file.css\');<br />' . "\n";
 		$note_html .= '&#xA0; $response-&gt;<strong>css_alternate_add</strong>(\'/path/to/file.css\', \'print\');<br />' . "\n";

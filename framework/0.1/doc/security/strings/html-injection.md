@@ -14,8 +14,23 @@ Avoid adding JavaScript code to the HTML, so never do something like:
 
 	$response->head_add_html('<script>var x = ' . json_encode($x) . ';</script>');
 
-Instead use:
+Because the variable could still include a `</script>` tag, and the HTML parser (not being aware of the rules of JavaScript) will just see that as the end of the JavaScript, and will continue to treat the rest as HTML.
 
-	$response->js_code_add('var x = ' . json_encode($x) . ';');
+So you could instead use:
 
-Because the variable could still include a </script> tag, and the HTML parser (not being aware of the rules of JavaScript) will just see that as the end of the JavaScript, and will continue to treat the rest as HTML.
+	$response->head_add_html("\n\t" .
+		'<meta name="js_data" content="' . html(json_encode($x)) . '" />');
+
+And in your JavaScript, get the value  with something like:
+
+	my_data = document.querySelector('meta[name="js_data"]');
+	if (my_data) {
+		try {
+			my_data = JSON.parse(my_data.getAttribute('content'));
+		} catch (e) {
+			my_data = null;
+		}
+	}
+	if (!my_data) {
+		return;
+	}
