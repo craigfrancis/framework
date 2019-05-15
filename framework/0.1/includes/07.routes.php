@@ -163,6 +163,7 @@
 					redirect('/.well-known/origin-policy' . $current_suffix, 302); // "Servers MUST respond to a GET request to /.well-known/origin-policy with a 302 redirect whose Location header points to the origin's current Origin Policy Manifest"
 				}
 
+				http_cache_headers((60*60*24*365), filemtime($policy_path));
 				header('Content-Type: application/json; charset=' . head(config::get('output.charset')));
 				readfile($policy_path);
 
