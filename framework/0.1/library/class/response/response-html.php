@@ -486,6 +486,17 @@
 
 					session::start();
 
+					$integrity = config::get('output.integrity');
+					if (is_array($integrity)) {
+						if (($key = array_search('script', $integrity)) !== false) {
+							unset($integrity[$key]);
+							if (count($integrity) == 0) {
+								$integrity = true;
+							}
+							config::set('output.integrity', $integrity);
+						}
+					}
+
 				}
 
 				if ($this->js_code[$position]['saved']) {
@@ -850,7 +861,7 @@
 				$version = config::get('output.timestamp_url', false);
 				$minify = false;
 
-				$integrity = config::get('output.integrity', false);
+				$integrity = config::get('output.integrity');
 				if ($integrity) {
 					foreach ($files as $id => $file) {
 						if (substr($file['path'], 0, 1) == '/' && !isset($file['attributes']['integrity']) && is_file(PUBLIC_ROOT . $file['path'])) {
@@ -1641,7 +1652,7 @@
 					//--------------------------------------------------
 					// Framing options
 
-						$output_framing = strtoupper(config::get('output.framing', 'DENY'));
+						$output_framing = strtoupper(config::get('output.framing'));
 
 						if ($output_framing && $output_framing != 'ALLOW') {
 							header('X-Frame-Options: ' . head($output_framing));

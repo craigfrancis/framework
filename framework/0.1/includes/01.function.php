@@ -1436,9 +1436,10 @@
 	function http_csp_header($csp = NULL, $config = []) {
 
 		$config = array_merge([
-				'enforced' => config::get('output.csp_enforced', false),
-				'report'   => config::get('output.csp_report', false),
-				'framing'  => config::get('output.framing', 'DENY'),
+				'enforced'  => config::get('output.csp_enforced', false),
+				'report'    => config::get('output.csp_report', false),
+				'framing'   => config::get('output.framing'),
+				'integrity' => config::get('output.integrity'),
 			], $config);
 
 		if ($config['enforced']) {
@@ -1454,6 +1455,10 @@
 			} else if ($framing == 'SAMEORIGIN') {
 				$csp['frame-ancestors'] = "'self'";
 			}
+		}
+
+		if (is_array($config['integrity'])) {
+			$csp['require-sri-for'] = implode(' ', $config['integrity']);
 		}
 
 		if (($config['report'] || !$config['enforced']) && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
