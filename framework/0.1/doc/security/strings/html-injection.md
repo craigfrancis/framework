@@ -16,12 +16,12 @@ Avoid adding JavaScript code to the HTML, so never do something like:
 
 Because the variable could still include a `</script>` tag, and the HTML parser (not being aware of the rules of JavaScript) will just see that as the end of the JavaScript, and will continue to treat the rest as HTML.
 
-So you could instead use:
+Instead you could use:
 
 	$response->head_add_html("\n\t" .
 		'<meta name="js_data" content="' . html(json_encode($x)) . '" />');
 
-And in your JavaScript, get the value  with something like:
+And in your JavaScript, get the value with:
 
 	my_data = document.querySelector('meta[name="js_data"]');
 	if (my_data) {
