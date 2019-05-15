@@ -740,7 +740,7 @@
 
 					$fetch = config::get('request.fetch');
 
-					if ($this->form_submitted) {
+					if ($this->form_submitted && !$this->form_passive) {
 						foreach ($this->fetch_allowed as $field => $allowed) {
 							if ($fetch[$field] != NULL && !in_array($fetch[$field], $allowed)) {
 								report_add('Form submitted with Sec-Fetch-' . ucfirst($field) . ' "' . $fetch[$field] . '" (' . (in_array($fetch[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ')', 'notice');
@@ -751,11 +751,11 @@
 				//--------------------------------------------------
 				// CSRF check
 
-					if (!$this->form_passive && $this->csrf_error_html != NULL) { // Cant type check, as html() will convert NULL to string
+					if ($this->form_submitted && !$this->form_passive && $this->csrf_error_html != NULL) { // Cant type check, as html() will convert NULL to string
 
 						$csrf_token = request('csrf', $this->form_method);
 
-						if ($this->form_submitted && !csrf_challenge_check($csrf_token, $this->form_action, $this->csrf_token)) {
+						if (!csrf_challenge_check($csrf_token, $this->form_action, $this->csrf_token)) {
 
 							cookie::require_support();
 
