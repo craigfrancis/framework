@@ -7,7 +7,8 @@
 		return;
 	}
 
-	var debug_data,
+	var debug_script = document.currentScript,
+		debug_data,
 		debug_open,
 		debug_wrapper,
 		debug_links;
@@ -186,11 +187,11 @@
 	}
 
 	function init() {
-
-		var api_url = document.querySelector('script[data-api]');
+		var api_url = (debug_script ? debug_script : document.querySelector('script[src$="debug.js"][data-api]'));
 		if (api_url) {
-
 			api_url = api_url.getAttribute('data-api');
+		}
+		if (api_url) {
 
 			var debug_xhr = new XMLHttpRequest();
 			debug_xhr.open('GET', api_url, true);
@@ -212,7 +213,6 @@
 			debug_xhr.send();
 
 		}
-
 	}
 
 	if (document.readyState !== 'loading') {
