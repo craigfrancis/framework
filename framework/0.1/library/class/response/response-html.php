@@ -1459,9 +1459,11 @@
 
 					if (config::get('debug.level') > 0 && config::get('debug.show') && in_array($mime_type, array('text/html', 'application/xhtml+xml'))) {
 
-						$this->js_code_add("\n", 'defer'); // Add something so the file is included, and session is started. The rest will be added in debug_shutdown()
+						session::start();
 
-						config::set('debug.output_ref', $this->js_code_ref);
+						$debug_ref = time() . '-' . mt_rand(1000000, 9999999);
+
+						config::set('debug.output_ref', $debug_ref);
 
 						$css_path = FRAMEWORK_ROOT . '/library/view/debug.css';
 						$css_url = gateway_url('framework-file', filemtime($css_path) . '-debug.css');
@@ -1472,7 +1474,7 @@
 						$js_path = FRAMEWORK_ROOT . '/library/view/debug.js';
 						$js_url = gateway_url('framework-file', filemtime($js_path) . '-debug.js');
 						$js_integrity = 'sha256-' . base64_encode(hash('sha256', file_get_contents($js_path), true));
-						$js_api = gateway_url('debug', $this->js_code_ref . '.json');
+						$js_api = gateway_url('debug', $debug_ref . '.json');
 						$this->js_add($js_url, ['async', 'integrity' => $js_integrity, 'data-api' => $js_api], 'head');
 						$this->csp_source_add('script-src', $js_url);
 						$this->csp_source_add('connect-src', $js_api);
