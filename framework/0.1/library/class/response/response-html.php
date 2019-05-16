@@ -486,17 +486,6 @@
 
 					session::start();
 
-					$integrity = config::get('output.integrity');
-					if (is_array($integrity)) {
-						if (($key = array_search('script', $integrity)) !== false) {
-							unset($integrity[$key]);
-							if (count($integrity) == 0) {
-								$integrity = true;
-							}
-							config::set('output.integrity', $integrity);
-						}
-					}
-
 				}
 
 				if ($this->js_code[$position]['saved']) {
@@ -575,12 +564,13 @@
 		//--------------------------------------------------
 		// CSS
 
-			public function css_add($path, $media = 'all') {
+			public function css_add($path, $attributes = []) {
+				if (!is_array($attributes)) {
+					$attributes = ['media' => $attributes];
+				}
 				$this->css_files_main[] = array(
 						'path' => $path,
-						'attributes' => array(
-								'media' => $media,
-							),
+						'attributes' => array_merge(['media' => 'all'], $attributes),
 					);
 			}
 
@@ -1471,13 +1461,21 @@
 
 						$this->js_code_add("\n", 'defer'); // Add something so the file is included, and session is started. The rest will be added in debug_shutdown()
 
-						config::set('debug.js_code', $this->js_code_ref);
+						config::set('debug.output_ref', $this->js_code_ref);
 
-						$css_path = gateway_url('framework-file', 'debug.css');
+						$css_path = FRAMEWORK_ROOT . '/library/view/debug.css';
+						$css_url = gateway_url('framework-file', filemtime($css_path) . '-debug.css');
+						$css_integrity = 'sha256-' . base64_encode(hash('sha256', file_get_contents($css_path), true));
+						$this->css_add($css_url, ['integrity' => $css_integrity]);
+						$this->csp_source_add('style-src', $css_url);
 
-						$this->css_add($css_path);
-
-						$this->csp_source_add('style-src', $css_path);
+						$js_path = FRAMEWORK_ROOT . '/library/view/debug.js';
+						$js_url = gateway_url('framework-file', filemtime($js_path) . '-debug.js');
+						$js_integrity = 'sha256-' . base64_encode(hash('sha256', file_get_contents($js_path), true));
+						$js_api = gateway_url('debug', $this->js_code_ref . '.json');
+						$this->js_add($js_url, ['async', 'integrity' => $js_integrity, 'data-api' => $js_api], 'head');
+						$this->csp_source_add('script-src', $js_url);
+						$this->csp_source_add('connect-src', $js_api);
 
 						$trusted_types = config::get('output.js_trusted_types');
 						if (is_array($trusted_types)) {

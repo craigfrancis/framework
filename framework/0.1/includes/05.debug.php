@@ -960,9 +960,9 @@
 				//--------------------------------------------------
 				// Send
 
-					$js_code_ref = config::get('debug.js_code');
+					$output_ref = config::get('debug.output_ref');
 
-					if ($js_code_ref) {
+					if ($output_ref) {
 
 						//--------------------------------------------------
 						// End time
@@ -975,25 +975,13 @@
 								));
 
 						//--------------------------------------------------
-						// JS Code
-
-							$js_code  = "\n";
-							$js_code .= 'var debug_time = ' . json_encode(debug_time_format($time_total - $time_check)) . ';' . "\n";
-							$js_code .= 'var debug_notes = ' . json_encode(config::get('debug.notes')) . ';';
-							$js_code .= file_get_contents(FRAMEWORK_ROOT . '/library/view/debug.js');
-
-						//--------------------------------------------------
 						// Store
 
-							$session_js = session::get('output.js_code');
+							$debug_data = session::get('debug.output_data');
 
-							if (!isset($session_js[$js_code_ref]['foot'])) {
-								$session_js[$js_code_ref]['foot'] = '';
-							}
+							$debug_data[$output_ref] = json_encode(['time' => debug_time_format($time_total - $time_check), 'notes' => config::get('debug.notes')]);
 
-							$session_js[$js_code_ref]['foot'] .= $js_code;
-
-							session::set('output.js_code', $session_js);
+							session::set('debug.output_data', $debug_data);
 
 					} else if (config::get('output.mime') == 'text/plain') {
 

@@ -1,9 +1,38 @@
 
-;(function() {
+;(function(document, window, undefined) {
 
-	"use strict";
+	'use strict';
 
-	var debug_open, debug_wrapper, debug_links;
+	if (!document.addEventListener || !document.querySelector || !window.XMLHttpRequest || !window.JSON) {
+		return;
+	}
+
+	var debug_data,
+		debug_open,
+		debug_wrapper,
+		debug_links;
+
+	function debug_close() {
+		debug_wrapper.parentNode.removeChild(debug_wrapper);
+	}
+
+	function debug_open_link(e) {
+
+		if (debug_open && debug_open !== this) {
+			debug_open.debugOutput.setAttribute('class', 'debug_notes');
+			debug_open.setAttribute('class', 'debug_link');
+		}
+
+		var o = (this.debugOutput.getAttribute('class').indexOf('debug_notes_open') > -1);
+		this.setAttribute('class', (o ? 'debug_link' : 'debug_link debug_link_open'));
+		this.debugOutput.setAttribute('class', (o ? 'debug_notes' : 'debug_notes debug_notes_open'));
+		this.debugOutput.style.minHeight = (window.innerHeight - debug_links.offsetHeight) + 'px';
+		this.scrollIntoView();
+		debug_open = this;
+
+		e.preventDefault();
+
+	}
 
 	function debug_setup() {
 
@@ -63,8 +92,8 @@
 				'L': {'name': 'Log',    'notes': []}
 			};
 
-			for (k in debug_notes) {
-				debug_types[debug_notes[k].type].notes.push(debug_notes[k]);
+			for (k in debug_data.notes) {
+				debug_types[debug_data.notes[k].type].notes.push(debug_data.notes[k]);
 			}
 
 		//--------------------------------------------------
@@ -144,9 +173,9 @@
 			}
 
 			var time_text = document.createElement('span');
-			time_text.setAttribute('class', 'debug_time' + (debug_time > 0.1 ? ' debug_slow' : ''));
+			time_text.setAttribute('class', 'debug_time' + (debug_data.time > 0.1 ? ' debug_slow' : ''));
 			time_text.addEventListener('dblclick', debug_close);
-			time_text.appendChild(document.createTextNode(' - ' + debug_time));
+			time_text.appendChild(document.createTextNode(' - ' + debug_data.time));
 			debug_links.appendChild(time_text);
 
 			debug_wrapper.appendChild(debug_links);
@@ -156,36 +185,40 @@
 
 	}
 
-	function debug_close() {
-		debug_wrapper.parentNode.removeChild(debug_wrapper);
-	}
+	function init() {
 
-	function debug_open_link(e) {
+		var api_url = document.querySelector('script[data-api]');
+		if (api_url) {
 
-		if (debug_open && debug_open !== this) {
-			debug_open.debugOutput.setAttribute('class', 'debug_notes');
-			debug_open.setAttribute('class', 'debug_link');
+			api_url = api_url.getAttribute('data-api');
+
+			var debug_xhr = new XMLHttpRequest();
+			debug_xhr.open('GET', api_url, true);
+			debug_xhr.onreadystatechange = function() {
+				if (this.readyState == 4) {
+					var response;
+					if (this.status == 200) {
+						try {
+							debug_data = JSON.parse(debug_xhr.responseText);
+						} catch (e) {
+							debug_data = null;
+						}
+					}
+					if (debug_data) {
+						debug_setup();
+					}
+				}
+			}
+			debug_xhr.send();
+
 		}
-
-		var o = (this.debugOutput.getAttribute('class').indexOf('debug_notes_open') > -1);
-		this.setAttribute('class', (o ? 'debug_link' : 'debug_link debug_link_open'));
-		this.debugOutput.setAttribute('class', (o ? 'debug_notes' : 'debug_notes debug_notes_open'));
-		this.debugOutput.style.minHeight = (window.innerHeight - debug_links.offsetHeight) + 'px';
-		this.scrollIntoView();
-		debug_open = this;
-
-		e.preventDefault();
 
 	}
 
 	if (document.readyState !== 'loading') {
-
-		debug_setup();
-
-	} else if (document.addEventListener) {
-
-		document.addEventListener('DOMContentLoaded', debug_setup);
-
+		window.setTimeout(init); // Handle asynchronously
+	} else {
+		document.addEventListener('DOMContentLoaded', init);
 	}
 
-}());
+})(document, window);
