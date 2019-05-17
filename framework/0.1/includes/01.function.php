@@ -126,7 +126,12 @@
 				if (hash('sha256', $token . $hash_salt) == $hash_value) {
 					$hash = $token;
 					if ($salt !== NULL && $hash_salt != $salt) {
-						report_add('CSRF match was valid, but the salt check failed (no error shown to user, but please investigate).' . "\n\n" . debug_dump($hash_salt) . "\n" . debug_dump($salt));
+						if (config::get('form.csrf_hash_check', false) === true) {
+							report_add('CSRF match was valid, but the salt check failed (user asked to re-submit).' . "\n\n" . debug_dump($hash_salt) . "\n" . debug_dump($salt), 'error');
+							return false;
+						} else {
+							report_add('CSRF match was valid, but the salt check failed (no error shown to user, but please investigate).' . "\n\n" . debug_dump($hash_salt) . "\n" . debug_dump($salt));
+						}
 					}
 				}
 			}
