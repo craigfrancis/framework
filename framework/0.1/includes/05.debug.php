@@ -325,7 +325,7 @@
 		$output = debug_dump($variable); // Shows false (not an empty string), quotes strings (var_export does - but has problems with recursion), and shows a simple string representation for the url object.
 
 		if (php_sapi_name() == 'cli' || config::get('output.mime') == 'text/plain') {
-			echo "\n" . $called_from_file . ' (line ' . html($called_from_line) . ')' . "\n";
+			echo "\n" . $called_from_file . ' (line ' . $called_from_line . ')' . "\n";
 			echo $output . "\n";
 		} else {
 			echo "\n" . '<strong>' . html($called_from_file) . '</strong> (line <strong>' . html($called_from_line) . '</strong>)' . "\n";
@@ -401,33 +401,32 @@
 //--------------------------------------------------
 // Config
 
-	function debug_config_html($prefix = '') { // Used in CLI, so don't check on debug.level
+	function debug_config_log($prefix = '') { // Used in CLI, so don't check on debug.level
 
 		$config = config::get_all($prefix);
 
 		ksort($config);
 
-		$config_html  = html($prefix == '' ? 'Configuration:' : ucfirst($prefix) . ' configuration:');
-		$config_html .= '<div class="debug_keys">';
+		$log = [];
 
 		foreach ($config as $key => $value) {
 			if (!in_array($key, array('db.link', 'output.response', 'debug.time_init', 'debug.time_check', 'debug.time_query', 'debug.units'))) {
 				if ($key == 'debug.notes' || substr($key, -5) == '.pass' || substr($key, -9) == '.password') { // e.g. 'db.pass'
-					$value_html = '???';
+					$value = '???';
 				} else if (is_object($value)) {
-					$value_html = get_class($value) . '()';
+					$value = get_class($value) . '()';
 				} else {
-					$value_html = html(debug_dump($value, 1));
+					$value = preg_replace('/\s+/', ' ', debug_dump($value, 1));
 				}
-				$config_html .= "\n" . '  <p><strong>' . html(($prefix == '' ? '' : $prefix . '.') . $key) . '</strong>: ' . $value_html . '</p>';
+				$log[] = [['strong', (($prefix == '' ? '' : $prefix . '.') . $key)], ['span', ': ' . $value]];
 			}
 		}
 
-		return $config_html . '</div>';
+		return $log;
 
 	}
 
-	function debug_constants_html() {
+	function debug_constants_log() {
 
 		$constants = get_defined_constants(true);
 
@@ -437,19 +436,18 @@
 
 		ksort($constants['user']);
 
-		$constants_html  = 'Constants:';
-		$constants_html .= '<div class="debug_keys">';
+		$log = [];
 
 		foreach ($constants['user'] as $key => $value) {
 			if ($key == 'ENCRYPTION_KEY') {
-				$value_html = '???';
+				$value = '???';
 			} else {
-				$value_html = html(debug_dump($value));
+				$value = preg_replace('/\s+/', ' ', debug_dump($value, 1));
 			}
-			$constants_html .= "\n" . '  <p><strong>' . html($key) . '</strong>: ' . $value_html . '</p>';
+			$log[] = [['strong', $key], ['span', ': ' . $value]];
 		}
 
-		return $constants_html . '</div>';
+		return $log;
 
 	}
 
@@ -465,26 +463,32 @@
 
 				$time = debug_time_format(debug_time_elapsed() - config::get('debug.time_check'));
 
-				config::array_push('debug.notes', array(
+				debug_note([
 						'type' => 'L',
 						'colour' => '#CCC',
+						'file' => NULL,
 						'time' => NULL,
-						'html' => html($time . ' - ' . $label),
-					));
+						'text' => ($time . ' - ' . $label),
+					]);
 
 			}
 
 		//--------------------------------------------------
 		// Debug notes
 
-			function debug_note($note, $type = NULL, $colour = NULL) {
-				debug_note_html(html(is_string($note) ? $note : debug_dump($note)), $type, $colour);
-			}
-
-			function debug_note_html($note_html, $type = NULL, $colour = NULL) {
+			function debug_note($note) {
 
 				//--------------------------------------------------
-				// Called from
+				// Array
+
+					if (!is_array($note)) {
+						$note = [
+								'text' => (is_string($note) ? $note : debug_dump($note)),
+							];
+					}
+
+				//--------------------------------------------------
+				// Call data
 
 					foreach (debug_backtrace() as $called_from) {
 						if (isset($called_from['file']) && $called_from['file'] != __FILE__) {
@@ -492,52 +496,37 @@
 						}
 					}
 
-					$call_from_file = $called_from['file'];
-					$call_from_line = $called_from['line'];
+					if (isset($called_from['file'])) {
+						$system_call = prefix_match(FRAMEWORK_ROOT, $called_from['file']);
+					} else {
+						$system_call = true; // e.g. shutdown function
+					}
 
-					$system_call = prefix_match(FRAMEWORK_ROOT, $call_from_file);
-
-				//--------------------------------------------------
-				// Time position
+					$default_file = NULL;
+					$default_time = NULL;
 
 					if (!$system_call) {
 
-						$note_html = '&#xA0; ' . str_replace("\n", "\n&#xA0; ", $note_html);
-						$note_html = '<strong>' . str_replace(ROOT, '', $call_from_file) . '</strong> (line ' . $call_from_line . '):<br />' . $note_html;
+						$default_file = [
+								'path' => str_replace(ROOT, '', $called_from['file']),
+								'line' => $called_from['line'],
+							];
 
-						$time = debug_time_format(debug_time_elapsed() - config::get('debug.time_check'));
-
-					} else {
-
-						if (SERVER == 'live') {
-							$note_html = str_replace(ROOT, '[HIDDEN]', $note_html);
-						}
-
-						$time = NULL;
+						$default_time = debug_time_format(debug_time_elapsed() - config::get('debug.time_check'));
 
 					}
 
 				//--------------------------------------------------
 				// Note
 
-					if ($type == NULL) {
-						$type = 'L';
-					}
+					$note = array_merge([
+							'type'   => 'L',
+							'colour' => ($system_call ? '#CCC' : '#FFC'),
+							'file'   => $default_file,
+							'time'   => $default_time,
+						], $note);
 
-					if ($colour !== NULL) {
-						if (substr($colour, 0, 1) != '#') {
-							$colour = '#' . $colour;
-						}
-					} else {
-						$colour = ($system_call ? '#CCC' : '#FFC');
-					}
-
-					config::array_push('debug.notes', array(
-							'type' => $type,
-							'colour' => $colour,
-							'time' => $time,
-							'html' => $note_html,
-						));
+					config::array_push('debug.notes', $note);
 
 			}
 
@@ -614,7 +603,7 @@
 					}
 
 				//--------------------------------------------------
-				// HTML Format for the query
+				// Formatted query
 
 					$indent = 0;
 					$query_lines = array();
@@ -656,25 +645,26 @@
 
 					}
 
-					$query_html = html(implode("\n", $query_lines) . ';');
+					$query_plain = implode("\n", $query_lines) . ';';
 
 				//--------------------------------------------------
-				// Values
+				// Parameters
 
 					if ($parameters) {
-						$offset = 0;
 						$k = 0;
-						while (($pos = strpos($query_html, '?', $offset)) !== false) {
+						$query_formatted = [];
+						foreach (explode('?', $query_plain) as $section) {
+							$query_formatted[] = ['span', $section];
 							if (isset($parameters[$k]) && $parameters[$k][1] !== NULL) {
-								$parameter_html = html($parameters[$k][0] == 's' ? '"' . $parameters[$k][1] . '"' : $parameters[$k][1]);
+								$query_formatted[] = ['strong', ($parameters[$k][0] == 's' ? '"' . $parameters[$k][1] . '"' : $parameters[$k][1]), 'value'];
 							} else {
-								$parameter_html = 'NULL';
+								$query_formatted[] = ['strong', 'NULL', 'value'];
 							}
-							$parameter_html = '<strong class="value">' . $parameter_html . '</strong>';
-							$query_html = substr($query_html, 0, $pos) . $parameter_html . substr($query_html, ($pos + 1));
-							$offset = ($pos + strlen($parameter_html));
 							$k++;
 						}
+						array_pop($query_formatted); // Last entry isn't a parameter.
+					} else {
+						$query_formatted = $query_plain;
 					}
 
 				//--------------------------------------------------
@@ -697,7 +687,7 @@
 						echo '	<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>' . "\n";
 						echo '	<p>The following SQL has been tainted.</p>' . "\n";
 						echo '	<hr />' . "\n";
-						echo '	<p><pre>' . "\n\n" . $query_html . "\n\n" . '</pre></p>' . "\n";
+						echo '	<p><pre>' . "\n\n" . html(implode('', array_column($query_formatted, 1))) . "\n\n" . '</pre></p>' . "\n";
 						echo '</div>' . "\n";
 
 						exit();
@@ -707,62 +697,15 @@
 				//--------------------------------------------------
 				// Explain how the query is executed
 
-					$explain_html = '';
+					$explain = NULL;
 
 					if ($select_query) {
-
-						$explain_html .= '
-							<table>';
-
-						$headers_printed = false;
 
 						$result = $db->query('EXPLAIN ' . $sql, $parameters, false, false); // No debug, and don't exit on error
 
 						if ($result) {
-							while ($row = $db->fetch_row($result)) {
-
-								if ($headers_printed == false) {
-									$headers_printed = true;
-									$explain_html .= '
-										<tr>';
-									foreach ($row as $key => $value) {
-										$explain_html .= '
-											<th>' . html($key) . '</th>';
-									}
-									$explain_html .= '
-										</tr>';
-								}
-
-								$explain_html .= '
-									<tr>';
-
-								foreach ($row as $key => $value) {
-
-									if ($key == 'possible_keys') {
-										$value = str_replace(',', ', ', $value);
-									}
-
-									$value_html = ($value == '' ? '&#xA0;' : html($value));
-
-									if ($key == 'type') {
-										$explain_html .= '
-											<td><a href="https://dev.mysql.com/doc/refman/5.0/en/explain-output.html#jointype_' . html($value) . '">' . $value_html . '</a></td>';
-									} else {
-										$explain_html .= '
-											<td>' . $value_html . '</td>';
-
-									}
-
-								}
-
-								$explain_html .= '
-									</tr>';
-
-							}
+							$explain = $db->fetch_all($result);
 						}
-
-						$explain_html .= '
-							</table>';
 
 					}
 
@@ -771,7 +714,7 @@
 				// have a "deleted" column, make sure that it's
 				// being used
 
-					$text_html = '';
+					$result_list = [];
 
 					if (preg_match('/^\W*(SELECT|UPDATE|DELETE)/i', ltrim($sql))) {
 
@@ -861,7 +804,7 @@
 											echo '	<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>' . "\n";
 											echo '	<p>Missing reference to "' . html(str_replace('`', '', $required_clause)) . '" column on the table "' . html($table[1]) . '".</p>' . "\n";
 											echo '	<hr />' . "\n";
-											echo '	<p><pre>' . "\n\n" . $query_html . "\n\n" . '</pre></p>' . "\n";
+											echo '	<p><pre>' . "\n\n" . html(implode('', array_column($query_formatted, 1))) . "\n\n" . '</pre></p>' . "\n";
 											echo '</div>' . "\n";
 
 											exit();
@@ -878,16 +821,13 @@
 
 						if (count($tables) > 0) {
 
-							$text_html .= '
-								<ul>';
-
 							foreach ($tables as $table) {
-								$text_html .= '
-									<li>' . preg_replace('/: (.*)/', ': <strong>$1</strong>', html($table)) . '</li>';
+								if (($pos = strrpos($table, ': ')) !== false) {
+									$result_list[] = [['span', substr($table, 0, ($pos + 2))], ['strong', substr($table, ($pos + 2))]];
+								} else {
+									$result_list[] = $table;
+								}
 							}
-
-							$text_html .= '
-								</ul>';
 
 						}
 
@@ -904,9 +844,9 @@
 					$time_query = round((microtime(true) - $time_start), 3);
 
 					if ($select_query && $result) {
-						$results_html = '<div class="note_rows">Rows: ' . html($db->num_rows($result)) . '</div>';
+						$result_rows = $db->num_rows($result);
 					} else {
-						$results_html = '';
+						$result_rows = NULL;
 					}
 
 					config::set('debug.time_query', (config::get('debug.time_query') + $time_query));
@@ -915,17 +855,16 @@
 				//--------------------------------------------------
 				// Create debug output
 
-					$single_line = (strpos($query_html, "\n") === false);
-
-					$html  = '<strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')<br />' . ($single_line ? "\n\n" : "\n");
-					$html .= '<pre class="debug_sql">' . ($single_line ? '' : "\n") . $query_html . ($single_line ? '' : "\n\n") . '</pre>';
-
 					config::array_push('debug.notes', array(
-							'type' => 'L',
+							'type'   => 'L',
 							'colour' => '#CCF',
-							'time' => debug_time_format($time_query),
-							'html' => $html,
-							'extra_html' => $results_html . $explain_html . $text_html,
+							'class'  => 'debug_sql',
+							'file'   => ['path' => str_replace(ROOT, '', $called_from['file']), 'line' => $called_from['line']],
+							'text'   => $query_formatted,
+							'time'   => debug_time_format($time_query),
+							'rows'   => $result_rows,
+							'table'  => $explain,
+							'list'   => $result_list,
 						));
 
 				//--------------------------------------------------
@@ -967,12 +906,13 @@
 						//--------------------------------------------------
 						// End time
 
-							config::array_push('debug.notes', array(
+							debug_note([
 									'type' => 'L',
 									'colour' => '#FFF',
+									'file' => NULL,
 									'time' => NULL,
-									'html' => nl2br(html($time_text)),
-								));
+									'text' => $time_text,
+								]);
 
 						//--------------------------------------------------
 						// Store
@@ -988,15 +928,69 @@
 						//--------------------------------------------------
 						// Base notes
 
-							$output_text  = "\n\n\n\n\n\n\n\n\n\n";
+							$output_text = "\n\n\n\n\n\n\n\n\n\n";
 
 							foreach (config::get('debug.notes') as $note) {
 
 								$output_text .= '--------------------------------------------------' . "\n\n";
-								$output_text .= trim(html_decode(strip_tags($note['html']))) . "\n\n";
 
-								if ($note['time'] !== NULL) {
-									$output_text .= 'Time:  ' . $note['time'] . "\n\n";
+								if (isset($note['heading'])) {
+									$output_text .= $note['heading'] . (isset($note['heading_extra']) ? ': ' . $note['heading_extra'] : '') . "\n\n";
+								}
+
+								if (isset($note['file'])) {
+									$output_text .= $note['file']['path'] . ' (line ' . $note['file']['line'] . ')' . "\n\n";
+								}
+
+								if (isset($note['text'])) {
+									if (is_array($note['text'])) {
+										$output_text .= implode('', array_column($note['text'], 1)) . "\n\n";
+									} else {
+										$output_text .= $note['text'] . "\n\n";
+									}
+								}
+
+								if (isset($note['lines'])) {
+									foreach ($note['lines'] as $line) {
+										if (is_array($line)) {
+											$output_text .= implode('', array_column($line, 1)) . "\n";
+										} else {
+											$output_text .= $line . "\n";
+										}
+									}
+									if (count($note['lines']) == 0) {
+										$output_text .= ($note['lines_empty'] ?? 'none') . "\n";
+									}
+									$output_text .= "\n";
+								}
+
+								if (isset($note['time'])) {
+									$output_text .= 'Time:  ' . $note['time'] . (isset($note['rows']) ? "\n" : "\n\n");
+								}
+
+								if (isset($note['rows'])) {
+									$output_text .= 'Rows:  ' . $note['rows'] . "\n\n";
+								}
+
+								if (isset($note['table'])) {
+									foreach ($note['table'] as $row) {
+										$length = (max(array_map('strlen', array_keys($row))) + 1);
+										foreach ($row as $field => $value) {
+											$output_text .= str_pad($field, $length, ' ', STR_PAD_LEFT) . ': ' . $value . "\n";
+										}
+										$output_text .= "\n";
+									}
+								}
+
+								if (isset($note['list']) && count($note['list']) > 0) {
+									foreach ($note['list'] as $line) {
+										if (is_array($line)) {
+											$output_text .= '# ' .  implode('', array_column($line, 1)) . "\n";
+										} else {
+											$output_text .= '# ' .  $line . "\n";
+										}
+									}
+									$output_text .= "\n";
 								}
 
 							}

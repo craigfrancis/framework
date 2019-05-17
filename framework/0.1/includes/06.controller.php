@@ -150,7 +150,7 @@
 
 					} else {
 
-						$controller_log[] = $controller_path . ': ' . $controller_name . '->route() - no change';
+						$controller_log[] = $controller_path . ': ' . $controller_name . '->route() - unchanged';
 
 					}
 
@@ -258,20 +258,32 @@
 
 			if (config::get('debug.level') >= 3) {
 
-				$note_html = '<strong>Controllers</strong>:<br />' . "\n";
-
-				foreach ($controller_log as $log) {
-					$log_html = html($log);
-					$log_html = str_replace(' - no change', ' - <span class="debug_unchanged">no change</span>', $log_html);
-					$log_html = str_replace(' - found', ' - <span class="debug_found">found</span>', $log_html);
-					$log_html = str_replace(' - absent', ' - <span class="debug_absent">absent</span>', $log_html);
-					$log_html = preg_replace('/^([^:]+:)([^\(\)]*(\(\))?)/', '\1 <strong>\2</strong>', $log_html);
-					$note_html .= '&#xA0; ' . $log_html . '<br />' . "\n";
+				$log = [];
+				foreach ($controller_log as $entry) {
+					$entry = str_replace(ROOT, '', $entry);
+					if (preg_match('/^([^:]+:)([^\(\)]*(\(\))?)(.*)/', $entry, $matches)) {
+						$entry = [];
+						$entry[] = ['span', $matches[1]];
+						$entry[] = ['strong', $matches[2]];
+						if (($pos = strrpos($matches[4], ' - ')) !== false) {
+							$entry[] = ['span', substr($matches[4], 0, $pos)];
+							$entry[] = ['span', ' - '];
+							$match = substr($matches[4], ($pos + 3));
+							$entry[] = ['span', $match, 'debug_' . $match]; // debug_unchanged, debug_found, debug_absent
+						} else {
+							$entry[] = ['span', $matches[4]];
+						}
+					}
+					$log[] = $entry;
 				}
 
-				debug_note_html(str_replace(ROOT, '', $note_html), 'H');
+				debug_note([
+						'type' => 'H',
+						'heading' => 'Controllers',
+						'lines' => $log,
+					]);
 
-				unset($note_html, $log);
+				unset($log, $entry);
 
 			}
 

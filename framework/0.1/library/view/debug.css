@@ -4,6 +4,7 @@
 	#debug_output #debug_links a.debug_link,
 	#debug_output .debug_notes,
 	#debug_output .debug_notes .note,
+	#debug_output .debug_notes .note h2,
 	#debug_output .debug_notes .note a,
 	#debug_output .debug_notes .note pre,
 	#debug_output .debug_notes .note div,
@@ -12,6 +13,8 @@
 	#debug_output .debug_notes .note table td,
 	#debug_output .debug_notes .note ul,
 	#debug_output .debug_notes .note ul li,
+	#debug_output .debug_notes .note .note_lines,
+	#debug_output .debug_notes .note .note_lines li,
 	#debug_output .debug_notes .note .debug_keys,
 	#debug_output .debug_notes .note .debug_keys p {
 		color: #000;
@@ -94,11 +97,38 @@
 		background: inherit;
 	}
 
+	#debug_output .debug_notes .note h2 {
+		font-weight: bold;
+	}
+
+	#debug_output .debug_notes .note.debug_plain h2,
+	#debug_output .debug_notes .note h2 span {
+		font-weight: normal;
+	}
+
+	#debug_output .debug_notes .note .note_lines {
+		list-style: none;
+	}
+
+	#debug_output .debug_notes .note .note_text,
+	#debug_output .debug_notes .note .note_lines {
+		white-space: pre;
+	}
+
+	#debug_output .debug_notes .note.note_heading .note_text,
+	#debug_output .debug_notes .note.note_heading .note_lines {
+		padding-left: 10px;
+	}
+
 	#debug_output .debug_notes .note pre {
 		display: block;
 	}
 
-	#debug_output .debug_notes .note .debug_sql .value {
+	#debug_output .debug_notes .note.debug_sql .note_text {
+		padding: 10px 0;
+	}
+
+	#debug_output .debug_notes .note.debug_sql .value {
 		color: #A00;
 	}
 
@@ -122,12 +152,11 @@
 		padding: 0.2em;
 	}
 
-	#debug_output .debug_notes .note .debug_keys {
-		margin: 0;
-		padding: 0 0 0 3em;
+	#debug_output .debug_notes .note.debug_keys .note_lines {
+		padding-left: 3em;
 		white-space: normal;
 	}
 
-	#debug_output .debug_notes .note .debug_keys p {
+	#debug_output .debug_notes .note.debug_keys .note_lines li {
 		text-indent: -2em;
 	}

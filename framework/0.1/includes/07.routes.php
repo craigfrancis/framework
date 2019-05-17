@@ -593,11 +593,22 @@
 
 	if (config::get('debug.level') >= 3 && REQUEST_MODE != 'cli') { // In CLI mode, use the "-c" option
 
-		debug_note_html(debug_config_html(), 'C');
-		debug_note_html(debug_constants_html(), 'C');
-
 			// Done after the assets are loaded (need to be quick, and won't be used),
 			// but before the controllers start loading any objects into the site config.
+
+		debug_note([
+				'type' => 'C',
+				'heading' => 'Configuration',
+				'lines' => debug_config_log(),
+				'class' => 'debug_plain debug_keys',
+			]);
+
+		debug_note([
+				'type' => 'C',
+				'heading' => 'Constants',
+				'lines' => debug_constants_log(),
+				'class' => 'debug_plain debug_keys',
+			]);
 
 	}
 
@@ -674,16 +685,20 @@
 
 					if (config::get('debug.level') >= 3) {
 
-						$note_html  = 'Route ' . html($id) . ':<br />';
-						$note_html .= '&#xA0; <strong>old</strong>: ' . html($old_path) . '<br />';
-						$note_html .= '&#xA0; <strong>new</strong>: ' . html($route_path) . '<br />';
-						$note_html .= '&#xA0; <strong>preg</strong>: ' . html($preg_path) . '<br />';
-						$note_html .= '&#xA0; <strong>replace</strong>: ' . html($route['replace']) . '<br />';
-						$note_html .= '&#xA0; <strong>matches</strong>: ' . html(debug_dump($matches)) . '<br />';
+						$log = [];
+						$log[] = [['strong', 'old'],     ['span', ': ' . $old_path]];
+						$log[] = [['strong', 'new'],     ['span', ': ' . $route_path]];
+						$log[] = [['strong', 'preg'],    ['span', ': ' . $preg_path]];
+						$log[] = [['strong', 'replace'], ['span', ': ' . $route['replace']]];
+						$log[] = [['strong', 'matches'], ['span', ': ' . preg_replace('/\s+/', ' ', debug_dump($matches))]];
 
-						debug_note_html($note_html, 'H');
+						debug_note([
+								'type' => 'H',
+								'heading' => 'Route ' . $id,
+								'lines' => $log,
+							]);
 
-						unset($note_html);
+						unset($log);
 
 					}
 

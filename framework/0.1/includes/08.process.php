@@ -18,18 +18,24 @@
 
 		if (config::get('debug.level') >= 3) {
 
-			$note_html  = '<strong>Action</strong>: ' . html(str_replace(ROOT, '', $controller->path)) . '<br />' . "\n";
-
 			$controller_name = get_class($controller);
 			if ($controller_name != 'controller_index') {
-				$note_html .= '&#xA0; ' . html($controller_name) . '-&gt;<strong>before</strong>();<br />' . "\n";
-				$note_html .= '&#xA0; ' . html($controller_name) . '-&gt;<strong>' . html($method) . '</strong>(' . html(implode(', ', $arguments)) . ');<br />' . "\n";
-				$note_html .= '&#xA0; ' . html($controller_name) . '-&gt;<strong>after</strong>();<br />' . "\n";
+				$log = [];
+				$log[] = [['span', $controller_name . '->'], ['strong', 'before'], ['span', '();']];
+				$log[] = [['span', $controller_name . '->'], ['strong', $method], ['span', '(' . implode(', ', $arguments) . ');']];
+				$log[] = [['span', $controller_name . '->'], ['strong', 'after'], ['span', '();']];
+			} else {
+				$log = NULL;
 			}
 
-			debug_note_html($note_html, 'H');
+			debug_note([
+					'type' => 'H',
+					'heading' => 'Action',
+					'heading_extra' => str_replace(ROOT, '', $controller->path),
+					'lines' => $log,
+				]);
 
-			unset($note_html, $controller_name);
+			unset($controller_name, $log);
 
 		}
 
@@ -44,7 +50,13 @@
 	} else {
 
 		if (config::get('debug.level') >= 3) {
-			debug_note_html('<strong>Action</strong>: Missing', 'H');
+
+			debug_note([
+					'type' => 'H',
+					'heading' => 'Action',
+					'heading_extra' => 'Missing',
+				]);
+
 		}
 
 		config::set('output.folders', $route_folders);
@@ -53,45 +65,48 @@
 
 	if (config::get('debug.level') >= 3) {
 
-		$note_html = '<strong>Methods</strong>:<br />' . "\n";
-
-		$note_html .= '&#xA0; $response = response_get();<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>template_set</strong>(\'default\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>view_path_set</strong>(VIEW_ROOT . \'/file.ctp\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>page_id_set</strong>(\'example_ref\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>title_set</strong>(\'Custom page title.\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>title_full_set</strong>(\'Custom page title.\');<br />' . "\n";
+		$log = [];
+		$log[] = [['span', '$response = response_get();']];
+		$log[] = [['span', '$response->'], ['strong', 'template_set'], ['span', '(\'default\');']];
+		$log[] = [['span', '$response->'], ['strong', 'view_path_set'], ['span', '(VIEW_ROOT . \'/file.ctp\');']];
+		$log[] = [['span', '$response->'], ['strong', 'page_id_set'], ['span', '(\'example_ref\');']];
+		$log[] = [['span', '$response->'], ['strong', 'title_set'], ['span', '(\'Custom page title.\');']];
+		$log[] = [['span', '$response->'], ['strong', 'title_full_set'], ['span', '(\'Custom page title.\');']];
 
 		foreach (config::get('output.title_folders') as $id => $value) {
-			$note_html .= '&#xA0; $response-&gt;<strong>title_folder_set</strong>(' . html($id) . ', \'new_value\'); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
+			$log[] = [['span', '$response->'], ['strong', 'title_folder_set'], ['span', '(' . $id . ', \'new_value\');'], ['span', ' // ' . $value, 'comment']];
 		}
 
-		$note_html .= '&#xA0; $response-&gt;<strong>description_set</strong>(\'Page description.\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>meta_set</strong>(\'name\', \'content\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>link_set</strong>(\'rel\', \'href\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>csp_source_add</strong>(\'frame-src\', \'https://www.example.com\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>js_add</strong>(\'/path/to/file.js\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>css_auto</strong>();<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>css_add</strong>(\'/path/to/file.css\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>css_alternate_add</strong>(\'/path/to/file.css\', \'print\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>css_alternate_add</strong>(\'/path/to/file.css\', \'all\', \'Title\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>head_add_html</strong>(\'&lt;html&gt;\');<br />' . "\n";
-		$note_html .= '&#xA0; $response-&gt;<strong>mime_set</strong>(\'text/plain\');<br />' . "\n";
+		$log[] = [['span', '$response->'], ['strong', 'description_set'],   ['span', '(\'Page description.\');']];
+		$log[] = [['span', '$response->'], ['strong', 'meta_set'],          ['span', '(\'name\', \'content\');']];
+		$log[] = [['span', '$response->'], ['strong', 'link_set'],          ['span', '(\'rel\', \'href\');']];
+		$log[] = [['span', '$response->'], ['strong', 'csp_source_add'],    ['span', '(\'frame-src\', \'https://www.example.com\');']];
+		$log[] = [['span', '$response->'], ['strong', 'js_add'],            ['span', '(\'/path/to/file.js\');']];
+		$log[] = [['span', '$response->'], ['strong', 'css_auto'],          ['span', '();']];
+		$log[] = [['span', '$response->'], ['strong', 'css_add'],           ['span', '(\'/path/to/file.css\');']];
+		$log[] = [['span', '$response->'], ['strong', 'css_alternate_add'], ['span', '(\'/path/to/file.css\', \'print\');']];
+		$log[] = [['span', '$response->'], ['strong', 'css_alternate_add'], ['span', '(\'/path/to/file.css\', \'all\', \'Title\');']];
+		$log[] = [['span', '$response->'], ['strong', 'head_add_html'],     ['span', '(\'<html>\');']];
+		$log[] = [['span', '$response->'], ['strong', 'mime_set'],          ['span', '(\'text/plain\');']];
 
-		$note_html .= '&#xA0; <strong>error_send</strong>(\'page-not-found\');<br />' . "\n";
-		$note_html .= '&#xA0; <strong>message_set</strong>(\'The item has been updated.\');<br />' . "\n";
+		$log[] = [['strong', 'error_send'], ['span', '(\'page-not-found\');']];
+		$log[] = [['strong', 'message_set'], ['span', '(\'The item has been updated.\');']];
 
 		$request_folders = config::get('request.folders');
 		foreach ($request_folders as $id => $value) {
-			$note_html .= '&#xA0; <strong>request_folder_get</strong>(' . html($id) . '); <span class="comment">// ' . html($value) . '</span><br />' . "\n";
+			$log[] = [['strong', 'request_folder_get'], ['span', '(' . $id . ');'], ['span', ' // ' . $value, 'comment']];
 		}
 		if (count($request_folders) == 0) {
-			$note_html .= '&#xA0; <strong>request_folder_get</strong>(0); <span class="comment">// NULL</span><br />' . "\n";
+			$log[] = [['strong', 'request_folder_get'], ['span', '(0);'], ['span', ' // NULL', 'comment']];
 		}
 
-		debug_note_html($note_html, 'H');
+		debug_note([
+				'type' => 'H',
+				'heading' => 'Methods',
+				'lines' => $log,
+			]);
 
-		unset($note_html, $id, $value, $request_folders);
+		unset($log, $id, $value, $request_folders);
 
 	}
 

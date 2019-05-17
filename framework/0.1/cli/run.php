@@ -119,9 +119,17 @@
 					} else {
 						echo "\n";
 						echo '--------------------------------------------------' . "\n\n";
-						echo html_decode(strip_tags(debug_config_html())) . "\n\n";
+						echo 'Configuration:' . "\n";
+						foreach (debug_config_log() as $entry) {
+							echo '  ' . implode('', array_column($entry, 1)) . "\n";
+						}
+						echo "\n";
 						echo '--------------------------------------------------' . "\n\n";
-						echo html_decode(strip_tags(debug_constants_html())) . "\n\n";
+						echo 'Constants:' . "\n";
+						foreach (debug_constants_log() as $entry) {
+							echo '  ' . implode('', array_column($entry, 1)) . "\n";
+						}
+						echo "\n";
 						echo '--------------------------------------------------' . "\n\n";
 					}
 

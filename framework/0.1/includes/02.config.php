@@ -419,7 +419,7 @@
 
 			config::set('output.origin', $origin);
 
-			unset($origin);
+			unset($origin, $scheme, $default_port, $request_port);
 
 		}
 

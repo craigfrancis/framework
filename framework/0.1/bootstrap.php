@@ -133,20 +133,11 @@
 
 					if (config::get('debug.level') >= 3) {
 
-						$note_html  = '<strong>Units</strong>:<br />' . "\n";
-
-						$units = config::get('debug.units');
-
-						foreach ($units as $unit) {
-							$note_html .= '&#xA0; ' . html($unit) . '<br />' . "\n";
-						}
-						if (count($units) == 0) {
-							$note_html .= '&#xA0; <strong>none</strong>';
-						}
-
-						debug_note_html($note_html, 'H');
-
-						unset($note_html, $units, $unit);
+						debug_note([
+								'type' => 'H',
+								'heading' => 'Units',
+								'lines' => config::get('debug.units'),
+							]);
 
 					}
 
@@ -185,14 +176,18 @@
 							}
 						}
 
-						$variables_html = array('Variables:');
+						$log = [];
 						foreach ($variables_array as $key => $value) {
-							$variables_html[] = '&#xA0; <strong>' . html($key) . '</strong>: ' . html(debug_dump($value));
+							$log[] = [['strong', $key], ['span', ': ' . preg_replace('/\s+/', ' ', debug_dump($value))]];
 						}
 
-						debug_note_html(implode($variables_html, '<br />' . "\n"));
+						debug_note([
+								'type' => 'L',
+								'heading' => 'Variables',
+								'lines' => $log,
+							]);
 
-						unset($variables_array, $variables_html, $key, $value);
+						unset($variables_array, $log, $key, $value);
 
 					}
 

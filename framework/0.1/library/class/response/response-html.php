@@ -216,7 +216,13 @@
 				$template_path = $this->template_path_get();
 
 				if (config::get('debug.level') >= 3) {
-					debug_note_html('<strong>Template</strong>: ' . html(str_replace(ROOT, '', $template_path)), 'H');
+
+					debug_note([
+							'type' => 'H',
+							'heading' => 'Template',
+							'heading_extra' => str_replace(ROOT, '', $template_path),
+						]);
+
 				}
 
 				if (!is_file($template_path)) {
@@ -695,18 +701,27 @@
 
 					if (config::get('debug.level') >= 3) {
 
-						$note_html = '<strong>Styles</strong>:<br />';
-
+						$log = [];
 						foreach ($css_types as $css_type_name => $css_type_info) {
-							foreach ($css_type_info['log'] as $log) {
-								$log_html = html($log);
-								$log_html = str_replace(' - found', ' - <strong class="debug_found">found</strong>', $log_html);
-								$log_html = str_replace(' - absent', ' - <span class="debug_absent">absent</span>', $log_html);
-								$note_html .= "\n" . '&#xA0; ' . $log_html . '<br />';
+							foreach ($css_type_info['log'] as $entry) {
+								$entry = str_replace(ROOT, '', $entry);
+								$parts = [];
+								if (($pos = strrpos($entry, ' - ')) !== false) {
+									$parts[] = ['span', substr($entry, 0, ($pos + 3))];
+									$match = substr($entry, ($pos + 3));
+									$parts[] = ['span', $match, 'debug_' . $match]; // debug_found, debug_absent
+								} else {
+									$parts[] = ['span', $entry];
+								}
+								$log[] = $parts;
 							}
 						}
 
-						debug_note_html(str_replace(ROOT, '', $note_html), 'H');
+						debug_note([
+								'type' => 'H',
+								'heading' => 'Styles',
+								'lines' => $log,
+							]);
 
 					}
 
@@ -1290,7 +1305,13 @@
 						if ($view_path !== NULL) {
 
 							if (config::get('debug.level') >= 3) {
-								debug_note_html('<strong>View</strong>: ' . html(str_replace(ROOT, '', $view_path)), 'H');
+
+								debug_note([
+										'type' => 'H',
+										'heading' => 'View',
+										'heading_extra' => str_replace(ROOT, '', $view_path),
+									]);
+
 							}
 
 							if (!is_file($view_path)) {
