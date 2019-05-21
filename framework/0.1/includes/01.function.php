@@ -1371,6 +1371,12 @@
 			header('X-Download-Options: noopen');
 		}
 
+		if ($x_send_header === NULL) {
+			$x_send_path = config::get('output.xsend_path'); // Should match XSendFilePath in Apache config
+			if (strlen($x_send_path) > strlen(ROOT) && prefix_match($x_send_path, $path)) { // You should be specific
+				$x_send_header = true;
+			}
+		}
 		if ($x_send_header) {
 			header(($x_send_header === true ? 'X-Sendfile' : $x_send_header) . ': '. head($path));
 		} else {
