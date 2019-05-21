@@ -1353,17 +1353,20 @@
 
 		if (config::get('output.csp_enabled') === true) {
 
-				// Img for the favicon
-				// Style and Object for Chrome inline PDF viewing
-
-			http_csp_header([
+			$csp = [
 					'default-src' => "'none'",
 					'base-uri'    => "'none'",
 					'form-action' => "'none'",
-					'object-src'  => "'self'",
 					'img-src'     => "'self'",
 					'style-src'   => "'unsafe-inline'",
-				]);
+				];
+
+			if ($mime == 'application/pdf') {
+				$csp['object-src'] = "'self'";
+				$csp['plugin-types'] = 'application/pdf';
+			}
+
+			http_csp_header($csp);
 
 		}
 
