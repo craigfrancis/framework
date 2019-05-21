@@ -1358,7 +1358,7 @@
 					'base-uri'    => "'none'",
 					'form-action' => "'none'",
 					'img-src'     => "'self'",
-					'style-src'   => "'unsafe-inline'",
+					'style-src'   => "'unsafe-inline'", // For Chrome inline viewing
 				];
 
 			if ($mime == 'application/pdf') {
