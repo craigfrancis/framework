@@ -78,6 +78,78 @@
 		}
 
 	//--------------------------------------------------
+	// Default feature policy
+
+		$config['output.fp_directives'] = [
+
+				'autoplay'                              => [],
+				'camera'                                => [],
+				'encrypted-media'                       => [],
+				'fullscreen'                            => [],
+				'geolocation'                           => [],
+				'microphone'                            => [],
+				'midi'                                  => [],
+				'speaker'                               => [],
+				// 'sync-xhr'                           => [], // Disabled as potentially risky
+				'vr'                                    => [],
+
+				// 'idle-detection'                     => [], // Chrome 76 - IdleDetectionEnabled
+				// 'wake-lock'                          => [], // Chrome 76 - WakeLockNavigatorEnabled
+				// 'picture-in-picture'                 => [], // Chrome 76 - PictureInPictureAPIEnabled, Disabled as potentially risky.
+				// 'hid'                                => [], // Chrome 76 - WebHIDEnabled, The WebHID API enables web applications to request access to HID devices.
+
+				'payment'                               => [], // PaymentRequestEnabled
+
+				// 'execution-while-out-of-viewport'    => [], // Chrome 76 - FreezeFramesOnVisibilityEnabled
+				// 'execution-while-not-rendered'       => [], // Chrome 76 - FreezeFramesOnVisibilityEnabled
+
+				// 'downloads-without-user-activation'  => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
+				// 'forms'                              => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
+				// 'modals'                             => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
+				// 'orientation-lock'                   => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
+				// 'pointer-lock'                       => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
+				// 'popups'                             => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
+				// 'presentation'                       => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
+				// 'scripts'                            => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
+				// 'top-navigation'                     => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
+
+				// 'document-domain'                    => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
+				// 'document-write'                     => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
+				// 'font-display-late-swap'             => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
+				// 'layout-animations'                  => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
+				// 'lazyload'                           => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
+				// 'loading-frame-default-eager'        => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
+				// 'sync-script'                        => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
+				// 'unsized-media'                      => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
+				// 'vertical-scroll'                    => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
+
+				// 'serial'                             => [], // Chrome 76 - SerialEnabled
+
+				'accelerometer'                         => [], // SensorEnabled
+				'ambient-light-sensor'                  => [], // SensorEnabled
+				'gyroscope'                             => [], // SensorEnabled
+				'magnetometer'                          => [], // SensorEnabled
+
+				'usb'                                   => [], // WebUSBEnabled
+
+				// 'focus-without-user-activation'      => [], // Chrome 76 - BlockingFocusWithoutUserActivationEnabled
+
+				// 'frobulate'                          => [], // Chrome 76 - DisabledByOriginTrial, OriginTrialsSampleAPIEnabled
+				// 'oversized-images'                   => [], // Chrome 76 - DisabledByOriginTrial, was ExperimentalProductivityFeaturesEnabled, was 'max-downscaling-image'
+				// 'unoptimized-lossy-images'           => [], // Chrome 76 - DisabledByOriginTrial, was ExperimentalProductivityFeaturesEnabled, was 'image-compression': https://chromium.googlesource.com/chromium/src/+/f91910eba0d6f1d81dc2ec39255b5ad348b39dc6
+				// 'unoptimized-lossless-images-strict' => [], // Chrome 76 - DisabledByOriginTrial
+				// 'unoptimized-lossless-images'        => [], // Chrome 76 - DisabledByOriginTrial
+
+				// 'legacy-image-formats'               => [], // Removed: https://chromium.googlesource.com/chromium/src/+/a7ed373a087d07f91d9a58c03da1739d48e7f7ea
+				// 'cookie'                             => [], // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
+				// 'domain'                             => [], // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
+				// 'vibrate'                            => [], // Removed: https://chromium.googlesource.com/chromium/src/+/6684fb7780bea4dacdcb12b14a9b56894e07cbfb
+
+					// https://cs.chromium.org/chromium/src/out/Debug/gen/third_party/blink/renderer/core/feature_policy/feature_policy_helper.cc?q=GetDefaultFeatureNameMap&l=80
+
+			];
+
+	//--------------------------------------------------
 	// App config
 
 		$include_path = APP_ROOT . '/library/setup/config.php';
@@ -305,61 +377,6 @@
 		config::set_default('output.csp_directives', array('default-src' => array("'self'")));
 
 		config::set_default('output.fp_enabled', false);
-		config::set_default('output.fp_directives', array(
-
-				'accelerometer'          => [],
-				'ambient-light-sensor'   => [],
-				'autoplay'               => [],
-				'camera'                 => [],
-				'encrypted-media'        => [],
-				'fullscreen'             => [],
-				'geolocation'            => [],
-				'gyroscope'              => [],
-				'magnetometer'           => [],
-				'microphone'             => [],
-				'midi'                   => [],
-				'payment'                => [],
-				'speaker'                => [],
-				'usb'                    => [],
-				'vr'                     => [],
-
-
-				// 'sync-xhr'               => [], // Disabled as potentially risky
-				// 'picture-in-picture'     => [], // Disabled as potentially risky
-
-				// 'hid'                    => [], // Disabled in Chrome 73 (WebHIDEnabled) ... The WebHID API enables web applications to request access to HID devices,
-				// 'idle-detection'         => [], // Disabled in Chrome 73 (IdleDetectionEnabled)
-				// 'serial'                 => [], // Disabled in Chrome 73 (SerialEnabled)
-				// 'wake-lock'              => [], // Disabled in Chrome 73 (WakeLockEnabled)
-
-				// 'forms'                  => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
-				// 'modals'                 => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
-				// 'orientation-lock'       => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
-				// 'pointer-lock'           => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
-				// 'popups'                 => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
-				// 'presentation'           => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
-				// 'scripts'                => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
-				// 'top-navigation'         => [], // Disabled in Chrome 73 (FeaturePolicyForSandboxEnabled)
-
-				// 'document-domain'        => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
-				// 'document-write'         => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
-				// 'font-display-late-swap' => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
-				// 'layout-animations'      => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled), was 'animations': https://chromium.googlesource.com/chromium/src/+/9024e95af4b609ab5ef86b9baca2a25449f3907c
-				// 'lazyload'               => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
-				// 'legacy-image-formats'   => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
-				// 'oversized-images'       => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled), was 'max-downscaling-image': https://chromium.googlesource.com/chromium/src/+/f91910eba0d6f1d81dc2ec39255b5ad348b39dc6
-				// 'sync-script'            => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
-				// 'unoptimized-images'     => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled), was 'image-compression': https://chromium.googlesource.com/chromium/src/+/f91910eba0d6f1d81dc2ec39255b5ad348b39dc6
-				// 'unsized-media'          => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
-				// 'vertical-scroll'        => [], // Disabled in Chrome 73 (ExperimentalProductivityFeaturesEnabled)
-
-				// 'cookie'                 => [], // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
-				// 'domain'                 => [], // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
-				// 'vibrate'                => [], // Removed: https://chromium.googlesource.com/chromium/src/+/6684fb7780bea4dacdcb12b14a9b56894e07cbfb
-
-			));
-
-				// https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/feature_policy/feature_policy.cc?q=GetDefaultFeatureNameMap&l=252
 
 		config::set_default('output.block_browsers', array(
 				'/MSIE [1-5]\./',
