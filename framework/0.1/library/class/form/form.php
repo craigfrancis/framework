@@ -736,55 +736,51 @@
 					}
 
 				//--------------------------------------------------
-				// Fetch check
+				// CSRF checks
 
-					$fetch = config::get('request.fetch');
+					$csrf_errors = [];
+					$csrf_report = false;
 
-					if ($this->form_submitted) {
+					if ($this->form_submitted && $this->csrf_error_html != NULL) { // Cant type check, as html() will convert NULL to string
+
+						$fetch_values = config::get('request.fetch');
+
 						if ($this->form_passive) {
 
 							$checks = config::get('form.csrf_passive_checks', []);
-							$fetch_errors = [];
 
 							if (in_array('cookie', $checks) && trim(cookie::get('f')) == '') {
-								$fetch_errors[] = 'cookie';
+								$csrf_errors[] = 'SameSite-[cookie]';
+								$csrf_report = true;
 							}
 
-							if (in_array('fetch', $checks) && $fetch['site'] != NULL && !in_array($fetch['site'], $this->fetch_allowed['site'])) {
-								$fetch_errors[] = 'fetch-' . $fetch['site'];
-							}
-
-							if ($fetch_errors) {
-								report_add('CSRF check failed on a "passive" form (user asked to re-submit).' . "\n\n" . debug_dump($fetch_errors), 'error');
-								$this->_field_error_add_html(-1, $this->csrf_error_html, implode('/', $fetch_errors)); // To avoid
+							if (in_array('fetch', $checks) && $fetch_values['site'] != NULL && !in_array($fetch_values['site'], $this->fetch_allowed['site'])) {
+								$csrf_errors[] = 'SecFetch-[' . $fetch_values['site'] . ']';
+								$csrf_report = true;
 							}
 
 						} else {
 
+							$csrf_token = request('csrf', $this->form_method);
+							if (!csrf_challenge_check($csrf_token, $this->form_action, $this->csrf_token)) {
+								cookie::require_support();
+								$csrf_errors[] = 'Token-[' . $this->csrf_token . ']-[' . $this->form_method . ']-[' . $csrf_token . ']';
+							}
+
 							foreach ($this->fetch_allowed as $field => $allowed) {
-								if ($fetch[$field] != NULL && !in_array($fetch[$field], $allowed)) {
-									report_add('Form submitted with Sec-Fetch-' . ucfirst($field) . ' "' . $fetch[$field] . '" (' . (in_array($fetch[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ')', 'notice');
+								if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
+									$csrf_errors[] = 'SecFetch-[' . $field . ']-[' . $fetch_values[$field] . ']-[' . (in_array($fetch_values[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ']';
+									$csrf_report = true;
 								}
 							}
 
 						}
-					}
 
-				//--------------------------------------------------
-				// CSRF check
-
-					if ($this->form_submitted && !$this->form_passive && $this->csrf_error_html != NULL) { // Cant type check, as html() will convert NULL to string
-
-						$csrf_token = request('csrf', $this->form_method);
-
-						if (!csrf_challenge_check($csrf_token, $this->form_action, $this->csrf_token)) {
-
-							cookie::require_support();
-
-							$note = 'SESSION:' . $this->csrf_token . ' != ' . $this->form_method . ':' . $csrf_token;
-
-							$this->_field_error_add_html(-1, $this->csrf_error_html, $note);
-
+						if ($csrf_errors) {
+							if ($csrf_report) {
+								report_add('CSRF error via SecFetch/SameSite checks (user asked to re-submit).' . "\n\n" . debug_dump($csrf_errors), 'error');
+							}
+							$this->_field_error_add_html(-1, $this->csrf_error_html, implode('/', $csrf_errors));
 						}
 
 					}
