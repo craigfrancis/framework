@@ -755,6 +755,7 @@
 							}
 
 							if ($fetch_errors) {
+								report_add('CSRF check failed on a "passive" form (user asked to re-submit).' . "\n\n" . debug_dump($fetch_errors), 'error');
 								$this->_field_error_add_html(-1, $this->csrf_error_html, implode('/', $fetch_errors)); // To avoid
 							}
 
