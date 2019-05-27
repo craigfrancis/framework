@@ -740,10 +740,16 @@
 
 					$fetch = config::get('request.fetch');
 
-					if ($this->form_submitted && !$this->form_passive) {
-						foreach ($this->fetch_allowed as $field => $allowed) {
-							if ($fetch[$field] != NULL && !in_array($fetch[$field], $allowed)) {
-								report_add('Form submitted with Sec-Fetch-' . ucfirst($field) . ' "' . $fetch[$field] . '" (' . (in_array($fetch[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ')', 'notice');
+					if ($this->form_submitted) {
+						if ($this->form_passive) {
+							if ($fetch['site'] != NULL && !in_array($fetch['site'], $this->fetch_allowed['site'])) {
+								$this->_field_error_add_html(-1, $this->csrf_error_html, $fetch['site']); // To avoid
+							}
+						} else {
+							foreach ($this->fetch_allowed as $field => $allowed) {
+								if ($fetch[$field] != NULL && !in_array($fetch[$field], $allowed)) {
+									report_add('Form submitted with Sec-Fetch-' . ucfirst($field) . ' "' . $fetch[$field] . '" (' . (in_array($fetch[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ')', 'notice');
+								}
 							}
 						}
 					}
