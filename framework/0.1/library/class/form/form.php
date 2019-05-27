@@ -740,47 +740,48 @@
 
 					$csrf_errors = [];
 					$csrf_report = false;
+					$csrf_block = false;
 
 					if ($this->form_submitted && $this->csrf_error_html != NULL) { // Cant type check, as html() will convert NULL to string
 
 						$fetch_values = config::get('request.fetch');
 
 						if ($this->form_passive) {
-
 							$checks = config::get('form.csrf_passive_checks', []);
-
-							if (in_array('cookie', $checks) && trim(cookie::get('f')) == '') {
-								$csrf_errors[] = 'SameSite-[cookie]';
-								$csrf_report = true;
-							}
-
-							if (in_array('fetch', $checks) && $fetch_values['site'] != NULL && !in_array($fetch_values['site'], $this->fetch_allowed['site'])) {
-								$csrf_errors[] = 'SecFetch-[' . $fetch_values['site'] . ']';
-								$csrf_report = true;
-							}
-
 						} else {
+							$checks = ['token', 'fetch'];
+						}
 
+						if (in_array('token', $checks)) {
 							$csrf_token = request('csrf', $this->form_method);
 							if (!csrf_challenge_check($csrf_token, $this->form_action, $this->csrf_token)) {
 								cookie::require_support();
 								$csrf_errors[] = 'Token-[' . $this->csrf_token . ']-[' . $this->form_method . ']-[' . $csrf_token . ']';
+								$csrf_block = true;
 							}
+						}
 
+						if (in_array('cookie', $checks) && trim(cookie::get('f')) == '') { // The cookie just needs to exist.
+							$csrf_errors[] = 'Cookie-[SameSite]';
+							$csrf_report = true;
+						}
+
+						if (in_array('fetch', $checks)) {
 							foreach ($this->fetch_allowed as $field => $allowed) {
 								if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
 									$csrf_errors[] = 'SecFetch-[' . $field . ']-[' . $fetch_values[$field] . ']-[' . (in_array($fetch_values[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ']';
 									$csrf_report = true;
 								}
 							}
-
 						}
 
 						if ($csrf_errors) {
 							if ($csrf_report) {
 								report_add('CSRF error via SecFetch/SameSite checks (user asked to re-submit).' . "\n\n" . debug_dump($csrf_errors), 'error');
 							}
-							$this->_field_error_add_html(-1, $this->csrf_error_html, implode('/', $csrf_errors));
+							if ($csrf_block) {
+								$this->_field_error_add_html(-1, $this->csrf_error_html, implode('/', $csrf_errors));
+							}
 						}
 
 					}
