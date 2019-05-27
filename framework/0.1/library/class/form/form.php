@@ -761,7 +761,7 @@
 							}
 						}
 
-						if (in_array('cookie', $checks) && trim(cookie::get('f')) == '') { // The cookie just needs to exist.
+						if (in_array('cookie', $checks) && trim(cookie::get('f')) == '') { // The cookie just needs to exist, where it's marked SameSite=Strict
 							$csrf_errors[] = 'Cookie-[SameSite]';
 							$csrf_report = true;
 						}
