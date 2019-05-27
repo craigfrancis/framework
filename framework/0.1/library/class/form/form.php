@@ -740,7 +740,7 @@
 
 					$csrf_errors = [];
 					$csrf_report = false;
-					$csrf_block = false;
+					$csrf_block = false; // TODO: Remove, so all CSRF checks block (added 2019-05-27)
 
 					if ($this->form_submitted && $this->csrf_error_html != NULL) { // Cant type check, as html() will convert NULL to string
 
