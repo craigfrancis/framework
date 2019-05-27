@@ -742,15 +742,30 @@
 
 					if ($this->form_submitted) {
 						if ($this->form_passive) {
-							if ($fetch['site'] != NULL && !in_array($fetch['site'], $this->fetch_allowed['site'])) {
-								$this->_field_error_add_html(-1, $this->csrf_error_html, $fetch['site']); // To avoid
+
+							$checks = config::get('form.csrf_passive_checks', []);
+							$fetch_errors = [];
+
+							if (in_array('cookie', $checks) && trim(cookie::get('f')) == '') {
+								$fetch_errors[] = 'cookie';
 							}
+
+							if (in_array('fetch', $checks) && $fetch['site'] != NULL && !in_array($fetch['site'], $this->fetch_allowed['site'])) {
+								$fetch_errors[] = 'fetch-' . $fetch['site'];
+							}
+
+							if ($fetch_errors) {
+								$this->_field_error_add_html(-1, $this->csrf_error_html, implode('/', $fetch_errors)); // To avoid
+							}
+
 						} else {
+
 							foreach ($this->fetch_allowed as $field => $allowed) {
 								if ($fetch[$field] != NULL && !in_array($fetch[$field], $allowed)) {
 									report_add('Form submitted with Sec-Fetch-' . ucfirst($field) . ' "' . $fetch[$field] . '" (' . (in_array($fetch[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ')', 'notice');
 								}
 							}
+
 						}
 					}
 
