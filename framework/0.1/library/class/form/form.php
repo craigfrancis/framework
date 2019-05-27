@@ -744,8 +744,6 @@
 
 					if ($this->form_submitted && $this->csrf_error_html != NULL) { // Cant type check, as html() will convert NULL to string
 
-						$fetch_values = config::get('request.fetch');
-
 						if ($this->form_passive) {
 							$checks = config::get('form.csrf_passive_checks', []);
 						} else {
@@ -767,6 +765,7 @@
 						}
 
 						if (in_array('fetch', $checks)) {
+							$fetch_values = config::get('request.fetch');
 							foreach ($this->fetch_allowed as $field => $allowed) {
 								if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
 									$csrf_errors[] = 'SecFetch-[' . $field . ']-[' . $fetch_values[$field] . ']-[' . (in_array($fetch_values[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ']';
