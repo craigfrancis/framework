@@ -411,7 +411,8 @@
 
 				if ($this->uploaded) {
 					foreach ($this->files as $id => $file) {
-						if ($file['name'] == '') {
+						$name = pathinfo($file['name'], PATHINFO_FILENAME); // Exclude extension - Don't want ".jpg" passing PHP "jpg" check, but being seen as a hidden file with no extension by the web server.
+						if ($name == '') {
 							$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 							$this->files[$id]['preserve'] = false;
 						}
