@@ -464,11 +464,18 @@
 					);
 			}
 
-			public function js_add_async($path) {
-				$this->js_add($path, ['async', 'separate'], 'head');
+			public function js_add_async($path, $extra_attributes = []) {
+
+				$attributes = ['async', 'separate'];
+				foreach ($extra_attributes as $name => $value) {
+					$attributes[$name] = $value;
+				}
+
+				$this->js_add($path, $attributes, 'head');
+
 			}
 
-			public function js_add_trusted($path) {
+			public function js_add_trusted($path, $extra_attributes = []) {
 
 				$trusted_type = basename($path, '.js');
 				if ($trusted_type) {
@@ -480,7 +487,7 @@
 					exit_with_error('Could not determine the file name for trusted types on "' . $path . '"');
 				}
 
-				$this->js_add($path, ['async'], 'head');
+				$this->js_add_async($path, $extra_attributes);
 
 			}
 
