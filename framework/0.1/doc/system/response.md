@@ -7,8 +7,7 @@ This is nearly always going to be the **HTML response**, which builds its conten
 If you are not responding with some HTML (e.g. an image), then you will probably prefer to handle the response yourself, where the following [helper functions](../../doc/system/functions.md) may be useful:
 
 	mime_set();
-	http_download_file();
-	http_download_content();
+	http_download();
 
 However, for completeness, there are **file** and **text** response objects (see below).
 

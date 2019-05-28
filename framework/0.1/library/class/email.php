@@ -228,7 +228,7 @@
 
 			public function attachment_add($path, $mime, $name = NULL, $id = NULL) {
 
-				if ($mime === NULL) $mime = mime_content_type($path); // Please don't rely on this function
+				if ($mime === NULL) $mime = http_mime_type($path);
 				if ($name === NULL) $name = basename($path);
 
 				$this->attachment_raw_add(file_get_contents($path), $mime, $name, $id);

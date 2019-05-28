@@ -55,7 +55,7 @@
 
 			public function mime_get() {
 				if ($this->mime === NULL && $this->path !== NULL) {
-					return mime_content_type($this->path); // Please don't rely on this function
+					return http_mime_type($this->path);
 				}
 				if ($this->mime === NULL) {
 					return 'application/octet-stream';

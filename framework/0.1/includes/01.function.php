@@ -1333,22 +1333,50 @@
 //--------------------------------------------------
 // Download
 
-	function http_download_file($path, $mime, $name = NULL, $mode = 'attachment', $x_send_header = NULL) {
+	function http_download($config) {
 
 		config::set('debug.show', false);
 
 		$output = ob_get_clean_all();
 		if ($output != '') {
-			exit('Pre http_download_file output "' . $output . '"');
+			exit('Pre http_download output "' . $output . '"');
 		}
 
-		if ($mime === NULL) $mime = mime_content_type($path); // Please don't rely on this function
-		if ($name === NULL) $name = basename($path);
+		$config = array_merge([
+				'path'    => NULL,
+				'content' => NULL,
+				'name'    => NULL,
+				'mime'    => NULL,
+				'mode'    => NULL,
+				'xsend'   => NULL,
+			], $config);
 
-		mime_set($mime);
+		if (!$config['path'] && !$config['content']) {
+			exit_with_error('Either a "path" or "content" is required when calling http_download()');
+		}
 
-		header('Content-Disposition: ' . head($mode) . '; filename="' . head(safe_file_name($name, true)) . '"');
-		header('Content-Length: ' . head(filesize($path)));
+		if (!$config['name']) {
+			$config['name'] = ($config['path'] ? basename($config['path']) : 'untitled.bin');
+		}
+
+		if ($config['mode'] == 'auto') { // Try to show "safe" files in the browser, otherwise download.
+
+			$config['mode'] = (in_array(strtolower(pathinfo($config['name'], PATHINFO_EXTENSION)), ['pdf', 'jpg', 'jpeg', 'gif', 'png', 'webp', 'bmp', 'txt']) ? 'inline' : 'attachment');
+
+		} else if ($config['mode'] != 'inline') {
+
+			$config['mode'] = 'attachment'; // Safer default, as it triggers a download, so this file is not shown in the browser (in this origin).
+
+		}
+
+		if (!$config['mime']) {
+			$config['mime'] = http_mime_type($config['name']);
+		}
+
+		mime_set($config['mime']);
+
+		header('Content-Disposition: ' . head($config['mode']) . '; filename="' . head(safe_file_name($config['name'], true)) . '"');
+		header('Content-Length: ' . head($config['path'] ? filesize($config['path']) : strlen($config['content'])));
 
 		if (config::get('output.csp_enabled') === true) {
 
@@ -1360,52 +1388,170 @@
 					'style-src'   => "'unsafe-inline'", // For Chrome inline viewing
 				];
 
-			if ($mime == 'application/pdf') {
+			if ($config['mime'] == 'application/pdf') {
 				$csp['object-src'] = "'self'";
 				$csp['plugin-types'] = 'application/pdf';
 			}
 
-			http_csp_header($csp);
+			config::set('output.csp_directives', $csp);
 
 		}
 
-		if ($mode !== 'inline') {
+		if ($config['mode'] !== 'inline') {
 			header('X-Download-Options: noopen');
 		}
 
-		if ($x_send_header === NULL) {
-			$x_send_path = config::get('output.xsend_path'); // Should match XSendFilePath in Apache config
-			if (strlen($x_send_path) > strlen(ROOT) && prefix_match($x_send_path, $path)) { // You should be specific
-				$x_send_header = true;
+		http_system_headers();
+
+		if ($config['path']) {
+
+			if ($config['xsend'] === NULL) {
+				$x_send_path = config::get('output.xsend_path'); // Should match XSendFilePath in Apache config
+				if (strlen($x_send_path) > strlen(ROOT) && prefix_match($x_send_path, $config['path'])) { // Try to be as specific as possible
+					$config['xsend'] = true;
+				}
+			} else if ($config['xsend'] === true) {
+				$config['xsend'] = 'X-Sendfile';
 			}
-		}
-		if ($x_send_header) {
-			header(($x_send_header === true ? 'X-Sendfile' : $x_send_header) . ': '. head($path));
+			if ($config['xsend']) {
+				header(head($config['xsend']) . ': '. head($config['path']));
+			} else {
+				readfile($config['path']);
+			}
+
 		} else {
-			readfile($path);
+
+			echo $config['content'];
+
 		}
+
+	}
+
+	function http_download_file($path, $mime, $name = NULL, $mode = 'attachment', $x_send_header = NULL) {
+
+		http_download([
+				'path'    => $path,
+				'name'    => $name,
+				'mime'    => $mime,
+				'mode'    => $mode,
+				'xsend'   => $x_send_header,
+			]);
 
 	}
 
 	function http_download_content($content, $mime, $name, $mode = 'attachment') {
 
-		config::set('debug.show', false);
+		http_download([
+				'content' => $content,
+				'name'    => $name,
+				'mime'    => $mime,
+				'mode'    => $mode,
+			]);
 
-		$output = ob_get_clean_all();
-		if ($output != '') {
-			exit('Pre http_download_content output "' . $output . '"');
-		}
+	}
 
-		mime_set($mime);
+//--------------------------------------------------
+// Safe(ish) mime types
 
-		header('Content-Disposition: ' . head($mode) . '; filename="' . head($name) . '"');
-		header('Content-Length: ' . head(strlen($content)));
+	function http_mime_type($file_name) {
 
-		if ($mode !== 'inline') {
-			header('X-Download-Options: noopen');
-		}
+			// mime_content_type($file_name); // Do not use this function, it allows unsafe mime-types (e.g. text/html, application/javascript, etc)
 
-		echo $content;
+		$mime_types = [
+
+				// https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types
+
+			'ics'  => 'text/calendar',
+			'csv'  => 'text/csv',
+			'txt'  => 'text/plain',
+
+			'bmp'  => 'image/bmp',
+			'gif'  => 'image/gif',
+			'jpeg' => 'image/jpeg',
+			'jpg'  => 'image/jpeg',
+			'png'  => 'image/png',
+			'svg'  => 'image/svg+xml',
+			'tif'  => 'image/tiff',
+			'tiff' => 'image/tiff',
+			'ico'  => 'image/vnd.microsoft.icon',
+			'wdp'  => 'image/vnd.ms-photo',
+			'webp' => 'image/webp',
+
+			'midi' => 'audio/midi',
+			'mp3'  => 'audio/mp3',
+			'oga'  => 'audio/ogg',
+			'wav'  => 'audio/wav',
+			'weba' => 'audio/webm',
+			'm4a'  => 'audio/x-m4a',
+
+			'mp4'  => 'video/mp4',
+			'mpeg' => 'video/mpeg',
+			'ogv'  => 'video/ogg',
+			'mov'  => 'video/quicktime',
+			'webm' => 'video/webm',
+
+			'ogx'  => 'application/ogg',
+			'wbk'  => 'application/msword',
+			'wps'  => 'application/msworks',
+			'pdf'  => 'application/pdf',
+			'rtf'  => 'application/rtf',
+			'xml'  => 'application/xml',
+			'json' => 'application/json',
+
+			'tar'  => 'application/x-tar',
+			'7z'   => 'application/x-7z-compressed',
+			'rar'  => 'application/x-rar-compressed',
+			'zip'  => 'application/x-zip-compressed',
+
+				// https://docs.microsoft.com/en-us/previous-versions/office/office-2007-resource-kit/ee309278(v=office.12)
+				// https://blogs.msdn.microsoft.com/vsofficedeveloper/2008/05/08/office-2007-file-format-mime-types-for-http-content-streaming-2/
+
+			'doc'     => 'application/msword',
+			'dot'     => 'application/msword',
+			'docm'    => 'application/vnd.ms-word.document.macroEnabled.12',
+			'dotm'    => 'application/vnd.ms-word.template.macroEnabled.12',
+			'docx'    => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+			'dotx'    => 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
+			'pot'     => 'application/vnd.ms-powerpoint',
+			'ppa'     => 'application/vnd.ms-powerpoint',
+			'pps'     => 'application/vnd.ms-powerpoint',
+			'ppt'     => 'application/vnd.ms-powerpoint',
+			'pptm'    => 'application/vnd.ms-powerpoint.presentation.macroEnabled.12',
+			'sldm'    => 'application/vnd.ms-powerpoint.slide.macroEnabled.12',
+			'ppsm'    => 'application/vnd.ms-powerpoint.slideshow.macroEnabled.12',
+			'potm'    => 'application/vnd.ms-powerpoint.template.macroEnabled.12',
+			'ppam'    => 'application/vnd.ms-powerpoint.addin.macroEnabled.12',
+			'pptx'    => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+			'ppsx'    => 'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
+			'sldx'    => 'application/vnd.openxmlformats-officedocument.presentationml.slide',
+			'potx'    => 'application/vnd.openxmlformats-officedocument.presentationml.template',
+			'xla'     => 'application/vnd.ms-excel',
+			'xls'     => 'application/vnd.ms-excel',
+			'xlt'     => 'application/vnd.ms-excel',
+			'xlsm'    => 'application/vnd.ms-excel.sheet.macroEnabled.12',
+			'xlam'    => 'application/vnd.ms-excel.addin.macroEnabled.12',
+			'xlsb'    => 'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
+			'xltm'    => 'application/vnd.ms-excel.template.macroEnabled.12',
+			'xlsx'    => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+			'xltx'    => 'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
+			'thmx'    => 'application/vnd.ms-officetheme',
+			'one'     => 'application/msonenote',
+			'onepkg'  => 'application/msonenote',
+			'onetmp'  => 'application/msonenote',
+			'onetoc2' => 'application/msonenote',
+
+			'pub'     => 'application/vnd.ms-publisher',
+			'xps'     => 'application/vnd.ms-xpsdocument',
+
+			'odt'     => 'application/vnd.oasis.opendocument.text',
+			'odp'     => 'application/vnd.oasis.opendocument.presentation',
+			'ods'     => 'application/vnd.oasis.opendocument.spreadsheet',
+
+		];
+
+		$ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+		return (isset($mime_types[$ext]) ? $mime_types[$ext] : 'application/octet-stream');
 
 	}
 
@@ -1563,6 +1709,225 @@
 			}
 
 		}
+
+	}
+
+//--------------------------------------------------
+// HTTP system headers
+
+	function http_system_headers() {
+
+		//--------------------------------------------------
+		// Cache control - adding "no-transform" due to CSP,
+		// and because we have external CSS files for a reason!
+
+			foreach (headers_list() as $header) {
+				if (strtolower(substr($header, 0, 14)) == 'cache-control:') {
+					$value = trim(substr($header, 14));
+					header('Cache-Control: ' . $value . ', no-transform');
+					break;
+				}
+			}
+
+		//--------------------------------------------------
+		// Origin policy
+
+				// Not ready yet in Chrome 76.0.3791.0
+				// - The header format has changed from "Sec-Origin-Policy: policy-1" to "Sec-Origin-Policy: policy=policy-1"
+				// - The request is not shown in the developer tools Network tab.
+				// - If the server responds with a 302 redirect, it's treated as a failure (red screen).
+				// - The response is not stored, so the request is always "Sec-Origin-Policy: 0".
+				// - The JSON file format is changing, currently: {"content-security-policy": [{"policy": "default-src 'none'"}]}
+
+			if (isset($_SERVER['HTTP_SEC_ORIGIN_POLICY'])) {
+				$policy_path = PUBLIC_ROOT . '/origin-policy.json';
+				if (is_file($policy_path)) {
+					// $policy = 'policy-' . filemtime($policy_path);
+					$policy = 0; // Ensure it remains disabled for now.
+				} else {
+					$policy = 0;
+				}
+				header('Sec-Origin-Policy: policy=' . head($policy));
+				header('Vary: sec-origin-policy');
+			}
+
+		//--------------------------------------------------
+		// Referrer policy
+
+			if (($output_referrer_policy = config::get('output.referrer_policy')) != '') { // Not NULL or blank.
+				header('Referrer-Policy: ' . head($output_referrer_policy));
+			}
+
+		//--------------------------------------------------
+		// Window policy
+
+				// https://webkit.org/blog/8419/release-notes-for-safari-technology-preview-67/
+				// https://trac.webkit.org/changeset/236623/webkit/
+				// https://bugs.webkit.org/show_bug.cgi?id=190081
+
+			// $output_window_policy = config::get('output.window_policy', 'DENY');
+			//
+			// if ($output_window_policy) {
+			// 	header('Cross-Origin-Window-Policy: ' . head($output_window_policy));
+			// }
+
+		//--------------------------------------------------
+		// Framing options
+
+			$output_framing = strtoupper(config::get('output.framing'));
+
+			if ($output_framing && $output_framing != 'ALLOW') {
+				header('X-Frame-Options: ' . head($output_framing));
+			}
+
+		//--------------------------------------------------
+		// Extra XSS protection for IE (reflected)... not
+		// that there should be any XSS issues!
+
+			$output_xss_reflected = strtolower(config::get('output.xss_reflected', 'block'));
+
+			if ($output_xss_reflected == 'block' || $output_xss_reflected == 'filter') {
+
+				$header = 'X-XSS-Protection: 1';
+
+				if ($output_xss_reflected == 'block') {
+					$header .= '; mode=block';
+				}
+
+				$report_uri = config::get('output.xss_report', false);
+				if ($report_uri) {
+					if ($report_uri === true) {
+						$report_uri = gateway_url('xss-report');
+						$report_uri->scheme_set('https');
+					}
+					$header .= '; report=' . head($report_uri);
+				}
+
+				header($header);
+
+			}
+
+		//--------------------------------------------------
+		// Strict transport security... should be set in
+		// web server, for other resources (e.g. images).
+
+			// if (https_only()) {
+			// 	header('Strict-Transport-Security: max-age=31536000; includeSubDomains'); // HTTPS only (1 year)
+			// }
+
+		//--------------------------------------------------
+		// Public key pinning
+
+			$pkp_pins = config::get('output.pkp_pins', array());
+
+			if (count($pkp_pins) > 0) {
+
+				if (config::get('request.https')) { // Only send header when using a HTTPS connection
+
+					$enforced = config::get('output.pkp_enforced', false);
+
+					if ($enforced) {
+						$header = 'Public-Key-Pins';
+					} else {
+						$header = 'Public-Key-Pins-Report-Only';
+					}
+
+					$report_uri = config::get('output.pkp_report', false);
+					if ($report_uri || !$enforced) {
+						if ($report_uri === true) {
+							$report_uri = gateway_url('pkp-report');
+							$report_uri->scheme_set('https');
+						}
+						$pkp_pins[] = 'report-uri="' . $report_uri . '"';
+					}
+
+					header($header . ': ' . head(implode('; ', $pkp_pins)));
+
+				}
+
+				if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
+
+					debug_require_db_table(DB_PREFIX . 'system_report_pkp', '
+							CREATE TABLE [TABLE] (
+								date_time tinytext NOT NULL,
+								hostname tinytext NOT NULL,
+								port tinytext NOT NULL,
+								expires tinytext NOT NULL,
+								subdomains tinytext NOT NULL,
+								noted_hostname tinytext NOT NULL,
+								served_chain tinytext NOT NULL,
+								validated_chain tinytext NOT NULL,
+								known_pins tinytext NOT NULL,
+								referrer tinytext NOT NULL,
+								data_raw text NOT NULL,
+								ip tinytext NOT NULL,
+								browser tinytext NOT NULL,
+								created datetime NOT NULL
+							);');
+
+				}
+
+			}
+
+		//--------------------------------------------------
+		// Certificate Transparency
+
+			if (config::get('output.ct_enabled') === true) {
+
+				$ct_values = array();
+				$ct_values[] = 'max-age=' . config::get('output.ct_max_age', 0);
+
+				if (config::get('output.ct_enforced', false) === true) {
+					$ct_values[] = 'enforce';
+				}
+
+				$report_uri = config::get('output.ct_report', false);
+				if ($report_uri) {
+					$ct_values[] = 'report-uri="' . $report_uri . '"';
+				}
+
+				header('Expect-CT: ' . head(implode('; ', $ct_values)));
+
+			}
+
+		//--------------------------------------------------
+		// Feature policy
+
+			if (config::get('output.fp_enabled') === true) {
+
+					// https://crbug.com/623682
+					//
+					// Chrome to first implement:
+					// - fullscreen
+					// - payments
+					// - vibration
+					// https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/uKO1CwiY3ts
+					//
+					// document.querySelector(".row.submit input").onclick = function() { document.documentElement.requestFullscreen(); return false };
+					// document.querySelector(".row.submit input").onclick = function() { document.documentElement.webkitRequestFullscreen(); return false };
+					//
+					// navigator.geolocation.getCurrentPosition(function(position){console.log(position.coords)});
+
+				$policies = http_policy_values(config::get('output.fp_directives'));
+
+				header('Feature-Policy: ' . head(implode('; ', $policies)));
+
+			}
+
+		//--------------------------------------------------
+		// Content security policy
+
+			if (config::get('output.csp_enabled') === true) {
+				http_csp_header(config::get('output.csp_directives'));
+			}
+
+		//--------------------------------------------------
+		// Trusted types
+
+			$trusted_types = config::get('output.js_trusted_types');
+			if (is_array($trusted_types) && count($trusted_types) > 0) {
+				header('Content-Security-Policy: trusted-types ' . implode(' ', $trusted_types), false);
+			}
 
 	}
 

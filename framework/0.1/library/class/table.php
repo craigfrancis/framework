@@ -1157,7 +1157,12 @@
 				//--------------------------------------------------
 				// Download
 
-					http_download_content($this->csv(), $mime, $file_name, $mode);
+					http_download([
+							'content' => $this->csv(),
+							'name'    => $file_name,
+							'mime'    => $mime,
+							'mode'    => $mode,
+						]);
 
 			}
 

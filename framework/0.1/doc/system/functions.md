@@ -127,12 +127,17 @@ For other variables, you should probably use the [cookie](../../doc/helpers/cook
 	system_redirect($old_url, $new_url);
 		// Setup a redirect, used when calling error_send('page-not-found');
 
-	http_download_file($path, $mime, $name, $mode);
-		// http_download_file('/path/to/file.txt', 'text/plain');
+	http_download($config);
+		// http_download([
+		// 		'path' => '/path/to/file.txt',
+		// 		'name' => 'different-name.txt',
+		// 	]);
 		// exit();
-
-	http_download_content($content, $mime, $name, $mode);
-		// http_download_content('File content', 'text/plain', 'file.txt');
+		//
+		// http_download([
+		// 		'content' => 'File content',
+		// 		'name'    => 'file.txt',
+		// 	]);
 		// exit();
 
 	http_cache_headers($expires, $last_modified, $etag);
