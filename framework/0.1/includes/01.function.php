@@ -1410,7 +1410,8 @@
 				if (strlen($x_send_path) > strlen(ROOT) && prefix_match($x_send_path, $config['path'])) { // Try to be as specific as possible
 					$config['xsend'] = true;
 				}
-			} else if ($config['xsend'] === true) {
+			}
+			if ($config['xsend'] === true) {
 				$config['xsend'] = 'X-Sendfile';
 			}
 			if ($config['xsend']) {
