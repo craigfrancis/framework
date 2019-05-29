@@ -368,7 +368,7 @@
 				$sql = 'SHOW FULL COLUMNS FROM ' . $table_sql;
 
 				if ($field !== NULL) {
-					$sql .= ' LIKE "' . $this->escape_like($field) . '"';
+					$sql .= ' LIKE "' . $this->escape_like($field) . '"'; // Cannot use parameters in a SHOW query.
 				}
 
 				$details = array();
