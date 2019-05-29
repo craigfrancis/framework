@@ -776,7 +776,7 @@
 
 						if ($csrf_errors) {
 							if ($csrf_report) {
-								report_add('CSRF error via SecFetch/SameSite checks (user asked to re-submit).' . "\n\n" . debug_dump($csrf_errors), 'error');
+								report_add('CSRF error via SecFetch/SameSite checks (' . ($csrf_block ? 'user asked to re-submit' : 'not blocked') . ').' . "\n\n" . debug_dump($csrf_errors), 'error');
 							}
 							if ($csrf_block) {
 								$this->_field_error_add_html(-1, $this->csrf_error_html, implode('/', $csrf_errors));
