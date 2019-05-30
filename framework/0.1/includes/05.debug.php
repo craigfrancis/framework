@@ -959,7 +959,7 @@
 										}
 									}
 									if (count($note['lines']) == 0) {
-										$output_text .= ($note['lines_empty'] ?? 'none') . "\n";
+										$output_text .= (isset($note['lines_empty']) ? $note['lines_empty'] : 'none') . "\n";
 									}
 									$output_text .= "\n";
 								}
