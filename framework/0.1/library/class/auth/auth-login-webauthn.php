@@ -1,7 +1,5 @@
 <?php
 
-// https://www.w3.org/TR/webauthn/
-
 	class auth_login_webauthn_base extends check {
 
 		//--------------------------------------------------
@@ -36,6 +34,8 @@
 	<script type="text/javascript">
 	//<![CDATA[
 
+			// https://www.w3.org/TR/webauthn/
+			// https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API#Examples
 			// https://www.imperialviolet.org/2018/03/27/webauthn.html
 
 			//--------------------------------------------------
