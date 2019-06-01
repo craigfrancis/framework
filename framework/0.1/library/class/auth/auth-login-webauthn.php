@@ -182,6 +182,8 @@
 					'publicKey': {
 							'rp': {
 									'name': "Test Website"
+									// 'id': 'login.example.com',
+									// 'icon': 'https://login.example.com/login.ic'
 								},
 							'user': {
 									'name': "craig@example.com",
@@ -191,12 +193,18 @@
 							'challenge': challenge_uInt8,
 							'pubKeyCredParams': [
 									{
-										'type': "public-key",
-										'alg': cose_alg_ECDSA_w_SHA256
+										'type': "public-key", // As of March 2019, only "public-key" may be used.
+										'alg': cose_alg_ECDSA_w_SHA256 // -7 indicates the elliptic curve algorithm ECDSA with SHA-256, https://www.iana.org/assignments/cose/cose.xhtml#algorithms
 									}
 								],
 							'timeout': 10000, // In milliseconds
-							'excludeCredentials': []
+							'attestation': 'none', // Default, or could be "direct" or "indirect"
+							'excludeCredentials': [ // Avoid creating new public key credentials for an existing user who already have some.
+								// {
+								// 	'type': "public-key",
+								// 	'id': new Uint8Array(26)
+								// }
+							]
 						}
 				}).then(function(result) {
 
