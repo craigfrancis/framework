@@ -132,7 +132,7 @@
 
 				'usb'                                   => [], // WebUSBEnabled
 
-				// 'focus-without-user-activation'      => [], // Chrome 76 - BlockingFocusWithoutUserActivationEnabled
+				'focus-without-user-activation'         => [], // BlockingFocusWithoutUserActivationEnabled... does not effect top-level documents (yet?), just content in an iframe.
 
 				// 'frobulate'                          => [], // Chrome 76 - DisabledByOriginTrial, OriginTrialsSampleAPIEnabled
 				// 'oversized-images'                   => [], // Chrome 76 - DisabledByOriginTrial, was ExperimentalProductivityFeaturesEnabled, was 'max-downscaling-image'
