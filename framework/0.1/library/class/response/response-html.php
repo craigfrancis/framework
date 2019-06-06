@@ -446,7 +446,9 @@
 
 			public function js_add($path, $attributes = array(), $position = 'foot') { // Could be $this->js_add('/path.js', 'defer');
 				if (!isset($this->js_files[$position])) {
-					exit_with_error('Invalid js_add position "' . $position . '" - try head or foot');
+					exit_with_error('Invalid js_add position "' . $position . '" - try head or foot', $path);
+				} else if (config::get('output.js_head_only') === true && $position != 'head') {
+					exit_with_error('Invalid js_add position "' . $position . '" - head only', $path);
 				}
 				foreach ($this->js_files[$position] as $file) {
 					if ($file['path'] == $path) {
@@ -492,6 +494,10 @@
 			}
 
 			public function js_code_add($code, $mode = 'inline', $position = 'foot') {
+
+				if (config::get('output.js_head_only') === true) {
+					exit_with_error('Cannot use js_code_add in head only mode, try adding a <meta> tag, and get JS to return its content attribute.', $code);
+				}
 
 				if ($this->js_code_ref === NULL) {
 
@@ -1173,6 +1179,10 @@
 
 					$html .= $this->_js_get_html('head');
 
+					if (config::get('output.js_head_only') === true) {
+						$html .= "\n\n\t" . '<meta http-equiv="Content-Security-Policy" content="script-src \'none\'" /> <!-- No scripts after this -->';
+					}
+
 				//--------------------------------------------------
 				// Meta
 
@@ -1273,7 +1283,9 @@
 				//--------------------------------------------------
 				// Javascript
 
-					$html .= $this->_js_get_html('foot');
+					if (config::get('output.js_head_only') !== true) {
+						$html .= $this->_js_get_html('foot');
+					}
 
 				//--------------------------------------------------
 				// Extra head HTML
