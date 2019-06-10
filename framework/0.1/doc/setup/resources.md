@@ -48,8 +48,7 @@ Sometimes you may need to set a JavaScript variable "inline", for example the cu
 
 So instead just add:
 
-	$response->head_add_html("\n\t" .
-		'<meta name="js_data" content="' . html(json_encode($x)) . '" />');
+	$response->meta_set('js_data', json_encode($x));
 
 And the JavaScript can get that variable via:
 

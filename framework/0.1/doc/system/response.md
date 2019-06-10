@@ -60,6 +60,10 @@ To add some JavaScript or CSS ([details](../../doc/setup/resources.md)):
 	$response->css_alternate_add('/path/to/file.css', 'print');
 	$response->css_alternate_add('/path/to/file.css', 'all', 'Title');
 
+To add meta tags, which are ideal for providing variables to JavaScript:
+
+	$response->meta_set('js_data', json_encode($x));
+
 Or just to add your own HTML to the page head ([avoid JavaScript though](../../doc/setup/resources.md)):
 
 	$response->head_add_html('<html>');

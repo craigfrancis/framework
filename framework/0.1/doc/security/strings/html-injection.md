@@ -18,8 +18,7 @@ Because the variable could still include a `</script>` tag, and the HTML parser 
 
 Instead you could use:
 
-	$response->head_add_html("\n\t" .
-		'<meta name="js_data" content="' . html(json_encode($x)) . '" />');
+	$response->meta_set('js_data', json_encode($x));
 
 And in your JavaScript, get the value with:
 
