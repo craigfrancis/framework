@@ -1142,9 +1142,25 @@
 					$html = "\n\t" . '<meta charset="' . html(config::get('output.charset')) . '" />';
 
 				//--------------------------------------------------
+				// Javascript
+
+					$html .= $this->_js_get_html('head');
+
+					if (config::get('output.js_head_only') === true) {
+						$html .= "\n\n\t" . '<meta http-equiv="Content-Security-Policy" content="script-src \'none\'" /> <!-- No scripts after this -->';
+					}
+
+				//--------------------------------------------------
 				// Page title
 
 					$html .= "\n\n\t" . '<title>' . html($this->title_get()) . '</title>' . "\n";
+
+				//--------------------------------------------------
+				// CSS
+
+					if ($this->browser_advanced) {
+						$html .= $this->_css_get('html');
+					}
 
 				//--------------------------------------------------
 				// Favicon
@@ -1165,22 +1181,6 @@
 
 					foreach ($links as $rel => $href) {
 						$html .= "\n\t" . '<link rel="' . html($rel) . '" href="' . html($href) . '" />';
-					}
-
-				//--------------------------------------------------
-				// CSS
-
-					if ($this->browser_advanced) {
-						$html .= $this->_css_get('html');
-					}
-
-				//--------------------------------------------------
-				// Javascript
-
-					$html .= $this->_js_get_html('head');
-
-					if (config::get('output.js_head_only') === true) {
-						$html .= "\n\n\t" . '<meta http-equiv="Content-Security-Policy" content="script-src \'none\'" /> <!-- No scripts after this -->';
 					}
 
 				//--------------------------------------------------
