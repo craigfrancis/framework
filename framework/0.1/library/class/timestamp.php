@@ -129,9 +129,9 @@
 		//--------------------------------------------------
 		// Business days
 
-			public function business_days_add($business_days) {
+			public function business_days_add($business_days, $country = NULL) {
 				$business_days = intval($business_days); // Decrement does not work on strings
-				$holidays = timestamp::holidays_get();
+				$holidays = timestamp::holidays_get($country);
 				$timestamp = $this->clone();
 				while ($business_days != 0) {
 					$timestamp = $timestamp->clone($business_days > 0 ? '+1 day' : '-1 day');
@@ -142,8 +142,8 @@
 				return $timestamp;
 			}
 
-			public function business_day_next() {
-				$holidays = timestamp::holidays_get();
+			public function business_day_next($country = NULL) {
+				$holidays = timestamp::holidays_get($country);
 				$timestamp = $this->clone();
 				while ($timestamp->format('N') >= 6 || in_array($timestamp->format('Y-m-d'), $holidays)) {
 					$timestamp = $timestamp->clone('+1 day');
@@ -151,7 +151,7 @@
 				return $timestamp;
 			}
 
-			public function business_days_diff($end) {
+			public function business_days_diff($end, $country = NULL) {
 
 				if (!is_object($end) || !is_a($end, 'timestamp')) {
 					$end = new timestamp($end);
@@ -167,7 +167,7 @@
 				}
 
 				$business_days = 0;
-				$holidays = timestamp::holidays_get();
+				$holidays = timestamp::holidays_get($country);
 				$timestamp = $this->clone();
 
 				while ($timestamp < $end) {
@@ -184,70 +184,166 @@
 		//--------------------------------------------------
 		// Holiday support functions
 
-			public static function holidays_update() {
+			public static function holidays_update($countries = []) {
 
 				//--------------------------------------------------
-				// New
+				// Config
 
-					$xml = file_get_contents('https://www.devcf.com/a/api/holidays/');
-					$xml = simplexml_load_string($xml); // simplexml_load_file is blocked by libxml_disable_entity_loader()
-
-					$holidays = array();
-					$earliest = NULL;
-
-					foreach ($xml->holiday as $holiday) {
-
-						$date = strval($holiday['date']);
-
-						$timestamp = strtotime($date);
-						if ($earliest === NULL || $timestamp < $earliest) {
-							$earliest = $timestamp;
-						}
-
-						$holidays[strval($holiday['country'])][$date] = strval($holiday['name']);
-
-					}
-
-				//--------------------------------------------------
-				// Current
-
-					timestamp::holidays_check_table();
+					$now = new timestamp();
 
 					$db = db_get();
 
-					$sql = 'SELECT
-								sh.country,
-								sh.date
-							FROM
-								' . DB_PREFIX . 'system_holiday AS sh
-							WHERE
-								sh.date >= ?';
+					timestamp::holidays_check_table();
 
-					$parameters = array();
-					$parameters[] = array('s', date('Y-m-d', $earliest));
-
-					foreach ($db->fetch_all($sql, $parameters) as $row) {
-						unset($holidays[$row['country']][$row['date']]);
+					if (count($countries) == 0) {
+						$countries = $db->enum_values(DB_PREFIX . 'system_holiday', 'country');
 					}
 
 				//--------------------------------------------------
-				// Add
+				// Return
 
-					foreach ($holidays as $country_code => $country_holidays) {
-						foreach ($country_holidays as $holiday_date => $holiday_name) {
+					$data_json = file_get_contents('https://www.gov.uk/bank-holidays.json');
 
-							$db->insert(DB_PREFIX . 'system_holiday', array(
-									'country' => $country_code,
-									'date' => $holiday_date,
-									'name' => $holiday_name,
-								));
+					if (!$data_json) {
+						throw new error_exception('Cannot return Bank Holidays from gov.uk');
+					}
 
+					$data_array = json_decode($data_json, true);
+
+					if (!is_array($data_array)) {
+						throw new error_exception('Cannot parse Bank Holidays from gov.uk', $data_json);
+					}
+
+				//--------------------------------------------------
+				// Parse
+
+					$holidays = [];
+					$earliest = NULL;
+
+					foreach ($data_array as $country => $data) {
+						if (in_array($country, $countries)) {
+							foreach ($data['events'] as $event) {
+
+								$timestamp = new timestamp($event['date'], 'db');
+								if ($earliest === NULL || $timestamp < $earliest) {
+									$earliest = $timestamp;
+								}
+
+								$name = ucwords($event['title']);
+								$name = str_replace("\u{2019}", "'", $name); // Replace "Right Single Quotation Mark"
+								$name = trim($name);
+								if (stripos($event['notes'], 'substitute') !== false) {
+									$name .= ' (substitute)';
+								}
+
+								$holidays[$country][$timestamp->format('Y-m-d')] = $name;
+
+							}
+						}
+					}
+
+					if ($earliest === NULL) {
+						throw new error_exception('Cannot find the first Bank Holidays from gov.uk', $data_json);
+					}
+
+					foreach ($countries as $country) {
+						if (!isset($holidays[$country])) {
+							throw new error_exception('Cannot find any Bank Holidays for "' . $country . '" from gov.uk', debug_dump(array_keys($holidays)));
+						}
+					}
+
+				//--------------------------------------------------
+				// Existing
+
+					$matched_dates = array_fill_keys($countries, []);
+					$unmatched_dates = [];
+
+					$sql = 'SELECT
+								*
+							FROM
+								' . DB_PREFIX . 'system_holiday AS sh
+							WHERE
+								sh.date >= ? AND
+								sh.deleted = "0000-00-00 00:00:00"';
+
+					$parameters = array();
+					$parameters[] = array('s', $earliest);
+
+					foreach ($db->fetch_all($sql, $parameters) as $row) {
+
+						if (isset($holidays[$row['country']][$row['date']]) && $holidays[$row['country']][$row['date']] == $row['name']) {
+
+							$matched_dates[$row['country']][] = $row['date'];
+
+						} else {
+
+							$unmatched_dates[$row['country']][$row['date']] = $row;
+
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Remove un-matched
+
+					if (count($unmatched_dates) > 0) {
+
+						$where_sql = [];
+						$parameters = [];
+						$parameters[] = ['s', $now];
+
+						foreach ($unmatched_dates as $country => $dates) {
+							foreach ($dates as $date => $row) {
+
+								$where_sql[] = 'sh.country = ? AND sh.date = ?';
+
+								$parameters[] = ['s', $country];
+								$parameters[] = ['s', $date];
+
+							}
+						}
+
+						$sql = 'UPDATE
+									' . DB_PREFIX . 'system_holiday AS sh
+								SET
+									sh.deleted = ?
+								WHERE
+									sh.deleted = "0000-00-00 00:00:00" AND
+									(
+										' . implode(') OR (', $where_sql) . '
+									)';
+
+						$db->query($sql, $parameters);
+
+					}
+
+				//--------------------------------------------------
+				// Add new
+
+					foreach ($holidays as $country => $dates) {
+						foreach ($dates as $date => $name) {
+							if (!in_array($date, $matched_dates[$country])) {
+
+								if (isset($unmatched_dates[$country][$date])) {
+									$values = $unmatched_dates[$country][$date]; // If holiday name has changed, preserve any extra columns.
+								} else {
+									$values = [];
+								}
+
+								$values['country'] = $country;
+								$values['date'] = $date;
+								$values['name'] = $name;
+								$values['deleted'] = '0000-00-00 00:00:00';
+
+								$db->insert(DB_PREFIX . 'system_holiday', $values);
+
+							}
 						}
 					}
 
 			}
 
-			public static function holidays_get() {
+			public static function holidays_get($country = NULL) {
 
 				$holidays = config::get('timestamp.holiday_cache');
 
@@ -260,19 +356,26 @@
 					$db = db_get();
 
 					$sql = 'SELECT
+								sh.country,
 								sh.date
 							FROM
-								' . DB_PREFIX . 'system_holiday AS sh';
+								' . DB_PREFIX . 'system_holiday AS sh
+							WHERE
+								sh.deleted = "0000-00-00 00:00:00"';
 
 					foreach ($db->fetch_all($sql) as $row) {
-						$holidays[] = $row['date'];
+						$holidays[$row['country']][] = $row['date'];
 					}
 
 					config::set('timestamp.holiday_cache', $holidays);
 
 				}
 
-				return $holidays;
+				if (!$country) {
+					$country = config::get('timestamp.holiday_country', 'england-and-wales');
+				}
+
+				return (isset($holidays[$country]) ? $holidays[$country] : []);
 
 			}
 
@@ -282,10 +385,11 @@
 
 					debug_require_db_table(DB_PREFIX . 'system_holiday', '
 							CREATE TABLE [TABLE] (
-								`country` enum("uk") NOT NULL,
+								`country` enum("england-and-wales", "scotland", "northern-ireland") NOT NULL,
 								`date` date NOT NULL,
 								`name` tinytext NOT NULL,
-								PRIMARY KEY (`country`, `date`)
+								`deleted` datetime NOT NULL,
+								PRIMARY KEY (`country`, `date`, `deleted`)
 							);');
 
 				}

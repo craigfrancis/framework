@@ -1,6 +1,10 @@
 <?php
 
-	class cleanup_job extends job {
+	class holidays_job extends job {
+
+		public function should_run() {
+			return ($this->last_run === NULL || $this->last_run < timestamp('00:00:00', 'db')); // Once a day
+		}
 
 		public function email_addresses_get() {
 			return array(
@@ -17,9 +21,7 @@
 		}
 
 		public function run() {
-
-			return '<p>Hello</p>';
-
+			timestamp::holidays_update();
 		}
 
 	}

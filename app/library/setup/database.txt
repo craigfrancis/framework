@@ -742,14 +742,14 @@
             "country": {
                 "type": "enum",
                 "length": 1,
-                "collation": "utf8_unicode_ci",
+                "collation": "utf8mb4_unicode_ci",
                 "null": false,
                 "default": null,
                 "extra": "",
                 "options": [
-                    "uk"
+                    "england-and-wales"
                 ],
-                "definition": "enum('uk') NOT NULL"
+                "definition": "enum('england-and-wales') NOT NULL"
             },
             "date": {
                 "type": "date",
@@ -764,12 +764,35 @@
             "name": {
                 "type": "tinytext",
                 "length": 255,
-                "collation": "utf8_unicode_ci",
+                "collation": "utf8mb4_unicode_ci",
                 "null": false,
                 "default": null,
                 "extra": "",
                 "options": null,
                 "definition": "tinytext NOT NULL"
+            },
+            "custom_field": {
+                "type": "enum",
+                "length": 2,
+                "collation": "utf8mb4_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": [
+                    "false",
+                    "true"
+                ],
+                "definition": "enum('false','true') NOT NULL"
+            },
+            "deleted": {
+                "type": "datetime",
+                "length": 19,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "datetime NOT NULL"
             }
         },
         "keys": {
@@ -788,6 +811,172 @@
                 "2": {
                     "non_unique": 0,
                     "column_name": "date",
+                    "collation": "A",
+                    "sub_part": null,
+                    "packed": null,
+                    "null": "",
+                    "index_type": "BTREE",
+                    "comment": "",
+                    "index_comment": ""
+                },
+                "3": {
+                    "non_unique": 0,
+                    "column_name": "deleted",
+                    "collation": "A",
+                    "sub_part": null,
+                    "packed": null,
+                    "null": "",
+                    "index_type": "BTREE",
+                    "comment": "",
+                    "index_comment": ""
+                }
+            }
+        }
+    },
+    "tpl_system_maintenance": {
+        "fields": {
+            "id": {
+                "type": "int",
+                "length": "11",
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "auto_increment",
+                "options": null,
+                "definition": "int(11) NOT NULL auto_increment"
+            },
+            "run_start": {
+                "type": "datetime",
+                "length": 19,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "datetime NOT NULL"
+            },
+            "run_end": {
+                "type": "datetime",
+                "length": 19,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "datetime NOT NULL"
+            }
+        },
+        "keys": {
+            "PRIMARY": {
+                "1": {
+                    "non_unique": 0,
+                    "column_name": "id",
+                    "collation": "A",
+                    "sub_part": null,
+                    "packed": null,
+                    "null": "",
+                    "index_type": "BTREE",
+                    "comment": "",
+                    "index_comment": ""
+                }
+            },
+            "run_end": {
+                "1": {
+                    "non_unique": 0,
+                    "column_name": "run_end",
+                    "collation": "A",
+                    "sub_part": null,
+                    "packed": null,
+                    "null": "",
+                    "index_type": "BTREE",
+                    "comment": "",
+                    "index_comment": ""
+                }
+            }
+        }
+    },
+    "tpl_system_maintenance_job": {
+        "fields": {
+            "id": {
+                "type": "int",
+                "length": "11",
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "auto_increment",
+                "options": null,
+                "definition": "int(11) NOT NULL auto_increment"
+            },
+            "job": {
+                "type": "varchar",
+                "length": "20",
+                "collation": "utf8mb4_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "varchar(20) NOT NULL"
+            },
+            "run_id": {
+                "type": "int",
+                "length": "11",
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "int(11) NOT NULL"
+            },
+            "output": {
+                "type": "text",
+                "length": 65535,
+                "collation": "utf8mb4_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "text NOT NULL"
+            },
+            "created": {
+                "type": "datetime",
+                "length": 19,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "datetime NOT NULL"
+            }
+        },
+        "keys": {
+            "PRIMARY": {
+                "1": {
+                    "non_unique": 0,
+                    "column_name": "id",
+                    "collation": "A",
+                    "sub_part": null,
+                    "packed": null,
+                    "null": "",
+                    "index_type": "BTREE",
+                    "comment": "",
+                    "index_comment": ""
+                }
+            },
+            "job": {
+                "1": {
+                    "non_unique": 1,
+                    "column_name": "job",
+                    "collation": "A",
+                    "sub_part": null,
+                    "packed": null,
+                    "null": "",
+                    "index_type": "BTREE",
+                    "comment": "",
+                    "index_comment": ""
+                },
+                "2": {
+                    "non_unique": 1,
+                    "column_name": "created",
                     "collation": "A",
                     "sub_part": null,
                     "packed": null,
