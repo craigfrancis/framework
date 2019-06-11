@@ -771,19 +771,6 @@
                 "options": null,
                 "definition": "tinytext NOT NULL"
             },
-            "custom_field": {
-                "type": "enum",
-                "length": 2,
-                "collation": "utf8mb4_unicode_ci",
-                "null": false,
-                "default": null,
-                "extra": "",
-                "options": [
-                    "false",
-                    "true"
-                ],
-                "definition": "enum('false','true') NOT NULL"
-            },
             "deleted": {
                 "type": "datetime",
                 "length": 19,
