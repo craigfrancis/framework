@@ -264,6 +264,7 @@
 								' . DB_PREFIX . 'system_holiday AS sh
 							WHERE
 								sh.date >= ? AND
+								sh.source = "gov.uk" AND
 								sh.deleted = "0000-00-00 00:00:00"';
 
 					$parameters = array();
@@ -308,6 +309,7 @@
 								SET
 									sh.deleted = ?
 								WHERE
+									sh.source = "gov.uk" AND
 									sh.deleted = "0000-00-00 00:00:00" AND
 									(
 										' . implode(') OR (', $where_sql) . '
@@ -333,6 +335,7 @@
 								$values['country'] = $country;
 								$values['date'] = $date;
 								$values['name'] = $name;
+								$values['source'] = 'gov.uk';
 								$values['deleted'] = '0000-00-00 00:00:00';
 
 								$db->insert(DB_PREFIX . 'system_holiday', $values);
@@ -385,6 +388,7 @@
 
 					debug_require_db_table(DB_PREFIX . 'system_holiday', '
 							CREATE TABLE [TABLE] (
+								`source` enum("", "gov.uk") NOT NULL,
 								`country` enum("england-and-wales", "scotland", "northern-ireland") NOT NULL,
 								`date` date NOT NULL,
 								`name` tinytext NOT NULL,
