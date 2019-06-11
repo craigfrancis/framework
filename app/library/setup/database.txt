@@ -739,6 +739,19 @@
     },
     "tpl_system_holiday": {
         "fields": {
+            "source": {
+                "type": "enum",
+                "length": 2,
+                "collation": "utf8mb4_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": [
+                    "",
+                    "gov.uk"
+                ],
+                "definition": "enum('','gov.uk') NOT NULL"
+            },
             "country": {
                 "type": "enum",
                 "length": 1,
@@ -809,6 +822,17 @@
                 "3": {
                     "non_unique": 0,
                     "column_name": "deleted",
+                    "collation": "A",
+                    "sub_part": null,
+                    "packed": null,
+                    "null": "",
+                    "index_type": "BTREE",
+                    "comment": "",
+                    "index_comment": ""
+                },
+                "4": {
+                    "non_unique": 0,
+                    "column_name": "source",
                     "collation": "A",
                     "sub_part": null,
                     "packed": null,

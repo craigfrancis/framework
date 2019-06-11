@@ -353,9 +353,7 @@
 								usleep(200000); // 200ms, to keep Google happy (limited to 5 requests per second, or 2500 per day).
 							}
 
-							if (function_exists('debug_log_time')) {
-								debug_log_time('GEO', round((microtime(true) - $start), 3));
-							}
+							$time = round((microtime(true) - $start), 3);
 
 						//--------------------------------------------------
 						// Extract
@@ -370,6 +368,17 @@
 									$longitude = floatval($result->result->geometry->location->lng);
 									$accuracy = ($result->result->geometry->location_type == 'ROOFTOP' ? 5 : 4);
 								}
+							}
+
+						//--------------------------------------------------
+						// Log
+
+							if (function_exists('debug_note')) {
+								debug_note('Google Maps Geocode: "' . $search_query . '" = ' . ($latitude ? $latitude . ', ' . $longitude : 'N/A') . ' (' . $time . ($slow ? ' - slowed by 200ms' : '') . ')');
+							}
+
+							if (function_exists('debug_log_time')) {
+								debug_log_time('GEO', $time);
 							}
 
 					}
