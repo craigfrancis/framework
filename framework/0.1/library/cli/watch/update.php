@@ -119,12 +119,16 @@
 
 				}
 
-				if ($file_contents && $file_dest) {
+				if ($file_dest) {
 					$folder = dirname($file_dest);
 					if (!is_dir($folder)) {
 						mkdir($folder, 0755, true); // Writable for user only
 					}
-					file_put_contents($file_dest, $file_contents);
+					if ($file_contents) {
+						file_put_contents($file_dest, $file_contents);
+					} else if (is_file($file_dest)) {
+						unlink($file_dest);
+					}
 				}
 
 			}
