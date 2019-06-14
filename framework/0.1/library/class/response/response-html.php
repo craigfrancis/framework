@@ -1146,7 +1146,7 @@
 
 					$html .= $this->_js_get_html('head');
 
-					if (config::get('output.js_head_only') === true && strpos(config::get('request.browser'), 'Edge/') === false) { // For some reason MS Edge 17.17134 (and maybe a couple of earlier versions) can sometimes break, it seems to be a cache thing (e.g. I was trying to re-create a broken JS complaint, then it broke on my VM when I removed the last cookie).
+					if (config::get('output.js_head_only') === true && strpos(config::get('request.browser'), 'Edge/') === false) { // For some reason MS Edge 17.17134 (and maybe a couple of earlier versions) can break... seems to be cache related, make sure all cookies have been deleted, don't rely on refresh button (which seems to request HTML twice),
 
 						$html .= "\n\n\t" . '<meta http-equiv="Content-Security-Policy" content="script-src \'none\'" /> <!-- No scripts after this -->';
 
