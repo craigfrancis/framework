@@ -118,8 +118,16 @@
 				//--------------------------------------------------
 				// Fetch limits
 
-					if (config::get('form.allowed_nested', false) === true) {
-						$this->fetch_allowed_nested();
+					$fetch_allowed = config::get('form.fetch_allowed', NULL);
+					if (is_array($fetch_allowed)) {
+
+						if (in_array('nested', $fetch_allowed)) $this->fetch_allowed_nested();
+						if (in_array('cors', $fetch_allowed))   $this->fetch_allowed_cors();
+
+					} else if ($fetch_allowed === false) {
+
+						$this->fetch_allowed = false; // Disabled, not a good idea.
+
 					}
 
 				//--------------------------------------------------
@@ -646,9 +654,13 @@
 		//--------------------------------------------------
 		// Fetch limits
 
-			public function fetch_allowed_nested() {
+			public function fetch_allowed_nested() { // e.g. in an iframe.
 				$this->fetch_allowed_add('dest', 'nested-document');
 				$this->fetch_allowed_add('mode', 'nested-navigate');
+			}
+
+			public function fetch_allowed_cors() { // e.g. XMLHttpRequest
+				$this->fetch_allowed_add('mode', 'cors');
 			}
 
 			public function fetch_allowed_add($field, $value) {
@@ -740,7 +752,7 @@
 
 					$csrf_errors = [];
 					$csrf_report = false;
-					$csrf_block = false; // TODO: Remove, so all CSRF checks block (added 2019-05-27)
+					$csrf_block = (SERVER == 'stage'); // TODO: Remove, so all CSRF checks block (added 2019-05-27)
 
 					if ($this->form_submitted && $this->csrf_error_html != NULL) { // Cant type check, as html() will convert NULL to string
 
@@ -764,7 +776,7 @@
 							$csrf_report = true;
 						}
 
-						if (in_array('fetch', $checks)) {
+						if (in_array('fetch', $checks) && $this->fetch_allowed !== false) {
 							$fetch_values = config::get('request.fetch');
 							foreach ($this->fetch_allowed as $field => $allowed) {
 								if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
