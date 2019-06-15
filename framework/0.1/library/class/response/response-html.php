@@ -1146,7 +1146,7 @@
 
 					$html .= $this->_js_get_html('head');
 
-					if (config::get('output.js_head_only') === true && strpos(config::get('request.browser'), 'Edge/') === false) { // For some reason MS Edge 17.17134 (and maybe a couple of earlier versions) can break... seems to be cache related, make sure all cookies have been deleted, don't rely on refresh button (which seems to request HTML twice),
+					if (config::get('output.js_head_only') === true && strpos(config::get('request.browser'), 'Edge/') === false) { // MS Edge 17.17134 (and maybe earlier) does not work in "text/html" mode (it does work in XML mode; it also continues to work if changing back and using the Refresh button) https://github.com/w3c/webappsec-csp/issues/395#issuecomment-502358986
 
 						$html .= "\n\n\t" . '<meta http-equiv="Content-Security-Policy" content="script-src \'none\'" /> <!-- No scripts after this -->';
 
