@@ -53,7 +53,6 @@
 				);
 
 			public static $secret_version = 1;
-			public static $quick_hash = 'sha256'; // Using CRYPT_BLOWFISH for everything (e.g. session pass) would make page loading too slow (good for login though)
 
 		//--------------------------------------------------
 		// Setup
