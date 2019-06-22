@@ -336,12 +336,12 @@
 
 						if ($this->details['confirm_valid']) {
 							$register_pass = random_key(15);
-							$register_hash = auth::quick_hash_create($register_pass);
+							$register_hash = quick_hash_create($register_pass);
 						}
 
 						$record->value_set($this->db_fields['ip'], config::get('request.ip'));
 						$record->value_set($this->db_fields['browser'], config::get('request.browser'));
-						$record->value_set($this->db_fields['tracker'], auth::browser_tracker_get());
+						$record->value_set($this->db_fields['tracker'], browser_tracker_get());
 						$record->value_set($this->db_fields['token'], $register_hash);
 
 					}
@@ -458,7 +458,7 @@
 					$parameters = array();
 					$parameters[] = array('i', $register_id);
 
-					if (($row = $db->fetch_row($sql, $parameters)) && (auth::quick_hash_verify($register_pass, $row[$this->db_fields['token']]))) {
+					if (($row = $db->fetch_row($sql, $parameters)) && (quick_hash_verify($register_pass, $row[$this->db_fields['token']]))) {
 
 						//--------------------------------------------------
 						// Identification
@@ -522,7 +522,7 @@
 
 							if ($success && $user_id) {
 
-								if (auth::browser_tracker_changed($row[$this->db_fields['tracker']])) {
+								if (browser_tracker_changed($row[$this->db_fields['tracker']])) {
 
 										// Don't auto login if they are using a different browser.
 										// We don't want an evil actor creating an account, and putting the

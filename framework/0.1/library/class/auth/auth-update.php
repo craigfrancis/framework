@@ -632,7 +632,7 @@
 
 						if ($this->details['confirm_valid']) {
 							$update_pass = random_key(15);
-							$update_hash = auth::quick_hash_create($update_pass);
+							$update_hash = quick_hash_create($update_pass);
 						} else {
 							$update_pass = NULL;
 							$update_hash = '';
@@ -647,7 +647,7 @@
 								'token'   => $update_hash,
 								'ip'      => config::get('request.ip'),
 								'browser' => config::get('request.browser'),
-								'tracker' => auth::browser_tracker_get(),
+								'tracker' => browser_tracker_get(),
 								'user_id' => $this->details['user_id'],
 								'email'   => $this->details['confirm_email'],
 								'created' => $now,
@@ -711,7 +711,7 @@
 					$parameters = array();
 					$parameters[] = array('i', $update_id);
 
-					if (($row = $db->fetch_row($sql, $parameters)) && (auth::quick_hash_verify($update_pass, $row['token']))) {
+					if (($row = $db->fetch_row($sql, $parameters)) && (quick_hash_verify($update_pass, $row['token']))) {
 
 						//--------------------------------------------------
 						// Still unique

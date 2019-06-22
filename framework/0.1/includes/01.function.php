@@ -72,7 +72,7 @@
 	}
 
 //--------------------------------------------------
-// Get a request value
+// CSRF checking
 
 	function csrf_token_get() {
 
@@ -136,6 +136,33 @@
 			}
 		}
 		return ($hash == $token);
+	}
+
+//--------------------------------------------------
+// Browser checker - useful if you need to check
+// that a 2+ step action is being done via the
+// same browser (e.g. password reset).
+
+	function browser_tracker_get() {
+		$browser_tracker = config::get('request.browser_tracker');
+		if ($browser_tracker === NULL) {
+
+			$browser_tracker = cookie::get('b');
+
+			if (strlen($browser_tracker) != 40) {
+				$browser_tracker = random_key(40);
+			}
+
+			cookie::set('b', $browser_tracker, ['expires' => '+6 months', 'same_site' => 'Lax', 'update' => true]); // Always re-send with a long expiry (so it does not expire or expose how long session_history is).
+
+			config::set('request.browser_tracker', $browser_tracker);
+
+		}
+		return $browser_tracker;
+	}
+
+	function browser_tracker_changed($value) {
+		return (!hash_equals(browser_tracker_get(), $value));
 	}
 
 //--------------------------------------------------
@@ -432,13 +459,34 @@
 		}
 	}
 
-	function cms_text_html($config) {
-		$cms_text = config::get('cms_text');
-		if (!$cms_text) {
-			$cms_text = new cms_text();
-			config::set('cms_text', $cms_text);
+//--------------------------------------------------
+// Quick hash functions
+
+	function quick_hash_create($value, $algorithm = 'sha256') {
+
+		if (!in_array($algorithm, [$algorithm, 'sha256'])) {
+			exit_with_error('The specified algorithm is not allowed, it might be too weak.');
 		}
-		return $cms_text->html($config);
+
+		return $algorithm . '-' . hash($algorithm, $value);
+
+	}
+
+	function quick_hash_verify($value, $hash) {
+
+		if (trim($value) == '') {
+			return false;
+		}
+
+		if (($pos = strpos($hash, '-')) !== false) {
+			$algorithm = substr($hash, 0, $pos);
+			$hash = substr($hash, ($pos + 1));
+		} else {
+			exit_with_error('The hash does not specify the algorithm used.');
+		}
+
+		return hash_equals($hash, hash($algorithm, $value));
+
 	}
 
 //--------------------------------------------------
@@ -811,6 +859,18 @@
 		$url = $obj->newInstanceArgs(func_get_args());
 		$url->format_set('full');
 		return $url;
+	}
+
+//--------------------------------------------------
+// CMS Text usage helper
+
+	function cms_text_html($config) {
+		$cms_text = config::get('cms_text');
+		if (!$cms_text) {
+			$cms_text = new cms_text();
+			config::set('cms_text', $cms_text);
+		}
+		return $cms_text->html($config);
 	}
 
 //--------------------------------------------------

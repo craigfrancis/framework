@@ -305,7 +305,7 @@
 
 						if ($reset['identification']) {
 							$reset_pass = random_key(15);
-							$reset_hash = auth::quick_hash_create($reset_pass);
+							$reset_hash = quick_hash_create($reset_pass);
 						} else {
 							$reset_pass = NULL;
 							$reset_hash = '';
@@ -316,7 +316,7 @@
 								'token'   => $reset_hash,
 								'ip'      => config::get('request.ip'),
 								'browser' => config::get('request.browser'),
-								'tracker' => auth::browser_tracker_get(),
+								'tracker' => browser_tracker_get(),
 								'user_id' => $reset['user_id'],
 								'email'   => $this->details['email'], // Not $reset['email'], as that can be found by the user_id.
 								'created' => $now,

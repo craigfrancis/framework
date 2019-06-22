@@ -115,9 +115,9 @@
 					$parameters[] = array('i', $reset_id);
 					$parameters[] = array('s', $created_after);
 
-					if (($row = $db->fetch_row($sql, $parameters)) && (auth::quick_hash_verify($reset_pass, $row['token']))) {
+					if (($row = $db->fetch_row($sql, $parameters)) && (quick_hash_verify($reset_pass, $row['token']))) {
 
-						$row['browser_changed'] = auth::browser_tracker_changed($row['tracker']); // Don't use UA string, it changes too often.
+						$row['browser_changed'] = browser_tracker_changed($row['tracker']); // Don't use UA string, it changes too often.
 						$row['valid'] = NULL; // Not checked yet
 
 						unset($row['tracker']);

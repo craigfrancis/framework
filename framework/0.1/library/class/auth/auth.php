@@ -350,14 +350,14 @@ exit();
 				// Add record
 
 					$remember_pass = random_key(40);
-					$remember_hash = auth::quick_hash_create($remember_pass);
+					$remember_hash = quick_hash_create($remember_pass);
 
 					$db->insert($db_remember_table, array(
 							'id'      => '',
 							'token'   => $remember_hash,
 							'ip'      => config::get('request.ip'),
 							'browser' => config::get('request.browser'),
-							'tracker' => auth::browser_tracker_get(),
+							'tracker' => browser_tracker_get(),
 							'user_id' => $this->session_info_data['user_id'],
 							'created' => $now,
 							'expired' => $expires,
@@ -562,7 +562,7 @@ exit();
 
 								$ip_test = ($this->session_ip_lock == false || config::get('request.ip') == $row['ip']);
 
-								if ($ip_test && auth::quick_hash_verify($session_pass, $row['token'])) {
+								if ($ip_test && quick_hash_verify($session_pass, $row['token'])) {
 
 									//--------------------------------------------------
 									// Update the session - keep active
@@ -672,7 +672,7 @@ exit();
 								$parameters[] = array('i', $remember_id);
 								$parameters[] = array('s', $now);
 
-								if (($row = $db->fetch_row($sql, $parameters)) && (auth::quick_hash_verify($remember_pass, $row['token']))) {
+								if (($row = $db->fetch_row($sql, $parameters)) && (quick_hash_verify($remember_pass, $row['token']))) {
 
 									$sql = 'UPDATE
 												' . $db_remember_table . ' AS r
@@ -854,7 +854,7 @@ exit();
 						$this->session_previous = array(
 								'last_used' => new timestamp($row['last_used'], 'db'),
 								'location_changed' => ($row['ip'] != config::get('request.ip')),
-								'browser_changed' => auth::browser_tracker_changed($row['tracker']), // Don't use UA string, it changes too often.
+								'browser_changed' => browser_tracker_changed($row['tracker']), // Don't use UA string, it changes too often.
 							);
 
 					} else {
@@ -1023,7 +1023,7 @@ exit();
 				// Session pass
 
 					$session_pass = random_key(40);
-					$session_hash = auth::quick_hash_create($session_pass); // Must be a quick hash for fast page loading time.
+					$session_hash = quick_hash_create($session_pass); // Must be a quick hash for fast page loading time.
 					$session_logout_token = random_key(15);
 
 				//--------------------------------------------------
@@ -1036,7 +1036,7 @@ exit();
 							'user_id'       => $user_id,
 							'ip'            => config::get('request.ip'),
 							'browser'       => config::get('request.browser'),
-							'tracker'       => auth::browser_tracker_get(),
+							'tracker'       => browser_tracker_get(),
 							'hash_time'     => floatval($this->hash_time), // There is a risk this shows who has shorter passwords... however, a 1 vs 72 character password takes the same amount of time with bcrypt; AND we use base64 encoded sha384, so they will all be 64 characters long anyway.
 							'limit'         => $limit_ref,
 							'logout_token'  => $session_logout_token, // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
@@ -1543,7 +1543,7 @@ exit();
 								'user_id'   => $db_id,
 								'ip'        => $request_ip,
 								'browser'   => config::get('request.browser'),
-								'tracker'   => auth::browser_tracker_get(),
+								'tracker'   => browser_tracker_get(),
 								'hash_time' => floatval($this->hash_time), // See notes in $auth->_session_start() as to why this is ok.
 								'limit'     => 'error',
 								'created'   => $now,
@@ -1656,52 +1656,7 @@ exit();
 		//--------------------------------------------------
 		// Support functions
 
-			public static function browser_tracker_get() {
-				$browser_tracker = config::get('auth.browser_tracker');
-				if ($browser_tracker === NULL) {
 
-					$browser_tracker = cookie::get('b');
-
-					if (strlen($browser_tracker) != 40) {
-						$browser_tracker = random_key(40);
-					}
-
-					cookie::set('b', $browser_tracker, ['expires' => '+6 months', 'same_site' => 'Lax', 'update' => true]); // Always re-send with a long expiry (so it does not expire or expose how long session_history is).
-
-					config::set('auth.browser_tracker', $browser_tracker);
-
-				}
-				return $browser_tracker;
-			}
-
-			public static function browser_tracker_changed($value) {
-				return (!hash_equals(auth::browser_tracker_get(), $value));
-			}
-
-			public static function quick_hash_create($value) {
-				return auth::$quick_hash . '-' . hash(auth::$quick_hash, $value);
-			}
-
-			public static function quick_hash_verify($value, $hash) {
-
-				if (trim($value) == '') {
-					return false;
-				}
-
-				if (($pos = strpos($hash, '-')) !== false) {
-					$algorithm = substr($hash, 0, $pos);
-					$hash = substr($hash, ($pos + 1));
-				} else {
-					$algorithm = auth::$quick_hash;
-				}
-
-				if (!in_array($algorithm, array(auth::$quick_hash, 'sha256'))) {
-					return false; // Don't allow anyone to set a weak hash.
-				}
-
-				return hash_equals($hash, hash($algorithm, $value));
-
-			}
 
 			public static function password_prepare($password) {
 
