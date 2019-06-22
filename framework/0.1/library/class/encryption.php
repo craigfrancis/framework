@@ -205,6 +205,18 @@
 			}
 
 		//--------------------------------------------------
+		// Quick check to see if something looks like an
+		// encrypted string.
+
+			public static function encrypted($string) {
+				if (preg_match('/^E(S|AS|AP|AT)(1|2)-/', $string, $matches)) {
+					return ($matches[1] == 'S' ? 'symmetric' : 'asymmetric');
+				} else {
+					return false;
+				}
+			}
+
+		//--------------------------------------------------
 		// Encode / decode interface
 
 			public static function encode($input, $key1, $key2 = NULL) {
