@@ -159,15 +159,17 @@
 		// Get key
 
 			public static function key_exists($name, $key_id = NULL) {
-				$path = self::_key_path_get($name);
-				if (is_file($path)) {
-					if ($key_id === NULL) {
-						return true;
-					} else {
-						$keys = trim(file_get_contents($path));
-						$keys = json_decode($keys, true); // Associative array
-						if (isset($keys[$key_id])) {
+				if (strlen($name) > 0) {
+					$path = self::_key_path_get($name);
+					if (is_file($path)) {
+						if ($key_id === NULL) {
 							return true;
+						} else {
+							$keys = trim(file_get_contents($path));
+							$keys = json_decode($keys, true); // Associative array
+							if (isset($keys[$key_id])) {
+								return true;
+							}
 						}
 					}
 				}
