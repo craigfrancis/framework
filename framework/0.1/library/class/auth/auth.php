@@ -1349,10 +1349,6 @@ exit();
 						$parameters[] = array('s', $identification);
 					}
 
-					$where_sql .= ' AND
-								' . $db_main_where_sql . ' AND
-								' . $this->db_where_sql['main_login'];
-
 					$sql = 'SELECT
 								m.' . $db->escape_field($db_main_fields['id']) . ' AS id,
 								m.' . $db->escape_field($db_main_fields['password']) . ' AS password,
@@ -1360,7 +1356,9 @@ exit();
 							FROM
 								' . $db->escape_table($db_main_table) . ' AS m
 							WHERE
-								' . $where_sql . '
+								' . $where_sql . ' AND
+								' . $db_main_where_sql . ' AND
+								' . $this->db_where_sql['main_login'] . '
 							LIMIT
 								1';
 
