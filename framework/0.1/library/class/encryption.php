@@ -159,17 +159,15 @@
 		// Get key
 
 			public static function key_exists($name, $key_id = NULL) {
-				if (strlen($name) > 0) {
-					$path = self::_key_path_get($name);
-					if (is_file($path)) {
-						if ($key_id === NULL) {
+				$path = self::_key_path_get($name);
+				if (is_file($path)) {
+					if ($key_id === NULL) {
+						return true;
+					} else {
+						$keys = file_get_contents($path);
+						$keys = json_decode($keys, true); // Associative array
+						if (isset($keys[$key_id])) {
 							return true;
-						} else {
-							$keys = trim(file_get_contents($path));
-							$keys = json_decode($keys, true); // Associative array
-							if (isset($keys[$key_id])) {
-								return true;
-							}
 						}
 					}
 				}
@@ -794,7 +792,7 @@
 							throw new error_exception('The encryption key file does not exist.', $path);
 						}
 
-						$keys = trim(file_get_contents($path));
+						$keys = file_get_contents($path);
 
 						$keys = json_decode($keys, true); // Associative array
 						if ($keys === NULL) {
@@ -856,6 +854,10 @@
 			}
 
 			private static function _key_path_get($name) {
+				$name = trim($name); // Also ensures it's not NULL.
+				if ($name == '') {
+					exit_with_error('Cannot have a blank key name.');
+				}
 				return config::get('encryption.key_folder') . '/' . safe_file_name($name);
 			}
 
