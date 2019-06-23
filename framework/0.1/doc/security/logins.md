@@ -9,7 +9,7 @@ There is a [password helper](https://github.com/craigfrancis/framework/blob/mast
 - [`password_verify`](https://php.net/password_verify)()
 - [`password_needs_rehash`](https://php.net/password_needs_rehash)()
 
-While providing backwards computability support for the old md5 style hashing.
+Where it provides a fallback via `crypt`, and it uses a password normalisation process (to avoid some edge case issues).
 
 ---
 
