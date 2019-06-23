@@ -19,20 +19,17 @@
 
 		public static function hash($password) {
 
+			$password = password::normalise($password);
+
 			if (function_exists('password_hash')) {
 
 				$start = microtime(true);
 
-				$hash = password_hash(password::normalise($password), PASSWORD_DEFAULT);
-				if ($hash) {
-					$hash = '$' . $hash; // Has been normalised.
-				}
+				$hash = password_hash($password, PASSWORD_DEFAULT);
 
 				if (function_exists('debug_log_time')) {
 					debug_log_time('PASSH', round((microtime(true) - $start), 3));
 				}
-
-				return $hash;
 
 			} else if (defined('CRYPT_BLOWFISH') && CRYPT_BLOWFISH == true) {
 
@@ -52,17 +49,15 @@
 
 				$start = microtime(true);
 
-				$ret = crypt($password, ($hash_format . $hash_salt));
+				$hash = crypt($password, ($hash_format . $hash_salt));
 
 				if (function_exists('debug_log_time')) {
 					debug_log_time('PASSH', round((microtime(true) - $start), 3));
 				}
 
-				if (!is_string($ret) || strlen($ret) <= 13) {
-					exit_with_error('Error when creating crypt version of password', $hash_format . "\n" . $ret);
+				if (!is_string($hash) || strlen($hash) <= 13) {
+					exit_with_error('Error when creating crypt version of password', $hash_format . "\n" . $hash);
 				}
-
-				return $ret;
 
 			} else {
 
@@ -70,26 +65,27 @@
 
 			}
 
+			if ($hash) {
+				$hash = '$' . $hash; // Successfully hashed, where the password was normalised.
+			}
+
+			return $hash;
+
 		}
 
 		public static function verify($password, $hash, $record_id = 0) {
 
-			if ($record_id > 0 && preg_match('/^([a-z0-9]{32})-([a-z0-9]{10})$/i', $hash, $matches)) { // Old hashing method
+			if ($record_id > 0 && preg_match('/^([a-z0-9]{32})-([a-z0-9]{10})$/i', $hash, $matches)) {
+				return (md5(md5($record_id) . md5($password) . md5($matches[2])) == $matches[1]); // Old hashing method, no longer used
+			}
 
-				$part_hash = $matches[1];
-				$part_salt = $matches[2];
+			if (substr($hash, 0, 2) == '$$') { // Hashed password has been normalised.
+				$hash = substr($hash, 1);
+				$hash_info = password_get_info($hash);
+				$password = password::normalise($password, $hash_info['algo']);
+			}
 
-				if (md5(md5($record_id) . md5($password) . md5($part_salt)) == $part_hash) { // Old hashing method, no longer used
-					return true;
-				}
-
-			} else if (function_exists('password_verify')) {
-
-				if (substr($hash, 0, 2) == '$$') {
-					$hash = substr($hash, 1);
-					$hash_info = password_get_info($hash);
-					$password = password::normalise($password, $hash_info['algo']);
-				}
+			if (function_exists('password_verify')) {
 
 				$start = microtime(true);
 
