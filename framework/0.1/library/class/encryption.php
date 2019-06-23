@@ -159,7 +159,7 @@
 		// Get key
 
 			public static function key_exists($name, $key_id = NULL) {
-				$path = self::_key_path_get($name);
+				$path = self::key_path_get($name);
 				if (is_file($path)) {
 					if ($key_id === NULL) {
 						return true;
@@ -174,25 +174,41 @@
 				return false;
 			}
 
-			public static function key_get_id($name) { // The ID of the current version (aka version).
-				$path = self::_key_path_get($name);
+			public static function key_public_get($name, $key_id = NULL) {
+				return self::_key_get($name, $key_id, 'P');
+			}
+
+			// public static function key_secret_get($name, $key_id = NULL) { // Only enable if it's needed.
+			// 	return self::_key_get($name, $key_id, 'S');
+			// }
+
+			public static function key_id_get($name) { // The ID of the current version (aka version).
+				$ids = self::key_ids_get($name);
+				if ($ids) {
+					return max($ids);
+				}
+				return false;
+			}
+
+			public static function key_ids_get($name) {
+				$path = self::key_path_get($name);
 				if (is_file($path)) {
 					$keys = file_get_contents($path);
 					$keys = json_decode($keys, true); // Associative array
 					if (count($keys) > 0) {
-						return max(array_keys($keys));
+						return array_keys($keys);
 					}
 				}
 				return false;
 			}
 
-			public static function key_get_public($name, $key_id = NULL) {
-				return self::_key_get($name, $key_id, 'P');
+			public static function key_path_get($name) {
+				$name = trim($name); // Also ensures it's not NULL.
+				if ($name == '') {
+					exit_with_error('Cannot have a blank key name.');
+				}
+				return config::get('encryption.key_folder') . '/' . safe_file_name($name);
 			}
-
-			// public static function key_get_secret($name, $key_id = NULL) { // Only enable if it's needed.
-			// 	return self::_key_get($name, $key_id, 'S');
-			// }
 
 			public static function key_cleanup($name, $keep_ids = NULL) {
 
@@ -208,7 +224,7 @@
 					}
 				}
 
-				$path = self::_key_path_get($name);
+				$path = self::key_path_get($name);
 
 				file_put_contents($path, json_encode($keys));
 
@@ -730,7 +746,7 @@
 					throw new error_exception('The encryption keys name cannot be longer than ' . self::$key_name_max_length . ' characters', $name);
 				}
 
-				$path = self::_key_path_get($name);
+				$path = self::key_path_get($name);
 				$folder = dirname($path);
 
 				if (!is_dir($folder)) {
@@ -786,7 +802,7 @@
 
 					if ($keys === NULL) {
 
-						$path = self::_key_path_get($name);
+						$path = self::key_path_get($name);
 
 						if (!is_file($path)) {
 							throw new error_exception('The encryption key file does not exist.', $path);
@@ -827,7 +843,7 @@
 
 						list($key_public, $key_secret) = $key_encoded;
 
-						$key_encoded = ($asymmetric_type === 'P' ? $key_public : $key_secret); // Internal functions expect the secret key by default - external code should be using encryption::key_get_public('my-key')
+						$key_encoded = ($asymmetric_type === 'P' ? $key_public : $key_secret); // Internal functions expect the secret key by default - external code should be using encryption::key_public_get('my-key')
 
 					}
 
@@ -851,14 +867,6 @@
 
 				}
 
-			}
-
-			private static function _key_path_get($name) {
-				$name = trim($name); // Also ensures it's not NULL.
-				if ($name == '') {
-					exit_with_error('Cannot have a blank key name.');
-				}
-				return config::get('encryption.key_folder') . '/' . safe_file_name($name);
 			}
 
 			private static function _key_cache_value($name, $value = NULL) {
