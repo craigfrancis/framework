@@ -23,13 +23,16 @@
 
 				$start = microtime(true);
 
-				$ret = password_hash($password, PASSWORD_DEFAULT);
+				$hash = password_hash(password::normalise($password), PASSWORD_DEFAULT);
+				if ($hash) {
+					$hash = '$' . $hash; // Has been normalised.
+				}
 
 				if (function_exists('debug_log_time')) {
 					debug_log_time('PASSH', round((microtime(true) - $start), 3));
 				}
 
-				return $ret;
+				return $hash;
 
 			} else if (defined('CRYPT_BLOWFISH') && CRYPT_BLOWFISH == true) {
 
@@ -82,6 +85,12 @@
 
 			} else if (function_exists('password_verify')) {
 
+				if (substr($hash, 0, 2) == '$$') {
+					$hash = substr($hash, 1);
+					$hash_info = password_get_info($hash);
+					$password = password::normalise($password, $hash_info['algo']);
+				}
+
 				$start = microtime(true);
 
 				$ret = password_verify($password, $hash);
@@ -117,6 +126,12 @@
 		public static function needs_rehash($hash) {
 
 			if (function_exists('password_needs_rehash')) {
+
+				if (substr($hash, 0, 2) == '$$') {
+					$hash = substr($hash, 1); // The first $ marks the password as having been normalised.
+				} else {
+					return true; // Not hashed, or normalised.
+				}
 
 				return password_needs_rehash($hash, PASSWORD_DEFAULT); // Use whenever possible
 
