@@ -211,11 +211,25 @@
 		// encrypted string.
 
 			public static function encrypted($string) {
-				if (preg_match('/^E(S|AS|AP|AT)(1|2)-/', $string, $matches)) {
-					return ($matches[1] == 'S' ? 'symmetric' : 'asymmetric');
-				} else {
-					return false;
+				if (preg_match('/^E(S|AS|AP|AT)([0-9]+)-([0-9\/]+)-/', $string, $matches)) {
+
+					$return = [
+							'type' => $matches[1],
+							'version' => $matches[2],
+						];
+
+					list($key1_id, $key2_id) = array_pad(explode('/', $matches[3], 2), 2, -1);
+					if ($return['type'] == 'S') {
+						$return['key'] = $key1_id;
+					} else {
+						$return['key1'] = $key1_id;
+						$return['key2'] = $key2_id;
+					}
+
+					return $return;
+
 				}
+				return false;
 			}
 
 		//--------------------------------------------------
