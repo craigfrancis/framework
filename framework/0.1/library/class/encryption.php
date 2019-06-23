@@ -176,6 +176,18 @@
 				return false;
 			}
 
+			public static function key_get_id($name) { // The ID of the current version (aka version).
+				$path = self::_key_path_get($name);
+				if (is_file($path)) {
+					$keys = file_get_contents($path);
+					$keys = json_decode($keys, true); // Associative array
+					if (count($keys) > 0) {
+						return max(array_keys($keys));
+					}
+				}
+				return false;
+			}
+
 			public static function key_get_public($name, $key_id = NULL) {
 				return self::_key_get($name, $key_id, 'P');
 			}
