@@ -53,6 +53,7 @@
 				);
 
 			public static $secret_version = 1;
+			public static $secret_key = 'auth';
 
 		//--------------------------------------------------
 		// Setup
@@ -1270,6 +1271,91 @@ exit();
 			}
 
 		//--------------------------------------------------
+		// Auth encryption - useful for initial setup.
+
+			public function auth_encrypt() {
+
+				if (!encryption::key_exists(auth::$secret_key)) {
+					exit_with_error('The encryption key "' . auth::$secret_key . '" does not exist.');
+				}
+
+				$current_key_id = encryption::key_id_get(auth::$secret_key);
+				if ($current_key_id === false) {
+					exit_with_error('Cannot determine the current ID for encryption key "' . auth::$secret_key . '".');
+				}
+
+				$db = $this->db_get();
+
+				list($db_main_table, $db_main_fields, $db_main_where_sql) = $this->db_table_get('main');
+
+				$sql = 'SELECT
+							m.' . $db->escape_field($db_main_fields['id']) . ' AS id,
+							m.' . $db->escape_field($db_main_fields['password']) . ' AS password,
+							m.' . $db->escape_field($db_main_fields['auth']) . ' AS auth
+						FROM
+							' . $db->escape_table($db_main_table) . ' AS m
+						WHERE
+							' . $db_main_where_sql . ' AND
+							' . $this->db_where_sql['main_login'];
+
+				$errors = [];
+
+				foreach ($db->fetch_all($sql) as $row) {
+
+					$auth_encoded = NULL;
+
+					if ($row['auth']) {
+
+						$encrypted = encryption::encrypted($row['auth']);
+						if (!$encrypted) {
+							exit_with_error('Unrecognised auth value for user "' . $row['id'] . '", should be encrypted.');
+						}
+
+						$auth_config = auth::secret_parse($row['id'], $row['auth']);
+						if (!$auth_config) {
+							exit_with_error('Could not parse encrypted auth value for user "' . $row['id'] . '".');
+						}
+
+						if ($encrypted['key'] != $current_key_id) { // Encryption key ID has changed.
+							$auth_encoded = auth::secret_encode($row['id'], $auth_config);
+						}
+
+					} else if (substr($row['password'], 0, 1) == '$' || preg_match('/^([a-z0-9]{32})-([a-z0-9]{10})$/i', $row['password'])) {
+
+						$auth_encoded = auth::secret_encode($row['id'], ['ph' => $row['password']]); // Looks like it has already been hashed.
+
+					} else if ($row['password']) {
+
+						$auth_encoded = auth::secret_encode($row['id'], [], $row['password']); // Best guess, it's plain text?
+
+					}
+
+					if ($auth_encoded) {
+
+						$sql = 'UPDATE
+									' . $db->escape_table($db_main_table) . ' AS m
+								SET
+									m.' . $db->escape_field($db_main_fields['password']) . ' = "",
+									m.' . $db->escape_field($db_main_fields['auth']) . ' = ?
+								WHERE
+									m.' . $db->escape_field($db_main_fields['id']) . ' = ? AND
+									' . $db_main_where_sql . '
+								LIMIT
+									1';
+
+						$parameters = array();
+						$parameters[] = array('s', $auth_encoded);
+						$parameters[] = array('i', $row['id']);
+
+						$db->query($sql, $parameters);
+
+					}
+
+				}
+
+			}
+
+		//--------------------------------------------------
 		// Validation
 
 			public function validate_identification_unique($identification, $user_id) {
@@ -1351,7 +1437,6 @@ exit();
 
 					$sql = 'SELECT
 								m.' . $db->escape_field($db_main_fields['id']) . ' AS id,
-								m.' . $db->escape_field($db_main_fields['password']) . ' AS password,
 								m.' . $db->escape_field($db_main_fields['auth']) . ' AS auth
 							FROM
 								' . $db->escape_table($db_main_table) . ' AS m
@@ -1363,18 +1448,15 @@ exit();
 								1';
 
 					$db_id = 0;
-					$db_pass = '';
-
-					$auth_config = NULL;
+					$db_auth = NULL;
 
 					if ($row = $db->fetch_row($sql, $parameters)) {
 
 						$db_id = $row['id'];
-						$db_pass = $row['password'];
 
 						if ($row['auth']) {
-							$auth_config = auth::secret_parse($db_id, $row['auth']); // Returns NULL on failure
-							if (!$auth_config) {
+							$db_auth = auth::secret_parse($db_id, $row['auth']); // Returns NULL on failure
+							if (!$db_auth) {
 								$error = 'failure_decryption';
 							}
 						}
@@ -1436,27 +1518,15 @@ exit();
 
 						$start = microtime(true);
 
-						if ($auth_config) { // If we have an auth value, we only use that.
+						if ($db_auth) { // If we have an auth value, we only use that.
 
-							$valid = password::verify(password::normalise($password), $auth_config['ph']);
+							$valid = password::verify($password, $db_auth['ph'], $db_id);
 
-							if ($db_pass != '') {
-
-								// Shouldn't have a 'pass' value now, if it does, get rid of it (with a re-hash).
-
-							} else if ($auth_config['v'] == auth::$secret_version && !password::needs_rehash($auth_config['ph'])) {
+							if ($db_auth['v'] == auth::$secret_version && !password::needs_rehash($db_auth['ph'])) {
 
 								$rehash = false; // All looks good, no need to re-hash.
 
 							}
-
-						} else if (substr($db_pass, 0, 1) === '$') { // The password field looks like it contains a simple hashed password.
-
-							$valid = password::verify($password, $db_pass, $db_id);
-
-						} else if (strlen($db_pass) > $this->password_min_length_get() && $db_pass != '-' && $password === $db_pass) { // The password field is long enough (not empty), disabled via '-', nor does it start with a "$"... maybe it's a plain text password, waiting to be hashed?
-
-							$valid = true;
 
 						}
 
@@ -1485,16 +1555,15 @@ exit();
 
 							if ($rehash) {
 
-								if (!is_array($auth_config)) {
-									$auth_config = array();
+								if (!is_array($db_auth)) {
+									$db_auth = array();
 								}
 
-								$auth_encoded = auth::secret_encode($db_id, $auth_config, $password);
+								$auth_encoded = auth::secret_encode($db_id, $db_auth, $password);
 
 								$sql = 'UPDATE
 											' . $db->escape_table($db_main_table) . ' AS m
 										SET
-											m.' . $db->escape_field($db_main_fields['password']) . ' = "",
 											m.' . $db->escape_field($db_main_fields['auth']) . ' = ?
 										WHERE
 											m.' . $db->escape_field($db_main_fields['id']) . ' = ? AND
@@ -1508,17 +1577,17 @@ exit();
 
 								$db->query($sql, $parameters);
 
-								$auth_config = auth::secret_parse($db_id, $auth_encoded); // So all fields are present (e.g. 'ips')
+								$db_auth = auth::secret_parse($db_id, $auth_encoded); // So all fields are present (e.g. 'ips')
 
 							}
 
-							unset($auth_config['ph']);
+							unset($db_auth['ph']);
 
 							return array(
 									'id' => intval($db_id),
 									'identification' => $identification,
-									'password_validation' => $this->validate_password($password, $auth_config['pu']),
-									'auth' => $auth_config,
+									'password_validation' => $this->validate_password($password, $db_auth['pu']),
+									'auth' => $db_auth,
 								);
 
 						}
@@ -1655,6 +1724,16 @@ exit();
 
 			public static function secret_parse($user_id, $secret) {
 
+				if (!encryption::key_exists(auth::$secret_key)) {
+					exit_with_error('The encryption key "' . auth::$secret_key . '" does not exist.');
+				}
+
+				try {
+					$secret = encryption::decode($secret, auth::$secret_key, $user_id); // user_id is used for "associated data", so this encrypted value cannot be used for any other account.
+				} catch (exception $e) {
+					exit_with_error('Unable to decrypt auth secret for user "' . $user_id . '".', $e->getMessage() . "\n\n" . $e->getHiddenInfo());
+				}
+
 				if (($pos = strpos($secret, '-')) !== false) {
 					$version = intval(substr($secret, 0, $pos));
 					$secret = substr($secret, ($pos + 1));
@@ -1697,17 +1776,25 @@ exit();
 					), $secret_values);
 
 				if ($new_password) {
-					$secret_values['ph'] = password::hash(password::normalise($new_password));
+					$secret_values['ph'] = password::hash($new_password);
 					$secret_values['pu'] = time();
 				}
 
 				unset($secret_values['v']);
 
-				$secret = json_encode($secret_values);
+				$secret = intval(auth::$secret_version) . '-' . json_encode($secret_values);
 
-// TODO: Use encryption::encode() ... maybe with sha256($user_id + ENCRYPTION_KEY) as the key? (so the value cannot be used for other users)... also need to consider Key V1 vs V2 (openssl / lib sodium).
+				if (!encryption::key_exists(auth::$secret_key)) {
+					encryption::key_symmetric_create(auth::$secret_key);
+				}
 
-				return intval(auth::$secret_version) . '-' . $secret;
+				try {
+					$secret = encryption::encode($secret, auth::$secret_key, $user_id); // user_id is used for "associated data", so this encrypted value cannot be used for any other account.
+				} catch (exception $e) {
+					exit_with_error('Unable to encrypt auth secret for user "' . $user_id . '".', $e->getMessage() . "\n\n" . $e->getHiddenInfo());
+				}
+
+				return $secret;
 
 			}
 
