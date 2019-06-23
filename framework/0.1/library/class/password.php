@@ -110,12 +110,6 @@
 
 			}
 
-			if ($hash != '' && $password == $hash) {
-
-				return true; // Password hasn't been hashed (yet)
-
-			}
-
 			return false;
 
 		}
@@ -136,9 +130,9 @@
 					}
 				}
 
-			} else if (preg_match('/^([a-z0-9]{32})-([a-z]{10})$/i', $hash)) { // Old hashing method
+			} else {
 
-				return false;
+				exit_with_error('No suitable password hashing methods found.');
 
 			}
 
