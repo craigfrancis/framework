@@ -29,7 +29,7 @@
 	function load_framework($inc_setup = false) {
 		require_once(FRAMEWORK_ROOT . '/bootstrap.php');
 		if ($inc_setup) {
-			script_run_once(ROOT . '/app/library/setup/setup.php');
+			require_once(FRAMEWORK_ROOT . '/includes/08.setup.php');
 		}
 	}
 
