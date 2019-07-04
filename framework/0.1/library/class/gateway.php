@@ -414,10 +414,7 @@
 				//--------------------------------------------------
 				// Run setup
 
-					$include_path = APP_ROOT . '/library/setup/setup.php';
-					if (is_file($include_path)) {
-						script_run_once($include_path);
-					}
+					require_once(FRAMEWORK_ROOT . '/includes/08.setup.php');
 
 				//--------------------------------------------------
 				// Response
@@ -800,10 +797,7 @@
 				// Includes
 
 					if (!$api_framework || $this->api == 'maintenance') {
-						$include_path = APP_ROOT . '/library/setup/setup.php';
-						if (is_file($include_path)) {
-							script_run_once($include_path);
-						}
+						require_once(FRAMEWORK_ROOT . '/includes/08.setup.php');
 					}
 
 					if (is_file($api_path)) {
