@@ -5,7 +5,6 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $browser_advanced = true;
 			private $message = NULL;
 			private $title = NULL;
 			private $description = NULL;
@@ -545,7 +544,7 @@
 
 				$html = '';
 
-				if ($this->js_enabled && $this->browser_advanced) {
+				if ($this->js_enabled) {
 
 					$js_files = array();
 					$js_prefix = config::get('output.js_path_prefix', ''); // e.g. '.' or '../..'
@@ -1160,9 +1159,7 @@
 				//--------------------------------------------------
 				// CSS
 
-					if ($this->browser_advanced) {
-						$html .= $this->_css_get('html');
-					}
+					$html .= $this->_css_get('html');
 
 				//--------------------------------------------------
 				// Favicon
@@ -1209,9 +1206,7 @@
 				//--------------------------------------------------
 				// Extra head HTML
 
-					if ($this->browser_advanced) {
-						$html .= $this->head_html . "\n\n";
-					}
+					$html .= $this->head_html . "\n\n";
 
 				//--------------------------------------------------
 				// Return
@@ -1292,9 +1287,7 @@
 				//--------------------------------------------------
 				// Extra head HTML
 
-					if ($this->browser_advanced) {
-						$html .= $this->foot_html . "\n\n";
-					}
+					$html .= $this->foot_html . "\n\n";
 
 				//--------------------------------------------------
 				// Return
@@ -1542,18 +1535,6 @@
 
 						}
 
-					}
-
-				//--------------------------------------------------
-				// Browser on black list (no css/js)
-
-					$browser = config::get('request.browser');
-					if ($browser != '') {
-						foreach (config::get('output.block_browsers') as $browser_reg_exp) {
-							if (preg_match($browser_reg_exp, $browser)) {
-								$this->browser_advanced = false;
-							}
-						}
 					}
 
 				//--------------------------------------------------

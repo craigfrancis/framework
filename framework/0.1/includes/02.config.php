@@ -378,12 +378,6 @@
 
 		config::set_default('output.fp_enabled', false);
 
-		config::set_default('output.block_browsers', array(
-				'/MSIE [1-5]\./',
-				'/MSIE.*; Mac_PowerPC/',
-				'/Netscape\/[4-7]\./',
-			));
-
 		config::set_default('output.favicon_url',  ASSET_URL  . '/img/global/favicon.ico');
 		config::set_default('output.favicon_path', ASSET_ROOT . '/img/global/favicon.ico');
 		config::set_default('output.timestamp_url', false);
