@@ -57,6 +57,13 @@
 	require_once(CLI_ROOT . '/../bootstrap.php');
 
 //--------------------------------------------------
+// Setup
+
+	config::set_default('route.setup_include', false);
+
+	require_once(FRAMEWORK_ROOT . '/includes/08.setup.php');
+
+//--------------------------------------------------
 // Mime type
 
 	mime_set('text/plain');
