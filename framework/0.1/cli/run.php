@@ -59,9 +59,15 @@
 //--------------------------------------------------
 // Setup
 
-	config::set_default('route.setup_include', false);
+	$setup_include = config::get('route.setup_include', NULL);
+
+	if ($setup_include === NULL) {
+		config::set('route.setup_include', false); // Only set to false if not already set.
+	}
 
 	require_once(FRAMEWORK_ROOT . '/includes/08.setup.php');
+
+	config::set('route.setup_include', $setup_include);
 
 //--------------------------------------------------
 // Mime type

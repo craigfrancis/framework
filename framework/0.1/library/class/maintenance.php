@@ -70,7 +70,7 @@
 				//--------------------------------------------------
 				// Run setup
 
-					require_once(FRAMEWORK_ROOT . '/includes/08.setup.php');
+					require(FRAMEWORK_ROOT . '/includes/08.setup.php'); // Not "require_once", as was already required by "/cli/run.php"
 
 				//--------------------------------------------------
 				// Cleanup
