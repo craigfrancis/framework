@@ -465,11 +465,11 @@
 					}
 
 					if ($this->wrapper_class) {
-						$output_html .= "\n\t\t\t\t\t" . '<div class="' . html($this->wrapper_class) . '" role="region" tabindex="0"' . ($caption_id ? ' aria-labelledby="' . html($caption_id) . '"' : ' aria-label="Table ' . html($this->table_id) . '"') . '>';
+						$output_html .= "\n\t\t\t\t\t" . '<div class="' . html($this->wrapper_class) . '" tabindex="0">';
 					}
 
 					$output_html .= '
-						<table' . ($this->id_value != '' ? ' id="' . html($this->id_value) . '"' : '') . ($this->class_name != '' ? ' class="' . html($this->class_name) . '"' : '') . '>';
+						<table' . ($this->id_value != '' ? ' id="' . html($this->id_value) . '"' : '') . ($this->class_name != '' ? ' class="' . html($this->class_name) . '"' : '') . ($caption_id ? ' aria-labelledby="' . html($caption_id) . '"' : ' aria-label="Table ' . html($this->table_id) . '"') . '>';
 
 					if ($this->caption_text) {
 						$output_html .= '
