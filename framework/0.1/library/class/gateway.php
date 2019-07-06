@@ -797,7 +797,7 @@
 				// Includes
 
 					if (!$api_framework || $this->api == 'maintenance') {
-						require_once(FRAMEWORK_ROOT . '/includes/08.setup.php');
+						require(FRAMEWORK_ROOT . '/includes/08.setup.php'); // Not "require_once", as was already required by "/cli/run.php"
 					}
 
 					if (is_file($api_path)) {
