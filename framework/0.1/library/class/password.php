@@ -115,6 +115,10 @@
 
 			}
 
+			if (config::get('password.allow_unhashed', false) === true && $hash != '' && $hash != '-' && $password == $hash) {
+				return true; // Password hasn't been hashed (yet)
+			}
+
 			return false;
 
 		}
