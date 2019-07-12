@@ -34,6 +34,7 @@
 			private $field_refs = array();
 			private $field_count = 0;
 			private $field_tag_id = 0;
+			private $file_setup_complete = false;
 			private $required_mark_html = NULL;
 			private $required_mark_position = 'left';
 			private $label_prefix_html = '';
@@ -1034,6 +1035,22 @@
 				$this->fields[$this->field_count] = $field_obj;
 				$this->print_page_valid = false;
 				return $this->field_count;
+			}
+
+			public function _field_setup_file() { // Public for form_field to call
+
+				if ($this->file_setup_complete !== true) {
+
+					$this->file_setup_complete = true;
+
+					$this->form_attribute_set('enctype', 'multipart/form-data');
+
+					if (session::open()) {
+						session::regenerate_delay(60*20); // 20 minutes for the user to select the file(s), submit the form, and for the upload to complete (try to avoid issue with them using a second tab, and getting a new session key, while uploading).
+					}
+
+				}
+
 			}
 
 			public function _field_tag_id_get() { // Public for form_field to call
