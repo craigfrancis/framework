@@ -92,6 +92,16 @@
 			session::set('session.regenerate_block', ($blocked == true));
 		}
 
+		public static function regenerate_delay($delay = NULL) { // e.g. On a file upload page, you might want to delay any auto regenerations.
+			if ($delay === NULL) {
+				$delay = config::get('session.regenerate_delay', (60*5));
+			}
+			if ($delay < 5) {
+				exit_with_error('Should not auto regenerate a session key too frequently (' . $delay . ' seconds)');
+			}
+			session::set('session.regenerate_time', (time() + intval($delay)));
+		}
+
 		public static function destroy() {
 
 			if (config::get('session.id') !== NULL) {
@@ -228,14 +238,14 @@
 
 					if (config::get('output.mode') === NULL && !headers_sent()) { // Not a gateway/maintenance/asset script
 
-						$session_block = session::get('session.regenerate_block');
-						$session_age = session::get('session.regenerate_age');
+						$regenerate_block = session::get('session.regenerate_block');
+						$regenerate_time = session::get('session.regenerate_time');
 
-						if (($session_block !== true) && ($session_age === NULL || $session_age < (time() - 300))) {
+						if (($regenerate_block !== true) && ($regenerate_time === NULL || $regenerate_time < time())) {
 
-							session::set('session.regenerate_age', time());
+							session::regenerate_delay(); // Set a new 'session.regenerate_time' value.
 
-							if ($session_age !== NULL) {
+							if ($regenerate_time !== NULL) { // A time hadn't been set (first page), so don't regenerate now, wait till the time expires.
 
 								session::regenerate();
 

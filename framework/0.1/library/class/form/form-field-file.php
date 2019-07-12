@@ -31,9 +31,19 @@
 					$this->setup($form, $label, $name, $type);
 
 				//--------------------------------------------------
-				// Form encoding
+				// First file field
 
-					$this->form->form_attribute_set('enctype', 'multipart/form-data');
+					if (config::get('form.file_setup_complete') !== true) {
+
+						config::set('form.file_setup_complete', true);
+
+						$this->form->form_attribute_set('enctype', 'multipart/form-data');
+
+						if (session::open()) {
+							session::regenerate_delay(60*20); // 20 minutes for the user to select the file(s), submit the form, and for the upload to complete (try to avoid issue with them using a second tab, and getting a new session key, while uploading).
+						}
+
+					}
 
 				//--------------------------------------------------
 				// Newly uploaded files
