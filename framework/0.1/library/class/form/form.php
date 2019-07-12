@@ -1037,7 +1037,7 @@
 				return $this->field_count;
 			}
 
-			public function _field_setup_file() { // Public for form_field to call
+			public function _field_setup_file() { // Public for form_field to call, will only action once (for this form)
 
 				if ($this->file_setup_complete !== true) {
 
