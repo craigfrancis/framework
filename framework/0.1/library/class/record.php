@@ -33,7 +33,10 @@
 						'table_sql' => NULL,
 						'table_alias' => NULL,
 
+						'single' => false, // A single row per field, with a table [id, field, value, created, deleted]
+
 						'where' => NULL, // Currently not available
+						'where_field' => 'id',
 						'where_id' => NULL,
 						'where_extra_sql' => NULL, // e.g. 'cancelled = "0000-00-00 00:00:00"'
 						'where_sql' => NULL,
@@ -144,7 +147,7 @@
 
 				$this->where_id = $id;
 
-				$where_sql = 'id = ?';
+				$where_sql = $db->escape_field($this->config['where_field']) . ' = ?';
 
 				array_unshift($where_parameters, ['i', $id]);
 
@@ -216,7 +219,9 @@
 
 			public function field_get($field) {
 				$fields = $this->fields_get();
-				if (array_key_exists($field, $fields)) { // Local returned value is ever so slightly faster than class properties.
+				if ($this->config['single'] === true) {
+					return $fields['value'];
+				} else if (array_key_exists($field, $fields)) {
 					return $fields[$field];
 				} else {
 					exit_with_error('The field "' . $field . '" is not recognised on table "' . $this->table_sql . '"');
@@ -228,6 +233,33 @@
 					if ($this->where_sql === NULL) {
 
 						$this->values = false; // Lock... where clause not specified in time.
+
+					} else if ($this->config['single'] === true) {
+
+						$this->values = [];
+						foreach ($this->config['fields'] as $field) {
+							$this->values[$field] = '';
+						}
+
+						$db = $this->db_get();
+
+						$parameters = $this->where_parameters;
+
+						$in_sql = $db->parameter_in($parameters, 's', $this->config['fields']);
+
+						$sql = 'SELECT
+									field,
+									value
+								FROM
+									' . $this->table_sql . '
+								WHERE
+									' . $this->where_sql . ' AND
+									field IN (' . $in_sql . ') AND
+									deleted = "0000-00-00 00:00:00"';
+
+						foreach ($db->fetch_all($sql, $parameters) as $row) {
+							$this->values[$row['field']] = $row['value'];
+						}
 
 					} else {
 
@@ -310,77 +342,144 @@
 
 					$insert_mode = ($this->where_sql === NULL);
 
+					$now = new timestamp();
+
 				//--------------------------------------------------
 				// Merge new values
 
 					$new_values = array_merge($this->new_values, $new_values);
 
 				//--------------------------------------------------
-				// Changes
+				// Save
 
-					$changed = true; // New record
+					if ($this->config['single'] === true) {
 
-					if (!$insert_mode) {
+						//--------------------------------------------------
+						// Changes
 
-						$old_values = $this->values_get();
+							if (count($new_values) == 0) {
+								return; // Nothing to save, and we can't insert a record in 'single' mode.
+							}
 
-						if ($old_values === false) { // e.g. inserting a record into a second table, where the ID is already known (auto increment from the first table).
+							if ($this->values === NULL && $this->config['fields'] === NULL) {
+								$this->config['fields'] = array_keys($new_values);
+							}
 
-							$insert_mode = true;
+							$old_values = $this->values_get();
 
-						} else {
-
-							$changed = false;
+							if ($insert_mode || $old_values === false) {
+								exit_with_error('Cannot create a new record when record helper is in "single" mode.');
+							}
 
 							foreach ($new_values as $field => $new_value) {
+								if (!array_key_exists($field, $old_values) || $this->log_value_different($old_values[$field], $new_value)) {
 
-								if (!array_key_exists($field, $old_values)) {
-									continue; // Probably a new value supplied though $form->db_value_set();
+									//--------------------------------------------------
+									// Delete old
+
+										$sql = 'UPDATE
+													' . $this->table_sql . '
+												SET
+													deleted = ?
+												WHERE
+													' . $this->where_sql . ' AND
+													field = ? AND
+													deleted = "0000-00-00 00:00:00"';
+
+										$parameters = [];
+										$parameters[] = ['s', $now];
+										$parameters = array_merge($parameters, $this->where_parameters);
+										$parameters[] = ['s', $field];
+
+										$db->query($sql, $parameters);
+
+									//--------------------------------------------------
+									// Add new
+
+										// if ($new_value) { // Always record, as 'log_values' may want to log the author.
+										// }
+
+										$db->insert($this->table_sql, array_merge($this->config['log_values'], [
+												$this->config['where_field'] => $this->id_get(),
+												'field'   => $field,
+												'value'   => $new_value,
+												'created' => $now,
+												'deleted' => '0000-00-00 00:00:00',
+											]));
+
 								}
+							}
 
-								$old_value = $old_values[$field];
+					} else {
 
-								if ($this->log_value_different($old_value, $new_value)) {
+						//--------------------------------------------------
+						// Changes
 
-									$this->log_change($field, $old_value, $new_value);
+							$changed = true; // New record
 
-									$changed = true;
+							if (!$insert_mode || $this->config['single'] === true) {
+
+								$old_values = $this->values_get();
+
+								if ($old_values === false) { // e.g. inserting a record into a second table, where the ID is already known (auto increment from the first table).
+
+									$insert_mode = true;
+
+								} else {
+
+									$changed = false;
+
+									foreach ($new_values as $field => $new_value) {
+
+										if (!array_key_exists($field, $old_values)) {
+											continue; // Probably a new value supplied though $form->db_value_set();
+										}
+
+										$old_value = $old_values[$field];
+
+										if ($this->log_value_different($old_value, $new_value)) {
+
+											$this->log_change($field, $old_value, $new_value);
+
+											$changed = true;
+
+										}
+
+									}
 
 								}
 
 							}
 
-						}
+						//--------------------------------------------------
+						// When this happened
 
-					}
+							$fields = $this->fields_get();
 
-				//--------------------------------------------------
-				// When this happened
+							if (isset($fields['created']) && $insert_mode) {
+								$new_values['created'] = $now;
+							}
 
-					$fields = $this->fields_get();
+							if (isset($fields['edited']) && $changed) {
+								$new_values['edited'] = $now;
+							}
 
-					if (isset($fields['created']) && $insert_mode) {
-						$new_values['created'] = new timestamp();
-					}
+						//--------------------------------------------------
+						// Save
 
-					if (isset($fields['edited']) && $changed) {
-						$new_values['edited'] = new timestamp();
-					}
+							if ($insert_mode) {
 
-				//--------------------------------------------------
-				// Save
+								$db->insert($this->table_sql, $new_values);
 
-					if ($insert_mode) {
+								$this->where_set_id($db->insert_id());
 
-						$db->insert($this->table_sql, $new_values);
+							} else if (count($new_values) > 0) { // No new values when a user does not have permission to view/edit any db related fields.
 
-						$this->where_set_id($db->insert_id());
+								$table_sql = $this->table_sql . ($this->config['table_alias'] === NULL ? '' : ' AS ' . $this->config['table_alias']);
 
-					} else if (count($new_values) > 0) { // No new values when a user does not have permission to view/edit any db related fields.
+								$db->update($table_sql, $new_values, $this->where_sql, $this->where_parameters);
 
-						$table_sql = $this->table_sql . ($this->config['table_alias'] === NULL ? '' : ' AS ' . $this->config['table_alias']);
-
-						$db->update($table_sql, $new_values, $this->where_sql, $this->where_parameters);
+							}
 
 					}
 
