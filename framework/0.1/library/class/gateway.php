@@ -1,10 +1,46 @@
 <?php
 
 //--------------------------------------------------
-// http://www.phpprime.com/doc/setup/gateways/
+// TODO: Between servers auth.
+//
+// oAuth is not appropriate for 2-legged.
+//
+// Client calling local:
+//
+//   $gateway = new gateway();
+//   $gateway->run('example');
+//
+// Client calling remote:
+//
+//   $gateway = new gateway('https://www.example.com');
+//   $gateway->run('/a/api/example/sub-path/'); // Rarely used, where a leading slash means it's a full path.
+//   $gateway->run('example');
+//   $gateway->run('example', [
+//       'version' => 1,
+//       'sub_path' => '/sub-path/',
+//       'data_get' => ['a' => 'b'],
+//       'data_post' => ['a' => 'b'], // for 'application/x-www-form-urlencoded'... or it could also be a string?
+//       'username' => 'test',
+//       'expires' => '+5 seconds', How long the generated signature lasts, converted to a timestamp, passed in a separate 'X-Expires' header?
+//     ]);
+//
+// Server checking:
+//
+//   $username = $this->client_verify(); // where $this is an api object... and it calls the method client_key_get($username), so the project stores/provides the $key.
+//
+//   $header = 'Authorization base64(username):base64(signature):base64(nonce):base64(expires)'... not really 'Basic' (does provide username/signature), nor 'Bearer' (not a single token).
+//   $signature = base64_encode(hash_hmac('sha256', $string, $key)),
+//   hash_equals()
+//   $string = `url_path + http_build_query(ksort($_GET)) + body/POST + $nonce + $expires`
+//
+//   Use base64_encode_rfc4648(), which converts '+/' to '-_'... should we use ':' to separate fields?
+//   Need to stop the signature being used more than once... maybe the method client_log($config, $signature), where $config = ['version' => 1, 'sub_path' ...], and the framework provides a default implementation, using a UNIQUE index table on the signature, log of created date, etc.
+//
 //--------------------------------------------------
 
-	// TODO: Update to oAuth (see documentation for notes)
+//--------------------------------------------------
+// http://www.phpprime.com/doc/setup/gateways/
+//--------------------------------------------------
 
 	if (config::get('gateway.active') !== true) {
 		exit_with_error('Gateway disabled.');
@@ -32,12 +68,13 @@
 
 					$include_path = APP_ROOT . '/library/gateway/default.ini';
 					if (is_file($include_path)) {
+report_add('Deprecated: Is anyone using /library/gateway/default.ini ???', 'notice');
 						$this->config = parse_ini_file($include_path, true);
 					}
 
 					$include_path = APP_ROOT . '/library/gateway/' . config::get('gateway.server') . '.ini';
 					if (is_file($include_path)) {
-
+report_add('Deprecated: Is anyone using /library/gateway/SERVER.ini ???', 'notice');
 						$config_extra = parse_ini_file($include_path, true);
 						foreach ($config_extra as $section => $values) {
 							if (is_array($values)) {
@@ -98,6 +135,7 @@
 		// Client support
 
 			function string_get($gateway_name, $data = NULL) {
+report_add('Deprecated: $gateway->string_get()', 'notice');
 
 				//--------------------------------------------------
 				// Call
@@ -112,6 +150,7 @@
 			}
 
 			function array_get($gateway_name, $data = NULL) {
+report_add('Deprecated: $gateway->array_get()', 'notice');
 
 				//--------------------------------------------------
 				// Call
@@ -143,6 +182,7 @@
 			}
 
 			private function _client_get($gateway_name, $data = NULL, $connection_test = false) {
+report_add('Deprecated: $gateway->_client_get() ... intention is to replace all of this', 'notice');
 
 				//--------------------------------------------------
 				// Check tables
@@ -566,16 +606,19 @@
 		// Return values to client
 
 			protected function return_array($data) {
+report_add('Deprecated: $api->return_array() ... just call mime_set(), then exit with http_build_query()', 'notice');
 				mime_set('application/x-www-form-urlencoded');
 				exit(http_build_query($data));
 			}
 
 			protected function return_xml($xml) {
+report_add('Deprecated: $api->return_xml() ... just call mime_set(), then exit with the XML', 'notice');
 				mime_set('application/xml');
 				exit($xml);
 			}
 
 			protected function return_error($error) {
+report_add('Deprecated: $api->return_error() ... just call http_response_code(500), and exit with your own mime/content', 'notice');
 				http_response_code(500);
 				$this->return_xml('<error message="' . xml($error) . '" />');
 			}
@@ -615,10 +658,12 @@
 		// Client support
 
 			protected function client_ref_get() {
+report_add('Deprecated: $api->client_ref_get()', 'notice');
 				return $this->client_ref;
 			}
 
 			protected function client_verify() {
+report_add('Deprecated: $api->client_verify() ... will be replaced with something else, hash_hmac based', 'notice'); // Notes above.
 
 				//--------------------------------------------------
 				// Supplied details
@@ -732,6 +777,7 @@
 		// Data
 
 			protected function data($name) {
+report_add('Deprecated: $api->data() ... just use request(), or read from "php://input"', 'notice');
 
 				//--------------------------------------------------
 				// Get data supplied to gateway... typically XML
