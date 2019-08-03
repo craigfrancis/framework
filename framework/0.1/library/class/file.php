@@ -14,7 +14,7 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($config = NULL) {
+			public function __construct($config) { // Either a profile name (string), or config options (array).
 				$this->setup($config);
 			}
 
@@ -35,21 +35,22 @@
 				// Default config
 
 					$default_config = array(
-							'file_private' => false,
-							'file_root' => NULL,
-							'file_url' => NULL,
-							'file_timestamp_url' => config::get('output.timestamp_url', false),
-							'file_ext' => NULL,
-							'file_folder_division' => NULL, // Set to something like "1000" so the folder structure can by divided into folders /files/008000/8192
-							'file_missing_url' => NULL,
-							'image_type' => 'jpg',
-							'image_quality' => NULL,
+							'profile'                 => 'default',
+							'file_private'            => false,
+							'file_root'               => NULL,
+							'file_url'                => NULL,
+							'file_timestamp_url'      => config::get('output.timestamp_url', false),
+							'file_ext'                => NULL,
+							'file_folder_division'    => NULL, // Set to something like "1000" so the folder structure can by divided into folders /files/008000/8192
+							'file_missing_url'        => NULL,
+							'image_type'              => 'jpg',
+							'image_quality'           => NULL,
 							'image_preserve_original' => false, // Ideally the image needs to be re-saved, ensuring no hacked files are uploaded and exposed on the website, e.g. http://blog.portswigger.net/2016/12/bypassing-csp-using-polyglot-jpegs.html
-							'image_preserve_unsafe' => false,
-							'image_url_prefix' => '', // Could include the domain name (e.g. for email images).
-							'image_placeholder_url' => NULL, // If you want to show placeholder images, e.g. /a/img/place-holder/100x100.jpg
-							'image_missing_url' => NULL,
-							'image_background' => NULL, // If images should not be cropped, but have borders instead (e.g. '000000' for black)
+							'image_preserve_unsafe'   => false,
+							'image_url_prefix'        => '', // Could include the domain name (e.g. for email images).
+							'image_placeholder_url'   => NULL, // If you want to show placeholder images, e.g. /a/img/place-holder/100x100.jpg
+							'image_missing_url'       => NULL,
+							'image_background'        => NULL, // If images should not be cropped, but have borders instead (e.g. '000000' for black)
 						);
 
 					$default_config = array_merge($default_config, config::get_all('file.default'));
@@ -66,16 +67,13 @@
 						$config['profile'] = $profile;
 					}
 
-					$config = array_merge($default_config, $config);
-
-					if ($config['file_root'] === NULL) $config['file_root'] = ($config['file_private'] ? PRIVATE_ROOT . '/files' : FILE_ROOT);
-					if ($config['file_url']  === NULL) $config['file_url']  = ($config['file_private'] ? NULL : FILE_URL);
-
-					$this->config = $config;
+					$this->config = array_merge($default_config, $config);
 
 			}
 
 			public function config_get($key) {
+				if ($key == 'file_root' && $this->config[$key] === NULL) return ($this->config['file_private'] ? PRIVATE_ROOT . '/files' : FILE_ROOT);
+				if ($key == 'file_url'  && $this->config[$key] === NULL) return ($this->config['file_private'] ? NULL : FILE_URL);
 				if (isset($this->config[$key])) {
 					return $this->config[$key];
 				} else {
@@ -88,7 +86,7 @@
 			}
 
 			public function folder_path_get() {
-				return $this->config['file_root'] . '/' . safe_file_name($this->config['profile']);
+				return $this->config_get('file_root') . '/' . safe_file_name($this->config['profile']);
 			}
 
 		//--------------------------------------------------
@@ -143,15 +141,17 @@
 
 			public function file_url_get($id, $ext = NULL) {
 
-				if ($this->config['file_url'] === NULL) {
-					exit_with_error('There is no public url for private files.', $this->config['profile'] . ' - ' . $id);
+				$file_url = $this->config_get('file_url');
+
+				if ($file_url === NULL || $file_url === false) {
+					exit_with_error('There is no public url for this file.', $this->config['profile'] . ' - ' . $id);
 				}
 
 				$path = $this->file_path_get($id, $ext);
 
 				if (is_file($path)) {
 
-					$url = $this->config['file_url'] . substr($path, strlen($this->config['file_root']));
+					$url = $file_url . substr($path, strlen($this->config_get('file_root')));
 
 					if ($this->config['file_timestamp_url']) {
 						$url = timestamp_url($url, filemtime($path));
@@ -218,15 +218,17 @@
 
 			public function image_url_get($id, $size = 'original') {
 
-				if ($this->config['file_url'] === NULL) {
-					exit_with_error('There is no public url for private files.', $this->config['profile'] . ' - ' . $id);
+				$file_url = $this->config_get('file_url');
+
+				if ($file_url === NULL || $file_url === false) {
+					exit_with_error('There is no public url for this file.', $this->config['profile'] . ' - ' . $id);
 				}
 
 				$path = $this->image_path_get($id, $size);
 
 				if (is_file($path)) {
 
-					$url = $this->config['file_url'] . substr($path, strlen($this->config['file_root']));
+					$url = $file_url . substr($path, strlen($this->config_get('file_root')));
 
 					if ($this->config['file_timestamp_url']) {
 						$url = timestamp_url($url, filemtime($path));
