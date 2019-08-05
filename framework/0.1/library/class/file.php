@@ -32,9 +32,9 @@
 					}
 
 				//--------------------------------------------------
-				// Default config
+				// Config
 
-					$default_config = array(
+					$this->config = array_merge($this->config, [
 							'profile'                 => 'default',
 							'file_private'            => false,
 							'file_root'               => NULL,
@@ -51,23 +51,16 @@
 							'image_placeholder_url'   => NULL, // If you want to show placeholder images, e.g. /a/img/place-holder/100x100.jpg
 							'image_missing_url'       => NULL,
 							'image_background'        => NULL, // If images should not be cropped, but have borders instead (e.g. '000000' for black)
-						);
-
-					$default_config = array_merge($default_config, config::get_all('file.default'));
-
-				//--------------------------------------------------
-				// Set config
-
-					if (!is_array($config)) {
-						$config = array();
-					}
+						], config::get_all('file.default'));
 
 					if ($profile !== NULL) {
-						$config = array_merge(config::get_all('file.' . $profile), $config);
-						$config['profile'] = $profile;
+						$this->config = array_merge($this->config, config::get_all('file.' . $profile));
+						$this->config['profile'] = $profile;
 					}
 
-					$this->config = array_merge($default_config, $config);
+					if (is_array($config)) {
+						$this->config = array_merge($this->config, $config);
+					}
 
 			}
 
@@ -83,6 +76,12 @@
 
 			public function config_set($key, $value) {
 				$this->config[$key] = $value;
+			}
+
+			public function config_set_default($key, $value) {
+				if (!isset($this->config[$key])) {
+					$this->config[$key] = $value;
+				}
 			}
 
 			public function folder_path_get() {
