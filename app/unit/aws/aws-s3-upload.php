@@ -12,6 +12,13 @@
 		protected function setup($config) {
 
 			//--------------------------------------------------
+			// Testing
+
+				if (SERVER != 'stage') {
+					exit('Disabled');
+				}
+
+			//--------------------------------------------------
 			// Form setup
 
 				$form = new form();
