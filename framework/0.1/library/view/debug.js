@@ -178,6 +178,7 @@
 							link = document.createElement('a');
 							link.setAttribute('href', trusted_types.createURL(debug_mysql_url + row[field]));
 							link.setAttribute('target', '_blank');
+							link.setAttribute('rel', 'noopener');
 							link.textContent = row[field];
 							td.appendChild(link);
 						} else {
