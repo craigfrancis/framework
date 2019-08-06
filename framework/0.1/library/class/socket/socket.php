@@ -10,6 +10,7 @@
 		// Variables
 
 			private $values = array();
+			private $files = array();
 			private $headers = array();
 			private $cookies = array();
 			private $cookies_raw = array();
@@ -44,6 +45,7 @@
 			public function reset() {
 
 				$this->values = array();
+				$this->files = array();
 				$this->headers = array();
 				$this->cookies = array();
 				$this->cookies_raw = array();
@@ -66,6 +68,10 @@
 
 			public function value_set($name, $value) {
 				$this->values[$name] = $value;
+			}
+
+			public function file_add($field_name, $file_name, $content) {
+				$this->files[] = [$field_name, $file_name, $content];
 			}
 
 			public function header_set($name, $value) {
@@ -405,29 +411,85 @@ if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: su
 
 							if ($data == '' || is_array($data)) { // Similar to "http_build_query()"
 
-								$data_encoded = array();
+								//--------------------------------------------------
+								// Existing Content-Type header
 
-								if (is_array($data)) {
-									foreach ($data as $name => $value) {
-										if (is_array($value)) { // Support duplicate field names
-											$name = $value[0];
-											$value = $value[1];
+									$content_type_value = NULL;
+									$content_type_key = NULL;
+									foreach ($this->headers as $name => $value) {
+										if (strtolower($name) == 'content-type') {
+											$content_type_value = $value;
+											$content_type_key = $name;
+											break;
 										}
-										$data_encoded[] = urlencode($name) . '=' . urlencode($value); // urlencode not rawurlencode to match mime-type
 									}
-								}
+									if (count($this->files) > 0) {
+										$content_type_value = 'multipart/form-data';
+									}
 
-								foreach ($this->values as $name => $value) {
-									$data_encoded[] = urlencode($name) . '=' . urlencode($value);
-								}
+								//--------------------------------------------------
+								// Array of values (supports duplicate field names)
 
-								$data = implode('&', $data_encoded);
+									$data_values = [];
+									if (is_array($data)) {
+										foreach ($data as $name => $value) {
+											if (is_array($value)) {
+												$name = $value[0];
+												$value = $value[1];
+											}
+											$data_values[] = [$name, $value];
+										}
+									}
+									foreach ($this->values as $name => $value) {
+										$data_values[] = [$name, $value];
+									}
 
-								if (!in_array('content-type', array_map('strtolower', array_keys($this->headers)))) {
-									$headers[] = 'Content-Type: application/x-www-form-urlencoded; charset=' . head(config::get('output.charset'));
-								}
+								//--------------------------------------------------
+								// Encode data
 
-								$this->values = array();
+									if ($content_type_value == 'multipart/form-data') {
+
+										$boundary = '--form_boundary--' . time() . '--' . mt_rand(1000000, 9999999);
+
+										$content_type_value .= '; boundary=' . head($boundary);
+
+										$data = array();
+										foreach ($data_values as $value) {
+											$data[] = '--' . head($boundary) . "\n" . 'Content-Disposition: form-data; name="' . head($value[0]) . '"' . "\n\n" . $value[1];
+										}
+										foreach ($this->files as $value) {
+											$data[] = '--' . head($boundary) . "\n" . 'Content-Disposition: form-data; name="' . head($value[0]) . '"; filename="' . head($value[1]) . '"' . "\n\n" . $value[2];
+										}
+										$data = implode("\n", $data) . "\n" . '--' . head($boundary) . '--';
+
+									} else { // 'application/x-www-form-urlencoded' ... similar to http_build_query()
+
+										if ($content_type_value === NULL) {
+											$content_type_value = 'application/x-www-form-urlencoded; charset=' . head(config::get('output.charset'));
+										}
+
+										$data = array();
+										foreach ($data_values as $value) {
+											$data[] = urlencode($value[0]) . '=' . urlencode($value[1]); // urlencode not rawurlencode to match mime-type
+										}
+										$data = implode('&', $data);
+
+									}
+
+								//--------------------------------------------------
+								// Set header
+
+									if ($content_type_key !== NULL) {
+										$this->headers[$content_type_key] = $content_type_value;
+									} else {
+										$headers[] = 'Content-Type: ' . $content_type_value;
+									}
+
+								//--------------------------------------------------
+								// Reset for next request
+
+									$this->values = array();
+									$this->files = array();
 
 							}
 
