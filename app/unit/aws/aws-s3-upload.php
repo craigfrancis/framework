@@ -48,7 +48,15 @@
 							//--------------------------------------------------
 							// Save
 
-								$file = new file_aws_s3('aws-s3-example');
+								$file = new file_aws_s3([
+										'aws_region' => 'eu-west-1',
+										'aws_bucket' => 'code-poets',
+										'aws_access_key' => '???',
+										'aws_access_secret' => '???',
+									]);
+
+
+
 
 								$info = $file->file_save($field_file->file_path_get());
 
