@@ -10,14 +10,23 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($config) { // Either a profile name (string), or config options (array).
+			public function __construct($config) {
 				$this->setup($config);
 			}
 
 			protected function setup($config) {
 
+				if (!is_array($config))                   exit_with_error('The setup of file_aws_s3 requires a config array.');
+				if (!isset($config['aws_region']))        exit_with_error('The file_aws_s3 config must set "aws_region".');
+				if (!isset($config['aws_bucket']))        exit_with_error('The file_aws_s3 config must set "aws_bucket".');
+				if (!isset($config['aws_access_key']))    exit_with_error('The file_aws_s3 config must set "aws_access_key".');
+				if (!isset($config['aws_access_secret'])) exit_with_error('The file_aws_s3 config must set "aws_access_secret".');
+
+				if (!isset($config['profile'])) {
+					$config['profile'] = $config['aws_bucket'];
+				}
+
 				$this->file = new file($config);
-				$this->file->config_set_default('bucket', $this->file->config_get('profile'));
 				$this->file->config_set_default('file_encryption_key', 'aws-s3-default');
 				$this->file->config_set_default('file_hash', 'sha256');
 				$this->file->config_set('file_private', true);
@@ -135,6 +144,111 @@ debug($encrypted_path);
 				//--------------------------------------------------
 				// Upload to AWS S3
 
+					//--------------------------------------------------
+					// Config
+
+						$aws_region = $this->file->config_get('aws_region');
+						$aws_host = $this->file->config_get('aws_bucket') . '.s3.amazonaws.com';
+
+						$request_date = gmdate('Ymd');
+						$request_time = gmdate('Ymd\THis\Z');
+
+						$request_headers = [
+								'Content-Type'         => 'application/octet-stream',
+								'Date'                 => $request_time,
+								'Host'                 => $aws_host,
+								'x-amz-acl'            => 'private',
+								'x-amz-content-sha256' => hash('sha256', $encrypted_content),
+							];
+
+					//--------------------------------------------------
+					// Authorisation
+
+							// https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
+
+						ksort($request_headers);
+
+						$headers_canonical = [];
+						$headers_signed = [];
+						foreach ($request_headers as $key => $value) {
+							$key = strtolower($key);
+							$headers_canonical[] = $key . ':' . $value;
+							$headers_signed[] = $key;
+						}
+						$headers_canonical = implode("\n", $headers_canonical);
+						$headers_signed = implode(';', $headers_signed);
+
+						$canonical_request = implode("\n", [
+								'PUT',
+								'/' . $encrypted_hash,
+								'',
+								$headers_canonical,
+								'',
+								$headers_signed,
+								hash('sha256', $encrypted_content),
+							]);
+
+						$scope = implode('/', [
+								$request_date,
+								$aws_region,
+								's3',
+								'aws4_request',
+							]);
+
+						$string_to_sign = implode("\n", [
+								'AWS4-HMAC-SHA256',
+								$request_time,
+								$scope,
+								hash('sha256', $canonical_request),
+							]);
+
+						$signing_key = 'AWS4' . $this->file->config_get('aws_access_secret');
+						$signing_key = hash_hmac('sha256', $request_date, $signing_key, true);
+						$signing_key = hash_hmac('sha256', $aws_region, $signing_key, true);
+						$signing_key = hash_hmac('sha256', 's3', $signing_key, true);
+						$signing_key = hash_hmac('sha256', 'aws4_request', $signing_key, true);
+
+						$signature = hash_hmac('sha256', $string_to_sign, $signing_key);
+
+						$authorisation = 'AWS4-HMAC-SHA256' . ' ' . implode(',', [
+								'Credential=' . $this->file->config_get('aws_access_key') . '/' . $scope,
+								'SignedHeaders=' . $headers_signed,
+								'Signature=' . $signature,
+							]);
+
+					//--------------------------------------------------
+					// Send
+
+						$socket = new socket();
+						$socket->exit_on_error_set(false);
+
+						foreach ($request_headers as $key => $value) {
+							if (!in_array($key, ['Host'])) {
+								$socket->header_set($key, $value);
+							}
+						}
+						$socket->header_set('Authorization', $authorisation);
+
+						if ($socket->put('https://' . $aws_host . '/' . $encrypted_hash, $encrypted_content) !== true) {
+
+// TODO
+							debug($socket->error_message_get());
+							exit();
+
+						} else if ($socket->response_code_get() != 200) {
+
+// TODO
+							debug($socket->response_data_get());
+							exit();
+
+						}
+
+
+
+
+exit('Done?');
+
+
 unlink($plain_path);
 
 				//--------------------------------------------------
@@ -156,6 +270,8 @@ debug($info);
 			}
 
 			public function file_delete($id, $ext = NULL) {
+
+// Create a /deleted/ folder, with an empty file (named after the hash), for the backup server to read from.
 
 			}
 
