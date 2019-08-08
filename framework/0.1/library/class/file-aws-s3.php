@@ -6,6 +6,7 @@
 		// Variables
 
 			private $file = NULL;
+			private $access_secret = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -16,42 +17,59 @@
 
 			protected function setup($config) {
 
-				$this->file = new file($config);
-				$this->file->config_set_default('aws_bucket', $this->file->config_get('profile'));
-				$this->file->config_set_default('file_encryption_key', 'aws-s3-default');
-				$this->file->config_set_default('file_hash', 'sha256');
-				$this->file->config_set_default('file_local_max_age', '-30 days');
-				$this->file->config_set('file_private', true);
-				$this->file->config_set('file_url', false);
-				$this->file->config_set('file_folder_division', NULL);
+				//--------------------------------------------------
+				// File helper
 
-				if (!$this->file->config_exists('aws_region'))    throw new error_exception('The file_aws_s3 config must set "aws_region".');
-				if (!$this->file->config_exists('aws_bucket'))    throw new error_exception('The file_aws_s3 config must set "aws_bucket".');
-				if (!$this->file->config_exists('aws_access_id')) throw new error_exception('The file_aws_s3 config must set "aws_access_id".');
+					$this->file = new file($config);
+					$this->file->config_set('file_private', true);
+					$this->file->config_set('file_url', false);
+					$this->file->config_set('file_folder_division', NULL);
 
-				if (!$this->file->config_exists('aws_access_secret')) {
+				//--------------------------------------------------
+				// Config defaults
 
-					$password_id = $this->file->config_get('aws_access_id');
-					$password_file = ROOT . '/private/passwords/aws-s3-' . safe_file_name($password_id) . '.txt';
+					$this->file->config_set_default('aws_bucket', $this->file->config_get('profile'));
+					$this->file->config_set_default('aws_info_key', 'aws-s3-default');
+					$this->file->config_set_default('aws_file_hash', 'sha256');
+					$this->file->config_set_default('aws_local_max_age', '-30 days');
 
-					if (is_file($password_file)) {
-						$this->file->config_set('aws_access_secret', trim(file_get_contents($password_file)));
+				//--------------------------------------------------
+				// Config required
+
+					if (!$this->file->config_exists('aws_region'))    throw new error_exception('The file_aws_s3 config must set "aws_region".');
+					if (!$this->file->config_exists('aws_bucket'))    throw new error_exception('The file_aws_s3 config must set "aws_bucket".');
+					if (!$this->file->config_exists('aws_access_id')) throw new error_exception('The file_aws_s3 config must set "aws_access_id".');
+
+				//--------------------------------------------------
+				// Access secret
+
+					if ($this->file->config_exists('aws_access_secret')) {
+
+						$this->access_secret = $this->file->config_get('aws_access_secret');
+
 					} else {
-						throw new error_exception('The file_aws_s3 config must set "aws_access_secret", or create a password file', $password_file);
-					}
 
-				}
+						$password_id = $this->file->config_get('aws_access_id');
+						$password_file = ROOT . '/private/passwords/aws-s3-' . safe_file_name($password_id) . '.txt';
+
+						if (is_file($password_file)) {
+							$this->access_secret = trim(file_get_contents($password_file));
+						} else {
+							throw new error_exception('The file_aws_s3 config must set "aws_access_secret", or use a password file', $password_file);
+						}
+
+					}
 
 			}
 
 			public function cleanup() {
 
-				$local_max_age = $this->file->config_get('file_local_max_age');
+				$local_max_age = $this->file->config_get('aws_local_max_age');
 				$local_max_age = strtotime($local_max_age);
 
 				$limit_check = strtotime('-3 hours');
 				if ($local_max_age > $limit_check) {
-					throw new error_exception('The "file_local_max_age" should be longer.');
+					throw new error_exception('The "aws_local_max_age" should be longer.');
 				}
 
 				foreach (['plain', 'encrypted', 'deleted'] as $folder) {
@@ -117,7 +135,7 @@
 
 			public function file_info_get($info, $file_id = NULL) {
 
-				$info_key = $this->file->config_get('file_encryption_key');
+				$info_key = $this->file->config_get('aws_info_key');
 				if (!encryption::key_exists($info_key)) {
 					throw new error_exception('Cannot find encryption key "' . $info_key . '"');
 				}
@@ -188,14 +206,14 @@
 			}
 
 			public function file_save($path, $file_id = NULL) {
-				$plain_hash = hash_file($this->file->config_get('file_hash'), $path);
+				$plain_hash = hash_file($this->file->config_get('aws_file_hash'), $path);
 				$plain_path = $this->folder_path_get('plain', $plain_hash);
 				copy($path, $plain_path);
 				return $this->_file_save($plain_hash, $plain_path, $file_id);
 			}
 
 			public function file_save_contents($contents, $file_id = NULL) {
-				$plain_hash = hash($this->file->config_get('file_hash'), $contents);
+				$plain_hash = hash($this->file->config_get('aws_file_hash'), $contents);
 				$plain_path = $this->folder_path_get('plain', $plain_hash);
 				file_put_contents($dest, $plain_hash);
 				return $this->_file_save($plain_hash, $plain_path, $file_id);
@@ -206,7 +224,7 @@
 				//--------------------------------------------------
 				// Keys (x2)
 
-					$info_key = $this->file->config_get('file_encryption_key');
+					$info_key = $this->file->config_get('aws_info_key');
 					if (!encryption::key_exists($info_key)) {
 						encryption::key_symmetric_create($info_key);
 					}
@@ -219,7 +237,7 @@
 					$encrypted_content = file_get_contents($plain_path);
 					$encrypted_content = encryption::encode($encrypted_content, $file_key);
 
-					$encrypted_hash = hash($this->file->config_get('file_hash'), $encrypted_content);
+					$encrypted_hash = hash($this->file->config_get('aws_file_hash'), $encrypted_content);
 					$encrypted_path = $this->folder_path_get('encrypted', $encrypted_hash);
 
 					file_put_contents($encrypted_path, $encrypted_content);
@@ -363,7 +381,7 @@
 							hash('sha256', $canonical_request),
 						]);
 
-					$signing_key = 'AWS4' . $this->file->config_get('aws_access_secret');
+					$signing_key = 'AWS4' . $this->access_secret;
 					$signing_key = hash_hmac('sha256', $request_date, $signing_key, true);
 					$signing_key = hash_hmac('sha256', $aws_region, $signing_key, true);
 					$signing_key = hash_hmac('sha256', 's3', $signing_key, true);
