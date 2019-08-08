@@ -64,16 +64,6 @@
 
 			}
 
-			public function config_get($key) {
-				if ($key == 'file_root' && $this->config[$key] === NULL) return ($this->config['file_private'] ? PRIVATE_ROOT . '/files' : FILE_ROOT);
-				if ($key == 'file_url'  && $this->config[$key] === NULL) return ($this->config['file_private'] ? NULL : FILE_URL);
-				if (isset($this->config[$key])) {
-					return $this->config[$key];
-				} else {
-					exit_with_error('Unknown file config type "' . $key . '"');
-				}
-			}
-
 			public function config_set($key, $value) {
 				$this->config[$key] = $value;
 			}
@@ -81,6 +71,20 @@
 			public function config_set_default($key, $value) {
 				if (!isset($this->config[$key])) {
 					$this->config[$key] = $value;
+				}
+			}
+
+			public function config_exists($key) {
+				return isset($this->config[$key]);
+			}
+
+			public function config_get($key) {
+				if ($key == 'file_root' && $this->config[$key] === NULL) return ($this->config['file_private'] ? PRIVATE_ROOT . '/files' : FILE_ROOT);
+				if ($key == 'file_url'  && $this->config[$key] === NULL) return ($this->config['file_private'] ? NULL : FILE_URL);
+				if (isset($this->config[$key])) {
+					return $this->config[$key];
+				} else {
+					exit_with_error('Unknown file config type "' . $key . '"');
 				}
 			}
 
