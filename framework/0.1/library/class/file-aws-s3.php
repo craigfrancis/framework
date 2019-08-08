@@ -127,6 +127,7 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 					$this->file->config_set_default('aws_info_key', 'aws-s3-default');
 					$this->file->config_set_default('aws_file_hash', 'sha256');
 					$this->file->config_set_default('aws_local_max_age', '-30 days');
+					$this->file->config_set_default('aws_backup_path', NULL); // e.g. /path/to/backup
 
 				//--------------------------------------------------
 				// Config required
@@ -253,6 +254,8 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 
 					if (!is_file($info['encrypted_path'])) {
 
+// TODO: Use 'aws_backup_path' for backup server
+
 						$encrypted_content = $this->_aws_request([
 								'method'    => 'GET',
 								'file_name' => $info['eh'],
@@ -289,6 +292,8 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 					return true;
 				}
 
+// TODO: Use 'aws_backup_path' for backup server
+
 				$result = $this->_aws_request([
 						'method'    => 'HEAD',
 						'file_name' => $info['eh'],
@@ -313,6 +318,8 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 			}
 
 			public function _file_save($plain_hash, $plain_path, $file_id) {
+
+// TODO: Disable when 'aws_backup_path' is set?
 
 				//--------------------------------------------------
 				// Keys (x2)
@@ -359,6 +366,8 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 			}
 
 			public function file_delete($info, $file_id = NULL) {
+
+// TODO: Disable when 'aws_backup_path' is set?
 
 				//--------------------------------------------------
 				// Remove on AWS

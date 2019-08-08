@@ -4,9 +4,9 @@ files/code-poets
 files/code-poets/plain
 files/code-poets/plain/11
 files/code-poets/encrypted
-files/code-poets/encrypted/43
+files/code-poets/encrypted/6b
+files/code-poets/encrypted/62
+files/code-poets/encrypted/c4
 files/code-poets/deleted
-files/code-poets/deleted/e
-files/code-poets/deleted/p
 watch
 keys
