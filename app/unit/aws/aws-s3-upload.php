@@ -19,6 +19,31 @@
 				}
 
 			//--------------------------------------------------
+			// File helper
+
+				$file = new file_aws_s3('code-poets');
+
+				$file->cleanup();
+
+			//--------------------------------------------------
+			// Existing file
+
+				$file_id = request('file_id');
+				$file_info = request('file_info');
+
+				if ($file_id) {
+
+					debug($file->file_exists($file_info, $file_id));
+
+					debug($file->file_path_get($file_info, $file_id));
+
+					// debug($file->file_delete($file_info, $file_id));
+
+					exit();
+
+				}
+
+			//--------------------------------------------------
 			// Form setup
 
 				$form = new form();
@@ -48,28 +73,14 @@
 							//--------------------------------------------------
 							// Save
 
-								$file = new file_aws_s3([
-										'aws_region' => 'eu-west-1',
-										'aws_bucket' => 'code-poets',
-										'aws_access_key' => '???',
-										'aws_access_secret' => '???',
-									]);
+								$file_id = rand(10000, 99999);
 
-
-
-
-								$info = $file->file_save($field_file->file_path_get());
-
-debug($info);
-
-debug($file->file_path_get($info));
-
-exit('Done');
+								$file_info = $file->file_save($field_file->file_path_get(), $file_id);
 
 							//--------------------------------------------------
 							// Next page
 
-								$form->dest_redirect(url());
+								$form->dest_redirect(url(['file_id' => $file_id, 'file_info' => $file_info]));
 
 						}
 

@@ -130,11 +130,17 @@
 //--------------------------------------------------
 // Pagination
 
-	$config['file.test-png.image_type'] = 'png';
-	$config['file.test-gif.image_type'] = 'gif';
-
 	// $config['paginator.elements'] = array('<ul class="pagination">', 'first', 'back', 'links', 'next', 'last', '</ul>', 'extra', "\n");
 	// $config['paginator.link_wrapper_element'] = 'li';
+
+//--------------------------------------------------
+// Files
+
+	$config['file.default.aws_region'] = 'eu-west-1';
+	$config['file.default.aws_access_id'] = 'AKIAQYSPEEVGNLHZAN6C';
+
+	$config['file.test-png.image_type'] = 'png';
+	$config['file.test-gif.image_type'] = 'gif';
 
 //--------------------------------------------------
 // Upload
