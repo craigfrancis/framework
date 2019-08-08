@@ -33,9 +33,9 @@
 
 				if ($file_id) {
 
-					// debug($file->file_exists($file_info, $file_id));
+					debug($file->file_path_get($file_info, $file_id));
 
-					// debug($file->file_path_get($file_info, $file_id));
+					// debug($file->file_exists($file_info, $file_id));
 
 					// debug($file->file_delete($file_info, $file_id));
 

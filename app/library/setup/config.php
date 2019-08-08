@@ -138,7 +138,7 @@
 
 	$config['file.default.aws_region'] = 'eu-west-1';
 	$config['file.default.aws_access_id'] = 'AKIAQYSPEEVGNLHZAN6C';
-	$config['file.default.file_local_max_age'] = 'AKIAQYSPEEVGNLHZAN6C';
+	$config['file.default.aws_local_max_age'] = '-1 day';
 
 	$config['file.test-png.image_type'] = 'png';
 	$config['file.test-gif.image_type'] = 'gif';
