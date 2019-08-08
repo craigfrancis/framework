@@ -426,6 +426,8 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 						$request_headers['x-amz-server-side-encryption-customer-algorithm'] = 'AES256';
 						$request_headers['x-amz-server-side-encryption-customer-key'] = base64_encode($request['aes-key']);
 						$request_headers['x-amz-server-side-encryption-customer-key-MD5'] = base64_encode(hash('md5', $request['aes-key'], true));
+					} else if ($request['method'] == 'PUT') {
+						$request_headers['x-amz-server-side-encryption'] = 'AES256';
 					}
 
 				//--------------------------------------------------
