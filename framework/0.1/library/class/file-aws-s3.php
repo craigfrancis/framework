@@ -1,5 +1,100 @@
 <?php
 
+/*--------------------------------------------------*/
+/* Setup
+
+Create a S3 bucket [BucketName]
+
+In Permissions > Bucket Policy, add IP address restrictions:
+
+	{
+		"Version": "2012-10-17",
+		"Id": "S3-BucketName",
+		"Statement": [{
+			"Sid": "S3-BucketName",
+			"Effect": "Deny",
+			"Principal": "*",
+			"Action": "s3:*",
+			"Resource": [
+				"arn:aws:s3:::BucketName",
+				"arn:aws:s3:::BucketName/*"
+			],
+			"Condition": {
+				"StringNotLike": {
+					"aws:sourceVpce": [
+					]
+				},
+				"NotIpAddress": {
+					"aws:SourceIp": [
+						"192.168.0.1/32"
+					]
+				}
+			}
+		}]
+	}
+
+In IAM, create two policies:
+
+	S3-RW-BucketName
+
+	{
+		"Version": "2012-10-17",
+		"Statement": [
+			{
+				"Effect": "Allow",
+				"Action": [
+					"s3:PutObject",
+					"s3:GetObject",
+					"s3:DeleteObject"
+				],
+				"Resource": [
+					"arn:aws:s3:::BucketName/*"
+				]
+			}
+		]
+	}
+
+	S3-RO-BucketName
+
+	{
+		"Version": "2012-10-17",
+		"Statement": [
+			{
+				"Effect": "Allow",
+				"Action": [
+					"s3:ListBucket"
+				],
+				"Resource": [
+					"arn:aws:s3:::BucketName"
+				]
+			},
+			{
+				"Effect": "Allow",
+				"Action": [
+					"s3:GetObject"
+				],
+				"Resource": [
+					"arn:aws:s3:::BucketName/*"
+				]
+			}
+		]
+	}
+
+In IAM, create two users, with "Programmatic access", and one of the "existing policies" (just created).
+
+Use the ReadWrite in this class.
+
+Install "aws" command line tools, and use the ReadOnly account to run:
+
+	aws s3 sync s3://BucketName /path/to/backup
+
+	TODO: The backup script should:
+	  sync the bucket files,
+	  rsync website files,
+	  use the /deleted/ folder to delete from bucket files.
+
+/*--------------------------------------------------*/
+
 	class file_aws_s3_base extends check {
 
 		//--------------------------------------------------
