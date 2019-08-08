@@ -161,7 +161,6 @@
 						$encrypted_content = $this->_aws_request([
 								'method'    => 'GET',
 								'file_name' => $info['eh'],
-								'aes-key'   => base64_decode($info['ak']),
 							]);
 
 						if ($encrypted_content !== false) {
@@ -198,7 +197,6 @@
 				$result = $this->_aws_request([
 						'method'    => 'HEAD',
 						'file_name' => $info['eh'],
-						'aes-key'   => base64_decode($info['ak']),
 					]);
 
 				return $result;
@@ -245,14 +243,11 @@
 				//--------------------------------------------------
 				// Upload to AWS S3
 
-					$aes_key = random_bytes(256 / 8); // So were also using encryption at rest on AWS servers (not necessary, but keeps auditors happy).
-
 					$this->_aws_request([
 							'method'    => 'PUT',
 							'content'   => $encrypted_content,
 							'file_name' => $encrypted_hash,
 							'acl'       => 'private',
-							'aes-key'   => $aes_key,
 						]);
 
 				//--------------------------------------------------
@@ -261,7 +256,6 @@
 					$info = [
 							'ph' => $plain_hash,
 							'fk' => $file_key,
-							'ak' => base64_encode($aes_key),
 							'eh' => $encrypted_hash,
 						];
 
@@ -279,7 +273,6 @@
 					$result = $this->_aws_request([
 							'method'    => 'DELETE',
 							'file_name' => $info['eh'],
-							'aes-key'   => base64_decode($info['ak']),
 						]);
 
 				//--------------------------------------------------
