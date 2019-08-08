@@ -563,8 +563,8 @@ if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: su
 								if (!$ca_bundle_path) { // NULL or false
 
 									$ca_bundle_paths = array(
-											'/etc/pki/tls/certs/ca-bundle.crt', // Fedora, RHEL, CentOS (ca-certificates package)
 											'/etc/ssl/certs/ca-certificates.crt', // Debian, Ubuntu, Gentoo, Arch Linux (ca-certificates package)
+											'/etc/pki/tls/certs/ca-bundle.crt', // Fedora, RHEL, CentOS (ca-certificates package)
 											'/etc/ssl/ca-bundle.pem', // SUSE, openSUSE (ca-certificates package)
 											'/usr/local/share/certs/ca-root-nss.crt', // FreeBSD (ca_root_nss_package)
 											'/usr/ssl/certs/ca-bundle.crt', // Cygwin
@@ -579,6 +579,7 @@ if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: su
 									foreach ($ca_bundle_paths as $path) {
 										if ($path != '' && is_file($path) && is_readable($path)) {
 											$ca_bundle_path = $path;
+											break;
 										}
 									}
 
