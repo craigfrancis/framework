@@ -67,10 +67,10 @@
 				$local_max_age = $this->file->config_get('aws_local_max_age');
 				$local_max_age = strtotime($local_max_age);
 
-				// $limit_check = strtotime('-3 hours');
-				// if ($local_max_age > $limit_check) {
-				// 	throw new error_exception('The "aws_local_max_age" should be longer.');
-				// }
+				$limit_check = strtotime('-3 hours');
+				if ($local_max_age > $limit_check) {
+					throw new error_exception('The "aws_local_max_age" should be longer.');
+				}
 
 				foreach (['plain', 'encrypted', 'deleted'] as $folder) {
 					$path = $this->folder_path_get($folder);
