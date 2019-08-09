@@ -82,70 +82,72 @@
 
 		$config['output.fp_directives'] = [
 
+					// https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/feature_policy/feature_policy_features.json5
+
+				'accelerometer'                         => [], // Sensor
+				'ambient-light-sensor'                  => [], // Sensor
 				'autoplay'                              => [],
 				'camera'                                => [],
+				// 'ch-dpr'                             => [], // ClientHintsFeaturePolicy
+				// 'ch-device-memory'                   => [], // ClientHintsFeaturePolicy
+				// 'ch-downlink'                        => [], // ClientHintsFeaturePolicy
+				// 'ch-ect'                             => [], // ClientHintsFeaturePolicy
+				// 'ch-lang'                            => [], // ClientHintsFeaturePolicy
+				// 'ch-rtt'                             => [], // ClientHintsFeaturePolicy
+				// 'ch-ua'                              => [], // ClientHintsFeaturePolicy
+				// 'ch-ua-arch'                         => [], // ClientHintsFeaturePolicy
+				// 'ch-ua-platform'                     => [], // ClientHintsFeaturePolicy
+				// 'ch-ua-model'                        => [], // ClientHintsFeaturePolicy
+				// 'ch-viewport-width'                  => [], // ClientHintsFeaturePolicy
+				// 'ch-width'                           => [], // ClientHintsFeaturePolicy
+				'document-domain'                       => [],
+				// 'document-write'                     => [], // ExperimentalProductivityFeatures
+				// 'downloads-without-user-activation'  => [], // FeaturePolicyForSandbox
 				'encrypted-media'                       => [],
+				// 'execution-while-out-of-viewport'    => [], // FreezeFramesOnVisibility
+				// 'execution-while-not-rendered'       => [], // FreezeFramesOnVisibility
+				'focus-without-user-activation'         => [], // BlockingFocusWithoutUserActivation, Does not effect top-level documents (yet?), just content in an iframe.
+				// 'font-display-late-swap'             => [], // ExperimentalProductivityFeatures
+				// 'forms'                              => [], // FeaturePolicyForSandbox
 				'fullscreen'                            => [],
+				// 'frobulate'                          => [], // OriginTrialsSampleAPI
 				'geolocation'                           => [],
+				'gyroscope'                             => [], // Sensor
+				// 'hid'                                => [], // WebHID, The WebHID API enables web applications to request access to HID devices.
+				// 'idle-detection'                     => [], // IdleDetection
+				// 'layout-animations'                  => [], // ExperimentalProductivityFeatures
+				// 'lazyload'                           => [], // ExperimentalProductivityFeatures
+				// 'loading-frame-default-eager'        => [], // ExperimentalProductivityFeatures
+				'magnetometer'                          => [], // Sensor
 				'microphone'                            => [],
 				'midi'                                  => [],
-				'speaker'                               => [],
-				// 'sync-xhr'                           => [], // Disabled as potentially risky
+				// 'modals'                             => [], // FeaturePolicyForSandbox
+				// 'orientation-lock'                   => [], // FeaturePolicyForSandbox
+				// 'oversized-images'                   => [], // UnoptimizedImagePolicies, Was ExperimentalProductivityFeaturesEnabled, Was 'max-downscaling-image'
+				'payment'                               => [], // PaymentRequest
+				// 'picture-in-picture'                 => [], // PictureInPictureAPI, +[Risky]
+				// 'pointer-lock'                       => [], // FeaturePolicyForSandbox
+				// 'popups'                             => [], // FeaturePolicyForSandbox
+				// 'presentation'                       => [], // FeaturePolicyForSandbox
+				// 'scripts'                            => [], // FeaturePolicyForSandbox
+				// 'serial'                             => [], // Serial
+				// 'sync-script'                        => [], // ExperimentalProductivityFeatures
+				// 'sync-xhr'                           => [], // +[Risky]
+				// 'top-navigation'                     => [], // FeaturePolicyForSandbox
+				// 'unoptimized-lossless-images'        => [], // UnoptimizedImagePolicies
+				// 'unoptimized-lossless-images-strict' => [], // UnoptimizedImagePolicies
+				// 'unoptimized-lossy-images'           => [], // UnoptimizedImagePolicies, Was ExperimentalProductivityFeaturesEnabled, Was 'image-compression': https://chromium.googlesource.com/chromium/src/+/f91910eba0d6f1d81dc2ec39255b5ad348b39dc6
+				// 'unsized-media'                      => [], // UnsizedMediaPolicy
+				'usb'                                   => [], // WebUSB
+				// 'vertical-scroll'                    => [], // ExperimentalProductivityFeatures
+				// 'wake-lock'                          => [], // WakeLock
 				'vr'                                    => [],
 
-				// 'idle-detection'                     => [], // Chrome 76 - IdleDetectionEnabled
-				// 'wake-lock'                          => [], // Chrome 76 - WakeLockNavigatorEnabled
-				// 'picture-in-picture'                 => [], // Chrome 76 - PictureInPictureAPIEnabled, Disabled as potentially risky.
-				// 'hid'                                => [], // Chrome 76 - WebHIDEnabled, The WebHID API enables web applications to request access to HID devices.
-
-				'payment'                               => [], // PaymentRequestEnabled
-
-				// 'execution-while-out-of-viewport'    => [], // Chrome 76 - FreezeFramesOnVisibilityEnabled
-				// 'execution-while-not-rendered'       => [], // Chrome 76 - FreezeFramesOnVisibilityEnabled
-
-				// 'downloads-without-user-activation'  => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
-				// 'forms'                              => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
-				// 'modals'                             => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
-				// 'orientation-lock'                   => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
-				// 'pointer-lock'                       => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
-				// 'popups'                             => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
-				// 'presentation'                       => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
-				// 'scripts'                            => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
-				// 'top-navigation'                     => [], // Chrome 76 - FeaturePolicyForSandboxEnabled
-
-				// 'document-domain'                    => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
-				// 'document-write'                     => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
-				// 'font-display-late-swap'             => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
-				// 'layout-animations'                  => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
-				// 'lazyload'                           => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
-				// 'loading-frame-default-eager'        => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
-				// 'sync-script'                        => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
-				// 'unsized-media'                      => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
-				// 'vertical-scroll'                    => [], // Chrome 76 - ExperimentalProductivityFeaturesEnabled
-
-				// 'serial'                             => [], // Chrome 76 - SerialEnabled
-
-				'accelerometer'                         => [], // SensorEnabled
-				'ambient-light-sensor'                  => [], // SensorEnabled
-				'gyroscope'                             => [], // SensorEnabled
-				'magnetometer'                          => [], // SensorEnabled
-
-				'usb'                                   => [], // WebUSBEnabled
-
-				'focus-without-user-activation'         => [], // BlockingFocusWithoutUserActivationEnabled... does not effect top-level documents (yet?), just content in an iframe.
-
-				// 'frobulate'                          => [], // Chrome 76 - DisabledByOriginTrial, OriginTrialsSampleAPIEnabled
-				// 'oversized-images'                   => [], // Chrome 76 - DisabledByOriginTrial, was ExperimentalProductivityFeaturesEnabled, was 'max-downscaling-image'
-				// 'unoptimized-lossy-images'           => [], // Chrome 76 - DisabledByOriginTrial, was ExperimentalProductivityFeaturesEnabled, was 'image-compression': https://chromium.googlesource.com/chromium/src/+/f91910eba0d6f1d81dc2ec39255b5ad348b39dc6
-				// 'unoptimized-lossless-images-strict' => [], // Chrome 76 - DisabledByOriginTrial
-				// 'unoptimized-lossless-images'        => [], // Chrome 76 - DisabledByOriginTrial
-
-				// 'legacy-image-formats'               => [], // Removed: https://chromium.googlesource.com/chromium/src/+/a7ed373a087d07f91d9a58c03da1739d48e7f7ea
-				// 'cookie'                             => [], // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
-				// 'domain'                             => [], // Removed: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
-				// 'vibrate'                            => [], // Removed: https://chromium.googlesource.com/chromium/src/+/6684fb7780bea4dacdcb12b14a9b56894e07cbfb
-
-					// https://cs.chromium.org/chromium/src/out/Debug/gen/third_party/blink/renderer/core/feature_policy/feature_policy_helper.cc?q=GetDefaultFeatureNameMap&l=80
+				// 'speaker'                            => [], // Removed 22-07-2019: https://chromium.googlesource.com/chromium/src/+/d9af2becddc1b592e4aeff52db12e9d0d09fbe79
+				// 'legacy-image-formats'               => [], // Removed 29-03-2019: https://chromium.googlesource.com/chromium/src/+/a7ed373a087d07f91d9a58c03da1739d48e7f7ea
+				// 'cookie'                             => [], // Removed 14-06-2018: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
+				// 'domain'                             => [], // Removed 14-06-2018: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
+				// 'vibrate'                            => [], // Removed 15-02-2018: https://chromium.googlesource.com/chromium/src/+/6684fb7780bea4dacdcb12b14a9b56894e07cbfb
 
 			];
 
