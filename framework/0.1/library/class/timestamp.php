@@ -92,7 +92,7 @@
 
 			public function _debug_dump() {
 				if ($this->null) {
-					return 'NULL';
+					return 'timestamp(NULL)';
 				} else {
 					return $this->format('Y-m-d H:i:s (e)');
 				}
