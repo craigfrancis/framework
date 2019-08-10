@@ -35,11 +35,20 @@ In Permissions > Bucket Policy, add IP address restrictions:
 
 In IAM, create two policies:
 
-	S3-RW-BucketName
+	S3-RW-BucketName (ListBucket used to stop a 403 when checking for deleted files)
 
 	{
 		"Version": "2012-10-17",
 		"Statement": [
+			{
+				"Effect": "Allow",
+				"Action": [
+					"s3:ListBucket"
+				],
+				"Resource": [
+					"arn:aws:s3:::BucketName"
+				]
+			},
 			{
 				"Effect": "Allow",
 				"Action": [
@@ -82,16 +91,27 @@ In IAM, create two policies:
 
 In IAM, create two users, with "Programmatic access", and one of the "existing policies" (just created).
 
-Use the ReadWrite in this class.
+Use the ReadWrite account when using this class normally.
 
 Install "aws" command line tools, and use the ReadOnly account to run:
 
 	aws s3 sync s3://BucketName /path/to/backup
 
-	TODO: The backup script should:
-	  sync the bucket files,
-	  rsync website files,
-	  use the /deleted/ folder to delete from bucket files.
+	$file_aws_s3->cleanup(); // uses 'aws_backup_folder'
+
+The `aws sync` command does not use '--delete', the cleanup() method will delete the files using marker files (positive indicators).
+
+/*--------------------------------------------------
+
+Abbreviations:
+
+	'fk' - File encryption Key (unique to that file)
+	'ph' - Plain Hash
+	'eh' - Encrypted Hash
+
+	'pf' - Plain     folder for Files (a cache / temp folder)
+	'ef' - Encrypted folder for Files
+	'ed' - Encrypted folder for Deletes
 
 /*--------------------------------------------------*/
 
@@ -127,7 +147,7 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 					$this->file->config_set_default('aws_info_key', 'aws-s3-default');
 					$this->file->config_set_default('aws_file_hash', 'sha256');
 					$this->file->config_set_default('aws_local_max_age', '-30 days');
-					$this->file->config_set_default('aws_backup_path', NULL); // e.g. /path/to/backup
+					$this->file->config_set_default('aws_backup_folder', NULL); // e.g. /path/to/backup
 
 				//--------------------------------------------------
 				// Config required
@@ -158,6 +178,14 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 
 			}
 
+			public function config_get($key) {
+				$this->file->config_get($key);
+			}
+
+			public function config_set($key, $value) {
+				$this->file->config_set($key, $value);
+			}
+
 			public function cleanup() {
 
 				$local_max_age = $this->file->config_get('aws_local_max_age');
@@ -168,40 +196,68 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 					throw new error_exception('The "aws_local_max_age" should be longer.');
 				}
 
-				foreach (['plain', 'encrypted', 'deleted'] as $folder) {
-					$path = $this->folder_path_get($folder);
+				$base_folders = [];
+				foreach (['pf', 'ef', 'ed'] as $folder) {
+					$base_folders[$folder] = $this->folder_path_get($folder);
+				}
+
+				$encrypted_folder = $base_folders['ef'];
+				$backup_folder = $this->file->config_get('aws_backup_folder');
+
+				foreach ($base_folders as $folder => $path) {
 					foreach (glob($path . '/*') as $sub_path) {
+
 						if (!is_dir($sub_path)) {
 							throw new error_exception('Unexpected non-folder, should just contain sub-folders', $sub_path);
 						}
 						$empty = true;
+
 						foreach (glob($sub_path . '/*') as $file_path) {
+
+							if ($folder == 'ed') { // A folder to positively record files that have been deleted; not done for 'plain' files, as the same file can be uploaded by different people.
+								$file_path_suffix = str_replace($path, '', $file_path);
+								if (strlen($file_path_suffix) != 66) { // 64 character hash (sha256), with two '/' separators (1 leading, 1 after the second hash character).
+									throw new error_exception('Wrong length of file_path_suffix', $path . "\n" . $file_path . "\n" . $file_path_suffix);
+								}
+								if (is_file($encrypted_folder . $file_path_suffix)) {
+									throw new error_exception('An encrypted file still exists, even though it has been marked as deleted.', $encrypted_folder . $file_path_suffix);
+								}
+								if ($backup_folder) { // On the backup server, use this delete marker to remove the local file (externally 'aws sync' will get the files from S3, without using the dangerous '--delete' option).
+									$backup_path = $backup_folder . $file_path_suffix;
+									if (is_file($backup_path)) unlink($backup_path);
+									if (is_file($backup_path)) throw new error_exception('Could not remove a deleted file from the backup folder.', $backup_path);
+								}
+							}
+
 							$file_age = filemtime($file_path);
 							if (!is_file($file_path)) {
-								throw new error_exception('Unexpected non-file, should just contain files', $file_path);
+								throw new error_exception('This folder should only contain files.', $sub_path . "\n" . $file_path);
 							} else if ($file_age < $local_max_age) {
-								unlink($file_path);
+								unlink($file_path); // Hasn't been accessed for a while, delete local copy.
 							} else {
 								$empty = false;
 							}
+
 						}
-						if ($folder != 'deleted' && $empty) {
+
+						if ($empty) {
 							rmdir($sub_path);
 						}
+
 					}
 				}
 
 			}
 
-			private function folder_path_get($kind, $hash = NULL) {
+			public function folder_path_get($kind = NULL, $sub_path = NULL) {
 				$path = $this->file->folder_path_get();
-				$parts = [$kind];
-				if ($hash) {
-					if (strlen($hash) == 1) {
-						$parts[] = $hash; // Not a hash, but the 'p' and 'e' deleted folders.
-					} else {
-						$parts[] = substr($hash, 0, 2); // Match unpacked (loose object) structure found in git.
-						$parts[] = substr($hash, 2);
+				$parts = [];
+				if ($kind) {
+					$parts[] = $kind;
+					if ($sub_path) {
+						foreach (explode('/', $sub_path) as $part) {
+							$parts[] = $part;
+						}
 					}
 				}
 				$k = 0;
@@ -229,7 +285,14 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 		//--------------------------------------------------
 		// Standard file support
 
-			public function file_info_get($info, $file_id = NULL) {
+			private function file_name_get($hash) {
+				return implode('/', [
+						substr($hash, 0, 2), // Match unpacked (loose object) structure found in git.
+						substr($hash, 2),
+					]);
+			}
+
+			private function file_info_get($info, $file_id = NULL) {
 
 				$info_key = $this->file->config_get('aws_info_key');
 				if (!encryption::key_exists($info_key)) {
@@ -239,8 +302,18 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 				$info = encryption::decode($info, $info_key, $file_id);
 				$info = json_decode($info, true);
 
-				$info['plain_path'] = $this->folder_path_get('plain', $info['ph']);
-				$info['encrypted_path'] = $this->folder_path_get('encrypted', $info['eh']);
+				$info['plain_name'] = $this->file_name_get($info['ph']);
+				$info['plain_path'] = $this->folder_path_get('pf', $info['plain_name']);
+
+				$info['encrypted_name'] = $this->file_name_get($info['eh']);
+				$info['encrypted_path'] = $this->folder_path_get('ef', $info['encrypted_name']);
+
+				$backup_folder = $this->file->config_get('aws_backup_folder');
+				if ($backup_folder !== NULL) {
+					$info['backup_path'] = $backup_folder . '/' . $info['encrypted_name'];
+				} else {
+					$info['backup_path'] = NULL;
+				}
 
 				return $info;
 
@@ -254,12 +327,18 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 
 					if (!is_file($info['encrypted_path'])) {
 
-// TODO: Use 'aws_backup_path' for backup server
+						if ($info['backup_path']) {
 
-						$encrypted_content = $this->_aws_request([
-								'method'    => 'GET',
-								'file_name' => $info['eh'],
-							]);
+							$encrypted_content = @file_get_contents($info['backup_path']);
+
+						} else {
+
+							$encrypted_content = $this->_aws_request([
+									'method'    => 'GET',
+									'file_name' => $info['encrypted_name'],
+								]);
+
+						}
 
 						if ($encrypted_content !== false) {
 							file_put_contents($info['encrypted_path'], $encrypted_content);
@@ -277,7 +356,7 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 
 				}
 
-				touch($info['plain_path']); // File still being used, don't remove during cleanup
+				touch($info['plain_path']); // File still being used, don't remove in cleanup()
 				touch($info['encrypted_path']);
 
 				return $info['plain_path'];
@@ -288,38 +367,81 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 
 				$info = $this->file_info_get($info, $file_id);
 
-				if (is_file($info['plain_path'])) { // Faster, but the file might not be stored locally any more.
+				if (is_file($info['encrypted_path'])) { // We have a local copy already (fast), cannot use plain text path as 2 identical files may exist.
 					return true;
 				}
 
-// TODO: Use 'aws_backup_path' for backup server
+				if ($info['backup_path']) {
 
-				$result = $this->_aws_request([
-						'method'    => 'HEAD',
-						'file_name' => $info['eh'],
-					]);
+					$result = file_exists($info['backup_path']);
+
+				} else {
+
+					$result = $this->_aws_request([
+							'method'    => 'HEAD',
+							'file_name' => $info['encrypted_name'],
+						]);
+
+				}
 
 				return $result;
 
 			}
 
 			public function file_save($path, $file_id = NULL) {
+
+				if ($this->file->config_get('aws_backup_folder') !== NULL) {
+					throw new error_exception('On the backup server, an AWS file cannot be saved (created).');
+				}
+
 				$plain_hash = hash_file($this->file->config_get('aws_file_hash'), $path);
-				$plain_path = $this->folder_path_get('plain', $plain_hash);
+				$plain_name = $this->file_name_get($plain_hash);
+				$plain_path = $this->folder_path_get('pf', $plain_name);
+
 				copy($path, $plain_path);
-				return $this->_file_save($plain_hash, $plain_path, $file_id);
+
+				$plain_content = file_get_contents($plain_path);
+
+				return $this->_file_save($plain_hash, $plain_content, true, $file_id);
+
 			}
 
-			public function file_save_contents($contents, $file_id = NULL) {
-				$plain_hash = hash($this->file->config_get('aws_file_hash'), $contents);
-				$plain_path = $this->folder_path_get('plain', $plain_hash);
-				file_put_contents($dest, $plain_hash);
-				return $this->_file_save($plain_hash, $plain_path, $file_id);
+			public function file_save_contents($plain_content, $file_id = NULL) {
+
+				if ($this->file->config_get('aws_backup_folder') !== NULL) {
+					throw new error_exception('On the backup server, an AWS file cannot be saved (created).');
+				}
+
+				$plain_hash = hash($this->file->config_get('aws_file_hash'), $plain_content);
+				$plain_name = $this->file_name_get($plain_hash);
+				$plain_path = $this->folder_path_get('pf', $plain_name);
+
+				file_put_contents($plain_path, $plain_content);
+
+				return $this->_file_save($plain_hash, $plain_content, true, $file_id);
+
 			}
 
-			public function _file_save($plain_hash, $plain_path, $file_id) {
+			public function file_import($path, $file_id = NULL) { // Use to import into S3 only (no local copy), used during initial setup where there is a large number of files.
 
-// TODO: Disable when 'aws_backup_path' is set?
+				$plain_hash = hash_file($this->file->config_get('aws_file_hash'), $path);
+				$plain_name = $this->file_name_get($plain_hash);
+				$plain_path = $this->folder_path_get('pf', $plain_name);
+
+				$plain_content = file_get_contents($plain_path);
+
+				return $this->_file_save($plain_hash, $plain_content, false, $file_id);
+
+			}
+
+			public function _file_save($plain_hash, $plain_content, $save_local, $file_id) {
+
+				//--------------------------------------------------
+				// Not available when using a backup path
+
+					if ($this->file->config_get('aws_backup_folder') !== NULL) {
+						throw new error_exception('On the backup server, an AWS file cannot be saved.');
+					}
 
 				//--------------------------------------------------
 				// Keys (x2)
@@ -334,13 +456,15 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 				//--------------------------------------------------
 				// Encrypted content
 
-					$encrypted_content = file_get_contents($plain_path);
-					$encrypted_content = encryption::encode($encrypted_content, $file_key);
+					$encrypted_content = encryption::encode($plain_content, $file_key);
 
 					$encrypted_hash = hash($this->file->config_get('aws_file_hash'), $encrypted_content);
-					$encrypted_path = $this->folder_path_get('encrypted', $encrypted_hash);
+					$encrypted_name = $this->file_name_get($encrypted_hash);
+					$encrypted_path = $this->folder_path_get('ef', $encrypted_name);
 
-					file_put_contents($encrypted_path, $encrypted_content);
+					if ($save_local) {
+						file_put_contents($encrypted_path, $encrypted_content);
+					}
 
 				//--------------------------------------------------
 				// Upload to AWS S3
@@ -348,7 +472,7 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 					$this->_aws_request([
 							'method'    => 'PUT',
 							'content'   => $encrypted_content,
-							'file_name' => $encrypted_hash,
+							'file_name' => $encrypted_name,
 							'acl'       => 'private',
 						]);
 
@@ -356,8 +480,8 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 				// Return
 
 					$info = [
-							'ph' => $plain_hash,
 							'fk' => $file_key,
+							'ph' => $plain_hash,
 							'eh' => $encrypted_hash,
 						];
 
@@ -367,7 +491,12 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 
 			public function file_delete($info, $file_id = NULL) {
 
-// TODO: Disable when 'aws_backup_path' is set?
+				//--------------------------------------------------
+				// Not available when using a backup path
+
+					if ($this->file->config_get('aws_backup_folder') !== NULL) {
+						throw new error_exception('On the backup server, an AWS file cannot be deleted.');
+					}
 
 				//--------------------------------------------------
 				// Remove on AWS
@@ -376,7 +505,7 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 
 					$result = $this->_aws_request([
 							'method'    => 'DELETE',
-							'file_name' => $info['eh'],
+							'file_name' => $info['encrypted_name'],
 						]);
 
 				//--------------------------------------------------
@@ -395,11 +524,7 @@ Install "aws" command line tools, and use the ReadOnly account to run:
 				// files as positive indicators that the file can
 				// be deleted.
 
-					$deleted_path_plain     = $this->folder_path_get('deleted', 'p') . '/' . safe_file_name($info['ph']);
-					$deleted_path_encrypted = $this->folder_path_get('deleted', 'e') . '/' . safe_file_name($info['eh']);
-
-					touch($deleted_path_plain);
-					touch($deleted_path_encrypted);
+					touch($this->folder_path_get('ed', $info['encrypted_name']));
 
 			}
 
