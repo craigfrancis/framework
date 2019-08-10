@@ -2051,7 +2051,7 @@
 //--------------------------------------------------
 // Recursively delete a directory
 
-	function rrmdir($dir) {
+	function rrmdir($dir, $delete = true) { // Set $delete to false if you just want to empty the folder
 		foreach (scandir($dir) as $file) {
 			if ($file != '.' && $file != '..') {
 				$path = $dir . '/' . $file;
@@ -2062,7 +2062,9 @@
 				}
 			}
 		}
-		rmdir($dir);
+		if ($delete !== false) {
+			rmdir($dir);
+		}
 	}
 
 //--------------------------------------------------
