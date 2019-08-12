@@ -42,8 +42,6 @@
 
 					if ($action == 'info') {
 
-						debug($file_info);
-						debug($file->debug_info_get($file_info, $file_id));
 						debug($file->file_path_get($file_info, $file_id));
 						debug($file->file_exists($file_info, $file_id));
 						exit();
