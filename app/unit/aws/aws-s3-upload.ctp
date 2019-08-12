@@ -3,4 +3,16 @@
 
 	<p>Files uploaded here will be encrypted and sent to AWS S3.</p>
 
-	<?= $form->html(); ?>
+	<?php if (isset($links)) { ?>
+
+		<ul>
+			<?php foreach ($links as $link => $url) { ?>
+				<li><a href="<?= html($url) ?>"><?= html(ucfirst($link)) ?></a></li>
+			<?php } ?>
+		</ul>
+
+	<?php } else { ?>
+
+		<?= $form->html(); ?>
+
+	<?php } ?>

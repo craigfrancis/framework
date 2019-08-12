@@ -38,13 +38,40 @@
 
 				if ($file_id) {
 
-					debug($file->file_path_get($file_info, $file_id));
+					$action = request('action');
 
-					debug($file->file_exists($file_info, $file_id));
+					if ($action == 'info') {
 
-					// debug($file->file_delete($file_info, $file_id));
+						debug($file_info);
+						debug($file->debug_info_get($file_info, $file_id));
+						debug($file->file_path_get($file_info, $file_id));
+						debug($file->file_exists($file_info, $file_id));
+						exit();
 
-					exit();
+					} else if ($action == 'download') {
+
+						http_download([
+								'path' => $file->file_path_get($file_info, $file_id),
+								'name' => 'example.jpg',
+								'mode' => 'inline',
+							]);
+
+						exit();
+
+					} else if ($action == 'delete') {
+
+						debug($file->file_delete($file_info, $file_id));
+						exit('Done');
+
+					}
+
+					$this->set('links', [
+							'info'     => url(['action' => 'info']),
+							'download' => url(['action' => 'download']),
+							'delete'   => url(['action' => 'delete']),
+						]);
+
+					return;
 
 				}
 
