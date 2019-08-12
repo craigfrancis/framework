@@ -1276,7 +1276,7 @@ exit();
 			public function auth_encrypt() {
 
 				if (!encryption::key_exists(auth::$secret_key)) {
-					exit_with_error('The encryption key "' . auth::$secret_key . '" does not exist.');
+					encryption::key_symmetric_create(auth::$secret_key);
 				}
 
 				$current_key_id = encryption::key_id_get(auth::$secret_key);
