@@ -65,7 +65,7 @@
 
 			public static function upgradable($thing) {
 
-				list($type) = explode('-', $thing);
+				list($type) = explode('.', $thing);
 
 				if ($type === 'KS2' || $type === 'ES2') {
 
@@ -106,11 +106,11 @@
 
 				if (function_exists('sodium_crypto_aead_chacha20poly1305_ietf_encrypt') && config::get('encryption.version') !== 1) {
 
-					$key_encoded = 'KS2-0-' . base64_encode(sodium_crypto_aead_chacha20poly1305_ietf_keygen());
+					$key_encoded = 'KS2.0.' . base64_encode_rfc4648(sodium_crypto_aead_chacha20poly1305_ietf_keygen());
 
 				} else {
 
-					$key_encoded = 'KS1-0-' . base64_encode(openssl_random_pseudo_bytes(256/8)); // Recommended 256 bit key... https://gist.github.com/atoponce/07d8d4c833873be2f68c34f9afc5a78a
+					$key_encoded = 'KS1.0.' . base64_encode_rfc4648(openssl_random_pseudo_bytes(256/8)); // Recommended 256 bit key... https://gist.github.com/atoponce/07d8d4c833873be2f68c34f9afc5a78a
 
 				}
 
@@ -125,8 +125,8 @@
 					$keypair = sodium_crypto_box_keypair();
 
 					$keys_encoded = [
-							'KA2P-0-' . base64_encode(sodium_crypto_box_publickey($keypair)),
-							'KA2S-0-' . base64_encode(sodium_crypto_box_secretkey($keypair)),
+							'KA2P.0.' . base64_encode_rfc4648(sodium_crypto_box_publickey($keypair)),
+							'KA2S.0.' . base64_encode_rfc4648(sodium_crypto_box_secretkey($keypair)),
 						];
 
 				} else {
@@ -145,8 +145,8 @@
 					$public_key = openssl_pkey_get_details($res);
 
 					$keys_encoded = [
-							'KA1P-0-' . base64_encode($public_key['key']),
-							'KA1S-0-' . base64_encode($secret_key),
+							'KA1P.0.' . base64_encode_rfc4648($public_key['key']),
+							'KA1S.0.' . base64_encode_rfc4648($secret_key),
 						];
 
 				}
@@ -237,7 +237,7 @@
 		// encrypted string.
 
 			public static function encrypted($string) {
-				if (preg_match('/^E(S|AS|AP|AT)([0-9]+)-([0-9\/]+)-/', $string, $matches)) {
+				if (preg_match('/^E(S|AS|AP|AT)([0-9]+)\.([0-9\/]+)\./', $string, $matches)) {
 
 					$return = [
 							'type' => $matches[1],
@@ -359,13 +359,13 @@
 					throw new error_exception('Unrecognised encryption key type', 'Key1: ' . $key1_type . "\n" . 'Key2: ' . $key2_type);
 				}
 
-				return $return_type . '-' . implode('/', $return_keys) . '-' . implode('-', array_map('base64_encode', $return_values));
+				return $return_type . '.' . implode('/', $return_keys) . '.' . implode('.', array_map('base64_encode_rfc4648', $return_values));
 
 			}
 
 			public static function decode($input, $key1, $key2 = NULL) {
 
-				list($input_type, $input_keys, $input_1, $input_2, $input_3, $input_4) = array_pad(explode('-', $input), 6, NULL);
+				list($input_type, $input_keys, $input_1, $input_2, $input_3, $input_4) = array_pad(explode('.', $input), 6, NULL);
 
 				if ($input_type === NULL || $input_keys === NULL) {
 					throw new error_exception('The encrypted data does not include the necessary metadata.');
@@ -385,49 +385,49 @@
 
 					if ($input_type === 'ES2' && $key1_type === 'KS2') {
 
-						$encrypted = base64_decode($input_1);
-						$nonce = base64_decode($input_2);
+						$encrypted = base64_decode_rfc4648($input_1);
+						$nonce = base64_decode_rfc4648($input_2);
 
 						$return = self::_decode_symmetric_sodium($key1_value, $encrypted, $nonce, $key2);
 
 					} else if ($input_type === 'ES1' && $key1_type === 'KS1') {
 
-						$encrypted = base64_decode($input_1);
-						$vi = base64_decode($input_2);
-						$hmac = base64_decode($input_3);
-						$salt = base64_decode($input_4);
+						$encrypted = base64_decode_rfc4648($input_1);
+						$vi = base64_decode_rfc4648($input_2);
+						$hmac = base64_decode_rfc4648($input_3);
+						$salt = base64_decode_rfc4648($input_4);
 
 						$return = self::_decode_symmetric_openssl($key1_value, $encrypted, $vi, $hmac, $salt, $key2);
 
 					} else if ($input_type === 'EAS2' && $key1_type === 'KA2S' && $key2 === NULL) {
 
-						$encrypted = base64_decode($input_1);
+						$encrypted = base64_decode_rfc4648($input_1);
 
 						$return = self::_decode_asymmetric_to_secret_sodium($key1_value, $encrypted);
 
 					} else if ($input_type === 'EAS1' && $key1_type === 'KA1S' && $key2 === NULL) {
 
-						$data_encrypted = base64_decode($input_1);
-						$keys_encrypted = base64_decode($input_2);
-						$hmac_value = base64_decode($input_3);
+						$data_encrypted = base64_decode_rfc4648($input_1);
+						$keys_encrypted = base64_decode_rfc4648($input_2);
+						$hmac_value = base64_decode_rfc4648($input_3);
 
 						$return = self::_decode_asymmetric_to_secret_openssl($key1_value, $data_encrypted, $keys_encrypted, $hmac_value);
 
 					} else if ($input_type === 'EAP2' && $key1_type === 'KA2P' && $key2 === NULL) {
 
-						$message = base64_decode($input_1);
-						$sign_box_nonce = base64_decode($input_2);
-						$sign_box_encrypted = base64_decode($input_3);
-						$sign_box_secret = base64_decode($input_4);
+						$message = base64_decode_rfc4648($input_1);
+						$sign_box_nonce = base64_decode_rfc4648($input_2);
+						$sign_box_encrypted = base64_decode_rfc4648($input_3);
+						$sign_box_secret = base64_decode_rfc4648($input_4);
 
 						$return = self::_decode_asymmetric_to_public_sodium($key1_value, $message, $sign_box_nonce, $sign_box_encrypted, $sign_box_secret);
 
 					} else if ($input_type === 'EAP1' && $key1_type === 'KA1P' && $key2 === NULL) {
 
-						$message = base64_decode($input_1);
-						$keys_encrypted = base64_decode($input_2);
-						$hmac_encrypted = base64_decode($input_3);
-						$shared_secret = base64_decode($input_4);
+						$message = base64_decode_rfc4648($input_1);
+						$keys_encrypted = base64_decode_rfc4648($input_2);
+						$hmac_encrypted = base64_decode_rfc4648($input_3);
+						$shared_secret = base64_decode_rfc4648($input_4);
 
 						$return = self::_decode_asymmetric_to_public_openssl($key1_value, $message, $keys_encrypted, $hmac_encrypted, $shared_secret);
 
@@ -437,8 +437,8 @@
 
 						if ($key2_type === 'KA2P') {
 
-							$encrypted = base64_decode($input_1);
-							$nonce = base64_decode($input_2);
+							$encrypted = base64_decode_rfc4648($input_1);
+							$nonce = base64_decode_rfc4648($input_2);
 
 							$return = self::_decode_asymmetric_two_sodium($key1_value, $key2_value, $encrypted, $nonce);
 
@@ -450,9 +450,9 @@
 
 						if ($key2_type === 'KA1P') {
 
-							$data_encrypted = base64_decode($input_1);
-							$keys_encrypted = base64_decode($input_2);
-							$hmac_encrypted = base64_decode($input_3);
+							$data_encrypted = base64_decode_rfc4648($input_1);
+							$keys_encrypted = base64_decode_rfc4648($input_2);
+							$hmac_encrypted = base64_decode_rfc4648($input_3);
 
 							$return = self::_decode_asymmetric_two_openssl($key1_value, $key2_value, $data_encrypted, $keys_encrypted, $hmac_encrypted);
 
@@ -577,7 +577,7 @@
 				$hmac_key = openssl_random_pseudo_bytes(32); // 256/8
 				$hmac_value = hash_hmac('sha256', $iv . $data_encrypted, $hmac_key, true);
 
-				$keys_encoded = base64_encode($data_key) . '-' . base64_encode($hmac_key) . '-' . base64_encode($iv);
+				$keys_encoded = base64_encode_rfc4648($data_key) . '.' . base64_encode_rfc4648($hmac_key) . '.' . base64_encode_rfc4648($iv);
 				$keys_encrypted = '';
 				$result = openssl_public_encrypt($keys_encoded, $keys_encrypted, $key_public, OPENSSL_PKCS1_OAEP_PADDING);
 				if ($result !== true) {
@@ -598,10 +598,10 @@
 				if ($result !== true) {
 					throw new error_exception('Could not decrypt the AES keys with the secret key', openssl_error_string());
 				} else {
-					list($data_key, $hmac_key, $iv) = array_pad(explode('-', $data_keys), 3, NULL);
-					$data_key = base64_decode($data_key);
-					$hmac_key = base64_decode($hmac_key);
-					$iv = base64_decode($iv);
+					list($data_key, $hmac_key, $iv) = array_pad(explode('.', $data_keys), 3, NULL);
+					$data_key = base64_decode_rfc4648($data_key);
+					$hmac_key = base64_decode_rfc4648($hmac_key);
+					$iv = base64_decode_rfc4648($iv);
 				}
 
 				$check_hmac = hash_hmac('sha256', $iv . $data_encrypted, $hmac_key, true);
@@ -684,14 +684,14 @@
 				$hmac_key = openssl_random_pseudo_bytes(32); // 256/8
 				$hmac_value = hash_hmac('sha256', $iv . $data_encrypted, $hmac_key, true);
 
-				$keys_encoded = base64_encode($data_key) . '-' . base64_encode($hmac_key); // 256 x 2 ... ceil(((256/3)*4)/8) = 43 x 2 characters (86) ... 86 + 5 (2 x '==' and 1 x '-') ... 91 < 214 byte limit with a 2048 bit key and PKCS1-OAEP padding (or 470 byte limit for 4096 bit key)
+				$keys_encoded = base64_encode_rfc4648($data_key) . '.' . base64_encode_rfc4648($hmac_key); // 256 x 2 ... ceil(((256/3)*4)/8) = 43 x 2 characters (86) ... 86 + 5 (2 x '==' and 1 x '.') ... 91 < 214 byte limit with a 2048 bit key and PKCS1-OAEP padding (or 470 byte limit for 4096 bit key)
 				$keys_encrypted = '';
 				$result = openssl_public_encrypt($keys_encoded, $keys_encrypted, $recipient_key_public, OPENSSL_PKCS1_OAEP_PADDING);
 				if ($result !== true) {
 					throw new error_exception('Could not encrypt with recipients public key', openssl_error_string());
 				}
 
-				$hmac_encoded = base64_encode($hmac_value) . '-' . base64_encode($iv); // The "signature", anyone who knows the senders public key will be able to see these values.
+				$hmac_encoded = base64_encode_rfc4648($hmac_value) . '.' . base64_encode_rfc4648($iv); // The "signature", anyone who knows the senders public key will be able to see these values.
 				$hmac_encrypted = '';
 				$result = openssl_private_encrypt($hmac_encoded, $hmac_encrypted, $sender_key_secret, OPENSSL_PKCS1_PADDING);
 				if ($result !== true) {
@@ -712,9 +712,9 @@
 				if ($result !== true) {
 					throw new error_exception('Could not decrypt the HMAC with the senders public key', openssl_error_string());
 				} else {
-					list($hmac_value, $iv) = array_pad(explode('-', $data_info), 2, NULL);
-					$hmac_value = base64_decode($hmac_value);
-					$iv = base64_decode($iv);
+					list($hmac_value, $iv) = array_pad(explode('.', $data_info), 2, NULL);
+					$hmac_value = base64_decode_rfc4648($hmac_value);
+					$iv = base64_decode_rfc4648($iv);
 				}
 
 				$data_info = '';
@@ -722,9 +722,9 @@
 				if ($result !== true) {
 					throw new error_exception('Could not decrypt the AES keys with the recipients secret key', openssl_error_string());
 				} else {
-					list($data_key, $hmac_key) = array_pad(explode('-', $data_info), 2, NULL);
-					$data_key = base64_decode($data_key);
-					$hmac_key = base64_decode($hmac_key);
+					list($data_key, $hmac_key) = array_pad(explode('.', $data_info), 2, NULL);
+					$data_key = base64_decode_rfc4648($data_key);
+					$hmac_key = base64_decode_rfc4648($hmac_key);
 				}
 
 				$check_hmac = hash_hmac('sha256', $iv . $data_encrypted, $hmac_key, true);
@@ -849,7 +849,7 @@
 
 				}
 
-				list($key_type, $key_extracted_id, $key_value) = array_pad(explode('-', $key_encoded, 3), 3, NULL);
+				list($key_type, $key_extracted_id, $key_value) = array_pad(explode('.', $key_encoded, 3), 3, NULL);
 
 				if ($key_id == 0) { // During asymmetric encoding, the provided public key specifies which ID to use.
 					$key_id = $key_extracted_id;
@@ -857,11 +857,11 @@
 
 				if ($asymmetric_type !== NULL) {
 
-					return $key_type . '-' . $key_id . '-' . $key_value;
+					return $key_type . '.' . $key_id . '.' . $key_value;
 
 				} else {
 
-					$key_value = base64_decode($key_value); // Base64 encoding is not "constant time", which might be an issue, but unlikely considering a network connection would introduce ~5ms delays ... https://twitter.com/CiPHPerCoder/status/947251405911412739 ... https://paragonie.com/blog/2016/06/constant-time-encoding-boring-cryptography-rfc-4648-and-you
+					$key_value = base64_decode_rfc4648($key_value); // Base64 encoding is not "constant time", which might be an issue, but unlikely considering a network connection would introduce ~5ms delays ... https://twitter.com/CiPHPerCoder/status/947251405911412739 ... https://paragonie.com/blog/2016/06/constant-time-encoding-boring-cryptography-rfc-4648-and-you
 
 					return [$key_type, $key_id, $key_value];
 
