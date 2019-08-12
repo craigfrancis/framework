@@ -5,7 +5,7 @@
 
 	encryption::key_asymmetric_create('my-key');
 
-	$key_public = encryption::key_get_public('my-key');
+	$key_public = encryption::key_public_get('my-key');
 
 //--------------------------------------------------
 // 2. Encrypt
