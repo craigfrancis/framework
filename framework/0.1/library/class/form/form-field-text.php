@@ -112,7 +112,6 @@
 
 				$this->min_length = $size;
 				$this->required = ($size > 0);
-				$this->validation_js[] = 'if (f.val.length < ' . intval($size) . ') f.errors.push({"type": "min_length", "html": ' . json_encode($error_html) . '});';
 
 			}
 
@@ -139,7 +138,6 @@
 				}
 
 				$this->max_length = $size;
-				$this->validation_js[] = 'if (f.val.length > ' . intval($size) . ') f.errors.push({"type": "max_length", "html": ' . json_encode($error_html) . '});';
 
 			}
 
@@ -176,14 +174,6 @@
 
 		//--------------------------------------------------
 		// Validation
-
-			public function _validation_js() {
-				$js  = "\n\t\t" . 'f.val = f.ref.value;';
-				foreach ($this->validation_js as $validation_js) {
-					$js .= "\n\t\t" . $validation_js;
-				}
-				return $js;
-			}
 
 			public function _post_validation() {
 

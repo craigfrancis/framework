@@ -34,7 +34,6 @@
 			protected $info_html = NULL;
 			protected $info_class = 'info';
 			protected $info_tag = 'span';
-			protected $validation_js = array();
 			protected $required = false;
 			protected $required_mark_html = NULL;
 			protected $required_mark_position = NULL;
@@ -587,10 +586,6 @@
 
 		//--------------------------------------------------
 		// Validation
-
-			public function _validation_js() {
-				return '';
-			}
 
 			public function _post_validation() {
 			}

@@ -52,7 +52,6 @@
 				}
 
 				$this->required = ($error_html !== NULL);
-				$this->validation_js[] = 'if (!f.val) f.errors.push({"type": "required_error", "html": ' . json_encode($error_html) . '});';
 
 			}
 
@@ -93,17 +92,6 @@
 				} else {
 					return NULL;
 				}
-			}
-
-		//--------------------------------------------------
-		// Validation
-
-			public function _validation_js() {
-				$js  = "\n\t\t" . 'f.val = f.ref.checked;';
-				foreach ($this->validation_js as $validation_js) {
-					$js .= "\n\t\t" . $validation_js;
-				}
-				return $js;
 			}
 
 		//--------------------------------------------------
