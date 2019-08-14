@@ -244,7 +244,7 @@
 							'version' => $matches[2],
 						];
 
-					list($key1_id, $key2_id) = array_pad(explode('/', $matches[3], 2), 2, -1);
+					list($key1_id, $key2_id) = array_pad(explode('-', $matches[3], 2), 2, -1);
 					if ($return['type'] == 'S') {
 						$return['key'] = $key1_id;
 					} else {
@@ -359,7 +359,7 @@
 					throw new error_exception('Unrecognised encryption key type', 'Key1: ' . $key1_type . "\n" . 'Key2: ' . $key2_type);
 				}
 
-				return $return_type . '.' . implode('/', $return_keys) . '.' . implode('.', array_map('base64_encode_rfc4648', $return_values));
+				return $return_type . '.' . implode('-', $return_keys) . '.' . implode('.', array_map('base64_encode_rfc4648', $return_values));
 
 			}
 
@@ -371,7 +371,7 @@
 					throw new error_exception('The encrypted data does not include the necessary metadata.');
 				}
 
-				list($key1_id, $key2_id) = array_pad(explode('/', $input_keys, 2), 2, -1);
+				list($key1_id, $key2_id) = array_pad(explode('-', $input_keys, 2), 2, -1);
 
 				list($key1_type, $key1_id, $key1_value) = self::_key_get($key1, $key1_id);
 
