@@ -1637,7 +1637,7 @@ exit();
 					$field = new form_field_text($form, $config['label'], $config['name']);
 				} else {
 					$field = new form_field_email($form, $config['label'], $config['name']);
-					$field->check_domain_set($config['check_domain']);
+					$field->domain_check_set($config['domain_check']);
 					$field->format_error_set($this->text_get('identification_format'));
 				}
 
@@ -1655,7 +1655,7 @@ exit();
 				$max_length = (isset($config['max_length']) ? $config['max_length'] : $this->email_max_length);
 
 				$field = new form_field_email($form, $config['label'], $config['name']);
-				$field->check_domain_set($config['check_domain']);
+				$field->domain_check_set($config['domain_check']);
 				$field->format_error_set($this->text_get('email_format'));
 				$field->min_length_set($this->text_get('email_min_length'));
 				$field->max_length_set($this->text_get('email_max_length'), $max_length);

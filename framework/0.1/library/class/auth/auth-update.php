@@ -146,7 +146,7 @@
 				$this->field_identification = $this->auth->_field_identification_get($form, array_merge(array(
 						'label' => $this->auth->text_get('identification_label'),
 						'name' => 'identification',
-						'check_domain' => true,
+						'domain_check' => true,
 					), $config));
 
 				if ($form->initial()) {

@@ -5,7 +5,12 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $check_domain = true;
+			protected $domain_check = true;
+			protected $domain_error_html = NULL;
+			protected $domain_error_skip_value = '';
+			protected $domain_error_skip_html = NULL;
+			protected $domain_error_skip_show = false;
+			protected $format_error_html = false;
 			protected $format_error_set = false;
 			protected $format_error_found = false;
 
@@ -29,28 +34,44 @@
 			}
 
 			public function check_domain_set($check_domain) {
-				$this->check_domain = $check_domain;
+				report_add('Deprecated: The email field check_domain_set() is being re-named to domain_check_set()', 'notice');
+				$this->domain_check_set($check_domain);
 			}
 
 		//--------------------------------------------------
 		// Errors
+
+			public function domain_check_set($domain_check) {
+				$this->domain_check = $domain_check;
+			}
+
+			public function domain_error_set($error, $skip_label = NULL) { // If a domain error is not set, the format error will be used (assuming the domain is checked).
+				$this->domain_error_set_html(html($error), html($skip_label));
+			}
+
+			public function domain_error_set_html($error_html, $skip_label_html = NULL) {
+
+				$this->domain_error_html = $error_html;
+
+				if ($skip_label_html) {
+					$name = $this->name . '-DW';
+					$id = $this->id . '-DW';
+					$this->domain_error_skip_value = request($name, $this->form->form_method_get());
+					$this->domain_error_skip_html = ' <input type="checkbox" name="' . html($name) . '" id="' . html($id) . '" value="' . html($this->value) . '"' . ($this->domain_error_skip_value == $this->value ? ' checked="checked"' : '') . ' /> <label for="' . html($id) . '">' . $skip_label_html . '</label>';
+				} else {
+					$this->domain_error_skip_value = '';
+					$this->domain_error_skip_html = NULL;
+				}
+
+			}
 
 			public function format_error_set($error) {
 				$this->format_error_set_html(html($error));
 			}
 
 			public function format_error_set_html($error_html) {
-
-				if ($this->form_submitted && $this->value != '' && !is_email($this->value, $this->check_domain)) {
-
-					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
-
-					$this->format_error_found = true;
-
-				}
-
+				$this->format_error_html = $error_html;
 				$this->format_error_set = true;
-
 			}
 
 		//--------------------------------------------------
@@ -64,6 +85,41 @@
 					exit('<p>You need to call "format_error_set", on the field "' . $this->label_html . '"</p>');
 				}
 
+				if ($this->form_submitted && $this->value != '') {
+
+					$valid = is_email($this->value, ($this->domain_check ? -1 : false)); // -1 to return the type of failure (-1 for format, -2 for domain check)
+
+					if ($valid !== true) {
+
+						if ($this->domain_error_html && $valid === -2) {
+
+							$this->domain_error_skip_show = true;
+
+							if (!$this->domain_error_skip_html || $this->domain_error_skip_value != $this->value) {
+								$this->form->_field_error_set_html($this->form_field_uid, $this->domain_error_html);
+							}
+
+						} else {
+
+							$this->form->_field_error_set_html($this->form_field_uid, $this->format_error_html);
+
+						}
+
+					}
+
+				}
+
+			}
+
+		//--------------------------------------------------
+		// HTML
+
+			public function html_input() {
+				$html = parent::html_input();
+				if ($this->domain_error_skip_show) {
+					$html .= $this->domain_error_skip_html;
+				}
+				return $html;
 			}
 
 	}

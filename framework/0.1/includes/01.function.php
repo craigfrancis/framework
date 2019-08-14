@@ -510,27 +510,37 @@
 //--------------------------------------------------
 // Check that an email address is valid
 
-	function is_email($email, $check_domain = true) {
-		if (preg_match('/^\w[-=.+\'\w]*@(\w[-._\w]*\.[a-zA-Z]{2,}.*)$/', $email, $matches)) {
-			if ($check_domain && config::get('email.check_domain', true) && function_exists('checkdnsrr')) {
-				$start = microtime(true);
-				foreach (array('MX', 'A') as $type) {
-					$valid = checkdnsrr($matches[1] . '.', $type);
-					if ($valid) {
-						if (function_exists('debug_log_time')) {
-							debug_log_time('DNS' . $type, round((microtime(true) - $start), 3));
-						}
-						return true;
-					}
-				}
-				if (function_exists('debug_log_time')) {
-					debug_log_time('DNSX', round((microtime(true) - $start), 3));
-				}
-			} else {
-				return true; // Skipping domain check, or on a Windows server.
+	function is_email($email, $domain_check = true) {
+
+		$format_valid = preg_match('/^\w[-=.+\'\w]*@(\w[-._\w]*\.[a-zA-Z]{2,}.*)$/', $email, $matches);
+
+		if ($format_valid) {
+
+			if ($domain_check === false || config::get('email.check_domain', true) === false || !function_exists('checkdnsrr')) {
+				return true;
 			}
+
+			foreach (array('MX', 'A') as $type) {
+				$start = microtime(true);
+				$valid = checkdnsrr($matches[1] . '.', $type);
+				if (function_exists('debug_log_time')) {
+					debug_log_time('DNS' . $type, round((microtime(true) - $start), 3));
+				}
+				if ($valid) {
+					return true;
+				}
+			}
+
 		}
-		return false;
+
+		if ($domain_check !== -1) {
+			return false;
+		} else if ($format_valid) {
+			return -2; // Domain check error.
+		} else {
+			return -1; // Format check error.
+		}
+
 	}
 
 //--------------------------------------------------

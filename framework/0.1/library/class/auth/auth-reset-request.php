@@ -56,7 +56,7 @@
 				$this->field_email = $this->auth->_field_email_get($form, array_merge(array(
 						'label' => $this->auth->text_get('email_label'),
 						'name' => ($identification_username ? 'email' : 'identification'), // We reset by 'email' address, even when they login by username; but keep calling the field 'identification' for email based logins (for consistency with other forms).
-						'check_domain' => true,
+						'domain_check' => true,
 						'autocomplete' => ($identification_username ? 'email' : 'username'), // When logging in via email address, we use the autocomplete value "username".
 					), $config));
 

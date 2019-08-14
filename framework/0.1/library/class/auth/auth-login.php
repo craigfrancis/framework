@@ -26,7 +26,7 @@
 				$this->field_identification = $this->auth->_field_identification_get($form, array_merge(array(
 						'label' => $this->auth->text_get('identification_label'),
 						'name' => 'identification',
-						'check_domain' => false, // DNS lookups can take time.
+						'domain_check' => false, // DNS lookups can take time.
 					), $config));
 
 				if ($form->initial()) {
