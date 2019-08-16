@@ -12,6 +12,10 @@ It allows you to return [configuration](../../doc/setup/config.md) options:
 	./cli --config
 	./cli --config=output.site_name
 
+Encrypt a value, using the key from environment variable `PRIME_CONFIG_KEY`:
+
+	./cli --config-encrypt
+
 Run a [gateway](../../doc/setup/gateways.md) script:
 
 	./cli --gateway

@@ -8,6 +8,8 @@
  -c[=name]
  --config[=name]   Show configuration.
 
+ --config-encrypt  Encrypt a value, entered at the prompt.
+
  -g[=name]
  --gateway[=name]  Call the gateway "name", or list the gateways.
 

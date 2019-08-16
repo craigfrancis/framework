@@ -7,6 +7,7 @@
 	// Start
 
 		$config = array();
+		$config_encrypted = array();
 
 	//--------------------------------------------------
 	// Request
@@ -169,29 +170,34 @@
 		// Variables
 
 			private $store = array();
+			private $encrypted = array();
 
 		//--------------------------------------------------
 		// Set and get
 
-			public static function set($variable, $value = NULL) {
+			public static function set($variable, $value = NULL, $encrypted = false) {
 				$obj = config::instance_get();
 				if (is_array($variable) && $value === NULL) {
 					$obj->store = array_merge($obj->store, $variable);
+					$obj->encrypted = array_merge($obj->encrypted, array_fill_keys(array_keys($obj->encrypted), false));
 				} else {
 					$obj->store[$variable] = $value;
+					$obj->encrypted[$variable] = $encrypted;
 				}
 			}
 
-			public static function set_default($variable, $value) {
+			public static function set_default($variable, $value, $encrypted = false) {
 				$obj = config::instance_get();
 				if (!array_key_exists($variable, $obj->store)) { // Can be set to NULL
 					$obj->store[$variable] = $value;
+					$obj->encrypted[$variable] = $encrypted;
 				}
 			}
 
 			public static function set_all($variables) { // Only really used once, during setup
 				$obj = config::instance_get();
 				$obj->store = $variables;
+				$obj->encrypted = array_fill_keys(array_keys($variables), false);
 			}
 
 			public static function get($variable, $default = NULL) {
@@ -203,12 +209,16 @@
 				}
 			}
 
-			public static function get_all($prefix = '') {
+			public static function get_all($prefix = '', $encrypted_mask = NULL) {
 				$obj = config::instance_get();
 				$prefix .= '.';
 				$prefix_length = strlen($prefix);
 				if ($prefix_length <= 1) {
-					return $obj->store;
+					$data = $obj->store;
+					if ($encrypted_mask) {
+						$data = array_merge($data, array_fill_keys(array_keys($obj->encrypted, true), $encrypted_mask));
+					}
+					return $data;
 				} else {
 					$data = array();
 					foreach ($obj->store as $k => $v) {
@@ -218,6 +228,31 @@
 					}
 					return $data;
 				}
+			}
+
+			public static function get_decrypted($variable, $default = NULL) {
+				$obj = config::instance_get();
+				if (isset($obj->store[$variable])) {
+					if (isset($obj->encrypted[$variable]) && $obj->encrypted[$variable]) {
+						$key = getenv('PRIME_CONFIG_KEY');
+						if (!$key) {
+							exit('Missing environment variable "PRIME_CONFIG_KEY"');
+						}
+						return encryption::decode($obj->store[$variable], $key);
+					} else {
+						return $obj->store[$variable];
+					}
+				} else {
+					return $default;
+				}
+			}
+
+			public static function get_encrypted($value) {
+				$key = getenv('PRIME_CONFIG_KEY');
+				if (!$key) {
+					exit('Missing environment variable "PRIME_CONFIG_KEY"');
+				}
+				return encryption::encode($value, $key);
 			}
 
 		//--------------------------------------------------
@@ -282,7 +317,14 @@
 
 	config::set_all($config);
 
-	unset($config);
+	if (isset($config_encrypted[SERVER]) && count($config_encrypted) > 0) {
+		foreach ($config_encrypted[SERVER] as $name => $value) {
+			config::set($name, $value, true);
+		}
+		unset($name, $value);
+	}
+
+	unset($config, $config_encrypted);
 
 //--------------------------------------------------
 // Constants

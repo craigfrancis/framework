@@ -27,7 +27,7 @@
 
 			} else {
 
-				$password = config::get('lolcat.pass', NULL);
+				$password = config::get_decrypted('lolcat.pass', NULL);
 				if ($password === NULL) {
 					$password_file = PRIVATE_ROOT . '/passwords/lolcat.txt';
 					if (is_file($password_file)) {

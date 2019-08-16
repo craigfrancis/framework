@@ -14,6 +14,7 @@
 		);
 
 	$extra_parameters = array(
+			'config-encrypt::',
 			'new::',
 			'check::',
 			'dump::',
@@ -145,6 +146,12 @@
 						echo "\n";
 						echo '--------------------------------------------------' . "\n\n";
 					}
+
+					break;
+
+				case 'config-encrypt':
+
+					require_once(FRAMEWORK_ROOT . '/library/cli/config-encrypt.php');
 
 					break;
 

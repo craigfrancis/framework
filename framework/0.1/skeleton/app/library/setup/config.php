@@ -19,9 +19,9 @@
 		// Database
 
 			// $config['db.host'] = 'localhost';
-			// $config['db.user'] = 'stage';
-			// $config['db.pass'] = 'password';
 			// $config['db.name'] = 's-company-project';
+			// $config['db.user'] = 'stage';
+			// $config_encrypted[SERVER]['db.pass'] = 'password';
 
 			$config['db.prefix'] = 'tpl_';
 
@@ -53,9 +53,9 @@
 		// Database
 
 			// $config['db.host'] = 'localhost';
-			// $config['db.user'] = 'demo';
-			// $config['db.pass'] = 'password';
 			// $config['db.name'] = 's-company-project';
+			// $config['db.user'] = 'demo';
+			// $config_encrypted[SERVER]['db.pass'] = 'password';
 
 			$config['db.prefix'] = 'tpl_';
 
@@ -78,9 +78,9 @@
 		// Database
 
 			// $config['db.host'] = 'localhost';
-			// $config['db.user'] = 'company';
-			// $config['db.pass'] = 'password';
 			// $config['db.name'] = 's-company-project';
+			// $config['db.user'] = 'company';
+			// $config_encrypted[SERVER]['db.pass'] = 'password';
 
 			$config['db.prefix'] = 'tpl_';
 

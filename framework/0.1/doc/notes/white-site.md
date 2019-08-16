@@ -133,9 +133,9 @@ Set the [database config](../../doc/system/database.md):
 	/app/library/setup/config.php
 
 		$config['db.host'] = 'localhost';
-		$config['db.user'] = 'stage';
-		$config['db.pass'] = 'password';
 		$config['db.name'] = 's-company-project';
+		$config['db.user'] = 'stage';
+		$config_encrypted[SERVER]['db.pass'] = 'XXX';
 
 		$config['db.prefix'] = 'tbl_';
 

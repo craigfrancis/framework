@@ -403,7 +403,9 @@
 
 	function debug_config_log($prefix = '') { // Used in CLI, so don't check on debug.level
 
-		$config = config::get_all($prefix);
+		$encrypted_mask = '[Encrypted]';
+
+		$config = config::get_all($prefix, $encrypted_mask);
 
 		ksort($config);
 
@@ -412,7 +414,9 @@
 		foreach ($config as $key => $value) {
 			if (!in_array($key, array('db.link', 'output.response', 'debug.time_init', 'debug.time_check', 'debug.time_query', 'debug.units'))) {
 				if ($key == 'debug.notes' || substr($key, -5) == '.pass' || substr($key, -9) == '.password') { // e.g. 'db.pass'
-					$value = '???';
+					if ($value != $encrypted_mask) {
+						$value = '???';
+					}
 				} else if (is_object($value)) {
 					$value = get_class($value) . '()';
 				} else {

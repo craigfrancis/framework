@@ -691,9 +691,9 @@
 				}
 
 				$name = config::get($prefix . 'name');
-				$user = config::get($prefix . 'user');
-				$pass = config::get($prefix . 'pass');
 				$host = config::get($prefix . 'host');
+				$user = config::get($prefix . 'user');
+				$pass = config::get_decrypted($prefix . 'pass');
 
 				if ($pass === NULL) {
 					$password_path = PRIVATE_ROOT . '/passwords/database.txt'; // Could also go into `/private/config/server.ini`, but this will appear in debug output (although it should show the value '???').
