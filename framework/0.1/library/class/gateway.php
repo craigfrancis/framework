@@ -24,6 +24,8 @@
 //       'expires' => '+5 seconds', How long the generated signature lasts, converted to a timestamp, passed in a separate 'X-Expires' header?
 //     ]);
 //
+// Should be used by "cli-diff-db" and "cli-opcache-clear"
+//
 // Server checking:
 //
 //   $username = $this->client_verify(); // where $this is an api object... and it calls the method client_key_get($username), so the project stores/provides the $key.
