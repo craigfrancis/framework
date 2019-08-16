@@ -143,6 +143,8 @@
 	$config['file.default.aws_local_max_age'] = '-1 day';
 	// $config['file.default.aws_backup_folder'] = '/path/to/backup';
 
+	$config_encrypted['stage']['file.default.aws_access_secret'] = 'ES2.0.J2cP1os1q_vqRm8nXnZOpmiItIGXLtQoQVqlOLl3xWtoBpRE2rBeJe2afUnaT16dQSFEzbZ5erA.LeNSHpmgZ3RM-udn';
+
 	$config['file.test-png.image_type'] = 'png';
 	$config['file.test-gif.image_type'] = 'gif';
 

@@ -230,15 +230,19 @@
 				}
 			}
 
+			public static function get_encrypted($value) {
+				$key = getenv('PRIME_CONFIG_KEY');
+				if (!$key) {
+					throw new error_exception('Missing environment variable "PRIME_CONFIG_KEY"');
+				}
+				return encryption::encode($value, $key);
+			}
+
 			public static function get_decrypted($variable, $default = NULL) {
 				$obj = config::instance_get();
 				if (isset($obj->store[$variable])) {
 					if (isset($obj->encrypted[$variable]) && $obj->encrypted[$variable]) {
-						$key = getenv('PRIME_CONFIG_KEY');
-						if (!$key) {
-							throw new error_exception('Missing environment variable "PRIME_CONFIG_KEY"');
-						}
-						return encryption::decode($obj->store[$variable], $key);
+						return config::value_decrypt($obj->store[$variable]);
 					} else {
 						return $obj->store[$variable];
 					}
@@ -247,12 +251,12 @@
 				}
 			}
 
-			public static function get_encrypted($value) {
+			public static function value_decrypt($value) {
 				$key = getenv('PRIME_CONFIG_KEY');
 				if (!$key) {
 					throw new error_exception('Missing environment variable "PRIME_CONFIG_KEY"');
 				}
-				return encryption::encode($value, $key);
+				return encryption::decode($value, $key);
 			}
 
 		//--------------------------------------------------

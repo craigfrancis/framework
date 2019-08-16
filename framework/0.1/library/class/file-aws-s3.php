@@ -159,21 +159,18 @@ Abbreviations:
 				//--------------------------------------------------
 				// Access secret
 
+					$this->access_secret = NULL;
+
 					if ($this->file->config_exists('aws_access_secret')) {
-
-						$this->access_secret = $this->file->config_get('aws_access_secret');
-
-					} else {
-
-						$password_id = $this->file->config_get('aws_access_id');
-						$password_file = ROOT . '/private/passwords/aws-s3-' . safe_file_name($password_id) . '.txt';
-
-						if (is_file($password_file)) {
-							$this->access_secret = trim(file_get_contents($password_file));
-						} else {
-							throw new error_exception('The file_aws_s3 config must set "aws_access_secret", or use a password file', $password_file);
+						try {
+							$this->access_secret = config::value_decrypt($this->file->config_get('aws_access_secret'));
+						} catch (exception $e) {
+							$this->access_secret = NULL;
 						}
+					}
 
+					if (!$this->access_secret) {
+						throw new error_exception('The file_aws_s3 config must set "aws_access_secret", in an encrypted form.');
 					}
 
 			}
