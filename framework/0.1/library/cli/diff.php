@@ -25,7 +25,19 @@
 
 				if (config::get('db.host') !== NULL && is_file($setup_path)) {
 
-					if (REQUEST_MODE == 'cli' && config::get('db.pass') === NULL) {
+					if (REQUEST_MODE == 'cli') {
+						$diff_via_api = true;
+						try {
+							if (config::get_decrypted('db.pass') !== NULL) {
+								$diff_via_api = false; // Can access the password, run locally.
+							}
+						} catch (Exception $e) {
+						}
+					} else {
+						$diff_via_api = false;
+					}
+
+					if ($diff_via_api) {
 
 						$diff_url = gateway_url('cli-diff-db');
 						$diff_url->format_set('full');

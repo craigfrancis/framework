@@ -236,7 +236,7 @@
 					if (isset($obj->encrypted[$variable]) && $obj->encrypted[$variable]) {
 						$key = getenv('PRIME_CONFIG_KEY');
 						if (!$key) {
-							exit('Missing environment variable "PRIME_CONFIG_KEY"');
+							throw new error_exception('Missing environment variable "PRIME_CONFIG_KEY"');
 						}
 						return encryption::decode($obj->store[$variable], $key);
 					} else {
@@ -250,7 +250,7 @@
 			public static function get_encrypted($value) {
 				$key = getenv('PRIME_CONFIG_KEY');
 				if (!$key) {
-					exit('Missing environment variable "PRIME_CONFIG_KEY"');
+					throw new error_exception('Missing environment variable "PRIME_CONFIG_KEY"');
 				}
 				return encryption::encode($value, $key);
 			}
