@@ -19,9 +19,10 @@
 		// Database
 
 			$config['db.host'] = 'localhost';
-			$config['db.user'] = 'stage';
-			$config['db.pass'] = 'st8ge';
 			$config['db.name'] = 's-craig-framework';
+			$config['db.user'] = 'stage';
+
+			$config_encrypted[SERVER]['db.pass'] = 'ES2.0.8D1eK3Z224M5KsfZMrKTlGLeuDcy.dYfLBCDv6zjcA-UC';
 
 			$config['db.prefix'] = 'tpl_';
 
@@ -55,9 +56,10 @@
 		// Database
 
 			$config['db.host'] = 'devcf-rds.cfbcmnc53kwh.eu-west-1.rds.amazonaws.com';
-			$config['db.user'] = 'craig-framework';
-			$config['db.pass'] = NULL; // see /private/passwords/database.txt
 			$config['db.name'] = 'l-craig-framework';
+			$config['db.user'] = 'craig-framework';
+
+			$config_encrypted[SERVER]['db.pass'] = 'ES2.0.27OnC9YqYhgk0qV6QdrrQMvAnnlGQXA4B9y9QNdEewTVgnACwvjHuwRS7VnYBg.mgJT_fv0Gn6e7xG3';
 
 			$config['db.ca_file'] = '/etc/mysql/tls.pem';
 			$config['db.prefix'] = 'tpl_';

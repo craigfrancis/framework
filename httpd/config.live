@@ -67,6 +67,8 @@
 			Header set Cache-Control "public, max-age=86400"
 		</FilesMatch>
 
+		SetEnv PRIME_CONFIG_KEY "${PRIME_CONFIG_KEY}"
+
 	</VirtualHost>
 
 #--------------------------------------------------
