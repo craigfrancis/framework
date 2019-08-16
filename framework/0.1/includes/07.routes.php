@@ -593,6 +593,28 @@
 			// Done after the assets are loaded (need to be quick, and won't be used),
 			// but before the controllers start loading any objects into the site config.
 
+		$config_key_path = '/etc/prime-config-key';
+		if (is_file($config_key_path) && is_readable($config_key_path)) {
+
+			debug_note([
+					'type' => 'L',
+					'colour' => '#FCC',
+					'class'  => 'debug_sql',
+					'heading' => 'Warning',
+					'lines' => [
+							$config_key_path,
+							'The config key file is readable by PHP, it should be:',
+						],
+					'list' => [
+							'Owned by root.',
+							'Be read-only (0400).',
+							'Included by Apache in the "envvars" file.',
+							'Included in the VirtualHost via "SetEnv".',
+						],
+				]);
+
+		}
+
 		debug_note([
 				'type' => 'C',
 				'heading' => 'Configuration',
