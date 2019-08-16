@@ -28,13 +28,6 @@
 			} else {
 
 				$password = config::get_decrypted('lolcat.pass', NULL);
-				if ($password === NULL) {
-					$password_file = PRIVATE_ROOT . '/passwords/lolcat.txt';
-					if (is_file($password_file)) {
-						$password = trim(file_get_contents($password_file));
-					}
-				}
-
 				$site = config::get('lolcat.site');
 				$pass = hash('sha256', $id . $site . $password);
 				$url = config::get('lolcat.url', 'https://www.devcf.com/a/api/lolcat/');

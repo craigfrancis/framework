@@ -696,16 +696,7 @@
 				$pass = config::get_decrypted($prefix . 'pass');
 
 				if ($pass === NULL) {
-					$password_path = PRIVATE_ROOT . '/passwords/database.txt'; // Could also go into `/private/config/server.ini`, but this will appear in debug output (although it should show the value '???').
-					if (is_readable($password_path)) {
-						$pass = trim(file_get_contents($password_path));
-					} else {
-						if (is_file($password_path)) {
-							$this->_error('Cannot read database password file');
-						} else {
-							$this->_error('Unknown database password (config "' . $prefix . 'pass")');
-						}
-					}
+					$this->_error('Unknown database password (config "' . $prefix . 'pass")');
 				}
 
 				if (!function_exists('mysqli_real_connect')) {

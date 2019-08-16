@@ -1,4 +1,3 @@
-passwords
 files
 files/code-poets
 files/code-poets/ed
