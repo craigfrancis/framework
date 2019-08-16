@@ -45,6 +45,8 @@
 						'log_table' => NULL,
 						'log_values' => array(),
 
+						'extra_values' => array(), // When in single mode, you might want to store something like the author.
+
 						'deleted' => false, // False, never allow deleted records; NULL, do not check; True/Array/etc, check and use error_send('deleted')
 
 						'db' => NULL,
@@ -72,10 +74,18 @@
 					$this->config = $config;
 
 				//--------------------------------------------------
-				// Where
+				// Database
 
 					if ($this->config['db']) { // Should come before the where clause is escaped.
 						$this->db_set($this->config['db']);
+					}
+
+				//--------------------------------------------------
+				// If in 'single' mode, with a 'log_table', then
+				// the main table will not have a 'deleted' field
+
+					if ($this->config['single'] === true) {
+						$this->config['deleted'] = NULL;
 					}
 
 				//--------------------------------------------------
@@ -254,8 +264,7 @@
 									' . $this->table_sql . '
 								WHERE
 									' . $this->where_sql . ' AND
-									field IN (' . $in_sql . ') AND
-									deleted = "0000-00-00 00:00:00"';
+									field IN (' . $in_sql . ')';
 
 						foreach ($db->fetch_all($sql, $parameters) as $row) {
 							$this->values[$row['field']] = $row['value'];
@@ -374,38 +383,89 @@
 							foreach ($new_values as $field => $new_value) {
 								if (!array_key_exists($field, $old_values) || $this->log_value_different($old_values[$field], $new_value)) {
 
-									//--------------------------------------------------
-									// Delete old
+									if ($this->config['log_table']) { // A separate table for the log, when dealing with a lot of records.
 
-										$sql = 'UPDATE
-													' . $this->table_sql . '
-												SET
-													deleted = ?
-												WHERE
-													' . $this->where_sql . ' AND
-													field = ? AND
-													deleted = "0000-00-00 00:00:00"';
+										//--------------------------------------------------
+										// Old values
 
-										$parameters = [];
-										$parameters[] = ['s', $now];
-										$parameters = array_merge($parameters, $this->where_parameters);
-										$parameters[] = ['s', $field];
+											$sql = 'SELECT
+														*
+													FROM
+														' . $this->table_sql . '
+													WHERE
+														' . $this->where_sql . ' AND
+														field = ?';
 
-										$db->query($sql, $parameters);
+											$parameters = [];
+											$parameters = array_merge($parameters, $this->where_parameters);
+											$parameters[] = ['s', $field];
 
-									//--------------------------------------------------
-									// Add new
+											$log_values = $db->fetch_row($sql, $parameters);
 
-										// if ($new_value) { // Always record, as 'log_values' may want to log the author.
-										// }
+											if ($log_values) {
 
-										$db->insert($this->table_sql, array_merge($this->config['log_values'], [
-												$this->config['where_field'] => $this->id_get(),
-												'field'   => $field,
-												'value'   => $new_value,
-												'created' => $now,
-												'deleted' => '0000-00-00 00:00:00',
-											]));
+												$log_values['deleted'] = new timestamp();
+
+												if ($this->config['log_values']) {
+													$log_values = array_merge($log_values, $this->config['log_values']);
+												}
+
+												$log_table_sql = $db->escape_table($this->config['log_table']);
+
+												$db->insert($log_table_sql, $log_values);
+
+											}
+
+										//--------------------------------------------------
+										// Store value
+
+											$values_update = array_merge($this->config['extra_values'], [
+													'value'   => $new_value,
+													'created' => $now,
+												]);
+
+											$values_insert = $values_update;
+											$values_insert[$this->config['where_field']] = $this->id_get();
+											$values_insert['field'] = $field;
+
+											$db->insert($this->table_sql, $values_insert, $values_update);
+
+									} else {
+
+										//--------------------------------------------------
+										// Delete old
+
+											$sql = 'UPDATE
+														' . $this->table_sql . '
+													SET
+														deleted = ?
+													WHERE
+														' . $this->where_sql . ' AND
+														field = ? AND
+														deleted = "0000-00-00 00:00:00"';
+
+											$parameters = [];
+											$parameters[] = ['s', $now];
+											$parameters = array_merge($parameters, $this->where_parameters);
+											$parameters[] = ['s', $field];
+
+											$db->query($sql, $parameters);
+
+										//--------------------------------------------------
+										// Add new
+
+											// if ($new_value) { // Always record, as 'extra_values' may want to log the author.
+											// }
+
+											$db->insert($this->table_sql, array_merge($this->config['extra_values'], [
+													$this->config['where_field'] => $this->id_get(),
+													'field'   => $field,
+													'value'   => strval($new_value),
+													'created' => $now,
+													'deleted' => '0000-00-00 00:00:00',
+												]));
+
+									}
 
 								}
 							}
