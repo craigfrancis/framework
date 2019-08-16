@@ -7,7 +7,7 @@
 
 	function config_key_file_example() {
 		echo '##########' . "\n";
-		echo 'export PRIME_CONFIG_KEY="' . encryption::key_symmetric_create() . '"' . "\n";
+		echo 'export PRIME_CONFIG_KEY=' . encryption::key_symmetric_create() . "\n";
 		echo '##########' . "\n\n";
 	}
 
