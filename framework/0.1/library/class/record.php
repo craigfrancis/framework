@@ -216,6 +216,10 @@
 		//--------------------------------------------------
 		// Returning
 
+			public function field_names_get() {
+				return $this->config['fields'];
+			}
+
 			public function fields_get() {
 				if ($this->fields === NULL) {
 
