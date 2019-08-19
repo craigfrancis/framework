@@ -18,8 +18,6 @@
 //--------------------------------------------------
 // Log file, and processing time
 
-	config::set('debug.log_values', array_fill_keys(config::get('debug.log_fields', ['code', 'time']), '-'));
-
 	function log_value($field, $value) {
 		config::array_set('debug.log_values', $field, $value);
 	}
@@ -50,13 +48,11 @@
 	function log_shutdown() {
 		if (!defined('FRAMEWORK_END')) { // Only run once, ref http_connection_close()
 
-			define('FRAMEWORK_END', number_format(round((microtime(true) - FRAMEWORK_START), 4), 4));
+			define('FRAMEWORK_END', number_format(debug_time_elapsed(), 3));
 
 			if (($log_file = config::get('debug.log_file')) !== NULL) {
 
-				log_value('date', date('Y-m-d H:i:s'));
 				log_value('time', FRAMEWORK_END);
-				log_value('path', config::get('request.path'));
 
 				if (($fp = fopen($log_file, 'a')) !== false) {
 					fputcsv($fp, config::get('debug.log_values'));
