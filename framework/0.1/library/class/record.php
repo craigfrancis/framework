@@ -26,7 +26,7 @@
 
 				$this->setup(array_merge(array(
 
-						'fields' => NULL,
+						'fields' => [],
 						'fields_sql' => NULL, // Currently not available
 
 						'table' => NULL,
@@ -374,7 +374,7 @@
 								return; // Nothing to save, and we can't insert a record in 'single' mode.
 							}
 
-							if ($this->values === NULL && $this->config['fields'] === NULL) {
+							if ($this->values === NULL && count($this->config['fields']) == 0) {
 								$this->config['fields'] = array_keys($new_values);
 							}
 
