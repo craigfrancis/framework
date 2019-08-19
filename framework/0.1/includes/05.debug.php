@@ -50,7 +50,7 @@
 
 			define('FRAMEWORK_END', number_format(debug_time_elapsed(), 3));
 
-			if (($log_file = config::get('debug.log_file')) !== NULL) {
+			if (($log_file = config::get('debug.log_file')) !== NULL && is_writable($log_file)) {
 
 				log_value('time', FRAMEWORK_END);
 
