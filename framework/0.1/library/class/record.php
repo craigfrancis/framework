@@ -26,7 +26,7 @@
 
 				$this->setup(array_merge(array(
 
-						'fields' => NULL,
+						'fields' => [],
 						'fields_sql' => NULL, // Currently not available
 
 						'table' => NULL,
@@ -281,7 +281,9 @@
 						$table_sql = $this->table_sql . ($this->config['table_alias'] === NULL ? '' : ' AS ' . $this->config['table_alias']);
 
 						$fields = $this->config['fields'];
-						if ($this->config['deleted'] && is_array($fields) && !in_array('deleted', $fields)) {
+						if (count($fields) == 0) {
+							$fields = NULL;
+						} else if ($this->config['deleted'] && !in_array('deleted', $fields)) {
 							$fields[] = 'deleted';
 						}
 
@@ -374,7 +376,7 @@
 								return; // Nothing to save, and we can't insert a record in 'single' mode.
 							}
 
-							if ($this->values === NULL && $this->config['fields'] === NULL) {
+							if ($this->values === NULL && count($this->config['fields']) == 0) {
 								$this->config['fields'] = array_keys($new_values);
 							}
 
