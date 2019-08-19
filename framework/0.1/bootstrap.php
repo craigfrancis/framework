@@ -5,17 +5,6 @@
 
 	define('FRAMEWORK_START', microtime(true));
 
-	function log_shutdown() {
-		if (!defined('FRAMEWORK_END')) {
-			define('FRAMEWORK_END', number_format(round((microtime(true) - FRAMEWORK_START), 4), 4));
-		}
-		if (function_exists('apache_note')) {
-			apache_note('TIME_INFO', FRAMEWORK_END);
-		}
-	}
-
-	register_shutdown_function('log_shutdown');
-
 //--------------------------------------------------
 // Error reporting
 

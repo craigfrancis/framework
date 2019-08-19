@@ -16,6 +16,65 @@
 		config::set('debug.time_check', 0);
 
 //--------------------------------------------------
+// Log file, and processing time
+
+	config::set('debug.log_values', array_fill_keys(config::get('debug.log_fields', ['code', 'time']), '-'));
+
+	function log_value($field, $value) {
+		config::array_set('debug.log_values', $field, $value);
+	}
+
+	if (($log_file = config::get('debug.log_file')) !== NULL) {
+
+		$time = microtime(true);
+		$sec = floor($time);
+		$usec = round(($time - $sec) * 1000000); // Only accurate to 6 decimal places.
+
+		$sec -= strtotime('-' . date('w', $sec) . ' days, 00:00:00', $sec); // Time since Sunday 00:00, max value = 604800 (60*60*24*7)
+
+		$code = '';
+		foreach([$sec, $usec, rand(100000, 999999)] as $code_part) {
+			$a = dechex($code_part); // decbin returns a string
+			$a = hex2bin(((strlen($a) % 2) == 0 ? '' : '0') . $a);
+			$a = base64_encode_rfc4648($a);
+			// $b = hexdec(bin2hex(base64_decode_rfc4648($a)));
+			$code .= str_pad($a, 4, '.', STR_PAD_LEFT); // 4 characters max = 999999 -> "0f423f" (hex) -> "D0I/" (base64)
+		}
+
+		log_value('code', $code); // A more compact uniqid (which uses hex encoding, and a full UNIX timestamp).
+
+		header('X-Request-Code: ' . $code); // So access_log can match up with log_file
+
+	}
+
+	function log_shutdown() {
+		if (!defined('FRAMEWORK_END')) { // Only run once, ref http_connection_close()
+
+			define('FRAMEWORK_END', number_format(round((microtime(true) - FRAMEWORK_START), 4), 4));
+
+			if (($log_file = config::get('debug.log_file')) !== NULL) {
+
+				log_value('date', date('Y-m-d H:i:s'));
+				log_value('time', FRAMEWORK_END);
+				log_value('path', config::get('request.path'));
+
+				if (($fp = fopen($log_file, 'a')) !== false) {
+					fputcsv($fp, config::get('debug.log_values'));
+					fclose($fp);
+				}
+
+			} else if (function_exists('apache_note')) {
+
+				apache_note('TIME_INFO', FRAMEWORK_END);
+
+			}
+
+		}
+	}
+
+	register_shutdown_function('log_shutdown');
+
+//--------------------------------------------------
 // Error reporting
 
 	function report_add($message, $type = 'notice', $send_email = true) {

@@ -1,6 +1,11 @@
 <?php
 
 //--------------------------------------------------
+// Disable log
+
+	config::set('debug.log_file', NULL);
+
+//--------------------------------------------------
 // Reference
 
 	$debug_ref = trim($this->sub_path_get(), '/');
