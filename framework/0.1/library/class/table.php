@@ -980,12 +980,18 @@
 
 			}
 
-			public function csv() {
+			public function csv($fp = NULL) {
 
 				//--------------------------------------------------
 				// File pointer
 
-					$fp = fopen('php://temp', 'r+');
+					$return_csv = ($fp === NULL);
+
+					if ($return_csv) {
+						$fp = fopen('php://temp', 'r+');
+					} else if (is_string($fp)) {
+						$fp = fopen($fp, 'r+');
+					}
 
 				//--------------------------------------------------
 				// UTF-8 BOM, for Excel
@@ -1073,18 +1079,26 @@
 				//--------------------------------------------------
 				// Get output
 
-					$csv_length = (ftell($fp) - 1);
+					if ($return_csv) {
 
-					rewind($fp);
+						$csv_length = (ftell($fp) - 1);
 
-					$csv_output = fread($fp, $csv_length);
+						rewind($fp);
 
-					fclose($fp);
+						$csv_output = fread($fp, $csv_length);
+
+						fclose($fp);
+
+					} else {
+
+						$csv_output = NULL; // Saving directly to a file
+
+					}
 
 				//--------------------------------------------------
 				// Correct charset
 
-					if ($this->charset_output !== NULL && $this->charset_output != $this->charset_input) {
+					if ($csv_output && $this->charset_output !== NULL && $this->charset_output != $this->charset_input) {
 						$csv_output = @iconv($this->charset_input, $this->charset_output . '//TRANSLIT', $csv_output);
 					}
 
