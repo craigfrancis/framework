@@ -318,7 +318,7 @@
 
 			private function _exec($command, $include_errors = true) {
 
-				if (!is_executable($this->gpg_command)) {
+				if (!@is_executable($this->gpg_command)) {
 					exit_with_error('Cannot find "gpg" command in /usr/bin/ or /usr/local/bin/');
 				}
 
@@ -352,7 +352,7 @@
 
 			private function _exec_zip($command) {
 
-				if (!is_executable($this->gpg_zip_command)) {
+				if (!@is_executable($this->gpg_zip_command)) {
 					exit_with_error('Cannot find "gpg-zip" command in /usr/bin/ or /usr/local/bin/');
 				}
 

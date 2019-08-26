@@ -37,7 +37,7 @@
 // WebP
 
 	$webp_command = '/usr/local/bin/cwebp';
-	if (!is_executable($webp_command)) {
+	if (!@is_executable($webp_command)) {
 		$webp_command = NULL;
 	}
 
