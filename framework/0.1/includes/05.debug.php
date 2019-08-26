@@ -53,6 +53,7 @@
 			if (($log_file = config::get('debug.log_file')) !== NULL && is_writable($log_file)) {
 
 				log_value('time', FRAMEWORK_END);
+				log_value('code', http_response_code());
 
 				if (($fp = fopen($log_file, 'a')) !== false) {
 					fputcsv($fp, config::get('debug.log_values'));
