@@ -39,7 +39,7 @@
 			$code .= str_pad($a, 4, '.', STR_PAD_LEFT); // 4 characters max = 999999 -> "0f423f" (hex) -> "D0I/" (base64)
 		}
 
-		log_value('code', $code); // A more compact uniqid (which uses hex encoding, and a full UNIX timestamp).
+		log_value('ref', $code); // A more compact uniqid (which uses hex encoding, and a full UNIX timestamp).
 
 		header('X-Request-Code: ' . $code); // So access_log can match up with log_file
 
