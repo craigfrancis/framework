@@ -25,19 +25,13 @@
 				// GPG Command
 
 					$this->gpg_command = '/usr/bin/gpg';
-					if (!@is_executable($this->gpg_command)) {
+					if (!@is_executable($this->gpg_command)) { // Ignore open_basedir errors
 						$this->gpg_command = '/usr/local/bin/gpg';
-						if (!@is_executable($this->gpg_command)) {
-							exit_with_error('Cannot find "gpg" executable');
-						}
 					}
 
 					$this->gpg_zip_command = '/usr/bin/gpg-zip';
 					if (!@is_executable($this->gpg_zip_command)) {
 						$this->gpg_zip_command = '/usr/local/bin/gpg-zip';
-						if (!@is_executable($this->gpg_zip_command)) {
-							exit_with_error('Cannot find "gpg-zip" executable');
-						}
 					}
 
 				//--------------------------------------------------
