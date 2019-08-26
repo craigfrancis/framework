@@ -292,26 +292,6 @@
 					set_time_limit(5); // Don't time out
 
 				//--------------------------------------------------
-				// Compression support
-
-					$optimise_jpg_path = NULL;
-					$optimise_png_path = NULL;
-
-					if ($this->config['image_type'] == 'jpg') {
-						$optimise_jpg_path = $this->_optimise_jpg_path();
-						if (!$optimise_jpg_path) {
-							trigger_error('Could not find path to jpegtran', E_USER_NOTICE);
-						}
-					}
-
-					if ($this->config['image_type'] == 'png') {
-						$optimise_png_path = $this->_optimise_png_path();
-						if (!$optimise_png_path) {
-							trigger_error('Could not find path to optipng', E_USER_NOTICE);
-						}
-					}
-
-				//--------------------------------------------------
 				// Original image
 
 					$original_path = $this->image_path_get($id, 'original');
@@ -420,15 +400,7 @@
 								//--------------------------------------------------
 								// Optimise
 
-									if ($optimise_jpg_path) {
-
-										$output = shell_exec(escapeshellcmd($optimise_jpg_path) . ' -copy none -optimize -progressive -outfile ' . escapeshellarg($image_path) . ' ' . escapeshellarg($image_path));
-
-									} else if ($optimise_png_path) {
-
-										$output = shell_exec(escapeshellcmd($optimise_png_path) . ' ' . escapeshellarg($image_path));
-
-									}
+									$this->_image_optimise($image_path, $this->config['image_type']);
 
 							}
 						}
@@ -469,6 +441,31 @@
 		//--------------------------------------------------
 		// Support
 
+			private function _image_optimise($image_path, $ext) {
+				if ($ext == 'jpg') {
+
+					foreach (array('/usr/bin/jpegtran', '/usr/local/bin/jpegtran') as $command_path) {
+						if (@is_executable($command_path)) {
+							shell_exec(escapeshellcmd($command_path) . ' -copy none -optimize -progressive -outfile ' . escapeshellarg($image_path) . ' ' . escapeshellarg($image_path));
+							return;
+						}
+					}
+					trigger_error('Could not find path to jpegtran', E_USER_NOTICE);
+
+				} else if ($ext == 'png') {
+
+					foreach (array('/usr/bin/optipng', '/usr/local/bin/optipng') as $command_path) {
+						if (@is_executable($command_path)) {
+							shell_exec(escapeshellcmd($command_path) . ' ' . escapeshellarg($image_path));
+							return;
+						}
+					}
+					trigger_error('Could not find path to optipng', E_USER_NOTICE);
+
+				}
+				return NULL;
+			}
+
 			private function _writable_check($dir) {
 
 				if (!is_dir($dir)) {
@@ -483,24 +480,6 @@
 					exit_with_error('Cannot write to directory', $dir);
 				}
 
-			}
-
-			private function _optimise_jpg_path() {
-				foreach (array('/usr/bin/jpegtran', '/usr/local/bin/jpegtran') as $path) {
-					if (@is_executable($path)) {
-						return $path;
-					}
-				}
-				return NULL;
-			}
-
-			private function _optimise_png_path() {
-				foreach (array('/usr/bin/optipng', '/usr/local/bin/optipng') as $path) {
-					if (@is_executable($path)) {
-						return $path;
-					}
-				}
-				return NULL;
 			}
 
 	}
