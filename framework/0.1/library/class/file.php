@@ -481,7 +481,7 @@
 
 			private function _optimise_jpg_path() {
 				foreach (array('/usr/bin/jpegtran', '/usr/local/bin/jpegtran') as $path) {
-					if (is_executable($path)) {
+					if (@is_executable($path)) {
 						return $path;
 					}
 				}
@@ -490,7 +490,7 @@
 
 			private function _optimise_png_path() {
 				foreach (array('/usr/bin/optipng', '/usr/local/bin/optipng') as $path) {
-					if (is_executable($path)) {
+					if (@is_executable($path)) {
 						return $path;
 					}
 				}
