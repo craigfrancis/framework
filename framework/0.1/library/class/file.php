@@ -299,10 +299,16 @@
 
 					if ($this->config['image_type'] == 'jpg') {
 						$optimise_jpg_path = $this->_optimise_jpg_path();
+						if (!$optimise_jpg_path) {
+							trigger_error('Could not find path to jpegtran', E_USER_NOTICE);
+						}
 					}
 
 					if ($this->config['image_type'] == 'png') {
 						$optimise_png_path = $this->_optimise_png_path();
+						if (!$optimise_png_path) {
+							trigger_error('Could not find path to optipng', E_USER_NOTICE);
+						}
 					}
 
 				//--------------------------------------------------
