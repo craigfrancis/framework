@@ -594,7 +594,7 @@
 			// but before the controllers start loading any objects into the site config.
 
 		$config_key_path = '/etc/prime-config-key';
-		if (is_file($config_key_path) && is_readable($config_key_path)) {
+		if (@is_file($config_key_path) && is_readable($config_key_path)) {
 
 			debug_note([
 					'type' => 'L',
