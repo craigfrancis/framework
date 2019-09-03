@@ -183,7 +183,12 @@
 				// http://www.unicode.org/reports/tr15/#Norm_Forms
 				//--------------------------------------------------
 
-			$password = normalizer_normalize($password, Normalizer::FORM_KD);
+			if (config::get('password.normalize', true) == true) { // Ideally you would install support for Internationalization Functions (e.g. on Debian/Ubuntu systems that would be "php-intl").
+				if (!function_exists('normalizer_normalize')) {
+					exit_with_error('Cannot normalise passwords, as the normalizer_normalize() function does not exist.');
+				}
+				$password = normalizer_normalize($password, Normalizer::FORM_KD);
+			}
 
 			if ($algorithm === PASSWORD_BCRYPT) {
 
