@@ -94,7 +94,7 @@
 			$token = random_key(15);
 		}
 
-		cookie::set('f', $token, array('same_site' => 'Strict'));
+		cookie::set('f', $token, array('same_site' => config::get('cookie.csrf_same_site', 'Strict')));
 
 			// Not using sessions, as they typically expire after 24 minutes.
 			// Short cookie name (header size)
