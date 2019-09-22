@@ -101,6 +101,7 @@
 				// 'ch-ua-model'                        => [], // ClientHintsFeaturePolicy
 				// 'ch-viewport-width'                  => [], // ClientHintsFeaturePolicy
 				// 'ch-width'                           => [], // ClientHintsFeaturePolicy
+				// 'document-access'                    => [], // ExperimentalProductivityFeatures
 				'document-domain'                       => [],
 				// 'document-write'                     => [], // ExperimentalProductivityFeatures
 				// 'downloads-without-user-activation'  => [], // FeaturePolicyForSandbox
@@ -142,6 +143,7 @@
 				'usb'                                   => [], // WebUSB
 				// 'vertical-scroll'                    => [], // ExperimentalProductivityFeatures
 				// 'wake-lock'                          => [], // WakeLock
+				// 'xr'                                 => [], // WebXR
 				'vr'                                    => [],
 
 				// 'speaker'                            => [], // Removed 22-07-2019: https://chromium.googlesource.com/chromium/src/+/d9af2becddc1b592e4aeff52db12e9d0d09fbe79
