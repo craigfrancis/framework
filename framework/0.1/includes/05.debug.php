@@ -48,7 +48,7 @@
 	function log_shutdown() {
 		if (!defined('FRAMEWORK_END')) { // Only run once, ref http_connection_close()
 
-			define('FRAMEWORK_END', number_format(debug_time_elapsed(), 3));
+			define('FRAMEWORK_END', number_format(debug_time_elapsed(), 3, '.', ''));
 
 			if (($log_file = config::get('debug.log_file')) !== NULL && is_writable($log_file)) {
 
