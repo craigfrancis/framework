@@ -699,7 +699,7 @@
 					$this->_error('Unknown database password (config "' . $prefix . 'pass")');
 				}
 
-				if (config::get($prefix . 'persistent', true) === true) {
+				if ($host != 'localhost' && config::get($prefix . 'persistent', true) === true) {
 					$host = 'p:' . $host;
 				}
 
