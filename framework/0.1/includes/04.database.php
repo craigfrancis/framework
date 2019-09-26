@@ -699,6 +699,10 @@
 					$this->_error('Unknown database password (config "' . $prefix . 'pass")');
 				}
 
+				if (config::get($prefix . 'persistent', true) === true) {
+					$host = 'p:' . $host;
+				}
+
 				if (!function_exists('mysqli_real_connect')) {
 					$this->_error('PHP does not have MySQLi support');
 				}
