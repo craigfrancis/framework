@@ -534,42 +534,6 @@
 					}
 
 				//--------------------------------------------------
-				// Allow replacing of @media tags for 'desktop view'
-				// and IE6-8 support.
-
-					// if ($route_ext == 'css' && ($viewport_width = request('viewport_width', 'GET')) !== NULL) {
-					//
-					// 	$viewport_width_unit = substr($viewport_width, -2);
-					// 	$viewport_width_value = substr($viewport_width, 0, -2);
-					//
-					// 	if (in_array($viewport_width_unit, array('em', 'px'))) {
-					//
-					// 		$output = '';
-					// 		foreach ($files_realpath as $realpath) {
-					// 			$output .= file_get_contents($realpath);
-					// 		}
-					//
-					// 		preg_match_all('/@media *(?:only *)?(.*?)(?: +and +)(\((max|min)-width: *([0-9]+)' . preg_quote($viewport_width_unit, '/') . '\)) *{/', $output, $matches, PREG_SET_ORDER);
-					// 		foreach ($matches as $match) {
-					// 			if ($match[3] == 'min') {
-					// 				$keep = ($match[4] <= $viewport_width_value);
-					// 			} else {
-					// 				$keep = ($match[4] >= $viewport_width_value);
-					// 			}
-					// 			if ($keep) {
-					// 				$output = str_replace($match[0], '@media ' . $match[1] . ' { /* ' . $match[2] . ' */', $output);
-					// 			} else {
-					// 				$output = str_replace($match[0], '@media none { /* ' . $match[2] . ' */', $output);
-					// 			}
-					// 		}
-					//
-					// 		exit($output);
-					//
-					// 	}
-					//
-					// }
-
-				//--------------------------------------------------
 				// Sent output
 
 					foreach ($files_realpath as $realpath) {
