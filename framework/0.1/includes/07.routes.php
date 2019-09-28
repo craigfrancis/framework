@@ -475,22 +475,23 @@
 								unlink($filename);
 							}
 
-							$files_contents = '';
+							$files_contents = [];
 							$files_minified = NULL;
 							foreach ($files_realpath as $realpath) {
 								$min_path = prefix_replace(ASSET_ROOT, ASSET_ROOT . '/min', $realpath);
 								if (is_file($min_path)) {
-									$files_contents .= file_get_contents($min_path) . "\n";
+									$files_contents[] = file_get_contents($min_path);
 									if ($files_minified === NULL) {
 										$files_minified = true;
 									}
 								} else {
-									$files_contents .= file_get_contents($realpath) . "\n";
+									$files_contents[] = file_get_contents($realpath);
 									if ($files_minified === NULL) {
 										$files_minified = false;
 									}
 								}
 							}
+							$files_contents = implode("\n", $files_contents);
 
 							if ($files_minified !== true) {
 								if ($route_ext == 'js') {
@@ -513,7 +514,7 @@
 
 						}
 
-						$files_realpath = array($cache_file_time);
+						$files_realpath = [$cache_file_time];
 
 					}
 
