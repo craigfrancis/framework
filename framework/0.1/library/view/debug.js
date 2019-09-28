@@ -60,11 +60,11 @@
 	function debug_build_item(item, contents) {
 		var element;
 		if (typeof contents === 'object') {
-			for (var k = 0, l = contents.length; k < l; k++) {
-				element = document.createElement(contents[k][0]);
-				element.textContent = contents[k][1];
-				if (contents[k][2]) {
-					element.setAttribute('class', contents[k][2]);
+			for (var content_count = 0, content_length = contents.length; content_count < content_length; content_count++) {
+				element = document.createElement(contents[content_count][0]);
+				element.textContent = contents[content_count][1];
+				if (contents[content_count][2]) {
+					element.setAttribute('class', contents[content_count][2]);
 				}
 				item.appendChild(element);
 			}
@@ -82,9 +82,9 @@
 			note_item,
 			note_node;
 
-		for (var k in notes) {
+		for (var note_count = 0, note_length = notes.length; note_count < note_length; note_count++) {
 
-			note = notes[k];
+			note = notes[note_count];
 
 			note_class = 'note';
 			if (note.class) {
@@ -129,9 +129,9 @@
 			if (typeof note.lines === 'object' && note.lines !== null) {
 				note_content = document.createElement('ul');
 				note_content.setAttribute('class', 'note_lines');
-				for (var k = 0, l = note.lines.length; k < l; k++) {
+				for (var line_count = 0, line_length = note.lines.length; line_count < line_length; line_count++) {
 					note_item = document.createElement('li');
-					debug_build_item(note_item, note.lines[k])
+					debug_build_item(note_item, note.lines[line_count])
 					note_content.appendChild(note_item);
 				}
 				if (note.lines.length == 0) {
@@ -160,11 +160,12 @@
 				note_content = document.createElement('table');
 				note_content.setAttribute('class', 'note_table');
 				var tr, td, row, link;
-				for (var k = 0, l = note.table.length; k < l; k++) {
-					row = note.table[k];
-					if (k == 0) {
+				for (var table_count = 0, table_length = note.table.length; table_count < table_length; table_count++) {
+					row = note.table[table_count];
+					if (table_count == 0) {
 						tr = document.createElement('tr');
 						for (var field in row) {
+							if (!row.hasOwnProperty(field)) continue;
 							td = document.createElement('th');
 							td.textContent = field;
 							tr.appendChild(td);
@@ -173,6 +174,7 @@
 					}
 					tr = document.createElement('tr');
 					for (var field in row) {
+						if (!row.hasOwnProperty(field)) continue;
 						td = document.createElement('td');
 						if (field == 'type') {
 							link = document.createElement('a');
@@ -197,9 +199,9 @@
 			if (note.list && note.list.length > 0) {
 				note_content = document.createElement('ul');
 				note_content.setAttribute('class', 'note_list');
-				for (var k = 0, l = note.list.length; k < l; k++) {
+				for (var list_count = 0, list_length = note.list.length; list_count < list_length; list_count++) {
 					note_item = document.createElement('li');
-					debug_build_item(note_item, note.list[k])
+					debug_build_item(note_item, note.list[list_count])
 					note_content.appendChild(note_item);
 				}
 				note_div.appendChild(note_content);
@@ -226,8 +228,8 @@
 		//--------------------------------------------------
 		// Group by type
 
-			for (var k in debug_data.notes) {
-				debug_types[debug_data.notes[k]['type']]['notes'].push(debug_data.notes[k]);
+			for (var note_count = 0, note_length = debug_data.notes.length; note_count < note_length; note_count++) {
+				debug_types[debug_data.notes[note_count]['type']]['notes'].push(debug_data.notes[note_count]);
 			}
 
 		//--------------------------------------------------
@@ -239,6 +241,7 @@
 			debug_links.setAttribute('id', 'debug_links');
 
 			for (var k in debug_types) {
+				if (!debug_types.hasOwnProperty(k)) continue;
 				if (debug_types[k]['notes'].length > 0) {
 
 					//--------------------------------------------------
