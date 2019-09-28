@@ -859,20 +859,25 @@
 		//--------------------------------------------------
 		// Get resources
 
-			public function resources_get($type) {
+			public function resources_get($source) {
 
-				if ($type == 'js_head') {
+				if ($source == 'js_head') {
 					$files = $this->js_files['head'];
-				} else if ($type == 'js_foot') {
+					$type = 'script';
+				} else if ($source == 'js_foot') {
 					$files = $this->js_files['foot'];
-				} else if ($type == 'js') {
+					$type = 'script';
+				} else if ($source == 'js') {
 					$files = array_merge($this->js_files['head'], $this->js_files['foot']);
-				} else if ($type == 'css') {
+					$type = 'script';
+				} else if ($source == 'css') {
 					$files = $this->css_files_main;
-				} else if ($type == 'css_alternate') {
+					$type = 'style';
+				} else if ($source == 'css_alternate') {
 					$files = $this->css_files_alternate;
+					$type = 'style';
 				} else {
-					exit_with_error('Unrecognised path type "' . $type . '"');
+					exit_with_error('Unrecognised path source "' . $source . '"');
 				}
 
 				$version = config::get('output.timestamp_url', false);
@@ -887,7 +892,7 @@
 					}
 				}
 
-				if ($type == 'js_head' || $type == 'js_foot' || $type == 'js') {
+				if ($type == 'script') {
 
 					//--------------------------------------------------
 					// Minify
@@ -897,7 +902,7 @@
 					//--------------------------------------------------
 					// Custom JS (first to provide data)
 
-						$position = ($type == 'js_head' ? 'head' : 'foot');
+						$position = ($source == 'js_head' ? 'head' : 'foot');
 
 						if ($this->js_code[$position]['data'] != '') {
 
@@ -972,7 +977,7 @@
 
 						}
 
-				} else if ($type == 'css' || $type == 'css_alternate') {
+				} else if ($type == 'style') {
 
 					//--------------------------------------------------
 					// Minify
