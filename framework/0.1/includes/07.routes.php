@@ -439,6 +439,24 @@
 
 					http_cache_headers((60*60*24*365), $files_mtime, $files_mtime, NULL, true); // Will exit if browser cache has not modified since
 
+					$minify = false;
+					if ($route_min) {
+						if ($route_ext == 'js') {
+							$minify = config::get('output.js_min');
+						} else if ($route_ext == 'css') {
+							$minify = config::get('output.css_min');
+						}
+					}
+
+					$cache_folder = NULL;
+					if ($minify && count($files_realpath) > 0) {
+						if ($route_ext == 'js') {
+							$cache_folder = tmp_folder('js-min');
+						} else if ($route_ext == 'css') {
+							$cache_folder = tmp_folder('css-min');
+						}
+					}
+
 				//--------------------------------------------------
 				// Compression
 
@@ -447,21 +465,18 @@
 					}
 
 				//--------------------------------------------------
-				// JS Minify or CSS Tidy support (cached)
+				// Minified single file
 
-					if ($route_min && $route_ext == 'js' && config::get('output.js_min')) {
-
-						$cache_folder = tmp_folder('js-min');
-
-					} else if ($route_min && $route_ext == 'css' && config::get('output.css_min')) {
-
-						$cache_folder = tmp_folder('css-min');
-
-					} else {
-
-						$cache_folder = NULL;
-
+					if ($minify && count($files_realpath) == 1) {
+						$min_path = prefix_replace(ASSET_ROOT, ASSET_ROOT . '/min', reset($files_realpath));
+						if (is_file($min_path)) {
+							$files_realpath = [$min_path];
+							$cache_folder = NULL; // Do not need to use the cache approach, just read this file.
+						}
 					}
+
+				//--------------------------------------------------
+				// JS Minify or CSS Tidy support (cached)
 
 					if ($cache_folder) {
 

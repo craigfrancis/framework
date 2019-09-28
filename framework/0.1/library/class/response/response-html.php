@@ -881,16 +881,8 @@
 				}
 
 				$version = config::get('output.timestamp_url', false);
+				$integrity = config::get('output.integrity', false);
 				$minify = false;
-
-				$integrity = config::get('output.integrity');
-				if ($integrity) {
-					foreach ($files as $id => $file) {
-						if (substr($file['path'], 0, 1) == '/' && !isset($file['attributes']['integrity']) && is_file(PUBLIC_ROOT . $file['path'])) {
-							$files[$id]['attributes']['integrity'] = 'sha256-' . base64_encode(hash('sha256', file_get_contents(PUBLIC_ROOT . $file['path']), true));
-						}
-					}
-				}
 
 				if ($type == 'script') {
 
@@ -989,6 +981,17 @@
 				foreach ($files as $id => $file) {
 					if (!isset($file['url'])) {
 
+						if ($minify && substr($file['path'], 0, 3) == ASSET_URL . '/') {
+							$min_path = ASSET_URL . '/min/' . substr($file['path'], 3);
+							if (is_file(PUBLIC_ROOT . $min_path)) {
+								$files[$id]['path_min'] = $min_path;
+							} else {
+								$min_path = NULL;
+							}
+						} else {
+							$min_path = NULL;
+						}
+
 						if ((!is_object($file['path']) || !is_a($file['path'], 'url')) && (substr($file['path'], 0, 1) == '/')) {
 							$file['path'] = config::get('url.prefix') . $file['path'];
 						}
@@ -997,7 +1000,7 @@
 
 							$url = timestamp_url($file['path']);
 
-							if (!$integrity && $minify) {
+							if ($minify && ($min_path || !$integrity)) {
 								if (substr($url, -4) == '.css' && substr($url, -8) != '.min.css') {
 									$url = substr($url, 0, -4) . '.min.css';
 								} else if (substr($url, -3) == '.js' && substr($url, -7) != '.min.js') {
@@ -1012,6 +1015,18 @@
 						}
 
 						$files[$id]['url'] = $url;
+
+					}
+				}
+
+				if ($integrity) {
+					foreach ($files as $id => $file) {
+
+						$path = (isset($file['path_min']) ? $file['path_min'] : $file['path']);
+
+						if (substr($path, 0, 1) == '/' && !isset($file['attributes']['integrity']) && is_file(PUBLIC_ROOT . $path)) {
+							$files[$id]['attributes']['integrity'] = 'sha256-' . base64_encode(hash('sha256', file_get_contents(PUBLIC_ROOT . $path), true));
+						}
 
 					}
 				}
