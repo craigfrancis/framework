@@ -756,12 +756,14 @@
 
 								$k = 0;
 								$chunk_data = '';
+								$chunk_returned = 0;
 
 								do {
 									if ($k++) usleep(10000); // 0.01 second, waiting for next packet.
-									$chunk_partial = fread($connection, $chunk_size_int);
+									$chunk_partial = fread($connection, ($chunk_size_int - $chunk_returned));
 									$chunk_data .= $chunk_partial;
-								} while (strlen($chunk_data) < $chunk_size_int && $chunk_partial !== false && $chunk_partial !== '');
+									$chunk_returned = strlen($chunk_data);
+								} while ($chunk_returned < $chunk_size_int && $chunk_partial !== false && $chunk_partial !== '');
 
 								$response_data .= $chunk_data;
 								$response_raw  .= $chunk_data;
