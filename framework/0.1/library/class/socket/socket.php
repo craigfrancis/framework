@@ -9,6 +9,7 @@
 		//--------------------------------------------------
 		// Variables
 
+			private $connections = array();
 			private $values = array();
 			private $files = array();
 			private $headers = array();
@@ -17,13 +18,15 @@
 			private $login_username = '';
 			private $login_password = '';
 
+			private $request_keep_alive = false;
 			private $request_timeout = 3;
 			private $request_full = '';
 			private $request_host = '';
 			private $request_path = '';
 
 			private $response_full = '';
-			private $response_headers = '';
+			private $response_headers_plain = '';
+			private $response_headers_parsed = '';
 			private $response_data = '';
 
 			private $exit_on_error = true;
@@ -44,6 +47,7 @@
 
 			public function reset() {
 
+				$this->connections = array();
 				$this->values = array();
 				$this->files = array();
 				$this->headers = array();
@@ -57,7 +61,8 @@
 				$this->request_path = '';
 
 				$this->response_full = '';
-				$this->response_headers = '';
+				$this->response_headers_plain = '';
+				$this->response_headers_parsed = [];
 				$this->response_data = '';
 
 				$this->error_message = NULL;
@@ -105,6 +110,10 @@
 			public function login_set($username, $password) {
 				$this->login_username = $username;
 				$this->login_password = $password;
+			}
+
+			public function keep_alive_set($keep_alive) {
+				$this->request_keep_alive = $keep_alive;
 			}
 
 			public function timeout_set($seconds) {
@@ -200,12 +209,8 @@
 		//--------------------------------------------------
 		// Response details
 
-			public function response_full_get() {
-				return $this->response_full;
-			}
-
 			public function response_code_get() {
-				if (preg_match('/^HTTP\/[0-9\.]+ ([0-9]+) /im', $this->response_headers, $matches)) {
+				if (preg_match('/^HTTP\/[0-9\.]+ ([0-9]+) /im', $this->response_headers_plain, $matches)) {
 					return intval($matches[1]);
 				} else {
 					return NULL;
@@ -213,15 +218,11 @@
 			}
 
 			public function response_mime_get() {
-				if (preg_match('/^Content-Type: ?("|)([^;\r\n]+)\1/im', $this->response_headers, $matches)) {
-					return $matches[2];
-				} else {
-					return NULL;
+				$content_type = $this->response_header_get('content-type');
+				if (substr($content_type, 0, 1) == '"' && substr($content_type, -1) == '"') {
+					$content_type = substr($content_type, 1, -1);
 				}
-			}
-
-			public function response_headers_get() {
-				return $this->response_headers;
+				return $content_type;
 			}
 
 			public function response_header_get($field) {
@@ -233,54 +234,29 @@
 				}
 			}
 
-			public function response_header_get_all($field) {
-				$values = array();
-				if (preg_match_all('/^' . preg_quote($field, '/') . ': ?([^\n]*)/im', $this->response_headers, $matches, PREG_SET_ORDER)) {
-					foreach ($matches as $match) {
-						$values[] = $match[1];
+			public function response_header_get_all($field = NULL) {
+				if ($field === NULL) {
+					return $this->response_headers_parsed;
+				} else {
+					$field = strtolower($field);
+					if (isset($this->response_headers_parsed[$field])) {
+						return $this->response_headers_parsed[$field];
+					} else {
+						return [];
 					}
 				}
-				return $values;
+			}
+
+			public function response_headers_get() {
+				return $this->response_headers_plain;
 			}
 
 			public function response_data_get() {
-
-				if (strtolower(trim($this->response_header_get('Transfer-Encoding'))) == 'chunked') {
-
-					$output = '';
-					$chunked_str = $this->response_data;
-					$chunked_length = strlen($chunked_str);
-					$chunked_pos = 0;
-
-					while ($chunked_pos < $chunked_length) { // See comment at https://php.net/manual/en/function.http-chunked-decode.php
-
-						$pos_nl = strpos($chunked_str, "\n", ($chunked_pos + 1));
-
-						if ($pos_nl === false) { // Bad response from remote server
-							break;
-						}
-
-						$hex_length = substr($chunked_str, $chunked_pos, ($pos_nl - $chunked_pos));
-						$chunked_pos = ($pos_nl + 1);
-
-						$chunk_length = hexdec(rtrim($hex_length, "\r\n"));
-
-if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: substr() expects parameter 3 to be integer, float given... hexdec('ffffffffffffffff') == 1.844674407371E+19
-	report_add('Float chunk length' . "\n\n" . debug_dump($chunk_length) . "\n\n" . debug_dump($hex_length) . "\n\n" . debug_dump($this->request_full));
-}
-
-						$output .= substr($chunked_str, $chunked_pos, $chunk_length);
-						$chunked_pos = ($chunked_pos + $chunk_length);
-							// $chunked_pos = (strpos($chunked_str, "\n", $chunked_pos + $chunk_length) + 1);
-
-					}
-
-					return $output;
-
-				}
-
 				return $this->response_data;
+			}
 
+			public function response_full_get() {
+				return $this->response_full;
 			}
 
 		//--------------------------------------------------
@@ -289,7 +265,12 @@ if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: su
 			public function request($url, $method = 'GET', $data = '') {
 
 				//--------------------------------------------------
-				// No error
+				// Reset
+
+					$this->response_full = '';
+					$this->response_headers_plain = '';
+					$this->response_headers_parsed = [];
+					$this->response_data = '';
 
 					$this->error_message = NULL;
 					$this->error_details = NULL;
@@ -372,7 +353,12 @@ if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: su
 						$headers = array();
 						$headers[] = $method . ' ' . $path . ' HTTP/1.1';
 						$headers[] = 'Host: ' . $host;
-						$headers[] = 'Connection: Close';
+
+						if ($this->request_keep_alive) {
+							$headers[] = 'Connection: keep-alive';
+						} else {
+							$headers[] = 'Connection: close';
+						}
 
 					//--------------------------------------------------
 					// User authorisation
@@ -522,11 +508,21 @@ if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: su
 						$this->request_path = $path;
 
 				//--------------------------------------------------
-				// HTTPS context
+				// Existing connection and context
 
 					$context = NULL;
+					$connection = NULL;
 
-					if ($https) {
+					if ($this->request_keep_alive && isset($this->connections[$socket_host])) {
+
+						list($context, $connection) = $this->connections[$socket_host]; // Key on HTTPS, Host, and Port.
+
+					}
+
+				//--------------------------------------------------
+				// HTTPS context
+
+					if ($https && $context === NULL) {
 
 							// https://github.com/padraic/file_get_contents/blob/master/src/Humbug/FileGetContents.php
 							// http://www.docnet.nu/tech-portal/2014/06/26/ssl-and-php-streams-part-1-you-are-doing-it-wrongtm/C0
@@ -605,11 +601,7 @@ if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: su
 					}
 
 				//--------------------------------------------------
-				// Communication
-
-					$this->response_full = '';
-					$this->response_headers = '';
-					$this->response_data = '';
+				// Connection
 
 					$error = false;
 					$error_details = NULL;
@@ -618,15 +610,19 @@ if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: su
 
 					set_error_handler(array($this, 'error_connect'));
 
-					if ($context) {
+					if (!$connection) {
 
-						$context_ref = stream_context_create($context);
+						if ($context) {
 
-						$connection = stream_socket_client($socket_host, $errno, $errstr, $this->request_timeout, STREAM_CLIENT_CONNECT, $context_ref);
+							$context_ref = stream_context_create($context);
 
-					} else {
+							$connection = stream_socket_client($socket_host, $errno, $errstr, $this->request_timeout, STREAM_CLIENT_CONNECT, $context_ref);
 
-						$connection = fsockopen($fsock_host, $port, $errno, $errstr, $this->request_timeout);
+						} else {
+
+							$connection = fsockopen($fsock_host, $port, $errno, $errstr, $this->request_timeout);
+
+						}
 
 					}
 
@@ -660,8 +656,6 @@ if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: su
 
 					}
 
-					ini_set('default_socket_timeout', $timeout_old);
-
 					if ($error) {
 						return $this->error($error, $error_details);
 					}
@@ -679,18 +673,48 @@ if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: su
 					// $response = stream_get_contents($connection);
 
 					$length = NULL;
-					$response_headers = '';
+					$chunked = false;
+					$response_headers_plain = '';
+					$response_headers_parsed = [];
+					$response_split = '';
 					$response_data = NULL;
+					$response_raw = NULL;
 
 					while (($line = fgets($connection))) {
 						if ($response_data === NULL) {
 
-							$response_headers .= $line;
+							if (trim($line) == '') { // End of headers
 
-							if (strncmp($line, 'Content-Length:', 15) === 0) {
-								$length = intval(substr($line, 15));
-							} else if (trim($line) == '') {
+								$response_split = $line;
 								$response_data = '';
+
+								if ($chunked) {
+									break; // Parses chucked data in a way that supports keep-alive connections.
+								}
+
+							} else {
+
+								if (($pos = strpos($line, ':')) !== false) {
+									$header = strtolower(trim(substr($line, 0, $pos)));
+									$value = trim(substr($line, ($pos + 1)));
+								} else {
+									$header = trim($line);
+									$value = '';
+								}
+
+								$response_headers_plain .= $line;
+								$response_headers_parsed[$header][] = $value;
+
+								if ($header == 'content-length') {
+
+									$length = intval($value);
+
+								} else if ($header == 'transfer-encoding') {
+
+									$chunked = (strtolower($value) == 'chunked');
+
+								}
+
 							}
 
 						} else {
@@ -704,28 +728,81 @@ if (is_float($chunk_length)) { // 04-Jan-2018, not sure on source... Warning: su
 						}
 					}
 
-					error_reporting($error_reporting);
+					if ($chunked) { // https://www.php.net/manual/en/function.fsockopen.php#36703 and https://cs.chromium.org/chromium/src/net/http/http_chunked_decoder.cc
 
-					$this->response_full = $response_headers . $response_data;
+						do {
+
+							$byte = '';
+							$chunk_size_hex = '';
+							do {
+								$chunk_size_hex .= $byte; // Done first, so we don't keep the ending LF.
+								$byte = @fread($connection, 1);
+							} while ($byte != "\n" && strlen($byte) == 1); // Keep matching until the LF (ignore the CR before it), or failure (false), or end of file.
+
+							$response_raw .= $chunk_size_hex . $byte;
+
+							if (($pos = strpos($chunk_size_hex, ';')) !== false) { // Ignore any chunk-extensions
+								$chunk_size_hex = substr($chunk_size_hex, 0, $pos);
+							}
+
+							$chunk_size_int = hexdec($chunk_size_hex); // Convert to an integer (or float if it's too big)... and PHP will happily ignore whitespace.
+							if (!is_int($chunk_size_int)) {
+								$error = 'Cannot parse chunked response.';
+								$error_details = $chunk_size_hex;
+								break;
+							}
+
+							$chunk_data = @fread($connection, $chunk_size_int);
+
+							$response_data .= $chunk_data;
+							$response_raw  .= $chunk_data;
+
+							do {
+								$byte = @fread($connection, 1);
+								$response_raw .= $byte;
+							} while ($byte != "\n" && strlen($byte) == 1); // Consume the LF character at the end (and optional CR).
+
+						} while ($chunk_size_int); // Until we reach the 0 length chunk (end marker)
+
+					}
+
+					error_reporting($error_reporting);
 
 				//--------------------------------------------------
 				// Close connection
 
-					$connection_md = stream_get_meta_data($connection);
+					ini_set('default_socket_timeout', $timeout_old);
 
-					fclose($connection);
+					$connection_meta_data = stream_get_meta_data($connection);
+
+					if (!$error && $this->request_keep_alive) {
+
+						$this->connections[$socket_host] = [$context, $connection];
+
+					} else {
+
+						fclose($connection);
+
+					}
+
+					if ($error) {
+						return $this->error($error, $error_details);
+					}
 
 				//--------------------------------------------------
 				// Store
 
-					if ($response_data !== NULL && !$connection_md['timed_out']) {
+					$this->response_full = $response_headers_plain . $response_split . ($response_raw ? $response_raw : $response_data);
 
-						$this->response_headers = str_replace("\r\n", "\n", $response_headers);
+					if ($response_data !== NULL && !$connection_meta_data['timed_out']) {
+
+						$this->response_headers_plain = rtrim($response_headers_plain);
+						$this->response_headers_parsed = $response_headers_parsed;
 						$this->response_data = $response_data;
 
 					} else {
 
-						if ($connection_md['timed_out']) {
+						if ($connection_meta_data['timed_out']) {
 							$error = 'Connection timed out';
 						} else {
 							$error = 'Cannot extract headers from response';
