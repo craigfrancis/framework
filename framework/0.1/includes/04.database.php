@@ -49,6 +49,7 @@
 		}
 
 		public function parameter_like(&$parameters, $val, $count = 0) { // $db->parameter_like($parameters, $word, 2);
+			$val = str_replace('\\', '\\\\', $val);
 			$val = str_replace('_', '\_', $val);
 			$val = str_replace('%', '\%', $val);
 			$parameters = array_merge($parameters, array_fill(0, $count, array('s', '%' . $val . '%')));
