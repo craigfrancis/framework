@@ -736,7 +736,7 @@
 							$chunk_size_hex = '';
 							do {
 								$chunk_size_hex .= $byte; // Done first, so we don't keep the ending LF.
-								$byte = @fread($connection, 1);
+								$byte = fread($connection, 1);
 							} while ($byte != "\n" && strlen($byte) == 1); // Keep matching until the LF (ignore the CR before it), or failure (false), or end of file.
 
 							$response_raw .= $chunk_size_hex . $byte;
@@ -752,13 +752,24 @@
 								break;
 							}
 
-							$chunk_data = @fread($connection, $chunk_size_int);
+							if ($chunk_size_int > 0) {
 
-							$response_data .= $chunk_data;
-							$response_raw  .= $chunk_data;
+								$k = 0;
+								$chunk_data = '';
+
+								do {
+									if ($k++) usleep(10000); // 0.01 second, waiting for next packet.
+									$chunk_partial = fread($connection, $chunk_size_int);
+									$chunk_data .= $chunk_partial;
+								} while (strlen($chunk_data) < $chunk_size_int && $chunk_partial !== false && $chunk_partial !== '');
+
+								$response_data .= $chunk_data;
+								$response_raw  .= $chunk_data;
+
+							}
 
 							do {
-								$byte = @fread($connection, 1);
+								$byte = fread($connection, 1);
 								$response_raw .= $byte;
 							} while ($byte != "\n" && strlen($byte) == 1); // Consume the LF character at the end (and optional CR).
 
