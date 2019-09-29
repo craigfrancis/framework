@@ -333,6 +333,17 @@
 	unset($config, $config_encrypted);
 
 //--------------------------------------------------
+// INI config, for anything not in version control
+
+	$include_path = PRIVATE_ROOT . '/config/' . safe_file_name(SERVER) . '.ini';
+
+	if (is_file($include_path)) {
+		foreach (parse_ini_file($include_path) as $key => $value) {
+			config::set($key, $value);
+		}
+	}
+
+//--------------------------------------------------
 // Constants
 
 	if (!defined('SERVER')) {
