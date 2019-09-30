@@ -677,55 +677,37 @@
 					$response_headers_plain = '';
 					$response_headers_parsed = [];
 					$response_split = '';
-					$response_data = NULL;
-					$response_raw = NULL;
+					$response_data = '';
+					$response_raw = '';
 
-					while (($line = fgets($connection))) {
-						if ($response_data === NULL) {
+					while (($line = fgets($connection)) !== false) { // Loop for headers, by line.
 
-							if (trim($line) == '') { // End of headers
+						if (trim($line) == '') { // End of headers
+							$response_split = $line;
+							break;
+						}
 
-								$response_split = $line;
-								$response_data = '';
-
-								if ($chunked) {
-									break; // Parses chucked data in a way that supports keep-alive connections.
-								}
-
-							} else {
-
-								if (($pos = strpos($line, ':')) !== false) {
-									$header = strtolower(trim(substr($line, 0, $pos)));
-									$value = trim(substr($line, ($pos + 1)));
-								} else {
-									$header = trim($line);
-									$value = '';
-								}
-
-								$response_headers_plain .= $line;
-								$response_headers_parsed[$header][] = $value;
-
-								if ($header == 'content-length') {
-
-									$length = intval($value);
-
-								} else if ($header == 'transfer-encoding') {
-
-									$chunked = (strtolower($value) == 'chunked');
-
-								}
-
-							}
-
+						if (($pos = strpos($line, ':')) !== false) {
+							$header = strtolower(trim(substr($line, 0, $pos)));
+							$value = trim(substr($line, ($pos + 1)));
 						} else {
+							$header = trim($line);
+							$value = '';
+						}
 
-							$response_data .= $line;
+						$response_headers_plain .= $line;
+						$response_headers_parsed[$header][] = $value;
 
-							if ($length !== NULL && strlen($response_data) >= $length) {
-								break; // For the 'loading' helper to run on the remote server (EOF will not come)
-							}
+						if ($header == 'content-length') {
+
+							$length = intval($value);
+
+						} else if ($header == 'transfer-encoding') {
+
+							$chunked = (strtolower($value) == 'chunked');
 
 						}
+
 					}
 
 					if ($chunked) { // https://www.php.net/manual/en/function.fsockopen.php#36703 and https://cs.chromium.org/chromium/src/net/http/http_chunked_decoder.cc
@@ -776,6 +758,28 @@
 							} while ($byte != "\n" && strlen($byte) == 1); // Consume the LF character at the end (and optional CR).
 
 						} while ($chunk_size_int); // Until we reach the 0 length chunk (end marker)
+
+					} else if ($length > 0) { // When we know how much data to read.
+
+						$length_remaining = $length;
+
+						while (($line = fread($connection, $length_remaining)) !== false) { // Will try to read in one go, but it might be split due to network packet arrival.
+
+							$response_data .= $line;
+
+							$length_remaining = ($length - strlen($response_data));
+
+							if ($length_remaining <= 0) {
+								break; // EOF may never come, especially on a keep-alive connection, or when the remote server is using the 'loading' helper.
+							}
+
+						}
+
+					} else { // Keep going until EOF (good luck)
+
+						while (($line = fgets($connection)) !== false) {
+							$response_data .= $line;
+						}
 
 					}
 
