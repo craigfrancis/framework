@@ -323,14 +323,7 @@
 
 	config::set_all($config);
 
-	if (isset($config_encrypted[SERVER]) && count($config_encrypted) > 0) {
-		foreach ($config_encrypted[SERVER] as $name => $value) {
-			config::set($name, $value, true);
-		}
-		unset($name, $value);
-	}
-
-	unset($config, $config_encrypted);
+	unset($config);
 
 //--------------------------------------------------
 // Constants
@@ -344,6 +337,18 @@
 	if (!defined('FILE_URL'))     define('FILE_URL',     '/a/files');
 	if (!defined('FILE_ROOT'))    define('FILE_ROOT',    ROOT . '/files');
 	if (!defined('PRIVATE_ROOT')) define('PRIVATE_ROOT', ROOT . '/private');
+
+//--------------------------------------------------
+// Encrypted config, now we know the SERVER
+
+	if (isset($config_encrypted[SERVER]) && count($config_encrypted) > 0) {
+		foreach ($config_encrypted[SERVER] as $name => $value) {
+			config::set($name, $value, true);
+		}
+		unset($name, $value);
+	}
+
+	unset($config_encrypted);
 
 //--------------------------------------------------
 // INI config, for anything not in version control
