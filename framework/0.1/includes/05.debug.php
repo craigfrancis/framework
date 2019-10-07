@@ -41,6 +41,8 @@
 
 		log_value('ref', $code); // A more compact uniqid (which uses hex encoding, and a full UNIX timestamp).
 
+		config::set('request.code', $code);
+
 		header('X-Request-Code: ' . $code); // So access_log can match up with log_file
 
 	}
