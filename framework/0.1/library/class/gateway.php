@@ -619,10 +619,28 @@ report_add('Deprecated: $api->return_xml() ... just call mime_set(), then exit w
 				exit($xml);
 			}
 
+			protected function return_json($output) {
+
+				mime_set('application/json');
+
+				if (!isset($output['error'])) {
+					$output['error'] = false;
+				}
+
+				$output = json_encode($output, JSON_PRETTY_PRINT);
+
+				header('Content-Length: ' . strlen($output));
+
+				echo $output;
+
+			}
+
 			protected function return_error($error) {
-report_add('Deprecated: $api->return_error() ... just call http_response_code(500), and exit with your own mime/content', 'notice');
+
 				http_response_code(500);
-				$this->return_xml('<error message="' . xml($error) . '" />');
+
+				$this->return_json(['error' => $error]);
+
 			}
 
 		//--------------------------------------------------
