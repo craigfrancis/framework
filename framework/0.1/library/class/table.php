@@ -163,6 +163,13 @@
 
 			}
 
+			public function sort_name_get() {
+				if ($this->sort_name === NULL) {
+					$this->sort_name_set();
+				}
+				return $this->sort_name;
+			}
+
 			public function sort_default_set($field, $order = 'ASC') {
 				$this->sort_enabled = true;
 				$this->sort_default_field = $field;
