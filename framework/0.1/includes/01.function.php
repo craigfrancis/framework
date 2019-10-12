@@ -547,6 +547,9 @@
 // Looks like spam
 
 	function is_spam_like($message) {
+		if (strpos($message, ' ') === false) {
+			return true; // Probably a random value like "TwGVjoKIzFJxhAm"
+		}
 		return preg_match('/(https?:\/\/|\b(BTC|bitcoin|cialis|viagra)\b)/i', $message);
 	}
 
