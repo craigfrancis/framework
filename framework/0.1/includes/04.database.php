@@ -730,7 +730,7 @@
 				do {
 
 					if ($k > 0) {
-						sleep(1);
+						usleep(500000); // Half a second
 					}
 
 					$result = @mysqli_real_connect($this->link, $host, $user, $pass, $name);
@@ -739,7 +739,10 @@
 						$error_messages[] = mysqli_connect_error() . ' (' . $error_number . ')';
 					}
 
-				} while (!$result && $error_number == 2002 && SERVER != 'stage' && (++$k < 3)); // 2002 connection error, e.g. "Temporary failure in name resolution" or "Can't connect to local MySQL server through socket"
+				} while (!$result && ($error_number == 2002 || $error_number == 1045) && SERVER != 'stage' && (++$k < 3));
+
+					// 2002 Connection error, e.g. "Temporary failure in name resolution" or "Can't connect to local MySQL server through socket"
+					// 1045 Access denied for user, e.g. using persistent connections and the remote server restarts.
 
 				if (!$result) {
 
