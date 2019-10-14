@@ -344,7 +344,17 @@
 											$this->selected_link_found = true; // For any parents
 										}
 
-										$wrapper_html = ($selected ? 'strong' : 'span');
+									//--------------------------------------------------
+									// Wrapper tag
+
+										if (array_key_exists('link_wrapper', $link_config)) {
+											$wrapper_tag = $link_config['link_wrapper'];
+										} else {
+											$wrapper_tag = ($selected ? 'strong' : 'span');
+										}
+
+										$wrapper_html_start = ($wrapper_tag ? '<'  . html($wrapper_tag) . ' class="link_level' . html($level) . '">' : '');
+										$wrapper_html_end   = ($wrapper_tag ? '</' . html($wrapper_tag) . '>' : '');
 
 									//--------------------------------------------------
 									// Class
@@ -380,6 +390,10 @@
 											$link_attributes_html .= ' title="' . html($link_config['link_title']) . '"';
 										}
 
+										if (isset($link_config['link_target']) && $link_config['link_target'] != '') {
+											$link_attributes_html .= ' target="' . html($link_config['link_target']) . '"';
+										}
+
 										if ($this->path == $link_info['url']) { // Not $selected, as that is a best match (not exact).
 											$link_attributes_html .= ' aria-current="page"';
 										}
@@ -393,7 +407,7 @@
 											$link_html = '<a href="' . html($link_info['url']) . '"' . $link_attributes_html . '>' . $link_html . '</a>';
 										}
 
-										$html .= $this->indent . ($this->include_white_space ? "\t" : '') . '<li' . ($class != '' ? ' class="' . trim($class) . '"' : '') . '><' . $wrapper_html . ' class="link_level' . html($level) . '">' . $link_html . '</' . $wrapper_html . '>' . $link_info['child_html'] . '</li>';
+										$html .= $this->indent . ($this->include_white_space ? "\t" : '') . '<li' . ($class != '' ? ' class="' . trim($class) . '"' : '') . '>' . $wrapper_html_start . $link_html . $wrapper_html_end . $link_info['child_html'] . '</li>';
 
 								}
 
