@@ -680,6 +680,7 @@
 
 					$length = NULL;
 					$chunked = false;
+					$chunk_error = false;
 					$response_headers_plain = '';
 					$response_headers_parsed = [];
 					$response_split = '';
@@ -720,50 +721,63 @@
 
 						do {
 
-							$byte = '';
-							$chunk_size_hex = '';
-							do {
-								$chunk_size_hex .= $byte; // Done first, so we don't keep the ending LF.
-								$byte = fread($connection, 1);
-							} while ($byte != "\n" && strlen($byte) == 1); // Keep matching until the LF (ignore the CR before it), or failure (false), or end of file.
+							//--------------------------------------------------
+							// Chunk size
 
-							$response_raw .= $chunk_size_hex . $byte;
+								$byte = '';
+								$chunk_size_hex = '';
+								do {
+									$chunk_size_hex .= $byte; // Done first, so we don't keep the ending LF.
+									$byte = fread($connection, 1);
+								} while ($byte != "\n" && strlen($byte) == 1); // Keep matching until the LF (ignore the CR before it), or failure (false), or end of file.
 
-							if (($pos = strpos($chunk_size_hex, ';')) !== false) { // Ignore any chunk-extensions
-								$chunk_size_hex = substr($chunk_size_hex, 0, $pos);
-							}
+								$response_raw .= $chunk_size_hex . $byte;
 
-							$chunk_size_int = hexdec($chunk_size_hex); // Convert to an integer (or float if it's too big)... and PHP will happily ignore whitespace.
-							if (!is_int($chunk_size_int)) {
-								$error = 'Cannot parse chunked response.';
-								$error_details = $chunk_size_hex;
-								break;
-							}
+								if (($pos = strpos($chunk_size_hex, ';')) !== false) { // Ignore any chunk-extensions
+									$chunk_size_hex = substr($chunk_size_hex, 0, $pos);
+								}
 
-							if ($chunk_size_int > 0) {
+								$chunk_size_int = hexdec($chunk_size_hex); // Convert to an integer (or float if it's too big)... and PHP will happily ignore whitespace.
+								if (!is_int($chunk_size_int)) {
+									$error = 'Cannot parse chunked response.';
+									$error_details = $chunk_size_hex;
+									break;
+								}
 
-								$k = 0;
-								$chunk_data = '';
-								$chunk_returned = 0;
+							//--------------------------------------------------
+							// Chunk data
+
+								if ($chunk_size_int > 0) {
+
+									$k = 0;
+									$chunk_data = '';
+									$chunk_returned = 0;
+
+									do {
+										if ($k++) usleep(10000); // 0.01 second, waiting for next packet.
+										$chunk_partial = fread($connection, ($chunk_size_int - $chunk_returned));
+										if ($chunk_partial === false) {
+											$chunk_error = $chunk_returned . ' of ' . $chunk_size_int . ', packet ' . $k;
+										} else {
+											$chunk_data .= $chunk_partial;
+											$chunk_returned = strlen($chunk_data);
+										}
+									} while ($chunk_returned < $chunk_size_int && $chunk_error === false);
+
+									$response_data .= $chunk_data;
+									$response_raw  .= $chunk_data;
+
+								}
+
+							//--------------------------------------------------
+							// End of chunk
 
 								do {
-									if ($k++) usleep(10000); // 0.01 second, waiting for next packet.
-									$chunk_partial = fread($connection, ($chunk_size_int - $chunk_returned));
-									$chunk_data .= $chunk_partial;
-									$chunk_returned = strlen($chunk_data);
-								} while ($chunk_returned < $chunk_size_int && $chunk_partial !== false && $chunk_partial !== '');
+									$byte = fread($connection, 1);
+									$response_raw .= $byte;
+								} while ($byte != "\n" && strlen($byte) == 1); // Consume the LF character at the end (and optional CR).
 
-								$response_data .= $chunk_data;
-								$response_raw  .= $chunk_data;
-
-							}
-
-							do {
-								$byte = fread($connection, 1);
-								$response_raw .= $byte;
-							} while ($byte != "\n" && strlen($byte) == 1); // Consume the LF character at the end (and optional CR).
-
-						} while ($chunk_size_int); // Until we reach the 0 length chunk (end marker)
+						} while ($chunk_size_int && $chunk_error === false); // Until we reach the 0 length chunk (end marker)
 
 					} else if ($length > 0) { // When we know how much data to read.
 
@@ -798,7 +812,7 @@
 
 					$connection_meta_data = stream_get_meta_data($connection);
 
-					if (!$error && $this->request_keep_alive) {
+					if ($this->request_keep_alive && $error === false && $chunk_error === false) {
 
 						$this->connections[$socket_host] = [$context, $connection];
 
@@ -817,7 +831,7 @@
 
 					$this->response_full = $response_headers_plain . $response_split . ($response_raw ? $response_raw : $response_data);
 
-					if ($response_data !== NULL && !$connection_meta_data['timed_out']) {
+					if ($chunk_error === false && $response_data !== NULL && !$connection_meta_data['timed_out']) {
 
 						$this->response_headers_plain = rtrim($response_headers_plain);
 						$this->response_headers_parsed = $response_headers_parsed;
@@ -828,11 +842,16 @@
 						$debug = '';
 
 						if ($connection_meta_data['timed_out']) {
+							$error = 'Connection timed out';
 							$debug .= debug_dump($connection_meta_data) . "\n\n";
 							$debug .= '--------------------------------------------------' . "\n\n";
-							$error = 'Connection timed out';
 						} else {
 							$error = 'Cannot extract headers from response';
+						}
+
+						if ($chunk_error !== false) {
+							$debug .= 'Chunk Error: ' . $chunk_error . "\n\n";
+							$debug .= '--------------------------------------------------' . "\n\n";
 						}
 
 						if (is_array($context)) {
