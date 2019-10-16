@@ -825,13 +825,15 @@
 
 					} else {
 
+						$debug = '';
+
 						if ($connection_meta_data['timed_out']) {
+							$debug .= debug_dump($connection_meta_data) . "\n\n";
+							$debug .= '--------------------------------------------------' . "\n\n";
 							$error = 'Connection timed out';
 						} else {
 							$error = 'Cannot extract headers from response';
 						}
-
-						$debug = '';
 
 						if (is_array($context)) {
 							$debug .= debug_dump($context) . "\n\n";
