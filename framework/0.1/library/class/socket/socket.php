@@ -620,7 +620,7 @@
 
 						if ($context) {
 
-							$context_ref = stream_context_create($context);
+							$context_ref = (is_array($context) ? stream_context_create($context) : $context);
 
 							$connection = stream_socket_client($socket_host, $errno, $errstr, $this->request_timeout, STREAM_CLIENT_CONNECT, $context_ref);
 
@@ -833,7 +833,7 @@
 
 						$debug = '';
 
-						if ($context) {
+						if (is_array($context)) {
 							$debug .= debug_dump($context) . "\n\n";
 							$debug .= '--------------------------------------------------' . "\n\n";
 						}
