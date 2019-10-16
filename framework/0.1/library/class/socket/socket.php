@@ -662,7 +662,7 @@
 
 					}
 
-					if ($error) {
+					if ($error !== false) {
 						return $this->error($error, $error_details);
 					}
 
@@ -808,7 +808,7 @@
 
 					}
 
-					if ($error) {
+					if ($error !== false) {
 						return $this->error($error, $error_details);
 					}
 
