@@ -9,6 +9,7 @@
 		//--------------------------------------------------
 		// Variables
 
+			private $context = NULL;
 			private $connections = array();
 			private $values = array();
 			private $files = array();
@@ -47,6 +48,7 @@
 
 			public function reset() {
 
+				$this->context = NULL;
 				$this->connections = array();
 				$this->values = array();
 				$this->files = array();
@@ -69,6 +71,10 @@
 				$this->error_details = NULL;
 				$this->error_connect = array();
 
+			}
+
+			function context_set($context) {
+				$this->context = $context;
 			}
 
 			public function value_set($name, $value) {
@@ -510,7 +516,7 @@
 				//--------------------------------------------------
 				// Existing connection and context
 
-					$context = NULL;
+					$context = $this->context;
 					$connection = NULL;
 
 					if ($this->request_keep_alive && isset($this->connections[$socket_host])) {
