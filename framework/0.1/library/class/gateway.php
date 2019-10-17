@@ -623,6 +623,10 @@ report_add('Deprecated: $api->return_xml() ... just call mime_set(), then exit w
 
 				mime_set('application/json');
 
+				if (!is_array($output)) {
+					exit_with_error('When calling $gateway->return_json, the $output should be an array.');
+				}
+
 				if (!isset($output['error'])) {
 					$output['error'] = false;
 				}
