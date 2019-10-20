@@ -8,6 +8,7 @@
 	}
 
 	var debug_script = document.currentScript,
+		debug_setup_count = 0,
 		debug_data,
 		debug_open,
 		debug_wrapper,
@@ -218,12 +219,24 @@
 		//--------------------------------------------------
 		// Variables
 
-			var body = document.getElementsByTagName('body')[0],
+			var body = document.getElementsByTagName('body'),
 				output,
 				ref,
 				wrapper,
 				link,
 				links = {};
+
+		//--------------------------------------------------
+		// Body, where IE can sometimes fail to find.
+
+			if (body.length > 0) {
+				body = body[0];
+			} else {
+				if (debug_setup_count++ < 2) {
+					setTimeout(debug_setup, 100);
+				}
+				return;
+			}
 
 		//--------------------------------------------------
 		// Group by type
