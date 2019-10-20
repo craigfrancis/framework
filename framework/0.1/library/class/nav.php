@@ -394,6 +394,10 @@
 											$link_attributes_html .= ' target="' . html($link_config['link_target']) . '"';
 										}
 
+										if (isset($link_config['link_rel']) && $link_config['link_rel'] != '') {
+											$link_attributes_html .= ' rel="' . html($link_config['link_rel']) . '"';
+										}
+
 										if ($this->path == $link_info['url']) { // Not $selected, as that is a best match (not exact).
 											$link_attributes_html .= ' aria-current="page"';
 										}
