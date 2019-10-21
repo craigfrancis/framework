@@ -114,31 +114,35 @@
 
 					if (is_array($routing_results)) {
 
-						$controller_log[] = $controller_path . ': ' . $controller_name . '->route() - ' . html(debug_dump($routing_results));
+						$controller_log[] = $controller_path . ': ' . $controller_name . '->route() - ' . debug_dump($routing_results);
 
 						foreach ($routing_results as $result_name => $result_value) {
+
+							if (!is_array($result_value)) {
+								$result_value = path_to_array($result_value);
+							}
 
 							if ($result_name == 'route_path_reset') {
 
 								$building_path = '';
 								$building_name = '';
 								$building_stack = array();
-								$route_stack = path_to_array($result_value);
+								$route_stack = $result_value;
 
 							} else if ($result_name == 'route_path_reset_prefix') {
 
 								$building_path = '';
 								$building_name = '';
 								$building_stack = array();
-								$route_stack = array_merge(path_to_array($result_value), $route_stack);
+								$route_stack = array_merge($result_value, $route_stack);
 
 							} else if ($result_name == 'route_path_extend') {
 
-								$route_stack = array_merge($route_stack, path_to_array($result_value));
+								$route_stack = array_merge($route_stack, $result_value);
 
 							} else if ($result_name == 'route_path_extend_prefix') {
 
-								$route_stack = array_merge(path_to_array($result_value), $route_stack);
+								$route_stack = array_merge($result_value, $route_stack);
 
 							} else {
 
@@ -261,7 +265,7 @@
 				$log = [];
 				foreach ($controller_log as $entry) {
 					$entry = str_replace(ROOT, '', $entry);
-					if (preg_match('/^([^:]+:)([^\(\)]*(\(\))?)(.*)/', $entry, $matches)) {
+					if (preg_match('/^([^:]+:)([^\(\)]*(\(\))?)(.*)/ms', $entry, $matches)) {
 						$entry = [];
 						$entry[] = ['span', $matches[1]];
 						$entry[] = ['strong', $matches[2]];
