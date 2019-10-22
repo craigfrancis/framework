@@ -102,23 +102,12 @@ Or extend the record class, for every record edited via this helper:
 
 		class record extends record_base {
 
-			protected function setup($config) {
+			protected function where_set_done($update) {
 
-				if ($config['where_id'] && !isset($config['log_values']['item_id'])) {
-					$config['log_values']['item_id'] = $config['where_id'];
-				}
-
-				if (count($config['log_values']) > 0) {
-
-					$item_type = prefix_replace(DB_PREFIX, '', $config['table']);
-
-					$config['log_table'] = DB_PREFIX . 'log';
-					$config['log_values']['item_type'] = $item_type;
-					$config['log_values']['admin_id'] = ADMIN_ID;
-
-				}
-
-				parent::setup($config);
+				$this->log_table_set_sql(DB_PREFIX . 'log', 'item_id', [
+						'item_type' => $this->table_get_short(),
+						'admin_id' => ADMIN_ID,
+					]);
 
 			}
 
