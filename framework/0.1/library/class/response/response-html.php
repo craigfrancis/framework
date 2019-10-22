@@ -53,7 +53,7 @@
 			}
 
 			public function get($variable, $default = NULL) {
-				if (isset($this->variables[$variable])) {
+				if (key_exists($variable, $this->variables)) {
 					return $this->variables[$variable];
 				} else {
 					return $default;

@@ -28,7 +28,7 @@
 
 			session::start();
 
-			if (isset($_SESSION[$variable])) {
+			if (key_exists($variable, $_SESSION)) {
 				return $_SESSION[$variable];
 			} else {
 				return $default;

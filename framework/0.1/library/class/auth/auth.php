@@ -197,7 +197,7 @@
 			}
 
 			public function text_get($ref, $default = NULL) {
-				if (isset($this->text[$ref])) {
+				if (key_exists($ref, $this->text)) {
 					return $this->text[$ref];
 				} else if ($default) {
 					return $default;

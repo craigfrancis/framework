@@ -204,7 +204,7 @@
 
 			public static function get($variable, $default = NULL) {
 				$obj = config::instance_get();
-				if (isset($obj->store[$variable])) {
+				if (key_exists($variable, $obj->store)) {
 					return $obj->store[$variable];
 				} else {
 					return $default;
@@ -242,7 +242,7 @@
 
 			public static function get_decrypted($variable, $default = NULL) {
 				$obj = config::instance_get();
-				if (isset($obj->store[$variable])) {
+				if (key_exists($variable, $obj->store)) {
 					if (isset($obj->encrypted[$variable]) && $obj->encrypted[$variable]) {
 						return config::value_decrypt($obj->store[$variable]);
 					} else {

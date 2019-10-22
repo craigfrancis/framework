@@ -109,7 +109,7 @@
 			}
 
 			public function get($variable, $default = NULL) {
-				if (isset($this->view_variables[$variable])) {
+				if (key_exists($variable, $this->view_variables)) {
 					return $this->view_variables[$variable];
 				} else {
 					return $default;
