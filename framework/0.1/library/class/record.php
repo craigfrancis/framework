@@ -122,6 +122,14 @@
 
 			}
 
+			protected function table_get_short() {
+				$table = $this->table_sql;
+				if (preg_match('/`([^`]+)`/', $table, $matches)) {
+					$table = $matches[1];
+				}
+				return prefix_replace(DB_PREFIX, '', $table);
+			}
+
 			// public function where_set($where) {
 			//
 			// 	Could pass in an array...
@@ -144,11 +152,15 @@
 			//
 			// }
 
+			protected function where_set_done($update) { // Useful to enable log
+			}
+
 			public function where_set_sql($where_sql, $where_parameters = NULL) { // Can be an array (AND)
 				$this->where_sql = $where_sql;
 				$this->where_parameters = $where_parameters;
 				$this->fields = NULL;
 				$this->values = NULL;
+				$this->where_set_done($where_sql !== NULL);
 			}
 
 			public function where_set_id($id, $extra_sql = NULL, $where_parameters = []) {
@@ -201,11 +213,11 @@
 
 			}
 
-			// public function config_get($key) {
+			// protected function config_get($key, $default = NULL) { // Just going with protected for now, probably could be public.
 			// 	if (key_exists($key, $this->config)) {
 			// 		return $this->config[$key];
 			// 	} else {
-			// 		exit_with_error('Unknown record config "' . $key . '"');
+			// 		return $default;
 			// 	}
 			// }
 
@@ -588,6 +600,21 @@
 
 		//--------------------------------------------------
 		// Log
+
+			protected function log_table_set_sql($table_sql, $where_field = NULL, $extra_values = []) {
+
+				if ($where_field !== NULL && $this->where_id) {
+					$this->config['log_values'][$where_field] = $this->where_id;
+				}
+
+				if (count($this->config['log_values']) > 0) {
+
+					$this->config['log_table'] = $table_sql;
+					$this->config['log_values'] = array_merge($this->config['log_values'], $extra_values);
+
+				}
+
+			}
 
 			protected function log_values_get($field, $old_value, $new_value) {
 
