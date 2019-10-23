@@ -733,7 +733,11 @@
 						usleep(500000); // Half a second
 					}
 
-					$result = @mysqli_real_connect($this->link, $host, $user, $pass, $name);
+					if ($ca_file) {
+						$result = @mysqli_real_connect($this->link, $host, $user, $pass, $name, NULL, NULL, MYSQLI_CLIENT_SSL);
+					} else {
+						$result = @mysqli_real_connect($this->link, $host, $user, $pass, $name);
+					}
 					if (!$result) {
 						$error_number = mysqli_connect_errno();
 						$error_messages[] = mysqli_connect_error() . ' (' . $error_number . ')';
