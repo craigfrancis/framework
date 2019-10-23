@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // Include setup
 
-	if (config::get('route.setup_include', true) == true) {
+	if (config::get('route.setup_include') !== false) { // Could be NULL because it's not set; or because /cli/run.php set it to NULL (after temporarily setting to false).
 
 		$include_path = APP_ROOT . '/library/setup/setup.php';
 		if (is_file($include_path)) {
