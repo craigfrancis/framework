@@ -18,6 +18,7 @@
 			protected $session_ref = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $session_length = 1800; // 30 minutes, or set to 0 for indefinite length
 			protected $session_ip_lock = false; // By default this is disabled (AOL users)
+			protected $session_browser_tracker = false; // Store a browser tracker, useful to show user about browser changing
 			protected $session_concurrent = false; // Close previous sessions on new session start
 			protected $session_cookies = false; // Use sessions by default
 			protected $session_history = 7776000; // Keep session data for X seconds (defaults to 90 days)
@@ -1042,19 +1043,24 @@ exit();
 
 					list($db_session_table) = $this->db_table_get('session');
 
-					$db->insert($db_session_table, array(
+					$values = [
 							'token'         => $session_hash,
 							'user_id'       => $user_id,
 							'ip'            => config::get('request.ip'),
 							'browser'       => config::get('request.browser'),
-							'tracker'       => browser_tracker_get(),
 							'hash_time'     => floatval($this->hash_time), // There is a risk this shows who has shorter passwords... however, a 1 vs 72 character password takes the same amount of time with bcrypt; AND we use base64 encoded sha384, so they will all be 64 characters long anyway.
 							'limit'         => $limit_ref,
 							'logout_token'  => $session_logout_token, // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
 							'created'       => $now,
 							'last_used'     => $now,
 							'deleted'       => '0000-00-00 00:00:00',
-						));
+						];
+
+					if ($this->session_browser_tracker) {
+						$values['tracker'] = browser_tracker_get();
+					}
+
+					$db->insert($db_session_table, $values);
 
 					$session_id = $db->insert_id();
 
