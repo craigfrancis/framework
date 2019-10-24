@@ -123,7 +123,7 @@
 			}
 
 			protected function table_get_short() {
-				$table = $this->table_sql;
+				$table = strval($this->table_sql); // Not NULL
 				if (preg_match('/`([^`]+)`/', $table, $matches)) {
 					$table = $matches[1];
 				}
