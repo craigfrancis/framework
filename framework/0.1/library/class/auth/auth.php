@@ -784,6 +784,17 @@ exit();
 				}
 			}
 
+			public function session_user_id_get() {
+				if (!$this->session_info_available) {
+					exit_with_error('Cannot call $auth->session_user_id_get() before $auth->session_get()');
+				}
+				if ($this->session_info_data) {
+					return $this->session_info_data['user_id'];
+				} else {
+					return NULL;
+				}
+			}
+
 			public function session_token_get() {
 				if (!$this->session_info_available) {
 					exit_with_error('Cannot call $auth->session_token_get() before $auth->session_get()');
