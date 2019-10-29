@@ -595,6 +595,8 @@
 
 		}
 
+		unset($config_key_path);
+
 		debug_note([
 				'type' => 'C',
 				'heading' => 'Configuration',

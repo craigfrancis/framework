@@ -27,11 +27,11 @@
 		$config['request.referrer']  = (isset($_SERVER['HTTP_REFERER'])    ? $_SERVER['HTTP_REFERER']    : '');
 		$config['request.ip']        = (isset($_SERVER['REMOTE_ADDR'])     ? $_SERVER['REMOTE_ADDR']     : '127.0.0.1');
 		$config['request.fetch'] = [
-				'dest' => (isset($_SERVER['HTTP_SEC_FETCH_DEST']) ? $_SERVER['HTTP_SEC_FETCH_DEST'] : NULL),
+				'dest' => (isset($_SERVER['HTTP_SEC_FETCH_DEST']) ? $_SERVER['HTTP_SEC_FETCH_DEST'] : NULL), // Added in Chrome 76
 				'mode' => (isset($_SERVER['HTTP_SEC_FETCH_MODE']) ? $_SERVER['HTTP_SEC_FETCH_MODE'] : NULL),
 				'site' => (isset($_SERVER['HTTP_SEC_FETCH_SITE']) ? $_SERVER['HTTP_SEC_FETCH_SITE'] : NULL),
 				'user' => (isset($_SERVER['HTTP_SEC_FETCH_USER']) ? $_SERVER['HTTP_SEC_FETCH_USER'] : NULL),
-			]; // Added in Chrome 76
+			];
 
 		$uri = $config['request.uri'];
 		$pos = strpos($uri, '?');

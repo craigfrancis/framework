@@ -47,6 +47,8 @@
 
 	}
 
+	unset($log_file, $time, $sec, $usec, $code, $code_part, $a);
+
 	function log_shutdown() {
 		if (!defined('FRAMEWORK_END')) { // Only run once, ref http_connection_close()
 
