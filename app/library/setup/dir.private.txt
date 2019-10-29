@@ -1,8 +1,4 @@
 files
-files/code-poets
-files/code-poets/ed
-files/code-poets/pf
-files/code-poets/ef
 files/backup
 watch
 keys
