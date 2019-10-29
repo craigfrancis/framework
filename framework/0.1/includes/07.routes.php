@@ -566,6 +566,27 @@
 	unset($route_asset);
 
 //--------------------------------------------------
+// Check 'Sec-Fetch-*' headers
+
+	$fetch_allowed = config::get('request.fetch_allowed');
+
+	if (is_array($fetch_allowed)) {
+		$fetch_values = config::get('request.fetch');
+		foreach ($fetch_allowed as $field => $allowed) {
+			if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
+				report_add('Main request Sec-Fetch-' . ucfirst($field) . ', [' . $fetch_values[$field] . '] not in [' . implode(',', $allowed) . ']');
+				if (SERVER == 'stage') {
+					http_response_code(403);
+					exit();
+				}
+			}
+		}
+		unset($fetch_values, $field, $allowed);
+	}
+
+	unset($fetch_allowed);
+
+//--------------------------------------------------
 // Configuration debug
 
 	if (config::get('debug.level') >= 3 && REQUEST_MODE != 'cli') { // In CLI mode, use the "-c" option
