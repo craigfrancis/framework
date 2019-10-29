@@ -1,4 +1,3 @@
 files
-files/backup
 watch
 keys
