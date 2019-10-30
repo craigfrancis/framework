@@ -601,17 +601,27 @@
 		//--------------------------------------------------
 		// Log
 
-			protected function log_table_set_sql($table_sql, $where_field = NULL, $extra_values = []) {
+			public function log_table_set_sql($table_sql, $where_field = NULL, $extra_values = []) {
 
 				if ($where_field !== NULL && $this->where_id) {
 					$this->config['log_values'][$where_field] = $this->where_id;
 				}
 
-				if (count($this->config['log_values']) > 0) {
+				if (count($this->config['log_values']) > 0 || $where_field === NULL) { // If a $where_field is specified, then only log on edits (e.g. an ID exists); if not, then we are logging all changes (probably via direct call to log_values_check)
 
 					$this->config['log_table'] = $table_sql;
 					$this->config['log_values'] = array_merge($this->config['log_values'], $extra_values);
 
+				}
+
+			}
+
+			public function log_values_check($old_values, $new_values, $extra_values = []) {
+
+				foreach ($new_values as $field => $new_value) {
+					if ($this->log_value_different($old_values[$field], $new_value)) {
+						$this->log_change($field, $old_values[$field], $new_value, $extra_values);
+					}
 				}
 
 			}
@@ -664,6 +674,19 @@
 
 //--------------------------------------------------
 // Testing
+
+	// if (false) {
+	//
+	// 	$old_values = ['a' => 1, 'b' => 2, 'c' => 3, 'd' => 4];
+	// 	$new_values = ['a' => 1, 'b' => 9, 'c' => 3, 'd' => 4];
+	//
+	// 	$record = new record_base([]); // or record_get();
+	// 	$record->log_table_set_sql(DB_PREFIX . 'log', NULL, ['editor_id' => 123]);
+	// 	$record->log_values_check($old_values, $new_values, ['item_id' => 200, 'item_type' => 'example']);
+	//
+	// 	exit();
+	//
+	// }
 
 	// if (false) {
 	//
