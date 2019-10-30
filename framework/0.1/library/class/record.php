@@ -618,11 +618,19 @@
 
 			public function log_values_check($old_values, $new_values, $extra_values = []) {
 
+				$changed = false;
+
 				foreach ($new_values as $field => $new_value) {
 					if ($this->log_value_different($old_values[$field], $new_value)) {
+
 						$this->log_change($field, $old_values[$field], $new_value, $extra_values);
+
+						$changed = true;
+
 					}
 				}
+
+				return $changed;
 
 			}
 
