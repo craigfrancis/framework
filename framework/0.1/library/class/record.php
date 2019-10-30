@@ -644,7 +644,7 @@
 
 			}
 
-			protected function log_change($field, $old_value, $new_value) {
+			protected function log_change($field, $old_value, $new_value, $extra_values = []) {
 
 				if ($this->config['log_table']) {
 
@@ -652,7 +652,7 @@
 
 					$log_table_sql = $db->escape_table($this->config['log_table']);
 
-					$log_values = $this->log_values_get($field, $old_value, $new_value);
+					$log_values = array_merge($this->log_values_get($field, $old_value, $new_value), $extra_values);
 
 					$db->insert($log_table_sql, $log_values);
 
