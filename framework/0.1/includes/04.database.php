@@ -807,6 +807,10 @@
 			}
 		}
 
+		public function error_reset() {
+			config::set('db.error_thrown', false);
+		}
+
 		private function _error($error = 'N/A', $parameters = NULL, $show_db_error = false) {
 
 			$info = $this->error_get();
