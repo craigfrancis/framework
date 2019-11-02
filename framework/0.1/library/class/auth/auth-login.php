@@ -60,6 +60,8 @@
 
 				$this->field_remember_user = new form_field_checkbox($form, $this->auth->text_get('remember_user_label'));
 
+				return $this->field_remember_user;
+
 			}
 
 		//--------------------------------------------------

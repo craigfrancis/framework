@@ -146,8 +146,7 @@
 							'register' => DB_PREFIX . 'user_auth_register', // Can be set to NULL to skip email verification (and help attackers identify active accounts).
 							'update'   => DB_PREFIX . 'user_auth_update',
 							'reset'    => DB_PREFIX . 'user_auth_reset',
-							'remember' => NULL,
-							'totp'     => NULL,
+							'remember' => DB_PREFIX . 'user_auth_remember',
 						), $this->db_table);
 
 					$this->db_where_sql = array_merge(array(
@@ -325,9 +324,6 @@ exit();
 					}
 
 					list($db_remember_table) = $this->db_table_get('remember');
-					if ($db_remember_table === NULL) {
-						return false;
-					}
 
 					$now = new timestamp();
 
@@ -1178,11 +1174,11 @@ exit();
 
 				} else if ($type == 'remember') {
 
-					list($db_table) = $this->db_table_get('remember');
-
-					if ($db_table === NULL) {
+					if (!$this->remember_cookie_name) {
 						return NULL;
 					}
+
+					list($db_table) = $this->db_table_get('remember');
 
 					if (config::get('debug.level') > 0) {
 
@@ -1195,6 +1191,7 @@ exit();
 									tracker tinytext NOT NULL,
 									user_id int(11) NOT NULL,
 									created datetime NOT NULL,
+									expired datetime NOT NULL,
 									deleted datetime NOT NULL,
 									PRIMARY KEY (id)
 								);');
