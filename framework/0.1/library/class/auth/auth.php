@@ -87,15 +87,15 @@
 							'password_min_length'            => 'Your password must be at least XXX characters.',
 							'password_max_length'            => 'Your password cannot be longer than XXX characters.',
 
-							'password_new_label'             => 'New password',
+							'password_new_label'             => 'New Password',
 							'password_new_min_length'        => 'Your new password must be at least XXX characters.',
 							'password_new_max_length'        => 'Your new password cannot be longer than XXX characters.',
 
-							'password_repeat_label'          => 'Repeat password',
+							'password_repeat_label'          => 'Repeat Password',
 							'password_repeat_min_length'     => 'Your password confirmation is required.',
 							'password_repeat_max_length'     => 'Your password confirmation cannot be longer than XXX characters.',
 
-							'remember_user_label'            => 'Remember me',
+							'remember_user_label'            => 'Remember Me',
 
 							'failure_login_details'          => 'Incorrect log-in details.',
 							'failure_login_identification'   => NULL, // Do not use, except for very special situations (e.g. low security and overly user friendly websites).
