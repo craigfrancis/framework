@@ -471,6 +471,14 @@
 
 						}
 
+					//--------------------------------------------------
+					// Auth
+
+						$result = $this->auth->validate('update', $current_user_id);
+						if (is_array($result)) {
+							$errors = array_merge($errors, $result);
+						}
+
 				//--------------------------------------------------
 				// Return
 
@@ -663,6 +671,11 @@
 						}
 
 					}
+
+				//--------------------------------------------------
+				// Auth complete
+
+					$this->auth->complete('update', $this->details['user_id']);
 
 				//--------------------------------------------------
 				// Return

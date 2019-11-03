@@ -254,6 +254,14 @@
 
 						}
 
+					//--------------------------------------------------
+					// Auth
+
+						$result = $this->auth->validate('register', NULL);
+						if (is_array($result)) {
+							$errors = array_merge($errors, $result);
+						}
+
 				//--------------------------------------------------
 				// Return
 
@@ -427,6 +435,11 @@
 					if ($config['remember_user'] && !$this->confirm_enabled && $auth_encoded) {
 						$this->auth->login_remember();
 					}
+
+				//--------------------------------------------------
+				// Auth complete
+
+					$this->auth->complete('register', $record_id);
 
 				//--------------------------------------------------
 				// Return

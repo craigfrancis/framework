@@ -1640,6 +1640,16 @@ exit();
 
 			}
 
+			public function validate($method, $user_id) {
+			}
+
+		//--------------------------------------------------
+		// Complete
+
+			public function complete($method, $user_id) {
+				// Common method for 'register' and 'update' actions.
+			}
+
 		//--------------------------------------------------
 		// Generic fields
 
