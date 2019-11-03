@@ -17,6 +17,7 @@
 			protected $field_password_1 = NULL;
 			protected $field_password_2 = NULL;
 			protected $field_password_required = false; // Don't set directly, just call $auth_register->field_password_1_get($form, ['required' => true]);
+			protected $field_remember_user = NULL;
 
 			public function __construct($auth) {
 
@@ -117,6 +118,16 @@
 
 			}
 
+			public function field_remember_user_get($form, $config = array()) {
+
+				$this->form = $form;
+
+				$this->field_remember_user = new form_field_checkbox($form, $this->auth->text_get('remember_user_label'));
+
+				return $this->field_remember_user;
+
+			}
+
 		//--------------------------------------------------
 		// Actions
 
@@ -158,20 +169,26 @@
 							exit_with_error('You must call $auth_register->field_identification_get() before $auth_register->validate().');
 						}
 
+						$password_1 = NULL; // Ignore any passed in values
+						$password_2 = NULL;
+
 						if (isset($this->field_password_1)) {
 
 							$password_1 = strval($this->field_password_1->value_get());
 
-							if (isset($this->field_password_2)) {
+							if ($password_1 == '' && !$this->field_password_required) {
+
+								$password_1 = NULL; // Disable checking
+
+							} else if (isset($this->field_password_2)) {
+
 								$password_2 = strval($this->field_password_2->value_get()); // Not NULL
+
 							} else {
+
 								exit_with_error('You must call $auth_register->field_password_2_get() before $auth_register->validate().');
+
 							}
-
-						} else {
-
-							$password_1 = NULL;
-							$password_2 = NULL;
 
 						}
 
@@ -280,9 +297,10 @@
 				// Config
 
 					$config = array_merge(array(
-							'form'   => NULL,
-							'record' => NULL,
-							'login'  => true,
+							'form'          => NULL,
+							'record'        => NULL,
+							'login'         => true,
+							'remember_user' => NULL,
 						), $config);
 
 					if ($this->details === NULL) {
@@ -389,7 +407,7 @@
 				//--------------------------------------------------
 				// Start session
 
-					if (!$this->confirm_enabled && $config['login']) {
+					if ($config['login'] && !$this->confirm_enabled && $auth_encoded) {
 
 						$auth_config = auth::secret_parse($record_id, $auth_encoded); // So all fields are present (e.g. 'ips')
 
@@ -397,6 +415,17 @@
 
 						list($limit_ref, $limit_extra) = $this->auth->_session_start($record_id, $this->details['identification'], $auth_config, $password_validation);
 
+					}
+
+				//--------------------------------------------------
+				// Remember user
+
+					if ($config['remember_user'] === NULL && isset($this->field_remember_user)) {
+						$config['remember_user'] = $this->field_remember_user->value_get();
+					}
+
+					if ($config['remember_user'] && !$this->confirm_enabled && $auth_encoded) {
+						$this->auth->login_remember();
 					}
 
 				//--------------------------------------------------
