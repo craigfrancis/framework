@@ -228,6 +228,10 @@
 
 			}
 
+			public function user_selected() {
+				return ($this->user_id || $this->session_info_available);
+			}
+
 			public function user_get() {
 				if ($this->user_id) {
 					return [$this->user_id, $this->user_identification, 'set'];
