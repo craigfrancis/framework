@@ -2,17 +2,17 @@
 
 	class [CLASS_NAME]_unit extends unit {
 
-		protected $config = array(
+		protected $config = [
 
-				'add_url'    => array('type' => 'url'),
-				'edit_url'   => array('type' => 'url'),
-				'delete_url' => array('type' => 'url'),
+				'add_url'    => ['type' => 'url'],
+				'edit_url'   => ['type' => 'url'],
+				'delete_url' => ['type' => 'url'],
 
-				'paginate'   => array('default' => true),
-				'search'     => array('default' => true),
-				'download'   => array('default' => true),
+				'paginate'   => ['default' => true],
+				'search'     => ['default' => true],
+				'download'   => ['default' => true],
 
-			);
+			];
 
 		// protected function authenticate($config) {
 		// 	return false;
@@ -50,7 +50,7 @@
 			//--------------------------------------------------
 			// Columns
 
-				$columns = array('name');
+				$columns = ['name'];
 
 				if ($config['delete_url']) {
 					$columns[] = 'delete';
@@ -159,8 +159,8 @@
 						$edit_url = NULL;
 						$delete_url = NULL;
 
-						if ($config['edit_url'])   $edit_url   = $config['edit_url']->get(array('id'   => $row['id']));
-						if ($config['delete_url']) $delete_url = $config['delete_url']->get(array('id' => $row['id']));
+						if ($config['edit_url'])   $edit_url   = $config['edit_url']->get(['id'   => $row['id']]);
+						if ($config['delete_url']) $delete_url = $config['delete_url']->get(['id' => $row['id']]);
 
 						// $created = new timestamp($row['created'], 'db');
 						// $created->format('l jS F Y, g:i:sa');
@@ -200,7 +200,7 @@
 				$links_html = [];
 
 				if ($config['download']) {
-					$export_url = url(array('output' => 'csv'));
+					$export_url = url(['output' => 'csv']);
 					$links_html[] = '<a href="' . html($export_url) . '">download</a>';
 				}
 
@@ -223,10 +223,10 @@
 /*--------------------------------------------------*/
 /* Example
 
-	$unit = unit_add('[CLASS_NAME]', array(
+	$unit = unit_add('[CLASS_NAME]', [
 			'add_url' => url('/admin/item/edit/'),
 			'edit_url' => url('/admin/item/edit/'),
 			'delete_url' => url('/admin/item/delete/'),
-		));
+		]);
 
 ?>

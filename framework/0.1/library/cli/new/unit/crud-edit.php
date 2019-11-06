@@ -2,11 +2,11 @@
 
 	class [CLASS_NAME]_unit extends unit {
 
-		protected $config = array(
-				'id'         => array('type' => 'int'),
-				'index_url'  => array('type' => 'url'),
-				'delete_url' => array('type' => 'url'),
-			);
+		protected $config = [
+				'id'         => ['type' => 'int'],
+				'index_url'  => ['type' => 'url'],
+				'delete_url' => ['type' => 'url'],
+			];
 
 		// protected function authenticate($config) {
 		// 	return false;
@@ -24,9 +24,9 @@
 
 				$action_edit = ($item_id != 0);
 
-				$record = record_get(DB_PREFIX . 'item', $item_id, array(
+				$record = record_get(DB_PREFIX . 'item', $item_id, [
 						'name',
-					));
+					]);
 
 				if ($action_edit) {
 
@@ -87,7 +87,7 @@
 							//--------------------------------------------------
 							// Next page
 
-								$form->dest_redirect(url(array('id' => $item_id)));
+								$form->dest_redirect(url(['id' => $item_id]));
 
 						}
 
@@ -122,11 +122,11 @@
 
 	$id = request('id');
 
-	$unit = unit_add('[CLASS_NAME]', array(
+	$unit = unit_add('[CLASS_NAME]', [
 			'id' => $id,
 			'index_url' => url('/admin/item/'),
-			'delete_url' => url('/admin/item/delete/', array('id' => $id)),
-		));
+			'delete_url' => url('/admin/item/delete/', ['id' => $id]),
+		]);
 
 	$item_name = $unit->get('item_name');
 

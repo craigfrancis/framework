@@ -2,11 +2,11 @@
 
 	class [CLASS_NAME]_unit extends unit {
 
-		protected $config = array(
-				'id'        => array('type' => 'int'),
-				'index_url' => array('type' => 'url'),
-				'edit_url'  => array('type' => 'url'),
-			);
+		protected $config = [
+				'id'        => ['type' => 'int'],
+				'index_url' => ['type' => 'url'],
+				'edit_url'  => ['type' => 'url'],
+			];
 
 		// protected function authenticate($config) {
 		// 	return false;
@@ -22,9 +22,9 @@
 			//--------------------------------------------------
 			// Details
 
-				$record = record_get(DB_PREFIX . 'item', $item_id, array(
+				$record = record_get(DB_PREFIX . 'item', $item_id, [
 						'name',
-					));
+					]);
 
 				if ($row = $record->values_get()) {
 
@@ -93,11 +93,11 @@
 
 	$id = request('id');
 
-	$unit = unit_add('[CLASS_NAME]', array(
+	$unit = unit_add('[CLASS_NAME]', [
 			'id' => $id,
 			'index_url' => url('/admin/item/'),
-			'edit_url' => url('/admin/item/edit/', array('id' => $id)),
-		));
+			'edit_url' => url('/admin/item/edit/', ['id' => $id]),
+		]);
 
 	$item_name = $unit->get('item_name');
 

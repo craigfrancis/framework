@@ -4,11 +4,11 @@
 
 		public function action_index() {
 
-			$unit = unit_add('[UNIT_REF]_index', array(
+			$unit = unit_add('[UNIT_REF]_index', [
 					'add_url' => url('[UNIT_URL]/edit/'),
-					'edit_url' => url('[UNIT_URL]/edit/', array('dest' => 'referrer')),
+					'edit_url' => url('[UNIT_URL]/edit/', ['dest' => 'referrer']),
 					'delete_url' => url('[UNIT_URL]/delete/'),
-				));
+				]);
 
 		}
 
@@ -16,11 +16,11 @@
 
 			$id = request('id');
 
-			$unit = unit_add('[UNIT_REF]_edit', array(
+			$unit = unit_add('[UNIT_REF]_edit', [
 					'id' => $id,
 					'index_url' => url('[UNIT_URL]/'),
-					'delete_url' => url('[UNIT_URL]/delete/', array('id' => $id)),
-				));
+					'delete_url' => url('[UNIT_URL]/delete/', ['id' => $id]),
+				]);
 
 		}
 
@@ -28,11 +28,11 @@
 
 			$id = request('id');
 
-			$unit = unit_add('[UNIT_REF]_delete', array(
+			$unit = unit_add('[UNIT_REF]_delete', [
 					'id' => $id,
 					'index_url' => url('[UNIT_URL]/'),
-					'edit_url' => url('[UNIT_URL]/edit/', array('id' => $id)),
-				));
+					'edit_url' => url('[UNIT_URL]/edit/', ['id' => $id]),
+				]);
 
 		}
 

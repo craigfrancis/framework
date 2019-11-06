@@ -2,9 +2,9 @@
 
 	class [CLASS_NAME]_unit extends unit {
 
-		protected $config = array(
-				'next_url' => array('type' => 'url', 'default' => './thank-you/'),
-			);
+		protected $config = [
+				'next_url' => ['type' => 'url', 'default' => './thank-you/'],
+			];
 
 		// protected function authenticate($config) {
 		// 	return false;
@@ -92,9 +92,9 @@
 /*--------------------------------------------------*/
 /* Example
 
-	$unit = unit_add('[CLASS_NAME]', array(
+	$unit = unit_add('[CLASS_NAME]', [
 			'next_url' => url('/path/to/thankyou/'),
-		));
+		]);
 
 /*--------------------------------------------------*/
 
