@@ -123,9 +123,12 @@
 			}
 
 			protected function table_get_short() {
-				$table = strval($this->table_sql); // Not NULL
-				if (preg_match('/`([^`]+)`/', $table, $matches)) {
-					$table = $matches[1];
+				$table = $this->config['table'];
+				if (!$table) {
+					$table = strval($this->table_sql); // Not NULL
+					if (preg_match('/`([^`]+)`/', $table, $matches)) {
+						$table = $matches[1];
+					}
 				}
 				return prefix_replace(DB_PREFIX, '', $table);
 			}
