@@ -316,9 +316,9 @@
 									edited > ?';
 
 						$parameters = [];
-						$parameters[] = array('s', $search_query);
-						$parameters[] = array('s', $country);
-						$parameters[] = array('s', $max_age);
+						$parameters[] = ['s', $search_query];
+						$parameters[] = ['s', $country];
+						$parameters[] = ['s', $max_age];
 
 						if ($row = $db->fetch_row($sql, $parameters)) {
 							$latitude = $row['latitude'];
@@ -587,9 +587,9 @@
 												' . $this->config['where_sql'];
 
 									$parameters = [];
-									$parameters[] = array('s', $result['latitude']);
-									$parameters[] = array('s', $result['longitude']);
-									$parameters[] = array('s', $row[$this->config['field_id_sql']]);
+									$parameters[] = ['s', $result['latitude']];
+									$parameters[] = ['s', $result['longitude']];
+									$parameters[] = ['s', $row[$this->config['field_id_sql']]];
 
 									$db->query($sql, $parameters);
 

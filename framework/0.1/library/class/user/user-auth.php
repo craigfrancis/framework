@@ -107,7 +107,7 @@
 						1';
 
 			$parameters = [];
-			$parameters[] = array('i', $user_id);
+			$parameters[] = ['i', $user_id];
 
 			if ($row = $db->fetch_row($sql, $parameters)) {
 				return $row['identification'];
@@ -143,7 +143,7 @@
 							1';
 
 				$parameters = [];
-				$parameters[] = array('i', $user_id);
+				$parameters[] = ['i', $user_id];
 
 				if ($row = $db->fetch_row($sql, $parameters)) {
 
@@ -191,9 +191,9 @@
 							1';
 
 				$parameters = [];
-				$parameters[] = array('s', $now);
-				$parameters[] = array('s', $db_hash);
-				$parameters[] = array('i', $user_id);
+				$parameters[] = ['s', $now];
+				$parameters[] = ['s', $db_hash];
+				$parameters[] = ['i', $user_id];
 
 				$db->query($sql, $parameters);
 
@@ -225,7 +225,7 @@
 							created <= ?';
 
 				$parameters = [];
-				$parameters[] = array('s', $timestamp_old);
+				$parameters[] = ['s', $timestamp_old];
 
 				$db->query($sql, $parameters);
 
@@ -253,9 +253,9 @@
 							1';
 
 				$parameters = [];
-				$parameters[] = array('i', $user_id);
+				$parameters[] = ['i', $user_id];
 				$parameters[] = array('s', config::get('request.ip'));
-				$parameters[] = array('s', $timestamp_recent);
+				$parameters[] = ['s', $timestamp_recent];
 
 				if ($db->num_rows($sql, $parameters) > 0) {
 					return 'recently_requested';
@@ -294,7 +294,7 @@
 							used = "0000-00-00 00:00:00"';
 
 				$parameters = [];
-				$parameters[] = array('i', $user_id);
+				$parameters[] = ['i', $user_id];
 
 				if ($row = $db->fetch_row($sql, $parameters)) {
 
@@ -310,8 +310,8 @@
 								used = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = array('s', $now);
-					$parameters[] = array('i', $request_id);
+					$parameters[] = ['s', $now];
+					$parameters[] = ['i', $request_id];
 
 					$db->query($sql, $parameters);
 
@@ -379,9 +379,9 @@
 							used = "0000-00-00 00:00:00"';
 
 				$parameters = [];
-				$parameters[] = array('i', $request_id);
-				$parameters[] = array('s', $request_pass);
-				$parameters[] = array('s', $timeout);
+				$parameters[] = ['i', $request_id];
+				$parameters[] = ['s', $request_pass];
+				$parameters[] = ['s', $timeout];
 
 				if ($row = $db->fetch_row($sql, $parameters)) {
 
@@ -413,8 +413,8 @@
 						used = "0000-00-00 00:00:00"';
 
 			$parameters = [];
-			$parameters[] = array('s', $now);
-			$parameters[] = array('i', $request_id);
+			$parameters[] = ['s', $now];
+			$parameters[] = ['i', $request_id];
 
 			$db->query($sql, $parameters);
 
@@ -448,7 +448,7 @@
 
 					$where_sql = $db->escape_field($this->db_table_fields['identification']) . ' = ?';
 
-					$parameters[] = array('s', $identification);
+					$parameters[] = ['s', $identification];
 
 				}
 
@@ -487,7 +487,7 @@
 
 						$where_sql[] = 'user_id = ?';
 
-						$parameters[] = array('i', $db_id);
+						$parameters[] = ['i', $db_id];
 
 					}
 
@@ -562,8 +562,8 @@
 											1';
 
 								$parameters = [];
-								$parameters[] = array('s', $new_hash);
-								$parameters[] = array('i', $db_id);
+								$parameters[] = ['s', $new_hash];
+								$parameters[] = ['i', $db_id];
 
 								$db->query($sql, $parameters);
 

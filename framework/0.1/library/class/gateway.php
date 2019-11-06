@@ -392,11 +392,11 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 										id = ?';
 
 						$parameters = [];
-						$parameters[] = array('s', $this->response_code);
-						$parameters[] = array('s', $this->response_mime);
-						$parameters[] = array('s', $this->response_data);
-						$parameters[] = array('s', $now);
-						$parameters[] = array('i', $log_id);
+						$parameters[] = ['s', $this->response_code];
+						$parameters[] = ['s', $this->response_mime];
+						$parameters[] = ['s', $this->response_data];
+						$parameters[] = ['s', $now];
+						$parameters[] = ['i', $log_id];
 
 						$db->query($sql, $parameters);
 
@@ -779,10 +779,10 @@ report_add('Deprecated: $api->client_verify() ... will be replaced with somethin
 								1';
 
 					$parameters = [];
-					$parameters[] = array('s', $now);
-					$parameters[] = array('s', $client);
-					$parameters[] = array('s', $pass);
-					$parameters[] = array('s', $this->api);
+					$parameters[] = ['s', $now];
+					$parameters[] = ['s', $client];
+					$parameters[] = ['s', $pass];
+					$parameters[] = ['s', $this->api];
 
 					$db->query($sql, $parameters);
 

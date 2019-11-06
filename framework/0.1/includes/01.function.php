@@ -1252,9 +1252,9 @@
 								sr.url_dst = ?';
 
 					$parameters = [];
-					$parameters[] = array('s', $url_dst);
-					$parameters[] = array('s', $now);
-					$parameters[] = array('s', $url_src);
+					$parameters[] = ['s', $url_dst];
+					$parameters[] = ['s', $now];
+					$parameters[] = ['s', $url_src];
 
 					$db->query($sql, $parameters);
 
@@ -1270,8 +1270,8 @@
 								sr.url_src = ?';
 
 					$parameters = [];
-					$parameters[] = array('s', $now);
-					$parameters[] = array('s', $url_dst);
+					$parameters[] = ['s', $now];
+					$parameters[] = ['s', $url_dst];
 
 					$db->query($sql, $parameters);
 
@@ -1289,7 +1289,7 @@
 						url_src = ?';
 
 			$parameters = [];
-			$parameters[] = array('s', $url_src);
+			$parameters[] = ['s', $url_src];
 
 			if ($row = $db->fetch_row($sql, $parameters)) {
 
@@ -1314,7 +1314,7 @@
 
 			if ($config['referrer']) {
 				$set_sql[] = 'sr.referrer = ?';
-				$parameters[] = array('s', $config['referrer']);
+				$parameters[] = ['s', $config['referrer']];
 			}
 
 			$sql = 'UPDATE
@@ -1324,7 +1324,7 @@
 					WHERE
 						url_src = ?';
 
-			$parameters[] = array('s', $url_src);
+			$parameters[] = ['s', $url_src];
 
 			$db->query($sql, $parameters);
 

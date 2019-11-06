@@ -36,7 +36,7 @@
 							cp.ref';
 
 				$parameters = [];
-				$parameters[] = array('i', $folder_id);
+				$parameters[] = ['i', $folder_id];
 
 				foreach ($db->fetch_all($sql, $parameters) as $row) {
 
@@ -76,7 +76,7 @@
 				// 				deleted = "0000-00-00 00:00:00"';
 				//
 				// 	$parameters = [];
-				// 	$parameters[] = array('i', $pageId);
+				// 	$parameters[] = ['i', $pageId];
 				//
 				// 	if ($row = $db->fetch_row($sql, $parameters)) {
 				// 		$pageId = $row['parent_id'];
@@ -127,8 +127,8 @@
 									cp.deleted = "0000-00-00 00:00:00"';
 
 						$parameters = [];
-						$parameters[] = array('i', $page_id);
-						$parameters[] = array('s', $folder);
+						$parameters[] = ['i', $page_id];
+						$parameters[] = ['s', $folder];
 
 						if ($row = $db->fetch_row($sql, $parameters)) {
 							$page_id = $row['id'];

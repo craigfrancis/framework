@@ -551,12 +551,12 @@ exit();
 										' . $db_main_where_sql;
 
 							$parameters = [];
-							$parameters[] = array('i', $session_id);
+							$parameters[] = ['i', $session_id];
 
 							if ($this->session_length > 0) {
 								$last_used = new timestamp((0 - $this->session_length) . ' seconds');
 								$sql .= ' AND s.last_used > ?';
-								$parameters[] = array('s', $last_used);
+								$parameters[] = ['s', $last_used];
 							}
 
 							if ($row = $db->fetch_row($sql, $parameters)) {
@@ -585,9 +585,9 @@ exit();
 													s.deleted = "0000-00-00 00:00:00"';
 
 										$parameters = [];
-										$parameters[] = array('s', $now);
-										$parameters[] = array('i', $request_increment);
-										$parameters[] = array('i', $session_id);
+										$parameters[] = ['s', $now];
+										$parameters[] = ['i', $request_increment];
+										$parameters[] = ['i', $session_id];
 
 										$db->query($sql, $parameters);
 
@@ -670,8 +670,8 @@ exit();
 											' . $db_main_where_sql;
 
 								$parameters = [];
-								$parameters[] = array('i', $remember_id);
-								$parameters[] = array('s', $now);
+								$parameters[] = ['i', $remember_id];
+								$parameters[] = ['s', $now];
 
 								if (($row = $db->fetch_row($sql, $parameters)) && (quick_hash_verify($remember_pass, $row['token']))) {
 
@@ -684,8 +684,8 @@ exit();
 												r.deleted = "0000-00-00 00:00:00"';
 
 									$parameters = [];
-									$parameters[] = array('s', $now);
-									$parameters[] = array('i', $remember_id);
+									$parameters[] = ['s', $now];
+									$parameters[] = ['i', $remember_id];
 
 									$db->query($sql, $parameters);
 
@@ -841,8 +841,8 @@ exit();
 					list($db_session_table) = $this->db_table_get('session');
 
 					$parameters = [];
-					$parameters[] = array('i', $this->session_info_data['user_id']);
-					$parameters[] = array('s', $this->session_info_data['last_used_new']);
+					$parameters[] = ['i', $this->session_info_data['user_id']];
+					$parameters[] = ['s', $this->session_info_data['last_used_new']];
 
 					$sql = 'SELECT
 								s.last_used,
@@ -929,8 +929,8 @@ exit();
 								' . $db_main_where_sql;
 
 					$parameters = [];
-					$parameters[] = array('i', $this->session_info_data['user_id']);
-					$parameters[] = array('s', $session_history);
+					$parameters[] = ['i', $this->session_info_data['user_id']];
+					$parameters[] = ['s', $session_history];
 
 					if ($row = $db->fetch_row($sql, $parameters)) {
 
@@ -1153,8 +1153,8 @@ exit();
 					deleted = "0000-00-00 00:00:00"';
 
 				$parameters = [];
-				$parameters[] = array('s', $now);
-				$parameters[] = array('i', $user_id);
+				$parameters[] = ['s', $now];
+				$parameters[] = ['i', $user_id];
 
 				if ($type == 'session') {
 
@@ -1164,7 +1164,7 @@ exit();
 
 						$where_sql .= ' AND id = ?';
 
-						$parameters[] = array('i', $config['session_id']);
+						$parameters[] = ['i', $config['session_id']];
 
 					}
 
@@ -1172,7 +1172,7 @@ exit();
 
 						$where_sql .= ' AND id != ?';
 
-						$parameters[] = array('i', $config['session_keep']);
+						$parameters[] = ['i', $config['session_keep']];
 
 					}
 
@@ -1258,7 +1258,7 @@ exit();
 									s.deleted < ?';
 
 						$parameters = [];
-						$parameters[] = array('s', $deleted_before);
+						$parameters[] = ['s', $deleted_before];
 
 						$db->query($sql, $parameters);
 
@@ -1275,7 +1275,7 @@ exit();
 										s.deleted = "0000-00-00 00:00:00"';
 
 							$parameters = [];
-							$parameters[] = array('s', $last_used);
+							$parameters[] = ['s', $last_used];
 
 							$db->query($sql, $parameters);
 
@@ -1362,8 +1362,8 @@ exit();
 									1';
 
 						$parameters = [];
-						$parameters[] = array('s', $auth_encoded);
-						$parameters[] = array('i', $row['id']);
+						$parameters[] = ['s', $auth_encoded];
+						$parameters[] = ['i', $row['id']];
 
 						$db->query($sql, $parameters);
 
@@ -1394,7 +1394,7 @@ exit();
 							1';
 
 				$parameters = [];
-				$parameters[] = array('s', $identification);
+				$parameters[] = ['s', $identification];
 				$parameters[] = array('i', ($user_id === NULL ? 0 : $user_id));
 
 				return ($db->num_rows($sql, $parameters) == 0);
@@ -1450,7 +1450,7 @@ exit();
 						$parameters[] = array('i', $this->user_id_get());
 					} else {
 						$where_sql = 'm.' . $db->escape_field($db_main_fields['identification']) . ' = ?';
-						$parameters[] = array('s', $identification);
+						$parameters[] = ['s', $identification];
 					}
 
 					$sql = 'SELECT
@@ -1493,7 +1493,7 @@ exit();
 
 						if ($this->lockout_mode === NULL || $this->lockout_mode == 'user') {
 							$where_sql[] = 's.user_id = ?';
-							$parameters[] = array('i', $db_id);
+							$parameters[] = ['i', $db_id];
 						}
 						if ($this->lockout_mode === NULL || $this->lockout_mode == 'ip') {
 							$where_sql[] = 's.ip = ?';
@@ -1518,7 +1518,7 @@ exit();
 									s.created > ? AND
 									s.deleted = "0000-00-00 00:00:00"';
 
-						$parameters[] = array('s', $created_after);
+						$parameters[] = ['s', $created_after];
 
 						if ($db->num_rows($sql, $parameters) >= $this->lockout_attempts) { // Once every 30 seconds, for the 30 minutes
 							$error = 'failure_repetition';
@@ -1590,8 +1590,8 @@ exit();
 											1';
 
 								$parameters = [];
-								$parameters[] = array('s', $auth_encoded);
-								$parameters[] = array('i', $db_id);
+								$parameters[] = ['s', $auth_encoded];
+								$parameters[] = ['i', $db_id];
 
 								$db->query($sql, $parameters);
 

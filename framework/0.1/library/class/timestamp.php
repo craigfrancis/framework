@@ -268,7 +268,7 @@
 								sh.deleted = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = array('s', $earliest);
+					$parameters[] = ['s', $earliest];
 
 					foreach ($db->fetch_all($sql, $parameters) as $row) {
 

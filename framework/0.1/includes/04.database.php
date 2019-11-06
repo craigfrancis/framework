@@ -500,11 +500,11 @@
 				} else {
 					$values_sql[] = '?';
 					if (is_int($value)) {
-						$parameters[] = array('i', $value);
+						$parameters[] = ['i', $value];
 					} else if (is_float($value)) {
 						$parameters[] = array('d', $value);
 					} else {
-						$parameters[] = array('s', $value);
+						$parameters[] = ['s', $value];
 					}
 				}
 			}
@@ -521,11 +521,11 @@
 						} else {
 							$set_sql[] = $this->escape_field($field_name) . ' = ?';
 							if (is_int($field_value)) {
-								$parameters[] = array('i', $field_value);
+								$parameters[] = ['i', $field_value];
 							} else if (is_float($field_value)) {
 								$parameters[] = array('d', $field_value);
 							} else {
-								$parameters[] = array('s', $field_value);
+								$parameters[] = ['s', $field_value];
 							}
 						}
 					}
@@ -559,11 +559,11 @@
 					} else {
 						$values_sql[] = '?';
 						if (is_int($values[$field])) {
-							$parameters[] = array('i', $values[$field]);
+							$parameters[] = ['i', $values[$field]];
 						} else if (is_float($values[$field])) {
 							$parameters[] = array('d', $values[$field]);
 						} else {
-							$parameters[] = array('s', $values[$field]);
+							$parameters[] = ['s', $values[$field]];
 						}
 					}
 				}
@@ -654,7 +654,7 @@
 					$fields_sql = $this->escape_field($field);
 				}
 				if ($parameters !== NULL) {
-					$parameters[] = array('s', $search_query);
+					$parameters[] = ['s', $search_query];
 					return 'MATCH (' . $fields_sql . ') AGAINST (? IN BOOLEAN MODE)';
 				} else {
 					return 'MATCH (' . $fields_sql . ') AGAINST ("' . $this->escape($search_query) . '" IN BOOLEAN MODE)';

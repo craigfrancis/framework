@@ -242,7 +242,7 @@
 											enabled = "true"';
 
 								$parameters = [];
-								$parameters[] = array('s', $route_path);
+								$parameters[] = ['s', $route_path];
 
 								if ($row = $db->fetch_row($sql, $parameters)) {
 									redirect($row['url_dst'], ($row['permanent'] == 'true' ? 301 : 302));

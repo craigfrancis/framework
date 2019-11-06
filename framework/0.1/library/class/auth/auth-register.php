@@ -498,7 +498,7 @@
 								' . $this->db_where_sql;
 
 					$parameters = [];
-					$parameters[] = array('i', $register_id);
+					$parameters[] = ['i', $register_id];
 
 					if (($row = $db->fetch_row($sql, $parameters)) && (quick_hash_verify($register_pass, $row[$this->db_fields['token']]))) {
 
@@ -525,8 +525,8 @@
 										' . $this->db_where_sql;
 
 							$parameters = [];
-							$parameters[] = array('s', $now);
-							$parameters[] = array('i', $register_id);
+							$parameters[] = ['s', $now];
+							$parameters[] = ['i', $register_id];
 
 							$db->query($sql, $parameters);
 

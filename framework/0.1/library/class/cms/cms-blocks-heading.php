@@ -35,7 +35,7 @@
 							cbh.deleted = "0000-00-00 00:00:00"';
 
 				$parameters = [];
-				$parameters[] = array('i', $this->block_id);
+				$parameters[] = ['i', $this->block_id];
 
 				if ($row = $db->fetch_row($sql, $parameters)) {
 					return array(
@@ -151,8 +151,8 @@
 								cbh.deleted = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = array('s', $now);
-					$parameters[] = array('i', $this->block_id);
+					$parameters[] = ['s', $now];
+					$parameters[] = ['i', $this->block_id];
 
 					$db->query($sql, $parameters);
 

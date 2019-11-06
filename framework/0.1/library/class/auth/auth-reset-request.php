@@ -131,7 +131,7 @@
 
 						$parameters = [];
 						$parameters[] = array('s', config::get('request.ip'));
-						$parameters[] = array('s', $created_after);
+						$parameters[] = ['s', $created_after];
 
 						if ($db->num_rows($sql, $parameters) >= $created_limit) {
 							$errors[] = $this->auth->text_get('failure_reset_recent_ip');
@@ -154,8 +154,8 @@
 										r.deleted = "0000-00-00 00:00:00"'; // Ignore those which have been accepted.
 
 							$parameters = [];
-							$parameters[] = array('s', $email);
-							$parameters[] = array('s', $created_after);
+							$parameters[] = ['s', $email];
+							$parameters[] = ['s', $created_after];
 
 							if ($db->num_rows($sql, $parameters) >= 1) {
 								$errors[] = $this->auth->text_get('failure_reset_recent_email');
@@ -184,8 +184,8 @@
 						// 				r.deleted = r.deleted';
 						//
 						// 	$parameters = [];
-						// 	$parameters[] = array('s', $email);
-						// 	$parameters[] = array('s', $created_after);
+						// 	$parameters[] = ['s', $email];
+						// 	$parameters[] = ['s', $created_after];
 						//
 						// 	if ($db->num_rows($sql, $parameters) >= 1) {
 						// 		$errors[] = $this->auth->text_get('failure_reset_recent_changed');
@@ -278,7 +278,7 @@
 								' . $this->db_main_where_sql;
 
 					$parameters = [];
-					$parameters[] = array('s', $this->details['email']);
+					$parameters[] = ['s', $this->details['email']];
 
 					foreach ($db->fetch_all($sql, $parameters) as $row) {
 

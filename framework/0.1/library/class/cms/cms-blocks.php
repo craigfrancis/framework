@@ -136,8 +136,8 @@
 							cb.sort';
 
 				$parameters = [];
-				$parameters[] = array('s', $this->parent_type);
-				$parameters[] = array('i', $this->parent_id);
+				$parameters[] = ['s', $this->parent_type];
+				$parameters[] = ['i', $this->parent_id];
 
 				foreach ($db->fetch_all($sql, $parameters) as $row) {
 
@@ -191,8 +191,8 @@
 									cb.sort';
 
 						$parameters = [];
-						$parameters[] = array('s', $this->parent_type);
-						$parameters[] = array('i', $this->parent_id);
+						$parameters[] = ['s', $this->parent_type];
+						$parameters[] = ['i', $this->parent_id];
 
 						foreach ($db->fetch_all($sql, $parameters) as $row) {
 							$db_fields[$row['id']] = array(
@@ -355,9 +355,9 @@
 											cb.deleted = "0000-00-00 00:00:00"';
 
 								$parameters = [];
-								$parameters[] = array('s', $info['sort_new']);
-								$parameters[] = array('s', $now);
-								$parameters[] = array('i', $id);
+								$parameters[] = ['s', $info['sort_new']];
+								$parameters[] = ['s', $now];
+								$parameters[] = ['i', $id];
 
 								$db->query($sql, $parameters);
 
@@ -381,8 +381,8 @@
 									cb.deleted = "0000-00-00 00:00:00"';
 
 						$parameters = [];
-						$parameters[] = array('s', $this->parent_type);
-						$parameters[] = array('i', $this->parent_id);
+						$parameters[] = ['s', $this->parent_type];
+						$parameters[] = ['i', $this->parent_id];
 
 						if ($row = $db->fetch_row($sql, $parameters)) {
 							$add_sort = (intval($row['sort']) + 1);
