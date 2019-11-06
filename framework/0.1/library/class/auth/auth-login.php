@@ -19,7 +19,7 @@
 		//--------------------------------------------------
 		// Fields
 
-			public function field_identification_get($form, $config = array()) {
+			public function field_identification_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -37,7 +37,7 @@
 
 			}
 
-			public function field_password_get($form, $config = array()) {
+			public function field_password_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -54,7 +54,7 @@
 
 			}
 
-			public function field_remember_user_get($form, $config = array()) {
+			public function field_remember_user_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -159,7 +159,7 @@
 
 			}
 
-			public function complete($config = array()) {
+			public function complete($config = []) {
 
 				//--------------------------------------------------
 				// Config

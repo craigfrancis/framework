@@ -54,7 +54,7 @@ class cms_tags_base extends check {
 	private $config;
 
 	public function __construct($config = NULL) {
-		$this->preserved_inline_tags = array();
+		$this->preserved_inline_tags = [];
 		$this->indent_level = 1;
 		$this->config_set($config);
 	}
@@ -66,13 +66,13 @@ class cms_tags_base extends check {
 		// array parameter.
 
 			if ($config === NULL) {
-				$config = array();
+				$config = [];
 			}
 
 		//--------------------------------------------------
 		// The config setup is an array
 
-			$this->config = array();
+			$this->config = [];
 
 		//--------------------------------------------------
 		// Boolean (permission) values - default to false
@@ -154,10 +154,10 @@ class cms_tags_base extends check {
 			$in_tag_text = NULL;
 			$in_tag_attribute = NULL;
 			$escaping_stack = 0;
-			$tag_stack = array();
+			$tag_stack = [];
 			$output_html = '';
 
-			$inline_tags = array();
+			$inline_tags = [];
 			$inline_tags['b']['open'] = '<strong>';
 			$inline_tags['b']['close'] = '</strong>';
 			$inline_tags['i']['open'] = '<em>';
@@ -270,7 +270,7 @@ class cms_tags_base extends check {
 									// This is a CLOSING tag that is already open
 
 										$tag_output = '';
-										$temp_stack = array();
+										$temp_stack = [];
 
 									//--------------------------------------------------
 									// Close all of the tags which are currently open,
@@ -582,7 +582,7 @@ class cms_tags_base extends check {
 			$output_buffer = '';
 			$output_html = '';
 
-			$block_level_tags = array();
+			$block_level_tags = [];
 			$block_level_tags[] = 'p';
 
 			if ($this->config['allow_para_align']) {
@@ -940,8 +940,8 @@ class cms_tags_base extends check {
 		// Split the data into a multi-dimensional array
 
 			$table_columns = 1;
-			$table_data = array();
-			$table_row_cells = array();
+			$table_data = [];
+			$table_row_cells = [];
 			$k = 0;
 
 			$rows = explode("\n", $content);

@@ -93,7 +93,7 @@
 //--------------------------------------------------
 // Create units
 
-	$unit_info = array();
+	$unit_info = [];
 	$unit_info[] = new_unit($unit_ref . '_index', 'crud-index');
 	$unit_info[] = new_unit($unit_ref . '_edit', 'crud-edit');
 	$unit_info[] = new_unit($unit_ref . '_delete', 'crud-delete');

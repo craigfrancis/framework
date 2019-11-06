@@ -28,7 +28,7 @@
 		//--------------------------------------------------
 		// Fields
 
-			public function field_password_1_get($form, $config = array()) {
+			public function field_password_1_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -45,7 +45,7 @@
 
 			}
 
-			public function field_password_2_get($form, $config = array()) {
+			public function field_password_2_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -64,7 +64,7 @@
 		//--------------------------------------------------
 		// Actions
 
-			public function active($reset_token, $config = array()) {
+			public function active($reset_token, $config = []) {
 
 				//--------------------------------------------------
 				// Config
@@ -111,7 +111,7 @@
 								r.used = "0000-00-00 00:00:00" AND
 								r.deleted = "0000-00-00 00:00:00"';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('i', $reset_id);
 					$parameters[] = array('s', $created_after);
 
@@ -165,7 +165,7 @@
 						exit_with_error('The reset token is not valid, so why has $auth_reset_change->validate() been called?');
 					}
 
-					$errors = array();
+					$errors = [];
 
 				//--------------------------------------------------
 				// Values
@@ -258,7 +258,7 @@
 
 			}
 
-			public function complete($config = array()) {
+			public function complete($config = []) {
 
 				//--------------------------------------------------
 				// Config
@@ -308,7 +308,7 @@
 								r.id = ? AND
 								r.deleted = "0000-00-00 00:00:00"';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $now);
 					$parameters[] = array('s', $now);
 					$parameters[] = array('i', $this->details['id']);

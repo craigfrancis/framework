@@ -9,7 +9,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $config = array();
+			protected $config = [];
 			protected $content = NULL;
 
 			private $db_link = NULL;
@@ -48,9 +48,9 @@
 							'editable'     => false,
 							'log_missing'  => true,
 							'path'         => config::get('request.path'),
-							'versions'     => array(),
-							'variables'    => array(),
-							'priority'     => array(),
+							'versions'     => [],
+							'variables'    => [],
+							'priority'     => [],
 							'edit_url'     => '/admin/cms-text/edit/',
 						);
 
@@ -60,7 +60,7 @@
 				// Set config
 
 					if (!is_array($config)) {
-						$config = array();
+						$config = [];
 					}
 
 					if ($profile !== NULL) {
@@ -177,7 +177,7 @@
 						$processor_config = $this->config['processor'];
 					} else {
 						$processor_name = $this->config['processor'];
-						$processor_config = array();
+						$processor_config = [];
 					}
 
 					if ($processor_name == 'markdown') {
@@ -213,7 +213,7 @@
 
 					$processor = $this->processor_get();
 
-					$content = array();
+					$content = [];
 
 				//--------------------------------------------------
 				// Fields
@@ -235,7 +235,7 @@
 
 					$versions = $this->config['versions'];
 					if (count($versions) == 0) {
-						$versions = array('default' => array());
+						$versions = array('default' => []);
 					}
 
 					$sql = 'SELECT
@@ -250,7 +250,7 @@
 								revision = ? AND
 								' . $this->config['where_sql'];
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $this->config['path']);
 					$parameters[] = array('i', $this->config['revision']);
 
@@ -290,7 +290,7 @@
 
 			public static function cache_files($path = NULL) {
 
-				$files = array();
+				$files = [];
 				$path_encoded = base64_encode($path);
 
 				$dir = cms_text::cache_folder_get();
@@ -332,7 +332,7 @@
 							'path'          => $this->config['path'],
 							'section'       => 'content',
 							'default'       => NULL,
-							'variables'     => array(),
+							'variables'     => [],
 							'wrapper_tag'   => NULL,
 							'wrapper_class' => NULL,
 							'editable'      => $this->config['editable'],
@@ -348,7 +348,7 @@
 
 					} else if (!is_array($config)) {
 
-						$config = array();
+						$config = [];
 
 					}
 

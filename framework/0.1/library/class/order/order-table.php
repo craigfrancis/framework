@@ -5,7 +5,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $config = array();
+			protected $config = [];
 			protected $order_obj = NULL;
 			protected $order_items = NULL;
 			protected $order_totals = NULL;
@@ -13,7 +13,7 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($order, $config = array()) {
+			public function __construct($order, $config = []) {
 
 				//--------------------------------------------------
 				// Order
@@ -23,7 +23,7 @@
 					$this->order_totals = $order->totals_get();
 
 					if (!is_array($config)) {
-						$config = array();
+						$config = [];
 					}
 
 					$show_image_info = method_exists($this, 'item_image_info');
@@ -104,7 +104,7 @@
 
 			}
 
-			public function item_remove_html($item, $remove_config = array()) {
+			public function item_remove_html($item, $remove_config = []) {
 
 				//--------------------------------------------------
 				// Config
@@ -144,7 +144,7 @@
 
 			}
 
-			public function item_quantity_html($item, $quantity, $edit_config = array()) {
+			public function item_quantity_html($item, $quantity, $edit_config = []) {
 
 				//--------------------------------------------------
 				// Config

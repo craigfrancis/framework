@@ -69,7 +69,7 @@
 									user_id = ? AND
 									deleted = "0000-00-00 00:00:00"';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('i', $user_id);
 
 						$db->query($sql, $parameters);
@@ -85,7 +85,7 @@
 									user_id = ? AND
 									deleted = "0000-00-00 00:00:00"';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('s', date('Y-m-d H:i:s'));
 						$parameters[] = array('i', $user_id);
 
@@ -106,7 +106,7 @@
 								deleted != "0000-00-00 00:00:00" AND
 								deleted < ?';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', date('Y-m-d H:i:s', (time() - $this->history_length)));
 
 					$db->query($sql, $parameters);
@@ -120,7 +120,7 @@
 									deleted = "0000-00-00 00:00:00" AND
 									last_used < ?';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('s', date('Y-m-d H:i:s', (time() - $this->length - $this->history_length)));
 
 						$db->query($sql, $parameters);
@@ -262,7 +262,7 @@
 						id = ? AND
 						deleted = "0000-00-00 00:00:00"';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('i', $session_id);
 
 					if ($this->length > 0) {
@@ -297,7 +297,7 @@
 											id = ? AND
 											deleted = "0000-00-00 00:00:00"';
 
-								$parameters = array();
+								$parameters = [];
 								$parameters[] = array('s', date('Y-m-d H:i:s'));
 								$parameters[] = array('i', $session_id);
 
@@ -366,7 +366,7 @@
 									id = ? AND
 									deleted = "0000-00-00 00:00:00"';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('i', $this->session_id);
 
 						$db->query($sql, $parameters);
@@ -382,7 +382,7 @@
 									id = ? AND
 									deleted = "0000-00-00 00:00:00"';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('s', date('Y-m-d H:i:s'));
 						$parameters[] = array('i', $this->session_id);
 

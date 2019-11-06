@@ -21,7 +21,7 @@
 
 			config::set('output.mode', 'tester');
 
-			$tests = array();
+			$tests = [];
 			$root = APP_ROOT . '/library/tester';
 			foreach (glob($root . '/*.php') as $test) {
 				$tests[] = str_replace($root . '/', '', substr($test, 0, -4));

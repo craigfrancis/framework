@@ -46,7 +46,7 @@
 			if ($prefix_length <= 1) {
 				return $_SESSION;
 			} else {
-				$data = array();
+				$data = [];
 				foreach ($_SESSION as $k => $v) {
 					if (substr($k, 0, $prefix_length) == $prefix) {
 						$data[substr($k, $prefix_length)] = $v;

@@ -79,10 +79,10 @@
 					//--------------------------------------------------
 					// Start
 
-						$where_sql = array();
+						$where_sql = [];
 						$where_sql[] = 'i.deleted = "0000-00-00 00:00:00"';
 
-						$parameters = array();
+						$parameters = [];
 
 					//--------------------------------------------------
 					// Keywords
@@ -197,7 +197,7 @@
 			//--------------------------------------------------
 			// Links
 
-				$links_html = array();
+				$links_html = [];
 
 				if ($config['download']) {
 					$export_url = url(array('output' => 'csv'));

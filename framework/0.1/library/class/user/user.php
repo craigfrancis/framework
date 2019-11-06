@@ -15,8 +15,8 @@
 
 			protected $form = NULL;
 
-			protected $text = array();
-			protected $text_html = array();
+			protected $text = [];
+			protected $text_html = [];
 			protected $user_id = 0;
 			protected $session_name = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $form_name = 'user_form';
@@ -358,7 +358,7 @@
 		//--------------------------------------------------
 		// Register
 
-			public function register_and_login($config = array()) {
+			public function register_and_login($config = []) {
 				$result = $this->register($config);
 				if ($result) {
 					$this->login_forced();
@@ -366,7 +366,7 @@
 				return $result;
 			}
 
-			public function register($config = array()) {
+			public function register($config = []) {
 
 				//--------------------------------------------------
 				// Not a user

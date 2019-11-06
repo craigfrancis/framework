@@ -35,7 +35,7 @@
 
 			}
 
-			public function record_get($fields = NULL, $config_extra = array()) {
+			public function record_get($fields = NULL, $config_extra = []) {
 
 				$this->record = record_get($this->table_get(), $this->auth->user_id_get(), $fields, $config_extra);
 
@@ -139,7 +139,7 @@
 		//--------------------------------------------------
 		// Fields
 
-			public function field_identification_get($form, $config = array()) {
+			public function field_identification_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -162,7 +162,7 @@
 
 			}
 
-			public function field_password_old_get($form, $config = array()) {
+			public function field_password_old_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -179,7 +179,7 @@
 
 			}
 
-			public function field_password_new_1_get($form, $config = array()) {
+			public function field_password_new_1_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -198,7 +198,7 @@
 
 			}
 
-			public function field_password_new_2_get($form, $config = array()) {
+			public function field_password_new_2_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -224,7 +224,7 @@
 
 					$this->details = false;
 
-					$errors = array();
+					$errors = [];
 
 					$db = $this->auth->db_get();
 
@@ -257,8 +257,8 @@
 
 					} else {
 
-						$fields = array();
-						$values = array();
+						$fields = [];
+						$values = [];
 
 						if ($this->field_identification !== NULL) $fields['identification'] = $this->field_identification;
 						if ($this->field_password_old !== NULL)   $fields['password_old']   = $this->field_password_old;
@@ -394,7 +394,7 @@
 										m.' . $db->escape_field($this->db_main_fields['id']) . ' = ? AND
 										' . $this->db_main_where_sql;
 
-							$parameters = array();
+							$parameters = [];
 							$parameters[] = array('i', $current_user_id);
 
 							if ($row = $db->fetch_row($sql, $parameters)) {
@@ -461,7 +461,7 @@
 										u.created > ? AND
 										u.deleted = "0000-00-00 00:00:00"'; // Ignore those which have been accepted.
 
-							$parameters = array();
+							$parameters = [];
 							$parameters[] = array('i', $current_user_id);
 							$parameters[] = array('s', $created_after);
 
@@ -526,7 +526,7 @@
 
 			}
 
-			public function complete($config = array()) {
+			public function complete($config = []) {
 
 				//--------------------------------------------------
 				// Config
@@ -684,7 +684,7 @@
 
 			}
 
-			public function confirm($update_token, $config = array()) {
+			public function confirm($update_token, $config = []) {
 
 				//--------------------------------------------------
 				// Config
@@ -721,7 +721,7 @@
 								u.token != "" AND
 								u.deleted = "0000-00-00 00:00:00"';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('i', $update_id);
 
 					if (($row = $db->fetch_row($sql, $parameters)) && (quick_hash_verify($update_pass, $row['token']))) {
@@ -744,7 +744,7 @@
 										u.id = ? AND
 										u.deleted = "0000-00-00 00:00:00"';
 
-							$parameters = array();
+							$parameters = [];
 							$parameters[] = array('s', $now);
 							$parameters[] = array('i', $update_id);
 

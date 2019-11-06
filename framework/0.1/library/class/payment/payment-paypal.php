@@ -190,7 +190,7 @@
 					if ($socket->response_code_get() == 200) {
 						parse_str($socket->response_data_get(), $response);
 					} else {
-						$response = array();
+						$response = [];
 					}
 
 					$db = $this->db_get();

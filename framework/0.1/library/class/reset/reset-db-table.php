@@ -10,7 +10,7 @@
 			private $id = 0;
 			private $records = NULL;
 			private $table = NULL;
-			private $fields = array();
+			private $fields = [];
 
 		//--------------------------------------------------
 		// Setup
@@ -34,7 +34,7 @@
 		//--------------------------------------------------
 		// Add a record
 
-			final public function record_add($values = array(), $config = array()) {
+			final public function record_add($values = [], $config = []) {
 
 				$config['id'] = ++$this->id;
 
@@ -60,7 +60,7 @@
 			}
 
 			final public function records_reset() {
-				$this->records = array();
+				$this->records = [];
 			}
 
 	}

@@ -70,8 +70,8 @@
 			protected $parent_id = 0;
 			protected $form = NULL;
 			protected $block_types = array('heading', 'text');
-			protected $fields = array();
-			protected $field_objects = array();
+			protected $fields = [];
+			protected $field_objects = [];
 			protected $field_add = NULL;
 
 		//--------------------------------------------------
@@ -135,7 +135,7 @@
 						ORDER BY
 							cb.sort';
 
-				$parameters = array();
+				$parameters = [];
 				$parameters[] = array('s', $this->parent_type);
 				$parameters[] = array('i', $this->parent_id);
 
@@ -175,7 +175,7 @@
 					//--------------------------------------------------
 					// Current fields
 
-						$db_fields = array();
+						$db_fields = [];
 
 						$sql = 'SELECT
 									cb.id,
@@ -190,7 +190,7 @@
 								ORDER BY
 									cb.sort';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('s', $this->parent_type);
 						$parameters[] = array('i', $this->parent_id);
 
@@ -204,7 +204,7 @@
 					//--------------------------------------------------
 					// Fields in order
 
-						$this->fields = array();
+						$this->fields = [];
 
 						if ($form->submitted()) {
 							$field_order = explode('x', $form->hidden_value_get('cms-block-order'));
@@ -354,7 +354,7 @@
 											cb.id = ? AND
 											cb.deleted = "0000-00-00 00:00:00"';
 
-								$parameters = array();
+								$parameters = [];
 								$parameters[] = array('s', $info['sort_new']);
 								$parameters[] = array('s', $now);
 								$parameters[] = array('i', $id);
@@ -380,7 +380,7 @@
 									cb.parent_id = ? AND
 									cb.deleted = "0000-00-00 00:00:00"';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('s', $this->parent_type);
 						$parameters[] = array('i', $this->parent_id);
 

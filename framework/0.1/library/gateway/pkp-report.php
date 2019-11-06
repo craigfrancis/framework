@@ -62,7 +62,7 @@
 	if ($handler && function_exists($handler)) {
 		$return = call_user_func($handler, $report, $data_raw); // Either handles everything, or returns details in an array (e.g. 'user_id').
 	} else {
-		$return = array();
+		$return = [];
 	}
 
 	if (is_array($return) && config::get('db.host') !== NULL) {
@@ -86,7 +86,7 @@
 				'ip'              => config::get('request.ip'),
 				'browser'         => config::get('request.browser'),
 				'created'         => $now,
-			), config::get('output.pkp_report_extra', array()), $return);
+			), config::get('output.pkp_report_extra', []), $return);
 
 		$db->insert(DB_PREFIX . 'system_report_pkp', $values);
 

@@ -241,7 +241,7 @@
 											url_src = ? AND
 											enabled = "true"';
 
-								$parameters = array();
+								$parameters = [];
 								$parameters[] = array('s', $route_path);
 
 								if ($row = $db->fetch_row($sql, $parameters)) {
@@ -299,7 +299,7 @@
 	//--------------------------------------------------
 	// Title folders
 
-		$title_folders = array();
+		$title_folders = [];
 
 		foreach (path_to_array($route_path) as $folder) {
 			if ($folder != '') {
@@ -366,7 +366,7 @@
 			$route_min = ($matches[4] != '');
 			$route_ext = $matches[5];
 
-			$route_files = array();
+			$route_files = [];
 			foreach (explode(',', $route_file) as $path) {
 				$route_files[] = PUBLIC_ROOT . $route_dir . '/' . $path . '.' . $route_ext;
 			}
@@ -392,7 +392,7 @@
 		if ($route_mtime > 0) {
 
 			$files_mtime = 0;
-			$files_realpath = array();
+			$files_realpath = [];
 
 			foreach ($route_files as $path) {
 
@@ -637,7 +637,7 @@
 //--------------------------------------------------
 // Process routes
 
-	$routes = array();
+	$routes = [];
 
 	$include_path = APP_ROOT . '/library/setup/routes.php';
 	if (is_file($include_path)) {

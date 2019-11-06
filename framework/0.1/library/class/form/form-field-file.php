@@ -12,7 +12,7 @@
 			protected $partial_file_error_set = false;
 			protected $blank_name_error_set = false;
 
-			protected $files = array();
+			protected $files = [];
 			protected $file_current = NULL;
 			protected $uploaded = NULL;
 
@@ -38,7 +38,7 @@
 				//--------------------------------------------------
 				// Newly uploaded files
 
-					$this->files = array();
+					$this->files = [];
 
 					if ($this->form_submitted && isset($_FILES[$this->name]['error']) && is_array($_FILES[$this->name]['error'])) {
 						foreach ($_FILES[$this->name]['error'] as $key => $error) {
@@ -132,7 +132,7 @@
 
 						}
 
-						$file_info = array();
+						$file_info = [];
 						foreach ($_FILES[$file_name] as $key => $value) {
 							$file_info[$key] = $value[$file_offset];
 						}
@@ -458,7 +458,7 @@
 			}
 
 			public function value_file_names_get() {
-				$file_names = array();
+				$file_names = [];
 				foreach ($this->files as $file) {
 					if ($file['preserve']) {
 						$file_names[] = $file['name'];
@@ -468,7 +468,7 @@
 			}
 
 			public function value_hashes_get() {
-				$hashes = array();
+				$hashes = [];
 				foreach ($this->files as $file) {
 					if ($file['preserve']) {
 						$hashes[] = $file['hash'];
@@ -487,7 +487,7 @@
 			}
 
 			public function files_get() {
-				$return = array();
+				$return = [];
 				foreach ($this->files as $file) {
 					if ($file['error'] == 0) {
 						$return[] = array(

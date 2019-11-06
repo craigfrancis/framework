@@ -54,7 +54,7 @@
 
 			$db = db_get();
 
-			$tables = array();
+			$tables = [];
 
 			foreach ($db->fetch_all('SHOW TABLES') as $row) {
 
@@ -67,8 +67,8 @@
 				$field_names = array_keys($fields);
 				$field_names_sql = implode(', ', array_map(array($db, 'escape_field'), $field_names));
 
-				$field_datetimes = array();
-				$field_dates = array();
+				$field_datetimes = [];
+				$field_dates = [];
 				foreach ($fields as $field_name => $field_info) {
 					if ($field_info['type'] == 'datetime') {
 						$field_datetimes[] = $field_name;
@@ -95,8 +95,8 @@
 
 			$k = 0;
 			$unknown_tables = array_keys($tables);
-			$unknown_files = array();
-			$table_rounds = array();
+			$unknown_files = [];
+			$table_rounds = [];
 
 			while (true) {
 
@@ -106,9 +106,9 @@
 
 				if (is_dir($folder)) {
 
-					$table_rounds[$k] = array();
+					$table_rounds[$k] = [];
 
-					$files = array();
+					$files = [];
 					foreach (glob($folder . '/*.php') as $path) {
 						$table = str_replace('-', '_', str_replace(array($folder . '/', '.php'), '', $path));
 						if (isset($tables[$table])) {
@@ -202,7 +202,7 @@
 
 								$length = (max(array_map('strlen', array_keys($fields))) + 2);
 
-								$fields_php = array();
+								$fields_php = [];
 								foreach ($fields as $field_name => $field_info) {
 
 									if ($field_name == 'id') {
@@ -287,7 +287,7 @@
 			$length = (max(array_map('strlen', array_keys($tables))) + 2);
 			$overall = 0;
 			$round_count = count($table_rounds);
-			$missing_fields = array();
+			$missing_fields = [];
 
 			foreach ($table_rounds as $round_id => $round_tables) {
 
@@ -352,10 +352,10 @@
 
 							if ($record_count > 0) {
 
-								$records_sql = array();
+								$records_sql = [];
 
 								foreach ($records as $values) {
-									$values_sql = array();
+									$values_sql = [];
 									foreach ($fields as $field) {
 										if (!array_key_exists($field, $values)) {
 

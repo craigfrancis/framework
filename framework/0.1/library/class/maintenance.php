@@ -12,8 +12,8 @@
 		// Variables
 
 			private $job_dir = NULL;
-			private $job_paths = array();
-			private $jobs_run = array();
+			private $job_paths = [];
+			private $jobs_run = [];
 			private $run_id = NULL;
 			private $result_url = NULL;
 			private $time_out = 1200; // 20 minutes
@@ -83,7 +83,7 @@
 									run_end != "0000-00-00 00:00:00" AND
 									run_end < ?';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $archive_date);
 
 					$db->query($sql, $parameters);
@@ -93,7 +93,7 @@
 								WHERE
 									created < ?';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $archive_date);
 
 					$db->query($sql, $parameters);
@@ -112,7 +112,7 @@
 									run_end = "0000-00-00 00:00:00" AND
 									run_start < ?';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $clear_date);
 
 					if ($row = $db->fetch_row($sql, $parameters)) {
@@ -123,7 +123,7 @@
 									id = ? AND
 									run_end = "0000-00-00 00:00:00"';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('i', $row['id']);
 
 						$db->query($sql, $parameters);
@@ -178,7 +178,7 @@
 								run_end = "0000-00-00 00:00:00" OR
 								run_end = ?';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $now);
 
 					if ($db->num_rows($sql, $parameters) > 0) {
@@ -268,7 +268,7 @@
 								LIMIT
 									1';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $now);
 
 					$db->query($sql, $parameters);
@@ -371,7 +371,7 @@
 								LIMIT
 									1';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('s', $this->job_name);
 
 						if ($row = $db->fetch_row($sql, $parameters)) {
@@ -391,7 +391,7 @@
 		// Job setup functions
 
 			public function email_addresses_get() {
-				return array();
+				return [];
 			}
 
 			public function email_title_get() {
@@ -573,7 +573,7 @@
 						// Email
 
 							$email_title = $this->email_title_get();
-							$email_addresses = array();
+							$email_addresses = [];
 
 					}
 

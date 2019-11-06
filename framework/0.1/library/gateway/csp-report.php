@@ -62,7 +62,7 @@
 	if ($handler && function_exists($handler)) {
 		$return = call_user_func($handler, $report, $data_raw); // Either handles everything, or returns details in an array (e.g. 'user_id').
 	} else {
-		$return = array();
+		$return = [];
 	}
 
 	if (is_array($return) && config::get('db.host') !== NULL) {
@@ -81,7 +81,7 @@
 				'ip'                 => config::get('request.ip'),
 				'browser'            => config::get('request.browser'),
 				'updated'            => $now,
-			), config::get('output.csp_report_extra', array()), $return);
+			), config::get('output.csp_report_extra', []), $return);
 
 		$values_insert = $values_update;
 		$values_insert['created'] = $now;

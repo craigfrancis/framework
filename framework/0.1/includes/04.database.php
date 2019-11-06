@@ -210,7 +210,7 @@
 			} else {
 				$result = $this->result;
 			}
-			$data = array();
+			$data = [];
 			if ($result !== true) {
 				while ($row = mysqli_fetch_assoc($result)) {
 					$data[] = $row;
@@ -240,7 +240,7 @@
 					$result = $this->result;
 				}
 
-				$details = array();
+				$details = [];
 
 				if ($field !== NULL) {
 					$results = array(mysqli_fetch_field_direct($result, $field)); // Index based offset
@@ -372,7 +372,7 @@
 					$sql .= ' LIKE "' . $this->escape_like($field) . '"'; // Cannot use parameters in a SHOW query.
 				}
 
-				$details = array();
+				$details = [];
 
 				foreach ($this->fetch_all($sql) as $row) {
 
@@ -485,7 +485,7 @@
 
 		private function _insert($table_sql, $values, $on_duplicate) {
 
-			$parameters = array();
+			$parameters = [];
 
 			if (!is_array($values)) {
 				exit_with_error('An array of field values needs to be provided to the database.', 'Value: ' . debug_dump($values));
@@ -493,7 +493,7 @@
 
 			$fields_sql = implode(', ', array_map(array($this, 'escape_field'), array_keys($values)));
 
-			$values_sql = array();
+			$values_sql = [];
 			foreach ($values as $value) {
 				if ($value === NULL) {
 					$values_sql[] = 'NULL';
@@ -514,7 +514,7 @@
 			if ($on_duplicate !== NULL) {
 				if (is_array($on_duplicate)) {
 
-					$set_sql = array();
+					$set_sql = [];
 					foreach ($on_duplicate as $field_name => $field_value) {
 						if ($field_value === NULL) {
 							$set_sql[] = $this->escape_field($field_name) . ' = NULL';
@@ -544,15 +544,15 @@
 
 		public function insert_many($table_sql, $records) {
 
-			$parameters = array();
+			$parameters = [];
 
 			$fields = array_keys(reset($records));
 
 			$fields_sql = implode(', ', array_map(array($this, 'escape_field'), $fields));
 
-			$records_sql = array();
+			$records_sql = [];
 			foreach ($records as $values) {
-				$values_sql = array();
+				$values_sql = [];
 				foreach ($fields as $field) {
 					if (!isset($values[$field]) || $values[$field] === NULL) {
 						$values_sql[] = 'NULL';
@@ -595,7 +595,7 @@
 
 		}
 
-		public function select($table_sql, $fields, $where_sql, $options = array()) { // Table first, like all other methods
+		public function select($table_sql, $fields, $where_sql, $options = []) { // Table first, like all other methods
 
 			if ($fields === 1) {
 				$fields_sql = '1';
@@ -634,7 +634,7 @@
 		}
 
 		private function _match_boolean_all($field, $search, &$parameters = NULL) {
-			$search_query = array();
+			$search_query = [];
 			if (!is_array($search)) {
 				$search = split_words($search);
 			}

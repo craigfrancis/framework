@@ -5,7 +5,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $config = array();
+			protected $config = [];
 
 		//--------------------------------------------------
 		// Setup
@@ -17,7 +17,7 @@
 			protected function setup($config) {
 
 				if (!is_array($config)) {
-					$config = array();
+					$config = [];
 				}
 
 				$this->config = $config;

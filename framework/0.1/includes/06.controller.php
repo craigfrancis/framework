@@ -39,15 +39,15 @@
 
 			$building_path = '';
 			$building_name = '';
-			$building_stack = array();
+			$building_stack = [];
 
-			$controllers = array();
+			$controllers = [];
 			$controller_id = 0;
-			$controller_log = array();
+			$controller_log = [];
 
 			$action_controller_id = 0;
-			$action_route_stack_used = array();
-			$action_route_stack_pending = array();
+			$action_route_stack_used = [];
+			$action_route_stack_pending = [];
 			$action_method = NULL;
 
 		//--------------------------------------------------
@@ -126,14 +126,14 @@
 
 								$building_path = '';
 								$building_name = '';
-								$building_stack = array();
+								$building_stack = [];
 								$route_stack = $result_value;
 
 							} else if ($result_name == 'route_path_reset_prefix') {
 
 								$building_path = '';
 								$building_name = '';
-								$building_stack = array();
+								$building_stack = [];
 								$route_stack = array_merge($result_value, $route_stack);
 
 							} else if ($result_name == 'route_path_extend') {

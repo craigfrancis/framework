@@ -56,7 +56,7 @@
 
 			}
 
-			public function complete($config = array()) {
+			public function complete($config = []) {
 
 				//--------------------------------------------------
 				// Config

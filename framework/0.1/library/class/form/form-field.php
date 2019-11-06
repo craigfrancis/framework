@@ -15,7 +15,7 @@
 			protected $wrapper_tag = 'div';
 			protected $wrapper_id = NULL;
 			protected $wrapper_class = '';
-			protected $wrapper_data = array();
+			protected $wrapper_data = [];
 			protected $label_html = '';
 			protected $label_aria = NULL;
 			protected $label_prefix_html = '';
@@ -25,10 +25,10 @@
 			protected $label_wrapper_class = 'label';
 			protected $input_first = false;
 			protected $input_class = NULL;
-			protected $input_data = array();
+			protected $input_data = [];
 			protected $input_wrapper_tag = 'span';
 			protected $input_wrapper_class = 'input';
-			protected $input_described_by = array();
+			protected $input_described_by = [];
 			protected $format_class = 'format';
 			protected $format_tag = 'span';
 			protected $info_html = NULL;
@@ -682,7 +682,7 @@
 
 			}
 
-			protected function _html_input($attributes_custom = array()) {
+			protected function _html_input($attributes_custom = []) {
 				return html_tag('input', array_merge($this->_input_attributes(), $attributes_custom));
 			}
 

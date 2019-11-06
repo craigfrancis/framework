@@ -12,11 +12,11 @@
 			protected $webdriver;
 
 			private $tester_path;
-			private $tester_output = array();
+			private $tester_output = [];
 			private $test_name;
 			private $test_path;
 			private $test_start;
-			private $test_output = array();
+			private $test_output = [];
 
 		//--------------------------------------------------
 		// Setup
@@ -39,7 +39,7 @@
 				$this->test_name = $test;
 				$this->test_path = $this->tester_path . '/' . safe_file_name($this->test_name) . '.php';
 				$this->test_start = microtime(true);
-				$this->test_output = array();
+				$this->test_output = [];
 
 				ob_start();
 
@@ -62,7 +62,7 @@
 						'output' => $this->test_output,
 					);
 
-				$this->test_output = array();
+				$this->test_output = [];
 
 				return $return;
 
@@ -187,7 +187,7 @@
 						);
 
 					if (!is_array($config)) {
-						$config = array();
+						$config = [];
 					}
 
 					$config = array_merge($defaults, $config);

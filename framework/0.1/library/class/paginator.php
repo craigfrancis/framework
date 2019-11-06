@@ -9,7 +9,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $config = array(); // Can be used when extending the paginator helper
+			protected $config = []; // Can be used when extending the paginator helper
 
 			private $url = NULL;
 			private $page_count = NULL;
@@ -56,7 +56,7 @@
 					if (!is_array($config)) { // May be a string, number, or false (if database did not return record count)
 
 						if ($config === NULL) {
-							$config = array();
+							$config = [];
 						} else {
 							$config = array(
 									'item_count' => intval($config),
@@ -495,7 +495,7 @@
 					if ($start > $max) $start = $max;
 					if ($start < 1) $start = 1;
 
-					$page_links_html = array();
+					$page_links_html = [];
 
 					for ($i = 1; ($start <= $this->page_count && $i <= $this->config['link_count']); $i++, $start++) {
 

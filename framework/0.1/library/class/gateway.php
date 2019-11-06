@@ -53,7 +53,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $config = array();
+			private $config = [];
 			private $exit_on_error = true;
 			private $response_data = NULL;
 			private $response_mime = NULL;
@@ -103,7 +103,7 @@ report_add('Deprecated: Is anyone using /library/gateway/SERVER.ini ???', 'notic
 
 			function get_all() {
 
-				$gateway_urls = array();
+				$gateway_urls = [];
 				$gateway_dirs = array(
 						'framework' => FRAMEWORK_ROOT . '/library/gateway/',
 						'app' => APP_ROOT . '/gateway/',
@@ -243,7 +243,7 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 									WHERE
 										request_date < ?';
 
-							$parameters = array();
+							$parameters = [];
 							$parameters[] = array('s', date('Y-m-d H:i:s', strtotime('-1 month')));
 
 							$db->query($sql, $parameters);
@@ -353,7 +353,7 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 
 					} else {
 
-						foreach (config::get('gateway.default_values', array()) as $name => $value) {
+						foreach (config::get('gateway.default_values', []) as $name => $value) {
 							$socket->value_set($name, $value);
 						}
 
@@ -391,7 +391,7 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 									WHERE
 										id = ?';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('s', $this->response_code);
 						$parameters[] = array('s', $this->response_mime);
 						$parameters[] = array('s', $this->response_data);
@@ -714,7 +714,7 @@ report_add('Deprecated: $api->client_verify() ... will be replaced with somethin
 							WHERE
 								created < ?';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', date('Y-m-d H:i:s', strtotime('-3 days')));
 
 					$db->query($sql, $parameters);
@@ -778,7 +778,7 @@ report_add('Deprecated: $api->client_verify() ... will be replaced with somethin
 							LIMIT
 								1';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $now);
 					$parameters[] = array('s', $client);
 					$parameters[] = array('s', $pass);

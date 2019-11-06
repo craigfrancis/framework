@@ -5,8 +5,8 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $cache_children = array();
-			private $cache_page_ids = array();
+			private $cache_children = [];
+			private $cache_page_ids = [];
 
 		//--------------------------------------------------
 		// Listing
@@ -35,7 +35,7 @@
 							cp.sort,
 							cp.ref';
 
-				$parameters = array();
+				$parameters = [];
 				$parameters[] = array('i', $folder_id);
 
 				foreach ($db->fetch_all($sql, $parameters) as $row) {
@@ -75,7 +75,7 @@
 				// 				id = ? AND
 				// 				deleted = "0000-00-00 00:00:00"';
 				//
-				// 	$parameters = array();
+				// 	$parameters = [];
 				// 	$parameters[] = array('i', $pageId);
 				//
 				// 	if ($row = $db->fetch_row($sql, $parameters)) {
@@ -126,7 +126,7 @@
 									cp.ref = ? AND
 									cp.deleted = "0000-00-00 00:00:00"';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('i', $page_id);
 						$parameters[] = array('s', $folder);
 

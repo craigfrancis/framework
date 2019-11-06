@@ -333,7 +333,7 @@
 			//--------------------------------------------------
 			// Text
 
-				$output_text = array();
+				$output_text = [];
 
 				if ($output_weeks    > 0) $output_text[] = $output_weeks    . ' week'   . ($output_weeks    != 1 ? 's' : '');
 				if ($output_days     > 0) $output_text[] = $output_days     . ' day'    . ($output_days     != 1 ? 's' : '');
@@ -379,7 +379,7 @@
 
 	function path_to_array($path) {
 		$path = str_replace('\\', '/', $path); // Windows
-		$output = array();
+		$output = [];
 		foreach (explode('/', $path) as $name) {
 			if ($name == '..') { // Move up a folder
 				array_pop($output);
@@ -419,7 +419,7 @@
 	}
 
 	function split_words($text) {
-		$words = array();
+		$words = [];
 		$text = str_replace(['@', '-'], ' ', $text); // InnoDB: '@' is used by the @distance proximity search operator, '-' is always used as a negate operator; MyISAM: ignores both.
 		foreach (preg_split('/\s+/u', $text) as $word) { // Only on whitespace, so not "O'Brien"
 			$word = preg_replace('/^\W*(.*?)\W*$/u', '$1', $word); // Trim non-word characters from start/end (e.g. "A, B" or "A - B" or "A 'B'" to only "A" and "B")
@@ -772,7 +772,7 @@
 
 	function format_url_path($src) {
 
-		$new = array();
+		$new = [];
 		foreach (path_to_array($src) as $folder) {
 			$folder = safe_file_name($folder);
 			if ($folder != '') {
@@ -952,12 +952,12 @@
 //--------------------------------------------------
 // Get a unit object
 
-	function unit_add($unit_name, $config = array()) {
+	function unit_add($unit_name, $config = []) {
 		$response = response_get();
 		return $response->unit_add($unit_name, $config);
 	}
 
-	function unit_get($unit_name, $config = array()) {
+	function unit_get($unit_name, $config = []) {
 
 		$unit_class_name = $unit_name . '_unit';
 		$unit_file_name = safe_file_name(str_replace('_', '-', $unit_name));
@@ -987,7 +987,7 @@
 //--------------------------------------------------
 // Record
 
-	function record_get($config = array(), $where_id = NULL, $fields = NULL, $config_extra = array()) {
+	function record_get($config = [], $where_id = NULL, $fields = NULL, $config_extra = []) {
 
 		// if (is_array($config)) {
 		//
@@ -1049,7 +1049,7 @@
 //--------------------------------------------------
 // Query
 
-	function query_get($query_name, $config = array()) {
+	function query_get($query_name, $config = []) {
 
 		$query_class_name = $query_name . '_query';
 		$query_file_name = safe_file_name(str_replace('_', '-', $query_name));
@@ -1111,7 +1111,7 @@
 //--------------------------------------------------
 // Send an error page (shortcut)
 
-	function error_send($error, $variables = array()) {
+	function error_send($error, $variables = []) {
 		$response = response_get(); // Keep current response (ref framework documentation, where the nav was setup in controller)
 		$response->set($variables);
 		$response->error_send($error);
@@ -1152,12 +1152,12 @@
 //--------------------------------------------------
 // Redirect the user
 
-	function redirect($url, $config = array()) {
+	function redirect($url, $config = []) {
 
 		if (is_numeric($config)) {
 			$config = array('code' => $config);
 		} else if (!is_array($config)) {
-			$config = array();
+			$config = [];
 		}
 
 		$config = array_merge(array(
@@ -1204,7 +1204,7 @@
 //--------------------------------------------------
 // System redirect
 
-	function system_redirect($url_src, $url_dst = NULL, $config = array()) {
+	function system_redirect($url_src, $url_dst = NULL, $config = []) {
 
 		if (is_array($url_dst)) {
 			$config = $url_dst;
@@ -1251,7 +1251,7 @@
 							WHERE
 								sr.url_dst = ?';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $url_dst);
 					$parameters[] = array('s', $now);
 					$parameters[] = array('s', $url_src);
@@ -1269,7 +1269,7 @@
 							WHERE
 								sr.url_src = ?';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $now);
 					$parameters[] = array('s', $url_dst);
 
@@ -1288,7 +1288,7 @@
 					WHERE
 						url_src = ?';
 
-			$parameters = array();
+			$parameters = [];
 			$parameters[] = array('s', $url_src);
 
 			if ($row = $db->fetch_row($sql, $parameters)) {
@@ -1305,8 +1305,8 @@
 
 		if (($url_dst !== NULL || $return) && ($config['requested'] || $config['referrer'])) {
 
-			$set_sql = array();
-			$parameters = array();
+			$set_sql = [];
+			$parameters = [];
 
 			if ($config['requested']) {
 				$set_sql[] = 'sr.requests = (sr.requests + 1)';
@@ -1634,7 +1634,7 @@
 
 	function http_policy_values($policies) {
 
-		$output = array();
+		$output = [];
 
 		foreach ($policies as $directive => $value) {
 			if ($value !== NULL) {
@@ -1892,7 +1892,7 @@
 		//--------------------------------------------------
 		// Public key pinning
 
-			$pkp_pins = config::get('output.pkp_pins', array());
+			$pkp_pins = config::get('output.pkp_pins', []);
 
 			if (count($pkp_pins) > 0) {
 
@@ -1948,7 +1948,7 @@
 
 			if (config::get('output.ct_enabled') === true) {
 
-				$ct_values = array();
+				$ct_values = [];
 				$ct_values[] = 'max-age=' . config::get('output.ct_max_age', 0);
 
 				if (config::get('output.ct_enforced', false) === true) {

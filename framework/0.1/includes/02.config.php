@@ -6,8 +6,8 @@
 	//--------------------------------------------------
 	// Start
 
-		$config = array();
-		$config_encrypted = array();
+		$config = [];
+		$config_encrypted = [];
 
 	//--------------------------------------------------
 	// Request
@@ -171,8 +171,8 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $store = array();
-			private $encrypted = array();
+			private $store = [];
+			private $encrypted = [];
 
 		//--------------------------------------------------
 		// Set and get
@@ -222,7 +222,7 @@
 					}
 					return $data;
 				} else {
-					$data = array();
+					$data = [];
 					foreach ($obj->store as $k => $v) {
 						if (substr($k, 0, $prefix_length) == $prefix) {
 							$data[substr($k, $prefix_length)] = $v;
@@ -267,7 +267,7 @@
 			public static function array_push($variable, $value) {
 				$obj = config::instance_get();
 				if (!isset($obj->store[$variable]) || !is_array($obj->store[$variable])) {
-					$obj->store[$variable] = array();
+					$obj->store[$variable] = [];
 				}
 				$obj->store[$variable][] = $value;
 			}
@@ -275,7 +275,7 @@
 			public static function array_set($variable, $key, $value) {
 				$obj = config::instance_get();
 				if (!isset($obj->store[$variable]) || !is_array($obj->store[$variable])) {
-					$obj->store[$variable] = array();
+					$obj->store[$variable] = [];
 				}
 				$obj->store[$variable][$key] = $value;
 			}
@@ -417,7 +417,7 @@
 		config::set_default('output.xss_reflected', 'block');
 		config::set_default('output.referrer_policy', 'strict-origin-when-cross-origin'); // Added in Chrome 61.0.3130.0
 
-		config::set_default('output.pkp_pins', array());
+		config::set_default('output.pkp_pins', []);
 		config::set_default('output.pkp_enforced', false);
 		config::set_default('output.pkp_report', false);
 
@@ -497,7 +497,7 @@
 		config::set_default('debug.show', DEBUG_SHOW_DEFAULT); // Only relevant when running.
 		config::set_default('debug.db', (config::get('debug.level') > 1));
 		config::set_default('debug.db_required_fields', array('deleted'));
-		config::set_default('debug.units', array());
+		config::set_default('debug.units', []);
 
 	//--------------------------------------------------
 	// Gateway

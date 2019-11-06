@@ -5,7 +5,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $config = array(); // Can be used when extending the calendar helper
+			protected $config = []; // Can be used when extending the calendar helper
 
 			private $current_year     = NULL;
 			private $current_week     = NULL;
@@ -21,11 +21,11 @@
 
 			private $base_url         = NULL;
 			private $day_url_base     = NULL;
-			private $day_urls         = array();
-			private $day_heading_html = array();
-			private $day_events       = array();
-			private $day_class        = array();
-			private $day_data         = array();
+			private $day_urls         = [];
+			private $day_heading_html = [];
+			private $day_events       = [];
+			private $day_class        = [];
+			private $day_data         = [];
 
 		//--------------------------------------------------
 		// Setup
@@ -63,7 +63,7 @@
 
 					if (!is_array($config)) {
 						if ($config === NULL) {
-							$config = array();
+							$config = [];
 						} else {
 							$config = array(
 									'mode' => $config,
@@ -263,7 +263,7 @@
 			public function day_event_add_html($date, $html, $class = 'event', $url = NULL) {
 
 				if (!isset($this->day_events[$date])) {
-					$this->day_events[$date] = array();
+					$this->day_events[$date] = [];
 				}
 
 				$this->day_events[$date][] = array(
@@ -282,7 +282,7 @@
 			public function day_event_heading_add_html($date, $html, $class = 'event', $url = NULL) {
 
 				if (!isset($this->day_events[$date])) {
-					$this->day_events[$date] = array();
+					$this->day_events[$date] = [];
 				}
 
 				$this->day_events[$date][] = array(
@@ -344,7 +344,7 @@
 					//--------------------------------------------------
 					// Unit
 
-						$select_units = array();
+						$select_units = [];
 
 						if ($this->config['mode'] == 'month') {
 
@@ -385,7 +385,7 @@
 					//--------------------------------------------------
 					// Year
 
-						$select_years = array();
+						$select_years = [];
 
 						for ($jump_year = $this->config['select_year_start']; $jump_year <= $this->config['select_year_end']; $jump_year++) {
 							$select_years[] = $jump_year;

@@ -39,17 +39,17 @@
 			// 			),
 			// 	);
 
-			$database_setup = config::get('db.setup', array());
+			$database_setup = config::get('db.setup', []);
 
 			$default_setup = array(
 					'engine' => config::get('db.engine', 'MyISAM'), // or InnoDB... use MyISAM for FULLTEXT search before MySQL 5.6.4, faster COUNT(*) on the whole table (e.g. no WHERE), 'INSERT DELAYED' before MySQL 5.7 (now not supported), ability to 'ALTER TABLE table AUTO_INCREMENT=1'
 					'collation' => config::get('db.collation', 'utf8mb4_unicode_ci'), // Avoid general, is faster, but more error prone.
-					'fields' => array(),
+					'fields' => [],
 				);
 
-			$notes_engine = array();
-			$notes_collation = array();
-			$update_sql = array();
+			$notes_engine = [];
+			$notes_collation = [];
+			$update_sql = [];
 
 		//--------------------------------------------------
 		// For each table
@@ -97,7 +97,7 @@
 					//--------------------------------------------------
 					// Check fields
 
-						$update_field_sql = array();
+						$update_field_sql = [];
 
 						foreach ($db->fetch_fields($table_sql) as $field_name => $field_info) {
 							if ($field_info['collation'] !== NULL) {

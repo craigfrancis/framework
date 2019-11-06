@@ -43,14 +43,14 @@
 			protected $remember_cookie_path = '/';
 			protected $remember_timeout = 2592000; // 30 days (60*60*24*30)
 
-			protected $text = array();
+			protected $text = [];
 
 			protected $db_link = NULL;
-			protected $db_table = array();
-			protected $db_where_sql = array();
+			protected $db_table = [];
+			protected $db_where_sql = [];
 			protected $db_fields = array(
-					'main' => array(),
-					'register' => array(),
+					'main' => [],
+					'register' => [],
 				);
 
 			public static $secret_version = 1;
@@ -269,7 +269,7 @@
 		//--------------------------------------------------
 		// Login
 
-			public function login_forced($config = array()) {
+			public function login_forced($config = []) {
 
 				$config = array_merge(array(
 						'session_concurrent' => true,
@@ -302,7 +302,7 @@ exit();
 
 			}
 
-			public function login_remember($config = array()) {
+			public function login_remember($config = []) {
 
 					// Must be removed on logout, password change (profile), password reset, and re-login.
 					// https://paragonie.com/blog/2015/04/secure-authentication-php-with-long-term-persistence
@@ -432,7 +432,7 @@ exit();
 		//--------------------------------------------------
 		// Session
 
-			public function session_get($config = array()) {
+			public function session_get($config = []) {
 
 				if ($this->session_info_data === NULL) {
 
@@ -440,7 +440,7 @@ exit();
 					// Config
 
 						$config = array_merge(array(
-								'fields'     => array(),
+								'fields'     => [],
 								'auth_token' => NULL,
 							), $config);
 
@@ -550,7 +550,7 @@ exit();
 										s.deleted = "0000-00-00 00:00:00" AND
 										' . $db_main_where_sql;
 
-							$parameters = array();
+							$parameters = [];
 							$parameters[] = array('i', $session_id);
 
 							if ($this->session_length > 0) {
@@ -584,7 +584,7 @@ exit();
 													s.id = ? AND
 													s.deleted = "0000-00-00 00:00:00"';
 
-										$parameters = array();
+										$parameters = [];
 										$parameters[] = array('s', $now);
 										$parameters[] = array('i', $request_increment);
 										$parameters[] = array('i', $session_id);
@@ -669,7 +669,7 @@ exit();
 											r.deleted = "0000-00-00 00:00:00" AND
 											' . $db_main_where_sql;
 
-								$parameters = array();
+								$parameters = [];
 								$parameters[] = array('i', $remember_id);
 								$parameters[] = array('s', $now);
 
@@ -683,7 +683,7 @@ exit();
 												r.id = ? AND
 												r.deleted = "0000-00-00 00:00:00"';
 
-									$parameters = array();
+									$parameters = [];
 									$parameters[] = array('s', $now);
 									$parameters[] = array('i', $remember_id);
 
@@ -840,7 +840,7 @@ exit();
 
 					list($db_session_table) = $this->db_table_get('session');
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('i', $this->session_info_data['user_id']);
 					$parameters[] = array('s', $this->session_info_data['last_used_new']);
 
@@ -928,7 +928,7 @@ exit();
 								m.' . $db->escape_field($db_main_fields['created']) . ' > ? AND
 								' . $db_main_where_sql;
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('i', $this->session_info_data['user_id']);
 					$parameters[] = array('s', $session_history);
 
@@ -1142,7 +1142,7 @@ exit();
 		//--------------------------------------------------
 		// Expiring
 
-			public function expire($type, $user_id, $config = array()) {
+			public function expire($type, $user_id, $config = []) {
 
 				$db = $this->db_get();
 
@@ -1152,7 +1152,7 @@ exit();
 					user_id = ? AND
 					deleted = "0000-00-00 00:00:00"';
 
-				$parameters = array();
+				$parameters = [];
 				$parameters[] = array('s', $now);
 				$parameters[] = array('i', $user_id);
 
@@ -1257,7 +1257,7 @@ exit();
 									s.deleted != "0000-00-00 00:00:00" AND
 									s.deleted < ?';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('s', $deleted_before);
 
 						$db->query($sql, $parameters);
@@ -1274,7 +1274,7 @@ exit();
 										s.last_used < ? AND
 										s.deleted = "0000-00-00 00:00:00"';
 
-							$parameters = array();
+							$parameters = [];
 							$parameters[] = array('s', $last_used);
 
 							$db->query($sql, $parameters);
@@ -1361,7 +1361,7 @@ exit();
 								LIMIT
 									1';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('s', $auth_encoded);
 						$parameters[] = array('i', $row['id']);
 
@@ -1393,7 +1393,7 @@ exit();
 						LIMIT
 							1';
 
-				$parameters = array();
+				$parameters = [];
 				$parameters[] = array('s', $identification);
 				$parameters[] = array('i', ($user_id === NULL ? 0 : $user_id));
 
@@ -1443,7 +1443,7 @@ exit();
 				//--------------------------------------------------
 				// Account details
 
-					$parameters = array();
+					$parameters = [];
 
 					if ($identification === NULL) {
 						$where_sql = 'm.' . $db->escape_field($db_main_fields['id']) . ' = ?';
@@ -1488,8 +1488,8 @@ exit();
 
 						list($db_session_table) = $this->db_table_get('session');
 
-						$where_sql = array();
-						$parameters = array();
+						$where_sql = [];
+						$parameters = [];
 
 						if ($this->lockout_mode === NULL || $this->lockout_mode == 'user') {
 							$where_sql[] = 's.user_id = ?';
@@ -1574,7 +1574,7 @@ exit();
 							if ($rehash) {
 
 								if (!is_array($db_auth)) {
-									$db_auth = array();
+									$db_auth = [];
 								}
 
 								$auth_encoded = auth::secret_encode($db_id, $db_auth, $password);
@@ -1589,7 +1589,7 @@ exit();
 										LIMIT
 											1';
 
-								$parameters = array();
+								$parameters = [];
 								$parameters[] = array('s', $auth_encoded);
 								$parameters[] = array('i', $db_id);
 
@@ -1616,7 +1616,7 @@ exit();
 
 					$request_ip = config::get('request.ip');
 
-					if (!in_array($request_ip, config::get('auth.ip_whitelist', array()))) {
+					if (!in_array($request_ip, config::get('auth.ip_whitelist', []))) {
 
 						$db = $this->db_get();
 
@@ -1778,7 +1778,7 @@ exit();
 					return array_merge(array(
 							'ph'   => '',      // Password Hash
 							'pu'   => NULL,    // Password Updated
-							'ips'  => array(), // IP's allowed to login from
+							'ips'  => [], // IP's allowed to login from
 							'totp' => NULL,    // Time-based One Time Password
 						), $secret_values, array(
 							'v' => $version, // Version
@@ -1801,7 +1801,7 @@ exit();
 				$secret_values = array_merge(array(
 						'ph'   => '',
 						'pu'   => time(),
-						'ips'  => array(),
+						'ips'  => [],
 						'totp' => NULL,
 					), $secret_values);
 

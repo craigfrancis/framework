@@ -47,7 +47,7 @@
 		//--------------------------------------------------
 		// Fields
 
-			public function field_email_get($form, $config = array()) { // Must be email, username will be known and can be used to spam.
+			public function field_email_get($form, $config = []) { // Must be email, username will be known and can be used to spam.
 
 				$identification_username = ($this->auth->identification_type_get() == 'username');
 
@@ -82,7 +82,7 @@
 
 					$this->details = false;
 
-					$errors = array();
+					$errors = [];
 
 					$db = $this->auth->db_get();
 
@@ -129,7 +129,7 @@
 									r.created > ? AND
 									r.deleted = r.deleted'; // Don't GROUP BY r.created, as it opens a race condition (how many requests can be made in a second?)... just hope that we don't have someone with 5+ accounts on a single email address, and they don't receive the reset email.
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('s', config::get('request.ip'));
 						$parameters[] = array('s', $created_after);
 
@@ -153,7 +153,7 @@
 										r.created > ? AND
 										r.deleted = "0000-00-00 00:00:00"'; // Ignore those which have been accepted.
 
-							$parameters = array();
+							$parameters = [];
 							$parameters[] = array('s', $email);
 							$parameters[] = array('s', $created_after);
 
@@ -183,7 +183,7 @@
 						// 				r.used > ? AND
 						// 				r.deleted = r.deleted';
 						//
-						// 	$parameters = array();
+						// 	$parameters = [];
 						// 	$parameters[] = array('s', $email);
 						// 	$parameters[] = array('s', $created_after);
 						//
@@ -220,7 +220,7 @@
 
 			}
 
-			public function complete($config = array()) {
+			public function complete($config = []) {
 
 				//--------------------------------------------------
 				// Config
@@ -277,7 +277,7 @@
 								m.' . $db->escape_field($db_main_field_email) . ' = ? AND
 								' . $this->db_main_where_sql;
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $this->details['email']);
 
 					foreach ($db->fetch_all($sql, $parameters) as $row) {

@@ -9,7 +9,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $config = array();
+			private $config = [];
 			private $db_link;
 
 		//--------------------------------------------------
@@ -31,10 +31,10 @@
 							'field_id_sql'        => 'id',
 							'field_latitude_sql'  => 'latitude',
 							'field_longitude_sql' => 'longitude',
-							'field_address_sql'   => array(),
+							'field_address_sql'   => [],
 							'field_postcode_sql'  => 'postcode',
 							'field_country_sql'   => NULL,
-							'extra_fields_sql'    => array(),
+							'extra_fields_sql'    => [],
 							'max_results'         => 5,
 							'max_km'              => NULL,
 							'max_miles'           => NULL,
@@ -50,7 +50,7 @@
 					}
 
 					if (!is_array($config)) {
-						$config = array();
+						$config = [];
 					}
 
 					if ($profile) {
@@ -114,7 +114,7 @@
 			public function locations_limited($locations, $search, $country = NULL) {
 
 				$k = 0;
-				$results = array();
+				$results = [];
 				$locations = $this->locations_distance($locations, $search, $country);
 
 				array_key_sort($locations, 'distance', SORT_NUMERIC, SORT_ASC);
@@ -153,7 +153,7 @@
 						$point = $this->search($search, $country);
 
 						if ($point === NULL) {
-							return array(); // Invalid search, no results
+							return []; // Invalid search, no results
 						}
 
 					}
@@ -315,7 +315,7 @@
 									country = ? AND
 									edited > ?';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('s', $search_query);
 						$parameters[] = array('s', $country);
 						$parameters[] = array('s', $max_age);
@@ -440,7 +440,7 @@
 								LIMIT
 									1';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('s', ($postcode === NULL ? $search : substr($postcode, 0, -4)));
 
 						if ($row = $db->fetch_row($sql, $parameters)) {
@@ -515,13 +515,13 @@
 				//--------------------------------------------------
 				// Search
 
-					$options = array();
+					$options = [];
 					if ($limit !== NULL) {
 						$options['limit_sql'] = $limit;
 					}
 
 					$k = 0;
-					$updates = array();
+					$updates = [];
 
 					$db->select($this->config['table_sql'], $fields, $where_sql, $options);
 					foreach ($db->fetch_all() as $row) {
@@ -548,7 +548,7 @@
 
 								if (count($this->config['field_address_sql']) > 0) {
 
-									$search = array();
+									$search = [];
 									foreach (array_merge($this->config['field_address_sql'], array($this->config['field_postcode_sql'])) as $field) {
 										$val = trim($row[$field]);
 										if ($val != '') {
@@ -586,7 +586,7 @@
 												' . $this->config['field_id'] . ' = ? AND
 												' . $this->config['where_sql'];
 
-									$parameters = array();
+									$parameters = [];
 									$parameters[] = array('s', $result['latitude']);
 									$parameters[] = array('s', $result['longitude']);
 									$parameters[] = array('s', $row[$this->config['field_id_sql']]);

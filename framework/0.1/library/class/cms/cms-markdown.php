@@ -45,11 +45,11 @@ class cms_markdown_base extends check {
 	private $escape_chars_re;
 
 	# Predefined urls and titles for reference links and images.
-	private $predef_urls = array();
-	private $predef_titles = array();
+	private $predef_urls = [];
+	private $predef_titles = [];
 
 	# Item ID's
-	private $item_ids = array();
+	private $item_ids = [];
 
 	public function __construct($config = NULL) {
 	#
@@ -87,13 +87,13 @@ class cms_markdown_base extends check {
 		// array parameter.
 
 			if ($config === NULL) {
-				$config = array();
+				$config = [];
 			}
 
 		//--------------------------------------------------
 		// The config setup is an array
 
-			$this->config = array();
+			$this->config = [];
 
 		//--------------------------------------------------
 		// Boolean (permission) values - default to false
@@ -116,9 +116,9 @@ class cms_markdown_base extends check {
 	}
 
 	# Internal hashes used during transformation.
-	private $urls = array();
-	private $titles = array();
-	private $html_hashes = array();
+	private $urls = [];
+	private $titles = [];
+	private $html_hashes = [];
 
 	# Status flag to avoid invalid nesting.
 	private $in_anchor = false;
@@ -132,7 +132,7 @@ class cms_markdown_base extends check {
 		# Clear global hashes.
 		$this->urls = $this->predef_urls;
 		$this->titles = $this->predef_titles;
-		$this->html_hashes = array();
+		$this->html_hashes = [];
 
 		$in_anchor = false;
 	}
@@ -142,9 +142,9 @@ class cms_markdown_base extends check {
 	# Called after the transformation process to clear any variable
 	# which may be taking up memory unnecessarly.
 	#
-		$this->urls = array();
-		$this->titles = array();
-		$this->html_hashes = array();
+		$this->urls = [];
+		$this->titles = [];
+		$this->html_hashes = [];
 	}
 
 	function process_text($text) {
@@ -1031,7 +1031,7 @@ class cms_markdown_base extends check {
 		foreach ($this->em_relist as $em => $em_re) {
 			foreach ($this->strong_relist as $strong => $strong_re) {
 				# Construct list of allowed token expressions.
-				$token_relist = array();
+				$token_relist = [];
 				if (isset($this->em_strong_relist["$em$strong"])) {
 					$token_relist[] = $this->em_strong_relist["$em$strong"];
 				}

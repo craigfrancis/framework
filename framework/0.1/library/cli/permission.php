@@ -53,7 +53,7 @@
 					),
 			);
 
-			foreach (array_merge($reset_folders, config::get('cli.permission_reset_folders', array())) as $name => $info) {
+			foreach (array_merge($reset_folders, config::get('cli.permission_reset_folders', [])) as $name => $info) {
 				if (is_dir($info['path'])) {
 					if ($show_output) {
 						echo $name . "\n";
@@ -76,7 +76,7 @@
 					),
 			);
 
-			foreach (array_merge($reset_paths, config::get('cli.permission_reset_paths', array())) as $name => $info) {
+			foreach (array_merge($reset_paths, config::get('cli.permission_reset_paths', [])) as $name => $info) {
 				if (is_file($info['path']) || is_dir($info['path'])) {
 					if ($show_output) {
 						echo $name . "\n";

@@ -11,7 +11,7 @@
 
 			protected $order_id = NULL;
 			protected $order_data = NULL;
-			protected $order_fields = array();
+			protected $order_fields = [];
 			protected $order_currency = 'GBP';
 
 			protected $db_table_main = NULL;
@@ -119,7 +119,7 @@
 				return $this->db_link;
 			}
 
-			protected function table_get($config = array()) {
+			protected function table_get($config = []) {
 				$table = new $this->object_table($this, $config);
 				$table->init();
 				return $table;
@@ -231,7 +231,7 @@
 					id = ? AND
 					deleted = "0000-00-00 00:00:00"';
 
-				$parameters = array();
+				$parameters = [];
 				$parameters[] = array('i', $id);
 
 				if ($pass !== NULL || config::get('order.user_privileged', false) !== true) {
@@ -239,7 +239,7 @@
 					$parameters[] = array('s', $pass);
 				}
 
-				$fields_sql = array();
+				$fields_sql = [];
 				foreach (array_merge(array('pass', 'created', 'payment_received'), $this->order_fields) as $field) {
 					$fields_sql[] = $db->escape_field($field);
 				}
@@ -334,7 +334,7 @@
 
 					$db = $this->db_get();
 
-					$fields_sql = array();
+					$fields_sql = [];
 					foreach ($fields as $field) {
 						$fields_sql[] = $db->escape_field($field);
 					}
@@ -347,7 +347,7 @@
 								id = ? AND
 								deleted = "0000-00-00 00:00:00"';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('i', $this->order_id);
 
 					if ($row = $db->fetch_row($sql, $parameters)) {
@@ -619,7 +619,7 @@
 
 			}
 
-			protected function _item_quantity_set($item_id, $quantity, $info = array()) {
+			protected function _item_quantity_set($item_id, $quantity, $info = []) {
 
 				//--------------------------------------------------
 				// Config
@@ -645,7 +645,7 @@
 									oi.type = "item" AND
 									oi.deleted = "0000-00-00 00:00:00"';
 
-						$parameters = array();
+						$parameters = [];
 						$parameters[] = array('i', $item_id);
 						$parameters[] = array('i', $this->order_id);
 
@@ -689,7 +689,7 @@
 								oi.type = "item" AND
 								oi.deleted = "0000-00-00 00:00:00"';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $now);
 					$parameters[] = array('i', $item_id);
 					$parameters[] = array('i', $this->order_id);
@@ -731,7 +731,7 @@
 				// Order not open yet
 
 					if ($this->order_id === NULL) {
-						return array();
+						return [];
 					}
 
 				//--------------------------------------------------
@@ -759,7 +759,7 @@
 				//--------------------------------------------------
 				// Query
 
-					$items = array();
+					$items = [];
 
 					$db = $this->db_get();
 
@@ -774,7 +774,7 @@
 							ORDER BY
 								oi.created';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('i', $this->order_id);
 
 					foreach ($db->fetch_all($sql, $parameters) as $row) {
@@ -872,7 +872,7 @@
 					$db = $this->db_get();
 
 					$return = array(
-							'items' => array(),
+							'items' => [],
 							'sum' => array(
 									'net' => 0,
 									'tax' => 0,
@@ -925,7 +925,7 @@
 							GROUP BY
 								oi.type';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('i', $this->order_id);
 
 					foreach ($db->fetch_all($sql, $parameters) as $row) {
@@ -982,7 +982,7 @@
 		//--------------------------------------------------
 		// Events
 
-			public function payment_received($values = array()) {
+			public function payment_received($values = []) {
 
 				//--------------------------------------------------
 				// Details
@@ -1005,7 +1005,7 @@
 
 			}
 
-			public function payment_settled($values = array()) {
+			public function payment_settled($values = []) {
 
 				//--------------------------------------------------
 				// Details
@@ -1028,7 +1028,7 @@
 
 			}
 
-			public function processed($values = array()) { // aka "dispatched"
+			public function processed($values = []) { // aka "dispatched"
 
 				//--------------------------------------------------
 				// Details
@@ -1054,7 +1054,7 @@
 		//--------------------------------------------------
 		// Tables
 
-			public function table_get_html($config = array()) {
+			public function table_get_html($config = []) {
 
 				$table = $this->table_get($config);
 
@@ -1062,7 +1062,7 @@
 
 			}
 
-			public function table_get_text($config = array()) {
+			public function table_get_text($config = []) {
 
 				$table = $this->table_get($config);
 
@@ -1074,7 +1074,7 @@
 		// Create
 
 			protected function create_defaults() {
-				return array();
+				return [];
 			}
 
 			protected function create() {
@@ -1093,7 +1093,7 @@
 
 					$defaults = $this->create_defaults();
 					if (!is_array($defaults)) {
-						$defaults = array();
+						$defaults = [];
 					}
 
 					$now = new timestamp();
@@ -1116,7 +1116,7 @@
 				//--------------------------------------------------
 				// Store
 
-					$this->order_data = array();
+					$this->order_data = [];
 
 					foreach ($this->order_fields as $field) {
 						$this->order_data[$field] = NULL;
@@ -1197,7 +1197,7 @@
 								oi.type = "delivery" AND
 								oi.deleted = "0000-00-00 00:00:00"';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('i', $this->order_id);
 
 					$delivery = $db->fetch_all($sql, $parameters);
@@ -1220,7 +1220,7 @@
 								oi.type = "delivery" AND
 								oi.deleted = "0000-00-00 00:00:00"';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $now);
 					$parameters[] = array('i', $this->order_id);
 

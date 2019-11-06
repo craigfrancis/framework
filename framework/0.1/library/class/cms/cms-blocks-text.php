@@ -32,7 +32,7 @@
 							cbt.block_id = ? AND
 							cbt.deleted = "0000-00-00 00:00:00"';
 
-				$parameters = array();
+				$parameters = [];
 				$parameters[] = array('i', $this->block_id);
 
 				if ($row = $db->fetch_row($sql, $parameters)) {
@@ -139,7 +139,7 @@
 								cbt.block_id = ? AND
 								cbt.deleted = "0000-00-00 00:00:00"';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $now);
 					$parameters[] = array('i', $this->block_id);
 

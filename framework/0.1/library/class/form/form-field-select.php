@@ -8,7 +8,7 @@
 			protected $values = NULL;
 			protected $multiple = false;
 			protected $label_option = NULL;
-			protected $option_values = array();
+			protected $option_values = [];
 			protected $option_groups = NULL;
 			protected $options_class = NULL;
 			protected $db_field_options = NULL;
@@ -48,7 +48,7 @@
 							if ($this->values !== NULL) {
 								$this->values = json_decode($this->values, true); // associative array
 							} else if ($this->form_submitted) {
-								$this->values = array(); // Form submitted, but no checkboxes ticked, so REQUEST data is NULL.
+								$this->values = []; // Form submitted, but no checkboxes ticked, so REQUEST data is NULL.
 							}
 						}
 
@@ -199,7 +199,7 @@
 			}
 
 			public function values_set($values) {
-				$this->values = array();
+				$this->values = [];
 				foreach ($values as $value) {
 					$key = array_search($value, $this->option_values);
 					if ($key !== false && $key !== NULL) {
@@ -213,7 +213,7 @@
 			}
 
 			public function value_keys_set($keys) {
-				$this->values = array();
+				$this->values = [];
 				foreach ($keys as $key) {
 					if ($key !== '' && isset($this->option_values[$key])) {
 						$this->values[] = $key;
@@ -234,7 +234,7 @@
 			}
 
 			public function values_get() {
-				$return = array();
+				$return = [];
 				foreach ($this->value_keys_get() as $key) {
 					$return[$key] = $this->option_values[$key];
 				}
@@ -252,7 +252,7 @@
 
 			public function value_keys_get() {
 
-				$return = array();
+				$return = [];
 
 				if ($this->values !== NULL) {
 					foreach ($this->values as $key) {
@@ -281,7 +281,7 @@
 						$db_values = array($db_values);
 					}
 
-					$values = array();
+					$values = [];
 
 					if ($this->db_field_key) {
 						foreach ($db_values as $key) {
@@ -300,7 +300,7 @@
 
 				} else {
 
-					$values = array();
+					$values = [];
 
 				}
 				return $values;
@@ -379,7 +379,7 @@
 				//--------------------------------------------------
 				// Group HTML
 
-					$used_keys = array();
+					$used_keys = [];
 					$group_html = '';
 
 					if ($this->option_groups !== NULL) {

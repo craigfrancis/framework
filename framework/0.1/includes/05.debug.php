@@ -6,8 +6,8 @@
 	//--------------------------------------------------
 	// Setup
 
-		config::set_default('debug.values', array());
-		config::set('debug.notes', array());
+		config::set_default('debug.values', []);
+		config::set('debug.notes', []);
 
 	//--------------------------------------------------
 	// DB variables
@@ -87,7 +87,7 @@
 
 			if ($send_email && ($type == 'error' || $type == 'notice') && $error_email !== NULL) {
 
-				$email_values = config::get('debug.values', array());
+				$email_values = config::get('debug.values', []);
 				$email_values = array_merge($email_values, array('Message' => $message));
 
 				$email = new email();
@@ -670,7 +670,7 @@
 				// Formatted query
 
 					$indent = 0;
-					$query_lines = array();
+					$query_lines = [];
 					$query_text = preg_replace('/\) (AND|OR) \(/', "\n$0\n", $sql); // Could be better, just breaking up the keyword searching sections.
 
 					foreach (explode("\n", $query_text) as $line_text) {
@@ -782,7 +782,7 @@
 
 					if (preg_match('/^\W*(SELECT|UPDATE|DELETE)/i', ltrim($sql))) {
 
-						$tables = array();
+						$tables = [];
 
 						// if (preg_match('/WHERE(.*)/ims', $sql, $matches)) {
 						// 	$where_sql = $matches[1];
@@ -804,7 +804,7 @@
 
 						} else {
 
-							$matches = array();
+							$matches = [];
 
 							preg_match_all('/(UPDATE|FROM)([^\(]*?)(WHERE|GROUP BY|HAVING|ORDER BY|LIMIT|$)/isD', $sql, $from_matches, PREG_SET_ORDER);
 
@@ -822,7 +822,7 @@
 
 						foreach ($matches as $table) {
 
-							$found = array();
+							$found = [];
 
 							foreach (config::get('debug.db_required_fields') as $required_field) {
 

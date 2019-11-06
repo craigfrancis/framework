@@ -11,7 +11,7 @@
 				// Fields setup
 
 					$this->fields = array('H', 'I', 'S');
-					$this->format_html = array_merge(array('separator' => ':', 'H' => 'HH', 'I' => 'MM', 'S' => 'SS'), config::get('form.time_format_html', array()));
+					$this->format_html = array_merge(array('separator' => ':', 'H' => 'HH', 'I' => 'MM', 'S' => 'SS'), config::get('form.time_format_html', []));
 					$this->value_default = '00:00:00';
 					$this->input_separator = "\n\t\t\t\t\t\t\t\t\t";
 					$this->input_config = array(
@@ -196,7 +196,7 @@
 					if (is_a($value, 'timestamp')) {
 						$value = $value->format('H:i:s');
 					} else if (is_array($value)) {
-						$return = array();
+						$return = [];
 						foreach ($this->fields as $field) {
 							$return[$field] = (isset($value[$field]) ? $value[$field] : '');
 						}

@@ -18,7 +18,7 @@
 		//--------------------------------------------------
 		// Fields
 
-			public function field_password_1_get($form, $config = array()) {
+			public function field_password_1_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -35,7 +35,7 @@
 
 			}
 
-			public function field_password_2_get($form, $config = array()) {
+			public function field_password_2_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -54,7 +54,7 @@
 		//--------------------------------------------------
 		// Actions
 
-			public function active($config = array()) {
+			public function active($config = []) {
 
 				debug($this->auth->session_limited_get('password'));
 
@@ -70,7 +70,7 @@
 
 			}
 
-			public function complete($config = array()) {
+			public function complete($config = []) {
 
 // After a successful 'totp' or 'password' limited login, use save_request_restore().
 

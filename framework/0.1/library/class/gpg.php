@@ -333,7 +333,7 @@
 					}
 				}
 
-				$output = array();
+				$output = [];
 
 				$command = $this->gpg_command . ' --no-tty ' . $command . ($include_errors ? ' 2>&1' : '');
 
@@ -356,7 +356,7 @@
 					exit_with_error('Cannot find "gpg-zip" command in /usr/bin/ or /usr/local/bin/');
 				}
 
-				$output = array();
+				$output = [];
 
 					// Due to GnuPG-bug-id 1442 (17th Nov 2015), before 2.1.10, we cannot add... ' --gpg ' . escapeshellarg($this->gpg_command)
 

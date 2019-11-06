@@ -9,7 +9,7 @@
 
 			private $unit_path = NULL;
 			private $view_name = NULL;
-			private $view_variables = array();
+			private $view_variables = [];
 
 		//--------------------------------------------------
 		// Setup
@@ -32,8 +32,8 @@
 
 			protected function config($config) {
 
-				$output = array();
-				$errors = array();
+				$output = [];
+				$errors = [];
 
 				foreach ($config as $key => $setup) {
 					if (!array_key_exists($key, $this->config)) {
@@ -119,7 +119,7 @@
 		//--------------------------------------------------
 		// HTML
 
-			public function html($variables = array()) {
+			public function html($variables = []) {
 
 				if ($this->view_name !== NULL) {
 					$view_path = substr($this->unit_path, 0, -4) . '-' . safe_file_name($this->view_name) . '.ctp';

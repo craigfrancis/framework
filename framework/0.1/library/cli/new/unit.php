@@ -42,7 +42,7 @@
 
 		if (!$template) {
 
-			$template_paths = array();
+			$template_paths = [];
 
 			foreach (glob(FRAMEWORK_ROOT . '/library/cli/new/unit/*.php') as $template_path) {
 				$template_name = substr($template_path, (strrpos($template_path, '/') + 1), -4);

@@ -18,7 +18,7 @@
 				// Fields setup
 
 					$this->fields = array('D', 'M', 'Y');
-					$this->format_html = array_merge(array('separator' => '/', 'D' => 'DD', 'M' => 'MM', 'Y' => 'YYYY'), config::get('form.date_format_html', array()));
+					$this->format_html = array_merge(array('separator' => '/', 'D' => 'DD', 'M' => 'MM', 'Y' => 'YYYY'), config::get('form.date_format_html', []));
 					$this->value_default = '0000-00-00';
 					$this->input_separator = "\n\t\t\t\t\t\t\t\t\t";
 					$this->input_config = array(
@@ -76,7 +76,7 @@
 
 			public function input_options_text_set($field, $options, $label = '') {
 				if ($field == 'M' && !is_array($options)) {
-					$months = array();
+					$months = [];
 					for ($k = 1; $k <= 12; $k++) {
 						$months[$k] = date($options, mktime(0, 0, 0, $k, 1)); // Must specify day, as on the 31st this will push other month 2 is pushed to March
 					}
@@ -258,7 +258,7 @@
 				if ($month === NULL && $year === NULL) {
 
 					if (is_array($value)) {
-						$return = array();
+						$return = [];
 						foreach ($this->fields as $field) {
 							$return[$field] = (isset($value[$field]) ? intval($value[$field]) : 0);
 						}

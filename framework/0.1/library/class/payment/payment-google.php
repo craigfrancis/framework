@@ -46,7 +46,7 @@
 					//--------------------------------------------------
 					// Data
 
-						$header = array();
+						$header = [];
 						$header[] = 'POST ' . head($url_parts['path']) . ' HTTP/1.0';
 						$header[] = 'Host: ' . head($url_parts['host']);
 						$header[] = 'Authorization: Basic ' . head(base64_encode($GLOBALS['googleMerchantId'] . ':' . $GLOBALS['googleMerchantKey']));
@@ -293,7 +293,7 @@
 
 			protected function notification_new($order, $notice) {
 
-				// $orderItems = array();
+				// $orderItems = [];
 				// foreach ($notice['shopping-cart']->items->item as $cItem) {
 				// 	$orderItems[] = array(
 				// 			'item_name' => strval($cItem['item-name']),

@@ -45,7 +45,7 @@
 		//--------------------------------------------------
 		// List of units
 
-			$units = array();
+			$units = [];
 			$root = APP_ROOT . '/unit';
 			foreach (array_merge(glob($root . '/*.php'), glob($root . '/*/*.php')) as $unit) {
 				$units[] = substr($unit, (strrpos($unit, '/') + 1), -4);

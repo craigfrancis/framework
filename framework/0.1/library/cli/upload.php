@@ -81,7 +81,7 @@
 
 						if (isset($config_dst['update'])) {
 							if (!is_array($config_dst['update'])) {
-								$config_dst['update'] = ($config_dst['update'] === true ? array('project', 'framework') : array());
+								$config_dst['update'] = ($config_dst['update'] === true ? array('project', 'framework') : []);
 							}
 							$update = implode(' ', $config_dst['update']);
 						} else {

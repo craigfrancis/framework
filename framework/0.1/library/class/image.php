@@ -47,7 +47,7 @@
 						);
 
 					if (!is_array($config)) {
-						$config = array();
+						$config = [];
 					}
 
 					$config = array_merge($defaults, $config);
@@ -142,7 +142,7 @@
 				//--------------------------------------------------
 				// Return
 
-					$return = array();
+					$return = [];
 
 				//--------------------------------------------------
 				// If an image object was passed into this function
@@ -300,7 +300,7 @@
 							);
 
 						if (!is_array($config)) {
-							$config = array();
+							$config = [];
 						}
 
 						$config = array_merge($defaults, $config);
@@ -359,7 +359,7 @@
 							);
 
 						if (!is_array($config)) {
-							$config = array();
+							$config = [];
 						}
 
 						$config = array_merge($defaults, $config);
@@ -583,7 +583,7 @@
 							);
 
 						if (!is_array($config)) {
-							$config = array();
+							$config = [];
 						}
 
 						$config = array_merge($defaults, $config);
@@ -708,7 +708,7 @@
 							);
 
 						if (!is_array($config)) {
-							$config = array();
+							$config = [];
 						}
 
 						$config = array_merge($defaults, $config);

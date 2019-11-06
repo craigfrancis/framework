@@ -9,7 +9,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $config = array();
+			private $config = [];
 			private $lock = NULL;
 			private $running = false;
 			private $session_prefix = NULL;
@@ -55,7 +55,7 @@
 				// Set config
 
 					if (!is_array($config)) {
-						$config = array();
+						$config = [];
 					}
 
 					if ($profile !== NULL) {

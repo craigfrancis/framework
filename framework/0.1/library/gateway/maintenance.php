@@ -16,7 +16,7 @@
 							$modes[] = 'test';
 						}
 					} else {
-						$modes = array();
+						$modes = [];
 					}
 				}
 

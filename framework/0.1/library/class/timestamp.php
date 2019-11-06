@@ -267,7 +267,7 @@
 								sh.source = "gov.uk" AND
 								sh.deleted = "0000-00-00 00:00:00"';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $earliest);
 
 					foreach ($db->fetch_all($sql, $parameters) as $row) {
@@ -354,7 +354,7 @@
 
 					timestamp::holidays_check_table();
 
-					$holidays = array();
+					$holidays = [];
 
 					$db = db_get();
 

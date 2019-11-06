@@ -13,7 +13,7 @@
 		// 		'url3' => array('type' => 'url', 'default' => NULL),
 		// 		'name' => array('type' => 'str', 'default' => 'Unknown'),
 		// 		'item' => array('type' => 'obj'),
-		// 		'list' => array('default' => array()),
+		// 		'list' => array('default' => []),
 		// 	);
 
 		// protected function authenticate($config) {

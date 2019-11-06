@@ -18,16 +18,16 @@
 		//--------------------------------------------------
 		// Fields
 
-			public function field_totp_get($form, $config = array()) {
+			public function field_totp_get($form, $config = []) {
 			}
 
-			public function field_remember_browser_get($form, $config = array()) {
+			public function field_remember_browser_get($form, $config = []) {
 			}
 
 		//--------------------------------------------------
 		// Actions
 
-			public function active($config = array()) {
+			public function active($config = []) {
 
 // TODO: Support 2 Factor Authentication, via TOTP (Time based, one time password).
 // Ensure there is a "remember_browser" for 2FA, which creates a record in the database (so these can be easily listed/reset).
@@ -51,7 +51,7 @@
 
 			}
 
-			public function complete($config = array()) {
+			public function complete($config = []) {
 
 // After a successful 'totp' or 'password' limited login, use save_request_restore().
 

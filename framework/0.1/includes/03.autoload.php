@@ -44,7 +44,7 @@
 					$folder = $class_file_name;
 				}
 
-				$paths = array();
+				$paths = [];
 
 				if (!$base_mode) {
 					$paths[] = APP_ROOT . '/library/class/' . $class_file_name . '.php';

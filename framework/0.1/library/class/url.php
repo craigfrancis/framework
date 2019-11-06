@@ -12,7 +12,7 @@
 			private $path_data = NULL;
 			private $path_cache = NULL;
 
-			private $parameters = array();
+			private $parameters = [];
 			private $fragment = NULL;
 			private $format = NULL;
 			private $scheme = NULL;

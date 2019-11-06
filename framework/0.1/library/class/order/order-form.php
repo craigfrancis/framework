@@ -31,7 +31,7 @@
 						return $this->country_options;
 					}
 
-					$this->country_options = array();
+					$this->country_options = [];
 
 					$db = $this->db_get();
 

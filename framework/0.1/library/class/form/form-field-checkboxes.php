@@ -6,8 +6,8 @@
 		// Variables
 
 			protected $value_print_cache = NULL;
-			protected $option_values_html = array();
-			protected $options_info_id = array();
+			protected $option_values_html = [];
+			protected $options_info_id = [];
 			protected $options_info_html = NULL;
 			protected $options_disabled = NULL;
 

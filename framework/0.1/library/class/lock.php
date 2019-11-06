@@ -68,7 +68,7 @@
 
 				} else {
 
-					$data = array();
+					$data = [];
 
 				}
 

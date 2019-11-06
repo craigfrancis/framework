@@ -227,7 +227,7 @@
 				//--------------------------------------------------
 				// Validate the mime type
 
-					$mime_types = array();
+					$mime_types = [];
 
 					if (in_array('gif', $types)) {
 						$mime_types[] = 'image/gif';

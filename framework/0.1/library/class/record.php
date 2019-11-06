@@ -5,7 +5,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $config = array(); // Not protected - As we can't use constants (such as DB_PREFIX), it is of limited use when extending... use the setup method instead.
+			private $config = []; // Not protected - As we can't use constants (such as DB_PREFIX), it is of limited use when extending... use the setup method instead.
 
 			private $db_link = NULL;
 
@@ -17,7 +17,7 @@
 			private $fields = NULL;
 			private $values = NULL;
 
-			private $new_values = array();
+			private $new_values = [];
 
 		//--------------------------------------------------
 		// Setup
@@ -43,9 +43,9 @@
 						'where_parameters' => [],
 
 						'log_table' => NULL,
-						'log_values' => array(),
+						'log_values' => [],
 
-						'extra_values' => array(), // When in single mode, you might want to store something like the author.
+						'extra_values' => [], // When in single mode, you might want to store something like the author.
 
 						'deleted' => false, // False, never allow deleted records; NULL, do not check; True/Array/etc, check and use error_send('deleted')
 
@@ -302,7 +302,7 @@
 							$fields[] = 'deleted';
 						}
 
-						$options = array();
+						$options = [];
 						if (isset($this->config['group_sql'])) $options['group_sql'] = $this->config['group_sql'];
 						if (isset($this->config['order_sql'])) $options['order_sql'] = $this->config['order_sql'];
 						if (isset($this->config['limit_sql'])) $options['limit_sql'] = $this->config['limit_sql'];
@@ -363,7 +363,7 @@
 		//--------------------------------------------------
 		// Update
 
-			public function save($new_values = array()) {
+			public function save($new_values = []) {
 
 				//--------------------------------------------------
 				// Config
@@ -568,12 +568,12 @@
 				// Update local
 
 					if (!is_array($this->values)) { // NULL or FALSE
-						$this->values = array();
+						$this->values = [];
 					}
 
 					$this->values = array_merge($this->values, $new_values);
 
-					$this->new_values = array();
+					$this->new_values = [];
 
 			}
 
@@ -720,7 +720,7 @@
 	// 			array('123', '0123',   'DIFFERENT'), // e.g. CRN
 	// 		);
 	//
-	// 	$record = new record_base(array());
+	// 	$record = new record_base([]);
 	// 	$value_pad = 10;
 	//
 	// 	foreach ($values as $value) {

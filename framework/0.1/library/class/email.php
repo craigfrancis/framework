@@ -14,17 +14,17 @@
 			protected $subject_prefix = '';
 			protected $from_email = NULL;
 			protected $from_name = NULL;
-			protected $cc_emails = array();
-			protected $bcc_emails = array();
+			protected $cc_emails = [];
+			protected $bcc_emails = [];
 			protected $reply_to_email = NULL;
 			protected $reply_to_name = NULL;
 			protected $return_path = NULL;
-			protected $headers = array();
-			protected $attachments = array();
+			protected $headers = [];
+			protected $attachments = [];
 			protected $template_path = NULL;
 			protected $template_url = NULL;
-			protected $template_values_text = array();
-			protected $template_values_html = array();
+			protected $template_values_text = [];
+			protected $template_values_html = [];
 			protected $template_edit_function = NULL;
 			protected $body_text = '';
 			protected $body_html = '';
@@ -32,7 +32,7 @@
 			protected $content_html = NULL;
 			protected $default_style = NULL;
 			protected $default_bulk = true;
-			protected $boundaries = array();
+			protected $boundaries = [];
 
 		//--------------------------------------------------
 		// Setup
@@ -512,7 +512,7 @@
 							'--mail_boundary--' . time() . '--' . mt_rand(1000000, 9999999) . '-2',
 						);
 
-					$headers = array();
+					$headers = [];
 
 				//--------------------------------------------------
 				// Text and HTML content
@@ -619,7 +619,7 @@
 				//--------------------------------------------------
 				// CC
 
-					$cc_addresses = array();
+					$cc_addresses = [];
 
 					foreach ($this->cc_emails as $cc_email) {
 						if ($cc_email['name'] !== NULL) {
@@ -636,7 +636,7 @@
 				//--------------------------------------------------
 				// BCC
 
-					$bcc_addresses = array();
+					$bcc_addresses = [];
 
 					foreach ($this->bcc_emails as $bcc_email) {
 						if ($bcc_email['name'] !== NULL) {

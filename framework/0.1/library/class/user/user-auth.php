@@ -80,7 +80,7 @@
 					LIMIT
 						1';
 
-			$parameters = array();
+			$parameters = [];
 			$parameters[] = array('s', strval($identification));
 
 			if ($row = $db->fetch_row($sql, $parameters)) {
@@ -106,7 +106,7 @@
 					LIMIT
 						1';
 
-			$parameters = array();
+			$parameters = [];
 			$parameters[] = array('i', $user_id);
 
 			if ($row = $db->fetch_row($sql, $parameters)) {
@@ -142,7 +142,7 @@
 						LIMIT
 							1';
 
-				$parameters = array();
+				$parameters = [];
 				$parameters[] = array('i', $user_id);
 
 				if ($row = $db->fetch_row($sql, $parameters)) {
@@ -190,7 +190,7 @@
 						LIMIT
 							1';
 
-				$parameters = array();
+				$parameters = [];
 				$parameters[] = array('s', $now);
 				$parameters[] = array('s', $db_hash);
 				$parameters[] = array('i', $user_id);
@@ -224,7 +224,7 @@
 							user_id = 0 AND
 							created <= ?';
 
-				$parameters = array();
+				$parameters = [];
 				$parameters[] = array('s', $timestamp_old);
 
 				$db->query($sql, $parameters);
@@ -252,7 +252,7 @@
 						LIMIT
 							1';
 
-				$parameters = array();
+				$parameters = [];
 				$parameters[] = array('i', $user_id);
 				$parameters[] = array('s', config::get('request.ip'));
 				$parameters[] = array('s', $timestamp_recent);
@@ -293,7 +293,7 @@
 							user_id = ? AND
 							used = "0000-00-00 00:00:00"';
 
-				$parameters = array();
+				$parameters = [];
 				$parameters[] = array('i', $user_id);
 
 				if ($row = $db->fetch_row($sql, $parameters)) {
@@ -309,7 +309,7 @@
 								id = ? AND
 								used = "0000-00-00 00:00:00"';
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('s', $now);
 					$parameters[] = array('i', $request_id);
 
@@ -378,7 +378,7 @@
 							sent > ? AND
 							used = "0000-00-00 00:00:00"';
 
-				$parameters = array();
+				$parameters = [];
 				$parameters[] = array('i', $request_id);
 				$parameters[] = array('s', $request_pass);
 				$parameters[] = array('s', $timeout);
@@ -412,7 +412,7 @@
 						id = ? AND
 						used = "0000-00-00 00:00:00"';
 
-			$parameters = array();
+			$parameters = [];
 			$parameters[] = array('s', $now);
 			$parameters[] = array('i', $request_id);
 
@@ -436,7 +436,7 @@
 			//--------------------------------------------------
 			// Account details
 
-				$parameters = array();
+				$parameters = [];
 
 				if ($identification === NULL) {
 
@@ -479,9 +479,9 @@
 
 				if ($this->lockout_attempts > 0) {
 
-					$where_sql = array();
+					$where_sql = [];
 
-					$parameters = array();
+					$parameters = [];
 
 					if ($this->lockout_mode === NULL || $this->lockout_mode == 'user') {
 
@@ -561,7 +561,7 @@
 										LIMIT
 											1';
 
-								$parameters = array();
+								$parameters = [];
 								$parameters[] = array('s', $new_hash);
 								$parameters[] = array('i', $db_id);
 
@@ -589,7 +589,7 @@
 
 				$request_ip = config::get('request.ip');
 
-				if (!in_array($request_ip, config::get('user.ip_whitelist', array()))) {
+				if (!in_array($request_ip, config::get('user.ip_whitelist', []))) {
 
 					$now = date('Y-m-d H:i:s'); // Remove when session helper is using timestamp (GMT vs BST)
 

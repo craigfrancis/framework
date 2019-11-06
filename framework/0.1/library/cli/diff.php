@@ -99,14 +99,14 @@
 
 	function diff_db($a, $b) {
 
-		$details = array();
+		$details = [];
 
 		foreach ($a as $table => $a_table_info) {
 
 			//--------------------------------------------------
 			// Table
 
-				$details[$table] = array();
+				$details[$table] = [];
 
 				if (!isset($b[$table])) {
 					if (!prefix_match('zzz_', $table)) {

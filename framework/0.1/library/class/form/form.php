@@ -15,7 +15,7 @@
 			private $form_class = '';
 			private $form_button = 'Save';
 			private $form_button_name = 'button';
-			private $form_attributes = array();
+			private $form_attributes = [];
 			private $form_passive = false;
 			private $form_submitted = false;
 			private $autocomplete = NULL;
@@ -29,9 +29,9 @@
 			private $print_page_valid = true;
 			private $print_group = NULL;
 			private $print_group_tag = 'h2';
-			private $hidden_values = array();
-			private $fields = array();
-			private $field_refs = array();
+			private $hidden_values = [];
+			private $fields = [];
+			private $field_refs = [];
 			private $field_count = 0;
 			private $field_tag_id = 0;
 			private $file_setup_complete = false;
@@ -40,7 +40,7 @@
 			private $label_prefix_html = '';
 			private $label_suffix_html = ':';
 			private $label_override_function = NULL;
-			private $errors_html = array();
+			private $errors_html = [];
 			private $error_override_function = NULL;
 			private $post_validation_done = false;
 			private $db_link = NULL;
@@ -49,9 +49,9 @@
 			private $db_table_alias_sql = NULL;
 			private $db_where_sql = NULL;
 			private $db_log_table = NULL;
-			private $db_log_values = array();
+			private $db_log_values = [];
 			private $db_fields = NULL;
-			private $db_values = array();
+			private $db_values = [];
 			private $db_save_disabled = false;
 			private $saved_values_data = NULL;
 			private $saved_values_used = NULL;
@@ -384,7 +384,7 @@
 				return $this->hidden_value_set('dest', $url);
 			}
 
-			public function dest_redirect($default_url, $config = array()) {
+			public function dest_redirect($default_url, $config = []) {
 
 				$dest = $this->dest_url_get();
 
@@ -515,7 +515,7 @@
 				$this->db_where_sql = $where_sql;
 			}
 
-			public function db_log_set($table, $values = array()) {
+			public function db_log_set($table, $values = []) {
 				$this->db_log_table = $table;
 				$this->db_log_values = $values;
 			}
@@ -685,7 +685,7 @@
 		// Error support
 
 			public function error_reset() {
-				$this->errors_html = array();
+				$this->errors_html = [];
 			}
 
 			public function error_add($error, $hidden_info = NULL) {
@@ -697,7 +697,7 @@
 			}
 
 			public function errors_get() {
-				$errors = array();
+				$errors = [];
 				foreach ($this->errors_get_html() as $error_html) {
 					$errors[] = html_decode(strip_tags($error_html));
 				}
@@ -706,7 +706,7 @@
 
 			public function errors_get_html() {
 				$this->_post_validation();
-				$errors_flat_html = array();
+				$errors_flat_html = [];
 				$error_links = config::get('form.error_links', false);
 				ksort($this->errors_html); // Match order of fields
 				foreach ($this->errors_html as $ref => $errors_html) {
@@ -817,7 +817,7 @@
 
 			public function data_array_get() {
 
-				$values = array();
+				$values = [];
 
 				foreach ($this->fields as $field) {
 
@@ -849,7 +849,7 @@
 
 			public function data_db_get() {
 
-				$values = array();
+				$values = [];
 
 				foreach ($this->fields as $field) {
 					$value_new = $field->_db_field_value_new_get();
@@ -941,7 +941,7 @@
 		//--------------------------------------------------
 		// Field support
 
-			public function field_get($ref, $config = array()) {
+			public function field_get($ref, $config = []) {
 
 				if (is_numeric($ref)) {
 
@@ -989,7 +989,7 @@
 				if ($group === NULL) {
 					return $this->fields;
 				} else {
-					$fields = array();
+					$fields = [];
 					foreach ($this->fields as $field) {
 						if ($field->print_include_get() && !$field->print_hidden_get() && $field->print_group_get() == $group) {
 							$fields[] = $field;
@@ -1000,7 +1000,7 @@
 			}
 
 			public function field_groups_get() {
-				$field_groups = array();
+				$field_groups = [];
 				foreach ($this->fields as $field) {
 					if ($field->print_include_get() && !$field->print_hidden_get()) {
 						$field_group = $field->print_group_get();
@@ -1053,7 +1053,7 @@
 				}
 
 				if (!isset($this->errors_html[$field_uid])) {
-					$this->errors_html[$field_uid] = array();
+					$this->errors_html[$field_uid] = [];
 				}
 
 				if ($hidden_info !== NULL) {
@@ -1067,7 +1067,7 @@
 			}
 
 			public function _field_error_set_html($field_uid, $error_html, $hidden_info = NULL) {
-				$this->errors_html[$field_uid] = array();
+				$this->errors_html[$field_uid] = [];
 				$this->_field_error_add_html($field_uid, $error_html, $hidden_info);
 			}
 
@@ -1075,7 +1075,7 @@
 				if (isset($this->errors_html[$field_uid])) {
 					return $this->errors_html[$field_uid];
 				} else {
-					return array();
+					return [];
 				}
 			}
 
@@ -1092,7 +1092,7 @@
 				// Config
 
 					if (!is_array($config)) {
-						$config = array();
+						$config = [];
 					}
 
 				//--------------------------------------------------
@@ -1158,13 +1158,13 @@
 				// Config
 
 					if (!is_array($config)) {
-						$config = array();
+						$config = [];
 					}
 
 					if (!isset($config['wrapper'])) $config['wrapper'] = 'div';
 					if (!isset($config['class'])) $config['class'] = 'form_hidden_fields';
 
-					$field_names = array();
+					$field_names = [];
 
 					foreach ($this->fields as $field) {
 						if ($field->type_get() != 'info') {
@@ -1187,7 +1187,7 @@
 				//--------------------------------------------------
 				// Input fields - use array to keep unique keys
 
-					$input_fields = array();
+					$input_fields = [];
 
 					if (!$this->form_passive) {
 
@@ -1293,7 +1293,7 @@
 				//--------------------------------------------------
 				// Field groups
 
-					$field_groups = array();
+					$field_groups = [];
 
 					if ($group !== NULL) {
 

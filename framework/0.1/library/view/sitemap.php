@@ -9,7 +9,7 @@
 //--------------------------------------------------
 // URLs
 
-	$paths = array();
+	$paths = [];
 	$paths[] = '/';
 
 	foreach ($paths as $path) {

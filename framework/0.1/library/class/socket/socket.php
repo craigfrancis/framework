@@ -10,12 +10,12 @@
 		// Variables
 
 			private $context = NULL;
-			private $connections = array();
-			private $values = array();
-			private $files = array();
-			private $headers = array();
-			private $cookies = array();
-			private $cookies_raw = array();
+			private $connections = [];
+			private $values = [];
+			private $files = [];
+			private $headers = [];
+			private $cookies = [];
+			private $cookies_raw = [];
 			private $login_username = '';
 			private $login_password = '';
 
@@ -34,7 +34,7 @@
 			private $error_function = NULL;
 			private $error_message = NULL;
 			private $error_details = NULL;
-			private $error_connect = array();
+			private $error_connect = [];
 
 		//--------------------------------------------------
 		// Setup
@@ -49,12 +49,12 @@
 			public function reset() {
 
 				$this->context = NULL;
-				$this->connections = array();
-				$this->values = array();
-				$this->files = array();
-				$this->headers = array();
-				$this->cookies = array();
-				$this->cookies_raw = array();
+				$this->connections = [];
+				$this->values = [];
+				$this->files = [];
+				$this->headers = [];
+				$this->cookies = [];
+				$this->cookies_raw = [];
 				$this->login_username = '';
 				$this->login_password = '';
 
@@ -69,7 +69,7 @@
 
 				$this->error_message = NULL;
 				$this->error_details = NULL;
-				$this->error_connect = array();
+				$this->error_connect = [];
 
 			}
 
@@ -280,7 +280,7 @@
 
 					$this->error_message = NULL;
 					$this->error_details = NULL;
-					$this->error_connect = array();
+					$this->error_connect = [];
 
 				//--------------------------------------------------
 				// Post data with GET request
@@ -356,7 +356,7 @@
 					//--------------------------------------------------
 					// Header main
 
-						$headers = array();
+						$headers = [];
 						$headers[] = $method . ' ' . $path . ' HTTP/1.1';
 						$headers[] = 'Host: ' . $host;
 
@@ -382,7 +382,7 @@
 					//--------------------------------------------------
 					// Cookies
 
-						$cookies = array();
+						$cookies = [];
 
 						foreach ($this->cookies as $name => $value) {
 							$cookies[] = rawurlencode($name) . '=' . rawurlencode($value);
@@ -445,7 +445,7 @@
 
 										$content_type_value .= '; boundary=' . head($boundary);
 
-										$data = array();
+										$data = [];
 										foreach ($data_values as $value) {
 											$data[] = '--' . head($boundary) . "\n" . 'Content-Disposition: form-data; name="' . head($value[0]) . '"' . "\n\n" . $value[1];
 										}
@@ -460,7 +460,7 @@
 											$content_type_value = 'application/x-www-form-urlencoded; charset=' . head(config::get('output.charset'));
 										}
 
-										$data = array();
+										$data = [];
 										foreach ($data_values as $value) {
 											$data[] = urlencode($value[0]) . '=' . urlencode($value[1]); // urlencode not rawurlencode to match mime-type
 										}
@@ -480,8 +480,8 @@
 								//--------------------------------------------------
 								// Reset for next request
 
-									$this->values = array();
-									$this->files = array();
+									$this->values = [];
+									$this->files = [];
 
 							}
 
@@ -553,7 +553,7 @@
 						//--------------------------------------------------
 						// Verify peer
 
-							$skip_domains = config::get('socket.insecure_domains', array()); // Only PHP 5.6+ introduces SAN support (this function still needs to support 5.4 and 5.5)
+							$skip_domains = config::get('socket.insecure_domains', []); // Only PHP 5.6+ introduces SAN support (this function still needs to support 5.4 and 5.5)
 
 							if ($skip_domains === 'all' || in_array($host, $skip_domains)) {
 

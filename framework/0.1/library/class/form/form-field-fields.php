@@ -9,14 +9,14 @@
 			protected $value_default = NULL;
 			protected $value_provided = NULL;
 
-			protected $fields = array();
-			protected $placeholders = array();
+			protected $fields = [];
+			protected $placeholders = [];
 			protected $format_html = array('separator' => ' ');
 			protected $invalid_error_set = false;
 			protected $invalid_error_found = false;
-			protected $input_order = array();
+			protected $input_order = [];
 			protected $input_separator = ' ';
-			protected $input_config = array();
+			protected $input_config = [];
 			protected $input_described_by = NULL; // Disabled, as these fields use aria-label
 
 		//--------------------------------------------------
@@ -104,7 +104,7 @@
 
 				} else {
 
-					$format_html = array();
+					$format_html = [];
 
 					foreach ($this->input_order as $field) {
 						if (isset($this->format_html[$field])) {
@@ -235,7 +235,7 @@
 						return NULL;
 					}
 				} else if ($this->value_provided) {
-					$return = array();
+					$return = [];
 					foreach ($this->fields as $field) {
 						$return[$field] = (isset($this->value[$field]) ? $this->value[$field] : NULL);
 					}
@@ -502,7 +502,7 @@
 
 			public function html_input() {
 				$input_value = $this->_value_print_get();
-				$input_html = array();
+				$input_html = [];
 				foreach ($this->input_order as $html) {
 					if (in_array($html, $this->fields)) {
 						$input_html[] = $this->html_input_field($html, $input_value);

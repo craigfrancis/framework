@@ -69,7 +69,7 @@
 		//--------------------------------------------------
 		// Fields
 
-			public function field_identification_get($form, $config = array()) {
+			public function field_identification_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -83,7 +83,7 @@
 
 			}
 
-			public function field_password_1_get($form, $config = array()) {
+			public function field_password_1_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -102,7 +102,7 @@
 
 			}
 
-			public function field_password_2_get($form, $config = array()) {
+			public function field_password_2_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -118,7 +118,7 @@
 
 			}
 
-			public function field_remember_user_get($form, $config = array()) {
+			public function field_remember_user_get($form, $config = []) {
 
 				$this->form = $form;
 
@@ -142,7 +142,7 @@
 
 					$this->details = false;
 
-					$errors = array();
+					$errors = [];
 
 					$confirm_valid = true;
 
@@ -299,7 +299,7 @@
 
 			}
 
-			public function complete($config = array()) {
+			public function complete($config = []) {
 
 				//--------------------------------------------------
 				// Config
@@ -462,7 +462,7 @@
 
 			}
 
-			public function confirm($register_token, $config = array()) {
+			public function confirm($register_token, $config = []) {
 
 				//--------------------------------------------------
 				// Config
@@ -497,7 +497,7 @@
 								r.' . $db->escape_field($this->db_fields['token']) . ' != "" AND
 								' . $this->db_where_sql;
 
-					$parameters = array();
+					$parameters = [];
 					$parameters[] = array('i', $register_id);
 
 					if (($row = $db->fetch_row($sql, $parameters)) && (quick_hash_verify($register_pass, $row[$this->db_fields['token']]))) {
@@ -524,7 +524,7 @@
 										r.' . $db->escape_field($this->db_fields['id']) . ' = ? AND
 										' . $this->db_where_sql;
 
-							$parameters = array();
+							$parameters = [];
 							$parameters[] = array('s', $now);
 							$parameters[] = array('i', $register_id);
 

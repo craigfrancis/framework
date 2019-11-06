@@ -22,11 +22,11 @@
 			protected $wrapper_class = NULL;
 			protected $caption_text = NULL;
 			protected $caption_html = NULL;
-			protected $headings = array();
+			protected $headings = [];
 			protected $heading_id = 0;
-			protected $footers = array();
+			protected $footers = [];
 			protected $footer_id = 0;
-			protected $rows = array();
+			protected $rows = [];
 
 			protected $id_value = '';
 			protected $class_name = '';
@@ -47,7 +47,7 @@
 			protected $sort_default_field = NULL;
 			protected $sort_default_order = NULL;
 			protected $sort_id = 0;
-			protected $sort_fields = array();
+			protected $sort_fields = [];
 			protected $sort_active_asc_prefix_html = '';
 			protected $sort_active_asc_suffix_html = '&#xA0;<span class="sort asc" title="Ascending">&#9650;</span>';
 			protected $sort_active_desc_prefix_html = '';
@@ -327,14 +327,14 @@
 				$this->sort_inactive_suffix_html = $content_html;
 			}
 
-			public function heading_add($heading, $sort_name = NULL, $class_name = '', $config = array()) {
+			public function heading_add($heading, $sort_name = NULL, $class_name = '', $config = []) {
 				return $this->heading_add_html(nl2br(html($heading)), $sort_name, $class_name, $config);
 			}
 
-			public function heading_add_html($heading_html, $sort_name = NULL, $class_name = '', $config = array()) {
+			public function heading_add_html($heading_html, $sort_name = NULL, $class_name = '', $config = []) {
 
 				if (!isset($this->headings[$this->heading_id])) {
-					$this->headings[$this->heading_id] = array();
+					$this->headings[$this->heading_id] = [];
 				}
 
 				if ($sort_name !== NULL && $sort_name !== '') {
@@ -386,14 +386,14 @@
 				$this->heading_id++;
 			}
 
-			public function footer_add($footer, $class_name = '', $config = array()) {
+			public function footer_add($footer, $class_name = '', $config = []) {
 				$this->footer_add_html(html($footer), $class_name, $config);
 			}
 
-			public function footer_add_html($footer_html, $class_name = '', $config = array()) {
+			public function footer_add_html($footer_html, $class_name = '', $config = []) {
 
 				if (!isset($this->footers[$this->footer_id])) {
-					$this->footers[$this->footer_id] = array();
+					$this->footers[$this->footer_id] = [];
 				}
 
 				if (is_numeric($config)) {
@@ -412,7 +412,7 @@
 			public function footer_row_end() {
 
 				if (!isset($this->footers[$this->footer_id])) {
-					$this->footers[$this->footer_id] = array();
+					$this->footers[$this->footer_id] = [];
 				}
 
 				$this->footer_id++;
@@ -461,7 +461,7 @@
 				//--------------------------------------------------
 				// Headings
 
-					$col_class = array();
+					$col_class = [];
 					$col_count = 0;
 					$output_html = '';
 
@@ -838,8 +838,8 @@
 				//--------------------------------------------------
 				// Col widths
 
-					$col_widths = array();
-					$row_lines = array();
+					$col_widths = [];
+					$row_lines = [];
 					$max_width = 70;
 
 					foreach ($this->headings as $row_id => $heading_row) {
@@ -1012,7 +1012,7 @@
 
 					foreach ($this->headings as $row_id => $heading_row) {
 
-						$csv_output = array();
+						$csv_output = [];
 
 						foreach ($heading_row as $heading_info) {
 
@@ -1033,7 +1033,7 @@
 
 					foreach (array_keys($this->rows) as $row_key) {
 
-						$csv_output = array();
+						$csv_output = [];
 
 						foreach ($this->rows[$row_key]['row']->data as $cell_info) {
 
@@ -1065,7 +1065,7 @@
 
 						foreach ($this->footers as $footer_row) {
 
-							$csv_output = array();
+							$csv_output = [];
 
 							foreach ($footer_row as $footer_info) {
 
@@ -1237,7 +1237,7 @@
 			//--------------------------------------------------
 			// Defaults
 
-				$this->data = array();
+				$this->data = [];
 
 			//--------------------------------------------------
 			// Add
@@ -1263,15 +1263,15 @@
 
 		}
 
-		public function cell_add($content_text = '', $class_name = '', $config = array()) {
+		public function cell_add($content_text = '', $class_name = '', $config = []) {
 			$this->_cell_add_raw($content_text, NULL, $class_name, $config);
 		}
 
-		public function cell_add_html($content_html = '', $class_name = '', $config = array()) {
+		public function cell_add_html($content_html = '', $class_name = '', $config = []) {
 			$this->_cell_add_raw(NULL, $content_html, $class_name, $config);
 		}
 
-		public function cell_add_link($url, $text, $class_name = '', $config = array()) {
+		public function cell_add_link($url, $text, $class_name = '', $config = []) {
 
 			if ($url) {
 				$html = '<a href="' . html($url) . '">' . nl2br(html($text)) . '</a>';

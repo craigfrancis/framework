@@ -17,7 +17,7 @@
 			protected $current_data = NULL;
 			protected $current_code = NULL;
 			protected $current_url = NULL;
-			protected $cookies_raw = array();
+			protected $cookies_raw = [];
 			protected $form = NULL;
 			protected $exit_on_error = true;
 			protected $error_function = NULL;
@@ -41,7 +41,7 @@
 				$this->current_data = NULL;
 				$this->current_code = NULL;
 				$this->current_url = NULL;
-				$this->cookies_raw = array();
+				$this->cookies_raw = [];
 				$this->form = NULL;
 
 				$this->error_message = NULL;
@@ -121,7 +121,7 @@
 
 				} else {
 
-					$cookies = array();
+					$cookies = [];
 
 					foreach ($this->cookies_raw as $domain => $domain_cookies) {
 
@@ -297,7 +297,7 @@
 			}
 
 			public function nodes_get_html($query) {
-				$node_html = array();
+				$node_html = [];
 				foreach ($this->nodes_get($query) as $node) {
 					$node_html[] = trim($this->_node_as_dom($node)->saveHTML());
 				}
@@ -391,8 +391,8 @@
 						$this->form = array(
 								'action' => $form_action,
 								'method' => strtoupper($form_node->getAttribute('method')),
-								'fields' => array(),
-								'submits' => array(),
+								'fields' => [],
+								'submits' => [],
 							);
 
 					//--------------------------------------------------
@@ -443,7 +443,7 @@
 							$name = $select->getAttribute('name');
 							if ($name != '') {
 
-								$options = array();
+								$options = [];
 								$value = NULL;
 
 								foreach ($this->nodes_get('//option', $this->_node_as_dom($select)) as $option) {
@@ -549,7 +549,7 @@
 			}
 
 			public function form_fields_get() {
-				$fields = array();
+				$fields = [];
 				if ($this->form) {
 					foreach ($this->form['fields'] as $name => $info) {
 						if ($info['value'] !== NULL) { // Removed value, e.g. a checkbox
@@ -836,7 +836,7 @@
 
 									$cookie_name = trim($matches[1]);
 									$cookie_value = trim($matches[2]);
-									$cookie_attributes = array();
+									$cookie_attributes = [];
 
 									if (isset($matches[3])) {
 										foreach (explode(';', $matches[3]) as $attribute) {

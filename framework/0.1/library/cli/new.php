@@ -15,7 +15,7 @@
 
 			echo "\n";
 
-			$type_paths = array();
+			$type_paths = [];
 
 			foreach (glob(FRAMEWORK_ROOT . '/library/cli/new/*.php') as $type_path) {
 				$type_name = substr($type_path, (strrpos($type_path, '/') + 1), -4);

@@ -166,7 +166,7 @@
 						//--------------------------------------------------
 						// Crypt value
 
-							$crypt = array();
+							$crypt = [];
 							foreach ($values as $name => $value) {
 								$crypt[] = $name . '=' . $value;
 							}
@@ -373,7 +373,7 @@
 				//--------------------------------------------------
 				// Setup
 
-					$config = $this->_checkout_setup(array(), array(
+					$config = $this->_checkout_setup([], array(
 							'test' => false,
 							'debug' => false,
 						), array(
@@ -385,7 +385,7 @@
 				//--------------------------------------------------
 				// Get transactions
 
-					$transactions = array();
+					$transactions = [];
 
 mime_set('text/plain');
 

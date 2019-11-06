@@ -33,7 +33,7 @@
 		$folder_path_length = strlen($folder_path);
 
 		$folder_listing = shell_exec('find ' . escapeshellarg($folder_path) . ' -mindepth 1 -type d ! -path "*/.*" 2>&1');
-		$folder_children = array();
+		$folder_children = [];
 
 		foreach (explode("\n", $folder_listing) as $path) {
 			if (substr($path, 0, $folder_path_length) == $folder_path) {
@@ -59,7 +59,7 @@
 
 		$db = db_get();
 
-		$tables = array();
+		$tables = [];
 
 		foreach ($db->fetch_all('SHOW TABLES') as $row) {
 
@@ -71,8 +71,8 @@
 				$table_sql = $db->escape_table($table);
 
 				$tables[$table] = array(
-						'fields' => array(),
-						'keys' => array(),
+						'fields' => [],
+						'keys' => [],
 					);
 
 			//--------------------------------------------------

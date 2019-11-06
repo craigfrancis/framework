@@ -8,12 +8,12 @@
 			private $message = NULL;
 			private $title = NULL;
 			private $description = NULL;
-			private $links = array();
-			private $meta = array();
+			private $links = [];
+			private $meta = [];
 			private $page_id = NULL;
 			private $error = false;
-			private $variables = array();
-			private $units = array();
+			private $variables = [];
+			private $units = [];
 			private $completed_send_init = false;
 			private $completed_css_auto = false;
 
@@ -31,15 +31,15 @@
 			private $template_path = NULL;
 
 			private $js_enabled = true;
-			private $js_files = array('head' => array(), 'foot' => array());
+			private $js_files = array('head' => [], 'foot' => []);
 			private $js_code_ref = NULL;
 			private $js_code = array(
 					'head' => array('data' => '', 'mode' => NULL, 'saved' => false),
 					'foot' => array('data' => '', 'mode' => NULL, 'saved' => false),
 				);
 
-			private $css_files_main = array();
-			private $css_files_alternate = array();
+			private $css_files_main = [];
+			private $css_files_alternate = [];
 
 		//--------------------------------------------------
 		// Variables
@@ -63,7 +63,7 @@
 		//--------------------------------------------------
 		// Units
 
-			public function unit_add($unit, $config = array()) {
+			public function unit_add($unit, $config = []) {
 
 				$unit_id = (count($this->units) + 1);
 
@@ -295,7 +295,7 @@
 				if ($id !== NULL) {
 					return config::array_get('output.title_folders', $id);
 				} else {
-					return config::get('output.title_folders', array());
+					return config::get('output.title_folders', []);
 				}
 			}
 
@@ -331,7 +331,7 @@
 						$title_default = '';
 						$title_divide = config::get('output.title_divide');
 
-						foreach (config::get('output.title_folders', array()) as $folder) {
+						foreach (config::get('output.title_folders', []) as $folder) {
 							if ($folder != '') {
 								if ($k++ > 0) {
 									$title_default .= $title_divide;
@@ -391,7 +391,7 @@
 				$csp = config::get('output.csp_directives');
 
 				if (!isset($csp[$directive])) {
-					$csp[$directive] = (isset($csp['default-src']) ? $csp['default-src'] : array());
+					$csp[$directive] = (isset($csp['default-src']) ? $csp['default-src'] : []);
 					if (($none = array_search("'none'", $csp[$directive])) !== false) {
 						unset($csp[$directive][$none]);
 					}
@@ -443,7 +443,7 @@
 		//--------------------------------------------------
 		// JavaScript
 
-			public function js_add($path, $attributes = array(), $position = 'foot') { // Could be $this->js_add('/path.js', 'defer');
+			public function js_add($path, $attributes = [], $position = 'foot') { // Could be $this->js_add('/path.js', 'defer');
 				if (!isset($this->js_files[$position])) {
 					exit_with_error('Invalid js_add position "' . $position . '" - try head or foot', $path);
 				} else if (config::get('output.js_head_only') === true && $position != 'head') {
@@ -457,7 +457,7 @@
 				if (is_string($attributes)) {
 					$attributes = array($attributes);
 				} else if (!is_array($attributes)) { // e.g. NULL
-					$attributes = array();
+					$attributes = [];
 				}
 				$this->js_files[$position][] = array(
 						'path' => strval($path), // If passing in a url object
@@ -546,7 +546,7 @@
 
 				if ($this->js_enabled) {
 
-					$js_files = array();
+					$js_files = [];
 					$js_prefix = config::get('output.js_path_prefix', ''); // e.g. '.' or '../..'
 					$js_defer = ($position == 'foot' && config::get('output.js_defer', false));
 					foreach ($this->resources_get($position == 'head' ? 'js_head' : 'js_foot') as $file) {
@@ -657,8 +657,8 @@
 
 					foreach ($css_types as $css_type_name => $css_type_info) {
 
-						$css_types[$css_type_name]['files'] = array();
-						$css_types[$css_type_name]['log'] = array();
+						$css_types[$css_type_name]['files'] = [];
+						$css_types[$css_type_name]['log'] = [];
 
 						$file = '/css/global/' . $css_type_name . '.css';
 
@@ -898,7 +898,7 @@
 							array_unshift($files, array( // Should be first, so static JS files can access variables.
 									'path' => NULL,
 									'url' => strval(gateway_url('js-code', $this->js_code_ref . '-' . $position . '.js')),
-									'attributes' => ($this->js_code[$position]['mode'] != 'inline' ? array($this->js_code[$position]['mode']) : array()),
+									'attributes' => ($this->js_code[$position]['mode'] != 'inline' ? array($this->js_code[$position]['mode']) : []),
 								));
 
 						}
@@ -908,7 +908,7 @@
 
 						if (!$integrity && config::get('output.js_combine')) {
 
-							$grouped_files = array(); // Local files that can be grouped
+							$grouped_files = []; // Local files that can be grouped
 
 							foreach ($files as $id => $file) {
 								if (substr($file['path'], 0, 1) == '/' && substr($file['path'], -3) == '.js' && count($file['attributes']) == 0 && is_file(PUBLIC_ROOT . $file['path'])) {
@@ -944,7 +944,7 @@
 										$last_modified = '';
 									}
 
-									$paths = array();
+									$paths = [];
 									foreach ($grouped_files as $id => $path) {
 										unset($files[$id]);
 										$paths[] = substr($path, $length, -3);
@@ -953,7 +953,7 @@
 									$files[] = array(
 											'path' => NULL,
 											'url' => $prefix . $last_modified . rawurlencode('{') . implode(',', array_unique($paths)) . rawurlencode('}') . ($minify ? '.min' : '') . '.js',
-											'attributes' => array(),
+											'attributes' => [],
 										);
 
 								}
@@ -1122,7 +1122,7 @@
 
 						if (count($param_values) > 0) {
 
-							$vars_used = config::get('request.vars_used', array());
+							$vars_used = config::get('request.vars_used', []);
 							$vars_ignore = config::get('request.vars_ignored', array('js', 'style'));
 
 							foreach ($param_values as $name => $value) {
@@ -1238,7 +1238,7 @@
 				//--------------------------------------------------
 				// Clear buffers
 
-					$buffers = array();
+					$buffers = [];
 					while (ob_get_level() > 0) {
 						$buffers[] = ob_get_clean();
 					}

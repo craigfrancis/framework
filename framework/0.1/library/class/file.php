@@ -9,7 +9,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $config = array();
+			private $config = [];
 
 		//--------------------------------------------------
 		// Setup
@@ -329,7 +329,7 @@
 								//--------------------------------------------------
 								// Resize config
 
-									$config = array();
+									$config = [];
 
 									$pos = strpos($size, '_');
 									if ($pos !== false) {
@@ -496,7 +496,7 @@
 
 			for ($k = 0; $k < 30; $k++) {
 
-				$config = array();
+				$config = [];
 
 				if (mt_rand(1, 2) == 1) {
 					if (mt_rand(1, 2) == 1) {

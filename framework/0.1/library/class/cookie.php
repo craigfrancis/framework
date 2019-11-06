@@ -17,7 +17,7 @@
 
 		}
 
-		public static function set($variable, $value, $config = array()) {
+		public static function set($variable, $value, $config = []) {
 
 			//--------------------------------------------------
 			// Config
@@ -181,7 +181,7 @@
 
 		}
 
-		public static function get($variable, $config = array()) {
+		public static function get($variable, $config = []) {
 
 			if (!is_array($config)) {
 				$config = ['default' => $config];

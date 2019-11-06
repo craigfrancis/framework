@@ -12,7 +12,7 @@
 			protected $current_group = 0;
 			protected $current_index = 0;
 
-			protected $navigation = array();
+			protected $navigation = [];
 
 			protected $indent = '';
 			protected $main_class = '';
@@ -121,7 +121,7 @@
 									'selected' => $config
 								);
 						} else {
-							$config = array();
+							$config = [];
 						}
 					}
 
@@ -167,7 +167,7 @@
 				}
 
 				$this->navigation[$this->current_group]['name_html'] = $name_html;
-				$this->navigation[$this->current_group]['links'] = array();
+				$this->navigation[$this->current_group]['links'] = [];
 
 			}
 

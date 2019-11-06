@@ -5,18 +5,18 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $tables = array();
-			private $timestamps = array();
+			private $tables = [];
+			private $timestamps = [];
 			private $now = NULL;
-			private $list_paths = array();
-			private $list_data = array();
-			private $list_length = array();
+			private $list_paths = [];
+			private $list_data = [];
+			private $list_length = [];
 			private $list_postcode = array('AL','CB','CM','BT','BR','E','EC','DE','LE','LN','DH','DL','NE','BB','BL','CA','AB','DD','DG','HP','MK','NN','BN','CR','CT','BA','BH','BS','CF','LD','LL','B','CV','DY','BD','DN','HD');
 
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct($config = array()) {
+			public function __construct($config = []) {
 				$this->setup($config);
 			}
 
@@ -35,14 +35,14 @@
 		//--------------------------------------------------
 		// Create record - typically for child records.
 
-			final public function record_create($table, $values, $config = array()) {
+			final public function record_create($table, $values, $config = []) {
 				return $this->tables[$table]['class']->record_add($values, $config);
 			}
 
 		//--------------------------------------------------
 		// Create a value
 
-			public function value_get($type, $config = array()) {
+			public function value_get($type, $config = []) {
 
 				if ($type == 'timestamp') {
 
