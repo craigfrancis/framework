@@ -441,7 +441,7 @@
 									1';
 
 						$parameters = [];
-						$parameters[] = array('s', ($postcode === NULL ? $search : substr($postcode, 0, -4)));
+						$parameters[] = ['s', ($postcode === NULL ? $search : substr($postcode, 0, -4))];
 
 						if ($row = $db->fetch_row($sql, $parameters)) {
 							$latitude = $row['latitude'];

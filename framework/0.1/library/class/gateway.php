@@ -244,7 +244,7 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 										request_date < ?';
 
 							$parameters = [];
-							$parameters[] = array('s', date('Y-m-d H:i:s', strtotime('-1 month')));
+							$parameters[] = ['s', date('Y-m-d H:i:s', strtotime('-1 month'))];
 
 							$db->query($sql, $parameters);
 
@@ -715,7 +715,7 @@ report_add('Deprecated: $api->client_verify() ... will be replaced with somethin
 								created < ?';
 
 					$parameters = [];
-					$parameters[] = array('s', date('Y-m-d H:i:s', strtotime('-3 days')));
+					$parameters[] = ['s', date('Y-m-d H:i:s', strtotime('-3 days'))];
 
 					$db->query($sql, $parameters);
 

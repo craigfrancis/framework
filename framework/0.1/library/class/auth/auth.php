@@ -1395,7 +1395,7 @@ exit();
 
 				$parameters = [];
 				$parameters[] = ['s', $identification];
-				$parameters[] = array('i', ($user_id === NULL ? 0 : $user_id));
+				$parameters[] = ['i', ($user_id === NULL ? 0 : $user_id)];
 
 				return ($db->num_rows($sql, $parameters) == 0);
 
@@ -1447,7 +1447,7 @@ exit();
 
 					if ($identification === NULL) {
 						$where_sql = 'm.' . $db->escape_field($db_main_fields['id']) . ' = ?';
-						$parameters[] = array('i', $this->user_id_get());
+						$parameters[] = ['i', $this->user_id_get()];
 					} else {
 						$where_sql = 'm.' . $db->escape_field($db_main_fields['identification']) . ' = ?';
 						$parameters[] = ['s', $identification];
@@ -1497,7 +1497,7 @@ exit();
 						}
 						if ($this->lockout_mode === NULL || $this->lockout_mode == 'ip') {
 							$where_sql[] = 's.ip = ?';
-							$parameters[] = array('s', config::get('request.ip'));
+							$parameters[] = ['s', config::get('request.ip')];
 						}
 
 						if (count($where_sql) == 0) {

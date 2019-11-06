@@ -130,7 +130,7 @@
 									r.deleted = r.deleted'; // Don't GROUP BY r.created, as it opens a race condition (how many requests can be made in a second?)... just hope that we don't have someone with 5+ accounts on a single email address, and they don't receive the reset email.
 
 						$parameters = [];
-						$parameters[] = array('s', config::get('request.ip'));
+						$parameters[] = ['s', config::get('request.ip')];
 						$parameters[] = ['s', $created_after];
 
 						if ($db->num_rows($sql, $parameters) >= $created_limit) {

@@ -502,7 +502,7 @@
 					if (is_int($value)) {
 						$parameters[] = ['i', $value];
 					} else if (is_float($value)) {
-						$parameters[] = array('d', $value);
+						$parameters[] = ['d', $value];
 					} else {
 						$parameters[] = ['s', $value];
 					}
@@ -523,7 +523,7 @@
 							if (is_int($field_value)) {
 								$parameters[] = ['i', $field_value];
 							} else if (is_float($field_value)) {
-								$parameters[] = array('d', $field_value);
+								$parameters[] = ['d', $field_value];
 							} else {
 								$parameters[] = ['s', $field_value];
 							}
@@ -561,7 +561,7 @@
 						if (is_int($values[$field])) {
 							$parameters[] = ['i', $values[$field]];
 						} else if (is_float($values[$field])) {
-							$parameters[] = array('d', $values[$field]);
+							$parameters[] = ['d', $values[$field]];
 						} else {
 							$parameters[] = ['s', $values[$field]];
 						}

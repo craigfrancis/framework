@@ -81,7 +81,7 @@
 						1';
 
 			$parameters = [];
-			$parameters[] = array('s', strval($identification));
+			$parameters[] = ['s', strval($identification)];
 
 			if ($row = $db->fetch_row($sql, $parameters)) {
 				return $row['id'];
@@ -254,7 +254,7 @@
 
 				$parameters = [];
 				$parameters[] = ['i', $user_id];
-				$parameters[] = array('s', config::get('request.ip'));
+				$parameters[] = ['s', config::get('request.ip')];
 				$parameters[] = ['s', $timestamp_recent];
 
 				if ($db->num_rows($sql, $parameters) > 0) {
@@ -442,7 +442,7 @@
 
 					$where_sql = $db->escape_field($this->db_table_fields['id']) . ' = ?';
 
-					$parameters[] = array('i', $this->user_obj->id_get());
+					$parameters[] = ['i', $this->user_obj->id_get()];
 
 				} else {
 
@@ -495,7 +495,7 @@
 
 						$where_sql[] = 'ip = ?';
 
-						$parameters[] = array('s', config::get('request.ip'));
+						$parameters[] = ['s', config::get('request.ip')];
 
 					}
 
@@ -515,7 +515,7 @@
 								created > ? AND
 								deleted = "0000-00-00 00:00:00"';
 
-					$parameters[] = array('s', date('Y-m-d H:i:s', (time() - $this->lockout_timeout)));
+					$parameters[] = ['s', date('Y-m-d H:i:s', (time() - $this->lockout_timeout))];
 
 					if ($db->num_rows($sql, $parameters) >= $this->lockout_attempts) { // Once every 30 seconds, for the 30 minutes
 						$error = 'failure_repetition';

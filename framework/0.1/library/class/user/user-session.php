@@ -86,7 +86,7 @@
 									deleted = "0000-00-00 00:00:00"';
 
 						$parameters = [];
-						$parameters[] = array('s', date('Y-m-d H:i:s'));
+						$parameters[] = ['s', date('Y-m-d H:i:s')];
 						$parameters[] = ['i', $user_id];
 
 						$db->query($sql, $parameters);
@@ -107,7 +107,7 @@
 								deleted < ?';
 
 					$parameters = [];
-					$parameters[] = array('s', date('Y-m-d H:i:s', (time() - $this->history_length)));
+					$parameters[] = ['s', date('Y-m-d H:i:s', (time() - $this->history_length))];
 
 					$db->query($sql, $parameters);
 
@@ -121,7 +121,7 @@
 									last_used < ?';
 
 						$parameters = [];
-						$parameters[] = array('s', date('Y-m-d H:i:s', (time() - $this->length - $this->history_length)));
+						$parameters[] = ['s', date('Y-m-d H:i:s', (time() - $this->length - $this->history_length))];
 
 						$db->query($sql, $parameters);
 
@@ -267,7 +267,7 @@
 
 					if ($this->length > 0) {
 						$where_sql .= ' AND' . "\n\t\t\t\t\t\t\t\t\t" . 'last_used > ?';
-						$parameters[] = array('s', date('Y-m-d H:i:s', (time() - $this->length)));
+						$parameters[] = ['s', date('Y-m-d H:i:s', (time() - $this->length))];
 					}
 
 					$sql = 'SELECT
@@ -298,7 +298,7 @@
 											deleted = "0000-00-00 00:00:00"';
 
 								$parameters = [];
-								$parameters[] = array('s', date('Y-m-d H:i:s'));
+								$parameters[] = ['s', date('Y-m-d H:i:s')];
 								$parameters[] = ['i', $session_id];
 
 								$db->query($sql, $parameters);
@@ -383,7 +383,7 @@
 									deleted = "0000-00-00 00:00:00"';
 
 						$parameters = [];
-						$parameters[] = array('s', date('Y-m-d H:i:s'));
+						$parameters[] = ['s', date('Y-m-d H:i:s')];
 						$parameters[] = ['i', $this->session_id];
 
 						$db->query($sql, $parameters);
