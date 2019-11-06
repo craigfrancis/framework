@@ -12,7 +12,7 @@
 	// Root folders
 
 		$root_path = VIEW_ROOT . '/';
-		$root_folders = array();
+		$root_folders = [];
 		if (is_dir($root_path) && $handle = opendir($root_path)) {
 			while (false !== ($file = readdir($handle))) {
 
@@ -28,11 +28,11 @@
 	//--------------------------------------------------
 	// Sub pages
 
-		$sub_pages = array();
+		$sub_pages = [];
 
 		foreach ($root_folders as $root_folder => $root_url) {
 
-			$sub_pages[$root_folder] = array();
+			$sub_pages[$root_folder] = [];
 
 			$folder_path = $root_path . $root_folder . '/';
 			if (is_dir($folder_path)) {

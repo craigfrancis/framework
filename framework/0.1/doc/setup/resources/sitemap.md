@@ -17,7 +17,7 @@ And just echo the XML in whatever way you like. For example:
 
 	<?php
 
-		$paths = array();
+		$paths = [];
 
 		echo '<?xml version="1.0" encoding="' . xml(config::get('output.charset')) . '"?>';
 		echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';

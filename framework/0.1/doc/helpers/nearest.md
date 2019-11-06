@@ -32,7 +32,7 @@ Where the config could be something like:
 	$config['nearest.users.field_postcode_sql'] = 'address_postcode';
 	$config['nearest.users.field_latitude_sql'] = 'location_latitude';
 	$config['nearest.users.field_longitude_sql'] = 'location_longitude';
-	$config['nearest.users.extra_fields_sql'] = array();
+	$config['nearest.users.extra_fields_sql'] = [];
 	$config['nearest.users.max_results'] = 10;
 	$config['nearest.users.max_km'] = 0; // Unlimited
 

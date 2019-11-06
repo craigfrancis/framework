@@ -30,7 +30,7 @@ For example:
 
 				$db = db_get();
 
-				$trainers = array();
+				$trainers = [];
 
 				$sql = 'SELECT
 							u.id,
@@ -54,7 +54,7 @@ For example:
 			public function search($config) {
 
 				$config = array_merge(array(
-						'rules' => array(), // licenses, courses, organisations, etc.
+						'rules' => [], // licenses, courses, organisations, etc.
 						'rule_match' => 'all', // or 'any'
 						'fields' => array('id', 'name_first', 'name_last'),
 						'paginate' => false,

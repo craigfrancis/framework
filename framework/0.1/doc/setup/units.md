@@ -88,7 +88,7 @@ Some other examples include:
 			'url3' => array('type' => 'url', 'default' => NULL),
 			'name' => array('type' => 'str', 'default' => 'Unknown'),
 			'item' => array('type' => 'obj'),
-			'list' => array('default' => array()),
+			'list' => array('default' => []),
 		);
 
 Anything which does not have a 'default' value is required.

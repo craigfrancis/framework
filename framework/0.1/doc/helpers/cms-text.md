@@ -38,8 +38,8 @@ Initialisation with profile or config:
 			'processor'   => 'markdown',
 			'editable'    => false, // See above
 			'log_missing' => true,
-			'versions'    => array(), // See below
-			'priority'    => array(), // See below
+			'versions'    => [], // See below
+			'priority'    => [], // See below
 		));
 
 The 'profile' allows you to have use config variables:
@@ -68,13 +68,13 @@ To retrieve the HTML content:
 
 Set via config:
 
-	$config['cms.default.versions'] = array();
-	$config['cms.default.priority'] = array();
+	$config['cms.default.versions'] = [];
+	$config['cms.default.priority'] = [];
 
 Or when creating the `cms_text` object:
 
 	$cms_text = new cms_text(array(
-			'priority' => array(),
+			'priority' => [],
 		));
 
 Version example - should be fixed for the profile:
