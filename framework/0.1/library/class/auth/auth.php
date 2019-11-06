@@ -1756,10 +1756,12 @@ exit();
 					exit_with_error('The encryption key "' . auth::$secret_key . '" does not exist.');
 				}
 
-				try {
-					$secret = encryption::decode($secret, auth::$secret_key, $user_id); // user_id is used for "associated data", so this encrypted value cannot be used for any other account.
-				} catch (exception $e) {
-					exit_with_error('Unable to decrypt auth secret for user "' . $user_id . '".', $e->getMessage() . "\n\n" . $e->getHiddenInfo());
+				if ($secret != '') {
+					try {
+						$secret = encryption::decode($secret, auth::$secret_key, $user_id); // user_id is used for "associated data", so this encrypted value cannot be used for any other account.
+					} catch (exception $e) {
+						exit_with_error('Unable to decrypt auth secret for user "' . $user_id . '".', $e->getMessage() . "\n\n" . $e->getHiddenInfo());
+					}
 				}
 
 				if (($pos = strpos($secret, '-')) !== false) {
