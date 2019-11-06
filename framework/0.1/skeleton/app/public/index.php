@@ -5,10 +5,10 @@
 
 	define('ROOT', dirname(dirname(dirname(__FILE__))));
 
-	$framework_paths = array(
+	$framework_paths = [
 			ROOT . '/framework/0.1/bootstrap.php', // Local install
 			'/path/to/bootstrap.php', // Development
-		);
+		];
 
 	foreach ($framework_paths as $framework_path) {
 		if (is_file($framework_path)) {

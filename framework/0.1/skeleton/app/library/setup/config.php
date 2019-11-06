@@ -32,7 +32,7 @@
 			$config['email.testing'] = 'admin@example.com';
 			$config['email.check_domain'] = false;
 
-			// $config['email.contact_us'] = array('admin@example.com');
+			// $config['email.contact_us'] = ['admin@example.com'];
 
 		//--------------------------------------------------
 		// General
@@ -40,7 +40,7 @@
 			$config['gateway.maintenance'] = true;
 
 			// $config['debug.level'] = 0;
-			// $config['debug.db_required_fields'] = array('deleted', 'cancelled');
+			// $config['debug.db_required_fields'] = ['deleted', 'cancelled'];
 
 	} else if (prefix_match('/mnt/files/www/demo/', ROOT)) {
 
@@ -65,7 +65,7 @@
 			$config['email.from_email'] = 'noreply@example.com';
 			$config['email.testing'] = 'admin@example.com';
 
-			// $config['email.contact_us'] = array('admin@example.com');
+			// $config['email.contact_us'] = ['admin@example.com'];
 
 	} else {
 
@@ -90,7 +90,7 @@
 			$config['email.from_email'] = 'noreply@example.com';
 
 			$config['email.error'] = 'admin@example.com';
-			// $config['email.contact_us'] = array('admin@example.com');
+			// $config['email.contact_us'] = ['admin@example.com'];
 
 		//--------------------------------------------------
 		// General
@@ -112,7 +112,7 @@
 
 	// $config['cookie.prefix'] = '__Host-'; // A `Secure` cookie, with no `Domain` attribute
 
-	$config['output.protocols'] = array('http', 'https'); // If this only contains 'https', then https_only() returns true, and cookies get marked as "Secure"
+	$config['output.protocols'] = ['http', 'https']; // If this only contains 'https', then https_only() returns true, and cookies get marked as "Secure"
 
 	$config['output.framing'] = 'DENY'; // SAMEORIGIN or ALLOW
 
@@ -157,7 +157,7 @@
 
 	// $config['upload.demo.source'] = 'git'; // or 'svn'
 	// $config['upload.demo.location'] = 'demo:/www/demo/company.project';
-	// $config['upload.demo.update'] = false; // or true, or array('project', 'framework')
+	// $config['upload.demo.update'] = false; // or true, or ['project', 'framework']
 
 	// $config['upload.live.source'] = 'demo';
 	// $config['upload.live.location'] = 'live:/www/live/company.project';

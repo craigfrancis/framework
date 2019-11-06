@@ -26,11 +26,11 @@
 			//--------------------------------------------------
 			// Defaults
 
-				$default_config = array(
-						'versions' => array(),
+				$default_config = [
+						'versions' => [],
 						'revision_limit' => 10,
 						'author_id' => 0,
-					);
+					];
 
 				$config = array_merge($default_config, config::get_all('cms.default'));
 
@@ -39,7 +39,7 @@
 					$config = array_merge($config, config::get_all('cms.' . $profile));
 				}
 
-				$config = array_merge($config, array(
+				$config = array_merge($config, [
 						'profile' => $profile,
 						'path' => request('path'),
 						'url' => request('url'), // Typically path with query string
@@ -49,7 +49,7 @@
 						'marker' => request('marker'),
 						'variables' => request('variables'),
 						'default' => request('default'),
-					));
+					]);
 
 				if (!$config['url']) {
 					$config['url'] = $config['path'];
@@ -67,14 +67,14 @@
 				$db = db_get();
 
 				if (!is_array($config['versions']) || count($config['versions']) == 0) {
-					$config['versions'] = array('Text' => array());
+					$config['versions'] = ['Text' => []];
 				}
 
-				$version_where_sql = array();
+				$version_where_sql = [];
 
 				foreach ($config['versions'] as $version_name => $version_values) {
 
-					$where_sql = array();
+					$where_sql = [];
 					$where_sql[] = 'path = "' . $db->escape($config['path']) . '"';
 					$where_sql[] = 'section = "' . $db->escape($config['section']) . '"';
 
@@ -112,7 +112,7 @@
 			//--------------------------------------------------
 			// Variables
 
-				$variables = array();
+				$variables = [];
 
 				if ($config['variables']) {
 					foreach (explode(',', $config['variables']) as $variable) {
@@ -140,7 +140,7 @@
 					$field_variables->value_set($variables);
 				}
 
-				$fields = array();
+				$fields = [];
 
 				$row_count = (count($config['versions']) == 1 ? 20 : 10);
 
@@ -304,7 +304,7 @@
 				if (count($config['versions']) == 1) { // Hide if more than one version, should probably appear under each textarea
 					foreach ($config['versions'] as $version_name => $version_values) {
 
-						$history = array();
+						$history = [];
 
 						$sql = 'SELECT
 									ct.revision,
