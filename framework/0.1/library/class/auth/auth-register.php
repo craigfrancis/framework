@@ -136,7 +136,7 @@
 				//--------------------------------------------------
 				// Config
 
-					if ($this->auth->session_get() !== false) {
+					if ($this->auth->session_open() !== false) {
 						exit_with_error('Cannot call $auth_register->validate() when the user is logged in.');
 					}
 
