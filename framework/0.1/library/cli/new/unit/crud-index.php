@@ -11,6 +11,7 @@
 				'paginate'   => ['default' => true],
 				'search'     => ['default' => true],
 				'download'   => ['default' => true],
+				'autofocus'  => ['default' => NULL],
 
 			];
 
@@ -39,7 +40,7 @@
 
 				if ($config['search'] === true) {
 
-					$search_form = unit_get('search_form');
+					$search_form = unit_get('search_form'); // $config['autofocus']
 
 					$this->set('search', $search_form);
 
@@ -205,7 +206,7 @@
 				}
 
 				if ($config['add_url']) {
-					$links_html[] = '<a href="' . html($config['add_url']) . '">add item</a>';
+					$links_html[] = '<a href="' . html($config['add_url']) . '"' . ($config['autofocus'] == 'add' ? ' autofocus="autofocus"' : '') . '>add item</a>';
 				}
 
 				$this->set('links_html', implode(', ', $links_html));
