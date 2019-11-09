@@ -143,7 +143,7 @@
 				'usb'                                   => [], // WebUSB
 				// 'vertical-scroll'                    => [], // ExperimentalProductivityFeatures
 				// 'wake-lock'                          => [], // WakeLock
-				// 'xr'                                 => [], // WebXR
+				'xr-spatial-tracking'                   => [], // WebXR, Was "xr": https://chromium.googlesource.com/chromium/src/+/1b4eae88d6a915034f405d8a88551f9b6a7b35ca
 				'vr'                                    => [],
 
 				// 'speaker'                            => [], // Removed 22-07-2019: https://chromium.googlesource.com/chromium/src/+/d9af2becddc1b592e4aeff52db12e9d0d09fbe79
