@@ -54,6 +54,7 @@
 							'base_url' => NULL,
 							'select_year_start' => ($now->format('Y') - 1),
 							'select_year_end' => ($now->format('Y') + 3),
+							'day_format' => NULL,
 						);
 
 					$default_config = array_merge($default_config, $this->config, config::get_all('paginator'));
@@ -519,9 +520,14 @@
 
 							$class = (isset($this->day_class[$loop_date]) ? $this->day_class[$loop_date] : '');
 							if ($loop_day >= 6) $class .= ' weekend';
-							if ($loop_today) $class .= ' today';
 							if ($loop_timestamp >= $this->focus_start && $loop_timestamp < $this->focus_end) $class .= ' focus';
-							if ($loop_timestamp > $today_timestamp) $class .= ' future';
+							if ($loop_today) {
+								$class .= ' today';
+							} else if ($loop_timestamp > $today_timestamp) {
+								$class .= ' future';
+							} else {
+								$class .= ' past';
+							}
 
 							$attributes = array('class' => trim($class), 'data-date' => $loop_date);
 							if ($loop_today) {
@@ -581,7 +587,13 @@
 
 				} else {
 
-					$html = $timestamp->html($this->config['mode'] == 'week' ? 'l jS M' : 'jS M');
+					if ($this->config['day_format']) {
+						$format = $this->config['day_format'];
+					} else {
+						$format = ($this->config['mode'] == 'week' ? 'l jS M' : 'jS M');
+					}
+
+					$html = '<span class="day">' . html($timestamp->format('D')) . ' </span>' . $timestamp->html($format);
 
 					if ($url) {
 						$html = '<a href="' . html($url) . '">' . $html . '</a>';
