@@ -1794,6 +1794,10 @@ exit();
 
 			public static function secret_encode($user_id, $secret_values, $new_password = NULL) {
 
+				if ($secret_values === NULL) {
+					$secret_values = [];
+				}
+
 				if (!is_array($secret_values)) {
 					exit_with_error('The "auth" values for user "' . $user_id . '" are damaged', debug_dump($secret_values)); // If it's NULL, then it's probably due to failing to parse.
 				}
