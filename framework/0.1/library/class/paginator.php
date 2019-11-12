@@ -449,7 +449,7 @@
 
 						$link_html = $this->page_link_get_html($this->config['first_html'], 1);
 
-						$nav_links_html['first'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_first">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
+						$nav_links_html['first'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_jump pagination_first">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
 					}
 
@@ -457,7 +457,7 @@
 
 						$link_html = $this->page_link_get_html($this->config['back_html'], ($this->page_number - 1));
 
-						$nav_links_html['back'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_back">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
+						$nav_links_html['back'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_jump pagination_back">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
 					}
 
@@ -465,7 +465,7 @@
 
 						$link_html = $this->page_link_get_html($this->config['next_html'], $this->page_number + 1);
 
-						$nav_links_html['next'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_next">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
+						$nav_links_html['next'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_jump pagination_next">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
 					}
 
@@ -473,7 +473,7 @@
 
 						$link_html = $this->page_link_get_html($this->config['last_html'], $this->page_count);
 
-						$nav_links_html['last'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_last">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
+						$nav_links_html['last'] = $this->config['indent_html'] . "\t" . '<' . html($this->config['link_wrapper_element']) . ' class="pagination_jump pagination_last">' . $link_html . '</' . html($this->config['link_wrapper_element']) . '>';
 
 					}
 
