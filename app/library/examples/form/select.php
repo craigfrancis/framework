@@ -19,7 +19,7 @@
 	if ($database) $field->db_field_set('items', 'key'); // Drop second parameter if you want to store the value
 	if ($database) $field->options_set($items); // Can be removed if using a database enum/set field
 	if (!$database) $field->options_set($items);
-	if (!$database) $field->option_groups_set($groups); // Just remove if you don't want to group the items
+	if (!$database) $field->options_group_set($groups); // Just remove if you don't want to group the items
 	$field->label_option_set('');
 	$field->required_error_set('An item is required.');
 

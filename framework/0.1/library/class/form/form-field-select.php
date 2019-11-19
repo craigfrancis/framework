@@ -9,7 +9,7 @@
 			protected $multiple = false;
 			protected $label_option = NULL;
 			protected $option_values = [];
-			protected $option_groups = NULL;
+			protected $options_group = NULL;
 			protected $options_class = NULL;
 			protected $db_field_options = NULL;
 			protected $select_size = 1;
@@ -142,8 +142,8 @@
 				return $this->option_values;
 			}
 
-			public function option_groups_set($option_groups) {
-				$this->option_groups = $option_groups;
+			public function options_group_set($options_group) {
+				$this->options_group = $options_group;
 			}
 
 			public function options_class_set($options_class) {
@@ -152,6 +152,13 @@
 
 			public function select_size_set($size) {
 				$this->select_size = $size;
+			}
+
+		//--------------------------------------------------
+		// Legacy
+
+			public function option_groups_set($options_group) { // Use options_group_set(), to be consistent with options_class_set()
+				$this->options_group_set($options_group);
 			}
 
 		//--------------------------------------------------
@@ -382,15 +389,15 @@
 					$used_keys = [];
 					$group_html = '';
 
-					if ($this->option_groups !== NULL) {
-						foreach (array_unique($this->option_groups) as $opt_group) {
+					if ($this->options_group !== NULL) {
+						foreach (array_unique($this->options_group) as $opt_group) {
 
 							if ($opt_group !== NULL) {
 								$group_html .= '
 										<optgroup label="' . html($opt_group) . '">';
 							}
 
-							foreach (array_keys($this->option_groups, $opt_group) as $key) {
+							foreach (array_keys($this->options_group, $opt_group) as $key) {
 								if ($key === '') {
 
 									$group_html .= $label_html;
