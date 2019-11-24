@@ -296,7 +296,7 @@
 						$table_sql = $this->table_sql . ($this->config['table_alias'] === NULL ? '' : ' AS ' . $this->config['table_alias']);
 
 						$fields = $this->config['fields'];
-						if (count($fields) == 0) {
+						if ($fields === NULL || count($fields) == 0) {
 							$fields = NULL;
 						} else if ($this->config['deleted'] && !in_array('deleted', $fields)) {
 							$fields[] = 'deleted';
