@@ -3,21 +3,23 @@
 /*--------------------------------------------------*/
 /* Setup
 
-Create a S3 bucket [BucketName]
+Create a S3 bucket [bucket-name] which takes the form of:
+
+	[aws_prefix]-[name]-[SERVER]
 
 In Permissions > Bucket Policy, add IP address restrictions:
 
 	{
 		"Version": "2012-10-17",
-		"Id": "S3-BucketName",
+		"Id": "S3-[bucket-name]",
 		"Statement": [{
-			"Sid": "S3-BucketName",
+			"Sid": "S3-[bucket-name]",
 			"Effect": "Deny",
 			"Principal": "*",
 			"Action": "s3:*",
 			"Resource": [
-				"arn:aws:s3:::BucketName",
-				"arn:aws:s3:::BucketName/*"
+				"arn:aws:s3:::[bucket-name]",
+				"arn:aws:s3:::[bucket-name]/*"
 			],
 			"Condition": {
 				"StringNotLike": {
@@ -35,7 +37,7 @@ In Permissions > Bucket Policy, add IP address restrictions:
 
 In IAM, create two policies:
 
-	S3-RW-BucketName (ListBucket used to stop a 403 when checking for deleted files)
+	s3-[bucket-name]-rw (ListBucket used to stop a 403 when checking for deleted files)
 
 	{
 		"Version": "2012-10-17",
@@ -46,7 +48,7 @@ In IAM, create two policies:
 					"s3:ListBucket"
 				],
 				"Resource": [
-					"arn:aws:s3:::BucketName"
+					"arn:aws:s3:::[bucket-name]"
 				]
 			},
 			{
@@ -57,13 +59,13 @@ In IAM, create two policies:
 					"s3:DeleteObject"
 				],
 				"Resource": [
-					"arn:aws:s3:::BucketName/*"
+					"arn:aws:s3:::[bucket-name]/*"
 				]
 			}
 		]
 	}
 
-	S3-RO-BucketName
+	s3-[bucket-name]-ro
 
 	{
 		"Version": "2012-10-17",
@@ -74,7 +76,7 @@ In IAM, create two policies:
 					"s3:ListBucket"
 				],
 				"Resource": [
-					"arn:aws:s3:::BucketName"
+					"arn:aws:s3:::[bucket-name]"
 				]
 			},
 			{
@@ -83,7 +85,7 @@ In IAM, create two policies:
 					"s3:GetObject"
 				],
 				"Resource": [
-					"arn:aws:s3:::BucketName/*"
+					"arn:aws:s3:::[bucket-name]/*"
 				]
 			}
 		]
@@ -95,7 +97,7 @@ Use the ReadWrite account when using this class normally.
 
 Install "aws" command line tools, and use the ReadOnly account to run:
 
-	aws s3 sync s3://BucketName /path/to/backup
+	aws s3 sync s3://[bucket-name] /path/to/backup
 
 	$file_aws_s3->cleanup(); // uses 'aws_backup_folder'
 
@@ -143,7 +145,13 @@ Abbreviations:
 				//--------------------------------------------------
 				// Config defaults
 
-					$this->file->config_set_default('aws_bucket', $this->file->config_get('profile'));
+					$default_bucket = implode('-', [
+							$this->file->config_get('aws_prefix'),
+							$this->file->config_get('profile'),
+							SERVER,
+						]);
+
+					$this->file->config_set_default('aws_bucket', $default_bucket);
 					$this->file->config_set_default('aws_info_key', 'aws-s3-default');
 					$this->file->config_set_default('aws_file_hash', 'sha256');
 					$this->file->config_set_default('aws_local_max_age', '-30 days');
@@ -157,7 +165,7 @@ Abbreviations:
 					if (!$this->file->config_exists('aws_access_id')) throw new error_exception('The file_aws_s3 config must set "aws_access_id".');
 
 				//--------------------------------------------------
-				// Access secret
+				// Access details
 
 					$this->access_secret = NULL;
 
@@ -534,7 +542,7 @@ Abbreviations:
 				// Config
 
 					$aws_region = $this->file->config_get('aws_region');
-					$aws_host = $this->file->config_get('aws_bucket') . '.s3.amazonaws.com';
+					$aws_host = $this->file->config_get('aws_bucket') . '.s3-' . $aws_region . '.amazonaws.com';
 
 					$request_content = (isset($request['content']) ? $request['content'] : '');
 					$request_content_hash = hash('sha256', $request_content); // Hash an empty string for GET
@@ -667,7 +675,7 @@ Abbreviations:
 
 					}
 
-					throw new error_exception('Invalid response from AWS "' . $request['method'] . '"', 'Code:' . $response_code . "\n" . $socket->response_data_get());
+					throw new error_exception('Invalid response from AWS "' . $request['method'] . '"', 'Host: ' . $aws_host . "\n" . 'Code :' . $response_code . "\n\n-----\n\n" . $socket->response_data_get());
 
 			}
 
