@@ -755,7 +755,7 @@
 				}
 			}
 
-			return implode($chars);
+			return implode('', $chars);
 
 		}
 
