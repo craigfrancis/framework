@@ -391,7 +391,7 @@
 
 						} else {
 
-							$output .= '/' . implode($path_new, '/');
+							$output .= '/' . implode('/', $path_new);
 
 						}
 
