@@ -555,7 +555,7 @@
 											$search[] = $val;
 										}
 									}
-									$search = implode($search, ', ');
+									$search = implode(', ', $search);
 
 									$result = $this->search($search, $country, ($k > 1));
 

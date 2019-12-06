@@ -104,9 +104,8 @@
 					$this->statement = mysqli_prepare($this->link, $sql);
 
 					if ($this->statement) {
-
 						if ($parameters) {
-							$ref_values = array(implode(array_column($parameters, 0)));
+							$ref_values = array(implode('', array_column($parameters, 0)));
 							foreach ($parameters as $key => $value) {
 								$ref_values[] = &$parameters[$key][1];
 							}
