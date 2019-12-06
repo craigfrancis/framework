@@ -1668,6 +1668,14 @@
 
 	function http_csp_header($csp = NULL, $config = []) {
 
+		if (is_string($csp) && $csp === 'none') {
+			$csp = [
+					'default-src' => "'none'",
+					'base-uri'    => "'none'",
+					'form-action' => "'none'",
+				];
+		}
+
 		$config = array_merge([
 				'enforced'  => config::get('output.csp_enforced', false),
 				'report'    => config::get('output.csp_report', false),
