@@ -82,7 +82,7 @@
 			public function html_label($label_html = NULL) {
 				if ($label_html === NULL) {
 					if ($this->label_custom_html !== NULL) {
-						$label_html = $this->label_custom_html;
+						$label_html = $this->label_custom_html . $this->label_suffix_html;
 					} else {
 						$label_html = parent::html_label();
 						$label_html = preg_replace('/<label[^>]+>(.*)<\/label>/', '$1', $label_html); // Ugly, but better than duplication
