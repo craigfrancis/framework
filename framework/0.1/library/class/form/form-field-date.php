@@ -58,7 +58,7 @@
 				//--------------------------------------------------
 				// Guess correct year if only 2 digits provided
 
-					if ($this->value['Y'] > 0 && $this->value['Y'] < 100) {
+					if ($this->value !== NULL && $this->value['Y'] > 0 && $this->value['Y'] < 100) {
 						$this->value['Y'] = DateTime::createFromFormat('y', $this->value['Y'])->format('Y');
 					}
 

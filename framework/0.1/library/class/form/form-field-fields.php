@@ -476,7 +476,7 @@
 
 				} else {
 
-					$value = $input_value[$field];
+					$value = ($input_value === NULL ? NULL : $input_value[$field]);
 
 					if ($input_config['pad_length'] > 0) {
 						if ($value !== NULL && $value !== '') {
