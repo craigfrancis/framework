@@ -45,6 +45,7 @@
 							'link_count' => 9,
 							'link_wrapper_element' => 'span',
 							'link_html' => NULL,
+							'show' => NULL, // NULL will hide pagination when there is only 1 page.
 							'extra_html' => NULL, // '<span class="pagination_extra">Page [PAGE_NUMBER] of [PAGE_COUNT]</span>'
 						);
 
@@ -351,14 +352,36 @@
 				//--------------------------------------------------
 				// Ignore if the navigation only has 1 page
 
-					if ($this->page_count <= 1) {
+					if ($this->page_count <= 1 && $this->config['show'] === NULL) {
 						return '';
 					}
 
 				//--------------------------------------------------
-				// Elements
+				// Links
 
-					$nav_links_html = $this->html_links_nav();
+					if ($this->page_count <= 1) {
+
+						$nav_links_html = [
+								'first' => '',
+								'back' => '',
+								'next' => '',
+								'last' => '',
+							];
+
+						$links_array = [];
+
+					} else {
+
+						$nav_links_html = $this->html_links_nav();
+
+						$links_array = $this->html_links_page();
+
+					}
+
+					$links_html = '';
+					foreach ($links_array as $link_html) {
+						$links_html .= $this->config['indent_html'] . "\t" . $link_html;
+					}
 
 				//--------------------------------------------------
 				// Extra HTML
@@ -369,16 +392,6 @@
 						$extra_html = $this->config['indent_html'] . "\t" . $extra_html;
 					} else {
 						$extra_html = '';
-					}
-
-				//--------------------------------------------------
-				// Links
-
-					$links_array = $this->html_links_page();
-
-					$links_html = '';
-					foreach ($links_array as $link_html) {
-						$links_html .= $this->config['indent_html'] . "\t" . $link_html;
 					}
 
 				//--------------------------------------------------
@@ -435,12 +448,12 @@
 				//--------------------------------------------------
 				// Defaults
 
-					$nav_links_html = array(
+					$nav_links_html = [
 							'first' => '',
 							'back' => '',
 							'next' => '',
 							'last' => '',
-						);
+						];
 
 				//--------------------------------------------------
 				// Build
