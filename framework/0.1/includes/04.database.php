@@ -101,9 +101,12 @@
 
 				if (function_exists('mysqli_stmt_get_result')) { // When mysqlnd is installed - There is no way I'm using bind_result(), where the values from the database should stay in their array (ref fetch_assoc), and work around are messy.
 
+					$this->statement = false; // Must be reset, see bug https://bugs.php.net/bug.php?id=78932
+
 					$this->statement = mysqli_prepare($this->link, $sql);
 
 					if ($this->statement) {
+
 						if ($parameters) {
 							$ref_values = array(implode('', array_column($parameters, 0)));
 							foreach ($parameters as $key => $value) {
