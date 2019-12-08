@@ -77,6 +77,7 @@
 						'label' => $this->auth->text_get('identification_label'),
 						'name' => 'identification',
 						'domain_check' => true,
+						'required' => true,
 					), $config));
 
 				return $this->field_identification;
@@ -165,6 +166,9 @@
 
 						if (isset($this->field_identification)) {
 							$identification = strval($this->field_identification->value_get());
+							if ($identification == '') {
+								$identification = NULL; // The table will use UNIQUE on the identification field, so a 'min_length' of 0 will need to be NULL.
+							}
 						} else {
 							exit_with_error('You must call $auth_register->field_identification_get() before $auth_register->validate().');
 						}

@@ -147,15 +147,11 @@
 						'label' => $this->auth->text_get('identification_label'),
 						'name' => 'identification',
 						'domain_check' => true,
+						'required' => true,
 					), $config));
 
 				if ($form->initial()) {
-					$identification = $this->auth->user_identification_get();
-					if ($identification) {
-						$this->field_identification->value_set($identification);
-					} else {
-						exit_with_error('Cannot pre-fill the identification field, as the value is not known. You probably need to call $auth_update->record_get([\'field_name\']);');
-					}
+					$this->field_identification->value_set($this->auth->user_identification_get());
 				}
 
 				return $this->field_identification;

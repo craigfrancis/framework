@@ -27,7 +27,9 @@
 						'label' => $this->auth->text_get('identification_label'),
 						'name' => 'identification',
 						'domain_check' => false, // DNS lookups can take time.
-					), $config));
+					), $config, array(
+						'required' => true,
+					)));
 
 				if ($form->initial()) {
 					$this->field_identification->value_set($this->auth->last_identification_get());

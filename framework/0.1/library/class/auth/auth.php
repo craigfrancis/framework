@@ -1669,7 +1669,10 @@ exit();
 					$field->format_error_set($this->text_get('identification_format'));
 				}
 
-				$field->min_length_set($this->text_get('identification_min_length'));
+				if ($config['required']) {
+					$field->min_length_set($this->text_get('identification_min_length'));
+				}
+
 				$field->max_length_set($this->text_get('identification_max_length'), $max_length);
 				$field->autocapitalize_set(false);
 				$field->autocomplete_set($this->user_id ? NULL : 'username');
