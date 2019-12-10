@@ -1455,7 +1455,8 @@ exit();
 
 					$sql = 'SELECT
 								m.' . $db->escape_field($db_main_fields['id']) . ' AS id,
-								m.' . $db->escape_field($db_main_fields['auth']) . ' AS auth
+								m.' . $db->escape_field($db_main_fields['auth']) . ' AS auth,
+								m.' . $db->escape_field($db_main_fields['password']) . ' AS pass
 							FROM
 								' . $db->escape_table($db_main_table) . ' AS m
 							WHERE
@@ -1467,6 +1468,7 @@ exit();
 
 					$db_id = 0;
 					$db_auth = NULL;
+					$db_pass = NULL;
 
 					if ($row = $db->fetch_row($sql, $parameters)) {
 
@@ -1477,6 +1479,8 @@ exit();
 							if (!$db_auth) {
 								$error = 'failure_decryption';
 							}
+						} else if (strlen(trim($row['pass'])) > 1) {
+							$db_pass = $row['pass']; // The auth field is blank, and a TEMPORARY plain text password is in the pass field.
 						}
 
 					}
@@ -1546,6 +1550,11 @@ exit();
 
 							}
 
+						} else if ($db_pass && $db_pass == $password) {
+
+							$valid = true;
+							$rehash = true;
+
 						}
 
 						$this->hash_time = round((microtime(true) - $start), 4);
@@ -1582,7 +1591,8 @@ exit();
 								$sql = 'UPDATE
 											' . $db->escape_table($db_main_table) . ' AS m
 										SET
-											m.' . $db->escape_field($db_main_fields['auth']) . ' = ?
+											m.' . $db->escape_field($db_main_fields['auth']) . ' = ?,
+											m.' . $db->escape_field($db_main_fields['password']) . ' = ""
 										WHERE
 											m.' . $db->escape_field($db_main_fields['id']) . ' = ? AND
 											' . $db_main_where_sql . '
