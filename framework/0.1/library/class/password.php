@@ -19,13 +19,15 @@
 
 		public static function hash($password) {
 
-			$password = password::normalise($password);
+			$default_algorithm = PASSWORD_BCRYPT; // PASSWORD_DEFAULT is NULL in PHP 7.4, so normalise() won't work properly.
+
+			$password = password::normalise($password, $default_algorithm);
 
 			if (function_exists('password_hash')) {
 
 				$start = microtime(true);
 
-				$hash = password_hash($password, PASSWORD_DEFAULT);
+				$hash = password_hash($password, $default_algorithm);
 
 				if (function_exists('debug_log_time')) {
 					debug_log_time('PASSH', round((microtime(true) - $start), 3));
@@ -133,7 +135,7 @@
 					return true; // Not hashed, or normalised.
 				}
 
-				return password_needs_rehash($hash, PASSWORD_DEFAULT); // Use whenever possible
+				return password_needs_rehash($hash, PASSWORD_BCRYPT); // Use whenever possible ... see note about PASSWORD_DEFAULT above.
 
 			} else if (defined('CRYPT_BLOWFISH') && CRYPT_BLOWFISH == true) {
 
@@ -155,7 +157,7 @@
 
 		}
 
-		public static function normalise($password, $algorithm = PASSWORD_DEFAULT) {
+		public static function normalise($password, $algorithm) {
 
 				//--------------------------------------------------
 				// As certain unicode characters can be encoded in
@@ -197,7 +199,7 @@
 					// some implementations truncate the value to
 					// the first 72 bytes.
 					//
-					//   var_dump(password_verify("abc", password_hash("abc\0defghijklmnop", PASSWORD_DEFAULT)));
+					//   var_dump(password_verify("abc", password_hash("abc\0defghijklmnop", PASSWORD_BCRYPT)));
 					//
 					// A SHA384 hash, with base64 encoding (6 bits
 					// per character, or 64 characters long), would
