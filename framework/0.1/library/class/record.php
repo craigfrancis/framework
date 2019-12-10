@@ -370,8 +370,6 @@
 
 					$db = $this->db_get();
 
-					$insert_mode = ($this->where_sql === NULL);
-
 					$now = new timestamp();
 
 				//--------------------------------------------------
@@ -397,7 +395,7 @@
 
 							$old_values = $this->values_get();
 
-							if ($insert_mode || $old_values === false) {
+							if ($this->where_sql === NULL || $old_values === false) {
 								exit_with_error('Cannot create a new record when record helper is in "single" mode.');
 							}
 
@@ -496,35 +494,31 @@
 						//--------------------------------------------------
 						// Changes
 
-							$changed = true; // New record
+							$old_values = $this->values_get();
 
-							if (!$insert_mode || $this->config['single'] === true) {
+							if ($old_values === false) { // e.g. The where_sql is NULL... or it has been set, but it does not match a record.
 
-								$old_values = $this->values_get();
+								$insert_mode = true;
+								$changed = true; // New record
 
-								if ($old_values === false) { // e.g. inserting a record into a second table, where the ID is already known (auto increment from the first table).
+							} else {
 
-									$insert_mode = true;
+								$insert_mode = false;
+								$changed = false;
 
-								} else {
+								foreach ($new_values as $field => $new_value) {
 
-									$changed = false;
+									if (!array_key_exists($field, $old_values)) {
+										continue; // Probably a new value supplied though $form->db_value_set();
+									}
 
-									foreach ($new_values as $field => $new_value) {
+									$old_value = $old_values[$field];
 
-										if (!array_key_exists($field, $old_values)) {
-											continue; // Probably a new value supplied though $form->db_value_set();
-										}
+									if ($this->log_value_different($old_value, $new_value)) {
 
-										$old_value = $old_values[$field];
+										$this->log_change($field, $old_value, $new_value);
 
-										if ($this->log_value_different($old_value, $new_value)) {
-
-											$this->log_change($field, $old_value, $new_value);
-
-											$changed = true;
-
-										}
+										$changed = true;
 
 									}
 
