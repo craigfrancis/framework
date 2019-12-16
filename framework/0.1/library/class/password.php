@@ -19,15 +19,13 @@
 
 		public static function hash($password) {
 
-			$default_algorithm = PASSWORD_BCRYPT; // PASSWORD_DEFAULT is NULL in PHP 7.4, so normalise() won't work properly.
-
-			$password = password::normalise($password, $default_algorithm);
+			$password = password::normalise($password);
 
 			if (function_exists('password_hash')) {
 
 				$start = microtime(true);
 
-				$hash = password_hash($password, $default_algorithm);
+				$hash = password_hash($password, PASSWORD_DEFAULT);
 
 				if (function_exists('debug_log_time')) {
 					debug_log_time('PASSH', round((microtime(true) - $start), 3));
@@ -135,7 +133,7 @@
 					return true; // Not hashed, or normalised.
 				}
 
-				return password_needs_rehash($hash, PASSWORD_BCRYPT); // Use whenever possible ... see note about PASSWORD_DEFAULT above.
+				return password_needs_rehash($hash, PASSWORD_DEFAULT); // Use whenever possible
 
 			} else if (defined('CRYPT_BLOWFISH') && CRYPT_BLOWFISH == true) {
 
@@ -157,7 +155,7 @@
 
 		}
 
-		public static function normalise($password, $algorithm) {
+		public static function normalise($password, $algorithm = PASSWORD_DEFAULT) {
 
 				//--------------------------------------------------
 				// As certain unicode characters can be encoded in
@@ -192,7 +190,17 @@
 				$password = normalizer_normalize($password, Normalizer::FORM_KD);
 			}
 
-			if ($algorithm === PASSWORD_BCRYPT) {
+			if ($algorithm === PASSWORD_DEFAULT) { // Support PHP 7.4, where PASSWORD_DEFAULT is now set to NULL... https://bugs.php.net/bug.php?id=78969
+				if (!defined('PASSWORD_DEFAULT_IS_BCRYPT')) {
+					$hash_info = password_get_info(password_hash('pass', PASSWORD_DEFAULT, ['cost' => 4]));
+					define('PASSWORD_DEFAULT_IS_BCRYPT', ($hash_info['algo'] === PASSWORD_BCRYPT));
+				}
+				$algorithm_bcrypt = PASSWORD_DEFAULT_IS_BCRYPT;
+			} else {
+				$algorithm_bcrypt = ($algorithm === PASSWORD_BCRYPT);
+			}
+
+			if ($algorithm_bcrypt) {
 
 					//--------------------------------------------------
 					// BCrypt truncates on the NULL character, and
