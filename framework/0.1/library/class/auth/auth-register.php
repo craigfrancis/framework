@@ -539,27 +539,56 @@
 						//--------------------------------------------------
 						// Copy record
 
+							$user_id = false;
+
 							if ($success) {
 
-								list($db_main_table, $db_main_fields) = $this->auth->db_table_get('main'); // Must be explicitly 'main'
+								//--------------------------------------------------
+								// Main table
 
-								$values = $row;
-								unset($values[$this->db_fields['id']]);
-								unset($values[$this->db_fields['token']]);
-								unset($values[$this->db_fields['ip']]);
-								unset($values[$this->db_fields['browser']]);
-								unset($values[$this->db_fields['tracker']]);
+									list($db_main_table, $db_main_fields, $db_main_where_sql) = $this->auth->db_table_get('main'); // Must be explicitly 'main'
 
-								$values[$db_main_fields['created']] = $now;
-								$values[$db_main_fields['edited']] = $now;
+								//--------------------------------------------------
+								// Cleanup
 
-								$db->insert($db_main_table, $values);
+									$values = $row;
+									unset($values[$this->db_fields['id']]);
+									unset($values[$this->db_fields['token']]);
+									unset($values[$this->db_fields['ip']]);
+									unset($values[$this->db_fields['browser']]);
+									unset($values[$this->db_fields['tracker']]);
 
-								$user_id = $db->insert_id();
+									$values[$db_main_fields['created']] = $now;
+									$values[$db_main_fields['edited']] = $now;
 
-							} else {
+								//--------------------------------------------------
+								// Add new record
 
-								$user_id = false;
+									$db->insert($db_main_table, $values);
+
+									$user_id = $db->insert_id();
+
+								//--------------------------------------------------
+								// Re-encode auth value... with the correct user_id,
+								// and to ensure all auth values are present.
+
+									$auth_config = auth::secret_parse($register_id, $row[$this->db_fields['auth']]);
+
+									$auth_encoded = auth::secret_encode($user_id, $auth_config);
+
+									$sql = 'UPDATE
+												' . $db->escape_table($db_main_table) . ' AS m
+											SET
+												m.' . $db->escape_field($db_main_fields['auth']) . ' = ?
+											WHERE
+												m.' . $db->escape_field($db_main_fields['id']) . ' = ? AND
+												' . $db_main_where_sql;
+
+									$parameters = [];
+									$parameters[] = ['s', $auth_encoded];
+									$parameters[] = ['i', $user_id];
+
+									$db->query($sql, $parameters);
 
 							}
 
@@ -579,8 +608,6 @@
 									$this->auth->last_identification_set(NULL); // Clear the last login cookie, just in case they have logged in before.
 
 								} else if ($config['login']) {
-
-									$auth_config = auth::secret_parse($user_id, $row[$this->db_fields['auth']]); // So all fields are present (e.g. 'ips')
 
 									$password_validation = true; // Has just passed $auth->validate_password()
 
