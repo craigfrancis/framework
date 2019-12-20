@@ -608,7 +608,7 @@
 
 				//--------------------------------------------------
 				// Connection
-
+$start = microtime(true);
 					$error = false;
 					$error_details = NULL;
 
@@ -665,7 +665,8 @@
 					if ($error !== false) {
 						return $this->error($error, $error_details);
 					}
-
+$part1 = round((microtime(true) - $start), 4);
+$start = microtime(true);
 				//--------------------------------------------------
 				// Receive
 
@@ -687,8 +688,9 @@
 					$response_data = '';
 					$response_raw = '';
 
+$k = 0;
 					while (($line = fgets($connection)) !== false) { // Loop for headers, by line.
-
+$k++;
 						if (trim($line) == '') { // End of headers
 							$response_split = $line;
 							break;
@@ -717,6 +719,34 @@
 
 					}
 
+$part2 = round((microtime(true) - $start), 4);
+$error_details = ['End Of File'];
+
+					if (!feof($connection)) {
+
+						$error_details = $this->error_connect;
+
+						if ($errno > 0 || $errstr != '') {
+							$error_details[] = $errno . ': ' . $errstr;
+						}
+
+						// return $this->error('Failed reading response from "' . $socket_host . '"', implode("\n\n", $error_details));
+
+					}
+
+$chunk_log = [];
+$chunk_log[] = [$part1, $part2];
+$chunk_log[] = $k;
+$chunk_log[] = $error_details;
+$chunk_log[] = $response_headers_parsed;
+$chunk_log[] = $response_headers_plain;
+
+if ($chunked) {
+	$chunk_log[] = 'Chunked';
+} else {
+	$chunk_log[] = 'Not-Chunked';
+}
+
 					if ($chunked) { // https://www.php.net/manual/en/function.fsockopen.php#36703 and https://cs.chromium.org/chromium/src/net/http/http_chunked_decoder.cc
 
 						do {
@@ -729,6 +759,7 @@
 								do {
 									$chunk_size_hex .= $byte; // Done first, so we don't keep the ending LF.
 									$byte = fread($connection, 1);
+$chunk_log[] = 'Hex: ' . $byte;
 								} while ($byte != "\n" && strlen($byte) == 1); // Keep matching until the LF (ignore the CR before it), or failure (false), or end of file.
 
 								$response_raw .= $chunk_size_hex . $byte;
@@ -744,6 +775,8 @@
 									break;
 								}
 
+$chunk_log[] = 'Size: ' . $chunk_size_int;
+
 							//--------------------------------------------------
 							// Chunk data
 
@@ -757,8 +790,13 @@
 										if ($k++) usleep(10000); // 0.01 second, waiting for next packet.
 										$chunk_partial = fread($connection, ($chunk_size_int - $chunk_returned));
 										if ($chunk_partial === false) {
-											$chunk_error = $chunk_returned . ' of ' . $chunk_size_int . ', packet ' . $k;
+$chunk_log[] = 'Failed';
+											$chunk_error = 'Failed fread: ' . $chunk_returned . ' of ' . $chunk_size_int . ', packet ' . $k;
+// 										} else if ($chunk_partial === '') {
+// $chunk_log[] = 'Empty';
+// 											$chunk_error = 'Empty fread: ' . $chunk_returned . ' of ' . $chunk_size_int . ', packet ' . $k;
 										} else {
+$chunk_log[] = 'Data: ' . strlen($chunk_partial);
 											$chunk_data .= $chunk_partial;
 											$chunk_returned = strlen($chunk_data);
 										}
@@ -775,6 +813,7 @@
 								do {
 									$byte = fread($connection, 1);
 									$response_raw .= $byte;
+$chunk_log[] = 'End: ' . $byte;
 								} while ($byte != "\n" && strlen($byte) == 1); // Consume the LF character at the end (and optional CR).
 
 						} while ($chunk_size_int && $chunk_error === false); // Until we reach the 0 length chunk (end marker)
@@ -848,6 +887,10 @@
 						} else {
 							$error = 'Cannot extract headers from response';
 						}
+
+$debug .= 'Chunk Log:' . "\n\n";
+$debug .= debug_dump($chunk_log) . "\n\n";
+$debug .= '--------------------------------------------------' . "\n\n";
 
 						if ($chunk_error !== false) {
 							$debug .= 'Chunk Error: ' . $chunk_error . "\n\n";
