@@ -86,7 +86,7 @@
 					// https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/feature_policy/feature_policy_features.json5
 
 				'accelerometer'                         => [], // Sensor
-				'ambient-light-sensor'                  => [], // Sensor
+				// 'ambient-light-sensor'               => [], // SensorExtraClasses
 				'autoplay'                              => [],
 				'camera'                                => [],
 				// 'ch-dpr'                             => [], // FeaturePolicyForClientHints
@@ -99,12 +99,12 @@
 				// 'ch-ua-arch'                         => [], // FeaturePolicyForClientHints
 				// 'ch-ua-platform'                     => [], // FeaturePolicyForClientHints
 				// 'ch-ua-model'                        => [], // FeaturePolicyForClientHints
+				// 'ch-ua-mobile'                       => [], // FeaturePolicyForClientHints
 				// 'ch-viewport-width'                  => [], // FeaturePolicyForClientHints
 				// 'ch-width'                           => [], // FeaturePolicyForClientHints
-				// 'document-access'                    => [], // ExperimentalProductivityFeatures
 				'document-domain'                       => [],
 				// 'document-write'                     => [], // ExperimentalProductivityFeatures
-				// 'downloads-without-user-activation'  => [], // FeaturePolicyForSandbox
+				// 'downloads'                          => [], // FeaturePolicyForSandbox, was "downloads-without-user-activation"
 				'encrypted-media'                       => [],
 				// 'execution-while-out-of-viewport'    => [], // FreezeFramesOnVisibility
 				// 'execution-while-not-rendered'       => [], // FreezeFramesOnVisibility
@@ -131,6 +131,7 @@
 				// 'pointer-lock'                       => [], // FeaturePolicyForSandbox
 				// 'popups'                             => [], // FeaturePolicyForSandbox
 				// 'presentation'                       => [], // FeaturePolicyForSandbox
+				// 'publickey-credentials'              => [], // WebAuthenticationFeaturePolicy
 				// 'scripts'                            => [], // FeaturePolicyForSandbox
 				// 'serial'                             => [], // Serial
 				// 'sync-script'                        => [], // ExperimentalProductivityFeatures
@@ -144,8 +145,10 @@
 				// 'vertical-scroll'                    => [], // ExperimentalProductivityFeatures
 				// 'wake-lock'                          => [], // WakeLock
 				'xr-spatial-tracking'                   => [], // WebXR, Was "xr": https://chromium.googlesource.com/chromium/src/+/1b4eae88d6a915034f405d8a88551f9b6a7b35ca
-				'vr'                                    => [],
 
+
+				// 'document-access'                    => [], // Removed 03-12-2019: https://chromium.googlesource.com/chromium/src/+/78196eaec1f2c663a719ed7ab4cc9f368d9ca141
+				// 'vr'                                 => [], // Removed 23-10-2019: https://chromium.googlesource.com/chromium/src/+/6b783608ee8f511047323c9f6e64d22cd5dde7cb
 				// 'speaker'                            => [], // Removed 22-07-2019: https://chromium.googlesource.com/chromium/src/+/d9af2becddc1b592e4aeff52db12e9d0d09fbe79
 				// 'legacy-image-formats'               => [], // Removed 29-03-2019: https://chromium.googlesource.com/chromium/src/+/a7ed373a087d07f91d9a58c03da1739d48e7f7ea
 				// 'cookie'                             => [], // Removed 14-06-2018: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
