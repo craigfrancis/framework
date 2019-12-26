@@ -2007,8 +2007,8 @@
 		// Trusted types
 
 			$trusted_types = config::get('output.js_trusted_types');
-			if (is_array($trusted_types) && count($trusted_types) > 0) {
-				header('Content-Security-Policy: trusted-types ' . implode(' ', $trusted_types), false);
+			if (is_array($trusted_types)) {
+				header('Content-Security-Policy: trusted-types ' . implode(' ', $trusted_types) . ';', false);
 			}
 
 	}
