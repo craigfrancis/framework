@@ -2000,15 +2000,16 @@
 		// Content security policy
 
 			if (config::get('output.csp_enabled') === true) {
-				http_csp_header(config::get('output.csp_directives'));
-			}
 
-		//--------------------------------------------------
-		// Trusted types
+				$csp = config::get('output.csp_directives');
 
-			$trusted_types = config::get('output.js_trusted_types');
-			if (is_array($trusted_types)) {
-				header('Content-Security-Policy: trusted-types ' . implode(' ', $trusted_types) . ';', false);
+				$trusted_types = config::get('output.js_trusted_types'); // Final version might not go in CSP header.
+				if (is_array($trusted_types)) {
+					$csp['trusted-types'] = $trusted_types;
+				}
+
+				http_csp_header($csp);
+
 			}
 
 	}
