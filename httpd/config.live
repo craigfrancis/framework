@@ -111,7 +111,7 @@
 
 	<Directory "/www/live/craig.framework/files/">
 
-		php_admin_flag engine off
+		# php_admin_flag engine off
 
 		ForceType application/octet-stream
 		Header set Content-Disposition attachment
