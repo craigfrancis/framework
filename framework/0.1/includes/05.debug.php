@@ -30,24 +30,24 @@
 
 		$sec -= strtotime('-' . date('w', $sec) . ' days, 00:00:00', $sec); // Time since Sunday 00:00, max value = 604800 (60*60*24*7)
 
-		$code = '';
-		foreach([$sec, $usec, rand(100000, 999999)] as $code_part) {
-			$a = dechex($code_part); // decbin returns a string
+		$response_ref = '';
+		foreach([$sec, $usec, rand(100000, 999999)] as $ref_part) {
+			$a = dechex($ref_part); // decbin returns a string
 			$a = hex2bin(((strlen($a) % 2) == 0 ? '' : '0') . $a);
 			$a = base64_encode_rfc4648($a);
 			// $b = hexdec(bin2hex(base64_decode_rfc4648($a)));
-			$code .= str_pad($a, 4, '.', STR_PAD_LEFT); // 4 characters max = 999999 -> "0f423f" (hex) -> "D0I/" (base64)
+			$response_ref .= str_pad($a, 4, '.', STR_PAD_LEFT); // 4 characters max = 999999 -> "0f423f" (hex) -> "D0I/" (base64)
 		}
 
-		log_value('ref', $code); // A more compact uniqid (which uses hex encoding, and a full UNIX timestamp).
+		log_value('ref', $response_ref); // A more compact uniqid (which uses hex encoding, and a full UNIX timestamp).
 
-		config::set('request.code', $code);
+		config::set('response.ref', $response_ref);
 
-		header('X-Request-Code: ' . $code); // So access_log can match up with log_file
+		header('X-Response-Ref: ' . $response_ref); // So access_log can match up with log_file
 
 	}
 
-	unset($log_file, $time, $sec, $usec, $code, $code_part, $a);
+	unset($log_file, $time, $sec, $usec, $response_ref, $ref_part, $a);
 
 	function log_shutdown() {
 		if (!defined('FRAMEWORK_END')) { // Only run once, ref http_connection_close()
