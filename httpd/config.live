@@ -9,24 +9,23 @@
 
 		DocumentRoot /www/live/craig.framework/app/public/
 
-		LogFormat "%h %l %u [%{LOG_INFO}n] [%{%Y-%m-%d %H:%M:%S}t] \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" inc_info
-
-		CustomLog /www/live/craig.framework/logs/access_log inc_info
+		CustomLog /www/live/craig.framework/logs/access_log inc_ref
 		ErrorLog /www/live/craig.framework/logs/error_log
 
 		# Header always set X-Frame-Options: DENY
 		# Header always set X-XSS-Protection: "1; mode=block"
 		Header always set X-Content-Type-Options: nosniff
 		Header always set Strict-Transport-Security: "max-age=31536000; includeSubDomains; preload"
-		Header always set Cross-Origin-Resource-Policy: "same-origin"
+		Header always set Cross-Origin-Resource-Policy: "same-origin" env=!disable_resource_policy
+		Header always set Cross-Origin-Opener-Policy: "same-origin"
 		Header always set Cache-Control "immutable" env=immutable
 
 		RewriteEngine on
 
-		RewriteRule ^/\.well-known/acme-challenge/(.*)$ /etc/acme/public/$1 [L]
-
 		RewriteCond %{HTTP_HOST} !^www\.phpprime\.com$
 		RewriteRule ^(.*) https://www.phpprime.com$1 [R=301,L]
+
+		RewriteRule ^/\.well-known/acme-challenge/(.*)$ /etc/acme/public/$1 [END]
 
 		RewriteRule ^/a/files/(.*) /www/live/craig.framework/files/$1 [S=1]
 		RewriteRule ^(.*)$ %{DOCUMENT_ROOT}$1
@@ -42,30 +41,6 @@
 		SSLEngine On
 		SSLCertificateFile /etc/apache2/tls/code-poets.co.uk.crt
 		SSLCertificateKeyFile /etc/apache2/tls/code-poets.co.uk.key
-
-		AddDefaultCharset UTF-8
-		AddCharset UTF-8 .css
-		AddCharset UTF-8 .js
-
-		ExpiresActive On
-		ExpiresByType image/gif "access plus 12 months"
-		ExpiresByType image/jpg "access plus 12 months"
-		ExpiresByType image/jpeg "access plus 12 months"
-		ExpiresByType image/png "access plus 12 months"
-		ExpiresByType image/svg+xml "access plus 12 months"
-		ExpiresByType image/x-icon "access plus 12 months"
-		ExpiresByType image/webp "access plus 12 months"
-		ExpiresByType video/webm "access plus 12 months"
-		ExpiresByType video/mp4 "access plus 12 months"
-		ExpiresByType text/css "access plus 12 months"
-		ExpiresByType application/javascript "access plus 12 months"
-		ExpiresByType application/font-woff "access plus 12 months"
-		ExpiresByType application/font-woff2 "access plus 12 months"
-		ExpiresByType image/vnd.microsoft.icon "access plus 12 months"
-
-		<FilesMatch "manifest\.json$">
-			Header set Cache-Control "public, max-age=86400"
-		</FilesMatch>
 
 		SetEnv PRIME_CONFIG_KEY "${PRIME_CONFIG_KEY}"
 
@@ -111,7 +86,9 @@
 
 	<Directory "/www/live/craig.framework/files/">
 
-		# php_admin_flag engine off
+		<Files "*.php">
+			SetHandler none
+		</Files>
 
 		ForceType application/octet-stream
 		Header set Content-Disposition attachment
