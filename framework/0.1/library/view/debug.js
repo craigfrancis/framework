@@ -20,22 +20,6 @@
 				'L': {'name': 'Log',    'notes': []}
 			};
 
-	var trusted_types = {
-			'createURL': function (s) {
-					if (['c','h','l'].indexOf(s) >= 0) { // Not -1
-						return '#debug_notes_' + s;
-					} else if (s.substring(0, debug_mysql_url.length) == debug_mysql_url) {
-						return s;
-					} else {
-						return '#';
-					}
-				}
-		};
-
-	if (window.TrustedTypes) {
-		trusted_types = TrustedTypes.createPolicy('debug', trusted_types);
-	}
-
 	function debug_open_click(e) {
 
 		if (debug_open && debug_open !== this) {
@@ -179,7 +163,7 @@
 						td = document.createElement('td');
 						if (field == 'type') {
 							link = document.createElement('a');
-							link.setAttribute('href', trusted_types.createURL(debug_mysql_url + row[field]));
+							link.setAttribute('href', (debug_mysql_url + row[field]));
 							link.setAttribute('target', '_blank');
 							link.setAttribute('rel', 'noopener');
 							link.textContent = row[field];
@@ -281,7 +265,7 @@
 						link.debugOutput = wrapper;
 						link.setAttribute('class', 'debug_link');
 						link.setAttribute('title', debug_types[k]['name']);
-						link.setAttribute('href', trusted_types.createURL(ref));
+						link.setAttribute('href', ref);
 						link.addEventListener('click', debug_open_click);
 
 						links[k] = link;

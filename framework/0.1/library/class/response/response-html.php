@@ -1527,11 +1527,6 @@
 						$this->csp_source_add('script-src', $js_url);
 						$this->csp_source_add('connect-src', $js_api);
 
-						$trusted_types = config::get('output.js_trusted_types');
-						if (is_array($trusted_types)) {
-							config::set('output.js_trusted_types', array_merge($trusted_types, ['debug']));
-						}
-
 						if (config::get('db.host') !== NULL) {
 
 							debug_require_db_table(DB_PREFIX . 'system_report', '
