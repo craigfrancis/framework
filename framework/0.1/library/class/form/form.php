@@ -123,7 +123,8 @@
 					if (is_array($fetch_allowed)) {
 
 						if (in_array('nested', $fetch_allowed)) $this->fetch_allowed_nested();
-						if (in_array('cors', $fetch_allowed))   $this->fetch_allowed_cors();
+						if (in_array('fetch',  $fetch_allowed)) $this->fetch_allowed_fetch();
+						if (in_array('cors',   $fetch_allowed)) $this->fetch_allowed_cors(); // Deprecated
 
 					} else if ($fetch_allowed === false) {
 
@@ -660,7 +661,13 @@
 				$this->fetch_allowed_add('mode', 'nested-navigate');
 			}
 
-			public function fetch_allowed_cors() { // e.g. XMLHttpRequest
+			public function fetch_allowed_fetch() { // e.g. XMLHttpRequest, fetch(), navigator.sendBeacon(), <a download="">, <a ping="">, <link rel="prefetch">
+				$this->fetch_allowed_add('dest', 'empty');
+				$this->fetch_allowed_add('mode', 'cors');
+			}
+
+			public function fetch_allowed_cors() {
+				report_add('Deprecated: $form->fetch_allowed_cors(), either set manually, or use $form->fetch_allowed_fetch() which is more likely what you need.', 'notice');
 				$this->fetch_allowed_add('mode', 'cors');
 			}
 
