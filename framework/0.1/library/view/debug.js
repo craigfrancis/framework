@@ -265,7 +265,7 @@
 						link.debugOutput = wrapper;
 						link.setAttribute('class', 'debug_link');
 						link.setAttribute('title', debug_types[k]['name']);
-						link.setAttribute('href', ref);
+						link.setAttribute('href', '#debug_notes_' + ref);
 						link.addEventListener('click', debug_open_click);
 
 						links[k] = link;
