@@ -550,7 +550,7 @@
 		if (strpos($message, ' ') === false) {
 			return true; // Probably a random value like "TwGVjoKIzFJxhAm"
 		}
-		return preg_match('/(https?:\/\/|\b(BTC|bitcoin|cialis|viagra)\b)/i', $message);
+		return preg_match('/(https?:\/\/|\s@\w|\b(BTC|bitcoin|cialis|viagra)\b)/i', $message); // The @ test allows emails, but not Twitter/Telegram/etc handles.
 	}
 
 //--------------------------------------------------
