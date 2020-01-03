@@ -1526,6 +1526,9 @@
 						$this->js_add($js_url, ['async', 'integrity' => $js_integrity, 'data-api' => $js_api], 'head');
 						$this->csp_source_add('script-src', $js_url);
 						$this->csp_source_add('connect-src', $js_api);
+						if ($this->csp_sources_get('navigate-to') !== NULL) {
+							$this->csp_source_add('navigate-to', 'https://dev.mysql.com/doc/');
+						}
 
 						if (config::get('db.host') !== NULL) {
 
