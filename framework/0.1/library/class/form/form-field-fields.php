@@ -460,7 +460,7 @@
 
 					foreach ($input_config['options'] as $option_value => $option_text) {
 
-						$selected = ($input_value[$field] !== NULL && strval($input_value[$field]) === strval($option_value)); // Can't use intval as some fields use text keys, also difference between '' and '0'.
+						$selected = ($input_value !== NULL && $input_value[$field] !== NULL && strval($input_value[$field]) === strval($option_value)); // Can't use intval as some fields use text keys, also difference between '' and '0'.
 
 						if ($input_config['pad_length'] > 0) {
 							$option_text = str_pad($option_text, $input_config['pad_length'], $input_config['pad_char'], STR_PAD_LEFT);
