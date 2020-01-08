@@ -208,7 +208,7 @@
 
 			public function value_set($value, $month = NULL, $year = NULL) {
 				$this->value = $this->_value_parse($value, $month, $year);
-				$this->value_provided = true;
+				$this->value_provided = ($this->value !== NULL);
 			}
 
 			public function value_get($field = NULL) {
@@ -241,7 +241,7 @@
 			}
 
 			public function value_time_stamp_get() { // Legacy name... but you should look at the timestamp helper anyway :-)
-				if ($this->value['M'] == 0 && $this->value['D'] == 0 && $this->value['Y'] == 0) {
+				if ($this->value === NULL || $this->value['M'] == 0 && $this->value['D'] == 0 && $this->value['Y'] == 0) {
 					$timestamp = false;
 				} else {
 					$timestamp = mktime(0, 0, 0, $this->value['M'], ($this->input_day ? $this->value['D'] : 1), $this->value['Y']);
