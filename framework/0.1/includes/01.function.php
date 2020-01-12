@@ -1459,13 +1459,15 @@
 					'default-src' => "'none'",
 					'base-uri'    => "'none'",
 					'form-action' => "'none'",
-					'img-src'     => "'self'",
 					'style-src'   => "'unsafe-inline'", // For Chrome inline viewing
 				];
 
 			if ($config['mime'] == 'application/pdf') {
 				$csp['object-src'] = "'self'";
 				$csp['plugin-types'] = 'application/pdf';
+				$csp['img-src'] = ['/favicon.ico'];
+			} else {
+				$csp['img-src'] = "'self'";
 			}
 
 			config::set('output.csp_directives', $csp);
