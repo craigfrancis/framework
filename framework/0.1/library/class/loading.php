@@ -17,6 +17,7 @@
 					'default-src' => "'none'",
 					'base-uri'    => "'none'",
 					'form-action' => "'none'",
+					'img-src'     => ['/favicon.ico'],
 					'style-src'   => [], // Defaults to 'none'
 				];
 
