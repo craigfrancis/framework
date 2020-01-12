@@ -485,11 +485,16 @@
 					$contents_html = str_replace('[TIME_UPDATE]', html($time_diff_update), $contents_html);
 
 				//--------------------------------------------------
+				// System headers
+
+					config::set('output.csp_directives', $this->csp_directives);
+
+					http_system_headers();
+
+				//--------------------------------------------------
 				// Output
 
 					header('Refresh: ' . head($refresh_header));
-
-					http_csp_header($this->csp_directives);
 
 					http_connection_close($contents_html);
 
