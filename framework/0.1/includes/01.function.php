@@ -1675,10 +1675,12 @@
 					'form-action' => "'none'",
 				];
 			if ($csp === 'img' || $csp === 'pdf') {
-				$default['img-src'] = "'self'";
 				$default['style-src'] = "'unsafe-inline'"; // For Chrome inline viewing
-				if ($csp === 'pdf') {
-					$default['object-src'] = "'self'";
+				if ($csp === 'img') {
+					$default['img-src'] = (isset($config['url']) ? $config['url'] : "'self'");
+				} else if ($csp === 'pdf') {
+					$default['img-src'] = ['/favicon.ico'];
+					$default['object-src'] = (isset($config['url']) ? $config['url'] : "'self'");
 					$default['plugin-types'] = 'application/pdf';
 				}
 			}
