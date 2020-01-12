@@ -13,6 +13,12 @@
 			private $lock = NULL;
 			private $running = false;
 			private $session_prefix = NULL;
+			private $csp_directives = [
+					'default-src' => "'none'",
+					'base-uri'    => "'none'",
+					'form-action' => "'none'",
+					'style-src'   => [], // Defaults to 'none'
+				];
 
 		//--------------------------------------------------
 		// Setup
@@ -397,7 +403,9 @@
 
 							$css_file = '/css/global/loading.css';
 							if (is_file(ASSET_ROOT . $css_file)) {
-								$css_html = '<link rel="stylesheet" type="text/css" href="' . html(timestamp_url(ASSET_URL . '/css/global/loading.css')) . '" media="all" />';
+								$css_url = timestamp_url(ASSET_URL . '/css/global/loading.css');
+								$css_html = '<link rel="stylesheet" type="text/css" href="' . html($css_url) . '" media="all" />';
+								$this->csp_directives['style-src'][] = $css_url;
 							} else {
 								$css_html = '';
 							}
@@ -479,6 +487,8 @@
 				// Output
 
 					header('Refresh: ' . head($refresh_header));
+
+					http_csp_header($this->csp_directives);
 
 					http_connection_close($contents_html);
 

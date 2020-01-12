@@ -1668,12 +1668,21 @@
 
 	function http_csp_header($csp = NULL, $config = []) {
 
-		if (is_string($csp) && $csp === 'none') {
-			$csp = [
+		if (is_string($csp) && ($csp === 'none' || $csp === 'img' || $csp === 'pdf')) {
+			$default = [
 					'default-src' => "'none'",
 					'base-uri'    => "'none'",
 					'form-action' => "'none'",
 				];
+			if ($csp === 'img' || $csp === 'pdf') {
+				$default['img-src'] = "'self'";
+				$default['style-src'] = "'unsafe-inline'"; // For Chrome inline viewing
+				if ($csp === 'pdf') {
+					$default['object-src'] = "'self'";
+					$default['plugin-types'] = 'application/pdf';
+				}
+			}
+			$csp = $default;
 		}
 
 		$config = array_merge([
