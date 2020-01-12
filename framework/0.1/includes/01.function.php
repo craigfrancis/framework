@@ -1191,6 +1191,8 @@
 			}
 		}
 
+		http_csp_header('none');
+
 		header('Location: ' . head($url), true, $config['code']);
 
 		if ($config['exit'] === false) {
