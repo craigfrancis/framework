@@ -674,7 +674,7 @@
 
 			public function value_get($field) {
 				$values = $this->values_get(array($field));
-				return $values[$field];
+				return ($values === false ? false : $values[$field]);
 			}
 
 			public function values_set($fields) {
