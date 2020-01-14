@@ -372,7 +372,7 @@
 				// Not a user
 
 					if ($this->user_id != 0) {
-						exit_with_error('This page is not available for members', 'Function call: register');
+						exit_with_error('This page is not available for members', 'Function call: register' . "\n" . 'User ID: ' . $this->user_id);
 					}
 
 				//--------------------------------------------------
