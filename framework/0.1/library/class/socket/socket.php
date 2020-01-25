@@ -670,8 +670,6 @@ $start = microtime(true);
 				//--------------------------------------------------
 				// Receive
 
-					$error_reporting = error_reporting(0); // Dam IIS forgetting close_notify indicator - https://php.net/file
-
 					// $response = '';
 					// while (!feof($connection)) {
 					// 	$response .= fread($connection, 2048);
@@ -842,7 +840,16 @@ $chunk_log[] = 'End: ' . $byte;
 
 					}
 
-					error_reporting($error_reporting);
+//--------------------------------------------------
+// Used to use this, due to IIS forgetting close_notify indicator (https://php.net/file).
+// But it suppresses all errors (not good).
+// Assume fixed, or wait for example to find better work around.
+//
+// 	$error_reporting = error_reporting(0);
+//   [...]
+// 	error_reporting($error_reporting);
+//
+//--------------------------------------------------
 
 				//--------------------------------------------------
 				// Close connection
