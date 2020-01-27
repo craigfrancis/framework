@@ -610,6 +610,8 @@
 				// Connection
 $start = microtime(true);
 					$error = false;
+					$error_number = 0;
+					$error_string = NULL;
 					$error_details = NULL;
 
 					$timeout_old = ini_set('default_socket_timeout', $this->request_timeout);
@@ -622,11 +624,11 @@ $start = microtime(true);
 
 							$context_ref = (is_array($context) ? stream_context_create($context) : $context);
 
-							$connection = stream_socket_client($socket_host, $errno, $errstr, $this->request_timeout, STREAM_CLIENT_CONNECT, $context_ref);
+							$connection = stream_socket_client($socket_host, $error_number, $error_string, $this->request_timeout, STREAM_CLIENT_CONNECT, $context_ref);
 
 						} else {
 
-							$connection = fsockopen($fsock_host, $port, $errno, $errstr, $this->request_timeout);
+							$connection = fsockopen($fsock_host, $port, $error_number, $error_string, $this->request_timeout);
 
 						}
 
@@ -650,8 +652,8 @@ $start = microtime(true);
 
 						$error_details = $this->error_connect;
 
-						if ($errno > 0 || $errstr != '') {
-							$error_details[] = $errno . ': ' . $errstr;
+						if ($error_number > 0 || $error_string != '') {
+							$error_details[] = $error_number . ': ' . $error_string;
 						}
 
 						if ($context) {
@@ -724,8 +726,8 @@ $error_details = ['End Of File'];
 
 						$error_details = $this->error_connect;
 
-						if ($errno > 0 || $errstr != '') {
-							$error_details[] = $errno . ': ' . $errstr;
+						if ($error_number > 0 || $error_string != '') {
+							$error_details[] = $error_number . ': ' . $error_string;
 						}
 
 						// return $this->error('Failed reading response from "' . $socket_host . '"', implode("\n\n", $error_details));
