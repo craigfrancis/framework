@@ -190,7 +190,7 @@
 				$password = normalizer_normalize($password, Normalizer::FORM_KD);
 			}
 
-			if ($algorithm === PASSWORD_DEFAULT) { // Support PHP 7.4, where PASSWORD_DEFAULT is now set to NULL... https://bugs.php.net/bug.php?id=78969
+			if (PASSWORD_DEFAULT === NULL && $algorithm === PASSWORD_DEFAULT) { // Support PHP 7.4.0, where PASSWORD_DEFAULT is set to NULL... https://bugs.php.net/bug.php?id=78969
 				if (!defined('PASSWORD_DEFAULT_IS_BCRYPT')) {
 					$hash_info = password_get_info(password_hash('pass', PASSWORD_DEFAULT, ['cost' => 4]));
 					define('PASSWORD_DEFAULT_IS_BCRYPT', ($hash_info['algo'] === PASSWORD_BCRYPT));
