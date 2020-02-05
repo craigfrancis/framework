@@ -500,6 +500,7 @@
 		config::set_default('debug.show', DEBUG_SHOW_DEFAULT); // Only relevant when running.
 		config::set_default('debug.db', (config::get('debug.level') > 1));
 		config::set_default('debug.db_required_fields', array('deleted'));
+		config::set_default('debug.errors', []);
 		config::set_default('debug.units', []);
 
 	//--------------------------------------------------

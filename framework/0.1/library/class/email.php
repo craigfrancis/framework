@@ -274,7 +274,7 @@
 				$this->body_html = $content_html;
 			}
 
-			public function request_table_add($values) {
+			public function request_table_add($values = []) {
 
 				$request_values = array(
 						'Sent' => date('l jS F Y, g:i:sa'),

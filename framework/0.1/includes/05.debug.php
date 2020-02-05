@@ -165,7 +165,7 @@
 		//--------------------------------------------------
 		// Config
 
-			$contact_email = config::get('email.error_display');
+			$contact_email = config::get('email.error_display'); // A different email address to show customers
 			if (!$contact_email) {
 				$contact_email = config::get('email.error');
 			}
@@ -356,7 +356,13 @@
 		// Log
 
 			if (ini_get('log_errors')) {
-				error_log(sprintf('PHP %s: %s in %s on line %d', $error_type, $err_str, $err_file, $err_line));
+
+				$error_message = sprintf('PHP %s: %s in %s on line %d', $error_type, $err_str, $err_file, $err_line);
+
+				error_log($error_message);
+
+				config::array_push('debug.errors', $error_message);
+
 			}
 
 		//--------------------------------------------------
@@ -942,6 +948,28 @@
 		// End debug
 
 			function debug_shutdown() {
+
+				//--------------------------------------------------
+				// Email errors
+
+					$error_email = config::get('debug.error_send', true); // Could be set to false (to disable), or a different email address.
+					if ($error_email === true) {
+						$error_email = config::get('email.error');
+					}
+
+					$errors = config::get('debug.errors');
+
+					if ($error_email && is_array($errors) && count($errors) > 0) {
+
+						$email = new email();
+						$email->default_style_set(NULL);
+						$email->subject_set('System PHP Errors: ' . config::get('output.domain'));
+						$email->request_table_add();
+						$email->body_add("\n" . implode("\n", $errors));
+
+						$email->send($error_email);
+
+					}
 
 				//--------------------------------------------------
 				// Ignore
