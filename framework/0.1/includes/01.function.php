@@ -1917,60 +1917,6 @@
 			// }
 
 		//--------------------------------------------------
-		// Public key pinning
-
-			$pkp_pins = config::get('output.pkp_pins', []);
-
-			if (count($pkp_pins) > 0) {
-
-				if (config::get('request.https')) { // Only send header when using a HTTPS connection
-
-					$enforced = config::get('output.pkp_enforced', false);
-
-					if ($enforced) {
-						$header = 'Public-Key-Pins';
-					} else {
-						$header = 'Public-Key-Pins-Report-Only';
-					}
-
-					$report_uri = config::get('output.pkp_report', false);
-					if ($report_uri || !$enforced) {
-						if ($report_uri === true) {
-							$report_uri = gateway_url('pkp-report');
-							$report_uri->scheme_set('https');
-						}
-						$pkp_pins[] = 'report-uri="' . $report_uri . '"';
-					}
-
-					header($header . ': ' . head(implode('; ', $pkp_pins)));
-
-				}
-
-				if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
-
-					debug_require_db_table(DB_PREFIX . 'system_report_pkp', '
-							CREATE TABLE [TABLE] (
-								date_time tinytext NOT NULL,
-								hostname tinytext NOT NULL,
-								port tinytext NOT NULL,
-								expires tinytext NOT NULL,
-								subdomains tinytext NOT NULL,
-								noted_hostname tinytext NOT NULL,
-								served_chain tinytext NOT NULL,
-								validated_chain tinytext NOT NULL,
-								known_pins tinytext NOT NULL,
-								referrer tinytext NOT NULL,
-								data_raw text NOT NULL,
-								ip tinytext NOT NULL,
-								browser tinytext NOT NULL,
-								created datetime NOT NULL
-							);');
-
-				}
-
-			}
-
-		//--------------------------------------------------
 		// Certificate Transparency
 
 			if (config::get('output.ct_enabled') === true) {

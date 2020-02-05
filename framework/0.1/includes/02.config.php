@@ -420,10 +420,6 @@
 		config::set_default('output.xss_reflected', 'block');
 		config::set_default('output.referrer_policy', 'strict-origin-when-cross-origin'); // Added in Chrome 61.0.3130.0
 
-		config::set_default('output.pkp_pins', []);
-		config::set_default('output.pkp_enforced', false);
-		config::set_default('output.pkp_report', false);
-
 		config::set_default('output.ct_enabled', false);
 		config::set_default('output.ct_enforced', false);
 		config::set_default('output.ct_max_age', 3); // Not 0, so we can also check resources (e.g. images)

@@ -73,8 +73,6 @@ Some special cases though:
 
 - **`output.xss_reflected`**: For basic [XSS protection](../../doc/security/xss.md).
 
-- **`output.pkp_*`**: For [PKP setup](../../doc/security/pkp.md).
-
 - **`output.csp_*`**: For [CSP setup](../../doc/security/csp.md).
 
 - **`output.js_*`**: For [JavaScript setup](../../doc/setup/resources.md).
