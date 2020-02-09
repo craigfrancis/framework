@@ -1450,7 +1450,11 @@
 
 		mime_set($config['mime']);
 
-		header('Content-Disposition: ' . head($config['mode']) . '; filename="' . head(safe_file_name($config['name'], true)) . '"');
+		$filename_clean = str_replace(['/', '\\'], '', $config['name']); // Never allowed
+		$filename_ascii = safe_file_name($filename_clean, true);
+		$filename_utf8  = ($filename_ascii == $filename_clean ? NULL : "UTF-8''" . urlencode($filename_clean));
+
+		header('Content-Disposition: ' . head($config['mode']) . '; filename="' . head($filename_ascii) . '"' . ($filename_utf8 ? '; filename*=' . head($filename_utf8) : ''));
 		header('Content-Length: ' . head($config['path'] ? filesize($config['path']) : strlen($config['content'])));
 
 		if (config::get('output.csp_enabled') === true) {
