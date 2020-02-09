@@ -213,14 +213,14 @@
 		return str_replace(array("\r", "\n", "\0"), '', $text);
 	}
 
-	function safe_file_name($name, $allow_ext = false) {
+	function safe_file_name($name, $allow_ext = false, $replace_character = '') {
 		if ($allow_ext && preg_match('/^(.*[^\.].*)(\.[a-zA-Z0-9]+)$/', $name, $matches)) {
 			$name = $matches[1];
 			$ext = $matches[2];
 		} else {
 			$ext = '';
 		}
-		$file_name = preg_replace('/[^a-zA-Z0-9_\- ]/', '', $name) . $ext;
+		$file_name = preg_replace('/[^a-zA-Z0-9_\- ]/', $replace_character, $name) . $ext;
 		if (extension_loaded('taint')) {
 			untaint($file_name);
 		}
@@ -1451,7 +1451,7 @@
 		mime_set($config['mime']);
 
 		$filename_clean = str_replace(['/', '\\'], '', $config['name']); // Never allowed
-		$filename_ascii = safe_file_name($filename_clean, true);
+		$filename_ascii = safe_file_name($filename_clean, true, '_');
 		$filename_utf8  = ($filename_ascii == $filename_clean ? NULL : "UTF-8''" . urlencode($filename_clean));
 
 		header('Content-Disposition: ' . head($config['mode']) . '; filename="' . head($filename_ascii) . '"' . ($filename_utf8 ? '; filename*=' . head($filename_utf8) : ''));
