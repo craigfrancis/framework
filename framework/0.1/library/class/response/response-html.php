@@ -364,8 +364,8 @@
 		//--------------------------------------------------
 		// Link tags
 
-			public function link_set($rel, $href) {
-				$this->links[$rel] = $href;
+			public function link_set($rel, $value) {
+				$this->links[$rel] = $value;
 			}
 
 		//--------------------------------------------------
@@ -1191,8 +1191,11 @@
 
 					$links = array_merge(config::get('output.links', []), $this->links);
 
-					foreach ($links as $rel => $href) {
-						$html .= "\n\t" . '<link rel="' . html($rel) . '" href="' . html($href) . '" />';
+					foreach ($links as $rel => $value) {
+						if (!is_array($value)) {
+							$value = ['href' => $value];
+						}
+						$html .= "\n\t" . html_tag('link', array_merge(['rel' => $rel], $value));
 					}
 
 				//--------------------------------------------------
