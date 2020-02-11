@@ -608,7 +608,10 @@
 
 				//--------------------------------------------------
 				// Connection
+
+$chunk_timings = [];
 $start = microtime(true);
+
 					$error = false;
 					$error_number = 0;
 					$error_string = NULL;
@@ -667,8 +670,10 @@ $start = microtime(true);
 					if ($error !== false) {
 						return $this->error($error, $error_details);
 					}
-$part1 = round((microtime(true) - $start), 4);
+
+$chunk_timings[] = round((microtime(true) - $start), 4);
 $start = microtime(true);
+
 				//--------------------------------------------------
 				// Receive
 
@@ -719,23 +724,11 @@ $k++;
 
 					}
 
-$part2 = round((microtime(true) - $start), 4);
-$error_details = ['End Of File'];
-
-					if (!feof($connection)) {
-
-						$error_details = $this->error_connect;
-
-						if ($error_number > 0 || $error_string != '') {
-							$error_details[] = $error_number . ': ' . $error_string;
-						}
-
-						// return $this->error('Failed reading response from "' . $socket_host . '"', implode("\n\n", $error_details));
-
-					}
+$chunk_timings[] = round((microtime(true) - $start), 4);
+$start = microtime(true);
 
 $chunk_log = [];
-$chunk_log[] = [$part1, $part2];
+$chunk_log[] = $chunk_timings;
 $chunk_log[] = $k;
 $chunk_log[] = $error_details;
 $chunk_log[] = $response_headers_parsed;
