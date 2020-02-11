@@ -880,14 +880,15 @@ $chunk_log[] = 'End: ' . $byte;
 
 					} else {
 
-						$debug = '';
+						$debug  = 'Host: "' . $this->request_host . '"' . "\n";
+						$debug .= 'Path: "' . $this->request_path . '"' . "\n\n";
 
 						if ($connection_meta_data['timed_out']) {
-							$error = 'Connection timed out';
+							$error = 'Connection timed out.';
 							$debug .= debug_dump($connection_meta_data) . "\n\n";
 							$debug .= '--------------------------------------------------' . "\n\n";
 						} else {
-							$error = 'Cannot extract headers from response';
+							$error = 'Invalid response from remote server.';
 						}
 
 $debug .= 'Chunk Log:' . "\n\n";
@@ -914,7 +915,7 @@ $debug .= '--------------------------------------------------' . "\n\n";
 						$debug .= $this->response_full . "\n\n";
 						$debug .= '--------------------------------------------------' . "\n";
 
-						return $this->error($error . ' (host: "' . $this->request_host . '", path: "' . $this->request_path . '")', $debug);
+						return $this->error($error, $debug);
 
 					}
 
