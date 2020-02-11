@@ -1545,7 +1545,7 @@
 
 							} else if ($tracking_js_path !== NULL) {
 
-								$this->js_add($tracking_js_path);
+								$this->js_add_async($tracking_js_path);
 
 							}
 
