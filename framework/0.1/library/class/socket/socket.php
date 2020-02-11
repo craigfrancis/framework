@@ -827,7 +827,7 @@ $chunk_log[] = 'End: ' . $byte;
 
 						}
 
-					} else { // Keep going until EOF (good luck)
+					} else if (count($response_headers_parsed) > 0) { // Keep going until EOF (good luck); and only when headers have been collected (if not, the connection probably timed out)
 
 						while (($line = fgets($connection)) !== false) {
 							$response_data .= $line;
