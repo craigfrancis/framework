@@ -436,7 +436,6 @@
 		config::set_default('output.favicon_path', ASSET_ROOT . '/img/global/favicon.ico');
 		config::set_default('output.timestamp_url', false);
 		config::set_default('output.js_head_only', false); // Prevents JS loading in the body, and js_code_add() from working.
-		config::set_default('output.js_combine', true);
 		config::set_default('output.js_defer', (preg_match('/MSIE [5-9]\./', config::get('request.browser')) ? false : true)); // https://github.com/h5bp/lazyweb-requests/issues/42#issuecomment-1896139
 		config::set_default('output.js_min', false);
 		config::set_default('output.css_min', false);

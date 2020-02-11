@@ -356,73 +356,42 @@
 //--------------------------------------------------
 // Assets containing file modification time
 
-	if ($route_asset) {
+	if ($route_asset && preg_match('/^(.*)\/([0-9]+)-([^\/]*?)(\.min)?\.(js|css)$/', $route_path, $matches)) {
 
-		if (preg_match('/^(.*)\/([0-9]+)-{(.*)}(\.min)?\.(js|css)$/', $route_path, $matches)) {
+		$route_dir = $matches[1];
+		$route_mtime = $matches[2];
+		$route_file = $matches[3];
+		$route_min = ($matches[4] != '');
+		$route_ext = $matches[5];
 
-			$route_dir = $matches[1];
-			$route_mtime = $matches[2];
-			$route_file = $matches[3];
-			$route_min = ($matches[4] != '');
-			$route_ext = $matches[5];
+		$file_path = realpath(PUBLIC_ROOT . $route_dir . '/' . $route_file . '.' . $route_ext);
 
-			$route_files = [];
-			foreach (explode(',', $route_file) as $path) {
-				$route_files[] = PUBLIC_ROOT . $route_dir . '/' . $path . '.' . $route_ext;
-			}
+		if (is_readable($file_path) && prefix_match(ASSET_ROOT . '/', $file_path)) { // Must be in the assets folder.
 
-			$route_file = '{' . $route_file . '}';
-
-		} else if (preg_match('/^(.*)\/([0-9]+)-([^\/]*?)(\.min)?\.(js|css)$/', $route_path, $matches)) {
-
-			$route_dir = $matches[1];
-			$route_mtime = $matches[2];
-			$route_file = $matches[3];
-			$route_min = ($matches[4] != '');
-			$route_ext = $matches[5];
-
-			$route_files = array(PUBLIC_ROOT . $route_dir . '/' . $route_file . '.' . $route_ext);
-
-		} else {
-
-			$route_mtime = 0;
-
-		}
-
-		if ($route_mtime > 0) {
-
-			$files_mtime = 0;
-			$files_realpath = [];
-
-			foreach ($route_files as $path) {
-
-				$realpath = realpath($path);
-
-				if (prefix_match(ASSET_ROOT, $realpath) && is_file($realpath)) { // Must be in the assets folder.
-
-					if (!is_readable($realpath)) {
-						exit_with_error('Cannot access: ' . str_replace(PUBLIC_ROOT, '', $realpath));
-					}
-
-					$file_modified = filemtime($realpath);
-					if ($files_mtime < $file_modified) {
-						$files_mtime = $file_modified;
-					}
-
-					$files_realpath[] = $realpath;
-
-				} else {
-
-					// $route_path = $path; // Show on 404 page the missing path (debug mode)
-
-					$files_mtime = 0;
-					break;
-
+			$minify = false;
+			if ($route_min) {
+				if ($route_ext == 'js') {
+					$minify = config::get('output.js_min');
+				} else if ($route_ext == 'css') {
+					$minify = config::get('output.css_min');
 				}
-
 			}
 
-			if ($route_mtime == $files_mtime) {
+			$cache_folder = NULL;
+			if ($minify) {
+				$min_path = prefix_replace(ASSET_ROOT, ASSET_ROOT . '/min', $file_path);
+				if (is_readable($min_path)) {
+					$file_path = $min_path;
+				} else if ($route_ext == 'js') {
+					$cache_folder = tmp_folder('js-min');
+				} else if ($route_ext == 'css') {
+					$cache_folder = tmp_folder('css-min');
+				}
+			}
+
+			$file_mtime = filemtime($file_path);
+
+			if ($route_mtime == $file_mtime) {
 
 				//--------------------------------------------------
 				// Headers and browser caching
@@ -437,25 +406,7 @@
 
 					mime_set($mime_types[$route_ext]);
 
-					http_cache_headers((60*60*24*365), $files_mtime, $files_mtime, NULL, true); // Will exit if browser cache has not modified since
-
-					$minify = false;
-					if ($route_min) {
-						if ($route_ext == 'js') {
-							$minify = config::get('output.js_min');
-						} else if ($route_ext == 'css') {
-							$minify = config::get('output.css_min');
-						}
-					}
-
-					$cache_folder = NULL;
-					if ($minify && count($files_realpath) > 0) {
-						if ($route_ext == 'js') {
-							$cache_folder = tmp_folder('js-min');
-						} else if ($route_ext == 'css') {
-							$cache_folder = tmp_folder('css-min');
-						}
-					}
+					http_cache_headers((60*60*24*365), $file_mtime, $file_mtime, NULL, true); // Will exit if browser cache has not modified since
 
 				//--------------------------------------------------
 				// Compression
@@ -465,24 +416,13 @@
 					}
 
 				//--------------------------------------------------
-				// Minified single file
-
-					if ($minify && count($files_realpath) == 1) {
-						$min_path = prefix_replace(ASSET_ROOT, ASSET_ROOT . '/min', reset($files_realpath));
-						if (is_file($min_path)) {
-							$files_realpath = [$min_path];
-							$cache_folder = NULL; // Do not need to use the cache approach, just read this file.
-						}
-					}
-
-				//--------------------------------------------------
-				// JS Minify or CSS Tidy support (cached)
+				// Cached minified JS or CSS
 
 					if ($cache_folder) {
 
-						$cache_file_hash = hash('sha256', ($route_dir . $route_file . $route_ext));
+						$cache_file_hash = hash('sha256', $file_path);
 						$cache_file_base = $cache_folder . '/' . safe_file_name($cache_file_hash);
-						$cache_file_time = $cache_file_base . '-' . $route_mtime;
+						$cache_file_time = $cache_file_base . '-' . $file_mtime;
 
 						if (!is_file($cache_file_time)) {
 
@@ -490,76 +430,55 @@
 								unlink($filename);
 							}
 
-							$files_contents = [];
-							$files_minified = NULL;
-							foreach ($files_realpath as $realpath) {
-								$min_path = prefix_replace(ASSET_ROOT, ASSET_ROOT . '/min', $realpath);
-								if (is_file($min_path)) {
-									$files_contents[] = file_get_contents($min_path);
-									if ($files_minified === NULL) {
-										$files_minified = true;
-									}
-								} else {
-									$files_contents[] = file_get_contents($realpath);
-									if ($files_minified === NULL) {
-										$files_minified = false;
-									}
-								}
-							}
-							$files_contents = implode("\n", $files_contents);
+							$file_contents = file_get_contents($file_path);
 
-							if ($files_minified !== true) {
-								if ($route_ext == 'js') {
+							if ($route_ext == 'js') {
 
-									$files_contents = jsmin::minify($files_contents);
+								$file_contents = jsmin::minify($file_contents);
 
-								} else {
+							} else if ($route_ext == 'css') {
 
 									// https://stackoverflow.com/a/1379487/6632
 
-									$files_contents = preg_replace('#/\*.*?\*/#s', '', $files_contents); // Remove comments
-									$files_contents = preg_replace('/[ \t]*([{}|:;,])[ \t]+/', '$1', $files_contents); // Remove whitespace (keeping newlines)
-									$files_contents = preg_replace('/^[ \t]+/m', '', $files_contents); // Remove whitespace at the start
-									$files_contents = str_replace(';}', '}', $files_contents); // Remove unnecessary ;'s
+								$file_contents = preg_replace('#/\*.*?\*/#s', '', $file_contents); // Remove comments
+								$file_contents = preg_replace('/[ \t]*([{}|:;,])[ \t]+/', '$1', $file_contents); // Remove whitespace (keeping newlines)
+								$file_contents = preg_replace('/^[ \t]+/m', '', $file_contents); // Remove whitespace at the start
+								$file_contents = str_replace(';}', '}', $file_contents); // Remove unnecessary ;'s
 
-								}
 							}
 
-							file_put_contents($cache_file_time, $files_contents);
+							file_put_contents($cache_file_time, $file_contents);
 
 						}
 
-						$files_realpath = [$cache_file_time];
+						$file_path = $cache_file_time;
 
 					}
 
 				//--------------------------------------------------
-				// Sent output
+				// Output
 
-					foreach ($files_realpath as $realpath) {
-						readfile($realpath);
-					}
-
+					readfile($file_path);
 					exit();
 
-			} else if ($files_mtime > 0) {
+			} else if ($file_mtime > 0) {
 
 				//--------------------------------------------------
 				// New version
 
 					$new_url = new url();
 					$new_url->format_set('full');
-					$new_url->path_set($route_dir . '/' . $files_mtime . '-' . $route_file . ($route_min ? '.min' : '') . '.' . $route_ext);
+					$new_url->path_set($route_dir . '/' . $file_mtime . '-' . $route_file . ($route_min ? '.min' : '') . '.' . $route_ext);
 
 					redirect($new_url->get(), 301);
 
 			}
 
-			unset($files_mtime, $file_modified);
+			unset($minify, $cache_folder, $file_mtime);
 
 		}
 
-		unset($route_dir, $route_mtime, $route_file, $route_ext, $route_files, $path, $files_realpath, $realpath);
+		unset($route_dir, $route_mtime, $route_file, $route_min, $route_ext, $file_path);
 
 	}
 

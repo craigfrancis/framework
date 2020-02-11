@@ -66,24 +66,6 @@ And the JavaScript can get that variable via:
 
 ---
 
-## JavaScript combined
-
-Along with the versioning, the JS files can also be [combined](https://developer.yahoo.com/performance/rules.html#num_http) to a single file if you set the config:
-
-	$config['output.js_combine'] = true;
-
-This means that all the local files will be presented to the browser with a single script tag, such as:
-
-	<script src="/a/js/946684800-{file1,file2}.js"></script>
-
-And the framework will automatically parse this and return the individual files as one.
-
-If you wan't a file to not be combined (e.g. jQuery), then instead call:
-
-	$response->js_add('/path/to/file.js', 'separate');
-
----
-
 ## JavaScript minified
 
 To [minify](https://developer.yahoo.com/performance/rules.html#minify) the JavaScript with [jsmin-php](https://github.com/rgrove/jsmin-php/), set:

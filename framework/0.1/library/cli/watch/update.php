@@ -92,7 +92,7 @@
 
 				} else if (substr($path, 0, 18) === '/app/public/a/css/' && $file_ext == 'css') {
 
-					// https://stackoverflow.com/a/1379487/6632
+						// https://stackoverflow.com/a/1379487/6632
 
 					$file_contents = file_get_contents(ROOT . $path);
 					$file_contents = preg_replace('#/\*.*?\*/#s', '', $file_contents); // Remove comments

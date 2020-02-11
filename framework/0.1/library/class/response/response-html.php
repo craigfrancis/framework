@@ -467,7 +467,7 @@
 
 			public function js_add_async($path, $extra_attributes = []) {
 
-				$attributes = ['async', 'separate'];
+				$attributes = ['async'];
 				foreach ($extra_attributes as $name => $value) {
 					$attributes[$name] = $value;
 				}
@@ -563,7 +563,7 @@
 					if (count($js_files) > 0) {
 						$html .= "\n";
 						foreach ($js_files as $attributes) {
-							if (($key = array_search('separate', $attributes)) !== false) {
+							if (($key = array_search('separate', $attributes)) !== false) { // Backwards compatibility (not used any more)
 								unset($attributes[$key]);
 							}
 							if ($js_defer && count($attributes) == 1 && isset($attributes['src'])) {
@@ -903,65 +903,6 @@
 
 						}
 
-					//--------------------------------------------------
-					// Combined JS
-
-						if (!$integrity && config::get('output.js_combine')) {
-
-							$grouped_files = []; // Local files that can be grouped
-
-							foreach ($files as $id => $file) {
-								if (substr($file['path'], 0, 1) == '/' && substr($file['path'], -3) == '.js' && count($file['attributes']) == 0 && is_file(PUBLIC_ROOT . $file['path'])) {
-									$grouped_files[$id] = $file['path'];
-								}
-							}
-
-							if (count($grouped_files) > 0) {
-
-								$prefix = reset($grouped_files);
-								$length = strlen($prefix);
-
-								foreach ($grouped_files as $path) { // @Gumbo - https://stackoverflow.com/q/1336207/finding-common-prefix-of-array-of-strings
-									while ($length && substr($path, 0, $length) !== $prefix) {
-										$length--;
-										$prefix = substr($prefix, 0, -1);
-									}
-									if (!$length) break;
-								}
-
-								if ($length > 0 && substr($prefix, -1) == '/') {
-
-									if ($version) {
-										$last_modified = 0;
-										foreach ($grouped_files as $path) {
-											$file_modified = filemtime(PUBLIC_ROOT . $path);
-											if ($last_modified < $file_modified) {
-												$last_modified = $file_modified;
-											}
-										}
-										$last_modified .= '-';
-									} else {
-										$last_modified = '';
-									}
-
-									$paths = [];
-									foreach ($grouped_files as $id => $path) {
-										unset($files[$id]);
-										$paths[] = substr($path, $length, -3);
-									}
-
-									$files[] = array(
-											'path' => NULL,
-											'url' => $prefix . $last_modified . rawurlencode('{') . implode(',', array_unique($paths)) . rawurlencode('}') . ($minify ? '.min' : '') . '.js',
-											'attributes' => [],
-										);
-
-								}
-
-							}
-
-						}
-
 				} else if ($type == 'style') {
 
 					//--------------------------------------------------
@@ -974,8 +915,8 @@
 				foreach ($files as $id => $file) {
 					if (!isset($file['url'])) {
 
-						if ($minify && substr($file['path'], 0, 3) == ASSET_URL . '/') {
-							$min_path = ASSET_URL . '/min/' . substr($file['path'], 3);
+						if ($minify && prefix_match(ASSET_URL . '/', $file['path'])) {
+							$min_path = ASSET_URL . '/min/' . substr($file['path'], (strlen(ASSET_URL) + 1));
 							if (is_file(PUBLIC_ROOT . $min_path)) {
 								$files[$id]['path_min'] = $min_path;
 							} else {
