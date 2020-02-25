@@ -1,4 +1,5 @@
 
+	#debug_urgent_list,
 	#debug_output,
 	#debug_output #debug_links,
 	#debug_output #debug_links a.debug_link,
@@ -25,6 +26,15 @@
 		text-align: left;
 		text-decoration: none;
 		max-width: none;
+	}
+
+	#debug_urgent_list {
+		color: #767676;
+		background: #FFF;
+		border: 3px solid #F00;
+		list-style: none;
+		margin-bottom: 1em;
+		padding: 1em;
 	}
 
 	#debug_output {

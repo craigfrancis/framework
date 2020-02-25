@@ -9,6 +9,7 @@
 
 	var debug_script = document.currentScript,
 		debug_setup_count = 0,
+		debug_urgent_list,
 		debug_data,
 		debug_open,
 		debug_wrapper,
@@ -19,6 +20,29 @@
 				'H': {'name': 'Help',   'notes': []},
 				'L': {'name': 'Log',    'notes': []}
 			};
+
+	function debug_urgent_error(type, message) {
+		if (!debug_urgent_list) {
+			debug_urgent_list = document.createElement('ol');
+			debug_urgent_list.setAttribute('id', 'debug_urgent_list');
+			document.body.insertBefore(debug_urgent_list, document.body.firstChild);
+		}
+		var li = document.createElement('li');
+		li.setAttribute('data-type', type);
+		li.textContent = message;
+		debug_urgent_list.appendChild(li);
+	}
+
+	function debug_reporting_callback(reports, observer) {
+		var message;
+		for (var k = 0, l = reports.length; k < l; k++) {
+			message = reports[k].body.message;
+			// if (reports[k].body.lineNumber) {
+			// 	message = 'Line ' + reports[k].body.lineNumber + ': ' + message;
+			// }
+			// debug_urgent_error(reports[k].type, message); // TODO: Enable?
+		}
+	}
 
 	function debug_open_click(e) {
 
@@ -297,32 +321,47 @@
 
 	function init() {
 
-		var api_url = (debug_script ? debug_script : document.querySelector('script[src$="debug.js"][data-api]'));
-		if (api_url) {
-			api_url = api_url.getAttribute('data-api');
-		}
-		if (api_url) {
+		//--------------------------------------------------
+		// Reporting Observer
 
-			var debug_xhr = new XMLHttpRequest();
-			debug_xhr.open('GET', api_url, true);
-			debug_xhr.onreadystatechange = function() {
-				if (this.readyState == 4) {
-					var response;
-					if (this.status == 200) {
-						try {
-							debug_data = JSON.parse(debug_xhr.responseText);
-						} catch (e) {
-							debug_data = null;
+			new ReportingObserver(debug_reporting_callback, {
+					'types': [
+							'deprecation',
+							'intervention',
+							'feature-policy-violation'
+						],
+					'buffered': true
+				}).observe();
+
+		//--------------------------------------------------
+		// API Data
+
+			var api_url = (debug_script ? debug_script : document.querySelector('script[src$="debug.js"][data-api]'));
+			if (api_url) {
+				api_url = api_url.getAttribute('data-api');
+			}
+			if (api_url) {
+
+				var debug_xhr = new XMLHttpRequest();
+				debug_xhr.open('GET', api_url, true);
+				debug_xhr.onreadystatechange = function() {
+					if (this.readyState == 4) {
+						var response;
+						if (this.status == 200) {
+							try {
+								debug_data = JSON.parse(debug_xhr.responseText);
+							} catch (e) {
+								debug_data = null;
+							}
+						}
+						if (debug_data) {
+							debug_setup();
 						}
 					}
-					if (debug_data) {
-						debug_setup();
-					}
 				}
-			}
-			debug_xhr.send();
+				debug_xhr.send();
 
-		}
+			}
 
 	}
 
