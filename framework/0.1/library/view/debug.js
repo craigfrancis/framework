@@ -40,7 +40,7 @@
 			// if (reports[k].body.lineNumber) {
 			// 	message = 'Line ' + reports[k].body.lineNumber + ': ' + message;
 			// }
-			// debug_urgent_error(reports[k].type, message); // TODO: Enable?
+			debug_urgent_error(reports[k].type, message);
 		}
 	}
 
