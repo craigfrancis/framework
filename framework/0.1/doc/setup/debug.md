@@ -39,6 +39,10 @@ In the bottom left of the page should be the time it took to process the HTML (s
 - **[H]** To see general help (e.g. how the [controllers](../../doc/setup/controllers.md) were used).
 - **[L]** To see a log of events (typically the SQL queries).
 
+If something is running slow, you can use the following to add notes (with times) on the **[L]** page:
+
+	debug_note('Example');
+
 ---
 
 ## Database required fields
@@ -47,7 +51,7 @@ In debug mode, every query sent to the database can be checked to ensure that yo
 
 So if you don't DELETE records (a good practice), then you will probably have a 'deleted' column on most tables.
 
-To ensure that you always check that your always ignoring deleted columns, the following default is used:
+To ensure that you always check that your always ignoring deleted records, the following default is used:
 
 	$config['debug.db_required_fields'] = array('deleted');
 
