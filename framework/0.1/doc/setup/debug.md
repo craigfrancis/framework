@@ -39,7 +39,7 @@ In the bottom left of the page should be the time it took to process the HTML (s
 - **[H]** To see general help (e.g. how the [controllers](../../doc/setup/controllers.md) were used).
 - **[L]** To see a log of events (typically the SQL queries).
 
-If something is running slow, you can use the following to add notes (with times) on the **[L]** page:
+You can use the following to add notes (with times) on the **[L]** page:
 
 	debug_note('Example');
 
