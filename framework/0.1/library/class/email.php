@@ -291,14 +291,64 @@
 			public function values_table_add($values) {
 
 				//--------------------------------------------------
-				// Field length
+				// Examples
 
-					$field_length = 0;
-					foreach ($values as $name => $value) {
-						$len = strlen(is_array($value) ? $value[0] : $name);
-						if ($len > $field_length) {
-							$field_length = $len;
+					// $values = [
+					//
+					// 		'Label_1A' => 'Value', // Normal values
+					// 		'Label_1B' => 'Value',
+					// 		'Label_1C' => 'Value',
+					//
+					// 		['Label_2', 'Value'], // Example from form class, note the duplicate label values.
+					// 		['Label_2', "A\nB"],
+					//
+					// 		'Label_3' => ['text' => 'Value', 'html' => '<strong>Value</strong>'],
+					//
+					// 		['label' => 'Label_4', 'text' => 'Value', 'html' => '<strong>Value</strong>'],
+					//
+					// 	];
+
+				//--------------------------------------------------
+				// Cleaned up values, and max label length
+
+					$clean_values = [];
+					$label_length = 0;
+
+					foreach ($values as $label => $value) {
+
+						if (is_array($value)) {
+							if (isset($value['text'])) {
+								if (!isset($value['label'])) {
+									$value['label'] = $label;
+								}
+							} else {
+								$value = [
+										'label' => $value[0], // The form class will use an array just incase there are two fields with the same label
+										'text' => $value[1],
+									];
+							}
+						} else {
+							$value = [
+									'label' => $label,
+									'text' => $value,
+								];
 						}
+
+						if (!isset($value['html'])) {
+							$value['html'] = nl2br(html($value['text']));
+						}
+
+						if ($value['html'] == '') {
+							$value['html'] = '&#xA0;';
+						}
+
+						$clean_values[] = $value;
+
+						$len = strlen($value['label']);
+						if ($len > $label_length) {
+							$label_length = $len;
+						}
+
 					}
 
 				//--------------------------------------------------
@@ -306,19 +356,14 @@
 
 					$this->body_html .= '<table cellspacing="0" cellpadding="3" border="1" style="font-size: 1em;">' . "\n"; // font-size is not inherited into the table in Outlook (IE)
 
-					foreach ($values as $name => $value) {
+					foreach ($clean_values as $value) {
 
-						if (is_array($value)) { // The form class will use an array just incase there are two fields with the same label
-							$name = $value[0];
-							$value = $value[1];
-						}
+						$this->body_html .= ' <tr><th align="left" valign="top">' . html($value['label']) . '</th><td valign="top">' . $value['html'] . '</td></tr>' . "\n";
 
-						$this->body_html .= ' <tr><th align="left" valign="top">' . html($name) . '</th><td valign="top">' . nl2br($value == '' ? '&#xA0;' : html($value)) . '</td></tr>' . "\n";
-
-						if (strpos($value, "\n") === false) {
-							$this->body_text .= str_pad($name . ':', ($field_length + 2)) . $value . "\n";
+						if (strpos($value['text'], "\n") === false) {
+							$this->body_text .= str_pad($value['label'] . ':', ($label_length + 2)) . $value['text'] . "\n";
 						} else {
-							$this->body_text .= $name . ':- ' . "\n\n" . preg_replace('/^/m', '  ', preg_replace('/\r\n?/', "\n", wordwrap($value, 70, "\n"))) . "\n\n";
+							$this->body_text .= $value['label'] . ':- ' . "\n\n" . preg_replace('/^/m', '  ', preg_replace('/\r\n?/', "\n", wordwrap($value['text'], 70, "\n"))) . "\n\n";
 						}
 
 					}
