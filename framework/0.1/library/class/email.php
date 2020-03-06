@@ -279,7 +279,6 @@
 				$request_values = [
 						'Sent'     => date('l jS F Y, g:i:sa'),
 						'Website'  => config::get('output.origin'),
-						'Method'   => config::get('request.method'),
 						'Request'  => config::get('request.uri'),
 						'Referrer' => config::get('request.referrer'),
 						'Remote'   => config::get('request.ip'),
