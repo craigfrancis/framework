@@ -276,13 +276,14 @@
 
 			public function request_table_add($values = []) {
 
-				$request_values = array(
-						'Sent' => date('l jS F Y, g:i:sa'),
-						'Website' => config::get('output.origin'),
-						'Request' => config::get('request.uri'),
+				$request_values = [
+						'Sent'     => date('l jS F Y, g:i:sa'),
+						'Website'  => config::get('output.origin'),
+						'Method'   => config::get('request.method'),
+						'Request'  => config::get('request.uri'),
 						'Referrer' => config::get('request.referrer'),
-						'Remote' => config::get('request.ip'),
-					);
+						'Remote'   => config::get('request.ip'),
+					];
 
 				$this->values_table_add(array_merge($request_values, $values));
 
