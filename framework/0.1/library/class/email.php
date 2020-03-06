@@ -276,10 +276,17 @@
 
 			public function request_table_add($values = []) {
 
+				$uri = config::get('request.uri');
+				$url = http_url();
+
 				$request_values = [
 						'Sent'     => date('l jS F Y, g:i:sa'),
 						'Website'  => config::get('output.origin'),
-						'Request'  => config::get('request.uri'),
+						'Method'   => config::get('request.method'),
+						'Request'  => [
+								'text' => $uri,
+								'html' => '<a href="' . html($url) . '">' . html($uri) . '</a>',
+							],
 						'Referrer' => config::get('request.referrer'),
 						'Remote'   => config::get('request.ip'),
 					];
