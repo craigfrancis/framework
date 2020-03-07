@@ -324,14 +324,18 @@
 		//--------------------------------------------------
 		// Reporting Observer
 
-			new ReportingObserver(debug_reporting_callback, {
-					'types': [
-							'deprecation',
-							'intervention',
-							'feature-policy-violation'
-						],
-					'buffered': true
-				}).observe();
+			if (window.ReportingObserver) {
+
+				new ReportingObserver(debug_reporting_callback, {
+						'types': [
+								'deprecation',
+								'intervention',
+								'feature-policy-violation'
+							],
+						'buffered': true
+					}).observe();
+
+			}
 
 		//--------------------------------------------------
 		// API Data
