@@ -235,6 +235,10 @@
 				}
 			}
 
+// TODO: /private/secrets/
+// config::secret_exist()
+// config::secret_get()
+
 			public static function get_encrypted($value) {
 				$key = getenv('PRIME_CONFIG_KEY');
 				if (!$key) {

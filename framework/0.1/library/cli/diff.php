@@ -28,6 +28,7 @@
 					if (REQUEST_MODE == 'cli') {
 						$diff_via_api = true;
 						try {
+// TODO: /private/secrets/
 							if (config::get_decrypted('db.pass') !== NULL) {
 								$diff_via_api = false; // Can access the password, run locally.
 							}

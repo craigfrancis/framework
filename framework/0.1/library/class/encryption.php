@@ -158,6 +158,9 @@
 		//--------------------------------------------------
 		// Get key
 
+// TODO: /private/secrets/
+// config::secret_exist()
+// config::secret_get()
 			public static function key_exists($name, $key_id = NULL) {
 				$path = self::key_path_get($name);
 				if (is_file($path)) {

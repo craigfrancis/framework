@@ -1293,6 +1293,7 @@ exit();
 
 			public function auth_encrypt() {
 
+// TODO: /private/secrets/
 				if (!encryption::key_exists(auth::$secret_key)) {
 					encryption::key_symmetric_create(auth::$secret_key);
 				}
@@ -1765,6 +1766,7 @@ exit();
 
 			public static function secret_parse($user_id, $secret) {
 
+// TODO: /private/secrets/
 				if (!encryption::key_exists(auth::$secret_key)) {
 					exit_with_error('The encryption key "' . auth::$secret_key . '" does not exist.');
 				}
@@ -1831,6 +1833,7 @@ exit();
 
 				$secret = intval(auth::$secret_version) . '-' . json_encode($secret_values);
 
+// TODO: /private/secrets/
 				if (!encryption::key_exists(auth::$secret_key)) {
 					encryption::key_symmetric_create(auth::$secret_key);
 				}

@@ -2,6 +2,10 @@
 
 // Check config-encrypt.php ... this might replace it.
 
+// Check TODO: /private/secrets/
+
+//--------------------------------------------------
+
 // PRIME_CONFIG_KEY is unique to each server, never leaves it, and is only used to encrypt config values.
 
 // If something needs encrypting, create a second key (that can be backed up), and that key is encrypted with PRIME_CONFIG_KEY.

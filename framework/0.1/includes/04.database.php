@@ -699,6 +699,8 @@
 				$name = config::get($prefix . 'name');
 				$host = config::get($prefix . 'host');
 				$user = config::get($prefix . 'user');
+
+// TODO: /private/secrets/
 				$pass = config::get_decrypted($prefix . 'pass');
 
 				if ($pass === NULL) {

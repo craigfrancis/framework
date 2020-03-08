@@ -27,7 +27,9 @@
 
 			} else {
 
+// TODO: /private/secrets/
 				$password = config::get_decrypted('lolcat.pass', NULL);
+
 				$site = config::get('lolcat.site');
 				$pass = hash('sha256', $id . $site . $password);
 				$url = config::get('lolcat.url', 'https://www.devcf.com/a/api/lolcat/');
