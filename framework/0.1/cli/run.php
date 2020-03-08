@@ -155,6 +155,13 @@
 
 					break;
 
+				case 's':
+				case 'secrets':
+
+					require_once(FRAMEWORK_ROOT . '/library/cli/secrets.php');
+
+					break;
+
 				case 'g':
 				case 'gateway':
 
