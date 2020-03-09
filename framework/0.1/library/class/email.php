@@ -280,15 +280,16 @@
 				$url = http_url();
 
 				$request_values = [
-						'Sent'     => date('l jS F Y, g:i:sa'),
-						'Website'  => config::get('output.origin'),
-						'Method'   => config::get('request.method'),
-						'Request'  => [
+						'Sent'      => date('l jS F Y, g:i:sa'),
+						'Website'   => config::get('output.origin'),
+						'Method'    => config::get('request.method'),
+						'Request'   => [
 								'text' => $uri,
 								'html' => '<a href="' . html($url) . '">' . html($uri) . '</a>',
 							],
-						'Referrer' => config::get('request.referrer'),
-						'Remote'   => config::get('request.ip'),
+						'Referrer'  => config::get('request.referrer'),
+						'Remote'    => config::get('request.ip'),
+						'Reference' => config::get('response.ref'),
 					];
 
 				$this->values_table_add(array_merge($request_values, $values));
