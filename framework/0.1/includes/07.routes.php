@@ -493,7 +493,7 @@
 		$fetch_values = config::get('request.fetch');
 		foreach ($fetch_allowed as $field => $allowed) {
 			if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
-				report_add('Main request Sec-Fetch-' . ucfirst($field) . ', [' . $fetch_values[$field] . '] not in [' . implode(',', $allowed) . ']');
+				report_add('Main request Sec-Fetch-' . ucfirst($field) . ', [' . $fetch_values[$field] . '] not in [' . implode(',', $allowed) . ']' . "\n\n" . debug_dump($fetch_values));
 				if (SERVER == 'stage') {
 					http_response_code(403);
 					exit();
