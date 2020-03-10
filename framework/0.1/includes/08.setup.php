@@ -30,8 +30,8 @@
 			$origin = $scheme . '://' . $domain;
 
 			$default_port = ($scheme == 'http' ? 80 : 443);
-			$request_port = config::get('output.port', config::get('request.port', $default_port));
-			if ($default_port != $request_port) {
+			$request_port = intval(config::get('output.port', config::get('request.port'))); // Probably not set on CLI
+			if ($request_port > 0 && $request_port != $default_port) {
 				$origin .= ':' . $request_port;
 			}
 
