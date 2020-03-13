@@ -24,6 +24,19 @@
 //       'expires' => '+5 seconds', How long the generated signature lasts, converted to a timestamp, passed in a separate 'X-Expires' header?
 //     ]);
 //
+// Returning errors: https://tools.ietf.org/html/rfc7807
+//
+//   HTTP/1.1 403 Forbidden
+//   Content-Type: application/problem+json.... or just application/json
+//   Content-Language: en
+//   {
+//    "status": "403 Forbidden",                   = Duplicates the HTTP header, easier for some clients to see.
+//    "title": "You do not have enough credit.",   = A short, human-readable summary
+//    "detail": "Balance is 30, but costs 50.",    = A human-readable explanation
+//    "type": "https://example.com/errors/credit", = URL providing human-readable documentation
+//    "instance": "/account/12345/credit",         = URL reference, identifying specific problem (may provide further info)
+//   }
+//
 // Should be used by "cli-diff-db" and "cli-opcache-clear"
 //
 // Server checking:
