@@ -33,6 +33,10 @@
 				$this->option_values_html = $options_html;
 			}
 
+			public function option_set_html($ref, $value_html) {
+				$this->option_values_html[$ref] = $value_html;
+			}
+
 			public function options_info_set($options_info) {
 				$this->options_info_set_html(array_map('html', $options_info));
 			}
