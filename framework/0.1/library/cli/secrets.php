@@ -28,7 +28,9 @@
 
 // Start by checking if "/etc/prime-config-key" exists, and propose it's contents (or if run by root, create it automatically?)
 
-// Check if the folder "/private/secrets/" exists, and if not, create it. Where it contains files only www-data can read.
+// Check if the file "/private/secrets/variables" exists, it only contains variable name and type (string or key), only created/edited on Stage, other servers use this to know which variables need/should exist.
+
+// Check if the folder "/private/secrets/encrypted/" exists, and if not, create it. It contains files only www-data can read.
 
 // For each key in PRIME_CONFIG_KEY, there is a file, where that key can decrypt the values.
 
