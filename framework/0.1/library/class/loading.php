@@ -138,6 +138,9 @@
 						}
 
 						if (($time_start == 0) || (($time_start + $this->config['time_out']) < time())) {
+							if ($time_start != 0) {
+								report_add('Lock Timeout (' . $time_start . ' + ' . $this->config['time_out'] .' < ' . time() . ')', 'notice');
+							}
 							$this->_cleanup();
 							return $variables;
 						}
