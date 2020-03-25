@@ -198,7 +198,7 @@
 					$config_key = config::get('session.key');
 
 					if ($session_key == '' || $session_key != $config_key) {
-debug([$_SESSION, headers_sent()]);
+
 						if (count($_SESSION) == 0 && !headers_sent()) {
 
 							session::regenerate(); // Don't want UA telling us the ID to use
