@@ -94,6 +94,10 @@
 				$this->current_url = $url;
 			}
 
+			public function current_url_get() {
+				return $this->current_url;
+			}
+
 			public function id_set($id) {
 				$this->id_value = $id;
 			}
