@@ -5,8 +5,8 @@ A typical [HTML response](../../doc/system/response.md) will add JavaScript and 
 	$response = response_get();
 
 	$response->js_add('/path/to/file.js');
-	$response->js_async_add('/path/to/file.js');
-	$response->js_trusted_add('/path/to/file.js');
+	$response->js_add_async('/path/to/file.js');
+	$response->js_add_trusted('/path/to/file.js');
 
 	$response->css_auto();
 	$response->css_add('/path/to/file.css');

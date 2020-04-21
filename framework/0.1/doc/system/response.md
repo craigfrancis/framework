@@ -52,8 +52,8 @@ Additional [CSP sources](../../doc/security/csp.md):
 To add some JavaScript or CSS ([details](../../doc/setup/resources.md)):
 
 	$response->js_add('/path/to/file.js');
-	$response->js_async_add('/path/to/file.js');
-	$response->js_trusted_add('/path/to/file.js');
+	$response->js_add_async('/path/to/file.js');
+	$response->js_add_trusted('/path/to/file.js');
 
 	$response->css_auto();
 	$response->css_add('/path/to/file.css');
