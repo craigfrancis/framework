@@ -6,6 +6,7 @@
 		// Variables
 
 			protected $currency_char = '£';
+			protected $trim_decimal = false;
 
 		//--------------------------------------------------
 		// Setup
@@ -27,6 +28,10 @@
 
 			public function currency_char_set($char) {
 				$this->currency_char = $char;
+			}
+
+			public function trim_decimal_set($trim) {
+				$this->trim_decimal = $trim;
 			}
 
 		//--------------------------------------------------
@@ -83,7 +88,11 @@
 
 				$value = parent::_value_print_get();
 
-				$decimal_places = ($this->step_value == 1 ? 0 : 2);
+				if ($this->trim_decimal && fmod($value, 1) == 0) {
+					$decimal_places = 0;
+				} else {
+					$decimal_places = ($this->step_value == 1 ? 0 : 2);
+				}
 
 				if (is_int($value) || is_float($value)) {
 					return format_currency($value, $this->currency_char, $decimal_places, $this->zero_to_blank);
