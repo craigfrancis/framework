@@ -652,6 +652,10 @@
 			return NULL;
 		}
 
+		if ($decimal_places === 'auto') {
+			$decimal_places = (fmod($value, 1) == 0 ? 0 : 2);
+		}
+
 		$value = (round($value, $decimal_places) == 0 ? 0 : $value); // Stop negative -£0
 
 		if ($value == 0 && $zero_to_blank) {
