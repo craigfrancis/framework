@@ -90,6 +90,16 @@
 				$email_values = config::get('debug.values', []);
 				$email_values = array_merge($email_values, array('Message' => $message));
 
+				if ($type == 'error' && config::get('request.method') == 'POST') {
+					$post_values = $_POST;
+					foreach (['password', 'pass', 'csrf'] as $remove) {
+						if (isset($post_values[$remove])) {
+							$post_values[$remove] = '-';
+						}
+					}
+					$email_values['Post'] = json_encode($post_values, JSON_PRETTY_PRINT);
+				}
+
 				$email = new email();
 				$email->default_style_set(NULL);
 				$email->subject_set('System ' . ucfirst($type) . ': ' . config::get('output.domain'));
