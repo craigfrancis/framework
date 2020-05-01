@@ -744,7 +744,7 @@
 						}
 						array_pop($query_formatted); // Last entry isn't a parameter.
 					} else {
-						$query_formatted = $query_plain;
+						$query_formatted = [['span', $query_plain]];
 					}
 
 				//--------------------------------------------------
