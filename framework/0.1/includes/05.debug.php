@@ -132,6 +132,17 @@
 	function exit_with_error($message, $hidden_info = '', $type = 'error') {
 
 		//--------------------------------------------------
+		// Config
+
+			if (is_a($message, 'error_exception')) {
+				$backtrace = $message->getBacktrace();
+				$hidden_info = $message->getHiddenInfo();
+				$message = $message->getMessage();
+			} else {
+				$backtrace = debug_backtrace();
+			}
+
+		//--------------------------------------------------
 		// Called from
 
 			foreach (debug_backtrace() as $called_from) {
@@ -285,14 +296,20 @@
 	class error_exception extends exception {
 
 		protected $hidden_info;
+		protected $backtrace;
 
 		public function __construct($message, $hidden_info = '', $code = 0) {
 			$this->message = $message;
 			$this->hidden_info = $hidden_info;
+			$this->backtrace = debug_backtrace();
 		}
 
 		public function getHiddenInfo() {
 			return $this->hidden_info;
+		}
+
+		public function getBacktrace() {
+			return $this->backtrace;
 		}
 
 	}

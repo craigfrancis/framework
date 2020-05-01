@@ -136,7 +136,7 @@
 
 			} catch (error_exception $e) {
 
-				exit_with_error($e->getMessage(), $e->getHiddenInfo());
+				exit_with_error($e);
 
 			}
 
