@@ -180,7 +180,7 @@ class cms_tags_base extends check {
 			$string_length = strlen($string);
 			for ($i = 0; $i < $string_length; $i++) {
 
-				$char = $string{$i};
+				$char = $string[$i];
 
 				if ($char == '[' && $in_tag_attribute === NULL) {
 
@@ -619,7 +619,7 @@ class cms_tags_base extends check {
 			$string_length = strlen($string);
 			for ($i = 0; $i < $string_length; $i++) {
 
-				$char = $string{$i};
+				$char = $string[$i];
 
 				if ($char == '[') {
 
