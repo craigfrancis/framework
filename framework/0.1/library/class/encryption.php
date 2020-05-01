@@ -371,7 +371,7 @@
 				list($input_type, $input_keys, $input_1, $input_2, $input_3, $input_4) = array_pad(explode('.', $input), 6, NULL);
 
 				if ($input_type === NULL || $input_keys === NULL) {
-					throw new error_exception('The encrypted data does not include the necessary metadata.');
+					throw new error_exception('The encrypted data does not include the necessary metadata.', 'Type = ' . debug_dump($input_type) . "\n" . 'Keys = ' . debug_dump($input_keys) . "\n" . 'Input = ' . strlen($input));
 				}
 
 				list($key1_id, $key2_id) = array_pad(explode('-', $input_keys, 2), 2, -1);
