@@ -11,4 +11,9 @@
 		<hr />
 		<div><?= nl2br(html($hidden_info)) ?></div>
 
+	<?php } else if (isset($hidden_html) && $hidden_html != '') { ?>
+
+		<hr />
+		<div><?= $hidden_html ?></div>
+
 	<?php } ?>
