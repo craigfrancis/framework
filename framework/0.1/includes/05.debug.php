@@ -145,17 +145,39 @@
 		//--------------------------------------------------
 		// Called from
 
-			foreach (debug_backtrace() as $called_from) {
-				if (isset($called_from['file']) && !prefix_match(FRAMEWORK_ROOT, $called_from['file'])) {
+			array_pop($backtrace); // Remove "/public/index.php", which is pointless, and prevents v2 from running.
 
-					if ($hidden_info != '') {
-						$hidden_info .= "\n\n";
+			foreach ([1, 2] as $try) { // v1 is to focus on project code, v2 for something that's just in the framework.
+				$k = 0;
+				foreach ($backtrace as $called_from) {
+					if (isset($called_from['file'])) {
+
+						if ($try == 1 && $k == 0 && prefix_match(FRAMEWORK_ROOT, $called_from['file'])) { // Where $k will remain 0 until something non-framework is found.
+							continue;
+						}
+
+						$path = $called_from['file'];
+						$path = prefix_replace(FRAMEWORK_ROOT, '/framework', $path);
+						$path = prefix_replace(APP_ROOT, '', $path);
+
+						if ($try == 1 && $path == '/framework/includes/09.process.php') {
+							break; // No point reporting any more
+						}
+
+						$k++;
+
+						if ($k == 1 && $hidden_info != '') {
+							$hidden_info .= "\n\n";
+						} else if ($k == 2) {
+							$hidden_info .= "\n"; // Make the first line stand out
+						}
+
+						$hidden_info .= $path . ':' . $called_from['line'] . "\n";
+
 					}
-
-					$hidden_info .= $called_from['file'] . ' (line ' . $called_from['line'] . ')';
-
-					break;
-
+				}
+				if ($k > 0) {
+					break; // Got something, no need for $try 2
 				}
 			}
 
