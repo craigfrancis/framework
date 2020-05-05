@@ -20,7 +20,7 @@
 //       'sub_path' => '/sub-path/',
 //       'data_get' => ['a' => 'b'],
 //       'data_post' => ['a' => 'b'], // for 'application/x-www-form-urlencoded'... or it could also be a string?
-//       'username' => 'test',
+//       'id' => 'server-name',
 //       'expires' => '+5 seconds', How long the generated signature lasts, converted to a timestamp, passed in a separate 'X-Expires' header?
 //     ]);
 //
@@ -41,15 +41,40 @@
 //
 // Server checking:
 //
-//   $username = $this->client_verify(); // where $this is an api object... and it calls the method client_key_get($username), so the project stores/provides the $key.
+//   $id = $this->client_verify(); // where $this is the api helper... where it called the method client_key_get($id), so the project stores/provides the $key.
 //
-//   $header = 'Authorization base64(username):base64(signature):base64(nonce):base64(expires)'... not really 'Basic' (does provide username/signature), nor 'Bearer' (not a single token).
+//   $header = 'Authorization base64(id):base64(signature):base64(nonce):base64(expires)'... not really 'Basic' (does provide id/signature), nor 'Bearer' (not a single token).
 //   $signature = base64_encode(hash_hmac('sha256', $string, $key)),
 //   hash_equals()
 //   $string = `url_path + http_build_query(ksort($_GET)) + body/POST + $nonce + $expires`
 //
 //   Use base64_encode_rfc4648(), which converts '+/' to '-_'... should we use ':' to separate fields?
 //   Need to stop the signature being used more than once... maybe the method client_log($config, $signature), where $config = ['version' => 1, 'sub_path' ...], and the framework provides a default implementation, using a UNIQUE index table on the signature, log of created date, etc.
+//
+//   ...
+//
+//   Also use HTTPS Client Certificates, where Apache config uses:
+//
+//     <Location "/a/api/">
+//       SSLVerifyClient optional_no_ca
+//       SSLVerifyDepth 0  <-- Only self-signed client certificates are accepted
+//       SSLOptions +StdEnvVars
+//     </Location>
+//
+//   This ensures the initial handshake contains the challenge.
+//
+//   The client connects using:
+//
+//     $context['ssl']['local_cert']
+//     $context['ssl']['local_pk']
+//     $context['ssl']['passphrase']
+//
+//   The server checks $_SERVER['SSL_CLIENT_VERIFY'] == 'SUCCESS', as Apache does the crypto checks.
+//
+//   Need to decide if we use Self-Signed certs, or use a CA (probably not for this case)... SSL_CLIENT_M_SERIAL might be enough.
+//
+//   More info:
+//     https://cweiske.de/tagebuch/ssl-client-certificates.htm
 //
 //--------------------------------------------------
 
