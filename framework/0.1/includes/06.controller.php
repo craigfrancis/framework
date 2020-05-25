@@ -223,11 +223,11 @@
 					$building_path = '';
 				}
 
-				$building_path .= '/index';
+				$building_path = str_replace('.', '', $building_path) . '/index'; // The str_replace is to work around bug 53041 (below)
 
 				$controller_path = CONTROLLER_ROOT . $building_path . '.php';
 
-				if (!is_file($controller_path)) {
+				if (!is_file($controller_path)) { // https://bugs.php.net/bug.php?id=53041 e.g. "GET /admin.php" tests "/admin.php/index.php", which causes an "open_basedir restriction" warning when "/admin.php" exists.
 
 					$controller_log[] = $controller_path . ' - absent';
 
