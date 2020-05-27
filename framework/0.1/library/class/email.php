@@ -280,7 +280,7 @@
 				$url = http_url();
 
 				$request_values = [
-						'Load'      => NULL,
+						'Loaded'    => NULL,
 						'Sent'      => date('l jS F Y, g:i:sa'),
 						'Website'   => config::get('output.origin'),
 						'Method'    => config::get('request.method'),
@@ -299,9 +299,9 @@
 					$original_request = date('l jS F Y, g:i:sa', $original_request);
 				}
 				if ($original_request !== NULL) {
-					$request_values['Load'] = $original_request;
+					$request_values['Loaded'] = $original_request;
 				} else {
-					unset($request_values['Load']); // Temporary
+					unset($request_values['Loaded']); // Temporary
 				}
 
 				$this->values_table_add(array_merge($request_values, $values));
