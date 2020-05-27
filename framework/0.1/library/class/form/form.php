@@ -1200,6 +1200,12 @@
 
 						$input_fields['act'] = ['value' => $this->form_id];
 
+						$original_request = intval(request('r'));
+						if ($original_request == 0) {
+							$original_request = time();
+						}
+						$input_fields['r'] = ['value' => $original_request];
+
 						if ($this->csrf_error_html != NULL) {
 							if ($this->form_method == 'POST') {
 								$input_fields['csrf'] = ['value' => csrf_challenge_hash($this->form_action, $this->csrf_token)];

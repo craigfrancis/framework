@@ -280,6 +280,7 @@
 				$url = http_url();
 
 				$request_values = [
+						'Load'      => NULL,
 						'Sent'      => date('l jS F Y, g:i:sa'),
 						'Website'   => config::get('output.origin'),
 						'Method'    => config::get('request.method'),
@@ -291,6 +292,17 @@
 						'Remote'    => config::get('request.ip'),
 						'Reference' => config::get('response.ref'),
 					];
+
+				$original_request = request('r');
+				if (preg_match('/^[0-9]{10,}$/', $original_request)) {
+					$request_values['Sent'] .= ' (' . timestamp_to_human((time() - $original_request), 2) . ')';
+					$original_request = date('l jS F Y, g:i:sa', $original_request);
+				}
+				if ($original_request !== NULL) {
+					$request_values['Load'] = $original_request;
+				} else {
+					unset($request_values['Load']); // Temporary
+				}
 
 				$this->values_table_add(array_merge($request_values, $values));
 
