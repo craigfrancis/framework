@@ -84,11 +84,14 @@
 		$config['output.fp_directives'] = [
 
 					// https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/feature_policy/feature_policy_features.json5
+					//
+					// Find:     \s+{[\s\n]+name: "[^"]+",[\s\n]+feature_policy_name: "([^"]+)",([\s\n]+depends_on: \["?([^\]]+?)"?\],?)?[\s\n]+},
+					// Replace:  '$1' => [], // $3\n
 
-				'accelerometer'                         => [], // Sensor
+				'accelerometer'                         => [], //
 				// 'ambient-light-sensor'               => [], // SensorExtraClasses
-				'autoplay'                              => [],
-				'camera'                                => [],
+				'autoplay'                              => [], //
+				'camera'                                => [], //
 				'ch-dpr'                                => [], // FeaturePolicyForClientHints
 				'ch-device-memory'                      => [], // FeaturePolicyForClientHints
 				'ch-downlink'                           => [], // FeaturePolicyForClientHints
@@ -105,25 +108,25 @@
 				'ch-viewport-width'                     => [], // FeaturePolicyForClientHints
 				'ch-width'                              => [], // FeaturePolicyForClientHints
 				// 'conversion-measurement'             => [], // ConversionMeasurement
-				'document-domain'                       => [],
+				'document-domain'                       => [], //
 				// 'document-write'                     => [], // ExperimentalProductivityFeatures
 				// 'downloads'                          => [], // FeaturePolicyForSandbox, was "downloads-without-user-activation"
-				'encrypted-media'                       => [],
+				'encrypted-media'                       => [], //
 				// 'execution-while-out-of-viewport'    => [], // FreezeFramesOnVisibility
 				// 'execution-while-not-rendered'       => [], // FreezeFramesOnVisibility
 				'focus-without-user-activation'         => [], // BlockingFocusWithoutUserActivation, Does not effect top-level documents (yet?), just content in an iframe.
 				// 'forms'                              => [], // FeaturePolicyForSandbox
-				'fullscreen'                            => [],
+				'fullscreen'                            => [], //
 				// 'frobulate'                          => [], // OriginTrialsSampleAPI
-				'geolocation'                           => [],
-				'gyroscope'                             => [], // Sensor
+				'geolocation'                           => [], //
+				'gyroscope'                             => [], //
 				// 'hid'                                => [], // WebHID, The WebHID API enables web applications to request access to HID devices.
 				// 'idle-detection'                     => [], // IdleDetection
 				// 'lazyload'                           => [], // ExperimentalProductivityFeatures
 				// 'loading-frame-default-eager'        => [], // ExperimentalProductivityFeatures
-				'magnetometer'                          => [], // Sensor
-				'microphone'                            => [],
-				'midi'                                  => [],
+				'magnetometer'                          => [], //
+				'microphone'                            => [], //
+				'midi'                                  => [], //
 				// 'modals'                             => [], // FeaturePolicyForSandbox
 				// 'orientation-lock'                   => [], // FeaturePolicyForSandbox
 				'payment'                               => [], // PaymentRequest
