@@ -134,8 +134,8 @@
 				// 'pointer-lock'                       => [], // FeaturePolicyForSandbox
 				// 'popups'                             => [], // FeaturePolicyForSandbox
 				// 'presentation'                       => [], // FeaturePolicyForSandbox
-				// 'publickey-credentials-get'          => [], // WebAuthenticationGetAssertionFeaturePolicy
-				// 'screen-wake-lock'                   => [], // WakeLock
+				'publickey-credentials-get'             => [], // WebAuthenticationGetAssertionFeaturePolicy
+				'screen-wake-lock'                      => [], // WakeLock
 				// 'scripts'                            => [], // FeaturePolicyForSandbox
 				// 'serial'                             => [], // Serial
 				// 'storage-access-api'                 => [], // StorageAccessAPI
