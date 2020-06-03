@@ -1425,6 +1425,10 @@
 							$attributes = array('value' => $attributes);
 						}
 
+						if (isset($attributes['text'])) {
+							$attributes['html'] = html($attributes['text']);
+						}
+
 						if (isset($attributes['html'])) {
 							$html .= '
 								' . $attributes['html'];
