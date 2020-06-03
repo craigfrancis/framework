@@ -87,6 +87,8 @@
 				// }
 				if (!$this->null) {
 					return parent::modify($modify);
+				} else {
+					return new timestamp(NULL);
 				}
 			}
 
