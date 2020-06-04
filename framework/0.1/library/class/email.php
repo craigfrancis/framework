@@ -293,13 +293,13 @@
 						'Reference' => config::get('response.ref'),
 					];
 
-				$original_request = request('r');
-				if (preg_match('/^[0-9]{10,}$/', $original_request)) {
-					$request_values['Sent'] .= ' (' . timestamp_to_human((time() - $original_request), 2) . ')';
-					$original_request = date('l jS F Y, g:i:sa', $original_request);
+				$original_time = request('t');
+				if (preg_match('/^[0-9]{10,}$/', $original_time)) {
+					$request_values['Sent'] .= ' (' . timestamp_to_human((time() - $original_time), 2) . ')';
+					$original_time = date('l jS F Y, g:i:sa', $original_time);
 				}
-				if ($original_request !== NULL) {
-					$request_values['Loaded'] = $original_request;
+				if ($original_time !== NULL) {
+					$request_values['Loaded'] = $original_time;
 				} else {
 					unset($request_values['Loaded']); // Temporary
 				}

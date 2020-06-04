@@ -1200,11 +1200,11 @@
 
 						$input_fields['act'] = ['value' => $this->form_id];
 
-						$original_request = intval(request('r'));
+						$original_request = intval(request('t'));
 						if ($original_request == 0) {
 							$original_request = time();
 						}
-						$input_fields['r'] = ['value' => $original_request];
+						$input_fields['t'] = ['value' => $original_request];
 
 						if ($this->csrf_error_html != NULL) {
 							if ($this->form_method == 'POST') {
