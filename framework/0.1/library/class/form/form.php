@@ -53,6 +53,9 @@
 			private $db_fields = NULL;
 			private $db_values = [];
 			private $db_save_disabled = false;
+			private $dedupe_user_id = NULL; // Protects against the form being submitted multiple times (typically on a slow internet connection)
+			private $dedupe_ref = NULL;
+			private $dedupe_data = NULL;
 			private $saved_values_data = NULL;
 			private $saved_values_used = NULL;
 			private $saved_message_html = 'Please submit this form again.';
@@ -96,11 +99,13 @@
 
 					$this->form_action = config::get('request.url'); // Use the full domain name so a malicious "base" meta tag does not send data to a different website (so not request.uri).
 
-					if (isset($site_config['disabled'])) $this->disabled = isset($site_config['disabled']);
-					if (isset($site_config['readonly'])) $this->readonly = isset($site_config['readonly']);
+					if (isset($site_config['disabled'])) $this->disabled = ($site_config['disabled'] == true);
+					if (isset($site_config['readonly'])) $this->readonly = ($site_config['readonly'] == true);
 
-					if (isset($site_config['label_override_function'])) $this->label_override_function = isset($site_config['label_override_function']);
-					if (isset($site_config['error_override_function'])) $this->error_override_function = isset($site_config['error_override_function']);
+					if (isset($site_config['dedupe_user_id'])) $this->dedupe_user_id = $site_config['dedupe_user_id'];
+
+					if (isset($site_config['label_override_function'])) $this->label_override_function = $site_config['label_override_function'];
+					if (isset($site_config['error_override_function'])) $this->error_override_function = $site_config['error_override_function'];
 
 				//--------------------------------------------------
 				// Internal form ID
@@ -389,11 +394,38 @@
 
 				$dest = $this->dest_url_get();
 
-				if (substr($dest, 0, 1) == '/') { // Scheme-relative URL "//example.com" won't work, the domain is prefixed.
-					redirect($dest, $config);
-				} else {
-					redirect($default_url, $config);
+				if (substr($dest, 0, 1) != '/') { // Must have a value, and must be for this site. Where a scheme-relative URL "//example.com" won't work, as the domain would be prefixed.
+					$dest = $default_url;
 				}
+
+				if ($this->dedupe_ref) {
+
+					$now = new timestamp();
+
+					$db = $this->db_get();
+
+					$db->insert(DB_PREFIX . 'system_form_dedupe', [
+							'user_id'         => $this->dedupe_user_id,
+							'ref'             => $this->dedupe_ref,
+							'data'            => $this->dedupe_data,
+							'created'         => $now,
+							'redirect_url'    => $dest,
+							'redirect_config' => json_encode($config),
+						]);
+
+					$sql = 'DELETE FROM
+								' . DB_PREFIX . 'system_form_dedupe
+							WHERE
+								created < ?';
+
+					$parameters = [];
+					$parameters[] = ['s', $now->clone('-1 hour')];
+
+					$db->query($sql, $parameters);
+
+				}
+
+				redirect($dest, $config);
 
 			}
 
@@ -612,7 +644,44 @@
 			}
 
 			private function _is_submitted() {
+
 				$this->form_submitted = ($this->form_passive || (request('act', $this->form_method) == $this->form_id && config::get('request.method') == $this->form_method));
+
+				if ($this->dedupe_user_id > 0 && $this->form_submitted && $this->form_method == 'POST') { // GET requests should not change state
+
+					$this->dedupe_ref = request('r');
+					$this->dedupe_data = hash('sha256', json_encode($_REQUEST));
+
+					if ($this->dedupe_ref) {
+
+						$db = $this->db_get();
+
+						$sql = 'SELECT
+									sfd.redirect_url,
+									sfd.redirect_config
+								FROM
+									' . DB_PREFIX . 'system_form_dedupe AS sfd
+								WHERE
+									sfd.user_id = ? AND
+									sfd.ref = ? AND
+									sfd.data = ?
+								LIMIT
+									1';
+
+						$parameters = [];
+						$parameters[] = ['i', $this->dedupe_user_id];
+						$parameters[] = ['s', $this->dedupe_ref];
+						$parameters[] = ['s', $this->dedupe_data];
+
+						if ($row = $db->fetch_row($sql, $parameters)) {
+							redirect($row['redirect_url'], json_decode($row['redirect_config']));
+							exit(); // Protect against the config containing ['exit' => false]
+						}
+
+					}
+
+				}
+
 			}
 
 			public function initial($page = NULL) { // Because you cant have a function called "default", and "defaults" implies an array of default values.
@@ -1205,6 +1274,10 @@
 							$original_request = time();
 						}
 						$input_fields['t'] = ['value' => $original_request];
+
+						if ($this->dedupe_user_id > 0) {
+							$input_fields['r'] = ['value' => random_key(15)]; // Request identifier
+						}
 
 						if ($this->csrf_error_html != NULL) {
 							if ($this->form_method == 'POST') {
