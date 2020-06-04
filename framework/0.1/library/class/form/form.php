@@ -674,6 +674,7 @@
 						$parameters[] = ['s', $this->dedupe_data];
 
 						if ($row = $db->fetch_row($sql, $parameters)) {
+							config::set('debug.response_code_extra', 'deduped');
 							redirect($row['redirect_url'], json_decode($row['redirect_config']));
 							exit(); // Protect against the config containing ['exit' => false]
 						}

@@ -56,8 +56,15 @@
 
 			if (($log_file = config::get('debug.log_file')) !== NULL && is_writable($log_file)) {
 
+				$response_code_value = http_response_code();
+
+				$response_code_extra = config::get('debug.response_code_extra');
+				if ($response_code_extra) {
+					$response_code_value .= '-' . $response_code_extra;
+				}
+
 				log_value('time', FRAMEWORK_END);
-				log_value('code', http_response_code());
+				log_value('code', $response_code_value);
 
 				if (($fp = fopen($log_file, 'a')) !== false) {
 					fputcsv($fp, config::get('debug.log_values'));
