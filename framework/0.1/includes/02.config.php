@@ -114,7 +114,7 @@
 				'encrypted-media'                       => [], //
 				// 'execution-while-out-of-viewport'    => [], // FreezeFramesOnVisibility
 				// 'execution-while-not-rendered'       => [], // FreezeFramesOnVisibility
-				'focus-without-user-activation'         => [], // BlockingFocusWithoutUserActivation, Does not effect top-level documents (yet?), just content in an iframe.
+				// 'focus-without-user-activation'      => [], // BlockingFocusWithoutUserActivation, Does not effect top-level documents (yet?), just content in an iframe.
 				// 'forms'                              => [], // FeaturePolicyForSandbox
 				'fullscreen'                            => [], //
 				// 'frobulate'                          => [], // OriginTrialsSampleAPI
