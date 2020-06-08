@@ -216,7 +216,7 @@
 
 					} else {
 
-						require_once(FRAMEWORK_ROOT . '/includes/08.setup.php');
+						setup_run();
 
 					}
 

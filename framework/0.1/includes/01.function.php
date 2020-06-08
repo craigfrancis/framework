@@ -864,6 +864,10 @@
 		require_once(func_get_arg(0));
 	}
 
+	function setup_run() {
+		require_once(FRAMEWORK_ROOT . '/includes/08.setup.php');
+	}
+
 //--------------------------------------------------
 // URL shortcuts - to avoid saying 'new'
 

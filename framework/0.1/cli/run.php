@@ -66,7 +66,7 @@
 		config::set('route.setup_include', false); // Only set to false if not already set.
 	}
 
-	require_once(FRAMEWORK_ROOT . '/includes/08.setup.php');
+	setup_run();
 
 	config::set('route.setup_include', $setup_include);
 

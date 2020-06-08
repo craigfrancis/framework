@@ -494,7 +494,7 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 				//--------------------------------------------------
 				// Run setup
 
-					require_once(FRAMEWORK_ROOT . '/includes/08.setup.php');
+					setup_run();
 
 				//--------------------------------------------------
 				// Response
