@@ -256,6 +256,8 @@
 							if (!function_exists('url_cleanup')) {
 								function url_cleanup($route_path, $new_path, $new_url) {
 
+									setup_run(); // A custom "url-cleanup.php" script may exist, not define a "url_cleanup" function, but the controller will probably expect the setup script to be run.
+
 									list($folders, $controller, $method, $arguments) = controller_get($route_path);
 									if ($controller !== NULL) {
 										return $new_url; // A controller would handle this.
