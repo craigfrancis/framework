@@ -55,6 +55,10 @@
 		define('UPLOAD_ROOT', substr(ROOT, 0, -13));
 	}
 
+	if (!getenv('PRIME_CONFIG_KEY') && preg_match('/PRIME_CONFIG_KEY=.+/', @file_get_contents('/etc/prime-config-key'), $matches)) { // Attempt to get key if not already set, but don't worry if it fails.
+		putenv($matches[0]);
+	}
+
 	require_once(CLI_ROOT . '/../bootstrap.php');
 
 //--------------------------------------------------
