@@ -562,6 +562,11 @@ overflow:auto;
 background:#EEE;
 }
 
+#p_doc.notes_short-variables #page_content ul strong {
+width:1.4em;
+display:inline-block;
+}
+
 
 
 
