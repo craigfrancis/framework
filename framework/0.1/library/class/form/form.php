@@ -1270,11 +1270,11 @@
 
 						$input_fields['act'] = ['value' => $this->form_id];
 
-						$initial_request = intval(request('o'));
-						if ($initial_request == 0) {
-							$initial_request = time();
+						$original_request = intval(request('o'));
+						if ($original_request == 0) {
+							$original_request = time();
 						}
-						$input_fields['o'] = ['value' => $initial_request];
+						$input_fields['o'] = ['value' => $original_request];
 
 						if ($this->dedupe_user_id > 0) {
 							$input_fields['r'] = ['value' => random_key(15)]; // Request identifier
