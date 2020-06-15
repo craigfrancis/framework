@@ -562,6 +562,11 @@
 		background: #EEE;
 	}
 
+	#p_doc.notes_short-variables ul strong {
+		width: 1.4em;
+		display: inline-block;
+	}
+
 /*--------------------------------------------------*/
 /* Examples                                         */
 

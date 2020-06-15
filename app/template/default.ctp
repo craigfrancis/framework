@@ -197,7 +197,7 @@
 	<link rel="author" href="http://www.craigfrancis.co.uk/contact/" />
 
 </head>
-<body id="<?= html($response->page_id_get()) ?>">
+<body id="<?= html($response->page_id_get()) ?>"<?= (isset($page_class) ? ' class="' . html($page_class) . '"' : '') ?>>
 
 	<div id="page_wrapper">
 

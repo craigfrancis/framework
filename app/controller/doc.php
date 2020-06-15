@@ -130,6 +130,7 @@
 			// Response
 
 				$response->page_id_set('p_doc');
+				$response->set('page_class', str_replace('/', '_', $request_path));
 				$response->view_path_set(VIEW_ROOT . '/doc.ctp');
 
 		}
