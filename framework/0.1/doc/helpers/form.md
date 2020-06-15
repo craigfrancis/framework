@@ -12,7 +12,7 @@ So for reference, most frameworks will put:
 
 2. Error messages into language specific files, which is difficult when the text often depends on the user ("The users name is required" vs "Your name is required").
 
-3. Basic flow control in the controller, which should require the repeating of fields in the view (aka a white-list), to avoid security issues.
+3. Basic flow control in the controller, which should require the repeating of fields in the view (aka an allow-list), to avoid security issues.
 
 4. Field setup in the view, which often does not enforce a hard link to field in the model, so a typo might mean that validation is not applied, or values aren't stored.
 

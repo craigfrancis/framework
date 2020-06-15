@@ -91,7 +91,7 @@ If the navigation text needs to be set elsewhere (e.g. for localisation), then t
 		public function link_name_get_html($url, $config)
 	}
 
-An example of this is can be found for the [white-site](../../doc/notes/white-site.md).
+An example of this is can be found for the [basic-site](../../doc/notes/basic-site.md).
 
 ---
 

@@ -589,7 +589,7 @@
 
 				$request_ip = config::get('request.ip');
 
-				if (!in_array($request_ip, config::get('user.ip_whitelist', []))) {
+				if (!in_array($request_ip, config::get('user.ip_allowed', []))) {
 
 					$now = date('Y-m-d H:i:s'); // Remove when session helper is using timestamp (GMT vs BST)
 

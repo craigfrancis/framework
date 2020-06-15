@@ -1627,7 +1627,7 @@ exit();
 
 					$request_ip = config::get('request.ip');
 
-					if (!in_array($request_ip, config::get('auth.ip_whitelist', []))) {
+					if (!in_array($request_ip, config::get('auth.ip_allowed', []))) {
 
 						$db = $this->db_get();
 
