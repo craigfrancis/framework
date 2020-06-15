@@ -49,26 +49,16 @@
 				$field_message->cols_set(40);
 				$field_message->rows_set(5);
 
+				$form->human_check('I am a Human', 'This message looks like Spam, can you confirm you are human?', [
+						'db_field' => 'human',
+						'db_insert' => true,
+						'content_values' => [$field_message],
+					]);
+
 			//--------------------------------------------------
 			// Form submitted
 
 				if ($form->submitted()) {
-
-					//--------------------------------------------------
-					// Spam detection
-
-						if (is_spam_like($field_message->value_get())) {
-
-							$field_human = new form_field_checkbox($form, 'I am a Human', 'human_' . $now->format('Ymd'));
-							$field_human->db_field_set('human');
-							$field_human->text_values_set('true', 'false');
-							$field_human->required_error_set('This message looks like Spam, can you confirm you are human?');
-
-							if ($field_human->value_get() == 'false') {
-								$form->db_insert();
-							}
-
-						}
 
 					//--------------------------------------------------
 					// Validation

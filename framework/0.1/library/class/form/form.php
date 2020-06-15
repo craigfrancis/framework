@@ -429,6 +429,65 @@
 
 			}
 
+			public function human_check($label, $error, $config = []) {
+
+				$field_human = NULL;
+				$is_human = NULL;
+
+				if ($this->form_submitted) {
+
+					$config = array_merge(array(
+							'content_values' => [],
+							'db_field' => NULL,
+							'db_insert' => false,
+						), $config);
+
+					$content_values = $config['content_values'];
+					foreach ($content_values as $key => $value) {
+						if (is_object($value) && is_a($value, 'form_field')) {
+							$content_values[$key] = $value->value_get();
+						}
+					}
+					if (count($content_values) > 0) {
+						$content_spam = is_spam_like(implode(' ', $content_values));
+					} else {
+						$content_spam = false;
+					}
+
+					$timestamp_original = request('o');
+					if (preg_match('/^[0-9]{10,}$/', $timestamp_original)) {
+						$timestamp_diff = (time() - $timestamp_original);
+						$timestamp_spam = ($timestamp_diff < 5 || $timestamp_diff > (60*60*3));
+					} else {
+						$timestamp_spam = true; // Missing or invalid value
+					}
+
+					if ($content_spam || $timestamp_spam) {
+
+						$day = floor(time() / (60*60*24));
+
+						$field_human = new form_field_checkbox($this, $label, 'human_' . $day);
+						$field_human->text_values_set('true', 'false');
+						$field_human->required_error_set($error);
+
+						if ($config['db_field']) {
+							$field_human->db_field_set($config['db_field']); // Set the field to enum('', 'true', 'false') where a blank value shows they did not see this field.
+						}
+
+						$is_human = ($field_human->value_get() == 'true');
+
+						if (!$is_human && $config['db_field'] && $config['db_insert'] === true) {
+							$this->db_insert();
+						}
+
+					}
+
+				}
+
+				return [$field_human, $is_human];
+
+			}
+
 			public function required_mark_set($required_mark) {
 				$this->required_mark_set_html(html($required_mark));
 			}
