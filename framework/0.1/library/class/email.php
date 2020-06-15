@@ -293,7 +293,7 @@
 						'Reference' => config::get('response.ref'),
 					];
 
-				$original_time = request('t');
+				$original_time = request('o');
 				if (preg_match('/^[0-9]{10,}$/', $original_time)) {
 					$request_values['Sent'] .= ' (' . timestamp_to_human((time() - $original_time), 2) . ')';
 					$original_time = date('l jS F Y, g:i:sa', $original_time);
