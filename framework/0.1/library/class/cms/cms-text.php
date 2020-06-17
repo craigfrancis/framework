@@ -80,7 +80,7 @@
 						debug_require_db_table($this->config['table_sql'], '
 								CREATE TABLE [TABLE] (
 									path varchar(100) NOT NULL,
-									section varchar(100) NOT NULL,
+									section varchar(50) NOT NULL,
 									global enum(\'false\',\'true\') NOT NULL,
 									marker tinytext NOT NULL,
 									created datetime NOT NULL,
@@ -95,7 +95,7 @@
 							debug_require_db_table(DB_PREFIX . 'cms_text_debug', '
 									CREATE TABLE [TABLE] (
 										path VARCHAR(100) NOT NULL,
-										section VARCHAR(100) NOT NULL,
+										section VARCHAR(50) NOT NULL,
 										priority VARCHAR(100) NOT NULL,
 										noticed DATETIME NOT NULL,
 										PRIMARY KEY (path, section, priority)
