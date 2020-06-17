@@ -1301,46 +1301,11 @@
 
 						if ((($this->error === false && !$view_exists) || ($this->error == 'page-not-found')) && (config::get('db.host') !== NULL)) {
 
-							if (config::get('debug.level') > 0) {
-
-								debug_require_db_table(DB_PREFIX . 'system_redirect', '
-										CREATE TABLE [TABLE] (
-											url_src varchar(150) NOT NULL,
-											url_dst varchar(150) NOT NULL,
-											permanent enum(\'false\',\'true\') NOT NULL,
-											enabled enum(\'false\',\'true\') NOT NULL,
-											requests int(11) NOT NULL,
-											referrer tinytext NOT NULL,
-											created datetime NOT NULL,
-											edited datetime NOT NULL,
-											PRIMARY KEY (url_src)
-										);');
-
-							}
-
-							$url = config::get('request.uri');
-
-							$redirect = system_redirect($url, array(
+							system_redirect(config::get('request.uri'), array(
+										'redirect'  => true,
 										'requested' => true,
-										'referrer' => config::get('request.referrer'),
+										'referrer'  => config::get('request.referrer'),
 									));
-
-							if ($redirect) {
-
-								if ($redirect['enabled'] && $redirect['url'] != '') {
-									redirect($redirect['url'], ($redirect['permanent'] ? 301 : 302));
-								}
-
-							} else {
-
-								// system_redirect($url, '', array(
-								// 		'permanent' => false,
-								// 		'enabled' => false,
-								// 		'requested' => true,
-								// 		'referrer' => config::get('request.referrer'),
-								// 	));
-
-							}
 
 						}
 

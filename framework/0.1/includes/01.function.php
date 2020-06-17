@@ -1216,21 +1216,39 @@
 
 	function system_redirect($url_src, $url_dst = NULL, $config = []) {
 
+		$return = NULL;
+
 		if (is_array($url_dst)) {
 			$config = $url_dst;
 			$url_dst = NULL;
 		}
 
 		$config = array_merge(array(
-				'permanent' => true,
-				'enabled' => true,
+				'permanent' => true, // Adding
+				'enabled'   => true, // Adding
+				'redirect'  => false,
 				'requested' => false,
-				'referrer' => NULL,
+				'referrer'  => NULL,
 			), $config);
 
 		$db = db_get();
 
-		$return = NULL;
+		if (config::get('debug.level') > 0) {
+
+			debug_require_db_table(DB_PREFIX . 'system_redirect', '
+					CREATE TABLE [TABLE] (
+						url_src varchar(150) NOT NULL,
+						url_dst varchar(150) NOT NULL,
+						permanent enum(\'false\',\'true\') NOT NULL,
+						enabled enum(\'false\',\'true\') NOT NULL,
+						requests int(11) NOT NULL,
+						referrer tinytext NOT NULL,
+						created datetime NOT NULL,
+						edited datetime NOT NULL,
+						PRIMARY KEY (url_src)
+					);');
+
+		}
 
 		if ($url_dst !== NULL) {
 
@@ -1338,6 +1356,10 @@
 
 			$db->query($sql, $parameters);
 
+		}
+
+		if ($config['redirect'] && $return && $return['enabled'] && $return['url'] != '') {
+			redirect($return['url'], ($return['permanent'] ? 301 : 302));
 		}
 
 		return $return;

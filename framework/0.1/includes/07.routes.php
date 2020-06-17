@@ -230,23 +230,11 @@
 
 							if (config::get('db.host') !== NULL) {
 
-								$db = db_get();
-
-								$sql = 'SELECT
-											url_dst,
-											permanent
-										FROM
-											' . DB_PREFIX . 'system_redirect
-										WHERE
-											url_src = ? AND
-											enabled = "true"';
-
-								$parameters = [];
-								$parameters[] = ['s', $route_path];
-
-								if ($row = $db->fetch_row($sql, $parameters)) {
-									redirect($row['url_dst'], ($row['permanent'] == 'true' ? 301 : 302));
-								}
+								$redirect = system_redirect($route_path, array(
+											'redirect' => true,
+											'requested' => true,
+											'referrer' => config::get('request.referrer'),
+										));
 
 							}
 
