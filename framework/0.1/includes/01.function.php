@@ -1233,7 +1233,7 @@
 
 		$db = db_get();
 
-		if (config::get('debug.level') > 0) {
+		if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
 
 			debug_require_db_table(DB_PREFIX . 'system_redirect', '
 					CREATE TABLE [TABLE] (
