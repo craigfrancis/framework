@@ -20,6 +20,7 @@
 			protected $expand_all_children = false;
 			protected $automatically_expand_children = true;
 			protected $automatically_select_link = true;
+			protected $link_wrapper_tag = true;
 			protected $include_white_space = true;
 
 			protected $selected_id = NULL;
@@ -76,6 +77,10 @@
 
 			public function automatically_select_link($do) {
 				$this->automatically_select_link = $do;
+			}
+
+			public function link_wrapper_tag($value) {
+				$this->link_wrapper_tag = $value;
 			}
 
 			public function include_white_space($do) {
@@ -349,8 +354,10 @@
 
 										if (array_key_exists('link_wrapper', $link_config)) {
 											$wrapper_tag = $link_config['link_wrapper'];
-										} else {
+										} else if ($this->link_wrapper_tag) {
 											$wrapper_tag = ($selected ? 'strong' : 'span');
+										} else {
+											$wrapper_tag = false;
 										}
 
 										$wrapper_html_start = ($wrapper_tag ? '<'  . html($wrapper_tag) . ' class="link_level' . html($level) . '">' : '');
