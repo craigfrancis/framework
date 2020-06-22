@@ -68,7 +68,7 @@
 
 								// $form->dest_redirect($config['next_url']);
 
-								redirect($config['next_url']);
+								$form->redirect($config['next_url']);
 
 						}
 

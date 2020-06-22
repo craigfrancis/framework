@@ -391,12 +391,14 @@
 			}
 
 			public function dest_redirect($default_url, $config = []) {
-
-				$dest = $this->dest_url_get();
-
-				if (substr($dest, 0, 1) != '/') { // Must have a value, and must be for this site. Where a scheme-relative URL "//example.com" won't work, as the domain would be prefixed.
-					$dest = $default_url;
+				$url = $this->dest_url_get();
+				if (substr($url, 0, 1) != '/') { // Must have a value, and must be for this site. Where a scheme-relative URL "//example.com" won't work, as the domain would be prefixed.
+					$url = $default_url;
 				}
+				$this->redirect($url, $config);
+			}
+
+			public function redirect($url, $config = []) {
 
 				if ($this->dedupe_ref) {
 
@@ -409,7 +411,7 @@
 							'ref'             => $this->dedupe_ref,
 							'data'            => $this->dedupe_data,
 							'created'         => $now,
-							'redirect_url'    => $dest,
+							'redirect_url'    => $url,
 							'redirect_config' => json_encode($config),
 						]);
 
@@ -425,7 +427,7 @@
 
 				}
 
-				redirect($dest, $config);
+				redirect($url, $config);
 
 			}
 
