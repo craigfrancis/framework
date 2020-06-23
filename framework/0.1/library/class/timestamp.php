@@ -54,15 +54,18 @@
 				}
 			}
 
-			public function html($format_text, $null_html = NULL, $format_title = NULL) {
+			public function html($format_text, $null_html = NULL, $attributes = []) {
 				if ($this->null) {
 					return $null_html;
 				} else {
-					$attribute_value = $this->format('c');
-					if (($pos = strpos($attribute_value, 'T00:00:00')) !== false) {
-						$attribute_value = substr($attribute_value, 0, $pos);
+					if (!is_array($attributes)) {
+						$attributes = ['title' => $attributes];
 					}
-					return '<time datetime="' . html($attribute_value) . '"' . ($format_title ? ' title="' . html($this->format($format_title)) . '"' : '') . '>' . nl2br(html($this->format($format_text))) . '</time>';
+					$attributes['datetime'] = $this->format('c');
+					if (($pos = strpos($attributes['datetime'], 'T00:00:00')) !== false) {
+						$attributes['datetime'] = substr($attributes['datetime'], 0, $pos);
+					}
+					return html_tag('time', $attributes) . nl2br(html($this->format($format_text))) . '</time>';
 				}
 			}
 
