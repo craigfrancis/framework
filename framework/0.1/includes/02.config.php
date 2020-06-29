@@ -122,8 +122,6 @@
 				'gyroscope'                             => [], //
 				// 'hid'                                => [], // WebHID, The WebHID API enables web applications to request access to HID devices.
 				// 'idle-detection'                     => [], // IdleDetection
-				// 'lazyload'                           => [], // ExperimentalProductivityFeatures
-				// 'loading-frame-default-eager'        => [], // ExperimentalProductivityFeatures
 				'magnetometer'                          => [], //
 				'microphone'                            => [], //
 				'midi'                                  => [], //
@@ -142,11 +140,13 @@
 				// 'sync-script'                        => [], // ExperimentalProductivityFeatures
 				// 'sync-xhr'                           => [], // +[Risky]
 				// 'top-navigation'                     => [], // FeaturePolicyForSandbox
-				// 'trust-token-redemption'             => [], // TrustTokens
+				'trust-token-redemption'                => [], // TrustTokens
 				'usb'                                   => [], // WebUSB
 				// 'vertical-scroll'                    => [], // ExperimentalProductivityFeatures
 				'xr-spatial-tracking'                   => [], // WebXR, Was "xr": https://chromium.googlesource.com/chromium/src/+/1b4eae88d6a915034f405d8a88551f9b6a7b35ca
 
+				// 'lazyload'                           => [], // Removed 03-06-2020: https://chromium.googlesource.com/chromium/src/+/1480a9a150c2c96bd624ad5d1f3aa809cbb40b09
+				// 'loading-frame-default-eager'        => [], // Removed 03-06-2020: https://chromium.googlesource.com/chromium/src/+/1480a9a150c2c96bd624ad5d1f3aa809cbb40b09
 				// 'font-display-late-swap'             => [], // Removed 05-05-2020: https://chromium.googlesource.com/chromium/src/+/05a30b0c83096ffa208434e35f4a04d1ca524737
 				// 'layout-animations'                  => [], // Removed 06-04-2020: https://chromium.googlesource.com/chromium/src/+/18d53120bc9184d31c61b5c3d5ad1cac4528d3a1
 				// 'unsized-media'                      => [], // Removed 13-03-2020: https://chromium.googlesource.com/chromium/src/+/c32d950bb5a62aa5189bf9a6f6323e7dcfc97d62

@@ -514,6 +514,8 @@
 
 		$format_valid = preg_match('/^\w[-=.+\'\w]*@(\w[-._\w]*\.[a-zA-Z]{2,}.*)$/', $email, $matches);
 
+// TODO: Allows 'example@example.com extra' due to the '.*' at the end
+
 		if ($format_valid) {
 
 			if ($domain_check === false || config::get('email.check_domain', true) === false || !function_exists('checkdnsrr')) {
