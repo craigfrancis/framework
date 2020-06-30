@@ -92,7 +92,7 @@
 
 		ForceType application/octet-stream
 		Header set Content-Disposition attachment
-		<FilesMatch "\.(?i:gif|jpe?g|png)$">
+		<FilesMatch "\.(?i:gif|jpe?g|png|webp)$">
 			ForceType none
 			Header unset Content-Disposition
 		</FilesMatch>
