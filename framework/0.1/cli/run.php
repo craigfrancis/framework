@@ -107,203 +107,211 @@
 //--------------------------------------------------
 // Process options
 
-	foreach ($options as $option_name => $option_values) {
+	try {
 
-		if (!is_array($option_values)) {
-			$option_values = array($option_values);
-		}
+		foreach ($options as $option_name => $option_values) {
 
-		foreach ($option_values as $option_value) {
+			if (!is_array($option_values)) {
+				$option_values = array($option_values);
+			}
 
-			switch ($option_name) {
-				case 'h':
-				case 'help':
+			foreach ($option_values as $option_value) {
 
-					print_help();
-					break;
+				switch ($option_name) {
+					case 'h':
+					case 'help':
 
-				case 'd':
-				case 'debug':
+						print_help();
+						break;
 
-					break; // Don't show help
+					case 'd':
+					case 'debug':
 
-				case 'c':
-				case 'config':
+						break; // Don't show help
 
-					if (in_array($option_value, array('SERVER', 'ROOT', 'FRAMEWORK_ROOT', 'APP_ROOT', 'FILE_ROOT', 'PRIVATE_ROOT', 'UPLOAD_ROOT'))) {
-						echo (defined($option_value) ? constant($option_value) : '') . "\n";
-					} else if ($option_value) {
-						echo config::get($option_value) . "\n";
-					} else {
-						echo "\n";
-						echo '--------------------------------------------------' . "\n\n";
-						echo 'Configuration:' . "\n";
-						foreach (debug_config_log() as $entry) {
-							echo '  ' . implode('', array_column($entry, 1)) . "\n";
-						}
-						echo "\n";
-						echo '--------------------------------------------------' . "\n\n";
-						echo 'Constants:' . "\n";
-						foreach (debug_constants_log() as $entry) {
-							echo '  ' . implode('', array_column($entry, 1)) . "\n";
-						}
-						echo "\n";
-						echo '--------------------------------------------------' . "\n\n";
-					}
+					case 'c':
+					case 'config':
 
-					break;
-
-				case 'config-encrypt':
-
-					require_once(FRAMEWORK_ROOT . '/library/cli/config-encrypt.php');
-
-					break;
-
-				case 's':
-				case 'secrets':
-
-					require_once(FRAMEWORK_ROOT . '/library/cli/secrets.php');
-
-					break;
-
-				case 'g':
-				case 'gateway':
-
-					config::set('output.mode', 'gateway');
-
-					$gateway = new gateway();
-
-					if ($option_value) {
-
-						$success = $gateway->run($option_value);
-						if (!$success) {
-							exit('Invalid gateway "' . $option_value . '"' . "\n");
-						}
-
-					} else {
-
-						foreach ($gateway->get_all() as $name => $url) {
-							echo $name . "\n";
-						}
-
-					}
-
-					break;
-
-				case 'm':
-				case 'maintenance':
-
-					config::set('output.mode', 'maintenance');
-
-					$maintenance = new maintenance();
-
-					$ran_jobs = $maintenance->run();
-
-					if ($debug_show) {
-						if (!is_array($ran_jobs)) {
-
+						if (in_array($option_value, array('SERVER', 'ROOT', 'FRAMEWORK_ROOT', 'APP_ROOT', 'FILE_ROOT', 'PRIVATE_ROOT', 'UPLOAD_ROOT'))) {
+							echo (defined($option_value) ? constant($option_value) : '') . "\n";
+						} else if ($option_value) {
+							echo config::get($option_value) . "\n";
+						} else {
 							echo "\n";
-							echo 'Maintenance already running (' . $ran_jobs . ')' . "\n\n";
+							echo '--------------------------------------------------' . "\n\n";
+							echo 'Configuration:' . "\n";
+							foreach (debug_config_log() as $entry) {
+								echo '  ' . implode('', array_column($entry, 1)) . "\n";
+							}
+							echo "\n";
+							echo '--------------------------------------------------' . "\n\n";
+							echo 'Constants:' . "\n";
+							foreach (debug_constants_log() as $entry) {
+								echo '  ' . implode('', array_column($entry, 1)) . "\n";
+							}
+							echo "\n";
+							echo '--------------------------------------------------' . "\n\n";
+						}
+
+						break;
+
+					case 'config-encrypt':
+
+						require_once(FRAMEWORK_ROOT . '/library/cli/config-encrypt.php');
+
+						break;
+
+					case 's':
+					case 'secrets':
+
+						require_once(FRAMEWORK_ROOT . '/library/cli/secrets.php');
+
+						break;
+
+					case 'g':
+					case 'gateway':
+
+						config::set('output.mode', 'gateway');
+
+						$gateway = new gateway();
+
+						if ($option_value) {
+
+							$success = $gateway->run($option_value);
+							if (!$success) {
+								exit('Invalid gateway "' . $option_value . '"' . "\n");
+							}
 
 						} else {
 
-							$now = new timestamp();
-
-							echo "\n";
-							echo 'Done @ ' . $now->format('Y-m-d H:i:s') . "\n\n";
-
-							foreach ($ran_jobs as $job) {
-								echo '- ' . $job . "\n";
-							}
-
-							if (count($ran_jobs) > 0) {
-								echo "\n";
+							foreach ($gateway->get_all() as $name => $url) {
+								echo $name . "\n";
 							}
 
 						}
-					}
 
-					break;
+						break;
 
-				case 'i':
-				case 'install':
+					case 'm':
+					case 'maintenance':
 
-					require_once(FRAMEWORK_ROOT . '/library/cli/install.php');
-					require_once(FRAMEWORK_ROOT . '/library/cli/permission.php');
+						config::set('output.mode', 'maintenance');
 
-					install_run();
-					break;
+						$maintenance = new maintenance();
 
-				case 'new':
+						$ran_jobs = $maintenance->run();
 
-					require_once(FRAMEWORK_ROOT . '/library/cli/new.php');
+						if ($debug_show) {
+							if (!is_array($ran_jobs)) {
 
-					new_item($option_value);
-					break;
+								echo "\n";
+								echo 'Maintenance already running (' . $ran_jobs . ')' . "\n\n";
 
-				case 'p':
-				case 'permissions':
+							} else {
 
-					require_once(FRAMEWORK_ROOT . '/library/cli/permission.php');
+								$now = new timestamp();
 
-					permission_reset();
-					break;
+								echo "\n";
+								echo 'Done @ ' . $now->format('Y-m-d H:i:s') . "\n\n";
 
-				case 'check':
+								foreach ($ran_jobs as $job) {
+									echo '- ' . $job . "\n";
+								}
 
-					require_once(FRAMEWORK_ROOT . '/library/cli/check.php');
+								if (count($ran_jobs) > 0) {
+									echo "\n";
+								}
 
-					check_run($option_value);
-					break;
+							}
+						}
 
-				case 'dump':
+						break;
 
-					require_once(FRAMEWORK_ROOT . '/library/cli/dump.php');
+					case 'i':
+					case 'install':
 
-					dump_run($option_value);
-					break;
+						require_once(FRAMEWORK_ROOT . '/library/cli/install.php');
+						require_once(FRAMEWORK_ROOT . '/library/cli/permission.php');
 
-				case 'diff':
+						install_run();
+						break;
 
-					require_once(FRAMEWORK_ROOT . '/library/cli/dump.php');
-					require_once(FRAMEWORK_ROOT . '/library/cli/diff.php');
+					case 'new':
 
-					diff_run($option_value, defined('UPLOAD_ROOT'));
-					break;
+						require_once(FRAMEWORK_ROOT . '/library/cli/new.php');
 
-				case 'reset':
+						new_item($option_value);
+						break;
 
-					require_once(FRAMEWORK_ROOT . '/library/cli/permission.php');
-					require_once(FRAMEWORK_ROOT . '/library/cli/reset.php');
+					case 'p':
+					case 'permissions':
 
-					reset_run($option_value);
-					// permission_reset(); TODO
-					break;
+						require_once(FRAMEWORK_ROOT . '/library/cli/permission.php');
 
-				case 'upload':
+						permission_reset();
+						break;
 
-					require_once(FRAMEWORK_ROOT . '/library/cli/upload.php');
+					case 'check':
 
-					upload_run($option_value);
-					break;
+						require_once(FRAMEWORK_ROOT . '/library/cli/check.php');
 
-				case 'confirm-server':
+						check_run($option_value);
+						break;
 
-					if ($option_value != SERVER) {
-						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Just tried connecting to "' . $option_value . '", but the config says this is "' . SERVER . '"?' . "\n\n";
-						exit();
-					}
+					case 'dump':
 
-					break;
+						require_once(FRAMEWORK_ROOT . '/library/cli/dump.php');
 
-				default:
+						dump_run($option_value);
+						break;
 
-					$show_help = true;
-					break;
+					case 'diff':
+
+						require_once(FRAMEWORK_ROOT . '/library/cli/dump.php');
+						require_once(FRAMEWORK_ROOT . '/library/cli/diff.php');
+
+						diff_run($option_value, defined('UPLOAD_ROOT'));
+						break;
+
+					case 'reset':
+
+						require_once(FRAMEWORK_ROOT . '/library/cli/permission.php');
+						require_once(FRAMEWORK_ROOT . '/library/cli/reset.php');
+
+						reset_run($option_value);
+						// permission_reset(); TODO
+						break;
+
+					case 'upload':
+
+						require_once(FRAMEWORK_ROOT . '/library/cli/upload.php');
+
+						upload_run($option_value);
+						break;
+
+					case 'confirm-server':
+
+						if ($option_value != SERVER) {
+							echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Just tried connecting to "' . $option_value . '", but the config says this is "' . SERVER . '"?' . "\n\n";
+							exit();
+						}
+
+						break;
+
+					default:
+
+						$show_help = true;
+						break;
+
+				}
 
 			}
 
 		}
+
+	} catch (error_exception $e) {
+
+		exit_with_error($e);
 
 	}
 
