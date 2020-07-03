@@ -784,6 +784,14 @@
 				$this->csrf_error_html = $error_html;
 			}
 
+			public function csrf_get() {
+				if ($this->form_method == 'POST') {
+					return csrf_challenge_hash($this->form_action, $this->csrf_token);
+				} else {
+					return $this->csrf_token;
+				}
+			}
+
 		//--------------------------------------------------
 		// Fetch limits
 
@@ -1342,11 +1350,7 @@
 						}
 
 						if ($this->csrf_error_html != NULL) {
-							if ($this->form_method == 'POST') {
-								$input_fields['csrf'] = ['value' => csrf_challenge_hash($this->form_action, $this->csrf_token)];
-							} else {
-								$input_fields['csrf'] = ['value' => $this->csrf_token];
-							}
+							$input_fields['csrf'] = ['value' => $this->csrf_get()];
 						}
 
 					}
