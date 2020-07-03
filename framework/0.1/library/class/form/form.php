@@ -803,6 +803,7 @@
 			public function fetch_allowed_fetch() { // e.g. XMLHttpRequest, fetch(), navigator.sendBeacon(), <a download="">, <a ping="">, <link rel="prefetch">
 				$this->fetch_allowed_add('dest', 'empty');
 				$this->fetch_allowed_add('mode', 'cors');
+				$this->fetch_allowed_add('mode', 'no-cors'); // navigator.sendBeacon
 			}
 
 			public function fetch_allowed_cors() {
