@@ -784,7 +784,7 @@
 				$this->csrf_error_html = $error_html;
 			}
 
-			public function csrf_get() {
+			public function csrf_token_get() {
 				if ($this->form_method == 'POST') {
 					return csrf_challenge_hash($this->form_action, $this->csrf_token);
 				} else {
@@ -1350,7 +1350,7 @@
 						}
 
 						if ($this->csrf_error_html != NULL) {
-							$input_fields['csrf'] = ['value' => $this->csrf_get()];
+							$input_fields['csrf'] = ['value' => $this->csrf_token_get()];
 						}
 
 					}
