@@ -1567,6 +1567,9 @@
 
 						if (isset($attributes['text'])) {
 							$attributes['html'] = html($attributes['text']);
+							if (isset($attributes['url'])) {
+								$attributes['html'] = '<a href="' . html($attributes['url']) . '">' . $attributes['html'] . '</a>';
+							}
 						}
 
 						if (isset($attributes['html'])) {
