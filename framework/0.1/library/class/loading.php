@@ -45,15 +45,16 @@
 				// Default config
 
 					$default_config = array(
-							'time_out' => (5 * 60),
-							'refresh_frequency' => 2,
-							'refresh_url' => NULL,
-							'template_name' => NULL,
-							'template_path' => NULL,
-							'session_prefix' => NULL,
-							'lock' => NULL,
-							'lock_type' => NULL,
-							'lock_ref' => NULL,
+							'time_out'          => (5 * 60),
+							'refresh_initial'   => 1, // Used during $loading->start()
+							'refresh_frequency' => 2, // Used during $loading->check()
+							'refresh_url'       => NULL,
+							'template_name'     => NULL,
+							'template_path'     => NULL,
+							'session_prefix'    => NULL,
+							'lock'              => NULL,
+							'lock_type'         => NULL,
+							'lock_ref'          => NULL,
 						);
 
 					$default_config = array_merge($default_config, config::get_all('loading.default'));
@@ -145,7 +146,7 @@
 							return $variables;
 						}
 
-						$this->_send($time_start, $time_update, $variables);
+						$this->_send($time_start, $time_update, $variables, false);
 
 						exit();
 
@@ -221,7 +222,7 @@
 
 				$this->running = true;
 
-				$this->_send($time, $time, $variables);
+				$this->_send($time, $time, $variables, true);
 
 				register_shutdown_function(array($this, 'shutdown'));
 
@@ -440,13 +441,13 @@
 
 			}
 
-			private function _send($time_start, $time_update, $variables) {
+			private function _send($time_start, $time_update, $variables, $start) {
 
 				//--------------------------------------------------
 				// Loading contents
 
 					$refresh_url = $this->config['refresh_url'];
-					$refresh_header = $this->config['refresh_frequency'] . '; url=' . $refresh_url;
+					$refresh_header = ($start ? $this->config['refresh_initial'] : $this->config['refresh_frequency']) . '; url=' . $refresh_url;
 
 					$contents_html = $this->_template_get_html($refresh_url, $refresh_header);
 
