@@ -378,6 +378,16 @@
 					$new_values = array_merge($this->new_values, $new_values);
 
 				//--------------------------------------------------
+				// Ignore no new values in single mode, this
+				// must be done before calling $this->values_get()
+
+					if ($this->config['single'] === true) { // A single row per field
+						if (count($new_values) == 0) {
+							return; // Nothing to save, and we can't insert a record in 'single' mode.
+						}
+					}
+
+				//--------------------------------------------------
 				// Auto set 'fields' config
 
 					if ($this->values === NULL && count($this->config['fields']) == 0) {
@@ -404,10 +414,6 @@
 
 						//--------------------------------------------------
 						// Changes
-
-							if (count($new_values) == 0) {
-								return; // Nothing to save, and we can't insert a record in 'single' mode.
-							}
 
 							if ($this->where_sql === NULL || $old_values === false) {
 								exit_with_error('Cannot create a new record when record helper is in "single" mode.');
