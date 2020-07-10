@@ -23,10 +23,6 @@
 
 	<?= $response->head_get_html(); ?>
 
-	<!--[if lt IE 9]>
-		<script src="/a/js/html5.js"></script>
-	<![endif]-->
-
 </head>
 <body id="<?= html($response->page_id_get()) ?>">
 
