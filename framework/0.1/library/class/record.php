@@ -378,15 +378,20 @@
 					$new_values = array_merge($this->new_values, $new_values);
 
 				//--------------------------------------------------
-				// Set 'fields' config
+				// Auto set 'fields' config
 
 					if ($this->values === NULL && count($this->config['fields']) == 0) {
 						$this->config['fields'] = array_keys($new_values);
 					}
 
-					if (is_array($this->values)) { // Not NULL or FALSE
+				//--------------------------------------------------
+				// Old values, with a sanity check
+
+					$old_values = $this->values_get();
+
+					if (is_array($old_values)) { // Not NULL or FALSE
 						foreach ($new_values as $field => $new_value) {
-							if (!array_key_exists($field, $this->values)) {
+							if (!array_key_exists($field, $old_values)) {
 								trigger_error('During $record->save(), the field "' . $field . '" was not collected to compare against.', E_USER_NOTICE);
 							}
 						}
@@ -403,8 +408,6 @@
 							if (count($new_values) == 0) {
 								return; // Nothing to save, and we can't insert a record in 'single' mode.
 							}
-
-							$old_values = $this->values_get();
 
 							if ($this->where_sql === NULL || $old_values === false) {
 								exit_with_error('Cannot create a new record when record helper is in "single" mode.');
@@ -504,8 +507,6 @@
 
 						//--------------------------------------------------
 						// Changes
-
-							$old_values = $this->values_get();
 
 							if ($old_values === false) { // e.g. The where_sql is NULL... or it has been set, but it does not match a record.
 
