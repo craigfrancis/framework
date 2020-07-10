@@ -378,19 +378,30 @@
 					$new_values = array_merge($this->new_values, $new_values);
 
 				//--------------------------------------------------
+				// Set 'fields' config
+
+					if ($this->values === NULL && count($this->config['fields']) == 0) {
+						$this->config['fields'] = array_keys($new_values);
+					}
+
+					if (is_array($this->values)) { // Not NULL or FALSE
+						foreach ($new_values as $field => $new_value) {
+							if (!array_key_exists($field, $this->values)) {
+								trigger_error('During $record->save(), the field "' . $field . '" was not collected to compare against.', E_USER_NOTICE);
+							}
+						}
+					}
+
+				//--------------------------------------------------
 				// Save
 
-					if ($this->config['single'] === true) {
+					if ($this->config['single'] === true) { // A single row per field
 
 						//--------------------------------------------------
 						// Changes
 
 							if (count($new_values) == 0) {
 								return; // Nothing to save, and we can't insert a record in 'single' mode.
-							}
-
-							if ($this->values === NULL && count($this->config['fields']) == 0) {
-								$this->config['fields'] = array_keys($new_values);
 							}
 
 							$old_values = $this->values_get();

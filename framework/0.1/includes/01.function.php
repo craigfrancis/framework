@@ -997,7 +997,7 @@
 //--------------------------------------------------
 // Record
 
-	function record_get($config = [], $where_id = NULL, $fields = NULL, $config_extra = []) {
+	function record_get($config = [], $where_id = NULL, $fields = [], $config_extra = []) {
 
 		// if (is_array($config)) {
 		//
