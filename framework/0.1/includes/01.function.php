@@ -1816,11 +1816,19 @@
 
 			header('Pragma: ' . head($pragma)); // For HTTP/1.0 compatibility
 
+			$cache_control = $pragma;
 			if ($expires > 0) {
+				$cache_control .= ', max-age=' . head($expires);
+			}
+			if ($immutable) {
+				$cache_control .= ', immutable';
+			}
+			header('Cache-Control: ' . head($cache_control)); // https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
 
-				header('Cache-Control: ' . head($pragma) . ', max-age=' . head($expires) . ($immutable ? ', immutable' : '')); // https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
+			if ($expires > 0) {
 				header('Expires: ' . head(gmdate('D, d M Y H:i:s', time() + $expires)) . ' GMT');
-
+			} else {
+				header_remove('Expires'); // e.g. from Session helper, but remember Apache might also set (e.g. ExpiresByType image/png).
 			}
 
 			if ($last_modified !== NULL) {
