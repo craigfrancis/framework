@@ -390,14 +390,7 @@
 
 				$csp = config::get('output.csp_directives');
 
-				if (!isset($csp[$directive])) {
-					$csp[$directive] = (isset($csp['default-src']) ? $csp['default-src'] : []);
-					if (($none = array_search("'none'", $csp[$directive])) !== false) {
-						unset($csp[$directive][$none]);
-					}
-				}
-
-				$csp[$directive] = array_merge($csp[$directive], $sources);
+				$csp[$directive] = array_merge((isset($csp[$directive]) ? $csp[$directive] : []), $sources);
 
 				config::set('output.csp_directives', $csp);
 
