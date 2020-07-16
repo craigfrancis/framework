@@ -328,7 +328,17 @@
 				//--------------------------------------------------
 				// Config
 
-					$defaults = array(
+					if (is_string($config)) {
+						$config = ['section' => $config];
+					} else if (!is_array($config)) {
+						$config = [];
+					}
+
+					if ($config['global'] && !isset($config['path'])) { // Some older projects will set the 'path' to '/'.
+						$config['path'] = '';
+					}
+
+					$config = array_merge([
 							'path'          => $this->config['path'],
 							'section'       => 'content',
 							'default'       => NULL,
@@ -340,19 +350,7 @@
 							'global'        => false,
 							'marker'        => NULL,
 							'edit_url'      => $this->config['edit_url'],
-						);
-
-					if (is_string($config)) {
-
-						$config = array('section' => $config);
-
-					} else if (!is_array($config)) {
-
-						$config = [];
-
-					}
-
-					$config = array_merge($defaults, $config);
+						], $config);
 
 					if (strlen($config['section']) > 100) {
 						exit_with_error('Cannot have a section name that is longer than 100 characters', $config['section']);
