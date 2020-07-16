@@ -334,7 +334,7 @@
 						$config = [];
 					}
 
-					if ($config['global'] && !isset($config['path'])) { // Some older projects will set the 'path' to '/'.
+					if (isset($config['global']) && $config['global'] && !isset($config['path'])) { // Some older projects will set the 'path' to '/'.
 						$config['path'] = '';
 					}
 
