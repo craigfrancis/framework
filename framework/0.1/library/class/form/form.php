@@ -48,6 +48,7 @@
 			private $db_table_name_sql = NULL;
 			private $db_table_alias_sql = NULL;
 			private $db_where_sql = NULL;
+			private $db_where_parameters = NULL;
 			private $db_log_table = NULL;
 			private $db_log_values = [];
 			private $db_fields = NULL;
@@ -579,13 +580,14 @@
 				if ($this->db_record === NULL) {
 					if ($this->db_table_name_sql !== NULL) {
 
-						$this->db_record = record_get(array(
-								'table_sql' => $this->db_table_name_sql,
-								'table_alias' => $this->db_table_alias_sql,
-								'where_sql' => $this->db_where_sql,
-								'log_table' => $this->db_log_table,
-								'log_values' => $this->db_log_values,
-							));
+						$this->db_record = record_get([
+								'table_sql'        => $this->db_table_name_sql,
+								'table_alias'      => $this->db_table_alias_sql,
+								'where_sql'        => $this->db_where_sql,
+								'where_parameters' => $this->db_where_parameters,
+								'log_table'        => $this->db_log_table,
+								'log_values'       => $this->db_log_values,
+							]);
 
 					} else {
 
@@ -605,8 +607,9 @@
 					//   function db_field_set { grep "db_field_set" $1 | sed -E "s/.*\('([^']+)'.*/'\1',/"; }
 			}
 
-			public function db_where_set_sql($where_sql) {
+			public function db_where_set_sql($where_sql, $parameters = []) {
 				$this->db_where_sql = $where_sql;
+				$this->db_where_parameters = $parameters;
 			}
 
 			public function db_log_set($table, $values = []) {
