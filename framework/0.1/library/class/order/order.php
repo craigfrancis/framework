@@ -289,10 +289,13 @@
 					$values['edited'] = new timestamp();
 
 					$where_sql = '
-						id = "' . $db->escape($this->order_id) . '" AND
+						id = ? AND
 						deleted = "0000-00-00 00:00:00"';
 
-					$db->update($this->db_table_main, $values, $where_sql);
+					$parameters = [];
+					$parameters[] = ['i', $this->order_id];
+
+					$db->update($this->db_table_main, $values, $where_sql, $parameters);
 
 				//--------------------------------------------------
 				// Local cache
