@@ -8,6 +8,7 @@
 		protected $user_obj;
 
 		protected $db_where_sql;
+		protected $db_where_parameters;
 		protected $db_table_fields;
 
 		public function __construct($user) {
@@ -25,7 +26,7 @@
 			// Table
 
 				$this->db_where_sql = 'true';
-
+				$this->db_where_parameters = [];
 				$this->db_table_fields = array(
 						'id' => 'id',
 						'deleted' => 'deleted'
@@ -37,14 +38,19 @@
 			$this->db_table_fields[$field] = $name;
 		}
 
-		public function db_where_get_sql($user_id) {
+		public function db_where_get($user_id) {
 
 			$db = $this->user_obj->db_get();
 
-			return '
+			$where_sql = '
 				' . $this->db_where_sql . ' AND
-				' . $db->escape_field($this->db_table_fields['id']) . ' = "' . $db->escape($user_id) . '" AND
+				' . $db->escape_field($this->db_table_fields['id']) . ' = ? AND
 				' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"';
+
+			$parameters = $this->db_where_parameters;
+			$parameters[] = ['i', $user_id];
+
+			return [$where_sql, $parameters];
 
 		}
 
@@ -60,7 +66,9 @@
 
 			$db = $this->user_obj->db_get();
 
-			$db->select($this->user_obj->db_table_main, $fields, $this->db_where_get_sql($user_id));
+			list($where_sql, $parameters) = $this->db_where_get($user_id);
+
+			$db->select($this->user_obj->db_table_main, $fields, $where_sql, ['parameters' => $parameters]);
 
 			if ($row = $db->fetch_row()) {
 				return $row;
@@ -80,7 +88,9 @@
 
 			$values['edited'] = new timestamp();
 
-			$db->update($this->user_obj->db_table_main, $values, $this->db_where_get_sql($user_id));
+			list($where_sql, $parameters) = $this->db_where_get($user_id);
+
+			$db->update($this->user_obj->db_table_main, $values, $where_sql, $parameters);
 
 		}
 

@@ -166,7 +166,11 @@
 					$this->form->db_table_set_sql($db->escape_table($this->db_table_main));
 
 					if ($this->user_id > 0) {
-						$this->form->db_where_set_sql($this->details->db_where_get_sql($this->user_id));
+
+						list($where_sql, $parameters) = $this->details->db_where_get($this->user_id);
+
+						$this->form->db_where_set_sql($where_sql, $parameters);
+
 					}
 
 				}
