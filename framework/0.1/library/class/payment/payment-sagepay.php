@@ -263,8 +263,12 @@
 						' . DB_PREFIX . 'order_sagepay_transaction AS ost';
 
 					$where_sql = '
-						ost.id = "' . $db->escape($transaction_id) . '" AND
-						ost.pass = "' . $db->escape($transaction_pass) . '"';
+						ost.id = ? AND
+						ost.pass = ?';
+
+					$parameters = [];
+					$parameters[] = ['s', $transaction_id];
+					$parameters[] = ['s', $transaction_pass];
 
 					$sql = 'SELECT
 								ost.order_type,
@@ -277,7 +281,7 @@
 							WHERE
 								' . $where_sql;
 
-					if ($row = $db->fetch_row($sql)) {
+					if ($row = $db->fetch_row($sql, $parameters)) {
 
 						$return['order_type'] = $row['order_type'];
 						$return['order_id'] = $row['order_id'];
@@ -312,7 +316,7 @@
 							'response_raw' => $crypt, // Just incase parse_str() does not work
 						);
 
-					$db->update($table_sql, $response, $where_sql);
+					$db->update($table_sql, $response, $where_sql, $parameters);
 
 				//--------------------------------------------------
 				// Result
