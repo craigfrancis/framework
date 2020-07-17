@@ -28,6 +28,7 @@
 							'profile'             => NULL,
 							'table_sql'           => DB_PREFIX . 'table',
 							'where_sql'           => 'true',
+							'where_parameters'    => [],
 							'field_id_sql'        => 'id',
 							'field_latitude_sql'  => 'latitude',
 							'field_longitude_sql' => 'longitude',
@@ -210,14 +211,16 @@
 
 				$fields = array_merge($fields, $this->config['extra_fields_sql']);
 
-				$sql_where = '
+				$where_sql = '
+					' . $this->config['where_sql'] . ' AND
 					' . $this->config['field_latitude_sql'] . ' != 0 AND
-					' . $this->config['field_longitude_sql'] . ' != 0 AND
-					' . $this->config['where_sql'];
+					' . $this->config['field_longitude_sql'] . ' != 0';
+
+				$parameters = $this->config['where_parameters'];
 
 				$db = $this->db_get();
 
-				$db->select($this->config['table_sql'], $fields, $sql_where);
+				$db->select($this->config['table_sql'], $fields, $where_sql, ['parameters' => $parameters]);
 
 				return $db->fetch_all();
 
@@ -502,14 +505,17 @@
 				// Where
 
 					$where_sql = $this->config['where_sql'];
+					$parameters = $this->config['where_parameters'];
 
 					$where_sql .= ' AND
 						' . $db->escape_field($this->config['field_postcode_sql']) . ' != ""';
 
 					if ($min_accuracy == 0) {
+
 						$where_sql .= ' AND
 							' . $db->escape_field($this->config['field_latitude']) . ' = 0 AND
 							' . $db->escape_field($this->config['field_longitude']) . ' = 0';
+
 					}
 
 				//--------------------------------------------------
@@ -519,6 +525,7 @@
 					if ($limit !== NULL) {
 						$options['limit_sql'] = $limit;
 					}
+					$options['parameters'] = $parameters;
 
 					$k = 0;
 					$updates = [];
@@ -577,19 +584,24 @@
 
 								if ($result !== NULL) {
 
+									$where_sql = $this->config['where_sql'];
+
+									$where_sql .= ' AND
+										' . $this->config['field_id'] . ' = ?';
+
+									$parameters = [];
+									$parameters[] = ['s', $result['latitude']];
+									$parameters[] = ['s', $result['longitude']];
+									$parameters = array_merge($parameters, $this->config['where_parameters']);
+									$parameters[] = ['i', $row[$this->config['field_id_sql']]];
+
 									$sql = 'UPDATE
 												' . $this->config['table_sql'] . '
 											SET
 												' . $this->config['field_latitude'] . ' = ?,
 												' . $this->config['field_longitude'] . ' = ?
 											WHERE
-												' . $this->config['field_id'] . ' = ? AND
-												' . $this->config['where_sql'];
-
-									$parameters = [];
-									$parameters[] = ['s', $result['latitude']];
-									$parameters[] = ['s', $result['longitude']];
-									$parameters[] = ['s', $row[$this->config['field_id_sql']]];
+												' . $where_sql;
 
 									$db->query($sql, $parameters);
 
@@ -619,17 +631,20 @@
 				//--------------------------------------------------
 				// Update
 
-					$old_sql_where = $this->config['where_sql'];
+					$old_where_sql = $this->config['where_sql'];
+					$old_where_parameters = $this->config['where_parameters'];
 
 					$db = $this->db_get();
 
-					$this->config['where_sql'] = '
-						' . $this->config['field_id_sql'] . ' = "' . $db->escape($id) . '" AND
-						' . $this->config['where_sql'];
+					$this->config['where_sql'] .= ' AND
+						' . $this->config['field_id_sql'] . ' = ?';
+
+					$this->config['where_parameters'][] = ['i', $id];
 
 					$results = $this->update_locations(-1); // The address has probably changed, so force an update with a min_accuracy of -1
 
-					$this->config['where_sql'] = $old_sql_where;
+					$this->config['where_sql'] = $old_where_sql;
+					$this->config['where_parameters'] = $old_where_parameters;
 
 				//--------------------------------------------------
 				// Return
