@@ -139,10 +139,13 @@
 					if ($this->order_id > 0) {
 
 						$where_sql = '
-							id = "' . $db->escape($this->order_id) . '" AND
+							id = ? AND
 							deleted = "0000-00-00 00:00:00"';
 
-						$this->form->db_where_set_sql($where_sql);
+						$parameters = [];
+						$parameters[] = ['i', $this->order_id];
+
+						$this->form->db_where_set_sql($where_sql, $parameters);
 
 					}
 
