@@ -334,8 +334,8 @@
 						$config = [];
 					}
 
-					if (isset($config['global']) && $config['global'] && !isset($config['path'])) {
-						$config['path'] = '/';
+					if (isset($config['global']) && $config['global'] && !isset($config['path'])) { // Some older projects will set the 'path' to '/'.
+						$config['path'] = '';
 					}
 
 					$config = array_merge([
