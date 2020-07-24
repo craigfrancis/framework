@@ -111,7 +111,7 @@ Abbreviations:
 	'ph' - Plain Hash
 	'eh' - Encrypted Hash
 
-	'pf' - Plain     folder for Files (a cache / temp folder)
+	'pf' - Plain     folder for Files (a temp folder)
 	'ef' - Encrypted folder for Files
 	'ed' - Encrypted folder for Deletes
 
