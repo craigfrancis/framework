@@ -138,7 +138,7 @@ Abbreviations:
 				// File helper
 
 					$this->file = new file($config);
-					$this->file->config_set('file_private', true);
+					$this->file->config_set('file_root', PRIVATE_ROOT . '/cache');
 					$this->file->config_set('file_url', false);
 					$this->file->config_set('file_folder_division', NULL);
 
