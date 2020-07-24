@@ -22,6 +22,7 @@ For a quick overview, the folder structure is basically:
 	/private/
 		/files/
 		/tmp/
+		/cache/
 	/resources/
 
 ---
@@ -105,7 +106,7 @@ Like the /files/ folder, it contains files that are created by the website and a
 
 However these files are not exposed to the internet.
 
-This is also where the /private/tmp/ folder exists.
+This is also where the /private/tmp/ and /private/cache/ folders exist.
 
 And if you are using something like [GPG](../../doc/helpers/gpg.md), you will probably want to store the server specific keys in here.
 
