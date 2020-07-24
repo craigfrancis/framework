@@ -94,7 +94,7 @@
 								i.name_first LIKE ? OR
 								i.name_last LIKE ?';
 
-							$db->parameter_like($parameters, $word, 6);
+							$db->parameter_like($parameters, $word, 2);
 
 						}
 
