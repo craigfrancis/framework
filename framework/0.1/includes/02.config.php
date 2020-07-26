@@ -85,8 +85,8 @@
 
 					// https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/feature_policy/feature_policy_features.json5
 					//
-					// Find:     \s+{[\s\n]+name: "[^"]+",[\s\n]+feature_policy_name: "([^"]+)",([\s\n]+depends_on: \["?([^\]]+?)"?\],?)?[\s\n]+},
-					// Replace:  '$1' => [], // $3\n
+					// Find:     \s+{[\s\n]+name: "[^"]+",[\s\n]+feature_policy_name: "([^"]+)",([\s\n]+feature_default: "[^"]+",)?([\s\n]+depends_on: \["?([^\]]+?)"?\],?)?[\s\n]+},
+					// Replace:  '$1' => [], // $4\n
 
 				'accelerometer'                         => [], //
 				// 'ambient-light-sensor'               => [], // SensorExtraClasses
@@ -107,7 +107,10 @@
 				'ch-ua-platform-version'                => [], // FeaturePolicyForClientHints
 				'ch-viewport-width'                     => [], // FeaturePolicyForClientHints
 				'ch-width'                              => [], // FeaturePolicyForClientHints
+				'clipboard-read'                        => [], //
+				'clipboard-write'                       => [], //
 				// 'conversion-measurement'             => [], // ConversionMeasurement
+				// 'cross-origin-isolated'              => [], // CrossOriginIsolation
 				'document-domain'                       => [], //
 				// 'document-write'                     => [], // ExperimentalProductivityFeatures
 				// 'downloads'                          => [], // FeaturePolicyForSandbox, was "downloads-without-user-activation"
@@ -143,6 +146,7 @@
 				'trust-token-redemption'                => [], // TrustTokens
 				'usb'                                   => [], // WebUSB
 				// 'vertical-scroll'                    => [], // ExperimentalProductivityFeatures
+				// 'web-share'                          => [], // WebShare
 				'xr-spatial-tracking'                   => [], // WebXR, Was "xr": https://chromium.googlesource.com/chromium/src/+/1b4eae88d6a915034f405d8a88551f9b6a7b35ca
 
 				// 'lazyload'                           => [], // Removed 03-06-2020: https://chromium.googlesource.com/chromium/src/+/1480a9a150c2c96bd624ad5d1f3aa809cbb40b09
