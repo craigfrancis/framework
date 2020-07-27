@@ -663,7 +663,7 @@ $start = microtime(true);
 							$error_details[] = 'Self signed certificates can use the "socket.insecure_domains" config array.';
 						}
 
-						$error_details = implode("\n\n", $error_details);
+						$error_details = debug_dump($error_details);
 
 					}
 
