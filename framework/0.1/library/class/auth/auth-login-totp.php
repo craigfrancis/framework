@@ -37,6 +37,10 @@
 
 // https://github.com/enygma/gauth
 
+// Rough implementation details at:
+//   https://www.idontplaydarts.com/2011/07/google-totp-two-factor-authentication-for-php/
+//   https://github.com/Spomky-Labs/otphp/blob/v10.0/src/OTP.php
+
 				debug($this->auth->session_limited_get('totp'));
 
 // See auth_reset_change_base...
