@@ -309,6 +309,10 @@
 								// Use current origin
 
 									$output = config::get('output.origin');
+									if ($output === NULL) {
+										require_once(FRAMEWORK_ROOT . '/library/misc/origin.php');
+										$output = config::get('output.origin');
+									}
 
 							} else {
 

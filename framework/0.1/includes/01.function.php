@@ -1676,12 +1676,18 @@
 
 		$output = [];
 
+		$origin = config::get('output.origin');
+		if ($origin === NULL) { // Normally set, but some locations (like routes.php) would be too early.
+			require_once(FRAMEWORK_ROOT . '/library/misc/origin.php');
+			$origin = config::get('output.origin');
+		}
+
 		foreach ($policies as $directive => $value) {
 			if ($value !== NULL) {
 				if (is_array($value)) {
 					foreach ($value as $k => $v) {
 						if (prefix_match('/', $v)) {
-							$value[$k] = config::get('output.origin') . $v;
+							$value[$k] = $origin . $v;
 						}
 					}
 					if (config::get('debug.level') > 0) {
