@@ -1749,9 +1749,10 @@
 			}
 		}
 
-		if (is_array($config['integrity'])) {
-			$csp['require-sri-for'] = implode(' ', $config['integrity']);
-		}
+		// Removed https://github.com/w3c/webappsec-subresource-integrity/pull/82 ... and in Chrome 85 http://crbug.com/618924
+		// if (is_array($config['integrity'])) {
+		// 	$csp['require-sri-for'] = implode(' ', $config['integrity']);
+		// }
 
 		if (isset($csp['trusted-types'])) {
 			$csp['require-trusted-types-for'] = "'script'";
