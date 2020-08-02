@@ -1208,10 +1208,15 @@
 						apache_setenv('no-gzip', 1);
 					}
 
-					// And when using PHP-FPM and Apache, something like:
-					// <Proxy fcgi://127.0.0.1:9001>
-					//   ProxySet flushpackets=on
-					// </Proxy>
+					// And when using PHP-FPM and Apache, use something like:
+					//   <Proxy fcgi://127.0.0.1:9001>
+					//     ProxySet flushpackets=on
+					//   </Proxy>
+					//
+					// If before Apache 2.4.38, try using:
+					//   $response->head_flush([
+					//       'body_html' => str_repeat(' ', 32769),
+					//     ]);
 
 					echo $output;
 
