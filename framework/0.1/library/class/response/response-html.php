@@ -1202,7 +1202,7 @@
 						$output .= $config['body_html'];
 					}
 
-					$output = str_pad($output, (4096 - 1)) . "\n";
+					$output = str_pad($output, 4096) . "\n";
 
 					if (function_exists('apache_setenv')) {
 						apache_setenv('no-gzip', 1);
