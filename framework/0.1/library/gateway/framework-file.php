@@ -30,6 +30,10 @@
 
 			http_cache_headers((60*60*24*365), filemtime($file_path));
 
+			if (extension_loaded('zlib')) {
+				ob_start('ob_gzhandler');
+			}
+
 		//--------------------------------------------------
 		// Content
 
