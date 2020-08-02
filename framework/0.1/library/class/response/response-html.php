@@ -1165,7 +1165,14 @@
 
 			}
 
-			public function head_flush() {
+			public function head_flush($config = []) {
+
+				//--------------------------------------------------
+				// Config
+
+					$config = array_merge(array(
+							'body_html' => NULL,
+						), $config);
 
 				//--------------------------------------------------
 				// Send init
@@ -1188,7 +1195,14 @@
 					$output .= '<head>' . "\n\n\t";
 					$output .= $this->head_get_html();
 
-					$output = str_pad($output, 4096);
+					if ($config['body_html'] !== NULL) { // Could be an empty string
+						$output .= "\n";
+						$output .= '</head>' . "\n";
+						$output .= '<body>' . "\n";
+						$output .= $config['body_html'];
+					}
+
+					$output = str_pad($output, (4096 - 1)) . "\n";
 
 					if (function_exists('apache_setenv')) {
 						apache_setenv('no-gzip', 1);
