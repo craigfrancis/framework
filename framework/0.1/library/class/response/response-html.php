@@ -1188,7 +1188,7 @@
 					$output .= '<head>' . "\n\n\t";
 					$output .= $this->head_get_html();
 
-					$output = str_pad($output, 1024);
+					$output = str_pad($output, 4096);
 
 					if (function_exists('apache_setenv')) {
 						apache_setenv('no-gzip', 1);
