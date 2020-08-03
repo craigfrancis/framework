@@ -50,6 +50,10 @@
 
 	http_cache_headers(0);
 
+	if (extension_loaded('zlib')) {
+		ob_start('ob_gzhandler');
+	}
+
 //--------------------------------------------------
 // Return
 
