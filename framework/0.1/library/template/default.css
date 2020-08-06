@@ -366,8 +366,15 @@
 		text-align: center;
 	}
 
-	.basic_form .row.textarea .input textarea {
-		width: 90%;
+	.basic_form .row textarea {
+		display: block;
+	}
+
+	.basic_form .row.full_width input[type=text],
+	.basic_form .row.full_width textarea {
+		max-width: none;
+		box-sizing: border-box;
+		width: 100%;
 	}
 
 	.basic_form .row + .row.submit {
