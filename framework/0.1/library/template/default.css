@@ -300,7 +300,8 @@
 	}
 
 	.basic_form .row {
-		padding: 5px 0 0 0;
+		padding: 0.3em 0 0 0;
+		line-height: 1.8em;
 		clear: both;
 	}
 
@@ -339,15 +340,6 @@
 			width: 11em;
 			margin: 0 0 0 -11.5em;
 			text-align: right;
-		}
-		.basic_form .row.text .label,
-		.basic_form .row.date .label,
-		.basic_form .row.email .label,
-		.basic_form .row.password .label,
-		.basic_form .row.postcode .label,
-		.basic_form .row.textarea .label,
-		.basic_form .row.number .label {
-			margin-top: 2px;
 		}
 		.basic_form .row.info .input {
 			margin-bottom: 0;
