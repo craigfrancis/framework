@@ -190,7 +190,9 @@
 					$this->value_print_cache = $this->_value_print_get();
 				}
 
-				$attributes = parent::_input_attributes();
+				$attributes = (isset($this->options_attributes[$key]) ? $this->options_attributes[$key] : []); // Takes least precedence
+				$attributes = array_merge($attributes, parent::_input_attributes());
+
 				$attributes['type'] = 'checkbox';
 				$attributes['id'] = $this->field_id_by_key_get($key);
 				$attributes['name'] = $this->name . '[]';

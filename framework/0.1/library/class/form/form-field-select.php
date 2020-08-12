@@ -11,6 +11,7 @@
 			protected $option_values = [];
 			protected $options_group = NULL;
 			protected $options_class = NULL;
+			protected $options_attributes = NULL;
 			protected $db_field_options = NULL;
 			protected $select_size = 1;
 			protected $required_error_set = false;
@@ -148,6 +149,10 @@
 
 			public function options_class_set($options_class) {
 				$this->options_class = $options_class;
+			}
+
+			public function options_attributes_set($options_attributes) {
+				$this->options_attributes = $options_attributes;
 			}
 
 			public function select_size_set($size) {
@@ -410,16 +415,17 @@
 
 									$value = $this->option_values[$key];
 
-									$attributes_html = ' value="' . html($key) . '"';
+									$attributes = (isset($this->options_attributes[$key]) ? $this->options_attributes[$key] : []);
+									$attributes['value'] = $key;
 									if (in_array($key, $print_values)) {
-										$attributes_html .= ' selected="selected"';
+										$attributes['selected'] = 'selected';
 									}
 									if (isset($this->options_class[$key])) {
-										$attributes_html .= ' class="' . html($this->options_class[$key]) . '"';
+										$attributes['class'] = $this->options_class[$key];
 									}
 
 									$group_html .= '
-											<option' . $attributes_html . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
+											' . html_tag('option', $attributes) . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 								}
 							}
@@ -443,16 +449,17 @@
 
 								// Cannot do strict check with in_array() as an ID from the db may be a string or int.
 
-							$attributes_html = ' value="' . html($key) . '"';
+							$attributes = (isset($this->options_attributes[$key]) ? $this->options_attributes[$key] : []);
+							$attributes['value'] = $key;
 							if (in_array($key, $print_values)) {
-								$attributes_html .= ' selected="selected"';
+								$attributes['selected'] = 'selected';
 							}
 							if (isset($this->options_class[$key])) {
-								$attributes_html .= ' class="' . html($this->options_class[$key]) . '"';
+								$attributes['class'] = $this->options_class[$key];
 							}
 
 							$html .= '
-										<option' . $attributes_html . '>' . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
+										' . html_tag('option', $attributes) . ($value === '' ? '&#xA0;' : html($value)) . '</option>';
 
 						}
 					}
