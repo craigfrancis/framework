@@ -372,7 +372,7 @@
 	if (document.readyState !== 'loading') {
 		window.setTimeout(init); // Handle asynchronously
 	} else {
-		document.addEventListener('DOMContentLoaded', init);
+		document.addEventListener('DOMContentLoaded', init, {'once': 1});
 	}
 
 })(document, window);

@@ -43,6 +43,6 @@
 		//--------------------------------------------------
 		// When the page has loaded, run the init function
 
-			document.addEventListener('DOMContentLoaded', this.init, false);
+			document.addEventListener('DOMContentLoaded', this.init, {'once': 1});
 
 	}

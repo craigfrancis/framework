@@ -1,5 +1,5 @@
 
-	(function() {
+	;(function(document, window, undefined) {
 
 		//--------------------------------------------------
 		// Start
@@ -40,7 +40,7 @@
 		//--------------------------------------------------
 		// Init
 
-			window.addEventListener('DOMContentLoaded', function() {
+			function init() {
 
 				bodyRef = document.querySelector('body');
 				headingLink = document.querySelector('#page_header a');
@@ -73,6 +73,12 @@
 
 				}
 
-			}, false);
+			}
 
-	})();
+			if (document.readyState !== 'loading') {
+				window.setTimeout(init); // Handle asynchronously
+			} else {
+				document.addEventListener('DOMContentLoaded', init, {'once': 1});
+			}
+
+	})(document, window);
