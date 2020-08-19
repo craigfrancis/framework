@@ -27,6 +27,7 @@
 
 		RewriteRule ^/\.well-known/acme-challenge/(.*)$ /etc/acme/public/$1 [L]
 
+		RewriteCond %{REQUEST_FILENAME} !/original/
 		RewriteRule ^/a/files/(.*) /www/live/company.project/files/$1 [S=1]
 		RewriteRule ^(.*)$ %{DOCUMENT_ROOT}$1
 

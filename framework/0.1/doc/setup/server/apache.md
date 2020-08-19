@@ -24,6 +24,7 @@ And [versioning url's on resourses](../../../doc/setup/resources.md#versioning) 
 
 		RewriteEngine on
 
+		RewriteCond %{REQUEST_FILENAME} !/original/
 		RewriteRule ^/a/files/(.*) /www/live/test.project/files/$1 [S=1]
 		RewriteRule ^(.*)$ %{DOCUMENT_ROOT}$1
 
@@ -43,6 +44,7 @@ And [versioning url's on resourses](../../../doc/setup/resources.md#versioning) 
 
 	RewriteEngine On
 
+	RewriteCond %{REQUEST_FILENAME} !/original/
 	RewriteRule ^/a/files/(.*) /www/live/test.project/files/$1
 
 	RewriteRule ^(.*)/[0-9]+-([^/]+)$ $1/$2 [L]
