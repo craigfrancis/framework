@@ -80,7 +80,7 @@
 					if ($this->config['item_count'] !== NULL) {
 						$this->item_count_update();
 					} else {
-						$this->page_number = intval(request($this->config['variable'])); // Assume the requested page number is valid, to be used later with limit_get_sql()
+						$this->page_number = intval(request($this->config['variable'])); // Assume the requested page number is valid, to be used later with limit_get_*()
 						if ($this->page_number < 1) {
 							$this->page_number = 1;
 						}
@@ -197,10 +197,17 @@
 				return [$page_offset, $page_size];
 			}
 
-			public function limit_get_parameters(&$parameters) {
+			public function limit_get_parameters(&$parameters = NULL) {
 				list($page_offset, $page_size) = $this->limit_get();
-				$parameters[] = ['i', $page_offset];
-				$parameters[] = ['i', $page_size];
+				if ($parameters !== NULL) {
+					$parameters[] = ['i', $page_offset];
+					$parameters[] = ['i', $page_size];
+				} else {
+					return [
+							['i', $page_offset],
+							['i', $page_size],
+						];
+				}
 			}
 
 			public function limit_get_sql() {

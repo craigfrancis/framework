@@ -34,14 +34,18 @@ Defaults can be set with the [site config](../../doc/setup/config.md) using:
 
 To get details from the paginator, you could use:
 
-	$limit_sql = $paginator->limit_get_sql();
-
 	$item_count = $paginator->item_count_get();
 	$page_size = $paginator->page_size_get();
 	$page_number = $paginator->page_number_get();
 	$page_count = $paginator->page_count_get();
 
 	$page_5_url = $paginator->page_url_get(5);
+
+And for SQL:
+
+	$paginator->limit_get_parameters($parameters);
+
+	$sql .= 'LIMIT ?, ?';
 
 ---
 
@@ -79,10 +83,17 @@ Then the actual query:
 				name
 			FROM
 				table
+			WHERE
+				type = ?
 			LIMIT
-				' . $paginator->limit_get_sql();
+				?, ?';
 
-	foreach ($db->fetch_all($sql) as $row) {
+	$parameters = [];
+	$parameters[] = ['s', 'example'];
+
+	$paginator->limit_get_parameters($parameters);
+
+	foreach ($db->fetch_all($sql, $parameters) as $row) {
 	}
 
 	$response->set('paginator', $paginator);
@@ -97,7 +108,7 @@ This works well with the [table helper](../../doc/helpers/table.md).
 
 ## Usage with SQL Found Rows
 
-Only do this if it's **actually** more efficient, many times it can be [much slower](https://stackoverflow.com/q/186588) than two separate queries (see above).
+Check if this is **actually** faster, because this can be [much slower](https://stackoverflow.com/q/186588) than two separate queries (see above).
 
 	$paginator = new paginator();
 
@@ -107,11 +118,16 @@ Only do this if it's **actually** more efficient, many times it can be [much slo
 			FROM
 				' . DB_PREFIX . 'table
 			WHERE
-				deleted = "0000-00-00 00:00:00"
+				deleted = ?
 			LIMIT
-				' . $paginator->limit_get_sql();
+				?, ?';
 
-	foreach ($db->fetch_all($sql) as $row) {
+	$parameters = [];
+	$parameters[] = ['s', '0000-00-00 00:00:00'];
+
+	$paginator->limit_get_parameters($parameters);
+
+	foreach ($db->fetch_all($sql, $parameters) as $row) {
 	}
 
 	$sql = 'SELECT FOUND_ROWS()';
@@ -133,7 +149,7 @@ If you want to use submit buttons (rather than links), then set the 'mode' confi
 
 This version will change the page number immediately.
 
-Alternativly, if you need to save something first, then use:
+Alternatively, if you need to save something first, then use:
 
 	$paginator = new paginator(array(
 			'item_count' => $result_count,

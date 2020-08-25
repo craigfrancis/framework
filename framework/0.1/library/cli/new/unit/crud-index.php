@@ -147,9 +147,13 @@
 							' . $table->sort_get_sql();
 
 				if ($paginator) {
+
 					$sql .= '
 						LIMIT
-							' . $paginator->limit_get_sql();
+							?, ?';
+
+					$paginator->limit_get_parameters($parameters);
+
 				}
 
 				foreach ($db->fetch_all($sql, $parameters) as $row) {
