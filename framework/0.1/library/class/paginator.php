@@ -190,10 +190,22 @@
 				return $this->config['item_count'];
 			}
 
-			public function limit_get_sql() {
+			public function limit_get() {
 				$page_number = $this->page_number_get();
 				$page_size = $this->page_size_get();
-				return intval(($page_number - 1) * $page_size) . ', ' . intval($page_size);
+				$page_offset = (($page_number - 1) * $page_size);
+				return [$page_offset, $page_size];
+			}
+
+			public function limit_get_parameters(&$parameters) {
+				list($page_offset, $page_size) = $this->limit_get();
+				$parameters[] = ['i', $page_offset];
+				$parameters[] = ['i', $page_size];
+			}
+
+			public function limit_get_sql() {
+				list($page_offset, $page_size) = $this->limit_get();
+				return intval($page_offset) . ', ' . intval($page_size);
 			}
 
 			public function limit_array($array) {
@@ -202,10 +214,9 @@
 					$this->item_count_set(count($array));
 				}
 
-				$page_number = $this->page_number_get();
-				$page_size = $this->page_size_get();
+				list($page_offset, $page_size) = $this->limit_get();
 
-				return array_slice($array, intval(($page_number - 1) * $page_size), $page_size, true);
+				return array_slice($array, $page_offset, $page_size, true);
 
 			}
 
