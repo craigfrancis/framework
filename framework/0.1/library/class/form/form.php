@@ -467,17 +467,11 @@
 
 					if ($content_spam || $timestamp_spam) {
 
-						$day = floor(time() / (60*60*24));
-
-						$field_human = new form_field_checkbox($this, $label, 'human_' . $day);
-						$field_human->text_values_set('true', 'false');
-						$field_human->required_error_set($error);
+						list($field_human, $is_human) = $this->human_check_field_get($label, $error);
 
 						if ($config['db_field']) {
 							$field_human->db_field_set($config['db_field']); // Set the field to enum('', 'true', 'false') where a blank value shows they did not see this field.
 						}
-
-						$is_human = ($field_human->value_get() == 'true');
 
 						if (!$is_human && $config['db_field'] && $config['db_insert'] === true) {
 							$this->db_insert();
@@ -486,6 +480,20 @@
 					}
 
 				}
+
+				return [$field_human, $is_human];
+
+			}
+
+			public function human_check_field_get($label, $error) {
+
+				$day = floor(time() / (60*60*24));
+
+				$field_human = new form_field_checkbox($this, $label, 'human_' . $day);
+				$field_human->text_values_set('true', 'false');
+				$field_human->required_error_set($error);
+
+				$is_human = ($field_human->value_get() == 'true');
 
 				return [$field_human, $is_human];
 
