@@ -170,6 +170,10 @@
 // form of HTML/XML/CSV without having to write the
 // full native function in the script.
 
+	function h($template_html, $parameters = []) {
+		return new html_template($template_html, $parameters);
+	}
+
 	function html($text) {
 		return htmlspecialchars($text, (ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE), config::get('output.charset')); // htmlentities does not work for HTML5+XML
 	}
