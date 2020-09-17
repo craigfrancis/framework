@@ -282,14 +282,15 @@
 		//--------------------------------------------------
 		// Save
 
-			public function image_save($id, $path = NULL) { // No path set, then re-save images using the original file... also see $file->file_save_image() to save a single image
-
 				//--------------------------------------------------
-				// Make sure we have plenty of memory
+				// You might need to increase these limits:
+				//
+				//   ini_set('memory_limit', '1024M');
+				//   set_time_limit(5);
+				//
+				//--------------------------------------------------
 
-					ini_set('memory_limit', '1024M');
-
-					set_time_limit(5); // Don't time out
+			public function image_save($id, $path = NULL) { // No path set, then re-save images using the original file... also see $file->file_save_image() to save a single image
 
 				//--------------------------------------------------
 				// Original image
