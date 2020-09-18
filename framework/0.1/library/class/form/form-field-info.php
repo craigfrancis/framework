@@ -34,8 +34,13 @@
 		// Value
 
 			public function value_set($value) {
-				$this->value = $value;
-				$this->value_html = nl2br(html($value));
+				if (is_a($value, 'html_template')) {
+					$this->value_html = $value->html();
+					$this->value = html_decode($this->value_html);
+				} else {
+					$this->value = $value;
+					$this->value_html = nl2br(html($value));
+				}
 			}
 
 			public function value_set_html($html) {
