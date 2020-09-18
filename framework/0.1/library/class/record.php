@@ -422,7 +422,7 @@
 							}
 
 							foreach ($new_values as $field => $new_value) {
-								if (!array_key_exists($field, $old_values) || $this->log_value_different($old_values[$field], $new_value)) {
+								if (!array_key_exists($field, $old_values) || log_value_different($old_values[$field], $new_value)) {
 
 									if ($this->config['log_table']) { // A separate table for the log, when dealing with a lot of records.
 
@@ -534,7 +534,7 @@
 
 									$old_value = $old_values[$field];
 
-									if ($this->log_value_different($old_value, $new_value)) {
+									if (log_value_different($old_value, $new_value)) {
 
 										$this->log_change($field, $old_value, $new_value);
 
@@ -638,7 +638,7 @@
 				$changed = false;
 
 				foreach ($new_values as $field => $new_value) {
-					if ($this->log_value_different($old_values[$field], $new_value)) {
+					if (log_value_different($old_values[$field], $new_value)) {
 
 						$this->log_change($field, $old_values[$field], $new_value, $extra_values);
 
@@ -659,23 +659,6 @@
 							'new_value' => strval($new_value),
 							'created' => new timestamp(),
 						));
-
-			}
-
-			public function log_value_different($old_value, $new_value) { // See testing section below.
-
-				if (strval($old_value) === strval($new_value)) {
-
-					return false;
-
-				} else {
-
-					$old_value_numeric = ($old_value === '' || (is_numeric($old_value) && (floatval($old_value) == 0 || substr($old_value, 0, 1) !== '0')));
-					$new_value_numeric = ($new_value === '' || (is_numeric($new_value) && (floatval($new_value) == 0 || substr($new_value, 0, 1) !== '0')));
-
-					return (!$old_value_numeric || !$new_value_numeric || floatval($old_value) != floatval($new_value));
-
-				}
 
 			}
 
