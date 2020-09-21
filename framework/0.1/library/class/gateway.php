@@ -53,7 +53,9 @@
 //
 //   ...
 //
-//   Also use HTTPS Client Certificates, where Apache config uses:
+//   Maybe use HTTPS Client Certificates?
+//
+//   Where Apache config uses:
 //
 //     <Location "/a/api/">
 //       SSLVerifyClient optional_no_ca
@@ -74,6 +76,7 @@
 //   Need to decide if we use Self-Signed certs, or use a CA (probably not for this case)... SSL_CLIENT_M_SERIAL might be enough.
 //
 //   More info:
+//     https://mobile.twitter.com/sleevi_/status/1306808099307687936
 //     https://cweiske.de/tagebuch/ssl-client-certificates.htm
 //
 //--------------------------------------------------
