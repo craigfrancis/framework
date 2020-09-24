@@ -189,6 +189,8 @@
 	// Don't allow:
 	// - missing slash at the end... to reduce the
 	//   possibility of duplicate content issues.
+	// - url ending with '/%0d'... as an email client
+	//   adds in the carriage return character.
 	// - uppercase characters... as urls should ideally
 	//   be case-insensitive and easy to type.
 	// - underscores... from an accessibility point of
@@ -246,12 +248,12 @@
 
 									setup_run(); // A custom "url-cleanup.php" script may exist, not define a "url_cleanup" function, but the controller will probably expect the setup script to be run.
 
-									list($folders, $controller, $method, $arguments) = controller_get($route_path);
+									list($folders, $controller, $method, $arguments) = controller_get($new_path); // Does this cleaned up path get to a controller.
 									if ($controller !== NULL) {
 										return $new_url; // A controller would handle this.
 									}
 
-									if (is_file(view_path(route_folders($route_path)))) {
+									if (is_file(view_path(route_folders($new_path)))) { // Does this cleaned up path point to a view file.
 										return $new_url; // There is a view file for this.
 									}
 
@@ -269,7 +271,6 @@
 							$new_url = $new_url->get();
 
 							$clean_url = url_cleanup($route_path, $new_path, $new_url);
-
 							if ($clean_url !== NULL) {
 								if (SERVER == 'stage') {
 									exit('<p>URL Cleanup: <a href="' . html($new_url) . '">' . html($new_url) . '</a>.</p>');
