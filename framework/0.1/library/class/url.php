@@ -231,15 +231,20 @@
 
 					$scheme = $this->scheme_get();
 
-				//--------------------------------------------------
-				// Mail to support
+					$scheme_set = ($scheme !== '' && $scheme !== NULL);
 
-					if ($scheme === 'mailto') {
+					if (!$scheme_set) {
+						if (!isset($this->path_data['host']) || $this->path_data['host'] == config::get('output.domain')) {
+							$scheme = (https_available() || config::get('request.https') ? 'https' : 'http'); // Go with HTTPS if possible
+						} else {
+							$scheme = 'http'; // Unfortunate browser default
+						}
+					}
 
-						$this->path_cache = 'mailto:' . (isset($this->path_data['path']) ? rawurlencode($this->path_data['path']) : '');
+					$scheme_http = in_array($scheme, ['http', 'https']);
 
-						return;
-
+					if (!in_array($scheme, $this->schemes)) { // Projection against "javascript:xxx" type links.
+						exit_with_error('Invalid scheme "' . $scheme . '"', 'Allowed schemes: ' . implode(', ', $this->schemes));
 					}
 
 				//--------------------------------------------------
@@ -250,7 +255,7 @@
 				//--------------------------------------------------
 				// If path is relative to current_path
 
-					if (isset($this->path_data['path']) && substr($this->path_data['path'], 0, 1) != '/') {
+					if ($scheme_http && isset($this->path_data['path']) && substr($this->path_data['path'], 0, 1) != '/') {
 
 						$this->path_data['path'] = $current_path . '/' . $this->path_data['path'];
 
@@ -291,7 +296,7 @@
 						$format = config::get('url.default_format');
 					}
 
-					if (isset($this->path_data['scheme']) || isset($this->path_data['host']) || isset($this->path_data['port']) || isset($this->path_data['user']) || isset($this->path_data['pass'])) {
+					if ($scheme_set || isset($this->path_data['host']) || isset($this->path_data['port']) || isset($this->path_data['user']) || isset($this->path_data['pass'])) {
 						$format = 'full';
 					}
 
@@ -312,7 +317,7 @@
 
 						if ($format == 'full') {
 
-							if (!isset($this->path_data['host'])) {
+							if ($scheme_http && !isset($this->path_data['host'])) { // If it's a HTTP(S) scheme, for an unset host, we can assume the it's for the current origin.
 
 								//--------------------------------------------------
 								// Use current origin
@@ -328,19 +333,7 @@
 								//--------------------------------------------------
 								// Scheme
 
-									if ($scheme === '' || $scheme === NULL) {
-										if ($this->path_data['host'] == config::get('output.domain')) {
-											$scheme = (https_available() || config::get('request.https') ? 'https' : 'http'); // Go with HTTPS if possible
-										} else {
-											$scheme = 'http'; // Safe default
-										}
-									}
-
-									if (!in_array($scheme, $this->schemes)) { // Projection against "javascript:xxx" type links.
-										exit_with_error('Invalid scheme "' . $scheme . '"', 'Allowed schemes: ' . implode(', ', $this->schemes));
-									}
-
-									$output .= $scheme . '://';
+									$output .= $scheme . ($scheme_http ? '://' : ':'); // Double slashes are used ONLY when the syntax of the URL's <scheme-specific-part> contains a hierarchical structure as described in RFC 2396.
 
 								//--------------------------------------------------
 								// User
@@ -356,7 +349,9 @@
 								//--------------------------------------------------
 								// Host
 
-									$output .= $this->path_data['host'];
+									if (isset($this->path_data['host'])) {
+										$output .= $this->path_data['host'];
+									}
 
 								//--------------------------------------------------
 								// Port
@@ -371,45 +366,53 @@
 					//--------------------------------------------------
 					// Path
 
-						if (isset($this->path_data['path'])) {
-							$path = $this->path_data['path'];
-						} else if (!isset($this->path_data['host'])) {
-							$path = $current_path;
-						} else {
-							$path = '/';
-						}
+						if ($scheme_http) {
 
-						$path_new = path_to_array($path);
-
-						if ($format == 'relative') {
-
-							$k = 0; // Folders in common
-							$j = 0; // Folders to work backwards from
-
-							foreach (path_to_array($current_path) as $folder) {
-								if (($j > 0) || (!isset($path_new[$k]) || $folder != $path_new[$k])) {
-									$j++;
-								} else {
-									$k++;
-								}
-							}
-
-							if ($j > 0) {
-								$output .= str_repeat('../', $j);
+							if (isset($this->path_data['path'])) {
+								$path = $this->path_data['path'];
+							} else if (!isset($this->path_data['host'])) {
+								$path = $current_path;
 							} else {
-								$output .= './';
+								$path = '/';
 							}
 
-							$output .= implode('/', array_splice($path_new, $k));
+							$path_new = path_to_array($path);
 
-						} else {
+							if ($format == 'relative') {
 
-							$output .= '/' . implode('/', $path_new);
+								$k = 0; // Folders in common
+								$j = 0; // Folders to work backwards from
 
-						}
+								foreach (path_to_array($current_path) as $folder) {
+									if (($j > 0) || (!isset($path_new[$k]) || $folder != $path_new[$k])) {
+										$j++;
+									} else {
+										$k++;
+									}
+								}
 
-						if (substr($path, -1) == '/' && substr($output, -1) != '/') { // Output could be '../'
-							$output .= '/';
+								if ($j > 0) {
+									$output .= str_repeat('../', $j);
+								} else {
+									$output .= './';
+								}
+
+								$output .= implode('/', array_splice($path_new, $k));
+
+							} else {
+
+								$output .= '/' . implode('/', $path_new);
+
+							}
+
+							if (substr($path, -1) == '/' && substr($output, -1) != '/') { // Output could be '../'
+								$output .= '/';
+							}
+
+						} else if (isset($this->path_data['path'])) { // e.g. a 'mailto:' URL
+
+							$output .= rawurlencode($this->path_data['path']);
+
 						}
 
 				//--------------------------------------------------
