@@ -69,6 +69,19 @@
 				$this->path_cache = NULL;
 			}
 
+			public function schemes_allowed_set($schemes) {
+				$this->schemes = [];
+				foreach ($schemes as $scheme) {
+					if (!preg_match('/^[a-z][a-z0-9\+\-\.]+$/i', $scheme)) { // https://url.spec.whatwg.org/ - A URL-scheme string must be one ASCII alpha, followed by zero or more of ASCII alphanumeric, U+002B (+), U+002D (-), and U+002E (.)
+						throw new error_exception('Invalid scheme provided', $scheme);
+					} else if (strtolower($scheme) == 'javascript') {
+						throw new error_exception('You are not allowed javascript URLs, they are far too dangerous');
+					} else {
+						$this->schemes[] = $scheme;
+					}
+				}
+			}
+
 			public function scheme_set($scheme) {
 				$this->format = 'full';
 				$this->scheme = $scheme; // Takes precedence over the value in path_data
