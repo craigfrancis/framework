@@ -92,11 +92,7 @@
 				if ($this->scheme !== NULL) {
 					return $this->scheme;
 				} else {
-					if (isset($this->path_data['scheme'])) {
-						return $this->path_data['scheme'];
-					} else {
-						return NULL;
-					}
+					return (isset($this->path_data['scheme']) ? $this->path_data['scheme'] : NULL);
 				}
 			}
 
