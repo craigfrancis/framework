@@ -8,8 +8,58 @@
 		// Variables
 
 			protected $template_html = [];
-			protected $template_tags = [];
 			protected $template_end = NULL;
+			protected $template_parameters = NULL;
+			protected $template_parameter_types = [];
+			protected $template_allowed = [ // Do not allow <script>, <style>, <link>, <object>, <embed> tags; or attributes that can include JS (e.g. style, onload, dynsrc)... although some can accept url(x) values
+					'meta'       => ['name' => 'text', 'content' => 'text'], // Do not allow <meta http-equiv="">, e.g. Refresh, Set-Cookie
+					'div'        => ['id' => 'ref', 'class' => 'ref', 'title' => 'text'],
+					'h1'         => ['id' => 'ref', 'class' => 'ref'],
+					'h2'         => ['id' => 'ref', 'class' => 'ref'],
+					'h3'         => ['id' => 'ref', 'class' => 'ref'],
+					'h4'         => ['id' => 'ref', 'class' => 'ref'],
+					'h5'         => ['id' => 'ref', 'class' => 'ref'],
+					'h6'         => ['id' => 'ref', 'class' => 'ref'],
+					'p'          => ['id' => 'ref', 'class' => 'ref'],
+					'ul'         => ['id' => 'ref', 'class' => 'ref'],
+					'ol'         => ['id' => 'ref', 'class' => 'ref', 'start' => 'int'],
+					'li'         => ['id' => 'ref', 'class' => 'ref'],
+					'dl'         => ['id' => 'ref', 'class' => 'ref'],
+					'dt'         => ['id' => 'ref', 'class' => 'ref'],
+					'dd'         => ['id' => 'ref', 'class' => 'ref'],
+					'pre'        => ['id' => 'ref', 'class' => 'ref'],
+					'table'      => ['id' => 'ref', 'class' => 'ref'],
+					'caption'    => ['id' => 'ref', 'class' => 'ref'],
+					'thead'      => ['id' => 'ref', 'class' => 'ref'],
+					'tbody'      => ['id' => 'ref', 'class' => 'ref'],
+					'tfoot'      => ['id' => 'ref', 'class' => 'ref'],
+					'tr'         => ['id' => 'ref', 'class' => 'ref'],
+					'th'         => ['id' => 'ref', 'class' => 'ref', 'rowspan' => 'int', 'colspan' => 'int'],
+					'td'         => ['id' => 'ref', 'class' => 'ref', 'rowspan' => 'int', 'colspan' => 'int'],
+					'span'       => ['id' => 'ref', 'class' => 'ref'],
+					'em'         => ['id' => 'ref', 'class' => 'ref'],
+					'strong'     => ['id' => 'ref', 'class' => 'ref'],
+					'hr'         => ['id' => 'ref', 'class' => 'ref'],
+					'sub'        => ['id' => 'ref', 'class' => 'ref'],
+					'sup'        => ['id' => 'ref', 'class' => 'ref'],
+					'abbr'       => ['id' => 'ref', 'class' => 'ref', 'title' => 'text'],
+					'cite'       => ['id' => 'ref', 'class' => 'ref'],
+					'code'       => ['id' => 'ref', 'class' => 'ref'],
+					'samp'       => ['id' => 'ref', 'class' => 'ref'],
+					'mark'       => ['id' => 'ref', 'class' => 'ref'],
+					'var'        => ['id' => 'ref', 'class' => 'ref'],
+					'wbr'        => ['id' => 'ref', 'class' => 'ref'],
+					'del'        => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
+					'ins'        => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
+					'blockquote' => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
+					'q'          => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
+					'a'          => ['id' => 'ref', 'class' => 'ref', 'href' => 'url'],
+					'img'        => ['id' => 'ref', 'class' => 'ref', 'src' => 'url', 'alt' => 'text', 'width' => 'int', 'height' => 'int'],
+					'time'       => ['id' => 'ref', 'class' => 'ref', 'datetime' => 'datetime'],
+					'data'       => ['id' => 'ref', 'class' => 'ref', 'value' => 'text'],
+					'br'         => [],
+				];
+
 			protected $parameters = [];
 
 		//--------------------------------------------------
@@ -23,14 +73,14 @@
 					$this->parameters = $parameters;
 
 				//--------------------------------------------------
-				// Initial split
+				// Simple Template HTML split
 
 						// This does not intend to be a full/proper templating system.
-						// The context of the placeholders is not checked - so '<a href="?">?</a>' with 'javascript:evil-js' is allowed.
-						// It uses a RegExp, which is bad for general HTML, but this works with known-good HTML (in theory).
+						// The context of the placeholders is only roughly checked, when in debug mode, via XML parsing.
+						// It uses a RegExp, which is bad for general HTML, but it's fast, and can work with known-good XHTML (in theory).
 						// The HTML must be a safe literal (a trusted string, from the developer, defined in the PHP script).
-						// The HTML should be valid XML (why be lazy/messy?).
-						// The HTML must put parameters in a Quoted Attribute or it's own HTML Tag.
+						// The HTML must be valid XML (why be lazy/messy?).
+						// The HTML must include parameters in a Quoted Attribute, or it's own HTML Tag.
 						// It only uses simple HTML Encoding - which is why attributes must be quoted, to avoid '<img src=? />' being used with 'x onerror=evil-js'
 
 					$this->template_html = preg_split('/(?<=(>)|(\'|"))\?(?=(?(1)<|\2))/', $template_html);
@@ -49,61 +99,82 @@
 
 					if (config::get('debug.level') > 0) {
 
-						$attribute_tag = NULL;
-						$attribute_quote = NULL;
+							// Your HTML should be valid XML,
+							// as it ensures strict/valid nesting,
+							// attributes are quoted (important!),
+							// and attributes cannot be redefined.
+							//
+							// You can use:
+							//   '<img />' for self closing tags
+							//   '<tag attribute="attribute">' for boolean attributes.
 
-						foreach ($this->template_html as $k => $html) {
+						$old = libxml_use_internal_errors(true); // "Disabling will also clear any existing libxml errors"
 
-							if ($k == $this->template_end) {
+						$html_prefix = '<?xml version="1.0" encoding="' . xml(config::get('output.charset')) . '"?><html>';
+						$html_suffix = '</html>';
 
-								// Last bit of HTML, ignore.
+						$doc = new DomDocument();
+						$doc->loadXML($html_prefix . $template_html . $html_suffix);
 
-							} else if (substr($html, -1) == '>') { // Tag mode
+						foreach (libxml_get_errors() as $error) {
+							libxml_clear_errors();
+							throw new error_exception('HTML Templates must be valid XML', trim($error->message) . ' (line ' . $error->line . ':' . (intval($error->column) - strlen($html_prefix)) . ')' . "\n" . $template_html);
+						}
 
-								if (preg_match('/<([a-z]+)( [^<>]*)?>$/', $html, $matches)) { // New tag
+						libxml_use_internal_errors($old);
 
-									$this->template_tags[] = [$matches[1], NULL];
+						$this->template_parameters = [];
 
-								} else if ($attribute_tag !== NULL && preg_match('/^' . preg_quote($attribute_quote, '/') . '[^<>]*>$/', $html, $matches)) { // After attributes
+						$this->node_walk($doc);
 
-									$this->template_tags[] = [$attribute_tag, NULL];
-
-								} else {
-
-									throw new error_exception('Could not determine HTML Tag for Content placeholder ' . ($k + 1), $template_html);
-
-								}
-
-								$attribute_tag = NULL;
-								$attribute_quote = NULL;
-
-							} else { // Attribute mode
-
-								if (preg_match('/<([a-z]+)[^<>]* ([a-z\-]+)=(["\'])$/', $html, $matches)) { // New tag
-
-									$this->template_tags[] = [$matches[1], $matches[2]];
-
-									$attribute_tag = $matches[1];
-									$attribute_quote = $matches[3];
-
-								} else if ($attribute_tag !== NULL && preg_match('/^' . preg_quote($attribute_quote, '/') . '[^<>]* ([a-z\-]+)=(["\'])$/', $html, $matches)) { // Additional attributes
-
-									$this->template_tags[] = [$attribute_tag, $matches[1]];
-
-									$attribute_quote = $matches[2];
-
-								} else {
-
-									throw new error_exception('Could not determine HTML Tag for Attribute placeholder ' . ($k + 1), $template_html);
-
-								}
-
+						foreach ($this->template_parameters as $k => $p) {
+							$allowed_attributes = ($this->template_allowed[$p[0]] ?? NULL);
+							if ($allowed_attributes === NULL) {
+								throw new error_exception('Placeholder ' . ($k + 1) . ' is for unrecognised tag "' . $p[0] . '"', $template_html);
+							} else if ($p[1] === NULL) {
+								// Content for a tag, so long as it's not an unsafe tag (e.g. <script>), it should be fine.
+							} else if (($attribute_type = ($allowed_attributes[$p[1]] ?? NULL)) !== NULL) {
+								$this->template_parameter_types[$k] = $attribute_type; // Generally fine, but check the type.
+							} else if (prefix_match('data-', $p[1])) {
+								// Can't tell, this is for JS/CSS to read and use.
+							} else {
+								throw new error_exception('Placeholder ' . ($k + 1) . ' is for unrecognised tag "' . $p[0] . '" and attribute "' . $p[1] . '"', $template_html);
 							}
-
 						}
 
 					}
 
+			}
+
+		//--------------------------------------------------
+		// Node walking
+
+			private function node_walk($parent, $root = true) {
+				foreach ($parent->childNodes as $node) {
+					if ($node->nodeType === XML_TEXT_NODE) {
+						if ($node->wholeText == '?') {
+							$this->template_parameters[] = [$parent->nodeName, NULL];
+						}
+					} else if (!array_key_exists($node->nodeName, $this->template_allowed) && $root !== true) { // Skip for the root node
+						throw new error_exception('HTML Templates cannot use <' . $node->nodeName . '>', implode('?', $this->template_html));
+					} else {
+						if ($node->hasAttributes()) {
+							$allowed_attributes = $this->template_allowed[$node->nodeName];
+							foreach ($node->attributes as $attr) {
+								if (!array_key_exists($attr->nodeName, $allowed_attributes) && !prefix_match('data-', $attr->nodeName)) {
+									throw new error_exception('HTML Templates cannot use the "' . $attr->nodeName . '" attribute in <' . $node->nodeName . '>', implode('?', $this->template_html));
+								} else if ($node->nodeName == 'meta' && $attr->nodeName == 'name' && in_array($attr->nodeValue, ['?', 'referrer'])) {
+									throw new error_exception('HTML Templates cannot allow the "name" attribute in <meta> to be set to "' . $attr->nodeValue . '"', implode('?', $this->template_html));
+								} else if ($attr->nodeValue == '?') {
+									$this->template_parameters[] = [$node->nodeName, $attr->nodeName];
+								}
+							}
+						}
+						if ($node->hasChildNodes()) {
+							$this->node_walk($node, false);
+						}
+					}
+				}
 			}
 
 		//--------------------------------------------------
@@ -115,20 +186,47 @@
 					$parameters = $this->parameters;
 				}
 
+				foreach ($this->template_parameter_types as $k => $type) {
+					if (!isset($parameters[$k])) {
+						// Ignore this missing parameter, should be picked up next.
+					} else if ($type == 'text') {
+						// Nothing to check
+					} else if ($type == 'url') {
+						if (!is_object($parameters[$k]) || !is_a($parameters[$k], 'url')) {
+							throw new error_exception('Parameter ' . ($k + 1) . ' should be a URL object.', debug_dump($parameters[$k]) . "\n" . implode('?', $this->template_html));
+						}
+					} else if ($type == 'int') {
+						if (!is_int($parameters[$k])) {
+							throw new error_exception('Parameter ' . ($k + 1) . ' should be an integer.', debug_dump($parameters[$k]) . "\n" . implode('?', $this->template_html));
+						}
+					} else if ($type == 'ref') {
+						foreach (explode(' ', $parameters[$k]) as $ref) {
+							$ref = trim($ref);
+							if (!preg_match('/^[a-z][a-z0-9\-\_]+$/i', $ref)) { // Simple strings aren't checked outside of debug mode, but it might catch something during development.
+								throw new error_exception('Parameter ' . ($k + 1) . ' should be one or more valid references.', debug_dump($ref) . "\n" . implode('?', $this->template_html));
+							}
+						}
+					} else if ($type == 'datetime') {
+						if (!preg_match('/^[0-9TWZPHMS \:\-\.]+$/i', $parameters[$k])) { // Could be better, but not important, as simple strings aren't checked outside of debug mode, and shouldn't be executed as JS by the browser... T=Time, W=Week, Z=Zulu, and PTHMS for duration
+							throw new error_exception('Parameter ' . ($k + 1) . ' should be a valid datetime.', debug_dump($parameters[$k]) . "\n" . implode('?', $this->template_html));
+						}
+					} else {
+						throw new error_exception('Parameter ' . ($k + 1) . ' has an unknown type.', $type . "\n" . debug_dump($parameters[$k]) . "\n" . implode('?', $this->template_html));
+					}
+				}
+
 				$html = '';
 
 				foreach ($this->template_html as $k => $template_html) {
 					$html .= $template_html;
 					if ($k < $this->template_end) {
 						if (isset($parameters[$k])) {
-							$html .= html($parameters[$k]);
+							$html .= nl2br(html($parameters[$k]));
 						} else {
-							exit_with_error('Missing parameter ' . ($k + 1), 'Template: ' . implode('?', $this->template_html));
+							throw new error_exception('Missing parameter ' . ($k + 1), implode('?', $this->template_html));
 						}
-					} else {
-						if (isset($parameters[$k])) {
-							exit_with_error('Extra parameter ' . ($k + 1), 'Template: ' . implode('?', $this->template_html));
-						}
+					} else if (isset($parameters[$k])) {
+						throw new error_exception('Extra parameter ' . ($k + 1), implode('?', $this->template_html));
 					}
 				}
 
