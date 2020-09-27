@@ -332,7 +332,11 @@
 			}
 
 			public function heading_add($heading, $sort_name = NULL, $class_name = '', $config = []) {
-				return $this->heading_add_html(nl2br(html($heading)), $sort_name, $class_name, $config);
+				if (is_object($heading) && (is_a($heading, 'html_template') || is_a($heading, 'html_template_immutable'))) {
+					return $this->heading_add_html($heading, $sort_name, $class_name, $config);
+				} else {
+					return $this->heading_add_html(nl2br(html($heading)), $sort_name, $class_name, $config);
+				}
 			}
 
 			public function heading_add_html($heading_html, $sort_name = NULL, $class_name = '', $config = []) {
@@ -391,7 +395,11 @@
 			}
 
 			public function footer_add($footer, $class_name = '', $config = []) {
-				$this->footer_add_html(html($footer), $class_name, $config);
+				if (is_object($footer) && (is_a($footer, 'html_template') || is_a($footer, 'html_template_immutable'))) {
+					$this->footer_add_html($footer, $class_name, $config);
+				} else {
+					$this->footer_add_html(html($footer), $class_name, $config);
+				}
 			}
 
 			public function footer_add_html($footer_html, $class_name = '', $config = []) {
@@ -1267,8 +1275,12 @@
 
 		}
 
-		public function cell_add($content_text = '', $class_name = '', $config = []) {
-			$this->_cell_add_raw($content_text, NULL, $class_name, $config);
+		public function cell_add($content = '', $class_name = '', $config = []) {
+			if (is_object($content) && (is_a($content, 'html_template') || is_a($content, 'html_template_immutable'))) {
+				$this->_cell_add_raw(NULL, $content, $class_name, $config);
+			} else {
+				$this->_cell_add_raw($content, NULL, $class_name, $config);
+			}
 		}
 
 		public function cell_add_html($content_html = '', $class_name = '', $config = []) {
