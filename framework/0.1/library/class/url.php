@@ -204,7 +204,7 @@
 				//--------------------------------------------------
 				// Return
 
-					return $output;
+					return new url_immutable($output, 'createdByUrlClass');
 
 			}
 
@@ -433,8 +433,25 @@
 		// String shorthand
 
 			public function __toString() {
-				return $this->get();
+				return strval($this->get());
 			}
+
+	}
+
+	class url_immutable {
+
+		private $value = NULL;
+
+		public function __construct($value, $source) {
+			$this->value = $value;
+			if ($source != 'createdByUrlClass') {
+				exit_with_error('Do not create a "url_immutable" object directly, use a "url" helper.');
+			}
+		}
+
+		public function __toString() {
+			return $this->value;
+		}
 
 	}
 

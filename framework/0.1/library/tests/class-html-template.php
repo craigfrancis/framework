@@ -15,13 +15,24 @@
 
 		echo "\n";
 
-		echo h('<a href="?">?</a>', [url('https://example.com/?a=b&c=d'), 'Example & Link']);
+		echo h('<a href="?">?</a>', [url('https://example.com/'), 'Example & Link']);
+
+	//--------------------------------------------------
+
+		echo "\n";
+
+		$link = h('<a href="?">?</a>');
+		$url = url('https://example.com/');
+
+		echo $link->html([$url->get(['id' => 1]), 'Example & Link']) . "\n";
+		echo $link->html([$url->get(['id' => 2]), 'Example & Link']) . "\n";
+		echo $link->html([$url->get(['id' => 3]), 'Example & Link']);
 
 	//--------------------------------------------------
 
 		echo "\n\n";
 
-		echo h('<a href="?">?</a>', [url('mailto:alert(1)'), 'Evil Link']); // This isn't safe.
+		echo h('<a href="?">?</a>', [url('mailto:alert(1)'), 'Evil Link']);
 
 	//--------------------------------------------------
 
