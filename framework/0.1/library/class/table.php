@@ -398,7 +398,7 @@
 				if ($footer instanceof html_template || $footer instanceof html_template_immutable) {
 					$this->footer_add_html($footer, $class_name, $config);
 				} else {
-					$this->footer_add_html(html($footer), $class_name, $config);
+					$this->footer_add_html(nl2br(html($footer)), $class_name, $config);
 				}
 			}
 

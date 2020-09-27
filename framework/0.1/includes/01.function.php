@@ -170,7 +170,7 @@
 // form of HTML/XML/CSV without having to write the
 // full native function in the script.
 
-	function h($template_html, $parameters = []) {
+	function ht($template_html, $parameters = []) {
 		return new html_template($template_html, $parameters);
 	}
 

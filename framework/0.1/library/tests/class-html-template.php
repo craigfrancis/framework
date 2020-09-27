@@ -15,13 +15,13 @@
 
 		echo "\n";
 
-		echo h('<a href="?">?</a>', [url('https://example.com/'), 'Example & Link']);
+		echo ht('<a href="?">?</a>', [url('https://example.com/'), 'Example & Link']);
 
 	//--------------------------------------------------
 
 		echo "\n";
 
-		$link = h('<a href="?">?</a>');
+		$link = ht('<a href="?">?</a>');
 		$url = url('https://example.com/');
 
 		echo $link->html([$url->get(['id' => 1]), 'Example & Link']) . "\n";
@@ -32,25 +32,25 @@
 
 		echo "\n\n";
 
-		echo h('<a href="?">?</a>', [url('mailto:alert(1)'), 'Evil Link']);
+		echo ht('<a href="?">?</a>', [url('mailto:alert(1)'), 'Evil Link']);
 
 	//--------------------------------------------------
 
 		echo "\n\n";
 
-		echo h('<p>Example?</p>'); // No parameters, just a question mark that should be ignored.
+		echo ht('<p>Example?</p>'); // No parameters, just a question mark that should be ignored.
 
 	//--------------------------------------------------
 
 		echo "\n\n";
 
-		echo h('<span>?</span> Test?', ['Example']); // Ignore last question mark
+		echo ht('<span>?</span> Test?', ['Example']); // Ignore last question mark
 
 	//--------------------------------------------------
 
 		echo "\n\n";
 
-		$link = h('<span class="s1a"><a href="?">?</a> - <em>?</em></span>');
+		$link = ht('<span class="s1a"><a href="?">?</a> - <em>?</em></span>');
 
 		echo $link->html([
 				url('/url/'),
@@ -72,7 +72,7 @@
 
 		echo "\n";
 
-		$link = h('<span class="s1b"><a href="?">?</a> - <em>?</em></span>', [
+		$link = ht('<span class="s1b"><a href="?">?</a> - <em>?</em></span>', [
 				url('/url/'),
 				'Link Text 3',
 				'Extra Text 3',
@@ -90,7 +90,7 @@
 
 		echo "\n";
 
-		echo h('<span class="s1c"><a href="?">?</a> - <em>?</em></span>', [
+		echo ht('<span class="s1c"><a href="?">?</a> - <em>?</em></span>', [
 				url('/url/'),
 				'Link Text 4',
 				'Extra Text 4',
@@ -133,7 +133,7 @@
 		$parameters[] = url('https://example.com');
 		$parameters[] = 'Some Words';
 
-		echo h(implode("\n", $html), $parameters);
+		echo ht(implode("\n", $html), $parameters);
 
 //--------------------------------------------------
 // Timings
@@ -149,7 +149,7 @@
 		echo "--------------------------------------------------";
 		echo "\n\n";
 
-		echo h($template_html, $parameters)->html();
+		echo ht($template_html, $parameters)->html();
 
 		echo "\n";
 
@@ -170,7 +170,7 @@
 
 		$start = microtime(true);
 
-		$link = h($template_html);
+		$link = ht($template_html);
 
 		$k = 0;
 		while (++$k < $iterations) {
@@ -187,7 +187,7 @@
 
 		$k = 0;
 		while (++$k < $iterations) {
-			$link = h($template_html);
+			$link = ht($template_html);
 			$html = $link->html($parameters);
 		}
 
@@ -201,7 +201,7 @@
 
 		$k = 0;
 		while (++$k < $iterations) {
-			$html = h($template_html, $parameters)->html();
+			$html = ht($template_html, $parameters)->html();
 		}
 
 		$time_template = (microtime(true) - $start);
@@ -218,7 +218,7 @@
 		echo "--------------------------------------------------";
 		echo "\n\n";
 
-		echo h('Start <a href="?" class=\'?\' data-value="?" data-static="abc">?</a> <span>?</span> End', [url('https://example.com/?a=b&c=d'), 'my-class', 123, 'Link\'s', '& Span']);
+		echo ht('Start <a href="?" class=\'?\' data-value="?" data-static="abc">?</a> <span>?</span> End', [url('https://example.com/?a=b&c=d'), 'my-class', 123, 'Link\'s', '& Span']);
 
 	//--------------------------------------------------
 
@@ -228,7 +228,7 @@
 
 		config::set('debug.level', 0); // Temporarily disable debugging, which checks this is valid XML, and the parameter context.
 
-		$link = h(implode("\n", [
+		$link = ht(implode("\n", [
 				'#0  ?',
 				'#0 x?<',
 				'#0 >?x',
@@ -255,7 +255,7 @@
 
 		echo "\n\n";
 
-		echo h(
+		echo ht(
 			'<span class="&quot;&apos;&#039;&amp;&lt;&gt;" data-ignore="? " data-value="?">?</span>' . "\n" .
 			'<span>&quot;&apos;&#039;&amp;&lt;&gt;</span>' . "\n" .
 			'<span class="ignore-value">? </span>', ['DataValue', 'ContentValue']); // Can parse these correctly
@@ -287,7 +287,7 @@
 
 		foreach ($parsing_tests as $test) {
 			try {
-				$t = h($test[0], $test[1]);
+				$t = ht($test[0], $test[1]);
 				echo $t;
 				exit_with_error('Did not pick up bad attribute: ' . $test[0]);
 			} catch (error_exception $e) {
