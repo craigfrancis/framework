@@ -230,17 +230,34 @@
 					}
 				}
 
-				return $html;
+				return new html_template_immutable($html, 'createdByHtmlTemplateClass');
 
 			}
 
 			public function __toString() {
-				return $this->html();
+				return strval($this->html());
 			}
 
 			public function _debug_dump() {
 				return 'html_template("' . implode('?', $this->template_html) . '"' . ($this->parameters ? ', ' . debug_dump($this->parameters) : '') . ')';
 			}
+
+	}
+
+	class html_template_immutable {
+
+		private $value = NULL;
+
+		public function __construct($value, $source) {
+			$this->value = $value;
+			if ($source != 'createdByHtmlTemplateClass') {
+				exit_with_error('Do not create a "html_template_immutable" object directly, use a "html_template" helper.');
+			}
+		}
+
+		public function __toString() {
+			return $this->value;
+		}
 
 	}
 

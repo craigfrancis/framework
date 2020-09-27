@@ -34,7 +34,7 @@
 		// Value
 
 			public function value_set($value) {
-				if (is_a($value, 'html_template')) {
+				if (is_object($value) && (is_a($value, 'html_template') || is_a($value, 'html_template_immutable'))) {
 					$this->value_html = $value->html();
 					$this->value = html_decode($this->value_html);
 				} else {
