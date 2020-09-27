@@ -42,7 +42,7 @@
 					'hr'         => ['id' => 'ref', 'class' => 'ref'],
 					'sub'        => ['id' => 'ref', 'class' => 'ref'],
 					'sup'        => ['id' => 'ref', 'class' => 'ref'],
-					'abbr'       => ['id' => 'ref', 'class' => 'ref', 'title' => 'text'],
+					'abbr'       => ['id' => 'ref', 'class' => 'ref', 'title' => 'text', 'aria-label' => 'text'],
 					'cite'       => ['id' => 'ref', 'class' => 'ref'],
 					'code'       => ['id' => 'ref', 'class' => 'ref'],
 					'samp'       => ['id' => 'ref', 'class' => 'ref'],
