@@ -192,7 +192,7 @@
 					} else if ($type == 'text') {
 						// Nothing to check
 					} else if ($type == 'url') {
-						if (!is_object($parameters[$k]) || (!is_a($parameters[$k], 'url') && !is_a($parameters[$k], 'url_immutable'))) {
+						if (!($parameters[$k] instanceof url) && !($parameters[$k] instanceof url_immutable)) {
 							throw new error_exception('Parameter ' . ($k + 1) . ' should be a URL object.', debug_dump($parameters[$k]) . "\n" . implode('?', $this->template_html));
 						}
 					} else if ($type == 'int') {

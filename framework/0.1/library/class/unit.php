@@ -56,9 +56,9 @@
 
 					if (is_array($setup) && isset($setup['type']) && $value !== NULL) {
 						if ($setup['type'] == 'url') {
-							if (is_string($value)) {
+							if (is_string($value) || $value instanceof url_immutable) {
 								$value = url($value);
-							} else if (!is_object($value) || (!is_a($value, 'url') && !is_a($value, 'url_immutable'))) {
+							} else if (!($value instanceof url)) {
 								$errors[] = 'Unrecognised url value for: ' . $key;
 							}
 						} else if ($setup['type'] == 'int') {

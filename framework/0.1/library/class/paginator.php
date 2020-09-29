@@ -288,7 +288,7 @@
 				if (!is_numeric($page_number) || ($page_number >= 1 && $page_number <= $this->page_count)) {
 
 					if ($this->url === NULL) {
-						if (is_object($this->config['base_url']) && is_a($this->config['base_url'], 'url')) {
+						if ($this->config['base_url'] instanceof url) {
 							$this->url = $this->config['base_url'];
 						} else if ($this->config['base_url'] !== NULL) {
 							$this->url = new url($this->config['base_url']);

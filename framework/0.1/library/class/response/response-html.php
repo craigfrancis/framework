@@ -919,7 +919,7 @@
 							$min_path = NULL;
 						}
 
-						if ((!is_object($file['path']) || !is_a($file['path'], 'url')) && (substr($file['path'], 0, 1) == '/')) {
+						if (!($file['path'] instanceof url) && (substr($file['path'], 0, 1) == '/')) {
 							$file['path'] = config::get('url.prefix') . $file['path'];
 						}
 
