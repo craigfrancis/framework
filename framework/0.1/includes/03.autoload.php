@@ -23,6 +23,16 @@
 						FRAMEWORK_ROOT . '/library/controller/' . $class_file_name . '.php',
 					);
 
+			} else if (substr($class_name, -6) == '_query') {
+
+				$base_mode = true;
+
+				$class_file_name = str_replace('_', '-', substr($class_name, 0, -6));
+
+				$paths = array(
+						APP_ROOT . '/library/query/' . $class_file_name . '.php',
+					);
+
 			} else {
 
 				$base_mode = (substr($class_name, -5) == '_base');
