@@ -255,6 +255,10 @@
 			}
 		}
 
+		public function _debug_dump() {
+			return 'html_template_immutable("' . $this->value . '")';
+		}
+
 		public function __toString() {
 			return $this->value;
 		}

@@ -449,6 +449,10 @@
 			}
 		}
 
+		public function _debug_dump() {
+			return 'url_immutable("' . $this->value . '")';
+		}
+
 		public function __toString() {
 			return $this->value;
 		}
