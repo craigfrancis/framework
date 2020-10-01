@@ -1258,7 +1258,7 @@
 
 		}
 
-		public function _cell_add_raw($content_text, $content_html, $config, $b = []) {
+		public function _cell_add_raw($content_text, $content_html, $config, $b) {
 
 			if (!is_array($config)) {
 				$config = ['class_name' => $config];
@@ -1282,18 +1282,18 @@
 
 		public function cell_add($content = '', $config = [], $b = []) {
 			if ($content instanceof html_template || $content instanceof html_template_immutable) {
-				$this->_cell_add_raw(NULL, $content, $config);
+				$this->_cell_add_raw(NULL, $content, $config, $b);
 			} else if ($content instanceof timestamp) {
 				$timestamp_format = ($config['timestamp_format'] ?? 'jS M Y, g:ia');
 				$timestamp_null   = ($config['timestamp_null'] ?? '-');
-				$this->_cell_add_raw(NULL, $content->html($timestamp_format, $timestamp_null), $config);
+				$this->_cell_add_raw(NULL, $content->html($timestamp_format, $timestamp_null), $config, $b);
 			} else {
-				$this->_cell_add_raw($content, NULL, $config);
+				$this->_cell_add_raw($content, NULL, $config, $b);
 			}
 		}
 
 		public function cell_add_html($content_html = '', $config = [], $b = []) {
-			$this->_cell_add_raw(NULL, $content_html, $config);
+			$this->_cell_add_raw(NULL, $content_html, $config, $b);
 		}
 
 		public function cell_add_link($url, $text, $config = [], $b = []) {
@@ -1304,7 +1304,7 @@
 				$html = NULL;
 			}
 
-			$this->_cell_add_raw($text, $html, $config);
+			$this->_cell_add_raw($text, $html, $config, $b);
 
 		}
 
