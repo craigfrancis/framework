@@ -1284,9 +1284,7 @@
 			if ($content instanceof html_template || $content instanceof html_template_immutable) {
 				$this->_cell_add_raw(NULL, $content, $config, $b);
 			} else if ($content instanceof timestamp) {
-				$timestamp_format = ($config['timestamp_format'] ?? 'jS M Y, g:ia');
-				$timestamp_null   = ($config['timestamp_null'] ?? '-');
-				$this->_cell_add_raw(NULL, $content->html($timestamp_format, $timestamp_null), $config, $b);
+				$this->_cell_add_raw(NULL, $content->html($config['timestamp_format'], ($config['timestamp_null'] ?? '-')), $config, $b); // 'timestamp_format' is required, to make this easy to in projects.
 			} else {
 				$this->_cell_add_raw($content, NULL, $config, $b);
 			}
