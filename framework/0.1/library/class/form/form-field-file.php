@@ -543,7 +543,7 @@
 
 					$return = copy($path_src, $path_dst); // Don't unlink/rename, as the same file may have been uploaded multiple times.
 
-					@chmod($path_dst, 0666); // Most websites use a generic apache user.
+					chmod($path_dst, octdec(config::get('file.default_permission', 666)));
 
 					return $return;
 

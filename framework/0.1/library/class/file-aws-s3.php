@@ -349,6 +349,7 @@ Abbreviations:
 
 						if ($encrypted_content !== false) {
 							file_put_contents($info['encrypted_path'], $encrypted_content);
+							// TODO: chmod($info['encrypted_path'], octdec(600));
 						}
 
 					}
@@ -360,6 +361,7 @@ Abbreviations:
 					$plain_content = file_get_contents($info['encrypted_path']);
 					$plain_content = encryption::decode($plain_content, $info['fk']);
 					file_put_contents($info['plain_path'], $plain_content);
+					// TODO: chmod($info['plain_path'], octdec(600));
 
 				}
 
@@ -407,6 +409,8 @@ Abbreviations:
 
 				copy($path, $plain_path);
 
+				// TODO: chmod($plain_path, octdec(600));
+
 				$plain_content = file_get_contents($plain_path);
 
 				return $this->_file_save($plain_hash, $plain_content, true, $file_id);
@@ -424,6 +428,7 @@ Abbreviations:
 				$plain_path = $this->folder_path_get('pf', $plain_name);
 
 				file_put_contents($plain_path, $plain_content);
+				// TODO: chmod($plain_path, octdec(600));
 
 				return $this->_file_save($plain_hash, $plain_content, true, $file_id);
 
@@ -472,6 +477,7 @@ Abbreviations:
 
 					if ($save_local) {
 						file_put_contents($encrypted_path, $encrypted_content);
+						// TODO: chmod($encrypted_path, octdec(600));
 					}
 
 				//--------------------------------------------------

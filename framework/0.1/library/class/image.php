@@ -655,6 +655,7 @@
 			public function save($file_path, $file_type = 'jpg', $quality = NULL, $preserve = false) {
 				if ($preserve === true && $this->image_source !== NULL && $file_type == $this->image_type) {
 					copy($this->image_source, $file_path);
+					chmod($file_path, octdec(config::get('file.default_permission', 666)));
 				} else if ($file_type == 'jpg') {
 					$this->save_jpg($file_path, $quality);
 				} else if ($file_type == 'png') {
@@ -672,14 +673,14 @@
 						$compression = 6;
 					}
 					imagepng($this->image_ref, $file_path, $compression);
-					@chmod($file_path, 0666);
+					chmod($file_path, octdec(config::get('file.default_permission', 666)));
 				}
 			}
 
 			public function save_gif($file_path) {
 				if ($this->image_ref) {
 					imagegif($this->image_ref, $file_path);
-					@chmod($file_path, 0666);
+					chmod($file_path, octdec(config::get('file.default_permission', 666)));
 				}
 			}
 
@@ -689,7 +690,7 @@
 						$quality = 75;
 					}
 					imagejpeg($this->image_ref, $file_path, $quality);
-					@chmod($file_path, 0666);
+					chmod($file_path, octdec(config::get('file.default_permission', 666)));
 				}
 			}
 
@@ -772,7 +773,7 @@
 									if ($config['file_type'] == 'jpg') imagejpeg($tile, $file_path);
 								}
 
-								@chmod($file_path, 0666);
+								chmod($file_path, octdec(config::get('file.default_permission', 666)));
 
 								imagedestroy($tile);
 

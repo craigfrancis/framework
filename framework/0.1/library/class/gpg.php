@@ -92,7 +92,7 @@
 				$pass_phrase_path = $this->config_path . '/passphrase.txt';
 				if (!is_file($pass_phrase_path)) {
 					file_put_contents($pass_phrase_path, random_key(15));
-					@chmod($pass_phrase_path, 0600);
+					chmod($pass_phrase_path, 0600);
 				}
 				return $pass_phrase_path;
 			}

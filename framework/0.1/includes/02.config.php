@@ -523,6 +523,11 @@
 		config::set_default('gateway.maintenance', false);
 		config::set_default('gateway.tester', false);
 
+	//--------------------------------------------------
+	// File
+
+		config::set_default('file.default_permission', 666); // Many servers use a generic www-data user.
+
 //--------------------------------------------------
 // Character set
 
