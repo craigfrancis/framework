@@ -1258,36 +1258,45 @@
 
 		}
 
-		public function _cell_add_raw($content_text, $content_html, $class_name, $config) {
+		public function _cell_add_raw($content_text, $content_html, $config, $b = []) {
 
-			if (is_numeric($config)) {
-				$config = array('colspan' => $config);
+			if (!is_array($config)) {
+				$config = ['class_name' => $config];
+				if (is_numeric($b)) {
+					$config['colspan'] = $b;
+				} else if (is_array($b)) {
+					$config = array_merge($config, $b);
+				}
 			}
 
-			$this->data[] = array_merge(array(
+			$this->data[] = array_merge([
 					'text' => $content_text,
 					'html' => $content_html,
-					'class_name' => $class_name,
+					'class_name' => '',
 					'colspan' => 1,
 					'title' => NULL,
 					'data' => NULL,
-				), $config);
+				], $config);
 
 		}
 
-		public function cell_add($content = '', $class_name = '', $config = []) {
+		public function cell_add($content = '', $config = [], $b = []) {
 			if ($content instanceof html_template || $content instanceof html_template_immutable) {
-				$this->_cell_add_raw(NULL, $content, $class_name, $config);
+				$this->_cell_add_raw(NULL, $content, $config);
+			} else if ($content instanceof timestamp) {
+				$timestamp_format = ($config['timestamp_format'] ?? 'jS M Y, g:ia');
+				$timestamp_null   = ($config['timestamp_null'] ?? '-');
+				$this->_cell_add_raw(NULL, $content->html($timestamp_format, $timestamp_null), $config);
 			} else {
-				$this->_cell_add_raw($content, NULL, $class_name, $config);
+				$this->_cell_add_raw($content, NULL, $config);
 			}
 		}
 
-		public function cell_add_html($content_html = '', $class_name = '', $config = []) {
-			$this->_cell_add_raw(NULL, $content_html, $class_name, $config);
+		public function cell_add_html($content_html = '', $config = [], $b = []) {
+			$this->_cell_add_raw(NULL, $content_html, $config);
 		}
 
-		public function cell_add_link($url, $text, $class_name = '', $config = []) {
+		public function cell_add_link($url, $text, $config = [], $b = []) {
 
 			if ($url) {
 				$html = '<a href="' . html($url) . '">' . nl2br(html($text)) . '</a>';
@@ -1295,7 +1304,7 @@
 				$html = NULL;
 			}
 
-			$this->_cell_add_raw($text, $html, $class_name, $config);
+			$this->_cell_add_raw($text, $html, $config);
 
 		}
 
