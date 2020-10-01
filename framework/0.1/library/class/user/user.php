@@ -838,10 +838,17 @@
 						if ($form->field_exists('password_new') && $form->field_exists('password_repeat')) {
 
 							$password_new_ref = $form->field_get('password_new');
+							$password_new_value = $password_new_ref->value_get();
 							$password_repeat_ref = $form->field_get('password_repeat');
 
-							if ($password_new_ref->value_get() != $password_repeat_ref->value_get()) {
+							if ($password_new_value != '' && strlen($password_new_value) < $this->password_min_length) { // When the field is not 'required', the min length is not checked by the form helper.
+
+								$password_new_ref->error_add(str_replace('XXX', $this->password_min_length, $this->text_get('password_new_min_len')));
+
+							} else if ($password_new_value != $password_repeat_ref->value_get()) {
+
 								$password_repeat_ref->error_add($this->text['save_details_invalid_new_password_repeat']);
+
 							}
 
 						}
