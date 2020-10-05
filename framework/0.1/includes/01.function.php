@@ -2178,7 +2178,7 @@
 // Random key, which is URL safe, using a base 58
 // value (base64url does exist by using slashes and
 // hyphens, but special characters can raise a
-// usability problem, as well as mixing 0, O, I and l.
+// usability problem, as well as mixing 0 and O.
 
 	function random_key($length, $safe = true) {
 
@@ -2199,7 +2199,7 @@
 
 			$key = random_bytes($bytes);
 			$key = base64_encode($key);
-			$key = str_replace(array('0', 'O', 'I', 'l', '/', '+'), '', $key); // Make URL safe (base58), and drop similar looking characters (no substitutions, as we don't want to bias certain characters)
+			$key = str_replace(array('0', 'O', 'I', 'l', '1', 'S', '5', '/', '+'), '', $key); // Make URL safe (base58), and drop similar looking characters (no substitutions, as we don't want to bias certain characters)
 			$key = substr($key, 0, $length);
 
 			if (preg_match('/[^a-zA-Z0-9]/', $key)) {
