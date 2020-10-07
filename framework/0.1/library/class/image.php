@@ -147,7 +147,7 @@
 				//--------------------------------------------------
 				// If an image object was passed into this function
 
-					if (is_object($image) && (get_class($image) == 'image' || is_subclass_of($image, 'image'))) {
+					if ($image instanceof image) {
 
 						if (!$image->image_ref) {
 							return IMAGE_LOAD_ERR_READ;
@@ -181,7 +181,7 @@
 				//--------------------------------------------------
 				// If not a file
 
-					if (substr($image, 0, 7) != 'http://' && (!is_file($image) || !is_readable($image))) {
+					if (!is_file($image) || !is_readable($image)) {
 						return IMAGE_LOAD_ERR_GONE;
 					}
 
