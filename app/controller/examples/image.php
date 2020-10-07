@@ -11,10 +11,6 @@
 
 		public function action_test() {
 
-			if (SERVER != 'stage') {
-				redirect('../');
-			}
-
 			$response = response_get();
 			$response->template_set('blank');
 
