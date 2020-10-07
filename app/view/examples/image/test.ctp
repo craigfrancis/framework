@@ -23,9 +23,9 @@
 						<tr>
 							<td><pre>' . print_r($config, true) . '</pre></td>
 							<td class="image"><img src="' . html($url) . '" alt="" /></td>
-							<td class="image"><img src="' . html($url->get(array('background' => '000000', 'grow' => 'false'))) . '" alt="" /></td>
-							<td class="image"><img src="' . html($url->get(array('background' => '000000'))) . '" alt="" /></td>
-							<td class="image"><img src="' . html($url->get(array('stretch' => 'true'))) . '" alt="" /></td>
+							<td class="image"><img src="' . html($url->get(['background' => '000000', 'grow' => 'false'])) . '" alt="" /></td>
+							<td class="image"><img src="' . html($url->get(['background' => '000000'])) . '" alt="" /></td>
+							<td class="image"><img src="' . html($url->get(['stretch' => 'true'])) . '" alt="" /></td>
 						</tr>';
 
 				}
