@@ -621,14 +621,27 @@
 //--------------------------------------------------
 // Format bytes
 
-	function format_bytes($size) { // like format_currency(), format_postcode(), format_telephone_number() ... and number_format(), date_format(), money_format()
+		// format_bytes(3000, 1, ' ');
+		// format_bytes(3000, 1, ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']); // If you want the abbreviated form, which can be prefixed with a space.
 
-		$units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+	function format_bytes($size, $precision = 0, $units = NULL) { // like format_currency(), format_postcode(), format_telephone_number() ... and number_format(), date_format(), money_format()
+
+		$separator = '';
+
+		if (!is_array($units)) {
+			if (is_string($units)) {
+				$separator = $units;
+			}
+			$units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+		}
+
+		$last_unit = end($units);
+
 		foreach ($units as $unit) {
-			if ($size >= 1024 && $unit != 'YB') {
+			if ($size >= 1024 && $unit != $last_unit) {
 				$size = ($size / 1024);
 			} else {
-				return round($size, 0) . $unit;
+				return round($size, $precision) . $separator . $unit;
 			}
 		}
 
