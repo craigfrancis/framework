@@ -36,7 +36,7 @@
 					'tr'         => ['id' => 'ref', 'class' => 'ref'],
 					'th'         => ['id' => 'ref', 'class' => 'ref', 'rowspan' => 'int', 'colspan' => 'int'],
 					'td'         => ['id' => 'ref', 'class' => 'ref', 'rowspan' => 'int', 'colspan' => 'int'],
-					'span'       => ['id' => 'ref', 'class' => 'ref'],
+					'span'       => ['id' => 'ref', 'class' => 'ref', 'title' => 'text'],
 					'em'         => ['id' => 'ref', 'class' => 'ref'],
 					'strong'     => ['id' => 'ref', 'class' => 'ref'],
 					'hr'         => ['id' => 'ref', 'class' => 'ref'],
