@@ -572,6 +572,22 @@
 		//--------------------------------------------------
 		// Rotate
 
+			public function sharpen($matrix = NULL) {
+
+				if (!is_array($matrix)) {
+					$matrix = [
+							[-1, -1, -1],
+							[-1, 16, -1],
+							[-1, -1, -1],
+						];
+				}
+
+				$divisor = array_sum(array_map('array_sum', $matrix));
+				$offset = 0;
+				imageconvolution($this->image_ref, $matrix, $divisor, $offset);
+
+			}
+
 			public function rotate($degrees, $config = NULL) {
 				if ($this->image_ref) {
 
