@@ -220,7 +220,7 @@
 				foreach ($this->template_html as $k => $template_html) {
 					$html .= $template_html;
 					if ($k < $this->template_end) {
-						if (isset($parameters[$k])) {
+						if (array_key_exists($k, $parameters)) { // Could be NULL
 							$html .= nl2br(html($parameters[$k]));
 						} else {
 							throw new error_exception('Missing parameter ' . ($k + 1), implode('?', $this->template_html));
