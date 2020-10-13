@@ -7,15 +7,21 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 
 ---
 
-## Load image and send to browser
+## Load image
 
 	$image = new image('1.jpg');
 
 	$image->output_jpg();
+	$image->output_jpg(90);
+
+	$image->output_png();
+
+	$image->save_jpg('/path/to/file.jpg');
+	$image->save_jpg('/path/to/file.jpg', 90);
 
 ---
 
-##  Load two images
+##  Combine images
 
 	$image_sub = new image('2.gif');
 
@@ -71,3 +77,20 @@ You can view the source on [GitHub](https://github.com/craigfrancis/framework/bl
 
 	$image->resize($config);
 	$image->save_jpg('/path/to/file.jpg');
+
+---
+
+##  Two images, Resize, and Alpha
+
+	$bg = new image('background.png');
+	$bg->alpha_blend_set(true);
+
+	$fg = new image('example.png');
+	$fg->resize(['height' => $bg->height_get()]);
+	$fg->sharpen();
+
+	$bg->image_add($fg, [
+			'left' => ($bg->width_get() - $fg->width_get()),
+		]);
+
+	$bg->output_png();
