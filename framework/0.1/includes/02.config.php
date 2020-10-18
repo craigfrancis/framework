@@ -110,9 +110,8 @@
 				'clipboard-read'                        => [], //
 				'clipboard-write'                       => [], //
 				// 'conversion-measurement'             => [], // ConversionMeasurement
-				// 'cross-origin-isolated'              => [], // CrossOriginIsolation
+				'cross-origin-isolated'                 => [], // CrossOriginIsolation
 				'document-domain'                       => [], //
-				// 'document-write'                     => [], // ExperimentalProductivityFeatures
 				// 'downloads'                          => [], // FeaturePolicyForSandbox, was "downloads-without-user-activation"
 				'encrypted-media'                       => [], //
 				// 'execution-while-out-of-viewport'    => [], // FreezeFramesOnVisibility
@@ -121,6 +120,7 @@
 				// 'forms'                              => [], // FeaturePolicyForSandbox
 				'fullscreen'                            => [], //
 				// 'frobulate'                          => [], // OriginTrialsSampleAPI
+				// 'gamepad'                            => [], // RestrictGamepadAccess
 				'geolocation'                           => [], //
 				'gyroscope'                             => [], //
 				// 'hid'                                => [], // WebHID, The WebHID API enables web applications to request access to HID devices.
@@ -140,7 +140,6 @@
 				// 'scripts'                            => [], // FeaturePolicyForSandbox
 				// 'serial'                             => [], // Serial
 				// 'storage-access-api'                 => [], // StorageAccessAPI
-				// 'sync-script'                        => [], // ExperimentalProductivityFeatures
 				// 'sync-xhr'                           => [], // +[Risky]
 				// 'top-navigation'                     => [], // FeaturePolicyForSandbox
 				'trust-token-redemption'                => [], // TrustTokens
@@ -149,6 +148,8 @@
 				// 'web-share'                          => [], // WebShare
 				'xr-spatial-tracking'                   => [], // WebXR, Was "xr": https://chromium.googlesource.com/chromium/src/+/1b4eae88d6a915034f405d8a88551f9b6a7b35ca
 
+				// 'sync-script'                        => [], // Removed 25-08-2020: https://chromium.googlesource.com/chromium/src/+/aab733a40c44173b21f13534f416704a1b8ee4a6 - Was ExperimentalProductivityFeatures, moved to Document Policy
+				// 'document-write'                     => [], // Removed 25-08-2020: https://chromium.googlesource.com/chromium/src/+/2e7eccbe66a302a95a4971df30db08b1abe6628c - Was ExperimentalProductivityFeatures, moved to Document Policy
 				// 'lazyload'                           => [], // Removed 03-06-2020: https://chromium.googlesource.com/chromium/src/+/1480a9a150c2c96bd624ad5d1f3aa809cbb40b09
 				// 'loading-frame-default-eager'        => [], // Removed 03-06-2020: https://chromium.googlesource.com/chromium/src/+/1480a9a150c2c96bd624ad5d1f3aa809cbb40b09
 				// 'font-display-late-swap'             => [], // Removed 05-05-2020: https://chromium.googlesource.com/chromium/src/+/05a30b0c83096ffa208434e35f4a04d1ca524737
