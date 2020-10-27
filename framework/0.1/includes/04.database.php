@@ -110,10 +110,17 @@
 					if ($this->statement) {
 
 						if ($parameters) {
-							$ref_values = array(implode('', array_column($parameters, 0)));
+							$ref_types = '';
 							foreach ($parameters as $key => $value) {
-								$ref_values[] = &$parameters[$key][1];
+								if (is_array($value)) { // Type specified, e.g. $parameters[] = ['i', $var];
+									$ref_types .= $value[0];
+									$ref_values[] = &$parameters[$key][1]; // Must be a reference
+								} else {
+									$ref_types .= (is_int($value) ? 'i' : (is_float($value) ? 'f' : 's'));
+									$ref_values[] = &$parameters[$key];
+								}
 							}
+							array_unshift($ref_values, $ref_types);
 							call_user_func_array(array($this->statement, 'bind_param'), $ref_values);
 						}
 

@@ -804,8 +804,14 @@
 						$query_formatted = [];
 						foreach (explode('?', $query_plain) as $section) {
 							$query_formatted[] = ['span', $section];
-							if (isset($parameters[$k]) && $parameters[$k][1] !== NULL) {
-								$query_formatted[] = ['strong', ($parameters[$k][0] == 's' ? '"' . $parameters[$k][1] . '"' : $parameters[$k][1]), 'value'];
+							$value = ($parameters[$k] ?? NULL);
+							if (is_array($value)) {
+								list($type, $value) = $value;
+							} else {
+								$type = (is_int($value) ? 'i' : (is_float($value) ? 'f' : 's'));
+							}
+							if ($value !== NULL) {
+								$query_formatted[] = ['strong', ($type == 's' ? '"' . $value . '"' : $value), 'value'];
 							} else {
 								$query_formatted[] = ['strong', 'NULL', 'value'];
 							}
