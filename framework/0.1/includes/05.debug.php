@@ -808,7 +808,7 @@
 							if (is_array($value)) {
 								list($type, $value) = $value;
 							} else {
-								$type = (is_int($value) ? 'i' : (is_float($value) ? 'f' : 's'));
+								$type = (is_int($value) ? 'i' : 's');
 							}
 							if ($value !== NULL) {
 								$query_formatted[] = ['strong', ($type == 's' ? '"' . $value . '"' : $value), 'value'];

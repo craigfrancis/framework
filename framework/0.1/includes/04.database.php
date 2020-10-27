@@ -116,7 +116,7 @@
 									$ref_types .= $value[0];
 									$ref_values[] = &$parameters[$key][1]; // Must be a reference
 								} else {
-									$ref_types .= (is_int($value) ? 'i' : (is_float($value) ? 'f' : 's'));
+									$ref_types .= (is_int($value) ? 'i' : 's'); // 'd' for double, or 'b' for blob.
 									$ref_values[] = &$parameters[$key];
 								}
 							}
@@ -580,7 +580,7 @@
 			$set_parameters = [];
 			foreach ($values as $field_name => $field_value) {
 				$set_sql[] = $this->escape_field($field_name) . ' = ?';
-				$set_parameters[] = ['s', $field_value];
+				$set_parameters[] = $field_value;
 			}
 
 			$sql = 'UPDATE ' . $table_sql . ' SET ' . implode(', ', $set_sql) . ' WHERE ' . $where_sql;

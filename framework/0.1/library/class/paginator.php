@@ -204,8 +204,8 @@
 					$parameters[] = intval($page_size);
 				} else {
 					return [
-							['i', $page_offset],
-							['i', $page_size],
+							intval($page_offset),
+							intval($page_size),
 						];
 				}
 			}

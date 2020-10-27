@@ -639,7 +639,7 @@
 					$this->config['where_sql'] .= ' AND
 						' . $this->config['field_id_sql'] . ' = ?';
 
-					$this->config['where_parameters'][] = ['i', $id];
+					$this->config['where_parameters'][] = intval($id);
 
 					$results = $this->update_locations(-1); // The address has probably changed, so force an update with a min_accuracy of -1
 
