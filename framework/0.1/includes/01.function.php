@@ -875,14 +875,14 @@
 		if (func_num_args() > 1) {
 			extract(func_get_arg(1));
 		}
-		require(func_get_arg(0));
+		return require(func_get_arg(0));
 	}
 
 	function script_run_once() {
 		if (func_num_args() > 1) {
 			extract(func_get_arg(1));
 		}
-		require_once(func_get_arg(0));
+		return require_once(func_get_arg(0));
 	}
 
 	function setup_run() {
