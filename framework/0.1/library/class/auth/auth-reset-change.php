@@ -112,8 +112,8 @@
 								r.deleted = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = ['i', $reset_id];
-					$parameters[] = ['s', $created_after];
+					$parameters[] = intval($reset_id);
+					$parameters[] = $created_after;
 
 					if (($row = $db->fetch_row($sql, $parameters)) && (quick_hash_verify($reset_pass, $row['token']))) {
 
@@ -309,9 +309,9 @@
 								r.deleted = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = ['s', $now];
-					$parameters[] = ['s', $now];
-					$parameters[] = ['i', $this->details['id']];
+					$parameters[] = $now;
+					$parameters[] = $now;
+					$parameters[] = intval($this->details['id']);
 
 					$db->query($sql, $parameters);
 

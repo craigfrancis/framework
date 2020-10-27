@@ -70,7 +70,7 @@
 									deleted = "0000-00-00 00:00:00"';
 
 						$parameters = [];
-						$parameters[] = ['i', $user_id];
+						$parameters[] = intval($user_id);
 
 						$db->query($sql, $parameters);
 
@@ -86,8 +86,8 @@
 									deleted = "0000-00-00 00:00:00"';
 
 						$parameters = [];
-						$parameters[] = ['s', date('Y-m-d H:i:s')];
-						$parameters[] = ['i', $user_id];
+						$parameters[] = date('Y-m-d H:i:s');
+						$parameters[] = intval($user_id);
 
 						$db->query($sql, $parameters);
 
@@ -107,7 +107,7 @@
 								deleted < ?';
 
 					$parameters = [];
-					$parameters[] = ['s', date('Y-m-d H:i:s', (time() - $this->history_length))];
+					$parameters[] = date('Y-m-d H:i:s', (time() - $this->history_length));
 
 					$db->query($sql, $parameters);
 
@@ -121,7 +121,7 @@
 									last_used < ?';
 
 						$parameters = [];
-						$parameters[] = ['s', date('Y-m-d H:i:s', (time() - $this->length - $this->history_length))];
+						$parameters[] = date('Y-m-d H:i:s', (time() - $this->length - $this->history_length));
 
 						$db->query($sql, $parameters);
 
@@ -263,11 +263,11 @@
 						deleted = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = ['i', $session_id];
+					$parameters[] = intval($session_id);
 
 					if ($this->length > 0) {
 						$where_sql .= ' AND' . "\n\t\t\t\t\t\t\t\t\t" . 'last_used > ?';
-						$parameters[] = ['s', date('Y-m-d H:i:s', (time() - $this->length))];
+						$parameters[] = date('Y-m-d H:i:s', (time() - $this->length));
 					}
 
 					$sql = 'SELECT
@@ -298,8 +298,8 @@
 											deleted = "0000-00-00 00:00:00"';
 
 								$parameters = [];
-								$parameters[] = ['s', date('Y-m-d H:i:s')];
-								$parameters[] = ['i', $session_id];
+								$parameters[] = date('Y-m-d H:i:s');
+								$parameters[] = intval($session_id);
 
 								$db->query($sql, $parameters);
 
@@ -367,7 +367,7 @@
 									deleted = "0000-00-00 00:00:00"';
 
 						$parameters = [];
-						$parameters[] = ['i', $this->session_id];
+						$parameters[] = intval($this->session_id);
 
 						$db->query($sql, $parameters);
 
@@ -383,8 +383,8 @@
 									deleted = "0000-00-00 00:00:00"';
 
 						$parameters = [];
-						$parameters[] = ['s', date('Y-m-d H:i:s')];
-						$parameters[] = ['i', $this->session_id];
+						$parameters[] = date('Y-m-d H:i:s');
+						$parameters[] = intval($this->session_id);
 
 						$db->query($sql, $parameters);
 

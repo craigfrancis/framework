@@ -391,7 +391,7 @@
 										' . $this->db_main_where_sql;
 
 							$parameters = [];
-							$parameters[] = ['i', $current_user_id];
+							$parameters[] = intval($current_user_id);
 
 							if ($row = $db->fetch_row($sql, $parameters)) {
 								$auth_config = auth::secret_parse($current_user_id, $row['auth']);
@@ -458,8 +458,8 @@
 										u.deleted = "0000-00-00 00:00:00"'; // Ignore those which have been accepted.
 
 							$parameters = [];
-							$parameters[] = ['i', $current_user_id];
-							$parameters[] = ['s', $created_after];
+							$parameters[] = intval($current_user_id);
+							$parameters[] = $created_after;
 
 							if ($db->num_rows($sql, $parameters) >= 1) {
 								$errors[$identification_username ? 'email' : 'identification'] = $this->auth->text_get('failure_update_recent');
@@ -718,7 +718,7 @@
 								u.deleted = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = ['i', $update_id];
+					$parameters[] = intval($update_id);
 
 					if (($row = $db->fetch_row($sql, $parameters)) && (quick_hash_verify($update_pass, $row['token']))) {
 
@@ -741,8 +741,8 @@
 										u.deleted = "0000-00-00 00:00:00"';
 
 							$parameters = [];
-							$parameters[] = ['s', $now];
-							$parameters[] = ['i', $update_id];
+							$parameters[] = $now;
+							$parameters[] = intval($update_id);
 
 							$db->query($sql, $parameters);
 

@@ -104,7 +104,7 @@ This framework provides a simple database abstraction for the `mysqli` extension
 				`id` = ?';
 
 	$parameters = [];
-	$parameters[] = ['i', $var];
+	$parameters[] = intval($var);
 
 	foreach ($db->fetch_all($sql, $parameters) as $row) {
 	}

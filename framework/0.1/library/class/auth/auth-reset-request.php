@@ -130,8 +130,8 @@
 									r.deleted = r.deleted'; // Don't GROUP BY r.created, as it opens a race condition (how many requests can be made in a second?)... just hope that we don't have someone with 5+ accounts on a single email address, and they don't receive the reset email.
 
 						$parameters = [];
-						$parameters[] = ['s', config::get('request.ip')];
-						$parameters[] = ['s', $created_after];
+						$parameters[] = config::get('request.ip');
+						$parameters[] = $created_after;
 
 						if ($db->num_rows($sql, $parameters) >= $created_limit) {
 							$errors[] = $this->auth->text_get('failure_reset_recent_ip');
@@ -154,8 +154,8 @@
 										r.deleted = "0000-00-00 00:00:00"'; // Ignore those which have been accepted.
 
 							$parameters = [];
-							$parameters[] = ['s', $email];
-							$parameters[] = ['s', $created_after];
+							$parameters[] = $email;
+							$parameters[] = $created_after;
 
 							if ($db->num_rows($sql, $parameters) >= 1) {
 								$errors[] = $this->auth->text_get('failure_reset_recent_email');
@@ -184,8 +184,8 @@
 						// 				r.deleted = r.deleted';
 						//
 						// 	$parameters = [];
-						// 	$parameters[] = ['s', $email];
-						// 	$parameters[] = ['s', $created_after];
+						// 	$parameters[] = $email;
+						// 	$parameters[] = $created_after;
 						//
 						// 	if ($db->num_rows($sql, $parameters) >= 1) {
 						// 		$errors[] = $this->auth->text_get('failure_reset_recent_changed');
@@ -278,7 +278,7 @@
 								' . $this->db_main_where_sql;
 
 					$parameters = [];
-					$parameters[] = ['s', $this->details['email']];
+					$parameters[] = $this->details['email'];
 
 					foreach ($db->fetch_all($sql, $parameters) as $row) {
 

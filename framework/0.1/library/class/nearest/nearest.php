@@ -319,9 +319,9 @@
 									edited > ?';
 
 						$parameters = [];
-						$parameters[] = ['s', $search_query];
-						$parameters[] = ['s', $country];
-						$parameters[] = ['s', $max_age];
+						$parameters[] = $search_query;
+						$parameters[] = $country;
+						$parameters[] = $max_age;
 
 						if ($row = $db->fetch_row($sql, $parameters)) {
 							$latitude = $row['latitude'];
@@ -444,7 +444,7 @@
 									1';
 
 						$parameters = [];
-						$parameters[] = ['s', ($postcode === NULL ? $search : substr($postcode, 0, -4))];
+						$parameters[] = ($postcode === NULL ? $search : substr($postcode, 0, -4));
 
 						if ($row = $db->fetch_row($sql, $parameters)) {
 							$latitude = $row['latitude'];
@@ -590,10 +590,10 @@
 										' . $this->config['field_id'] . ' = ?';
 
 									$parameters = [];
-									$parameters[] = ['s', $result['latitude']];
-									$parameters[] = ['s', $result['longitude']];
+									$parameters[] = $result['latitude'];
+									$parameters[] = $result['longitude'];
 									$parameters = array_merge($parameters, $this->config['where_parameters']);
-									$parameters[] = ['i', $row[$this->config['field_id_sql']]];
+									$parameters[] = intval($row[$this->config['field_id_sql']]);
 
 									$sql = 'UPDATE
 												' . $this->config['table_sql'] . '

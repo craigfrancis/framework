@@ -84,7 +84,7 @@
 									run_end < ?';
 
 					$parameters = [];
-					$parameters[] = ['s', $archive_date];
+					$parameters[] = $archive_date;
 
 					$db->query($sql, $parameters);
 
@@ -94,7 +94,7 @@
 									created < ?';
 
 					$parameters = [];
-					$parameters[] = ['s', $archive_date];
+					$parameters[] = $archive_date;
 
 					$db->query($sql, $parameters);
 
@@ -113,7 +113,7 @@
 									run_start < ?';
 
 					$parameters = [];
-					$parameters[] = ['s', $clear_date];
+					$parameters[] = $clear_date;
 
 					if ($row = $db->fetch_row($sql, $parameters)) {
 
@@ -124,7 +124,7 @@
 									run_end = "0000-00-00 00:00:00"';
 
 						$parameters = [];
-						$parameters[] = ['i', $row['id']];
+						$parameters[] = intval($row['id']);
 
 						$db->query($sql, $parameters);
 
@@ -179,7 +179,7 @@
 								run_end = ?';
 
 					$parameters = [];
-					$parameters[] = ['s', $now];
+					$parameters[] = $now;
 
 					if ($db->num_rows($sql, $parameters) > 0) {
 						if ($this->result_url) {
@@ -269,7 +269,7 @@
 									1';
 
 					$parameters = [];
-					$parameters[] = ['s', $now];
+					$parameters[] = $now;
 
 					$db->query($sql, $parameters);
 
@@ -372,7 +372,7 @@
 									1';
 
 						$parameters = [];
-						$parameters[] = ['s', $this->job_name];
+						$parameters[] = $this->job_name;
 
 						if ($row = $db->fetch_row($sql, $parameters)) {
 							$this->last_run = new timestamp($row['created'], 'db');

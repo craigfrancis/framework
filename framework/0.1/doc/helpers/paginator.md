@@ -89,7 +89,7 @@ Then the actual query:
 				?, ?';
 
 	$parameters = [];
-	$parameters[] = ['s', 'example'];
+	$parameters[] = 'example';
 
 	$paginator->limit_get_parameters($parameters);
 
@@ -123,7 +123,7 @@ Check if this is **actually** faster, because this can be [much slower](https://
 				?, ?';
 
 	$parameters = [];
-	$parameters[] = ['s', '0000-00-00 00:00:00'];
+	$parameters[] = '0000-00-00 00:00:00';
 
 	$paginator->limit_get_parameters($parameters);
 

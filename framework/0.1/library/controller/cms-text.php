@@ -86,14 +86,14 @@
 					$where_sql[] = 'path = ?';
 					$where_sql[] = 'section = ?';
 
-					$parameters[] = ['s', $config['path']];
-					$parameters[] = ['s', $config['section']];
+					$parameters[] = $config['path'];
+					$parameters[] = $config['section'];
 
 					foreach ($version_values as $field => $value) {
 
 						$where_sql[] = $db->escape_field($field) . ' = ?';
 
-						$parameters[] = ['s', $value];
+						$parameters[] = $value;
 
 					}
 
@@ -284,7 +284,7 @@
 												$parameters = $config['version_parameters'][$version_name];
 
 												$where_sql .= ' AND revision > ?';
-												$parameters[] = ['i', $config['revision_limit']];
+												$parameters[] = intval($config['revision_limit']);
 
 												$sql = 'DELETE FROM
 															' . DB_PREFIX . 'cms_text
@@ -444,7 +444,7 @@
 				$parameters = $config['version_parameters'][$version_name];
 
 				$where_sql .= ' AND ct.revision = ?';
-				$parameters[] = ['i', $revision];
+				$parameters[] = intval($revision);
 
 				$sql = 'SELECT
 							ct.created,

@@ -267,8 +267,8 @@
 						ost.pass = ?';
 
 					$parameters = [];
-					$parameters[] = ['s', $transaction_id];
-					$parameters[] = ['s', $transaction_pass];
+					$parameters[] = $transaction_id;
+					$parameters[] = $transaction_pass;
 
 					$sql = 'SELECT
 								ost.order_type,

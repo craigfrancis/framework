@@ -439,7 +439,7 @@
 
 											$parameters = [];
 											$parameters = array_merge($parameters, $this->where_parameters);
-											$parameters[] = ['s', $field];
+											$parameters[] = $field;
 
 											$log_values = $db->fetch_row($sql, $parameters);
 
@@ -486,9 +486,9 @@
 														deleted = "0000-00-00 00:00:00"';
 
 											$parameters = [];
-											$parameters[] = ['s', $now];
+											$parameters[] = $now;
 											$parameters = array_merge($parameters, $this->where_parameters);
-											$parameters[] = ['s', $field];
+											$parameters[] = $field;
 
 											$db->query($sql, $parameters);
 

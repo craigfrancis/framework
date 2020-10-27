@@ -502,7 +502,7 @@
 								' . $this->db_where_sql;
 
 					$parameters = [];
-					$parameters[] = ['i', $register_id];
+					$parameters[] = intval($register_id);
 
 					if (($row = $db->fetch_row($sql, $parameters)) && (quick_hash_verify($register_pass, $row[$this->db_fields['token']]))) {
 
@@ -529,8 +529,8 @@
 										' . $this->db_where_sql;
 
 							$parameters = [];
-							$parameters[] = ['s', $now];
-							$parameters[] = ['i', $register_id];
+							$parameters[] = $now;
+							$parameters[] = intval($register_id);
 
 							$db->query($sql, $parameters);
 
@@ -585,8 +585,8 @@
 												' . $db_main_where_sql;
 
 									$parameters = [];
-									$parameters[] = ['s', $auth_encoded];
-									$parameters[] = ['i', $user_id];
+									$parameters[] = $auth_encoded;
+									$parameters[] = intval($user_id);
 
 									$db->query($sql, $parameters);
 

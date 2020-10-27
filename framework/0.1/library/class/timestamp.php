@@ -275,7 +275,7 @@
 								sh.deleted = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = ['s', $earliest];
+					$parameters[] = $earliest;
 
 					foreach ($db->fetch_all($sql, $parameters) as $row) {
 
@@ -298,15 +298,15 @@
 
 						$where_sql = [];
 						$parameters = [];
-						$parameters[] = ['s', $now];
+						$parameters[] = $now;
 
 						foreach ($unmatched_dates as $country => $dates) {
 							foreach ($dates as $date => $row) {
 
 								$where_sql[] = 'sh.country = ? AND sh.date = ?';
 
-								$parameters[] = ['s', $country];
-								$parameters[] = ['s', $date];
+								$parameters[] = $country;
+								$parameters[] = $date;
 
 							}
 						}

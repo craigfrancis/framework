@@ -200,8 +200,8 @@
 			public function limit_get_parameters(&$parameters = NULL) {
 				list($page_offset, $page_size) = $this->limit_get();
 				if ($parameters !== NULL) {
-					$parameters[] = ['i', $page_offset];
-					$parameters[] = ['i', $page_size];
+					$parameters[] = intval($page_offset);
+					$parameters[] = intval($page_size);
 				} else {
 					return [
 							['i', $page_offset],

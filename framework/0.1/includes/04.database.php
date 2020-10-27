@@ -52,7 +52,7 @@
 			$val = str_replace('\\', '\\\\', $val);
 			$val = str_replace('_', '\_', $val);
 			$val = str_replace('%', '\%', $val);
-			$parameters = array_merge($parameters, array_fill(0, $count, array('s', '%' . $val . '%')));
+			$parameters = array_merge($parameters, array_fill(0, $count, '%' . $val . '%'));
 		}
 
 		public function parameter_match_boolean_all(&$parameters, $field, $search) {
@@ -72,7 +72,7 @@
 				exit_with_error('Unknown parameter type for parameter_in(), should be "i" or "s"');
 			}
 			foreach ($values as $value) {
-				$parameters[] =  array($type, $value);
+				$parameters[] = [$type, $value];
 			}
 			return substr(str_repeat('?,', $count), 0, -1);
 		}
@@ -112,7 +112,7 @@
 						if ($parameters) {
 							$ref_types = '';
 							foreach ($parameters as $key => $value) {
-								if (is_array($value)) { // Type specified, e.g. $parameters[] = ['i', $var];
+								if (is_array($value)) { // Type specified, e.g. $parameters[] = intval($var);
 									$ref_types .= $value[0];
 									$ref_values[] = &$parameters[$key][1]; // Must be a reference
 								} else {
@@ -511,13 +511,7 @@
 					$values_sql[] = 'NULL';
 				} else {
 					$values_sql[] = '?';
-					if (is_int($value)) {
-						$parameters[] = ['i', $value];
-					} else if (is_float($value)) {
-						$parameters[] = ['d', $value];
-					} else {
-						$parameters[] = ['s', $value];
-					}
+					$parameters[] = $value;
 				}
 			}
 
@@ -532,13 +526,7 @@
 							$set_sql[] = $this->escape_field($field_name) . ' = NULL';
 						} else {
 							$set_sql[] = $this->escape_field($field_name) . ' = ?';
-							if (is_int($field_value)) {
-								$parameters[] = ['i', $field_value];
-							} else if (is_float($field_value)) {
-								$parameters[] = ['d', $field_value];
-							} else {
-								$parameters[] = ['s', $field_value];
-							}
+							$parameters[] = $field_value;
 						}
 					}
 					$insert_sql .= ' ON DUPLICATE KEY UPDATE ' . implode(', ', $set_sql);
@@ -570,13 +558,7 @@
 						$values_sql[] = 'NULL';
 					} else {
 						$values_sql[] = '?';
-						if (is_int($values[$field])) {
-							$parameters[] = ['i', $values[$field]];
-						} else if (is_float($values[$field])) {
-							$parameters[] = ['d', $values[$field]];
-						} else {
-							$parameters[] = ['s', $values[$field]];
-						}
+						$parameters[] = $values[$field];
 					}
 				}
 				$records_sql[] = implode(', ', $values_sql);
@@ -666,7 +648,7 @@
 					$fields_sql = $this->escape_field($field);
 				}
 				if ($parameters !== NULL) {
-					$parameters[] = ['s', $search_query];
+					$parameters[] = $search_query;
 					return 'MATCH (' . $fields_sql . ') AGAINST (? IN BOOLEAN MODE)';
 				} else {
 					return 'MATCH (' . $fields_sql . ') AGAINST ("' . $this->escape($search_query) . '" IN BOOLEAN MODE)';
@@ -835,8 +817,7 @@
 
 				$hidden_info = trim($info . "\n\n" . $error);
 				if ($parameters) {
-					$hidden_info .= "\n\n" . debug_dump(array_column($parameters, 1));
-					$hidden_info .= "\n\n" . debug_dump(array_column($parameters, 0));
+					$hidden_info .= "\n\n" . debug_dump($parameters);
 				}
 
 				throw new error_exception('An error has occurred with the database.', $hidden_info);

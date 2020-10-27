@@ -81,7 +81,7 @@
 						1';
 
 			$parameters = [];
-			$parameters[] = ['s', strval($identification)];
+			$parameters[] = strval($identification);
 
 			if ($row = $db->fetch_row($sql, $parameters)) {
 				return $row['id'];
@@ -107,7 +107,7 @@
 						1';
 
 			$parameters = [];
-			$parameters[] = ['i', $user_id];
+			$parameters[] = intval($user_id);
 
 			if ($row = $db->fetch_row($sql, $parameters)) {
 				return $row['identification'];
@@ -143,7 +143,7 @@
 							1';
 
 				$parameters = [];
-				$parameters[] = ['i', $user_id];
+				$parameters[] = intval($user_id);
 
 				if ($row = $db->fetch_row($sql, $parameters)) {
 
@@ -191,9 +191,9 @@
 							1';
 
 				$parameters = [];
-				$parameters[] = ['s', $now];
-				$parameters[] = ['s', $db_hash];
-				$parameters[] = ['i', $user_id];
+				$parameters[] = $now;
+				$parameters[] = $db_hash;
+				$parameters[] = intval($user_id);
 
 				$db->query($sql, $parameters);
 
@@ -225,7 +225,7 @@
 							created <= ?';
 
 				$parameters = [];
-				$parameters[] = ['s', $timestamp_old];
+				$parameters[] = $timestamp_old;
 
 				$db->query($sql, $parameters);
 
@@ -253,9 +253,9 @@
 							1';
 
 				$parameters = [];
-				$parameters[] = ['i', $user_id];
-				$parameters[] = ['s', config::get('request.ip')];
-				$parameters[] = ['s', $timestamp_recent];
+				$parameters[] = intval($user_id);
+				$parameters[] = config::get('request.ip');
+				$parameters[] = $timestamp_recent;
 
 				if ($db->num_rows($sql, $parameters) > 0) {
 					return 'recently_requested';
@@ -294,7 +294,7 @@
 							used = "0000-00-00 00:00:00"';
 
 				$parameters = [];
-				$parameters[] = ['i', $user_id];
+				$parameters[] = intval($user_id);
 
 				if ($row = $db->fetch_row($sql, $parameters)) {
 
@@ -310,8 +310,8 @@
 								used = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = ['s', $now];
-					$parameters[] = ['i', $request_id];
+					$parameters[] = $now;
+					$parameters[] = intval($request_id);
 
 					$db->query($sql, $parameters);
 
@@ -379,9 +379,9 @@
 							used = "0000-00-00 00:00:00"';
 
 				$parameters = [];
-				$parameters[] = ['i', $request_id];
-				$parameters[] = ['s', $request_pass];
-				$parameters[] = ['s', $timeout];
+				$parameters[] = intval($request_id);
+				$parameters[] = $request_pass;
+				$parameters[] = $timeout;
 
 				if ($row = $db->fetch_row($sql, $parameters)) {
 
@@ -413,8 +413,8 @@
 						used = "0000-00-00 00:00:00"';
 
 			$parameters = [];
-			$parameters[] = ['s', $now];
-			$parameters[] = ['i', $request_id];
+			$parameters[] = $now;
+			$parameters[] = intval($request_id);
 
 			$db->query($sql, $parameters);
 
@@ -442,13 +442,13 @@
 
 					$where_sql = $db->escape_field($this->db_table_fields['id']) . ' = ?';
 
-					$parameters[] = ['i', $this->user_obj->id_get()];
+					$parameters[] = intval($this->user_obj->id_get());
 
 				} else {
 
 					$where_sql = $db->escape_field($this->db_table_fields['identification']) . ' = ?';
 
-					$parameters[] = ['s', $identification];
+					$parameters[] = $identification;
 
 				}
 
@@ -487,7 +487,7 @@
 
 						$where_sql[] = 'user_id = ?';
 
-						$parameters[] = ['i', $db_id];
+						$parameters[] = intval($db_id);
 
 					}
 
@@ -495,7 +495,7 @@
 
 						$where_sql[] = 'ip = ?';
 
-						$parameters[] = ['s', config::get('request.ip')];
+						$parameters[] = config::get('request.ip');
 
 					}
 
@@ -515,7 +515,7 @@
 								created > ? AND
 								deleted = "0000-00-00 00:00:00"';
 
-					$parameters[] = ['s', date('Y-m-d H:i:s', (time() - $this->lockout_timeout))];
+					$parameters[] = date('Y-m-d H:i:s', (time() - $this->lockout_timeout));
 
 					if ($db->num_rows($sql, $parameters) >= $this->lockout_attempts) { // Once every 30 seconds, for the 30 minutes
 						$error = 'failure_repetition';
@@ -562,8 +562,8 @@
 											1';
 
 								$parameters = [];
-								$parameters[] = ['s', $new_hash];
-								$parameters[] = ['i', $db_id];
+								$parameters[] = $new_hash;
+								$parameters[] = intval($db_id);
 
 								$db->query($sql, $parameters);
 

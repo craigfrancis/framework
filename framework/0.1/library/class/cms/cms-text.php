@@ -251,8 +251,8 @@
 								' . $this->config['where_sql'];
 
 					$parameters = [];
-					$parameters[] = ['s', $this->config['path']];
-					$parameters[] = ['i', $this->config['revision']];
+					$parameters[] = $this->config['path'];
+					$parameters[] = intval($this->config['revision']);
 
 					foreach ($db->fetch_all($sql, $parameters) as $row) {
 

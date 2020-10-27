@@ -143,7 +143,7 @@
 							deleted = "0000-00-00 00:00:00"';
 
 						$parameters = [];
-						$parameters[] = ['i', $this->order_id];
+						$parameters[] = intval($this->order_id);
 
 						$this->form->db_where_set_sql($where_sql, $parameters);
 
@@ -235,11 +235,11 @@
 					deleted = "0000-00-00 00:00:00"';
 
 				$parameters = [];
-				$parameters[] = ['i', $id];
+				$parameters[] = intval($id);
 
 				if ($pass !== NULL || config::get('order.user_privileged', false) !== true) {
 					$where_sql .= ' AND pass = ?';
-					$parameters[] = ['s', $pass];
+					$parameters[] = $pass;
 				}
 
 				$fields_sql = [];
@@ -293,7 +293,7 @@
 						deleted = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = ['i', $this->order_id];
+					$parameters[] = intval($this->order_id);
 
 					$db->update($this->db_table_main, $values, $where_sql, $parameters);
 
@@ -354,7 +354,7 @@
 								deleted = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = ['i', $this->order_id];
+					$parameters[] = intval($this->order_id);
 
 					if ($row = $db->fetch_row($sql, $parameters)) {
 						return $row;
@@ -652,8 +652,8 @@
 									oi.deleted = "0000-00-00 00:00:00"';
 
 						$parameters = [];
-						$parameters[] = ['i', $item_id];
-						$parameters[] = ['i', $this->order_id];
+						$parameters[] = intval($item_id);
+						$parameters[] = intval($this->order_id);
 
 						if ($row = $db->fetch_row($sql, $parameters)) {
 
@@ -696,9 +696,9 @@
 								oi.deleted = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = ['s', $now];
-					$parameters[] = ['i', $item_id];
-					$parameters[] = ['i', $this->order_id];
+					$parameters[] = $now;
+					$parameters[] = intval($item_id);
+					$parameters[] = intval($this->order_id);
 
 					$db->query($sql, $parameters);
 
@@ -781,7 +781,7 @@
 								oi.created';
 
 					$parameters = [];
-					$parameters[] = ['i', $this->order_id];
+					$parameters[] = intval($this->order_id);
 
 					foreach ($db->fetch_all($sql, $parameters) as $row) {
 
@@ -932,7 +932,7 @@
 								oi.type';
 
 					$parameters = [];
-					$parameters[] = ['i', $this->order_id];
+					$parameters[] = intval($this->order_id);
 
 					foreach ($db->fetch_all($sql, $parameters) as $row) {
 
@@ -1204,7 +1204,7 @@
 								oi.deleted = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = ['i', $this->order_id];
+					$parameters[] = intval($this->order_id);
 
 					$delivery = $db->fetch_all($sql, $parameters);
 
@@ -1227,8 +1227,8 @@
 								oi.deleted = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = ['s', $now];
-					$parameters[] = ['i', $this->order_id];
+					$parameters[] = $now;
+					$parameters[] = intval($this->order_id);
 
 					$db->query($sql, $parameters);
 

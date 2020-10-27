@@ -422,7 +422,7 @@
 								created < ?';
 
 					$parameters = [];
-					$parameters[] = ['s', $now->clone('-1 hour')];
+					$parameters[] = $now->clone('-1 hour');
 
 					$db->query($sql, $parameters);
 
@@ -741,9 +741,9 @@
 									1';
 
 						$parameters = [];
-						$parameters[] = ['i', $this->dedupe_user_id];
-						$parameters[] = ['s', $this->dedupe_ref];
-						$parameters[] = ['s', $this->dedupe_data];
+						$parameters[] = intval($this->dedupe_user_id);
+						$parameters[] = $this->dedupe_ref;
+						$parameters[] = $this->dedupe_data;
 
 						if ($row = $db->fetch_row($sql, $parameters)) {
 							config::set('debug.response_code_extra', 'deduped');

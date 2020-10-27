@@ -48,7 +48,7 @@
 				' . $db->escape_field($this->db_table_fields['deleted']) . ' = "0000-00-00 00:00:00"';
 
 			$parameters = $this->db_where_parameters;
-			$parameters[] = ['i', $user_id];
+			$parameters[] = intval($user_id);
 
 			return [$where_sql, $parameters];
 
