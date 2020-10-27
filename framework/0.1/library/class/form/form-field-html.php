@@ -31,6 +31,14 @@
 		//--------------------------------------------------
 		// Value
 
+			public function value_set($value) {
+				if ($value instanceof html_template || $value instanceof html_template_immutable) {
+					$this->value_html = $value->html();
+				} else {
+					$this->value_html = nl2br(html($value));
+				}
+			}
+
 			public function value_set_html($html) {
 				$this->value_html = $html;
 			}
