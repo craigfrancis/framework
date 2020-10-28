@@ -78,10 +78,10 @@
 					$archive_date = new timestamp('-2 months'); // Some jobs only run once a month, so needs some overlap
 
 					$sql = 'DELETE FROM
-									' . DB_PREFIX . 'system_maintenance
-								WHERE
-									run_end != "0000-00-00 00:00:00" AND
-									run_end < ?';
+								' . DB_PREFIX . 'system_maintenance
+							WHERE
+								run_end != "0000-00-00 00:00:00" AND
+								run_end < ?';
 
 					$parameters = [];
 					$parameters[] = $archive_date;
@@ -89,9 +89,9 @@
 					$db->query($sql, $parameters);
 
 					$sql = 'DELETE FROM
-									' . DB_PREFIX . 'system_maintenance_job
-								WHERE
-									created < ?';
+								' . DB_PREFIX . 'system_maintenance_job
+							WHERE
+								created < ?';
 
 					$parameters = [];
 					$parameters[] = $archive_date;
@@ -101,34 +101,35 @@
 				//--------------------------------------------------
 				// Clear old (but still open) run records
 
-					$clear_date = new timestamp('-2 hours');
-
 					$sql = 'SELECT
-									id,
-									run_start
-								FROM
-									' . DB_PREFIX . 'system_maintenance
-								WHERE
-									run_end = "0000-00-00 00:00:00" AND
-									run_start < ?';
+								id,
+								run_start
+							FROM
+								' . DB_PREFIX . 'system_maintenance
+							WHERE
+								run_end = "0000-00-00 00:00:00" AND
+								run_start < ?';
 
 					$parameters = [];
-					$parameters[] = $clear_date;
+					$parameters[] = timestamp('-2 hours');
 
-					if ($row = $db->fetch_row($sql, $parameters)) {
+					foreach ($db->fetch_all($sql, $parameters) as $row) {
 
-						$sql = 'DELETE FROM
+						$sql = 'UPDATE
 									' . DB_PREFIX . 'system_maintenance
+								SET
+									run_end = ?
 								WHERE
 									id = ? AND
 									run_end = "0000-00-00 00:00:00"';
 
 						$parameters = [];
+						$parameters[] = $now;
 						$parameters[] = intval($row['id']);
 
 						$db->query($sql, $parameters);
 
-						report_add('Deleted old maintenance run record (' . $row['id'] . ' / ' . $row['run_start'] . ')');
+						report_add('Cleared old maintenance run record (' . $row['id'] . ' / ' . $row['run_start'] . ')');
 
 					}
 
@@ -139,10 +140,10 @@
 
 					if ($this->result_url) {
 
-						$loading = new loading(array(
-								'time_out' => $this->time_out,
+						$loading = new loading([
+								'time_out'  => $this->time_out,
 								'lock_type' => $lock_type,
-							));
+							]);
 
 						$loading->check();
 
@@ -201,11 +202,11 @@
 				//--------------------------------------------------
 				// Create maintenance run record
 
-					$db->insert(DB_PREFIX . 'system_maintenance', array(
+					$db->insert(DB_PREFIX . 'system_maintenance', [
 							'id'        => '',
 							'run_start' => $now,
 							'run_end'   => '0000-00-00 00:00:00',
-						));
+						]);
 
 					$this->run_id = $db->insert_id();
 
@@ -441,7 +442,7 @@
 
 			public function error_get() {
 				if ($this->error_type) {
-					return array($this->error_type, $this->error_message);
+					return [$this->error_type, $this->error_message];
 				} else {
 					return NULL;
 				}
@@ -603,12 +604,12 @@
 
 						$now = new timestamp();
 
-						$db->insert(DB_PREFIX . 'system_maintenance_job', array(
+						$db->insert(DB_PREFIX . 'system_maintenance_job', [
 								'job'     => $this->job_name,
 								'run_id'  => $this->run_id,
 								'output'  => $job_output_html,
 								'created' => $now,
-							));
+							]);
 
 					}
 
