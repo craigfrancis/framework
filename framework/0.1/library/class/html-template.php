@@ -244,7 +244,7 @@
 
 	}
 
-	class html_template_immutable {
+	class html_template_immutable implements JsonSerializable {
 
 		private $value = NULL;
 
@@ -260,6 +260,10 @@
 		}
 
 		public function __toString() {
+			return $this->value;
+		}
+
+		public function jsonSerialize() { // If JSON encoded, fall back to being a simple string (typically going to the browser or API)
 			return $this->value;
 		}
 
