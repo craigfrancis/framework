@@ -6,7 +6,7 @@
 	//--------------------------------------------------
 	// Setup
 
-		config::set_default('debug.values', []);
+		config::set_default('debug.report_values', []);
 		config::set('debug.notes', []);
 
 	//--------------------------------------------------
@@ -94,7 +94,7 @@
 
 			if ($send_email && ($type == 'error' || $type == 'notice') && $error_email !== NULL) {
 
-				$email_values = config::get('debug.values', []);
+				$email_values = config::get('debug.report_values', []);
 				$email_values = array_merge($email_values, array('Message' => $message));
 
 				if ($type == 'error' && config::get('request.method') == 'POST') {
