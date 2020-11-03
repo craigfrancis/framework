@@ -119,6 +119,7 @@
 					} else if (!is_array($_FILES[$file_name]['error'])) {
 
 						$file_info = $_FILES[$file_name];
+						$file_offset = NULL;
 
 					} else {
 
@@ -183,6 +184,12 @@
 						$file_info['path'] = $file_path;
 
 						file_put_contents($file_path . '.json', json_encode($file_info));
+
+						if ($file_offset !== NULL) {
+							$_FILES[$file_name]['path'][$file_offset] = $file_path;
+						} else {
+							$_FILES[$file_name]['path'] = $file_path;
+						}
 
 					} else {
 

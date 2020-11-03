@@ -107,11 +107,48 @@
 					$email_values['Post'] = json_encode($post_values, JSON_PRETTY_PRINT);
 				}
 
+					// config::array_push('debug.report_files', ['path' => '/path/to/file.csv']);
+					// config::array_push('debug.report_files', ['path' => '/path/to/file', 'name' => 'Example.csv', 'type' => 'text/plain']);
+				$files = config::get('debug.report_files', []);
+				foreach ($_FILES as $field => $file) {
+					if (is_array($file['name'])) { // When input name is an array, e.g. <input type="file" name="example[]" />
+						foreach ($file['name'] as $id => $name) {
+							$row = ['name' => $name, 'type' => $file['type'][$id], 'error' => $file['error'][$id], 'size' => $file['size'][$id], 'field' => $field];
+							$row['path'] = ($file['path'][$id] ?? $file['tmp_name'][$id]); // If form_field_file has moved it to 'file_tmp_folder', then use 'path'.
+							$files[] = $row;
+						}
+					} else {
+						$file['field'] = $field;
+						$file['path'] = ($file['path'] ?? $file['tmp_name']);
+						$files[] = $file;
+					}
+				}
+				$included_size = 0;
+				foreach ($files as $id => $file) {
+					if (is_file($file['path'] ?? NULL)) {
+						if (!isset($file['name'])) $file['name'] = basename($file['path']);
+						if (!isset($file['size'])) $file['size'] = filesize($file['path']);
+					} else if (isset($file['data'])) {
+						if (!isset($file['name'])) $file['name'] = 'N/A';
+						if (!isset($file['size'])) $file['size'] = strlen($file['data']);
+					} else {
+						$file['include'] = false;
+					}
+					$value = (($file['field'] ?? '') != '' ? $file['field'] . ': ' : '') . $file['name'] . ' (' . $file['size'] . ' bytes' . (isset($file['type']) ? ', ' . $file['type'] : '') . (isset($file['error']) ? ', Error:' . $file['error'] : '') . ')';
+					if (($file['include'] ?? true) === true) {
+						$included_size += $file['size'];
+						if ($included_size < 1048576) { // 1MB
+							$data = ($file['data'] ?? file_get_contents($file['path']));
+							$value .= "\n\n" . wordwrap(base64_encode($data), 75, "\n", true);
+						}
+					}
+					$email_values['File ' . ($id + 1)] = $value;
+				}
+
 				$email = new email();
 				$email->default_style_set(NULL);
 				$email->subject_set('System ' . ucfirst($type) . ': ' . config::get('output.domain'));
 				$email->request_table_add($email_values);
-
 				$email->send($error_email);
 
 			}
