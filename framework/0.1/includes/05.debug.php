@@ -113,13 +113,14 @@
 				foreach ($_FILES as $field => $file) {
 					if (is_array($file['name'])) { // When input name is an array, e.g. <input type="file" name="example[]" />
 						foreach ($file['name'] as $id => $name) {
-							$row = ['name' => $name, 'type' => $file['type'][$id], 'error' => $file['error'][$id], 'size' => $file['size'][$id], 'field' => $field];
-							$row['path'] = ($file['path'][$id] ?? $file['tmp_name'][$id]); // If form_field_file has moved it to 'file_tmp_folder', then use 'path'.
+							$field_full = $field . '[' . $id . ']';
+							$row = ['name' => $name, 'type' => $file['type'][$id], 'error' => $file['error'][$id], 'size' => $file['size'][$id], 'field' => $field_full];
+							$row['path'] = (config::array_get('request.file_paths', $field_full) ?? $file['tmp_name'][$id]); // If form_field_file has moved it to 'file_tmp_folder', then use 'path'.
 							$files[] = $row;
 						}
 					} else {
 						$file['field'] = $field;
-						$file['path'] = ($file['path'] ?? $file['tmp_name']);
+						$file['path'] = (config::array_get('request.file_paths', $field) ?? $file['tmp_name']);
 						$files[] = $file;
 					}
 				}
@@ -288,7 +289,7 @@
 		//--------------------------------------------------
 		// Tell the user
 
-			if (config::get('output.sent') !== true) { // e.g. the loading helper has already sent the response.
+			if (config::get('output.sent', false) !== true) { // e.g. the loading helper has already sent the response.
 
 				$cli = (php_sapi_name() == 'cli');
 

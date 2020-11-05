@@ -185,11 +185,9 @@
 
 						file_put_contents($file_path . '.json', json_encode($file_info));
 
-						if ($file_offset !== NULL) {
-							$_FILES[$file_name]['path'][$file_offset] = $file_path;
-						} else {
-							$_FILES[$file_name]['path'] = $file_path;
-						}
+						$config_name = $file_name . ($file_offset !== NULL ? '[' . $file_offset . ']' : '');
+
+						config::array_set('request.file_paths', $config_name, $file_path);
 
 					} else {
 
