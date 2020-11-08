@@ -67,6 +67,14 @@
 		//--------------------------------------------------
 		// Label
 
+			public function label_set($label) {
+				if ($label instanceof html_template || $label instanceof html_template_immutable) {
+					$this->label_custom_html = $label->html();
+				} else {
+					$this->label_custom_html = nl2br(html($label));
+				}
+			}
+
 			public function label_set_html($html) {
 				$this->label_custom_html = $html;
 			}

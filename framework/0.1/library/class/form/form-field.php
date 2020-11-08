@@ -165,7 +165,11 @@
 			}
 
 			public function label_set($label) {
-				$this->label_set_html(html($label));
+				if ($label instanceof html_template || $label instanceof html_template_immutable) {
+					$this->label_html = $label->html();
+				} else {
+					$this->label_html = nl2br(html($label));
+				}
 			}
 
 			public function label_set_html($label_html) {

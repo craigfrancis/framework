@@ -199,6 +199,10 @@
 				$this->form_class = $form_class;
 			}
 
+			public function form_class_add($class) {
+				$this->form_class .= ($this->form_class == '' ? '' : ' ') . $class;
+			}
+
 			public function form_class_get() {
 				return $this->form_class;
 			}
