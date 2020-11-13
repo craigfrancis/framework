@@ -13,7 +13,7 @@
 			private $lock = NULL;
 			private $running = false;
 			private $session_prefix = NULL;
-			private $csp_directives = [
+			private $csp_directives = [ // If you want to add framing, use ... config::set('output.framing', 'SAMEORIGIN')
 					'default-src' => "'none'",
 					'base-uri'    => "'none'",
 					'form-action' => "'none'",
