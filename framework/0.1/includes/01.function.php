@@ -1475,6 +1475,7 @@
 				'mime'    => NULL,
 				'mode'    => NULL,
 				'xsend'   => NULL,
+				'csp'     => NULL,
 			], $config);
 
 		if (!$config['path'] && !$config['content']) {
@@ -1508,21 +1509,29 @@
 		header('Content-Disposition: ' . head($config['mode']) . '; filename="' . head($filename_ascii) . '"' . ($filename_utf8 ? '; filename*=' . head($filename_utf8) : ''));
 		header('Content-Length: ' . head($config['path'] ? filesize($config['path']) : strlen($config['content'])));
 
-		if (config::get('output.csp_enabled') === true) {
+		if ($config['csp'] !== false && config::get('output.csp_enabled') === true) {
 
-			$csp = [
-					'default-src' => "'none'",
-					'base-uri'    => "'none'",
-					'form-action' => "'none'",
-					'style-src'   => "'unsafe-inline'", // For Chrome inline viewing
-				];
+			if (is_array($config['csp'])) {
 
-			if ($config['mime'] == 'application/pdf') {
-				$csp['object-src'] = "'self'";
-				$csp['plugin-types'] = 'application/pdf';
-				$csp['img-src'] = ['/favicon.ico'];
+				$csp = $config['csp'];
+
 			} else {
-				$csp['img-src'] = "'self'";
+
+				$csp = [
+						'default-src' => "'none'",
+						'base-uri'    => "'none'",
+						'form-action' => "'none'",
+						'style-src'   => "'unsafe-inline'", // For Chrome inline viewing
+					];
+
+				if ($config['mime'] == 'application/pdf') {
+					$csp['object-src'] = "'self'";
+					$csp['plugin-types'] = 'application/pdf';
+					$csp['img-src'] = ['/favicon.ico'];
+				} else {
+					$csp['img-src'] = "'self'";
+				}
+
 			}
 
 			config::set('output.csp_directives', $csp);
