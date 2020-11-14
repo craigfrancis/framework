@@ -147,7 +147,11 @@
 			}
 
 			public function fragment_set($value) {
-				$this->fragment = $value;
+				$this->fragment = rawurlencode($value);
+			}
+
+			public function fragment_set_raw($value) {
+				$this->fragment = $value; // rawurlencode() breaks the PDF anchor '/path/to/file.pdf#page=4', and links such as GMail's '#inbox/1a1a1a1a1a1a1a1a'
 			}
 
 		//--------------------------------------------------
@@ -198,7 +202,7 @@
 				// Fragment
 
 					if ($this->fragment !== NULL) {
-						$output .= '#' . $this->fragment; // rawurlencode() breaks the PDF anchor '/path/to/file.pdf#page=4', and links such as GMail's '#inbox/1a1a1a1a1a1a1a1a'
+						$output .= '#' . $this->fragment;
 					}
 
 				//--------------------------------------------------
