@@ -198,7 +198,7 @@
 				// Fragment
 
 					if ($this->fragment !== NULL) {
-						$output .= '#' . rawurlencode($this->fragment);
+						$output .= '#' . $this->fragment; // rawurlencode() breaks the PDF anchor '/path/to/file.pdf#page=4', and links such as GMail's '#inbox/1a1a1a1a1a1a1a1a'
 					}
 
 				//--------------------------------------------------
