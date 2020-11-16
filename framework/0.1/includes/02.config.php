@@ -142,7 +142,7 @@
 				// 'storage-access-api'                 => [], // StorageAccessAPI
 				// 'sync-xhr'                           => [], // +[Risky]
 				// 'top-navigation'                     => [], // FeaturePolicyForSandbox
-				'trust-token-redemption'                => [], // TrustTokens
+				// 'trust-token-redemption'             => [], // TrustTokens
 				'usb'                                   => [], // WebUSB
 				// 'vertical-scroll'                    => [], // ExperimentalProductivityFeatures
 				// 'web-share'                          => [], // WebShare
