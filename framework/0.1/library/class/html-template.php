@@ -54,7 +54,7 @@
 					'blockquote' => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
 					'q'          => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
 					'a'          => ['id' => 'ref', 'class' => 'ref', 'href' => 'url'],
-					'img'        => ['id' => 'ref', 'class' => 'ref', 'src' => 'url', 'alt' => 'text', 'width' => 'int', 'height' => 'int'],
+					'img'        => ['id' => 'ref', 'class' => 'ref', 'src' => 'url-img', 'alt' => 'text', 'width' => 'int', 'height' => 'int'],
 					'time'       => ['id' => 'ref', 'class' => 'ref', 'datetime' => 'datetime'],
 					'data'       => ['id' => 'ref', 'class' => 'ref', 'value' => 'text'],
 					'br'         => [],
@@ -191,7 +191,9 @@
 						// Ignore this missing parameter, should be picked up next.
 					} else if ($type == 'text') {
 						// Nothing to check
-					} else if ($type == 'url') {
+					} else if ($type == 'url-img' && ($parameters[$k] instanceof url_data) && substr($parameters[$k]->mime_get(), 0, 6) == 'image/') {
+						// Images are allowed "data:" URLs with mime-types such as 'image/jpeg'
+					} else if ($type == 'url' || $type == 'url-img') {
 						if (!($parameters[$k] instanceof url) && !($parameters[$k] instanceof url_immutable)) {
 							throw new error_exception('Parameter ' . ($k + 1) . ' should be a URL object.', debug_dump($parameters[$k]) . "\n" . implode('?', $this->template_html));
 						}
