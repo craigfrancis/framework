@@ -13,7 +13,8 @@
 			protected $template_parameter_types = [];
 			protected $template_allowed = [ // Do not allow <script>, <style>, <link>, <object>, <embed> tags; or attributes that can include JS (e.g. style, onload, dynsrc)... although some can accept url(x) values
 					'meta'       => ['name' => 'text', 'content' => 'text'], // Do not allow <meta http-equiv="">, e.g. Refresh, Set-Cookie
-					'div'        => ['id' => 'ref', 'class' => 'ref', 'title' => 'text'],
+					'div'        => ['id' => 'ref', 'class' => 'ref', 'role' => 'text', 'title' => 'text', 'tabindex' => 'int'],
+					'span'       => ['id' => 'ref', 'class' => 'ref', 'role' => 'text', 'title' => 'text', 'tabindex' => 'int'],
 					'h1'         => ['id' => 'ref', 'class' => 'ref'],
 					'h2'         => ['id' => 'ref', 'class' => 'ref'],
 					'h3'         => ['id' => 'ref', 'class' => 'ref'],
@@ -34,9 +35,8 @@
 					'tbody'      => ['id' => 'ref', 'class' => 'ref'],
 					'tfoot'      => ['id' => 'ref', 'class' => 'ref'],
 					'tr'         => ['id' => 'ref', 'class' => 'ref'],
-					'th'         => ['id' => 'ref', 'class' => 'ref', 'rowspan' => 'int', 'colspan' => 'int'],
+					'th'         => ['id' => 'ref', 'class' => 'ref', 'rowspan' => 'int', 'colspan' => 'int', 'scope' => 'text'],
 					'td'         => ['id' => 'ref', 'class' => 'ref', 'rowspan' => 'int', 'colspan' => 'int'],
-					'span'       => ['id' => 'ref', 'class' => 'ref', 'title' => 'text'],
 					'em'         => ['id' => 'ref', 'class' => 'ref', 'title' => 'text'],
 					'strong'     => ['id' => 'ref', 'class' => 'ref', 'title' => 'text'],
 					'hr'         => ['id' => 'ref', 'class' => 'ref'],
