@@ -29,6 +29,7 @@
 			private $print_page_valid = true;
 			private $print_group = NULL;
 			private $print_group_tag = 'h2';
+			private $print_group_class = NULL;
 			private $hidden_values = [];
 			private $fields = [];
 			private $field_refs = [];
@@ -351,6 +352,10 @@
 
 			public function print_group_tag_set($tag) {
 				return $this->print_group_tag = $tag;
+			}
+
+			public function print_group_class_set($tag) {
+				return $this->print_group_class = $tag;
 			}
 
 			public function hidden_value($name) { // You should call form->hidden_value() first to initialise - get/set may not be called when form is submitted with errors.
@@ -1500,7 +1505,7 @@
 								$html .= "\n\t\t\t\t" . '</fieldset>' . "\n";
 							}
 
-							$html .= "\n\t\t\t\t" . '<fieldset>' . "\n";
+							$html .= "\n\t\t\t\t" . '<fieldset' . ($this->print_group_class ? ' class="' . html($this->print_group_class) . '"' : '') . '>' . "\n";
 							if ($group !== '') {
 								$html .= "\n\t\t\t\t\t" . '<legend>' . html($group) . '</legend>' . "\n";
 							}
@@ -1508,7 +1513,7 @@
 						} else if ($group_headings) {
 
 							if ($group !== '') {
-								$html .= "\n\t\t\t\t" . '<' . html($this->print_group_tag) . '>' . html($group) . '</' . html($this->print_group_tag) . '>' . "\n";
+								$html .= "\n\t\t\t\t" . '<' . html($this->print_group_tag) . '' . ($this->print_group_class ? ' class="' . html($this->print_group_class) . '"' : '') . '>' . html($group) . '</' . html($this->print_group_tag) . '>' . "\n";
 							}
 
 						}
