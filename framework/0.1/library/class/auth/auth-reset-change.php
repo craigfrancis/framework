@@ -363,6 +363,11 @@
 					}
 
 				//--------------------------------------------------
+				// Auth complete
+
+					$this->auth->complete('reset', $this->details['user_id']);
+
+				//--------------------------------------------------
 				// Try to restore session, if there are no limits
 
 					if ($limit_ref === '') {

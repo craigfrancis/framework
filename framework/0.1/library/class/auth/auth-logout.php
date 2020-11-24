@@ -72,12 +72,19 @@
 				//--------------------------------------------------
 				// End the current session
 
-					$this->auth->_session_end($this->auth->user_id_get(), $this->auth->session_id_get());
+					$user_id = $this->auth->user_id_get();
+
+					$this->auth->_session_end($user_id, $this->auth->session_id_get());
 
 				//--------------------------------------------------
 				// Change the CSRF token.
 
 					csrf_token_change();
+
+				//--------------------------------------------------
+				// Auth complete
+
+					$this->auth->complete('logout', $user_id);
 
 			}
 

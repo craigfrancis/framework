@@ -1662,7 +1662,7 @@ exit();
 		// Complete
 
 			public function complete($method, $user_id) {
-				// Common method for $method - 'login', 'register', 'update'.
+				// Common method for $method - 'login', 'logout', 'reset', 'register', 'update'.
 			}
 
 		//--------------------------------------------------
