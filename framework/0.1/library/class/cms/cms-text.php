@@ -410,7 +410,7 @@
 				//--------------------------------------------------
 				// Content cleanup
 
-					$content_html = $this->content_cleanup_html($html);
+					$content_html = $this->content_cleanup_html($content_html);
 
 				//--------------------------------------------------
 				// Empty defaults
