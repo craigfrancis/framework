@@ -288,6 +288,10 @@
 
 			}
 
+			protected function content_cleanup_html($html) {
+				return $html; // This hook can be used to modify the content outside of the cache (e.g. based on logged in user), if you extend this object, please keep this method quick/simple.
+			}
+
 			public static function cache_files($path = NULL) {
 
 				$files = [];
@@ -402,6 +406,11 @@
 					foreach ($config['variables'] as $name => $value) {
 						$content_html = str_replace('[' . strtoupper($name) . ']', html($value), $content_html);
 					}
+
+				//--------------------------------------------------
+				// Content cleanup
+
+					$content_html = $this->content_cleanup_html($html);
 
 				//--------------------------------------------------
 				// Empty defaults
