@@ -38,7 +38,7 @@
 			$config['gateway.maintenance'] = true;
 			$config['gateway.tester'] = true;
 
-	} else if (prefix_match('/mnt/www/demo/', ROOT)) {
+	} else if (str_starts_with(ROOT, '/mnt/www/demo/')) {
 
 		//--------------------------------------------------
 		// Server

@@ -5,7 +5,7 @@
 		<pre><?= html($output) ?></pre>
 		<hr />
 
-	<?php } else if (prefix_match('paginated', $type_name)) { ?>
+	<?php } else if (str_starts_with($type_name, 'paginated')) { ?>
 
 		<p>Example paginated form, if you don't want to use JavaScript to show/hide panels, or <a href="/doc/helpers/session/">Sessions</a> to preserve values between pages.</p>
 

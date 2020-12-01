@@ -26,7 +26,7 @@
 
 				foreach (glob($form_folder . '/*.php') as $path) {
 					$name = str_replace('-', '_', str_replace(array($form_folder . '/', '.php'), '', $path));
-					if (prefix_match('form_field_', $name)) { // Ignore 'form' (goes first), and generic 'form_field'
+					if (str_starts_with($name, 'form_field_')) { // Ignore 'form' (goes first), and generic 'form_field'
 						$form_classes[] = $name;
 					}
 				}
