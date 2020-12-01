@@ -545,7 +545,9 @@
 // Extra protection against XXE - not that anyone
 // should be using LIBXML_NOENT.
 
-	libxml_disable_entity_loader(true);
+	if (PHP_VERSION_ID < 80000) {
+		libxml_disable_entity_loader(true);
+	}
 
 //--------------------------------------------------
 // Extra
