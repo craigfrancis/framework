@@ -908,11 +908,7 @@
 		// Singleton
 
 			final private function __construct() {
-				// Being private prevents direct creation of object.
-			}
-
-			final private function __clone() {
-				trigger_error('Clone of encryption object is not allowed.', E_USER_ERROR);
+				// Being private prevents direct creation of object, which also prevents use of clone.
 			}
 
 	}
