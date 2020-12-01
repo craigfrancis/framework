@@ -391,7 +391,7 @@
 //--------------------------------------------------
 // Error handler
 
-	function error_handler($err_no, $err_str, $err_file, $err_line, $err_context) {
+	function error_handler($err_no, $err_str, $err_file, $err_line, $err_context = NULL) {
 
 		//--------------------------------------------------
 		// If disabled
