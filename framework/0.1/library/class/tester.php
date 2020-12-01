@@ -84,7 +84,7 @@
 					}
 
 					foreach ($stack as $called_from) {
-						if (isset($called_from['file']) && !prefix_match(FRAMEWORK_ROOT, $called_from['file'])) {
+						if (isset($called_from['file']) && !str_starts_with($called_from['file'], FRAMEWORK_ROOT)) {
 							$called_from_file = $called_from['file'];
 							$called_from_line = $called_from['line'];
 							break;

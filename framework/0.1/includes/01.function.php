@@ -368,8 +368,23 @@
 //--------------------------------------------------
 // Other string/array functions
 
+	if (PHP_VERSION_ID < 80000) {
+		function str_contains($haystack, $needle) {
+			return ($needle == '' || strpos($haystack, $needle) !== false);
+		}
+		function str_starts_with($haystack, $needle) {
+			return (strncmp($haystack, $needle, strlen($needle)) === 0);
+		}
+		function str_ends_with($haystack, $needle) {
+			return ($needle === '' || ($haystack !== '' && substr_compare($haystack, $needle, 0 - strlen($needle)) === 0));
+		}
+	}
+
 	function prefix_match($prefix, $string) {
-		return (strncmp($string, $prefix, strlen($prefix)) == 0);
+		if (PHP_VERSION_ID >= 80000) {
+			trigger_error('Please use str_starts_with(), as prefix_match() has been deprecated (to match PHP 8).', E_USER_NOTICE);
+		}
+		return str_starts_with($string, $prefix);
 	}
 
 	function prefix_replace($prefix, $replace, $string) {
@@ -1548,7 +1563,7 @@
 
 			if ($config['xsend'] === NULL) {
 				$x_send_path = config::get('output.xsend_path'); // Should match XSendFilePath in Apache config
-				if (strlen($x_send_path) > strlen(ROOT) && prefix_match($x_send_path, $config['path'])) { // Try to be as specific as possible
+				if (strlen($x_send_path) > strlen(ROOT) && str_starts_with($config['path'], $x_send_path)) { // Try to be as specific as possible
 					$config['xsend'] = true;
 				}
 			}
@@ -1714,7 +1729,7 @@
 			if ($value !== NULL) {
 				if (is_array($value)) {
 					foreach ($value as $k => $v) {
-						if (prefix_match('/', $v)) {
+						if (str_starts_with($v, '/')) {
 							$value[$k] = $origin . $v;
 						}
 					}

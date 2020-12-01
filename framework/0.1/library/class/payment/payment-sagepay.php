@@ -216,7 +216,7 @@
 
 					$crypt = request('crypt');
 
-					if (prefix_match('@', $crypt)) {
+					if (str_starts_with($crypt, '@')) {
 						$crypt = hex2bin(substr($crypt, 1));
 						$crypt = openssl_decrypt($crypt, 'aes-128-cbc', $config['key'], OPENSSL_RAW_DATA, $config['key']);
 					} else {

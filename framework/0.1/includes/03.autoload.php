@@ -12,7 +12,7 @@
 		//--------------------------------------------------
 		// Paths
 
-			if (prefix_match('controller_', $class_name)) {
+			if (str_starts_with($class_name, 'controller_')) {
 
 				$base_mode = true;
 

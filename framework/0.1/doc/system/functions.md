@@ -64,10 +64,6 @@ For other variables, you should probably use the [cookie](../../doc/helpers/cook
 
 # String functions
 
-	prefix_match($prefix, $string);
-		// prefix_match('/prefix/', '/prefix/match/');
-		// true
-
 	prefix_replace($prefix, $replace, $string);
 		// prefix_replace('aaa_', '', 'aaa_bbb');
 		// 'bbb'

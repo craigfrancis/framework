@@ -369,7 +369,7 @@
 			}
 
 			public function hidden_value_set($name, $value = NULL) {
-				if (prefix_match('h-', $name)) {
+				if (str_starts_with($name, 'h-')) {
 					exit_with_error('Cannot set the hidden value "' . $name . '", as it begins with a "h-" (used by hidden fields).');
 				}
 				if ($value === NULL) {

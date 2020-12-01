@@ -135,7 +135,7 @@
 								// Content for a tag, so long as it's not an unsafe tag (e.g. <script>), it should be fine.
 							} else if (($attribute_type = ($allowed_attributes[$p[1]] ?? NULL)) !== NULL) {
 								$this->template_parameter_types[$k] = $attribute_type; // Generally fine, but check the type.
-							} else if (prefix_match('data-', $p[1])) {
+							} else if (str_starts_with($p[1], 'data-')) {
 								// Can't tell, this is for JS/CSS to read and use.
 							} else {
 								throw new error_exception('Placeholder ' . ($k + 1) . ' is for unrecognised tag "' . $p[0] . '" and attribute "' . $p[1] . '"', $template_html);
@@ -161,7 +161,7 @@
 						if ($node->hasAttributes()) {
 							$allowed_attributes = $this->template_allowed[$node->nodeName];
 							foreach ($node->attributes as $attr) {
-								if (!array_key_exists($attr->nodeName, $allowed_attributes) && !prefix_match('data-', $attr->nodeName)) {
+								if (!array_key_exists($attr->nodeName, $allowed_attributes) && !str_starts_with($attr->nodeName, 'data-')) {
 									throw new error_exception('HTML Templates cannot use the "' . $attr->nodeName . '" attribute in <' . $node->nodeName . '>', implode('?', $this->template_html));
 								} else if ($node->nodeName == 'meta' && $attr->nodeName == 'name' && in_array($attr->nodeValue, ['?', 'referrer'])) {
 									throw new error_exception('HTML Templates cannot allow the "name" attribute in <meta> to be set to "' . $attr->nodeValue . '"', implode('?', $this->template_html));

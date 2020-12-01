@@ -908,7 +908,7 @@
 				foreach ($files as $id => $file) {
 					if (!isset($file['url'])) {
 
-						if ($minify && prefix_match(ASSET_URL . '/', $file['path'])) {
+						if ($minify && str_starts_with($file['path'], ASSET_URL . '/')) {
 							$min_path = ASSET_URL . '/min/' . substr($file['path'], (strlen(ASSET_URL) + 1));
 							if (is_file(PUBLIC_ROOT . $min_path)) {
 								$files[$id]['path_min'] = $min_path;

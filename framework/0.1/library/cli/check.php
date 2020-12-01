@@ -57,7 +57,7 @@
 			$db = db_get();
 
 			foreach ($db->fetch_all('SHOW TABLE STATUS') as $row) {
-				if (prefix_match(DB_PREFIX, $row['Name'])) {
+				if (str_starts_with($row['Name'], DB_PREFIX)) {
 
 					//--------------------------------------------------
 					// Table

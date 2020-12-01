@@ -135,7 +135,7 @@
 
 						if ($match) {
 							foreach ($domain_cookies as $domain_path => $path_cookies) {
-								if (prefix_match($domain_path, $search_path)) {
+								if (str_starts_with($search_path, $domain_path)) {
 									foreach ($path_cookies as $name => $value) {
 										$cookies[$name] = $value;
 									}

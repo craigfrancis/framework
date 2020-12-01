@@ -5,7 +5,7 @@
 		//--------------------------------------------------
 		// Check install location
 
-			if (prefix_match(FRAMEWORK_ROOT, ROOT)) {
+			if (str_starts_with(ROOT, FRAMEWORK_ROOT)) {
 				exit('Cannot install within framework folder' . "\n");
 			}
 
@@ -106,7 +106,7 @@
 							} else if ($skeleton_file == '/app/public/index.php') {
 
 								$parent_dir = dirname(ROOT);
-								if (prefix_match($parent_dir, FRAMEWORK_ROOT)) {
+								if (str_starts_with(FRAMEWORK_ROOT, $parent_dir)) {
 									$bootstrap_path = 'dirname(ROOT) . \'' . str_replace($parent_dir, '', FRAMEWORK_ROOT) . '/bootstrap.php\'';
 								} else {
 									$bootstrap_path = '\'' . FRAMEWORK_ROOT . '/bootstrap.php\'';

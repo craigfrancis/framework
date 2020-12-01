@@ -197,7 +197,7 @@
 				foreach ($backtrace as $called_from) {
 					if (isset($called_from['file'])) {
 
-						if ($try == 1 && $k == 0 && prefix_match(FRAMEWORK_ROOT, $called_from['file'])) { // Where $k will remain 0 until something non-framework is found.
+						if ($try == 1 && $k == 0 && str_starts_with($called_from['file'], FRAMEWORK_ROOT)) { // Where $k will remain 0 until something non-framework is found.
 							continue;
 						}
 
@@ -404,7 +404,7 @@
 		// Using the html() function with multibyte issue
 
 			foreach (debug_backtrace() as $called_from) {
-				if (isset($called_from['file']) && !prefix_match(FRAMEWORK_ROOT, $called_from['file'])) {
+				if (isset($called_from['file']) && !str_starts_with($called_from['file'], FRAMEWORK_ROOT)) {
 
 					if (isset($called_from['function']) && $called_from['function'] == 'html') {
 
@@ -668,7 +668,7 @@
 					}
 
 					if (isset($called_from['file'])) {
-						$system_call = prefix_match(FRAMEWORK_ROOT, $called_from['file']);
+						$system_call = str_starts_with($called_from['file'], FRAMEWORK_ROOT);
 					} else {
 						$system_call = true; // e.g. shutdown function
 					}
@@ -864,7 +864,7 @@
 				// Called from
 
 					foreach (debug_backtrace() as $called_from) {
-						if (isset($called_from['file']) && !prefix_match(FRAMEWORK_ROOT, $called_from['file'])) {
+						if (isset($called_from['file']) && !str_starts_with($called_from['file'], FRAMEWORK_ROOT)) {
 							break;
 						}
 					}

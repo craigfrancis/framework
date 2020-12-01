@@ -26,7 +26,7 @@
 			$route_path = preg_replace('/^' . preg_quote($url_prefix, '/') . '/', '', $route_path);
 		}
 
-		$route_asset = prefix_match(ASSET_URL . '/', $route_path);
+		$route_asset = str_starts_with($route_path, ASSET_URL . '/');
 
 	//--------------------------------------------------
 	// Robots
@@ -153,7 +153,7 @@
 	//--------------------------------------------------
 	// Origin-Policy
 
-		if (prefix_match('/.well-known/origin-policy', $route_path)) {
+		if (str_starts_with($route_path, '/.well-known/origin-policy')) {
 			$policy_path = PUBLIC_ROOT . '/origin-policy.json';
 			if (is_file($policy_path)) {
 
@@ -307,7 +307,7 @@
 
 		$gateway_url = config::get('gateway.url');
 
-		if ($gateway_url !== NULL && prefix_match($gateway_url, $route_path)) {
+		if ($gateway_url !== NULL && str_starts_with($route_path, $gateway_url)) {
 
 			config::set('output.page_id', 'request');
 
@@ -357,7 +357,7 @@
 
 		$file_path = realpath(PUBLIC_ROOT . $route_dir . '/' . $route_file . '.' . $route_ext);
 
-		if (is_readable($file_path) && prefix_match(ASSET_ROOT . '/', $file_path)) { // Must be in the assets folder.
+		if (is_readable($file_path) && str_starts_with($file_path, ASSET_ROOT . '/')) { // Must be in the assets folder.
 
 			$minify = false;
 			if ($route_min) {

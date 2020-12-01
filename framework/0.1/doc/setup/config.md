@@ -37,7 +37,7 @@ There are many ways to detect which server your running on, but my preferred met
 
 		define('SERVER', 'stage');
 
-	} else if (prefix_match('/www/demo/', ROOT)) {
+	} else if (str_starts_with(ROOT, '/www/demo/')) {
 
 		define('SERVER', 'demo');
 
@@ -47,7 +47,7 @@ There are many ways to detect which server your running on, but my preferred met
 
 	}
 
-Detection for **stage** is a simple regexp (as most OSX developers either use the /Library/ folder, or a case-sensitive volume). Then **demo** uses the [prefix_match](../../doc/system/functions.md)() function, and the default is to assume we are running on **live**.
+Detection for **stage** is a simple regexp (as most OSX developers either use the /Library/ folder, or a case-sensitive volume). Then **demo** uses `str_starts_with`, and the default is to assume we are running on **live**.
 
 This allows you to setup the [database connection](../../doc/system/database.md) details (probably different).
 
