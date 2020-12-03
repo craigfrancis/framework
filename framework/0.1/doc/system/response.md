@@ -120,10 +120,13 @@ Then provide it with the required information:
 Where the content can be added with:
 
 	$response->path_set('/path/to/file.csv');
+
+	// or
+
 	$response->content_set('...');
 	$response->content_add('...');
 
-And finally to send the response:
+And to send the response:
 
 	$response->send();
 	exit();
@@ -132,7 +135,7 @@ And finally to send the response:
 
 ## Text Response
 
-Pretty much the same as above really:
+Pretty much the same as above:
 
 	$response = response_get('text');
 	$response->charset_set('UTF-8'); // Defaults to output.charset
@@ -145,10 +148,16 @@ Pretty much the same as above really:
 	$response->send();
 	exit();
 
-Or for an example with JSON data:
+---
 
-	$response = response_get('text');
-	$response->mime_set('application/json');
-	$response->content_add(json_encode($data, JSON_PRETTY_PRINT));
-	$response->send();
+## JSON Response
+
+To make JSON responses easier:
+
+	$response = response_get('json');
+	$response->send(['name' => 'value']);
 	exit();
+
+Where you can use pretty printing:
+
+	$response->pretty_print_set(true);

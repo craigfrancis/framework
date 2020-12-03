@@ -92,7 +92,11 @@
 		//--------------------------------------------------
 		// Send
 
-			public function send() {
+			public function send($content = NULL) {
+
+				if ($content !== NULL) {
+					$this->content = $content; // Replace, as this is used instead of path_set, or content_set/content_add
+				}
 
 				if ($this->error_ref) {
 

@@ -82,7 +82,7 @@
 		//--------------------------------------------------
 		// Send
 
-			public function send() {
+			public function send($content = NULL) {
 			}
 
 	}

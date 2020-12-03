@@ -1273,7 +1273,14 @@
 		//--------------------------------------------------
 		// Send
 
-			public function send() {
+			public function send($content = NULL) {
+
+				//--------------------------------------------------
+				// Content not allowed
+
+					if ($content !== NULL) {
+						exit_with_error('Cannot provide content during a HTML response->send()'); // It's not clear if it's unsafe HTML, or Text that needs encoding.
+					}
 
 				//--------------------------------------------------
 				// Debug

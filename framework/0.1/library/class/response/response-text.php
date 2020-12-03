@@ -10,6 +10,7 @@
 			private $error_output = false;
 
 			private $name = NULL;
+			private $setup_output = NULL;
 			private $content = '';
 
 		//--------------------------------------------------
@@ -33,7 +34,11 @@
 		// Setup output
 
 			public function setup_output_set($output) {
-				$this->content = $content . $this->content;
+				$this->setup_output = $output;
+			}
+
+			public function setup_output_get() {
+				return $this->setup_output;
 			}
 
 		//--------------------------------------------------
@@ -77,10 +82,22 @@
 				$this->content .= $content;
 			}
 
+			public function content_get() {
+				return $this->content;
+			}
+
 		//--------------------------------------------------
 		// Send
 
-			public function send() {
+			public function send($content = NULL) {
+
+				if ($content !== NULL) {
+					$this->content = $content; // Replace, as this is used instead of content_set/content_add, and works with the JSON response (provides JSON data, or false on failure).
+				}
+
+				if ($this->setup_output !== NULL) {
+					$this->content = $this->setup_output . $this->content; // Just prepend to content.
+				}
 
 				$length = strlen($this->content);
 
