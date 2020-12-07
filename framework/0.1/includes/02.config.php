@@ -110,7 +110,7 @@
 				'clipboard-read'                        => [], //
 				'clipboard-write'                       => [], //
 				// 'conversion-measurement'             => [], // ConversionMeasurement
-				// 'cross-origin-isolated'              => [], // CrossOriginIsolation, should be allowed, this is a good thing
+				'cross-origin-isolated'                 => ["'self'"], // CrossOriginIsolation, should be allowed, this is a good thing
 				'document-domain'                       => [], //
 				// 'downloads'                          => [], // FeaturePolicyForSandbox, was "downloads-without-user-activation"
 				'encrypted-media'                       => [], //
