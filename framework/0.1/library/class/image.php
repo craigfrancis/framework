@@ -166,7 +166,12 @@
 				//--------------------------------------------------
 				// If we were passed an actual GD object
 
-					if (is_resource($image) && get_resource_type($image) == 'gd') {
+					$is_gd = (is_object($image) && $image instanceof GdImage);
+					if (!$is_gd) {
+						$is_gd = (is_resource($image) && get_resource_type($image) == 'gd'); // for PHP 7
+					}
+
+					if ($is_gd) {
 
 						$return['ref'] = $image;
 						$return['width'] = imagesx($image);
