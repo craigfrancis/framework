@@ -39,12 +39,14 @@
 
 			public function min_value_set_html($error_html, $value) {
 
+				$value = floatval($value);
+
 				if ($this->form_submitted && !$this->format_error_found && $this->value !== '' && $this->value_clean < $value) {
 
 					if ($value < 0) {
-						$value_text = '-' . $this->currency_char . number_format(floatval(0 - $value), 2);
+						$value_text = '-' . $this->currency_char . number_format((0 - $value), 2);
 					} else {
-						$value_text = $this->currency_char . number_format(floatval($value), 2);
+						$value_text = $this->currency_char . number_format($value, 2);
 					}
 
 					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $value_text, $error_html));
@@ -57,12 +59,14 @@
 
 			public function max_value_set_html($error_html, $value) {
 
+				$value = floatval($value);
+
 				if ($this->form_submitted && !$this->format_error_found && $this->value !== '' && $this->value_clean > $value) {
 
 					if ($value < 0) {
-						$value_text = '-' . $this->currency_char . number_format(floatval(0 - $value), 2);
+						$value_text = '-' . $this->currency_char . number_format((0 - $value), 2);
 					} else {
-						$value_text = $this->currency_char . number_format(floatval($value), 2);
+						$value_text = $this->currency_char . number_format($value, 2);
 					}
 
 					$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $value_text, $error_html));

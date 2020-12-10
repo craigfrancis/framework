@@ -72,9 +72,11 @@
 
 					$valid = true;
 
-					if ($this->value['H'] < 0 || $this->value['H'] > 23) $valid = false;
-					if ($this->value['I'] < 0 || $this->value['I'] > 59) $valid = false;
-					if ($this->value['S'] < 0 || $this->value['S'] > 59) $valid = false;
+					$int_values = array_map('intval', $this->value);
+
+					if ($int_values['H'] < 0 || $int_values['H'] > 23) $valid = false;
+					if ($int_values['I'] < 0 || $int_values['I'] > 59) $valid = false;
+					if ($int_values['S'] < 0 || $int_values['S'] > 59) $valid = false;
 
 					foreach ($this->fields as $field) {
 						$value = $this->value[$field];

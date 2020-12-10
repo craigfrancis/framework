@@ -692,14 +692,15 @@
 			$decimal_places = (fmod($value, 1) == 0 ? 0 : 2);
 		}
 
+		$value = floatval($value);
 		$value = (round($value, $decimal_places) == 0 ? 0 : $value); // Stop negative -£0
 
 		if ($value == 0 && $zero_to_blank) {
 			return '';
 		} else if ($value < 0) {
-			return '-' . $currency_char . number_format(floatval(0 - $value), $decimal_places);
+			return '-' . $currency_char . number_format((0 - $value), $decimal_places);
 		} else {
-			return $currency_char . number_format(floatval($value), $decimal_places);
+			return $currency_char . number_format($value, $decimal_places);
 		}
 
 	}
