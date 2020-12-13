@@ -4,7 +4,7 @@
 // http://www.phpprime.com/doc/helpers/socket/
 //--------------------------------------------------
 
-	class socket_base extends check {
+	class socket_base extends check { // TODO: Does not work in PHP 8... maybe re-name to "connection" with `class socket_base extends connection`
 
 		//--------------------------------------------------
 		// Variables
