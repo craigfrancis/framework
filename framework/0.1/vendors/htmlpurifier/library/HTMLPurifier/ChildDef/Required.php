@@ -93,7 +93,7 @@ class HTMLPurifier_ChildDef_Required extends HTMLPurifier_ChildDef
                     continue;
                 }
                 // spill the child contents in
-                // @to-do: Make configurable
+                // ToDo: Make configurable
                 if ($node instanceof HTMLPurifier_Node_Element) {
                     for ($i = count($node->children) - 1; $i >= 0; $i--) {
                         $stack[] = $node->children[$i];

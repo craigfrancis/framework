@@ -11,7 +11,7 @@
  *      Back list: 9 8 7 6
  *
  * User is expected to keep track of the "current element" and properly
- * fill it back in as necessary.  (@to-do: Maybe it's more user friendly
+ * fill it back in as necessary.  (ToDo: Maybe it's more user friendly
  * to implicitly track the current element?)
  *
  * Nota bene: the current class gets confused if you try to store NULLs

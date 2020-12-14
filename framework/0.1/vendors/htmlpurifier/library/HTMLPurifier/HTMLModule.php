@@ -12,7 +12,7 @@
  *       correspond to the variables in HTMLPurifier_HTMLDefinition.
  *       However, the prefix info carries no special meaning in these
  *       objects (include it anyway if that's the correspondence though).
- * @to-do Consider making some member functions protected
+ * @todo Consider making some member functions protected
  */
 
 class HTMLPurifier_HTMLModule
@@ -132,9 +132,9 @@ class HTMLPurifier_HTMLModule
      * @param string $element Name of element to add
      * @param string|bool $type What content set should element be registered to?
      *              Set as false to skip this step.
-     * @param string $contents Allowed children in form of:
+     * @param string|HTMLPurifier_ChildDef $contents Allowed children in form of:
      *              "$content_model_type: $content_model"
-     * @param array $attr_includes What attribute collections to register to
+     * @param array|string $attr_includes What attribute collections to register to
      *              element?
      * @param array $attr What unique attributes does the element define?
      * @see HTMLPurifier_ElementDef:: for in-depth descriptions of these parameters.

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @to-do Rewrite to use Interchange objects
+ * @todo Rewrite to use Interchange objects
  */
 class HTMLPurifier_Printer_ConfigForm extends HTMLPurifier_Printer
 {
@@ -48,7 +48,7 @@ class HTMLPurifier_Printer_ConfigForm extends HTMLPurifier_Printer
         $this->compress = $compress;
         // initialize sub-printers
         $this->fields[0] = new HTMLPurifier_Printer_ConfigForm_default();
-        $this->fields[HTMLPurifier_VarParser::BOOL] = new HTMLPurifier_Printer_ConfigForm_bool();
+        $this->fields[HTMLPurifier_VarParser::C_BOOL] = new HTMLPurifier_Printer_ConfigForm_bool();
     }
 
     /**
@@ -320,7 +320,7 @@ class HTMLPurifier_Printer_ConfigForm_default extends HTMLPurifier_Printer
                     foreach ($array as $val => $b) {
                         $value[] = $val;
                     }
-                    // @to-do does this need a break?
+                    //TODO does this need a break?
                 case HTMLPurifier_VarParser::ALIST:
                     $value = implode(PHP_EOL, $value);
                     break;
@@ -339,7 +339,7 @@ class HTMLPurifier_Printer_ConfigForm_default extends HTMLPurifier_Printer
                     $value = '';
             }
         }
-        if ($type === HTMLPurifier_VarParser::MIXED) {
+        if ($type === HTMLPurifier_VarParser::C_MIXED) {
             return 'Not supported';
             $value = serialize($value);
         }

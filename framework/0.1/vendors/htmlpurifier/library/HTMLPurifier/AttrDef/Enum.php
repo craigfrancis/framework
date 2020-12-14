@@ -13,7 +13,7 @@ class HTMLPurifier_AttrDef_Enum extends HTMLPurifier_AttrDef
     /**
      * Lookup table of valid values.
      * @type array
-     * @to-do Make protected
+     * @todo Make protected
      */
     public $valid_values = array();
 

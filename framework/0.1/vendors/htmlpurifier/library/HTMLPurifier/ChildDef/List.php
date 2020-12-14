@@ -66,7 +66,7 @@ class HTMLPurifier_ChildDef_List extends HTMLPurifier_ChildDef
             } else {
                 // we want to tuck this into the previous li
                 // Invariant: we expect the node to be ol/ul
-                // @to-do: Make this more robust in the case of not ol/ul
+                // ToDo: Make this more robust in the case of not ol/ul
                 // by distinguishing between existing li and li created
                 // to handle non-list elements; non-list elements should
                 // not be appended to an existing li; only li created
@@ -76,7 +76,7 @@ class HTMLPurifier_ChildDef_List extends HTMLPurifier_ChildDef
                     $result[] = $current_li;
                 }
                 $current_li->children[] = $node;
-                $current_li->empty = false; // XXX fascinating! Check for this error elsewhere @to-do
+                $current_li->empty = false; // XXX fascinating! Check for this error elsewhere ToDo
             }
         }
         if (empty($result)) {

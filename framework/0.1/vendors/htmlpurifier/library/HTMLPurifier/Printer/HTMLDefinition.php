@@ -43,8 +43,8 @@ class HTMLPurifier_Printer_HTMLDefinition extends HTMLPurifier_Printer
         $ret .= $this->element('caption', 'Doctype');
         $ret .= $this->row('Name', $doctype->name);
         $ret .= $this->row('XML', $doctype->xml ? 'Yes' : 'No');
-        $ret .= $this->row('Default Modules', implode($doctype->modules, ', '));
-        $ret .= $this->row('Default Tidy Modules', implode($doctype->tidyModules, ', '));
+        $ret .= $this->row('Default Modules', implode(', ', $doctype->modules));
+        $ret .= $this->row('Default Tidy Modules', implode(', ', $doctype->tidyModules));
         $ret .= $this->end('table');
         return $ret;
     }
@@ -275,7 +275,7 @@ class HTMLPurifier_Printer_HTMLDefinition extends HTMLPurifier_Printer
      * Listifies a list of objects by retrieving class names and internal state
      * @param array $array List of objects
      * @return string
-     * @to-do Also add information about internal state
+     * @todo Also add information about internal state
      */
     protected function listifyObjectList($array)
     {

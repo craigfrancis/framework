@@ -3,7 +3,7 @@
 /**
  * Abstract class for a set of proprietary modules that clean up (tidy)
  * poorly written HTML.
- * @to-do Figure out how to protect some of these methods/properties
+ * @todo Figure out how to protect some of these methods/properties
  */
 class HTMLPurifier_HTMLModule_Tidy extends HTMLPurifier_HTMLModule
 {
@@ -37,7 +37,7 @@ class HTMLPurifier_HTMLModule_Tidy extends HTMLPurifier_HTMLModule
      * Lazy load constructs the module by determining the necessary
      * fixes to create and then delegating to the populate() function.
      * @param HTMLPurifier_Config $config
-     * @to-do Wildcard matching and error reporting when an added or
+     * @todo Wildcard matching and error reporting when an added or
      *       subtracted fix has no effect.
      */
     public function setup($config)

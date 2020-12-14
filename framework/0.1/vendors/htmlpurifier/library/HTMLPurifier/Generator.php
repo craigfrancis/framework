@@ -2,9 +2,9 @@
 
 /**
  * Generates HTML from tokens.
- * @to-do Refactor interface so that configuration/context is determined
+ * @todo Refactor interface so that configuration/context is determined
  *       upon instantiation, no need for messy generateFromTokens() calls
- * @to-do Make some of the more internal functions protected, and have
+ * @todo Make some of the more internal functions protected, and have
  *       unit tests work around that
  */
 class HTMLPurifier_Generator
@@ -264,7 +264,7 @@ class HTMLPurifier_Generator
 
     /**
      * Escapes raw text data.
-     * @to-do This really ought to be protected, but until we have a facility
+     * @todo This really ought to be protected, but until we have a facility
      *       for properly generating HTML here w/o using tokens, it stays
      *       public.
      * @param string $string String data to escape for HTML.

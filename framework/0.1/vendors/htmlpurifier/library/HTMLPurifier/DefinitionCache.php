@@ -3,10 +3,10 @@
 /**
  * Abstract class representing Definition cache managers that implements
  * useful common methods and is a factory.
- * @to-do Create a separate maintenance file advanced users can use to
+ * @todo Create a separate maintenance file advanced users can use to
  *       cache their custom HTMLDefinition, which can be loaded
  *       via a configuration directive
- * @to-do Implement memcached
+ * @todo Implement memcached
  */
 abstract class HTMLPurifier_DefinitionCache
 {

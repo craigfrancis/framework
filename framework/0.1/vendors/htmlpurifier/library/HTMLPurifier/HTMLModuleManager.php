@@ -419,7 +419,7 @@ class HTMLPurifier_HTMLModuleManager
                 // this will usually result in a full replacement.
                 $def->mergeIn($new_def);
             } else {
-                // @to-do
+                // :TODO:
                 // non-standalone definitions that don't have a standalone
                 // to merge into could be deferred to the end
                 // HOWEVER, it is perfectly valid for a non-standalone

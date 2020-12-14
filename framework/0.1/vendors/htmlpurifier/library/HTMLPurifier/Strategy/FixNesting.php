@@ -25,7 +25,7 @@
  * @note Whether or not unrecognized children are silently dropped or
  *       translated into text depends on the child definitions.
  *
- * @to-do Enable nodes to be bubbled out of the structure.  This is
+ * @todo Enable nodes to be bubbled out of the structure.  This is
  *       easier with our new algorithm.
  */
 
@@ -119,7 +119,7 @@ class HTMLPurifier_Strategy_FixNesting extends HTMLPurifier_Strategy
                     $go = true;
                     $stack[] = array($node, $is_inline, $excludes, $ix);
                     $stack[] = array($child,
-                        // @to-do: I don't think it matters if it's def or
+                        // ToDo: I don't think it matters if it's def or
                         // child_def, but double check this...
                         $is_inline || $def->descendants_are_inline,
                         empty($def->excludes) ? $excludes
