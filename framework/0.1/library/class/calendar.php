@@ -116,6 +116,14 @@
 
 			}
 
+			protected function date_format($date) {
+				if ($date instanceof timestamp) {
+					return $date->format('Y-m-d');
+				} else {
+					return $date; // Assume correctly formatted ISO date.
+				}
+			}
+
 			public function date_select_month($year, $month) {
 
 				//--------------------------------------------------
@@ -232,15 +240,15 @@
 			}
 
 			public function day_url_set($date, $url) {
-				$this->day_urls[$date] = $url;
+				$this->day_urls[$this->date_format($date)] = $url;
 			}
 
 			public function day_class_set($date, $class) {
-				$this->day_class[$date] = $class;
+				$this->day_class[$this->date_format($date)] = $class;
 			}
 
 			public function day_data_set($date, $field, $value) {
-				$this->day_data[$date][$field] = $value;
+				$this->day_data[$this->date_format($date)][$field] = $value;
 			}
 
 		//--------------------------------------------------
@@ -251,7 +259,7 @@
 			}
 
 			public function day_heading_set_html($date, $html) {
-				$this->day_heading_html[$date] = $html;
+				$this->day_heading_html[$this->date_format($date)] = $html;
 			}
 
 		//--------------------------------------------------
@@ -269,17 +277,7 @@
 			}
 
 			public function day_event_add_html($date, $html, $class = 'event') {
-
-				if (!isset($this->day_events[$date])) {
-					$this->day_events[$date] = [];
-				}
-
-				$this->day_events[$date][] = array(
-						'element' => 'p',
-						'class' => $class,
-						'html' => $html,
-					);
-
+				$this->_day_event_add('p', $date, $html, $class);
 			}
 
 			public function day_event_heading_add($date, $text, $class = 'heading', $url = NULL) {
@@ -294,16 +292,22 @@
 			}
 
 			public function day_event_heading_add_html($date, $html, $class = 'event') {
+				$this->_day_event_add('h4', $date, $html, $class);
+			}
+
+			protected function _day_event_add($element, $date, $html, $class) {
+
+				$date = $this->date_format($date);
 
 				if (!isset($this->day_events[$date])) {
 					$this->day_events[$date] = [];
 				}
 
-				$this->day_events[$date][] = array(
-						'element' => 'h4',
+				$this->day_events[$date][] = [
+						'element' => $element,
 						'class' => $class,
 						'html' => $html,
-					);
+					];
 
 			}
 
@@ -520,8 +524,8 @@
 							if ($this->config['mode'] != 'week') {
 								if ($k > 1 && !($k % 7)) {
 									$html .= '
-										</tr>
-										<tr' . ($loop_timestamp > $today_timestamp ? ' class="future"' : '') . '>';
+									</tr>
+									<tr' . ($loop_timestamp > $today_timestamp ? ' class="future"' : '') . '>';
 								}
 							}
 
@@ -553,12 +557,12 @@
 							}
 
 							$html .= '
-									' . html_tag($day_tag, $attributes);
+										' . html_tag($day_tag, $attributes) . "\n";
 
 							$html .= $this->html_day($loop_date, $loop_timestamp, $loop_url);
 
-							$html .= '
-									</' . $day_tag . '>';
+							$html .= "\n" . '
+										</' . $day_tag . '>';
 
 						//--------------------------------------------------
 						// Next day
@@ -593,6 +597,8 @@
 
 			protected function html_day_heading($date, $timestamp, $url) {
 
+				$date = $this->date_format($date);
+
 				if (isset($this->day_heading_html[$date])) {
 
 					return $this->day_heading_html[$date];
@@ -611,7 +617,7 @@
 						$html = '<a href="' . html($url) . '">' . $html . '</a>';
 					}
 
-					return '<h3 class="day" id="' . html($date) . '">' . $html . '</h3>';
+					return "\n" . '<h3 class="day" id="' . html($date) . '">' . $html . '</h3>';
 
 				}
 
@@ -621,13 +627,8 @@
 
 				$html = '';
 
-				if (isset($this->day_events[$date])) {
-
-					foreach ($this->day_events[$date] as $event) {
-						$html .= '
-								<' . html($event['element']) . ' class="' . html($event['class']) . '">' . $event['html'] . '</' . html($event['element']) . '>';
-					}
-
+				foreach (($this->day_events[$this->date_format($date)] ?? []) as $event) {
+					$html .= "\n" . '<' . html($event['element']) . ' class="' . html($event['class']) . '">' . $event['html'] . '</' . html($event['element']) . '>';
 				}
 
 				return $html;
