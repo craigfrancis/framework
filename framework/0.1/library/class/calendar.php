@@ -47,7 +47,7 @@
 							'select_year' => request('year'),
 							'select_week' => request('week'),
 							'select_month' => request('month'),
-							'select_preserve' => true,
+							'select_preserve' => false,
 							'select_preserve_name' => 'calendar_selection',
 							'range_start' => '-1 week',
 							'range_end' => '+2 weeks',
