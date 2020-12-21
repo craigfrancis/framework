@@ -258,10 +258,17 @@
 		// Events
 
 			public function day_event_add($date, $text, $class = 'event', $url = NULL) {
-				$this->day_event_add_html($date, nl2br(html(trim($text))), $class, $url);
+
+				$html = nl2br(html(trim($text)));
+				if ($url) {
+					$html = '<a href="' . html($url) . '">' . $html . '</a>';
+				}
+
+				$this->day_event_add_html($date, $html, $class);
+
 			}
 
-			public function day_event_add_html($date, $html, $class = 'event', $url = NULL) {
+			public function day_event_add_html($date, $html, $class = 'event') {
 
 				if (!isset($this->day_events[$date])) {
 					$this->day_events[$date] = [];
@@ -271,16 +278,22 @@
 						'element' => 'p',
 						'class' => $class,
 						'html' => $html,
-						'url' => $url,
 					);
 
 			}
 
 			public function day_event_heading_add($date, $text, $class = 'heading', $url = NULL) {
-				$this->day_event_heading_add_html($date, nl2br(html(trim($text))), $class, $url);
+
+				$html = nl2br(html(trim($text)));
+				if ($url) {
+					$html = '<a href="' . html($url) . '">' . $html . '</a>';
+				}
+
+				$this->day_event_heading_add_html($date, nl2br(html(trim($text))), $class);
+
 			}
 
-			public function day_event_heading_add_html($date, $html, $class = 'event', $url = NULL) {
+			public function day_event_heading_add_html($date, $html, $class = 'event') {
 
 				if (!isset($this->day_events[$date])) {
 					$this->day_events[$date] = [];
@@ -290,7 +303,6 @@
 						'element' => 'h4',
 						'class' => $class,
 						'html' => $html,
-						'url' => $url,
 					);
 
 			}
@@ -612,18 +624,8 @@
 				if (isset($this->day_events[$date])) {
 
 					foreach ($this->day_events[$date] as $event) {
-
 						$html .= '
-								<' . html($event['element']) . ' class="' . html($event['class']) . '">';
-
-						if (isset($event['url'])) {
-							$html .= '<a href="' . html($event['url']) . '">' . $event['html'] . '</a>';
-						} else {
-							$html .= $event['html'];
-						}
-
-						$html .= '</' . html($event['element']) . '>';
-
+								<' . html($event['element']) . ' class="' . html($event['class']) . '">' . $event['html'] . '</' . html($event['element']) . '>';
 					}
 
 				}
