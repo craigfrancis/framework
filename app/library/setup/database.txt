@@ -999,6 +999,155 @@
             }
         }
     },
+    "tpl_system_nearest_cache": {
+        "fields": {
+            "search": {
+                "type": "varchar",
+                "length": "200",
+                "collation": "utf8mb4_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "varchar(200) NOT NULL"
+            },
+            "country": {
+                "type": "varchar",
+                "length": "10",
+                "collation": "utf8mb4_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "varchar(10) NOT NULL"
+            },
+            "latitude": {
+                "type": "double",
+                "length": null,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "double NOT NULL"
+            },
+            "longitude": {
+                "type": "double",
+                "length": null,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "double NOT NULL"
+            },
+            "accuracy": {
+                "type": "int",
+                "length": "11",
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "int(11) NOT NULL"
+            },
+            "created": {
+                "type": "datetime",
+                "length": 19,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "datetime NOT NULL"
+            },
+            "edited": {
+                "type": "datetime",
+                "length": 19,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "datetime NOT NULL"
+            }
+        },
+        "keys": {
+            "PRIMARY": {
+                "1": {
+                    "non_unique": 0,
+                    "column_name": "search",
+                    "collation": "A",
+                    "sub_part": null,
+                    "packed": null,
+                    "null": "",
+                    "index_type": "BTREE",
+                    "comment": "",
+                    "index_comment": ""
+                },
+                "2": {
+                    "non_unique": 0,
+                    "column_name": "country",
+                    "collation": "A",
+                    "sub_part": null,
+                    "packed": null,
+                    "null": "",
+                    "index_type": "BTREE",
+                    "comment": "",
+                    "index_comment": ""
+                }
+            }
+        }
+    },
+    "tpl_system_nearest_outcode": {
+        "fields": {
+            "outcode": {
+                "type": "varchar",
+                "length": "5",
+                "collation": "utf8mb4_unicode_ci",
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "varchar(5) NOT NULL"
+            },
+            "latitude": {
+                "type": "double",
+                "length": null,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "double NOT NULL"
+            },
+            "longitude": {
+                "type": "double",
+                "length": null,
+                "collation": null,
+                "null": false,
+                "default": null,
+                "extra": "",
+                "options": null,
+                "definition": "double NOT NULL"
+            }
+        },
+        "keys": {
+            "PRIMARY": {
+                "1": {
+                    "non_unique": 0,
+                    "column_name": "outcode",
+                    "collation": "A",
+                    "sub_part": null,
+                    "packed": null,
+                    "null": "",
+                    "index_type": "BTREE",
+                    "comment": "",
+                    "index_comment": ""
+                }
+            }
+        }
+    },
     "tpl_system_redirect": {
         "fields": {
             "url_src": {

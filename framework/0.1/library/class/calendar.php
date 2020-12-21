@@ -612,8 +612,18 @@
 				if (isset($this->day_events[$date])) {
 
 					foreach ($this->day_events[$date] as $event) {
+
 						$html .= '
-								<' . html($event['element']) . ' class="' . html($event['class']) . '">' . $event['html'] . '</' . html($event['element']) . '>';
+								<' . html($event['element']) . ' class="' . html($event['class']) . '">';
+
+						if (isset($event['url'])) {
+							$html .= '<a href="' . html($event['url']) . '">' . $event['html'] . '</a>';
+						} else {
+							$html .= $event['html'];
+						}
+
+						$html .= '</' . html($event['element']) . '>';
+
 					}
 
 				}
