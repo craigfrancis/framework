@@ -289,7 +289,7 @@
 					$html = '<a href="' . html($url) . '">' . $html . '</a>';
 				}
 
-				$this->day_event_heading_add_html($date, nl2br(html(trim($text))), $class);
+				$this->day_event_heading_add_html($date, $html, $class);
 
 			}
 
