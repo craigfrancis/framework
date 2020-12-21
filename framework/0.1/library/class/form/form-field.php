@@ -79,22 +79,20 @@
 				//--------------------------------------------------
 				// Name
 
-					if ($name == '') {
-						$name = substr(human_to_ref($label), 0, 30);
+					if ($name == '') { // Auto generate a name
+
+						$name = substr(human_to_ref($label), 0, 30); // Trim really long labels
+
 						if ($name == '' && !in_array($type, ['info', 'html'])) {
-							if (SERVER == 'stage') {
-								exit_with_error('Cannot have a field with no name.', $type);
-							} else {
-								report_add('Cannot have a field with no name.', 'error'); // TODO: Change to an exit_with_error
-							}
+							exit_with_error('Cannot have a field with no name.', $type);
 						}
-					}
 
-					$name_original = $name;
+						$k = 1;
+						$name_original = $name;
+						while (config::array_search('form.fields', $name) !== false) { // Ensure it's unique - provided names don't use this check, e.g. "names[]"
+							$name = $name_original . '_' . ++$k;
+						}
 
-					$k = 1;
-					while (config::array_search('form.fields', $name) !== false) {
-						$name = $name_original . '_' . ++$k;
 					}
 
 					$this->input_name_set($name);
@@ -230,7 +228,7 @@
 
 			public function input_name_set($name) { // name usually set on init, use this function ONLY if you really need to change it afterwards.
 
-				if ($this->name !== NULL) {
+				if ($this->name !== NULL) { // Remove the old name from list of used names
 					$fields = config::get('form.fields');
 					if (is_array($fields)) {
 						$key = array_search($this->name, $fields);
