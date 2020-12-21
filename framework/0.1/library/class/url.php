@@ -247,7 +247,7 @@
 
 					$scheme_http = in_array($scheme, ['http', 'https']);
 
-					if (!in_array($scheme, $this->schemes)) { // Projection against "javascript:xxx" type links.
+					if (!in_array($scheme, $this->schemes)) { // Projection against 'javascript:' type links, and remember schemes like ' javascript:' (leading space) and "java\nscript:" also work in the browser.
 						exit_with_error('Invalid scheme "' . $scheme . '"', 'Allowed schemes: ' . implode(', ', $this->schemes));
 					}
 
