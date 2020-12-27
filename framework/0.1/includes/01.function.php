@@ -175,7 +175,9 @@
 	}
 
 	function html($text) {
-		return htmlspecialchars($text, (ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE), config::get('output.charset')); // htmlentities does not work for HTML5+XML
+		return htmlspecialchars($text, (ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE | ENT_DISALLOWED), config::get('output.charset'));
+			// htmlentities does not work for HTML5+XML
+			// Using ENT_DISALLOWED as well, because certain characters like \x01 are valid in general (passes ENT_SUBSTITUTE), but not valid for HTML documents.
 	}
 
 	function html_decode($html) {
