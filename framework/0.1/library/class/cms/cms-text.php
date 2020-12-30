@@ -288,7 +288,7 @@
 
 			}
 
-			protected function content_cleanup_html($html) {
+			public function content_cleanup_html($html) {
 				return $html; // This hook can be used to modify the content outside of the cache (e.g. based on logged in user), if you extend this object, please keep this method quick/simple.
 			}
 
