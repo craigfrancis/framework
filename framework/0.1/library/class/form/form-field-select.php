@@ -415,7 +415,7 @@
 
 									$value = $this->option_values[$key];
 
-									$attributes = (isset($this->options_attributes[$key]) ? $this->options_attributes[$key] : []);
+									$attributes = ($this->options_attributes[$key] ?? []);
 									$attributes['value'] = $key;
 									if (in_array($key, $print_values)) {
 										$attributes['selected'] = 'selected';
@@ -449,7 +449,7 @@
 
 								// Cannot do strict check with in_array() as an ID from the db may be a string or int.
 
-							$attributes = (isset($this->options_attributes[$key]) ? $this->options_attributes[$key] : []);
+							$attributes = ($this->options_attributes[$key] ?? []);
 							$attributes['value'] = $key;
 							if (in_array($key, $print_values)) {
 								$attributes['selected'] = 'selected';

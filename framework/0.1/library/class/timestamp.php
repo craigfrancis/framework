@@ -385,7 +385,7 @@
 					$country = config::get('timestamp.holiday_country', 'england-and-wales');
 				}
 
-				return (isset($holidays[$country]) ? $holidays[$country] : []);
+				return ($holidays[$country] ?? []);
 
 			}
 

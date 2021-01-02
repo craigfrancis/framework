@@ -390,7 +390,7 @@
 
 				$csp = config::get('output.csp_directives');
 
-				$csp[$directive] = array_merge((isset($csp[$directive]) ? $csp[$directive] : []), $sources);
+				$csp[$directive] = array_merge(($csp[$directive] ?? []), $sources);
 
 				config::set('output.csp_directives', $csp);
 
