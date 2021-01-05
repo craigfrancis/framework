@@ -332,11 +332,7 @@
 			}
 
 			public function heading_add($heading, $sort_name = NULL, $class_name = '', $config = []) {
-				if ($heading instanceof html_template || $heading instanceof html_template_immutable) {
-					return $this->heading_add_html($heading, $sort_name, $class_name, $config);
-				} else {
-					return $this->heading_add_html(nl2br(html($heading)), $sort_name, $class_name, $config);
-				}
+				return $this->heading_add_html(to_safe_html($heading), $sort_name, $class_name, $config);
 			}
 
 			public function heading_add_html($heading_html, $sort_name = NULL, $class_name = '', $config = []) {
@@ -395,11 +391,7 @@
 			}
 
 			public function footer_add($footer, $class_name = '', $config = []) {
-				if ($footer instanceof html_template || $footer instanceof html_template_immutable) {
-					$this->footer_add_html($footer, $class_name, $config);
-				} else {
-					$this->footer_add_html(nl2br(html($footer)), $class_name, $config);
-				}
+				$this->footer_add_html(to_safe_html($footer), $class_name, $config);
 			}
 
 			public function footer_add_html($footer_html, $class_name = '', $config = []) {
@@ -1295,7 +1287,7 @@
 		public function cell_add_link($url, $text, $config = [], $b = []) {
 
 			if ($url) {
-				$html = '<a href="' . html($url) . '">' . nl2br(html($text)) . '</a>';
+				$html = '<a href="' . html($url) . '">' . to_safe_html($text) . '</a>';
 			} else {
 				$html = NULL;
 			}

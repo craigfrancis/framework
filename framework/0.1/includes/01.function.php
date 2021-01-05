@@ -174,6 +174,14 @@
 		return new html_template($template_html, $parameters);
 	}
 
+	function to_safe_html($input) {
+		if ($input instanceof html_template || $input instanceof html_template_immutable) {
+			return $input;
+		} else {
+			return nl2br(html($input));
+		}
+	}
+
 	function html($text) {
 		return htmlspecialchars($text, (ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE | ENT_DISALLOWED), config::get('output.charset'));
 			// htmlentities does not work for HTML5+XML
