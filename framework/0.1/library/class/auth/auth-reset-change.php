@@ -264,8 +264,9 @@
 				// Config
 
 					$config = array_merge(array(
-							'form'  => NULL,
-							'login' => true,
+							'form'            => NULL,
+							'login'           => true,
+							'session_restore' => NULL,
 						), $config);
 
 					if ($this->details === NULL) {
@@ -370,7 +371,7 @@
 				//--------------------------------------------------
 				// Try to restore session, if there are no limits
 
-					if ($limit_ref === '') {
+					if ($config['session_restore'] !== false && $limit_ref === '') {
 						save_request_restore($this->details['identification']);
 					}
 

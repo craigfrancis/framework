@@ -167,8 +167,9 @@
 				// Config
 
 					$config = array_merge(array(
-							'form'          => NULL,
-							'remember_user' => NULL,
+							'form'            => NULL,
+							'remember_user'   => NULL,
+							'session_restore' => NULL,
 						), $config);
 
 					if ($this->details === NULL) {
@@ -223,7 +224,7 @@
 				//--------------------------------------------------
 				// Try to restore session, if there are no limits
 
-					if ($limit_ref === '') {
+					if ($config['session_restore'] !== false && $limit_ref === '') {
 						save_request_restore($this->details['identification']);
 					}
 
