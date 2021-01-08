@@ -856,7 +856,7 @@
 			}
 
 			public function error_add($error, $hidden_info = NULL) {
-				$this->error_add_html(html($error), $hidden_info);
+				$this->error_add_html(to_safe_html($error), $hidden_info);
 			}
 
 			public function error_add_html($error_html, $hidden_info = NULL) {
