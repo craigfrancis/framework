@@ -152,7 +152,7 @@
 			}
 
 			public function min_date_set($error, $date) {
-				$this->min_date_set_html(html($error), $date);
+				$this->min_date_set_html(to_safe_html($error), $date);
 			}
 
 			public function min_date_set_html($error_html, $date) {
@@ -178,7 +178,7 @@
 			}
 
 			public function max_date_set($error, $date) {
-				$this->max_date_set_html(html($error), $date);
+				$this->max_date_set_html(to_safe_html($error), $date);
 			}
 
 			public function max_date_set_html($error_html, $date) {

@@ -43,7 +43,7 @@
 		// Errors
 
 			public function required_error_set($error) {
-				$this->required_error_set_html(html($error));
+				$this->required_error_set_html(to_safe_html($error));
 			}
 
 			public function required_error_set_html($error_html) {
@@ -57,7 +57,7 @@
 			}
 
 			public function invalid_error_set($error) {
-				$this->invalid_error_set_html(html($error));
+				$this->invalid_error_set_html(to_safe_html($error));
 			}
 
 			public function invalid_error_set_html($error_html) {
@@ -76,7 +76,7 @@
 			}
 
 			public function min_timestamp_set($error, $timestamp) {
-				$this->min_timestamp_set_html(html($error), $timestamp);
+				$this->min_timestamp_set_html(to_safe_html($error), $timestamp);
 			}
 
 			public function min_timestamp_set_html($error_html, $timestamp) {
@@ -102,7 +102,7 @@
 			}
 
 			public function max_timestamp_set($error, $timestamp) {
-				$this->max_timestamp_set_html(html($error), $timestamp);
+				$this->max_timestamp_set_html(to_safe_html($error), $timestamp);
 			}
 
 			public function max_timestamp_set_html($error_html, $timestamp) {

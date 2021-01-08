@@ -103,7 +103,7 @@
 			}
 
 			public function min_time_set($error, $time) {
-				$this->min_time_set_html(html($error), $time);
+				$this->min_time_set_html(to_safe_html($error), $time);
 			}
 
 			public function min_time_set_html($error_html, $time) {
@@ -129,7 +129,7 @@
 			}
 
 			public function max_time_set($error, $time) {
-				$this->max_time_set_html(html($error), $time);
+				$this->max_time_set_html(to_safe_html($error), $time);
 			}
 
 			public function max_time_set_html($error_html, $time) {

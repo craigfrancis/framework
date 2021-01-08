@@ -509,7 +509,7 @@
 			}
 
 			public function required_mark_set($required_mark) {
-				$this->required_mark_set_html(html($required_mark));
+				$this->required_mark_set_html(to_safe_html($required_mark));
 			}
 
 			public function required_mark_set_html($required_mark_html) {
@@ -539,7 +539,7 @@
 			}
 
 			public function label_prefix_set($prefix) {
-				$this->label_prefix_set_html(html($prefix));
+				$this->label_prefix_set_html(to_safe_html($prefix));
 			}
 
 			public function label_prefix_set_html($prefix_html) {
@@ -551,7 +551,7 @@
 			}
 
 			public function label_suffix_set($suffix) {
-				$this->label_suffix_set_html(html($suffix));
+				$this->label_suffix_set_html(to_safe_html($suffix));
 			}
 
 			public function label_suffix_set_html($suffix_html) {
@@ -797,7 +797,7 @@
 		// Errors
 
 			public function csrf_error_set($error) {
-				$this->csrf_error_set_html(html($error));
+				$this->csrf_error_set_html(to_safe_html($error));
 			}
 
 			public function csrf_error_set_html($error_html) {

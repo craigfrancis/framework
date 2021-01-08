@@ -99,7 +99,7 @@
 		// Errors
 
 			public function min_length_set($error, $size = 1) { // Default is "required"
-				$this->min_length_set_html(html($error), $size);
+				$this->min_length_set_html(to_safe_html($error), $size);
 			}
 
 			public function min_length_set_html($error_html, $size = 1) {
@@ -116,7 +116,7 @@
 			}
 
 			public function max_length_set($error, $size = NULL) {
-				$this->max_length_set_html(html($error), $size);
+				$this->max_length_set_html(to_safe_html($error), $size);
 			}
 
 			public function max_length_set_html($error_html, $size = NULL) {

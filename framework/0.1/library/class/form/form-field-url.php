@@ -30,7 +30,7 @@
 		// Errors
 
 			public function format_error_set($error) {
-				$this->format_error_set_html(html($error));
+				$this->format_error_set_html(to_safe_html($error));
 			}
 
 			public function format_error_set_html($error_html) {
@@ -57,7 +57,7 @@
 			}
 
 			public function scheme_allowed_set($error, $schemes) {
-				$this->scheme_allowed_set_html(html($error), $schemes);
+				$this->scheme_allowed_set_html(to_safe_html($error), $schemes);
 			}
 
 			public function scheme_allowed_set_html($error_html, $schemes) {

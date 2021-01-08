@@ -42,7 +42,7 @@
 		// Errors
 
 			public function required_error_set($error) {
-				$this->required_error_set_html(html($error));
+				$this->required_error_set_html(to_safe_html($error));
 			}
 
 			public function required_error_set_html($error_html) {

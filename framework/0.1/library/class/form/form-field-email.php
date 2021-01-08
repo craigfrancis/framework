@@ -46,7 +46,7 @@
 			}
 
 			public function domain_error_set($error, $skip_label = NULL) { // If a domain error is not set, the format error will be used (assuming the domain is checked).
-				$this->domain_error_set_html(html($error), html($skip_label));
+				$this->domain_error_set_html(to_safe_html($error), html($skip_label));
 			}
 
 			public function domain_error_set_html($error_html, $skip_label_html = NULL) {
@@ -66,7 +66,7 @@
 			}
 
 			public function format_error_set($error) {
-				$this->format_error_set_html(html($error));
+				$this->format_error_set_html(to_safe_html($error));
 			}
 
 			public function format_error_set_html($error_html) {

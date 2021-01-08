@@ -237,7 +237,7 @@
 		// Errors
 
 			public function required_error_set($error) {
-				$this->required_error_set_html(html($error));
+				$this->required_error_set_html(to_safe_html($error));
 			}
 
 			public function required_error_set_html($error_html) {
@@ -251,7 +251,7 @@
 			}
 
 			public function max_size_set($error, $size = NULL) {
-				$this->max_size_set_html(html($error), $size);
+				$this->max_size_set_html(to_safe_html($error), $size);
 			}
 
 			public function max_size_set_html($error_html, $size = NULL) {
@@ -337,7 +337,7 @@
 			}
 
 			public function partial_file_error_set($error) {
-				$this->partial_file_error_set_html(html($error));
+				$this->partial_file_error_set_html(to_safe_html($error));
 			}
 
 			public function partial_file_error_set_html($error_html) {
@@ -356,7 +356,7 @@
 			}
 
 			public function allowed_file_types_mime_set($error, $types) {
-				$this->allowed_file_types_mime_set_html(html($error), $types);
+				$this->allowed_file_types_mime_set_html(to_safe_html($error), $types);
 			}
 
 			public function allowed_file_types_mime_set_html($error_html, $types) {
@@ -373,7 +373,7 @@
 			}
 
 			public function allowed_file_types_ext_set($error, $types) {
-				$this->allowed_file_types_ext_set_html(html($error), $types);
+				$this->allowed_file_types_ext_set_html(to_safe_html($error), $types);
 			}
 
 			public function allowed_file_types_ext_set_html($error_html, $types) {
@@ -390,7 +390,7 @@
 			}
 
 			public function empty_file_error_set($error) {
-				$this->empty_file_error_set_html(html($error));
+				$this->empty_file_error_set_html(to_safe_html($error));
 			}
 
 			public function empty_file_error_set_html($error_html) {
@@ -409,7 +409,7 @@
 			}
 
 			public function blank_name_error_set($error) {
-				$this->blank_name_error_set_html(html($error));
+				$this->blank_name_error_set_html(to_safe_html($error));
 			}
 
 			public function blank_name_error_set_html($error_html) {

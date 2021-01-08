@@ -38,7 +38,7 @@
 			}
 
 			public function options_info_set($options_info) {
-				$this->options_info_set_html(array_map('html', $options_info));
+				$this->options_info_set_html(array_map('to_safe_html', $options_info));
 			}
 
 			public function options_info_set_html($options_info_html) {

@@ -284,7 +284,7 @@
 			}
 
 			public function active_asc_prefix_set($content) {
-				$this->sort_active_asc_prefix_html = html($content);
+				$this->sort_active_asc_prefix_html = to_safe_html($content);
 			}
 
 			public function active_asc_prefix_set_html($content_html) {
@@ -292,7 +292,7 @@
 			}
 
 			public function active_asc_suffix_set($content) {
-				$this->sort_active_asc_suffix_html = html($content);
+				$this->sort_active_asc_suffix_html = to_safe_html($content);
 			}
 
 			public function active_asc_suffix_set_html($content_html) {
@@ -300,7 +300,7 @@
 			}
 
 			public function active_desc_prefix_set($content) {
-				$this->sort_active_desc_prefix_html = html($content);
+				$this->sort_active_desc_prefix_html = to_safe_html($content);
 			}
 
 			public function active_desc_prefix_set_html($content_html) {
@@ -308,7 +308,7 @@
 			}
 
 			public function active_desc_suffix_set($content) {
-				$this->sort_active_desc_suffix_html = html($content);
+				$this->sort_active_desc_suffix_html = to_safe_html($content);
 			}
 
 			public function active_desc_suffix_set_html($content_html) {
@@ -316,7 +316,7 @@
 			}
 
 			public function inactive_prefix_set($content) {
-				$this->sort_inactive_prefix_html = html($content);
+				$this->sort_inactive_prefix_html = to_safe_html($content);
 			}
 
 			public function inactive_prefix_set_html($content_html) {
@@ -324,7 +324,7 @@
 			}
 
 			public function inactive_suffix_set($content) {
-				$this->sort_inactive_suffix_html = html($content);
+				$this->sort_inactive_suffix_html = to_safe_html($content);
 			}
 
 			public function inactive_suffix_set_html($content_html) {
@@ -436,7 +436,7 @@
 			}
 
 			public function no_records_set($no_records) {
-				$this->no_records_html = html($no_records);
+				$this->no_records_html = to_safe_html($no_records);
 			}
 
 			public function no_records_set_html($no_records_html) {

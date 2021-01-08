@@ -255,7 +255,7 @@
 		// Heading
 
 			public function day_heading_set($date, $text) {
-				$this->day_heading_set_html($date, nl2br(html(trim($text))));
+				$this->day_heading_set_html($date, to_safe_html($text));
 			}
 
 			public function day_heading_set_html($date, $html) {

@@ -60,7 +60,7 @@
 		// Errors
 
 			public function min_width_set($error, $size) {
-				$this->min_width_set_html(html($error), $size);
+				$this->min_width_set_html(to_safe_html($error), $size);
 			}
 
 			public function min_width_set_html($error_html, $size) {
@@ -81,7 +81,7 @@
 			}
 
 			public function max_width_set($error, $size) {
-				$this->max_width_set_html(html($error), $size);
+				$this->max_width_set_html(to_safe_html($error), $size);
 			}
 
 			public function max_width_set_html($error_html, $size) {
@@ -102,7 +102,7 @@
 			}
 
 			public function required_width_set($error, $size) {
-				$this->required_width_set_html(html($error), $size);
+				$this->required_width_set_html(to_safe_html($error), $size);
 			}
 
 			public function required_width_set_html($error_html, $size) {
@@ -136,7 +136,7 @@
 			}
 
 			public function min_height_set($error, $size) {
-				$this->min_height_set_html(html($error), $size);
+				$this->min_height_set_html(to_safe_html($error), $size);
 			}
 
 			public function min_height_set_html($error_html, $size) {
@@ -157,7 +157,7 @@
 			}
 
 			public function max_height_set($error, $size) {
-				$this->max_height_set_html(html($error), $size);
+				$this->max_height_set_html(to_safe_html($error), $size);
 			}
 
 			public function max_height_set_html($error_html, $size) {
@@ -178,7 +178,7 @@
 			}
 
 			public function required_height_set($error, $size) {
-				$this->required_height_set_html(html($error), $size);
+				$this->required_height_set_html(to_safe_html($error), $size);
 			}
 
 			public function required_height_set_html($error_html, $size) {
@@ -212,7 +212,7 @@
 			}
 
 			public function file_type_error_set($error, $types = NULL) {
-				$this->file_type_error_set_html(html($error), $types);
+				$this->file_type_error_set_html(to_safe_html($error), $types);
 			}
 
 			public function file_type_error_set_html($error_html, $types = NULL) {

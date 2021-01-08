@@ -183,7 +183,7 @@
 			}
 
 			public function label_prefix_set($prefix) {
-				$this->label_prefix_set_html(html($prefix));
+				$this->label_prefix_set_html(to_safe_html($prefix));
 			}
 
 			public function label_prefix_set_html($prefix_html) {
@@ -191,7 +191,7 @@
 			}
 
 			public function label_suffix_set($suffix) {
-				$this->label_suffix_set_html(html($suffix));
+				$this->label_suffix_set_html(to_safe_html($suffix));
 			}
 
 			public function label_suffix_set_html($suffix_html) {
@@ -290,7 +290,7 @@
 			}
 
 			public function info_set($info) {
-				$this->info_set_html($info === NULL ? NULL : html($info)); // An empty string can be used for the element to exist (e.g. for JS to populate)
+				$this->info_set_html($info === NULL ? NULL : to_safe_html($info)); // An empty string can be used for the element to exist (e.g. for JS to populate)
 			}
 
 			public function info_set_html($info_html) {
@@ -310,7 +310,7 @@
 			}
 
 			public function required_mark_set($required_mark) {
-				$this->required_mark_set_html($required_mark === true ? true : html($required_mark));
+				$this->required_mark_set_html($required_mark === true ? true : to_safe_html($required_mark));
 			}
 
 			public function required_mark_set_html($required_mark_html) {
@@ -541,7 +541,7 @@
 		// Errors
 
 			public function error_set($error) {
-				$this->error_set_html(html($error));
+				$this->error_set_html(to_safe_html($error));
 			}
 
 			public function error_set_html($error_html) {
@@ -549,7 +549,7 @@
 			}
 
 			public function error_add($error, $hidden_info = NULL) {
-				$this->error_add_html(html($error), $hidden_info);
+				$this->error_add_html(to_safe_html($error), $hidden_info);
 			}
 
 			public function error_add_html($error_html, $hidden_info = NULL) {

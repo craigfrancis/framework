@@ -51,7 +51,7 @@
 		// Errors
 
 			public function format_error_set($error) {
-				$this->format_error_set_html(html($error));
+				$this->format_error_set_html(to_safe_html($error));
 			}
 
 			public function format_error_set_html($error_html) {
@@ -69,7 +69,7 @@
 			}
 
 			public function required_error_set($error) {
-				$this->min_length_set_html(html($error));
+				$this->min_length_set_html(to_safe_html($error));
 			}
 
 			public function required_error_set_html($error_html) {
@@ -77,7 +77,7 @@
 			}
 
 			public function min_value_set($error, $value) {
-				$this->min_value_set_html(html($error), $value);
+				$this->min_value_set_html(to_safe_html($error), $value);
 			}
 
 			public function min_value_set_html($error_html, $value) {
@@ -91,7 +91,7 @@
 			}
 
 			public function max_value_set($error, $value) {
-				$this->max_value_set_html(html($error), $value);
+				$this->max_value_set_html(to_safe_html($error), $value);
 			}
 
 			public function max_value_set_html($error_html, $value) {
@@ -110,7 +110,7 @@
 			}
 
 			public function step_value_set($error, $step = 1) {
-				$this->step_value_set_html(html($error), $step);
+				$this->step_value_set_html(to_safe_html($error), $step);
 			}
 
 			public function step_value_set_html($error_html, $step = 1) {
