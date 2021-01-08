@@ -267,7 +267,7 @@
 
 			public function day_event_add($date, $text, $class = 'event', $url = NULL) {
 
-				$html = nl2br(html(trim($text)));
+				$html = to_safe_html($text);
 				if ($url instanceof url || $url instanceof url_immutable) { // Ensures 'javascript:' or similar aren't used.
 					$html = '<a href="' . html($url) . '">' . $html . '</a>';
 				}
@@ -282,7 +282,7 @@
 
 			public function day_event_heading_add($date, $text, $class = 'heading', $url = NULL) {
 
-				$html = nl2br(html(trim($text)));
+				$html = to_safe_html($text);
 				if ($url instanceof url || $url instanceof url_immutable) {
 					$html = '<a href="' . html($url) . '">' . $html . '</a>';
 				}
