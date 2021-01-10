@@ -122,6 +122,7 @@
 				// Authorisation
 
 						// https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
+						// https://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
 
 					$canonical_request = implode("\n", [
 							$method,
