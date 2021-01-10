@@ -1,7 +1,7 @@
 
-# Socket helper
+# Connection helper
 
-You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/socket/socket.php).
+You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/connection/connection.php).
 
 Kind of like [Symfony BrowserKit](https://github.com/symfony/BrowserKit).
 
@@ -11,25 +11,25 @@ Kind of like [Symfony BrowserKit](https://github.com/symfony/BrowserKit).
 
 Setup:
 
-	$socket = new socket();
-	// $socket->value_set('key', $value);
-	// $socket->header_set('name', 'value');
-	// $socket->cookie_set('name', 'value');
+	$connection = new connection();
+	// $connection->value_set('key', $value);
+	// $connection->header_set('name', 'value');
+	// $connection->cookie_set('name', 'value');
 
 Requesting a resource:
 
-	$socket->get('https://www.example.com');
-	// $socket->post('https://www.example.com');
-	// $socket->put('https://www.example.com');
-	// $socket->delete('https://www.example.com');
+	$connection->get('https://www.example.com');
+	// $connection->post('https://www.example.com');
+	// $connection->put('https://www.example.com');
+	// $connection->delete('https://www.example.com');
 
 Returning the response:
 
-	debug($socket->response_code_get());
-	debug($socket->response_mime_get());
-	debug($socket->response_headers_get());
-	debug($socket->response_data_get());
-	debug($socket->response_full_get());
+	debug($connection->response_code_get());
+	debug($connection->response_mime_get());
+	debug($connection->response_headers_get());
+	debug($connection->response_data_get());
+	debug($connection->response_full_get());
 
 If there is a connection problem, by default it will call [`exit_with_error`](../../doc/system/functions.md)() automatically.
 
@@ -39,35 +39,35 @@ If there is a connection problem, by default it will call [`exit_with_error`](..
 
 To handle errors yourself, do something like:
 
-	$socket = new socket();
-	$socket->exit_on_error_set(false);
+	$connection = new connection();
+	$connection->exit_on_error_set(false);
 
-	if ($socket->get('https://www.example.com') && $socket->response_code_get() == 200) {
-		$response = $socket->response_data_get();
+	if ($connection->get('https://www.example.com') && $connection->response_code_get() == 200) {
+		$response = $connection->response_data_get();
 	} else {
-		exit($socket->error_message_get());
+		exit($connection->error_message_get());
 	}
 
 Or perhaps:
 
-	$result = $socket->get('https://www.example.com');
+	$result = $connection->get('https://www.example.com');
 
 	if ($result) {
 		// Success
 	} else {
-		exit($socket->error_message_get());
+		exit($connection->error_message_get());
 	}
 
 ---
 
-## Socket browser
+## Connection browser
 
 Imitate a basic browser
 
 	//--------------------------------------------------
 	// Setup
 
-		$browser = new socket_browser();
+		$browser = new connection_browser();
 		// $browser->debug_set(true);
 
 	//--------------------------------------------------
@@ -106,7 +106,7 @@ Imitate a basic browser
 	//--------------------------------------------------
 	// GZip encoding
 
-		$browser = new socket_browser();
+		$browser = new connection_browser();
 		$browser->header_set('User-Agent', 'RSS Reader');
 		$browser->header_set('Accept', 'application/rss+xml');
 		$browser->encoding_accept_set('gzip', true);

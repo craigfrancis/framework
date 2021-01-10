@@ -43,23 +43,23 @@
 						$diff_url = gateway_url('cli-diff-db');
 						$diff_url->format_set('full');
 
-						$diff_socket = new socket();
-						$diff_socket->exit_on_error_set(false);
+						$diff_connection = new connection();
+						$diff_connection->exit_on_error_set(false);
 
 						$diff_time = new timestamp('now', 'UTC');
 						$diff_iso = $diff_time->format('Y-m-d H:i:s');
 						$diff_key = hash('sha256', (ENCRYPTION_KEY . $diff_iso));
 
-						if ($diff_socket->post($diff_url, array('key' => $diff_key, 'timestamp' => $diff_iso, 'upload' => ($upload ? 'true' : 'false')))) {
+						if ($diff_connection->post($diff_url, array('key' => $diff_key, 'timestamp' => $diff_iso, 'upload' => ($upload ? 'true' : 'false')))) {
 
-							echo $diff_socket->response_data_get();
+							echo $diff_connection->response_data_get();
 
 						} else {
 
 							echo "\n";
 							echo 'Checking DB Diff:' . "\n";
 							echo '  URL: ' . $diff_url . "\n";
-							echo '  Error: ' . $diff_socket->error_message_get() . "\n\n";
+							echo '  Error: ' . $diff_connection->error_message_get() . "\n\n";
 
 						}
 

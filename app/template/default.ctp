@@ -134,6 +134,7 @@
 				$helpers_nav = new nav();
 				$helpers_nav->link_add('/doc/helpers/cms-text/', 'CMS Text');
 				$helpers_nav->link_add('/doc/helpers/config/', 'Config');
+				$helpers_nav->link_add('/doc/helpers/connection/', 'Connection');
 				$helpers_nav->link_add('/doc/helpers/cookie/', 'Cookie');
 				$helpers_nav->link_add('/doc/helpers/email/', 'Email');
 				$helpers_nav->link_add('/doc/helpers/file/', 'File');
@@ -150,7 +151,6 @@
 				$helpers_nav->link_add('/doc/helpers/query/', 'Query');
 				$helpers_nav->link_add('/doc/helpers/record/', 'Record');
 				$helpers_nav->link_add('/doc/helpers/session/', 'Session');
-				$helpers_nav->link_add('/doc/helpers/socket/', 'Socket');
 				$helpers_nav->link_add('/doc/helpers/table/', 'Table');
 				$helpers_nav->link_add('/doc/helpers/timestamp/', 'Timestamp');
 				$helpers_nav->link_add('/doc/helpers/url/', 'URL');

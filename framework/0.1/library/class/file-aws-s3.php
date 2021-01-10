@@ -636,23 +636,23 @@ Abbreviations:
 				//--------------------------------------------------
 				// Send
 
-					$socket = new socket();
-					$socket->exit_on_error_set(false);
+					$connection = new connection();
+					$connection->exit_on_error_set(false);
 
 					foreach ($request_headers as $key => $value) {
 						if (!in_array($key, ['Host'])) {
-							$socket->header_set($key, $value);
+							$connection->header_set($key, $value);
 						}
 					}
-					$socket->header_set('Authorization', $authorisation);
+					$connection->header_set('Authorization', $authorisation);
 
-					$result = $socket->request('https://' . $aws_host . '/' . $request['file_name'], $request['method'], $request_content);
+					$result = $connection->request('https://' . $aws_host . '/' . $request['file_name'], $request['method'], $request_content);
 
 					if ($result !== true) {
-						throw new error_exception('Failed connection to AWS', $socket->error_message_get());
+						throw new error_exception('Failed connection to AWS', $connection->error_message_get());
 					}
 
-					$response_code = $socket->response_code_get();
+					$response_code = $connection->response_code_get();
 
 					if ($request['method'] == 'HEAD') {
 
@@ -677,14 +677,14 @@ Abbreviations:
 					} else if ($request['method'] == 'GET') {
 
 						if ($response_code == 200) {
-							return $socket->response_data_get();
+							return $connection->response_data_get();
 						} else if ($response_code == 404) {
 							return false;
 						}
 
 					}
 
-					throw new error_exception('Invalid response from AWS "' . $request['method'] . '"', 'Host: ' . $aws_host . "\n" . 'Code :' . $response_code . "\n\n-----\n\n" . $socket->response_data_get());
+					throw new error_exception('Invalid response from AWS "' . $request['method'] . '"', 'Host: ' . $aws_host . "\n" . 'Code: ' . $response_code . "\n\n-----\n\n" . $connection->response_data_get());
 
 			}
 

@@ -381,34 +381,34 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 
 					$this->response_data = '';
 
-					$socket = new socket();
-					$socket->exit_on_error_set(false);
+					$connection = new connection();
+					$connection->exit_on_error_set(false);
 
 					if ($data === NULL) {
 
-						$socket->post($gateway_url_pass);
+						$connection->post($gateway_url_pass);
 
 					} else if (!is_array($data)) {
 
-						$socket->post($gateway_url_pass, $data);
+						$connection->post($gateway_url_pass, $data);
 
 					} else {
 
 						foreach (config::get('gateway.default_values', []) as $name => $value) {
-							$socket->value_set($name, $value);
+							$connection->value_set($name, $value);
 						}
 
 						foreach ($data as $key => $value) {
-							$socket->value_set($key, $value);
+							$connection->value_set($key, $value);
 						}
 
-						$socket->post($gateway_url_pass);
+						$connection->post($gateway_url_pass);
 
 					}
 
-					$this->response_data = $socket->response_data_get();
-					$this->response_mime = $socket->response_mime_get();
-					$this->response_code = $socket->response_code_get();
+					$this->response_data = $connection->response_data_get();
+					$this->response_mime = $connection->response_mime_get();
+					$this->response_code = $connection->response_code_get();
 
 				//--------------------------------------------------
 				// Debug
@@ -457,7 +457,7 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 						}
 
 						if ($this->exit_on_error) {
-							exit_with_error($this->response_error, $socket->response_full_get());
+							exit_with_error($this->response_error, $connection->response_full_get());
 						} else {
 							$this->response_data = NULL;
 							$this->response_mime = NULL;

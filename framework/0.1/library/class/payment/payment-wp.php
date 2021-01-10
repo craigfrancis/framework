@@ -56,7 +56,7 @@
 				//--------------------------------------------------
 				// Browser object
 
-					$browser = new socket_browser();
+					$browser = new connection_browser();
 
 				//--------------------------------------------------
 				// Login page

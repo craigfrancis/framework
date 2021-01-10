@@ -183,12 +183,12 @@
 				//--------------------------------------------------
 				// Post request
 
-					$socket = new socket();
-					$socket->exit_on_error_set(false);
-					$socket->post($request_url, $details);
+					$connection = new connection();
+					$connection->exit_on_error_set(false);
+					$connection->post($request_url, $details);
 
-					if ($socket->response_code_get() == 200) {
-						parse_str($socket->response_data_get(), $response);
+					if ($connection->response_code_get() == 200) {
+						parse_str($connection->response_data_get(), $response);
 					} else {
 						$response = [];
 					}
@@ -201,11 +201,11 @@
 							'request_method' => $details['METHOD'],
 							'request_data' => debug_dump($details),
 							'response_data' => debug_dump($response),
-							'response_raw' => debug_dump($socket->response_full_get()),
+							'response_raw' => debug_dump($connection->response_full_get()),
 							'created' => new timestamp(),
 						));
 
-					$debug_info = debug_dump($details) . "\n-----\n" . debug_dump($response) . "\n-----\n" . $socket->response_full_get() . "\n-----\n" . $socket->error_message_get();
+					$debug_info = debug_dump($details) . "\n-----\n" . debug_dump($response) . "\n-----\n" . $connection->response_full_get() . "\n-----\n" . $connection->error_message_get();
 
 				//--------------------------------------------------
 				// Process request

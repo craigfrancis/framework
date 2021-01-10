@@ -512,33 +512,33 @@ exit();
 				//--------------------------------------------------
 				// Send
 
-					$socket = new socket();
-					$socket->exit_on_error_set(false);
+					$connection = new connection();
+					$connection->exit_on_error_set(false);
 
-					$result = $socket->post($gateway_url, array('XML' => $xml));
+					$result = $connection->post($gateway_url, array('XML' => $xml));
 
 				//--------------------------------------------------
 				// Result
 
 					if (!$result) {
-						exit_with_error('Invalid network response from SagePay (' . $command . ')', $socket->error_message_get());
+						exit_with_error('Invalid network response from SagePay (' . $command . ')', $connection->error_message_get());
 					}
 
-					$code = $socket->response_code_get();
+					$code = $connection->response_code_get();
 
 					if (!$code == 200) {
-						exit_with_error('Invalid response code (' . $code . ') from SagePay (' . $command . ')', $socket->response_full_get());
+						exit_with_error('Invalid response code (' . $code . ') from SagePay (' . $command . ')', $connection->response_full_get());
 					}
 
 				//--------------------------------------------------
 				// Parse
 
-					$xml = $socket->response_data_get();
+					$xml = $connection->response_data_get();
 
 					$result = simplexml_load_string($xml);
 
 					if (strval($result->errorcode) != '0000') {
-						exit_with_error('Error response from SagePay (' . $command . ')', $socket->response_full_get());
+						exit_with_error('Error response from SagePay (' . $command . ')', $connection->response_full_get());
 					}
 
 					return $result;

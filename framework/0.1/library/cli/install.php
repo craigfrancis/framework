@@ -217,21 +217,21 @@
 					$opcache_url = gateway_url('cli-opcache-clear');
 					$opcache_url->format_set('full');
 
-					$opcache_socket = new socket();
-					$opcache_socket->exit_on_error_set(false);
+					$opcache_connection = new connection();
+					$opcache_connection->exit_on_error_set(false);
 
 					$opcache_time = new timestamp('now', 'UTC');
 					$opcache_iso = $opcache_time->format('Y-m-d H:i:s');
 					$opcache_key = hash('sha256', (ENCRYPTION_KEY . $opcache_iso));
 
-					if ($opcache_socket->post($opcache_url, array('key' => $opcache_key, 'timestamp' => $opcache_iso))) {
-						$opcache_data = $opcache_socket->response_data_get();
+					if ($opcache_connection->post($opcache_url, array('key' => $opcache_key, 'timestamp' => $opcache_iso))) {
+						$opcache_data = $opcache_connection->response_data_get();
 						if ($opcache_data !== 'Success') {
 							$opcache_error = $opcache_data;
 						}
 					} else {
-						$opcache_error = $opcache_socket->error_message_get();
-						$opcache_details = $opcache_socket->error_details_get();
+						$opcache_error = $opcache_connection->error_message_get();
+						$opcache_details = $opcache_connection->error_details_get();
 						if ($opcache_details != '') {
 							$opcache_error .= "\n\n" . '--------------------------------------------------' . "\n\n" . $opcache_details;
 						}

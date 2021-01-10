@@ -2,7 +2,7 @@
 
 	//--------------------------------------------------
 	// INCOMPLETE... basic copy from an old project.
-	// Possibly use the socket class?
+	// Possibly use the connection class?
 	//--------------------------------------------------
 
 //--------------------------------------------------
