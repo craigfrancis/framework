@@ -39,7 +39,7 @@
 							//--------------------------------------------------
 							// Browser object
 
-								$browser = new socket_browser();
+								$browser = new connection_browser();
 								$browser->user_agent_set('Mozilla/5.0');
 
 							//--------------------------------------------------
