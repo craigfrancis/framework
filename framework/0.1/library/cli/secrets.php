@@ -1,8 +1,8 @@
 <?php
 
-// Check config-encrypt.php ... this might replace it.
+// TODO: /private/secrets/ - Main Notes File
 
-// Check TODO: /private/secrets/ - Main Notes File
+// This might replace 'config-encrypt.php' (but check all it's use cases before doing so)
 
 //--------------------------------------------------
 
