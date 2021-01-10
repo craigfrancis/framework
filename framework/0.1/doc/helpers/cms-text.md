@@ -1,7 +1,7 @@
 
 # CMS Text
 
-You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/cms/cms-text.php).
+You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/main/framework/0.1/library/class/cms/cms-text.php).
 
 Helper function:
 

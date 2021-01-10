@@ -1,7 +1,7 @@
 
 # Lock helper
 
-You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/lock.php).
+You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/main/framework/0.1/library/class/lock.php).
 
 Often used with the [loading helper](../../doc/helpers/loading.md), it allows you to obtain a lock, and ensures that no-one else can edit a particular resource.
 

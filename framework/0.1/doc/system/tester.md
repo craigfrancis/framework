@@ -1,7 +1,7 @@
 
 # Tester helper
 
-You can view the helper source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/tester.php).
+You can view the helper source on [GitHub](https://github.com/craigfrancis/framework/blob/main/framework/0.1/library/class/tester.php).
 
 The helper uses [Selenium](http://seleniumhq.org/), where you can download the standalone server from:
 

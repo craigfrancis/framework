@@ -35,7 +35,7 @@ This is why PHP Prime has [extensive debug output](../../doc/setup/debug.md), wh
 
 ## Database interaction
 
-In CakePHP I did finally get the required [debug output](https://github.com/craigfrancis/framework/blob/master/resources/alternatives/cakePHP/dbo_mysql_custom.php), and found that due to how the Models are created (with the relationships being setup site wide), it was often returning information that the current query did not need. So you have to use things like [unbindModel()](http://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#creating-and-destroying-associations-on-the-fly), and remember that these may only work for the next query.
+In CakePHP I did finally get the required [debug output](https://github.com/craigfrancis/framework/blob/main/resources/alternatives/cakePHP/dbo_mysql_custom.php), and found that due to how the Models are created (with the relationships being setup site wide), it was often returning information that the current query did not need. So you have to use things like [unbindModel()](http://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#creating-and-destroying-associations-on-the-fly), and remember that these may only work for the next query.
 
 Likewise other things happen by "default", and without actually thinking/tracing it though, you end up with issues such as the [Mass Assignment Vulnerability](https://stackoverflow.com/q/10458468/), a name for which [I didn't know about](https://groups.google.com/d/topic/cake-php/yvl-x88hl6E/discussion) at the time.
 

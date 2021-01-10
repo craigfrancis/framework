@@ -2,7 +2,7 @@
 
 Intention is to overcome some of the issues with [login and passwords](../../doc/security/logins.md).
 
-You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/user/user.php).
+You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/main/framework/0.1/library/class/user/user.php).
 
 Example setup
 

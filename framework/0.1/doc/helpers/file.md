@@ -1,7 +1,7 @@
 
 # File helper
 
-You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/file.php).
+You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/main/framework/0.1/library/class/file.php).
 
 The helper is a simple wrapper that allows you to save to the /files/ directory.
 

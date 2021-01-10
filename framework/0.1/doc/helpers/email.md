@@ -13,7 +13,7 @@ For example:
 
 And while we are on the subject, there is always the [is_email](../../doc/system/functions.md)() function.
 
-You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/email.php).
+You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/main/framework/0.1/library/class/email.php).
 
 ---
 

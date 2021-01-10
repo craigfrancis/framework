@@ -3,7 +3,7 @@
 
 Notes about hashing passwords... slow, one way.
 
-There is a [password helper](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/password.php) which is a basic wrapper for:
+There is a [password helper](https://github.com/craigfrancis/framework/blob/main/framework/0.1/library/class/password.php) which is a basic wrapper for:
 
 - [`password_hash`](https://php.net/password_hash)()
 - [`password_verify`](https://php.net/password_verify)()

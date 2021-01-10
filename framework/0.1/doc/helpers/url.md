@@ -22,7 +22,7 @@ There are 3 shortcut functions which you can use:
 		echo http_url('/about/');
 			https://www.example.com/about/
 
-You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/url.php).
+You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/main/framework/0.1/library/class/url.php).
 
 ---
 

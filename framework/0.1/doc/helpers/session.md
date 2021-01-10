@@ -3,7 +3,7 @@
 
 To gain access to the PHP session, there is a wrapper class (helper) which works very much the same as the [config helper](../../doc/helpers/config.md).
 
-You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/session.php).
+You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/main/framework/0.1/library/class/session.php).
 
 ---
 

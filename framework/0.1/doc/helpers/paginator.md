@@ -1,7 +1,7 @@
 
 # Paginator helper
 
-You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/paginator.php).
+You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/main/framework/0.1/library/class/paginator.php).
 
 Restricted nav creation, makes a navigation bar like:
 

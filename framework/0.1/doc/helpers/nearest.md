@@ -1,7 +1,7 @@
 
 # Nearest helper
 
-You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/nearest/nearest.php).
+You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/main/framework/0.1/library/class/nearest/nearest.php).
 
 To initialise with a profile:
 

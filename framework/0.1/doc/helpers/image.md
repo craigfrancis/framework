@@ -3,7 +3,7 @@
 
 To see some how the image helper can be used, look at the [examples](/examples/image/).
 
-You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/image.php).
+You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/main/framework/0.1/library/class/image.php).
 
 ---
 

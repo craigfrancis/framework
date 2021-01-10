@@ -1,7 +1,7 @@
 
 # GNU Privacy Guard
 
-You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/gpg.php).
+You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/main/framework/0.1/library/class/gpg.php).
 
 Install dependencies
 

@@ -3,7 +3,7 @@
 
 To see some how the table helper can be used, look at the [examples](/examples/table/).
 
-You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/master/framework/0.1/library/class/table.php).
+You can view the source on [GitHub](https://github.com/craigfrancis/framework/blob/main/framework/0.1/library/class/table.php).
 
 ---
 
