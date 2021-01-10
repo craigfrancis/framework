@@ -2,7 +2,7 @@
 
 // Check config-encrypt.php ... this might replace it.
 
-// Check TODO: /private/secrets/
+// Check TODO: /private/secrets/ - Main Notes File
 
 //--------------------------------------------------
 
