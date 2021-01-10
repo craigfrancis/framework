@@ -93,6 +93,10 @@
 				}
 			}
 
+			public function headers_set($headers) {
+				$this->headers = $headers;
+			}
+
 			public function header_get($name) {
 				return (isset($this->headers[$name]) ? $this->headers[$name] : NULL);
 			}

@@ -123,7 +123,7 @@ Abbreviations:
 		// Variables
 
 			private $file = NULL;
-			private $access_secret = NULL;
+			private $connection = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -167,20 +167,28 @@ Abbreviations:
 				//--------------------------------------------------
 				// Access details
 
-					$this->access_secret = NULL;
+					$access_secret = NULL;
 
 					if ($this->file->config_exists('aws_access_secret')) {
 						try {
 // TODO: /private/secrets/
-							$this->access_secret = config::value_decrypt($this->file->config_get('aws_access_secret'));
+							$access_secret = config::value_decrypt($this->file->config_get('aws_access_secret'));
 						} catch (exception $e) {
-							$this->access_secret = NULL;
+							$access_secret = NULL;
 						}
 					}
 
-					if (!$this->access_secret) {
+					if (!$access_secret) {
 						throw new error_exception('The file_aws_s3 config must set "aws_access_secret", in an encrypted form.');
 					}
+
+				//--------------------------------------------------
+				// Connection
+
+					$this->connection = new connection_aws();
+					$this->connection->exit_on_error_set(false);
+					$this->connection->access_set($this->file->config_get('aws_access_id'), $access_secret);
+					$this->connection->service_set('s3', $this->file->config_get('aws_region'), $this->file->config_get('aws_bucket'));
 
 			}
 
@@ -548,111 +556,41 @@ Abbreviations:
 			private function _aws_request($request) {
 
 				//--------------------------------------------------
-				// Config
+				// Extra headers
 
-					$aws_region = $this->file->config_get('aws_region');
-					$aws_host = $this->file->config_get('aws_bucket') . '.s3-' . $aws_region . '.amazonaws.com';
-
-					$request_content = (isset($request['content']) ? $request['content'] : '');
-					$request_content_hash = hash('sha256', $request_content); // Hash an empty string for GET
-
-					$request_date = gmdate('Ymd');
-					$request_time = gmdate('Ymd\THis\Z');
-
-					$request_headers = [
-							'Content-Type'         => 'application/octet-stream',
-							'Date'                 => $request_time,
-							'Host'                 => $aws_host,
-							'x-amz-content-sha256' => $request_content_hash,
-						];
+					$this->connection->reset();
 
 					if (isset($request['acl'])) {
-						$request_headers['x-amz-acl'] = $request['acl'];
+						$this->connection->header_set('x-amz-acl', $request['acl']);
 					}
 
 					if (isset($request['aes-key'])) {
-						$request_headers['x-amz-server-side-encryption-customer-algorithm'] = 'AES256';
-						$request_headers['x-amz-server-side-encryption-customer-key'] = base64_encode($request['aes-key']);
-						$request_headers['x-amz-server-side-encryption-customer-key-MD5'] = base64_encode(hash('md5', $request['aes-key'], true));
+
+						$this->connection->header_set('x-amz-server-side-encryption-customer-algorithm', 'AES256');
+						$this->connection->header_set('x-amz-server-side-encryption-customer-key', base64_encode($request['aes-key']));
+						$this->connection->header_set('x-amz-server-side-encryption-customer-key-MD5', base64_encode(hash('md5', $request['aes-key'], true)));
+
 					} else if ($request['method'] == 'PUT') {
-						$request_headers['x-amz-server-side-encryption'] = 'AES256';
+
+						$this->connection->header_set('x-amz-server-side-encryption', 'AES256');
+
 					}
 
 				//--------------------------------------------------
-				// Authorisation
+				// Request
 
-						// https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
+					$url = url('/' . $request['file_name']);
 
-					ksort($request_headers);
-
-					$headers_canonical = [];
-					$headers_signed = [];
-					foreach ($request_headers as $key => $value) {
-						$key = strtolower($key);
-						$headers_canonical[] = $key . ':' . $value;
-						$headers_signed[] = $key;
-					}
-					$headers_canonical = implode("\n", $headers_canonical);
-					$headers_signed = implode(';', $headers_signed);
-
-					$canonical_request = implode("\n", [
-							$request['method'],
-							'/' . $request['file_name'],
-							'',
-							$headers_canonical,
-							'',
-							$headers_signed,
-							$request_content_hash,
-						]);
-
-					$scope = implode('/', [
-							$request_date,
-							$aws_region,
-							's3',
-							'aws4_request',
-						]);
-
-					$string_to_sign = implode("\n", [
-							'AWS4-HMAC-SHA256',
-							$request_time,
-							$scope,
-							hash('sha256', $canonical_request),
-						]);
-
-					$signing_key = 'AWS4' . $this->access_secret;
-					$signing_key = hash_hmac('sha256', $request_date, $signing_key, true);
-					$signing_key = hash_hmac('sha256', $aws_region, $signing_key, true);
-					$signing_key = hash_hmac('sha256', 's3', $signing_key, true);
-					$signing_key = hash_hmac('sha256', 'aws4_request', $signing_key, true);
-
-					$signature = hash_hmac('sha256', $string_to_sign, $signing_key);
-
-					$authorisation = 'AWS4-HMAC-SHA256' . ' ' . implode(',', [
-							'Credential=' . $this->file->config_get('aws_access_id') . '/' . $scope,
-							'SignedHeaders=' . $headers_signed,
-							'Signature=' . $signature,
-						]);
-
-				//--------------------------------------------------
-				// Send
-
-					$connection = new connection();
-					$connection->exit_on_error_set(false);
-
-					foreach ($request_headers as $key => $value) {
-						if (!in_array($key, ['Host'])) {
-							$connection->header_set($key, $value);
-						}
-					}
-					$connection->header_set('Authorization', $authorisation);
-
-					$result = $connection->request('https://' . $aws_host . '/' . $request['file_name'], $request['method'], $request_content);
+					$result = $this->connection->request($url, $request['method'], ($request['content'] ?? ''));
 
 					if ($result !== true) {
-						throw new error_exception('Failed connection to AWS', $connection->error_message_get());
+						throw new error_exception('Failed connection to AWS', $this->connection->error_message_get());
 					}
 
-					$response_code = $connection->response_code_get();
+				//--------------------------------------------------
+				// Response
+
+					$response_code = $this->connection->response_code_get();
 
 					if ($request['method'] == 'HEAD') {
 
@@ -677,14 +615,14 @@ Abbreviations:
 					} else if ($request['method'] == 'GET') {
 
 						if ($response_code == 200) {
-							return $connection->response_data_get();
+							return $this->connection->response_data_get();
 						} else if ($response_code == 404) {
 							return false;
 						}
 
 					}
 
-					throw new error_exception('Invalid response from AWS "' . $request['method'] . '"', 'Host: ' . $aws_host . "\n" . 'Code: ' . $response_code . "\n\n-----\n\n" . $connection->response_data_get());
+					throw new error_exception('Invalid response from AWS "' . $request['method'] . '"', 'Code: ' . $response_code . "\n\n-----\n\n" . $this->connection->request_full_get() . "\n\n-----\n\n" . $this->connection->response_headers_get() . "\n\n" . $this->connection->response_data_get());
 
 			}
 
