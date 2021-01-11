@@ -651,6 +651,10 @@
 
 			}
 
+			public function log_value_set($field, $value) {
+				$this->config['log_values'][$field] = $value;
+			}
+
 			protected function log_values_get($field, $old_value, $new_value) {
 
 				return array_merge($this->config['log_values'], array(
