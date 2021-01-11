@@ -322,7 +322,7 @@
 	//--------------------------------------------------
 	// Timestamp to human
 
-		function timestamp_to_human($input_seconds, $accuracy = 0) {
+		function timestamp_to_human($input_seconds, $accuracy = NULL, $abbreviated = false) {
 
 			//--------------------------------------------------
 			// Maths
@@ -349,24 +349,27 @@
 
 				$output_text = [];
 
-				if ($output_weeks    > 0) $output_text[] = $output_weeks    . ' week'   . ($output_weeks    != 1 ? 's' : '');
-				if ($output_days     > 0) $output_text[] = $output_days     . ' day'    . ($output_days     != 1 ? 's' : '');
-				if ($output_hours    > 0) $output_text[] = $output_hours    . ' hour'   . ($output_hours    != 1 ? 's' : '');
-				if ($output_minutes  > 0) $output_text[] = $output_minutes  . ' minute' . ($output_minutes  != 1 ? 's' : '');
+				if ($output_weeks    > 0) $output_text[] = $output_weeks    . ($abbreviated ? 'w' : ' week'   . ($output_weeks    != 1 ? 's' : ''));
+				if ($output_days     > 0) $output_text[] = $output_days     . ($abbreviated ? 'd' : ' day'    . ($output_days     != 1 ? 's' : ''));
+				if ($output_hours    > 0) $output_text[] = $output_hours    . ($abbreviated ? 'h' : ' hour'   . ($output_hours    != 1 ? 's' : ''));
+				if ($output_minutes  > 0) $output_text[] = $output_minutes  . ($abbreviated ? 'm' : ' minute' . ($output_minutes  != 1 ? 's' : ''));
 
 				if ($output_seconds > 0 || count($output_text) == 0) {
-					$output_text[] = $output_seconds  . ' second' . ($output_seconds != 1 ? 's' : '');
+					$output_text[] = $output_seconds  . ($abbreviated ? 's' : ' second' . ($output_seconds != 1 ? 's' : ''));
 				}
 
 			//--------------------------------------------------
 			// Grammar
 
-				if ($accuracy > 0) {
+				if (is_int($accuracy) && $accuracy > 0) {
 					$output_text = array_slice($output_text, 0, $accuracy);
 				}
 
 				$output_text = implode(', ', $output_text);
-				$output_text = preg_replace('/, ([^,]+)$/', ', and $1', $output_text);
+
+				if (!$abbreviated) {
+					$output_text = preg_replace('/, ([^,]+)$/', ', and $1', $output_text);
+				}
 
 			//--------------------------------------------------
 			// Return
