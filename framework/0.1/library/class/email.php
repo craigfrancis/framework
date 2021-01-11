@@ -274,14 +274,14 @@
 				$this->body_html = $content_html;
 			}
 
-			public function request_table_add($values = []) {
+			public function request_table_add($values = [], $date_format = 'l jS F Y, g:i:sa') {
 
 				$uri = config::get('request.uri');
 				$url = http_url();
 
 				$request_values = [
+						'Sent'      => date($date_format),
 						'Loaded'    => NULL,
-						'Sent'      => date('l jS F Y, g:i:sa'),
 						'Website'   => config::get('output.origin'),
 						'Method'    => config::get('request.method'),
 						'Request'   => [
@@ -295,8 +295,7 @@
 
 				$original_time = request('o');
 				if (preg_match('/^[0-9]{10,}$/', $original_time)) {
-					$request_values['Sent'] .= ' (' . timestamp_to_human((time() - $original_time), 2) . ')';
-					$original_time = date('l jS F Y, g:i:sa', $original_time);
+					$original_time = date($date_format, $original_time) . ' (' . timestamp_to_human((time() - $original_time), 2, true) . ')';
 				}
 				if ($original_time !== NULL) {
 					$request_values['Loaded'] = $original_time;

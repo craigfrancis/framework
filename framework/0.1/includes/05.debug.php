@@ -149,7 +149,7 @@
 				$email = new email();
 				$email->default_style_set(NULL);
 				$email->subject_set('System ' . ucfirst($type) . ': ' . config::get('output.domain'));
-				$email->request_table_add($email_values);
+				$email->request_table_add($email_values, 'Y-m-d H:i:s - D jS M');
 				$email->send($error_email);
 
 			}
