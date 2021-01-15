@@ -209,7 +209,7 @@
 							}
 						}
 					} else if ($type == 'datetime') {
-						if (!preg_match('/^[0-9TWZPHMS \:\-\.]+$/i', $parameters[$k])) { // Could be better, but not important, as simple strings aren't checked outside of debug mode, and shouldn't be executed as JS by the browser... T=Time, W=Week, Z=Zulu, and PTHMS for duration
+						if (!preg_match('/^[0-9TWZPHMS \:\-\.\+]+$/i', $parameters[$k])) { // Could be better, but not important, as simple strings aren't checked outside of debug mode, and shouldn't be executed as JS by the browser... T=Time, W=Week, Z=Zulu, and PTHMS for duration
 							throw new error_exception('Parameter ' . ($k + 1) . ' should be a valid datetime.', debug_dump($parameters[$k]) . "\n" . implode('?', $this->template_html));
 						}
 					} else {
