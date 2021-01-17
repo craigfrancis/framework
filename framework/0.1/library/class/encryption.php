@@ -27,7 +27,7 @@
 	//   KA1P: Asymmetric, OpenSSL, Public
 	//   KA1S: Asymmetric, OpenSSL, Secret
 	//   KA2P: Asymmetric, LibSodium, Public
-	//   KA2S: Asymmetric, LibSodium, Public
+	//   KA2S: Asymmetric, LibSodium, Secret
 	//   -
 	//   [0-9]+ ... Key ID, where 0 is undefined.
 	//
