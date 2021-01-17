@@ -17,6 +17,7 @@
 //   command::exec('/path/to/cmd'. ['--argument "unsafe"']);
 //
 // Review:
+//   https://github.com/craigfrancis/php-is-literal-rfc#solution-cli-injection
 //   http://symfony.com/doc/current/components/process.html
 //   https://github.com/symfony/symfony/blob/master/src/Symfony/Component/Process/Process.php
 //
