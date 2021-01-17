@@ -497,7 +497,7 @@
 
 	function quick_hash_create($value, $algorithm = 'sha256') {
 
-		if (!in_array($algorithm, [$algorithm, 'sha256'])) {
+		if (!in_array($algorithm, ['sha256'])) {
 			exit_with_error('The specified algorithm is not allowed, it might be too weak.');
 		}
 
