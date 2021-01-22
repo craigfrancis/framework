@@ -106,7 +106,7 @@
 
 			public function locations_nearest($search, $country = NULL) {
 
-				$locations = $this->locations_get();
+				$locations = $this->locations_get_all();
 
 				return $this->locations_limited($locations, $search, $country);
 
@@ -201,7 +201,7 @@
 
 			}
 
-			private function locations_get() {
+			public function locations_get_all() {
 
 				$fields = array(
 						$this->config['field_id_sql'],
