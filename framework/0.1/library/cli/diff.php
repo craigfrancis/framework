@@ -40,17 +40,14 @@
 
 					if ($diff_via_api) {
 
-						$auth_value = random_key(40);
-						$auth_path = (defined('UPLOAD_ROOT') ? UPLOAD_ROOT : ROOT) . '/api-framework-db-diff.key'; // Not in /tmp/ because that's writable to by www-data.
-
-						file_put_contents($auth_path, quick_hash_create($auth_value));
+						list($auth_id, $auth_value, $auth_path) = gateway::framework_api_auth_start('framework-db-diff');
 
 						$diff_url = gateway_url('framework-db-diff');
 
 						$diff_connection = new connection();
 						$diff_connection->exit_on_error_set(false);
 
-						if ($diff_connection->post($diff_url, ['auth' => $auth_value, 'upload' => ($upload ? 'true' : 'false')])) {
+						if ($diff_connection->post($diff_url, ['auth_id' => $auth_id, 'auth_value' => $auth_value, 'upload' => ($upload ? 'true' : 'false')])) {
 
 							echo $diff_connection->response_data_get();
 
@@ -63,10 +60,7 @@
 
 						}
 
-						unlink($auth_path);
-						if (is_file($auth_path)) {
-							exit_with_error('Cannot delete auth key file', $auth_path);
-						}
+						gateway::framework_api_auth_end($auth_path);
 
 					} else {
 

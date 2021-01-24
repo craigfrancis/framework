@@ -212,10 +212,7 @@
 
 				} else {
 
-					$auth_value = random_key(40);
-					$auth_path = (defined('UPLOAD_ROOT') ? UPLOAD_ROOT : ROOT) . '/api-framework-opcache-clear.key'; // Not in /tmp/ because that's writable to by www-data.
-
-					file_put_contents($auth_path, quick_hash_create($auth_value));
+					list($auth_id, $auth_value, $auth_path) = gateway::framework_api_auth_start('framework-opcache-clear');
 
 					$opcache_error = NULL;
 
@@ -224,7 +221,7 @@
 					$opcache_connection = new connection();
 					$opcache_connection->exit_on_error_set(false);
 
-					if ($opcache_connection->post($opcache_url, ['auth' => $auth_value])) {
+					if ($opcache_connection->post($opcache_url, ['auth_id' => $auth_id, 'auth_value' => $auth_value])) {
 						$opcache_data = $opcache_connection->response_data_get();
 						if ($opcache_data !== 'Success') {
 							$opcache_error = $opcache_data;
@@ -245,10 +242,7 @@
 						echo '  Error: ' . $opcache_error . "\n\n";
 					}
 
-					unlink($auth_path);
-					if (is_file($auth_path)) {
-						exit_with_error('Cannot delete auth key file', $auth_path);
-					}
+					gateway::framework_api_auth_end($auth_path);
 
 				}
 
