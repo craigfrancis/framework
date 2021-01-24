@@ -324,7 +324,7 @@
 						$response = NULL;
 					}
 
-					if ($response && $response->error_get() === false && config::get('db.error_connect') !== true) { // Avoid looping, or using default template with db connection error.
+					if ($response && $response instanceof response_html && $response->error_get() === false && config::get('db.error_connect') !== true) { // Avoid looping, or using default template with db connection error.
 
 						$response->set($error);
 						$response->error_send('system');
