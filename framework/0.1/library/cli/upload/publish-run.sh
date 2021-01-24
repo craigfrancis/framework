@@ -149,7 +149,7 @@
 	echo;
 	echo 'Run install script...';
 
-	./cli --install;
+	./cli --install | awk '{ print "    " $0;}';
 
 	echo -e "  \033[1;34mDone\033[0m";
 

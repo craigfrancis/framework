@@ -44,7 +44,7 @@
 
 						if ($domain == '') {
 
-							echo "  \033[1;31m" . 'Error:' . "\033[0m" . ' Cannot run db diff without "output.domain" config.' . "\n";
+							echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Cannot run db diff without "output.domain" config.' . "\n";
 
 						} else {
 

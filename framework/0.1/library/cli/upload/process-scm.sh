@@ -114,7 +114,7 @@
 	echo;
 	echo 'Run install script...';
 
-	remote_cmd "${CLI_PATH} --install";
+	remote_cmd "${CLI_PATH} --install" | awk '{ print "    " $0;}';
 
 	echo -e "  \033[1;34mDone\033[0m";
 
