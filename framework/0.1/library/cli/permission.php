@@ -106,6 +106,7 @@
 					FRAMEWORK_ROOT . '/library/cli/upload/publish-prep.sh',
 					FRAMEWORK_ROOT . '/library/cli/upload/publish-run.sh',
 					FRAMEWORK_ROOT . '/library/cli/watch/install.sh',
+					FRAMEWORK_ROOT . '/library/misc/base.sh',
 					APP_ROOT . '/library/setup/install.sh',
 				);
 
