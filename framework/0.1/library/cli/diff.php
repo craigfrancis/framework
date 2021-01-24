@@ -40,27 +40,38 @@
 
 					if ($diff_via_api) {
 
-						list($auth_id, $auth_value, $auth_path) = gateway::framework_api_auth_start('framework-db-diff');
+						$domain = config::get('output.domain');
 
-						$diff_url = gateway_url('framework-db-diff');
+						if ($domain == '') {
 
-						$diff_connection = new connection();
-						$diff_connection->exit_on_error_set(false);
-debug($diff_url);
-						if ($diff_connection->post($diff_url, ['auth_id' => $auth_id, 'auth_value' => $auth_value, 'upload' => ($upload ? 'true' : 'false')])) {
-debug('A');
-							echo $diff_connection->response_data_get();
+							echo "  \033[1;31m" . 'Error:' . "\033[0m" . ' Cannot clear OpCache without "output.domain" config.' . "\n";
 
 						} else {
-debug('B');
-							echo "\n";
-							echo 'Checking DB Diff:' . "\n";
-							echo '  URL: ' . $diff_url . "\n";
-							echo '  Error: ' . $diff_connection->error_message_get() . "\n\n";
+
+							list($auth_id, $auth_value, $auth_path) = gateway::framework_api_auth_start('framework-db-diff');
+
+							$diff_url = gateway_url('framework-db-diff');
+
+							$diff_connection = new connection();
+							$diff_connection->exit_on_error_set(false);
+
+							if ($diff_connection->post($diff_url, ['auth_id' => $auth_id, 'auth_value' => $auth_value, 'upload' => ($upload ? 'true' : 'false')])) {
+
+								echo $diff_connection->response_data_get();
+
+							} else {
+
+								echo "\n";
+								echo 'Checking DB Diff:' . "\n";
+								echo '  Domain: ' . $domain . "\n";
+								echo '  URL: ' . $diff_url . "\n";
+								echo '  Error: ' . $diff_connection->error_message_get() . "\n\n";
+
+							}
+
+							gateway::framework_api_auth_end($auth_path);
 
 						}
-
-						gateway::framework_api_auth_end($auth_path);
 
 					} else {
 
