@@ -105,6 +105,46 @@
 	$show_help = (count($options) == 0);
 
 //--------------------------------------------------
+// Input select option
+
+	function input_select_option($label, $select, $options) {
+
+		$count = count($options);
+
+		if ($count == 0) {
+
+			exit_with_error('No options available');
+
+		} else if ($count == 1) {
+
+			return reset($options);
+
+		}
+
+		for ($k = 0; $k < 10; $k++) {
+
+			echo $label . ':' . "\n";
+
+			foreach ($options as $id => $option) {
+				echo ' ' . ($id + 1) . ') ' . $option . "\n";
+			}
+
+			echo "\n" . $select . ': ';
+			$option = trim(fgets(STDIN));
+
+			if (is_numeric($option) && isset($options[($option - 1)])) {
+				return $options[($option - 1)];
+			} else if (in_array($option, $options)) {
+				return $option;
+			}
+
+		}
+
+		exit_with_error('Too many attempts, giving up.');
+
+	}
+
+//--------------------------------------------------
 // Process options
 
 	try {

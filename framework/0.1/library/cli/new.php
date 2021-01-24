@@ -27,7 +27,8 @@
 			$type = array_shift($params);
 
 			if (!$type) {
-				$type = new_selection('Type', array_keys($type_paths));
+				$type = input_select_option('Types', 'Select type', array_keys($type_paths));
+				echo "\n";
 			}
 
 			if (isset($type_paths[$type])) {
@@ -47,43 +48,7 @@
 //--------------------------------------------------
 // Get selection from user
 
-	function new_selection($name, $options) {
 
-		$count = count($options);
-
-		if ($count == 0) {
-
-			exit_with_error('No options available');
-
-		} else if ($count == 1) {
-
-			return reset($options);
-
-		}
-
-		for ($k = 0; $k < 10; $k++) {
-
-			echo ucfirst($name) . 's: ' . "\n";
-
-			foreach ($options as $id => $option) {
-				echo ' ' . ($id + 1) . ') ' . $option . "\n";
-			}
-
-			echo "\n" . 'Select ' . strtolower($name) . ': ';
-			$option = trim(fgets(STDIN));
-			echo "\n";
-
-			if (isset($options[($option - 1)])) {
-				return $options[($option - 1)];
-			} else if (in_array($option, $options)) {
-				return $option;
-			}
-
-		}
-
-		exit_with_error('Too many attempts, giving up.');
-
-	}
 
 //--------------------------------------------------
 // New unit
