@@ -43,7 +43,7 @@
 						list($auth_id, $auth_value, $auth_path) = gateway::framework_api_auth_start('framework-db-diff');
 
 						$diff_url = gateway_url('framework-db-diff');
-
+debug($diff_url);
 						$diff_connection = new connection();
 						$diff_connection->exit_on_error_set(false);
 
