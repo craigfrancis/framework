@@ -42,6 +42,7 @@
 		protected $stderr_value = NULL;
 		protected $env_cwd = NULL;
 		protected $env_variables = [];
+		protected $paths = NULL;
 		protected $time_start = NULL;
 		protected $time_total = NULL;
 		protected $pipes = [];
@@ -114,6 +115,15 @@
 				if (($pos = strpos($executable, ' ')) !== false) {
 					$executable = substr($executable, 0, $pos);
 					$run_direct = false; // Needs a shell
+				}
+
+				if (substr($executable, 1) !== '/') {
+					foreach (($this->paths ?? explode(':', ($_SERVER['PATH'] ?? ''))) as $path) {
+						$test = $path . '/' . $executable;
+						if (is_file($test)) {
+							$executable = $test;
+						}
+					}
 				}
 
 				if (!is_executable($executable)) {
