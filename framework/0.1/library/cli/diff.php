@@ -43,16 +43,16 @@
 						list($auth_id, $auth_value, $auth_path) = gateway::framework_api_auth_start('framework-db-diff');
 
 						$diff_url = gateway_url('framework-db-diff');
-debug($diff_url);
+
 						$diff_connection = new connection();
 						$diff_connection->exit_on_error_set(false);
-
+debug($diff_url);
 						if ($diff_connection->post($diff_url, ['auth_id' => $auth_id, 'auth_value' => $auth_value, 'upload' => ($upload ? 'true' : 'false')])) {
-
+debug('A');
 							echo $diff_connection->response_data_get();
 
 						} else {
-
+debug('B');
 							echo "\n";
 							echo 'Checking DB Diff:' . "\n";
 							echo '  URL: ' . $diff_url . "\n";
