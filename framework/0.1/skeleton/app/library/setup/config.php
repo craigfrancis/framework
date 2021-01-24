@@ -1,11 +1,6 @@
 <?php
 
 //--------------------------------------------------
-// Encryption key
-
-	// define('ENCRYPTION_KEY', '');
-
-//--------------------------------------------------
 // Server specific
 
 	if (preg_match('/^\/(Library|Volumes)\//i', ROOT)) {
@@ -111,6 +106,8 @@
 // Security
 
 	// $config['cookie.prefix'] = '__Host-'; // A `Secure` cookie, with no `Domain` attribute
+
+	$config['session.key'] = ''; // Just needs to be unique, not really a secret.
 
 	$config['output.protocols'] = ['http', 'https']; // If this only contains 'https', then https_only() returns true, and cookies get marked as "Secure"
 

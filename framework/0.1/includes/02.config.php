@@ -380,19 +380,6 @@
 // Post app specified defaults
 
 	//--------------------------------------------------
-	// Encryption key
-
-		if (!defined('ENCRYPTION_KEY')) {
-
-			if (REQUEST_MODE == 'cli' && !is_file(APP_ROOT . '/library/setup/config.php')) {
-				define('ENCRYPTION_KEY', random_key(20)); // Temporary one off value (during install)
-			} else {
-				exit('Missing the ENCRYPTION_KEY constant in your config.' . "\n");
-			}
-
-		}
-
-	//--------------------------------------------------
 	// Database
 
 		define('DB_PREFIX', config::get('db.prefix'));

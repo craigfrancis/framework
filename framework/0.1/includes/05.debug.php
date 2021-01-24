@@ -580,7 +580,7 @@
 
 		foreach ($config as $key => $value) {
 			if (!in_array($key, array('db.link', 'output.response', 'debug.time_init', 'debug.time_check', 'debug.time_query', 'debug.units'))) {
-				if ($key == 'debug.notes' || substr($key, -5) == '.pass' || substr($key, -9) == '.password') { // e.g. 'db.pass'
+				if ($key == 'debug.notes' || str_ends_with($key, '.pass') || str_ends_with($key, '.password') || str_ends_with($key, '.key')) { // e.g. 'db.pass', although these should use the 'secrets' helper.
 					if ($value != $encrypted_mask) {
 						$value = '???';
 					}
@@ -610,11 +610,7 @@
 		$log = [];
 
 		foreach ($constants['user'] as $key => $value) {
-			if ($key == 'ENCRYPTION_KEY') {
-				$value = '???';
-			} else {
-				$value = preg_replace('/\s+/', ' ', debug_dump($value, 1));
-			}
+			$value = preg_replace('/\s+/', ' ', debug_dump($value, 1));
 			$log[] = [['strong', $key], ['span', ': ' . $value]];
 		}
 

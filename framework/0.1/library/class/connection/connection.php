@@ -164,7 +164,7 @@
 
 			}
 
-			private function error_connect($err_no, $err_str, $err_file, $err_line, $err_context) {
+			private function error_connect($err_no, $err_str, $err_file, $err_line, $err_context = NULL) {
 
 				switch ($err_no) {
 					case E_NOTICE:
@@ -291,6 +291,13 @@
 
 					if ($method == 'GET' && is_array($data)) {
 						$url = url($url, $data);
+					}
+
+				//--------------------------------------------------
+				// URL helper needs to use 'full' format.
+
+					if ($url instanceof url) {
+						$url->format_set('full');
 					}
 
 				//--------------------------------------------------

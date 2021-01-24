@@ -37,7 +37,7 @@
 //    "instance": "/account/12345/credit",         = URL reference, identifying specific problem (may provide further info)
 //   }
 //
-// Should be used by "cli-diff-db" and "cli-opcache-clear"
+// Should be used by "framework-db-diff" and "framework-opcache-clear"
 //
 // Server checking:
 //
@@ -150,7 +150,7 @@ report_add('Deprecated: Is anyone using /library/gateway/SERVER.ini ???', 'notic
 						'app' => APP_ROOT . '/gateway/',
 					);
 
-				$gateway_hide = array('framework-file', 'js-code', 'payment');
+				$gateway_hide = array('framework-db-diff', 'framework-db-dump', 'framework-file', 'framework-opcache-clear', 'framework-secrets', 'js-code', 'payment');
 
 				foreach ($gateway_dirs as $gateway_source => $gateway_dir) {
 					if ($handle = opendir($gateway_dir)) {

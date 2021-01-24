@@ -101,7 +101,7 @@
 
 							if ($skeleton_file == '/app/library/setup/config.php') {
 
-								$content = str_replace('// define(\'ENCRYPTION_KEY\', \'\');', 'define(\'ENCRYPTION_KEY\', \'' . random_key(20) . '\');', $content);
+								$content = str_replace('$config[\'session.key\'] = \'\';', '$config[\'session.key\'] = \'' . random_key(20) . '\';', $content);
 
 							} else if ($skeleton_file == '/app/public/index.php') {
 
@@ -212,19 +212,19 @@
 
 				} else {
 
+					$auth_value = random_key(40);
+					$auth_path = PRIVATE_ROOT . '/api-framework-opcache-clear.key'; // Not in /tmp/ because that's writable to by www-data.
+
+					file_put_contents($auth_path, quick_hash_create($auth_value));
+
 					$opcache_error = NULL;
 
-					$opcache_url = gateway_url('cli-opcache-clear');
-					$opcache_url->format_set('full');
+					$opcache_url = gateway_url('framework-opcache-clear');
 
 					$opcache_connection = new connection();
 					$opcache_connection->exit_on_error_set(false);
 
-					$opcache_time = new timestamp('now', 'UTC');
-					$opcache_iso = $opcache_time->format('Y-m-d H:i:s');
-					$opcache_key = hash('sha256', (ENCRYPTION_KEY . $opcache_iso));
-
-					if ($opcache_connection->post($opcache_url, array('key' => $opcache_key, 'timestamp' => $opcache_iso))) {
+					if ($opcache_connection->post($opcache_url, ['auth' => $auth_value])) {
 						$opcache_data = $opcache_connection->response_data_get();
 						if ($opcache_data !== 'Success') {
 							$opcache_error = $opcache_data;
@@ -243,6 +243,11 @@
 						echo '  Domain: ' . $domain . "\n";
 						echo '  URL: ' . $opcache_url . "\n";
 						echo '  Error: ' . $opcache_error . "\n\n";
+					}
+
+					unlink($auth_path);
+					if (is_file($auth_path)) {
+						exit_with_error('Cannot delete auth key file', $auth_path);
 					}
 
 				}

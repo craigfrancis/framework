@@ -15,18 +15,6 @@ After this file has been processed, you should use the [config helper](../../doc
 
 ---
 
-## Encryption key
-
-This should be considered private, and involves you typing in some random keys:
-
-	define('ENCRYPTION_KEY', 'type-your-own-random-characters');
-
-The intention of this constant is simply for encrypting information.
-
-It's also used to ensure sessions are valid for this websites... so avoiding session fixation, and sessions being created on other websites hosted on the same box ([notes](https://www.sitepoint.com/notes-on-php-session-security/)).
-
----
-
 ## Servers
 
 In your config.php file, you should set the 'SERVER' constant. This will allow your scripts to determine if they are running on a development server (stage), demo or live.
@@ -56,6 +44,16 @@ And if you are using the [email helper](../../doc/helpers/email.md), it might be
 	$config['email.testing'] = 'admin@example.com';
 
 It should also be noted that on **stage**, [development mode](../../doc/setup/debug.md) is enabled by default.
+
+---
+
+## Session Key
+
+    $config['session.key'] = '123...';
+
+Simply used to ensure sessions are valid for this website, it just needs to be unique (not really a secret).
+
+This avoids a form of session fixation, where a session created by another website hosted on the same server isn't recognised by this website.
 
 ---
 

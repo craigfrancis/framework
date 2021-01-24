@@ -4,8 +4,11 @@
 // http://www.phpprime.com/doc/system/session/
 //--------------------------------------------------
 
+	if (defined('ENCRYPTION_KEY')) {
+		config::set_default('session.key', sha1(ENCRYPTION_KEY . '-' . SERVER)); // Backwards compatibility
+	}
+
 	config::set('session.id', NULL);
-	config::set_default('session.key', sha1(ENCRYPTION_KEY . '-' . SERVER));
 	config::set_default('session.name', 's');
 
 	class session_base extends check {
@@ -197,7 +200,11 @@
 					$session_key = session::get('session.key');
 					$config_key = config::get('session.key');
 
-					if ($session_key == '' || $session_key != $config_key) {
+					if ($config_key == '') {
+
+						exit_with_error('Missing a "session.key" config value.', 'Why not try: $config[\'session.key\'] = \'' . random_key(20) . '\';');
+
+					} else if ($session_key == '' || $session_key != $config_key) {
 
 						if (count($_SESSION) == 0 && !headers_sent()) {
 

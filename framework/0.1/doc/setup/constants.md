@@ -13,9 +13,8 @@ You are free to create your own, but these can be used:
 
 ## Required constants
 
-The framework will require you to set the `ENCRYPTION_KEY` and `SERVER` constants:
+The framework will require you to set the `SERVER` constant:
 
-	define('ENCRYPTION_KEY', 'type-your-own-random-characters');
 	define('SERVER', 'live');
 
 See the [config setup](../../doc/setup/config.md) for more details.
@@ -47,7 +46,6 @@ For example:
 	<?php
 
 		define('ROOT', dirname(__FILE__));
-		define('ENCRYPTION_KEY', XXX);
 		define('SERVER', 'stage');
 		define('FRAMEWORK_INIT_ONLY', true);
 
