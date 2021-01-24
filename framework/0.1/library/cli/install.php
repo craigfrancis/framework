@@ -213,7 +213,7 @@
 				} else {
 
 					$auth_value = random_key(40);
-					$auth_path = PRIVATE_ROOT . '/api-framework-opcache-clear.key'; // Not in /tmp/ because that's writable to by www-data.
+					$auth_path = (defined('UPLOAD_ROOT') ? UPLOAD_ROOT : ROOT) . '/api-framework-opcache-clear.key'; // Not in /tmp/ because that's writable to by www-data.
 
 					file_put_contents($auth_path, quick_hash_create($auth_value));
 

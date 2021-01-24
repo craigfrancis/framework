@@ -5,7 +5,7 @@
 
 	$auth_provided = request('auth', 'POST');
 
-	$auth_path = PRIVATE_ROOT . '/api-framework-opcache-clear.key';
+	$auth_path = ROOT . '/api-framework-opcache-clear.key';
 
 	$auth_hash = trim(is_file($auth_path) ? file_get_contents($auth_path) : '');
 
