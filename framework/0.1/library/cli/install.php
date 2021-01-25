@@ -101,7 +101,7 @@
 
 							if ($skeleton_file == '/app/library/setup/config.php') {
 
-								$content = str_replace('$config[\'session.key\'] = \'\';', '$config[\'session.key\'] = \'' . random_key(20) . '\';', $content);
+								$content = str_replace('$config[\'session.key\'] = \'\';', '$config[\'session.key\'] = (\'' . random_key(20) . '-\' . SERVER);', $content);
 
 							} else if ($skeleton_file == '/app/public/index.php') {
 
