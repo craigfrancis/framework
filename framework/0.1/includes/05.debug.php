@@ -701,26 +701,6 @@
 		//--------------------------------------------------
 		// Database debug
 
-			// if (config::get('db.host') !== NULL) { ... Try to avoid always connecting, e.g. returning a minified CSS file should not need a DB connection.
-			//
-			// 	$db = db_get();
-			//
-			// 	if (version_compare($db->version_get(), '5.7.5', '>=')) { // 5.6 does not detect functional dependencies (used everywhere) - http://mysqlserverteam.com/mysql-5-7-only_full_group_by-improved-recognizing-functional-dependencies-enabled-by-default/
-			//
-			// 		$db->query('SET sql_mode := CONCAT("ONLY_FULL_GROUP_BY,", @@sql_mode)');
-			//
-			// 		//--------------------------------------------------
-			// 		// Before disabling, read:
-			// 		//   https://rpbouman.blogspot.co.uk/2007/05/debunking-group-by-myths.html
-			// 		//
-			// 		// You can always use:
-			// 		//   ANY_VALUE()
-			// 		//--------------------------------------------------
-			//
-			// 	}
-			//
-			// }
-
 			function debug_require_db_table($table, $sql) {
 
 				if ($table == '') {
@@ -739,22 +719,6 @@
 						exit('Missing table <strong>' . html($table) . '</strong>:<br /><br />' . nl2br(html(trim(str_replace('[TABLE]', $table, $sql)))));
 					}
 				}
-
-			}
-
-			if (config::get('db.host') !== NULL) {
-
-				debug_require_db_table(DB_PREFIX . 'system_report', '
-						CREATE TABLE [TABLE] (
-							id int(11) NOT NULL auto_increment,
-							type tinytext NOT NULL,
-							created datetime NOT NULL,
-							message text NOT NULL,
-							request tinytext NOT NULL,
-							referrer tinytext NOT NULL,
-							ip tinytext NOT NULL,
-							PRIMARY KEY  (id)
-						);');
 
 			}
 
