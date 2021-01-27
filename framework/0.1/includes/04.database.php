@@ -79,19 +79,16 @@
 
 		public function query($sql, $parameters = NULL, $run_debug = true, $exit_on_error = true) {
 
-			if ($parameters === false) {
-				trigger_error('Second parameter in query() is for SQL parameters', E_USER_NOTICE);
-				$parameters = NULL;
-				$run_debug = false;
+			if ($run_debug && function_exists('debug_database')) {
+				$this->result = debug_database($this, $sql, $parameters, $exit_on_error);
+				return $this->result;
 			}
+
+			$error = NULL;
 
 			$this->connect();
 
-			if ($run_debug && function_exists('debug_database')) {
-
-				$this->result = debug_database($this, $sql, $parameters, $exit_on_error);
-
-			} else {
+			try {
 
 				if (function_exists('debug_log_db')) {
 					$time_start = microtime(true);
@@ -120,8 +117,12 @@
 									$ref_values[] = &$parameters[$key];
 								}
 							}
-							array_unshift($ref_values, $ref_types);
-							call_user_func_array(array($this->statement, 'bind_param'), $ref_values);
+							if (count($ref_values) != $this->statement->param_count) {
+								throw new mysqli_sql_exception('Invalid parameter count', 2034);
+							} else {
+								array_unshift($ref_values, $ref_types);
+								call_user_func_array(array($this->statement, 'bind_param'), $ref_values);
+							}
 						}
 
 						$this->result = $this->statement->execute();
@@ -169,10 +170,16 @@
 					debug_log_db(round((microtime(true) - $time_start), 3), $sql); // This is higher than `debug.time_query`, because debug does not run for every query (e.g. SHOW COLUMNS and EXPLAIN)
 				}
 
+			} catch (exception $e) {
+
+				$this->result = false;
+
+				$error = $e;
+
 			}
 
 			if (!$this->result && $exit_on_error) {
-				$this->_error($sql, $parameters, true);
+				$this->_error($error, $sql, $parameters);
 			}
 
 			return $this->result;
@@ -707,6 +714,11 @@
 				$start = microtime(true);
 
 			//--------------------------------------------------
+			// Report mode
+
+				mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+			//--------------------------------------------------
 			// Link
 
 				$this->link = mysqli_init();
@@ -729,14 +741,16 @@
 						usleep(500000); // Half a second
 					}
 
-					if ($ca_file) {
-						$result = @mysqli_real_connect($this->link, $host, $user, $pass, $name, NULL, NULL, MYSQLI_CLIENT_SSL);
-					} else {
-						$result = @mysqli_real_connect($this->link, $host, $user, $pass, $name);
-					}
-					if (!$result) {
-						$error_number = mysqli_connect_errno();
-						$error_messages[] = mysqli_connect_error() . ' (' . $error_number . ')';
+					try {
+						if ($ca_file) {
+							$result = mysqli_real_connect($this->link, $host, $user, $pass, $name, NULL, NULL, MYSQLI_CLIENT_SSL);
+						} else {
+							$result = mysqli_real_connect($this->link, $host, $user, $pass, $name);
+						}
+					} catch (mysqli_sql_exception $e) {
+						$result = false;
+						$error_number = $e->getCode();
+						$error_messages[] = $error_number . ': ' . $e->getMessage();
 					}
 
 				} while (!$result && ($error_number == 2002 || $error_number == 1045) && SERVER != 'stage' && (++$k < 3));
@@ -748,7 +762,7 @@
 
 					config::set('db.error_connect', true);
 					$this->link = NULL;
-					$this->_error('Database connection error:' . "\n\n" . implode("\n\n", $error_messages));
+					$this->_error('Database connection error:' . "\n - " . implode("\n - ", $error_messages));
 
 				} else if ($error_messages) {
 
@@ -793,43 +807,47 @@
 
 		}
 
-		public function error_get() {
-			if ($this->statement && $this->statement->errno > 0) {
-				return $this->statement->errno . ': ' . $this->statement->error;
-			} else if ($this->link) {
-				return mysqli_errno($this->link) . ': ' . mysqli_error($this->link);
-			} else {
-				return NULL;
-			}
-		}
-
 		public function error_reset() {
 			config::set('db.error_thrown', false);
 		}
 
-		private function _error($error = 'N/A', $parameters = NULL, $show_db_error = false) {
+		private function _error($error, $sql = NULL, $parameters = NULL) {
 
-			$info = $this->error_get();
+			if ($error instanceof exception) {
+				$error = $error->getCode() . ': ' . $error->getMessage();
+			}
 
-			if (class_exists('error_exception') && config::get('db.error_thrown') !== true) {
+			$first_error = config::get('output.error');
+			if (is_array($first_error)) {
+				$error = $first_error['message'] . (config::get('debug.level') > 0 ? "\n\n-----\n\n" . $first_error['hidden_info'] : '') . "\n\n-----\n\n" . $error;
+			}
+
+			$hidden_info = '';
+			if ($sql) {
+				$hidden_info .= "\n\n" . debug_dump($sql);
+			}
+			if ($parameters) {
+				$hidden_info .= "\n\n" . debug_dump($parameters);
+			}
+
+			if (class_exists('error_exception') && config::get('db.error_thrown') !== true && $first_error === NULL) {
 
 				config::set('db.error_thrown', true);
 
-				$hidden_info = trim($info . "\n\n" . $error);
-				if ($parameters) {
-					$hidden_info .= "\n\n" . debug_dump($parameters);
-				}
-
-				throw new error_exception('An error has occurred with the database.', $hidden_info);
+				throw new error_exception('An error has occurred with the database.', $error . $hidden_info);
 
 			} else if (REQUEST_MODE == 'cli') {
 
-				exit('I have a problem: ' . ($show_db_error ? $info : $error) . "\n");
+				exit('I have a problem.' . "\n\n" . $error . $hidden_info . "\n\n");
 
 			} else {
 
+				if (config::get('debug.level') > 0) {
+					$error .= $hidden_info;
+				}
+
 				http_response_code(500);
-				exit('<p>I have a problem.<br />' . nl2br(htmlentities($show_db_error ? $info : $error)) . '</p>');
+				exit('<p>I have a problem.<br /><br />' . nl2br(htmlspecialchars($error, (ENT_QUOTES | ENT_SUBSTITUTE))) . '</p>');
 
 			}
 
