@@ -27,8 +27,10 @@
 
 			} else {
 
-// TODO: /private/secrets/
-				$password = config::get_decrypted('lolcat.pass', NULL);
+				$password = secrets::get('lolcat.pass');
+				if ($password === NULL) {
+					$password = config::get_decrypted('lolcat.pass'); // TODO [secrets-cleanup]
+				}
 
 				$site = config::get('lolcat.site');
 				$pass = hash('sha256', $id . $site . $password);

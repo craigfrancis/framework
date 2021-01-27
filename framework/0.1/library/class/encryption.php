@@ -224,9 +224,9 @@
 		//--------------------------------------------------
 		// Get key
 
-// TODO: /private/secrets/
-// config::secret_exist()
-// config::secret_get()
+// TODO [secrets-keys] - Move these functions to the secrets helper.
+// When using `encryption::key_symmetric_create('key-name')`, it creates the file '/private/keys/key-name', containing a JSON formatted list of keys (1, 2, 3, etc for key rotation).
+
 			public static function key_exists($name, $key_id = NULL) {
 				$path = self::key_path_get($name);
 				if (is_file($path)) {

@@ -1,5 +1,7 @@
 <?php
 
+// TODO [secrets] - Should replace this 'config-encrypt.php' script
+
 	echo "\n";
 
 //--------------------------------------------------

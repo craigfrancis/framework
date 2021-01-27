@@ -696,8 +696,10 @@
 				$host = config::get($prefix . 'host');
 				$user = config::get($prefix . 'user');
 
-// TODO: /private/secrets/
-				$pass = config::get_decrypted($prefix . 'pass');
+				$pass = secrets::get($prefix . 'pass');
+				if ($pass === NULL) {
+					$pass = config::get_decrypted($prefix . 'pass'); // TODO [secrets-cleanup], where this also effectively does config::get()
+				}
 
 				if ($pass === NULL) {
 					$this->_error('Unknown database password (config "' . $prefix . 'pass")');

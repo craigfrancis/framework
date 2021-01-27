@@ -7,7 +7,8 @@
 			'h' => 'help',
 			'd::' => 'debug::', // Optional value
 			'c::' => 'config::', // Optional value
-			'g::' => 'gateway::',
+			's::' => 'secrets::', // Optional value
+			'g::' => 'gateway::', // Optional value
 			'm' => 'maintenance',
 			'i' => 'install',
 			'p' => 'permissions',
@@ -205,6 +206,8 @@
 					case 'secrets':
 
 						require_once(FRAMEWORK_ROOT . '/library/cli/secrets.php');
+
+						secrets_run($option_value);
 
 						break;
 

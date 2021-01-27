@@ -247,9 +247,7 @@
 				}
 			}
 
-// TODO: /private/secrets/
-// config::secret_exist()
-// config::secret_get()
+// TODO [secrets] - Use secrets::get() instead
 
 			public static function get_encrypted($value) {
 				$key = getenv('PRIME_CONFIG_KEY');
@@ -469,6 +467,11 @@
 		if (config::get('output.tracking') === NULL) {
 			config::set('output.tracking', (SERVER == 'live'));
 		}
+
+	//--------------------------------------------------
+	// Secrets
+
+		config::set_default('secrets.folder', PRIVATE_ROOT . '/secrets');
 
 	//--------------------------------------------------
 	// Cookie

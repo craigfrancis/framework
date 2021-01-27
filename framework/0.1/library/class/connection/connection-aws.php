@@ -18,7 +18,7 @@
 			public function access_set($access_id, $access_secret = NULL) { // User details from IAM (Identity and Access Management)
 				$this->access_id = $access_id;
 				$this->access_secret = $access_secret;
-// TODO: /private/secrets/
+// TODO [secrets-keys]
 			}
 
 			public function service_set($service_ref, $service_region, $service_extra = NULL) {
