@@ -168,6 +168,60 @@
 			}
 
 		//--------------------------------------------------
+		// Key identifiers
+
+			public static function key_identifier_get($key, $hash_algorithm = 'sha256') {
+
+				list($key_type, $key_id, $key_value) = self::_key_get($key);
+
+				if ($key_type === 'KA1S' || $key_type === 'KA2S') {
+
+					throw new error_exception('Currently not possible to get an identifier for a Secret key, why not use the Public key?', 'KeyType: ' . $key_type);
+
+				} else if ($key_type === 'KS1' || $key_type === 'KS2' || $key_type === 'KA1P' || $key_type === 'KA2P') {
+
+						 // While fine to use a Public Asymmetric key, it's not a good idea to hash a Symmetric key and make that public (it's information for the attacker).
+						 // Ideally we want to drop some of the key data, so it's just not available in the (assume public) identifier.
+						 // But we can't simply use X bytes of the key, because that's potentially reversible.
+						 // For example, by using the last 10 bytes, an attacker could try every 10 byte combination looking for the identifier, they would know 31% of a 32 byte key (aka, a 256 bit key).
+						 // By hashing the whole key, it loses most of its value, but that's still not good enough (there may be issues with the hash).
+						 // So we drop most of the hash, so the identifier can only be used to find one of many hash candidates for the key.
+
+					$identifier = bin2hex(substr(hash($hash_algorithm, $key_value, true), -8)); // The last 64 bits (8 bytes), of a 256 bit hash (25%)
+
+					if (strlen($identifier) == 16) { // 64 bits, where every 4 bits make up a hexadecimal digit = 64/4 = 16
+						return $hash_algorithm . '-' . $identifier;
+					} else {
+						throw new error_exception('Unable to create a key identifier.', 'KeyType: ' . $key_type . "\n" . 'Identifier: ' . $identifier);
+					}
+
+				} else {
+
+					throw new error_exception('Unrecognised key type, cannot generate a key identifier.', 'KeyType: ' . $key_type);
+
+				}
+
+			}
+
+			public static function key_identifier_match($key, $identifiers) {
+				$hash_cache = [];
+				foreach ($identifiers as $identifier) {
+
+					list($hash_algorithm, $hash_value) = array_pad(explode('-', $identifier, 2), 2, -1);
+
+					if (!isset($hash_cache[$hash_algorithm])) {
+						$hash_cache[$hash_algorithm] = self::key_identifier_get($key, $hash_algorithm);
+					}
+
+					if (hash_equals($hash_cache[$hash_algorithm], $identifier)) {
+						return $identifier;
+					}
+
+				}
+				return false;
+			}
+
+		//--------------------------------------------------
 		// Get key
 
 // TODO: /private/secrets/
