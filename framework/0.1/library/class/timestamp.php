@@ -30,7 +30,7 @@
 							parent::__construct($time, new DateTimeZone($timezone));
 						}
 					}
-				} catch (Exception $e) {
+				} catch (exception $e) {
 					$this->null = true;
 				}
 			}
