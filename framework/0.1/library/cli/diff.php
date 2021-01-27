@@ -27,22 +27,15 @@
 
 					if (REQUEST_MODE == 'cli') {
 						$diff_via_api = true;
-debug(config::get('db.pass', NULL));
-debug(secrets::available());
-						if (config::get('db.pass', NULL) !== NULL || secrets::available() === true) {
+						if (secrets::available() === true) {
 							$diff_via_api = false; // Can access the password, run locally.
 						}
 						try {
-debug('#1');
 							if (config::get_decrypted('db.pass') !== NULL) { // TODO [secrets-cleanup]
-debug('#2');
 								$diff_via_api = false; // Can access the password, run locally.
 							}
-debug('#3');
 						} catch (exception $e) {
-debug('#4');
 						}
-debug($diff_via_api);
 					} else {
 						$diff_via_api = false;
 					}
