@@ -137,6 +137,7 @@
 				$helpers_nav->link_add('/doc/helpers/connection/', 'Connection');
 				$helpers_nav->link_add('/doc/helpers/cookie/', 'Cookie');
 				$helpers_nav->link_add('/doc/helpers/email/', 'Email');
+				$helpers_nav->link_add('/doc/helpers/encryption/', 'Encryption');
 				$helpers_nav->link_add('/doc/helpers/file/', 'File');
 				$helpers_nav->link_add('/doc/helpers/form/', 'Form'); // , array('child' => $form_nav)
 				$helpers_nav->link_add('/doc/helpers/gpg/', 'GPG');
@@ -151,6 +152,7 @@
 				$helpers_nav->link_add('/doc/helpers/query/', 'Query');
 				$helpers_nav->link_add('/doc/helpers/record/', 'Record');
 				$helpers_nav->link_add('/doc/helpers/session/', 'Session');
+				$helpers_nav->link_add('/doc/helpers/secrets/', 'Secrets');
 				$helpers_nav->link_add('/doc/helpers/table/', 'Table');
 				$helpers_nav->link_add('/doc/helpers/timestamp/', 'Timestamp');
 				$helpers_nav->link_add('/doc/helpers/url/', 'URL');
