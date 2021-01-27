@@ -155,6 +155,18 @@
 
 			}
 
+			public static function key_type_get($key) {
+
+				list($key_type, $key_id, $key_value) = array_pad(explode('.', $key, 3), 3, NULL);
+
+				if (in_array($key_type, ['KS1', 'KS2', 'KA1P', 'KA1S', 'KA2P', 'KA2S']) && $key_value != '') {
+					return $key_type;
+				} else {
+					return NULL;
+				}
+
+			}
+
 		//--------------------------------------------------
 		// Get key
 
