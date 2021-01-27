@@ -239,18 +239,6 @@
 			}
 
 		//--------------------------------------------------
-		// Report the error
-
-			$error_report = $message;
-
-			if ($hidden_info != '') {
-				$error_report .= "\n\n--------------------------------------------------\n\n";
-				$error_report .= $hidden_info;
-			}
-
-			report_add($error_report, $type);
-
-		//--------------------------------------------------
 		// Config
 
 			$contact_email = config::get('email.error_display'); // A different email address to show customers
@@ -276,7 +264,7 @@
 			$hidden_html = preg_replace('/(You have an error in your SQL syntax; .+) near &apos;(.+?)&apos; at line [0-9]+(.*)\2/ims', '\1.\3<strong>\2</strong>', $hidden_html);
 
 		//--------------------------------------------------
-		// The error
+		// Record the error
 
 			$error = [
 					'message' => $message,
@@ -286,6 +274,18 @@
 				];
 
 			config::set('output.error', $error);
+
+		//--------------------------------------------------
+		// Report the error
+
+			$error_report = $message;
+
+			if ($hidden_info != '') {
+				$error_report .= "\n\n--------------------------------------------------\n\n";
+				$error_report .= $hidden_info;
+			}
+
+			report_add($error_report, $type);
 
 		//--------------------------------------------------
 		// Tell the user
