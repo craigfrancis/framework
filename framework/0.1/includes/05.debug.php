@@ -278,11 +278,12 @@
 		//--------------------------------------------------
 		// The error
 
-			$error = array(
+			$error = [
 					'message' => $message,
+					'hidden_info' => $hidden_info,
 					'hidden_html' => $hidden_html,
 					'contact_email' => $contact_email,
-				);
+				];
 
 			config::set('output.error', $error);
 
