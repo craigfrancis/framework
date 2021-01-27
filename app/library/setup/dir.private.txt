@@ -1,6 +1,4 @@
 cache
-secrets
-secrets/data
 files
 files/backup
 watch
