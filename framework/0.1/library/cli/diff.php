@@ -42,6 +42,7 @@ debug('#3');
 						} catch (exception $e) {
 debug('#4');
 						}
+debug($diff_via_api);
 					} else {
 						$diff_via_api = false;
 					}
