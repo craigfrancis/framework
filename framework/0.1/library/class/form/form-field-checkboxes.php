@@ -116,7 +116,7 @@
 					} else if (isset($this->option_values_html[$key])) {
 						$label_html = $this->option_values_html[$key];
 					} else {
-						$label_html = html($this->option_values[$key]);
+						$label_html = to_safe_html($this->option_values[$key]);
 					}
 
 					$function = $this->form->label_override_get_function();
