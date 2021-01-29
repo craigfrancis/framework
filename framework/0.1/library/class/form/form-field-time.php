@@ -195,7 +195,7 @@
 
 				if ($minute === NULL && $second === NULL) {
 
-					if (is_a($value, 'timestamp')) {
+					if ($value instanceof timestamp) {
 						$value = $value->format('H:i:s');
 					} else if (is_array($value)) {
 						$return = [];

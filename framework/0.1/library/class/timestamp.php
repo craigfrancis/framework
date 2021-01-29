@@ -160,7 +160,7 @@
 
 			public function business_days_diff($end, $country = NULL) {
 
-				if (!is_object($end) || !is_a($end, 'timestamp')) {
+				if (!($end instanceof timestamp)) {
 					$end = new timestamp($end);
 				}
 

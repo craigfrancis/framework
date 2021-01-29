@@ -103,7 +103,7 @@
 
 // TODO: Can the admin do this for the email field, when using $auth->user_set()?
 
-				if (!is_object($field) || !is_a($field, 'form_field')) {
+				if (!($field instanceof form_field)) {
 					exit_with_error('Must provide a form field to $auth_update->confirm_email_field_set().');
 				}
 

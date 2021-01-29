@@ -85,11 +85,10 @@
 					exit_with_error('Call invalid_error_set() before min_timestamp_set()');
 				}
 
-				if (is_a($timestamp, 'timestamp')) {
-					$this->min_timestamp = $timestamp;
-				} else {
-					$this->min_timestamp = new timestamp($timestamp);
+				if (!($timestamp instanceof timestamp)) {
+					$timestamp = new timestamp($timestamp);
 				}
+				$this->min_timestamp = $timestamp;
 
 				if ($this->form_submitted && $this->value_provided && $this->invalid_error_found == false) {
 
@@ -111,11 +110,10 @@
 					exit_with_error('Call invalid_error_set() before max_timestamp_set()');
 				}
 
-				if (is_a($timestamp, 'timestamp')) {
-					$this->max_timestamp = $timestamp;
-				} else {
-					$this->max_timestamp = new timestamp($timestamp);
+				if (!($timestamp instanceof timestamp)) {
+					$timestamp = new timestamp($timestamp);
 				}
+				$this->max_timestamp = $timestamp;
 
 				if ($this->form_submitted && $this->value_provided && $this->invalid_error_found == false) {
 

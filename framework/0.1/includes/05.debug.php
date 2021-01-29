@@ -179,7 +179,7 @@
 		//--------------------------------------------------
 		// Config
 
-			if (is_a($message, 'error_exception')) {
+			if ($message instanceof error_exception) {
 				$backtrace = $message->getBacktrace();
 				$hidden_info = $message->getHiddenInfo();
 				$message = $message->getMessage();

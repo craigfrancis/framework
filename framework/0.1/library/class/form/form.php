@@ -456,7 +456,7 @@
 
 					$content_values = $config['content_values'];
 					foreach ($content_values as $key => $value) {
-						if (is_object($value) && is_a($value, 'form_field')) {
+						if ($value instanceof form_field) {
 							$content_values[$key] = $value->value_get();
 						}
 					}

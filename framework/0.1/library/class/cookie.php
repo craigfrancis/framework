@@ -37,7 +37,7 @@
 						'prefix'    => config::get('cookie.prefix', ''),
 					), $config);
 
-				if (is_object($config['expires']) && is_a($config['expires'], 'timestamp')) {
+				if ($config['expires'] instanceof timestamp) {
 					$config['expires'] = $config['expires']->getTimestamp();
 				} else if (is_string($config['expires'])) {
 					$config['expires'] = strtotime($config['expires']);

@@ -429,7 +429,7 @@
 
 				$form_record = $this->form->db_record_get();
 
-				if (is_object($a) && is_a($a, 'record')) {
+				if ($a instanceof record) {
 
 					$record = $a;
 					$field_name = $b;
@@ -442,7 +442,7 @@
 				} else {
 
 					$record = $form_record;
-					if (!is_object($record) || !is_a($record, 'record')) {
+					if (!($record instanceof record)) {
 						exit_with_error('Please specify a record to use when setting the db field for "' . $this->name . '"');
 					}
 
