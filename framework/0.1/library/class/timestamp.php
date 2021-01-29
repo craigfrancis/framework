@@ -359,22 +359,26 @@
 
 				if ($holidays === NULL) {
 
-					timestamp::holidays_check_table();
-
 					$holidays = [];
 
-					$db = db_get();
+					if (config::get('db.host') !== NULL) {
 
-					$sql = 'SELECT
-								sh.country,
-								sh.date
-							FROM
-								' . DB_PREFIX . 'system_holiday AS sh
-							WHERE
-								sh.deleted = "0000-00-00 00:00:00"';
+						timestamp::holidays_check_table();
 
-					foreach ($db->fetch_all($sql) as $row) {
-						$holidays[$row['country']][] = $row['date'];
+						$db = db_get();
+
+						$sql = 'SELECT
+									sh.country,
+									sh.date
+								FROM
+									' . DB_PREFIX . 'system_holiday AS sh
+								WHERE
+									sh.deleted = "0000-00-00 00:00:00"';
+
+						foreach ($db->fetch_all($sql) as $row) {
+							$holidays[$row['country']][] = $row['date'];
+						}
+
 					}
 
 					config::set('timestamp.holiday_cache', $holidays);
