@@ -564,9 +564,6 @@
 						//--------------------------------------------------
 						// Verify peer
 
-
-
-
 							$skip_domains = config::get('connection.insecure_domains', []); // Only PHP 5.6+ introduces SAN support (this function still needs to support 5.4 and 5.5)
 
 							if ($skip_domains === 'all' || in_array($host, $skip_domains)) {
@@ -708,7 +705,7 @@ $start = microtime(true);
 					$response_raw = '';
 
 $k = 0;
-					while (($line = fgets($connection)) !== false) { // Loop for headers, by line.
+					while (($line = @fgets($connection)) !== false) { // Loop for headers, by line.
 $k++;
 						if (trim($line) == '') { // End of headers
 							$response_split = $line;
