@@ -250,6 +250,16 @@
 			}
 
 		//--------------------------------------------------
+		// Email report
+
+			$email_report = $message;
+
+			if ($hidden_info != '') {
+				$email_report .= "\n\n--------------------------------------------------\n\n";
+				$email_report .= $hidden_info;
+			}
+
+		//--------------------------------------------------
 		// Remove hidden info
 
 			if ($contact_email != '' || config::get('debug.level') == 0) {
@@ -264,7 +274,9 @@
 			$hidden_html = preg_replace('/(You have an error in your SQL syntax; .+) near &apos;(.+?)&apos; at line [0-9]+(.*)\2/ims', '\1.\3<strong>\2</strong>', $hidden_html);
 
 		//--------------------------------------------------
-		// Record the error
+		// Record the error to avoid loops, be used with
+		// the loading helper, and set the variables used
+		// by the error-system.ctp template.
 
 			$error = [
 					'message' => $message,
@@ -276,16 +288,13 @@
 			config::set('output.error', $error);
 
 		//--------------------------------------------------
-		// Report the error
+		// Send report.
 
-			$error_report = $message;
+				// This must be after output.error as it can
+				// record in the database, and connection issues
+				// with the database would create a second error.
 
-			if ($hidden_info != '') {
-				$error_report .= "\n\n--------------------------------------------------\n\n";
-				$error_report .= $hidden_info;
-			}
-
-			report_add($error_report, $type);
+			report_add($email_report, $type);
 
 		//--------------------------------------------------
 		// Tell the user
