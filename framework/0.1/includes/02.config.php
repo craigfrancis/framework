@@ -122,7 +122,7 @@
 				// 'gamepad'                            => [], // RestrictGamepadAccess
 				'geolocation'                           => [], //
 				'gyroscope'                             => [], //
-				// 'hid'                                => [], // WebHID, The WebHID API enables web applications to request access to HID devices.
+				'hid'                                   => [], // WebHID, The WebHID API enables web applications to request access to HID devices.
 				// 'idle-detection'                     => [], // IdleDetection
 				// 'interest-cohort'                    => [], // InterestCohortFeaturePolicy
 				'magnetometer'                          => [], //
@@ -133,7 +133,7 @@
 				// 'picture-in-picture'                 => [], // PictureInPictureAPI, +[Risky]
 				'publickey-credentials-get'             => [], // WebAuthenticationGetAssertionFeaturePolicy
 				'screen-wake-lock'                      => [], // WakeLock
-				// 'serial'                             => [], // Serial
+				'serial'                                => [], // Serial
 				// 'storage-access-api'                 => [], // StorageAccessAPI
 				// 'sync-xhr'                           => [], // +[Risky]
 				// 'trust-token-redemption'             => [], // TrustTokens
