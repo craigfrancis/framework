@@ -472,6 +472,8 @@ exit();
 										UNIQUE KEY ' . $db->escape_field($db_main_fields['identification']) . ' (' . $db->escape_field($db_main_fields['identification']) . ')
 									);');
 
+// TODO: Maybe add an 'identification' field? so we can check what was typed when users tried to login (easy to check for typos).
+
 							debug_require_db_table($db_session_table, '
 									CREATE TABLE [TABLE] (
 										`id` int(11) NOT NULL AUTO_INCREMENT,
