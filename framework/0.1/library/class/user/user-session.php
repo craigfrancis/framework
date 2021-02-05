@@ -137,15 +137,15 @@
 			//--------------------------------------------------
 			// Create a new session
 
-				$db->insert($this->user_obj->db_table_session, array(
-						'pass' => $session_pass, // Using CRYPT_BLOWFISH in password::hash(), makes page loading too slow!
-						'user_id' => $user_id,
-						'ip' => config::get('request.ip'),
-						'browser' => config::get('request.browser'),
-						'created' => date('Y-m-d H:i:s'),
+				$db->insert($this->user_obj->db_table_session, [
+						'pass'      => $session_pass, // Using CRYPT_BLOWFISH in password::hash(), makes page loading too slow!
+						'user_id'   => $user_id,
+						'ip'        => config::get('request.ip'),
+						'browser'   => $this->user_obj->browser_log_get(),
+						'created'   => date('Y-m-d H:i:s'),
 						'last_used' => date('Y-m-d H:i:s'),
-						'deleted' => '0000-00-00 00:00:00',
-					));
+						'deleted'   => '0000-00-00 00:00:00',
+					]);
 
 				$session_id = $db->insert_id();
 

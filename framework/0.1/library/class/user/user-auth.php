@@ -266,15 +266,15 @@
 
 				if ($user_id === false) {
 
-					$db->insert($this->user_obj->db_table_reset, array(
-							'pass' => '',
+					$db->insert($this->user_obj->db_table_reset, [
+							'pass'    => '',
 							'user_id' => 0,
-							'ip' => config::get('request.ip'),
-							'browser' => config::get('request.browser'),
+							'ip'      => config::get('request.ip'),
+							'browser' => $this->user_obj->browser_log_get(),
 							'created' => $now,
-							'sent' => $now,
-							'used' => '0000-00-00 00:00:00',
-						));
+							'sent'    => $now,
+							'used'    => '0000-00-00 00:00:00',
+						]);
 
 					return 'invalid_user';
 
@@ -319,15 +319,15 @@
 
 					$request_pass = random_key(7);
 
-					$db->insert($this->user_obj->db_table_reset, array(
-							'pass' => $request_pass,
+					$db->insert($this->user_obj->db_table_reset, [
+							'pass'    => $request_pass,
 							'user_id' => $user_id,
-							'ip' => config::get('request.ip'),
-							'browser' => config::get('request.browser'),
+							'ip'      => config::get('request.ip'),
+							'browser' => $this->user_obj->browser_log_get(),
 							'created' => $now,
-							'sent' => $now,
-							'used' => '0000-00-00 00:00:00',
-						));
+							'sent'    => $now,
+							'used'    => '0000-00-00 00:00:00',
+						]);
 
 					$request_id = $db->insert_id();
 
@@ -593,15 +593,15 @@
 
 					$now = date('Y-m-d H:i:s'); // Remove when session helper is using timestamp (GMT vs BST)
 
-					$db->insert($this->user_obj->db_table_session, array(
-							'pass' => '', // Will remain blank to record failure
-							'user_id' => $db_id,
-							'ip' => $request_ip,
-							'browser' => config::get('request.browser'),
-							'created' => $now,
+					$db->insert($this->user_obj->db_table_session, [
+							'pass'      => '', // Will remain blank to record failure
+							'user_id'   => $db_id,
+							'ip'        => $request_ip,
+							'browser'   => $this->user_obj->browser_log_get(),
+							'created'   => $now,
 							'last_used' => $now,
-							'deleted' => '0000-00-00 00:00:00',
-						));
+							'deleted'   => '0000-00-00 00:00:00',
+						]);
 
 				}
 

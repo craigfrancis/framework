@@ -27,6 +27,7 @@
 			protected $password_reset_url = NULL;
 			protected $password_reset_user_id = NULL;
 			protected $login_url = '/';
+			protected $browser_log_full = false;
 
 			protected $db_link;
 
@@ -565,6 +566,27 @@
 
 			public function password_reset_user_id() {
 				return $this->password_reset_user_id;
+			}
+
+			public function browser_log_get() {
+
+				$browser_log = config::get('request.browser');
+
+				if ($this->browser_log_full) {
+
+						// Don't use POST as it could catch sensitive values, like the password.
+
+					$values = [
+							'identification' => request('identification'),
+							'browser' => $browser_log,
+						];
+
+					$browser_log = json_encode($values);
+
+				}
+
+				return $browser_log;
+
 			}
 
 			public function password_reset_valid() {
