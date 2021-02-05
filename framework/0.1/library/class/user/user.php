@@ -577,8 +577,8 @@
 						// Don't use POST as it could catch sensitive values, like the password.
 
 					$values = [
-							'identification' => request('identification'),
-							'browser' => $browser_log,
+							'id' => request('identification'),
+							'ua' => $browser_log,
 						];
 
 					$browser_log = json_encode($values);
