@@ -2,13 +2,14 @@
 
 	class db extends check {
 
-		private $result;
-		private $statement;
-		private $affected_rows;
-		private $connection;
-		private $link;
-		private $structure_table_cache;
-		private $structure_field_cache;
+		private $result = NULL;
+		private $statement = NULL;
+		private $affected_rows = NULL;
+		private $connection = NULL;
+		private $link = NULL;
+		private $structure_table_cache = [];
+		private $structure_field_cache = [];
+		private $match_min_len_cache = NULL;
 
 		public function __construct($connection = 'default') {
 			$this->connection = $connection;
@@ -634,10 +635,66 @@
 
 		}
 
+		public function match_boolean_words($search) {
+
+				// To Test this logic, set a field that's at least 35 characters long to:
+				//
+				//    ABC_DEF GHI+JKL-MNO~PQR>STU<VWX@YZA
+				//    ABC_DEF GHI'JKL"MNO.PQR,STU(VWX)YZA
+				//
+				// Setup a script to use:
+				//
+				//    $db->parameter_match_boolean_all($parameters, 'field', $search);
+				//
+				// Check that "ABC_DEF" works, and "ABC DEF" does not (because DEF is not the beginning of a word).
+				//
+				// Check each set of 7 characters will search with 2 words, and a result is returned, e.g.
+				//
+				//    GHI+JKL ... MATCH (`field`) AGAINST ("+GHI +JKL" IN BOOLEAN MODE)
+				//    JKL-MNO
+				//    MNO~PQR
+
+			$search = str_replace([
+					'+', // AND Operator, cannot be part of the word (isn't in the FULLTEXT INDEX).
+					'-', // NOT Operator
+					'~', // Negation Operator
+					'>', // Increase contribution.
+					'<', // Decrease contribution.
+					'@', // InnoDB uses as a @distance proximity search operator (MyISAM ignores)
+					"'", // Apostrophes are seen as word separators (not good for "O'Brien"); Bug report https://jira.mariadb.org/browse/MDEV-20797
+					'"', // Double quotes are used to type the phrase literally, as it was typed.
+					'.', // Treated as a word separator. When using BOOLEAN MODE with the AND operator, "a.name@example.com" would be seen as "+a" and "name@example.com" (also note min length requirements)
+					',', // Treated as a word separator
+					'*', // Wildcard operator
+					'(', // Brackets are used for grouping and subexpressions; and they can also cause a syntax error, e.g. "aaa(bbb".
+					')',
+				], ' ', $search);
+
+			$words = split_words($search);
+
+			if ($this->match_min_len_cache === NULL) {
+				foreach ($this->fetch_all('SHOW VARIABLES LIKE "ft_min_word_len"') as $row) { // Hopefully the same as "innodb_ft_min_token_size"
+					$this->match_min_len_cache = intval($row['Value']);
+				}
+			}
+			if ($this->match_min_len_cache > 0) {
+				$valid_words = [];
+				foreach ($words as $word) {
+					if (strlen($word) >= $this->match_min_len_cache) { // Any words marked as required (with a '+') and are too short, will simply return no results, so we should ignore them in the same way.
+						$valid_words[] = $word;
+					}
+				}
+				$words = $valid_words;
+			}
+
+			return $words;
+
+		}
+
 		private function _match_boolean_all($field, $search, &$parameters = NULL) {
 			$search_query = [];
 			if (!is_array($search)) {
-				$search = split_words($search);
+				$search = $this->match_boolean_words($search);
 			}
 			foreach ($search as $word) {
 				$char = substr($word, 0, 1);
