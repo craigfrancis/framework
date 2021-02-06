@@ -152,7 +152,7 @@
 			private function node_walk($parent, $root = true) {
 				foreach ($parent->childNodes as $node) {
 					if ($node->nodeType === XML_TEXT_NODE) {
-						if ($node->wholeText == '?') {
+						if ($node->wholeText === '?') {
 							$this->template_parameters[] = [$parent->nodeName, NULL];
 						}
 					} else if (!array_key_exists($node->nodeName, $this->template_allowed) && $root !== true) { // Skip for the root node
@@ -163,9 +163,9 @@
 							foreach ($node->attributes as $attr) {
 								if (!array_key_exists($attr->nodeName, $allowed_attributes) && !str_starts_with($attr->nodeName, 'data-')) {
 									throw new error_exception('HTML Templates cannot use the "' . $attr->nodeName . '" attribute in <' . $node->nodeName . '>', implode('?', $this->template_html));
-								} else if ($node->nodeName == 'meta' && $attr->nodeName == 'name' && in_array($attr->nodeValue, ['?', 'referrer'])) {
+								} else if ($node->nodeName === 'meta' && $attr->nodeName === 'name' && in_array($attr->nodeValue, ['?', 'referrer'])) {
 									throw new error_exception('HTML Templates cannot allow the "name" attribute in <meta> to be set to "' . $attr->nodeValue . '"', implode('?', $this->template_html));
-								} else if ($attr->nodeValue == '?') {
+								} else if ($attr->nodeValue === '?') {
 									$this->template_parameters[] = [$node->nodeName, $attr->nodeName];
 								}
 							}
@@ -191,24 +191,24 @@
 						// Ignore this missing parameter, should be picked up next.
 					} else if ($type == 'text') {
 						// Nothing to check
-					} else if ($type == 'url-img' && ($parameters[$k] instanceof url_data) && substr($parameters[$k]->mime_get(), 0, 6) == 'image/') {
+					} else if ($type === 'url-img' && ($parameters[$k] instanceof url_data) && substr($parameters[$k]->mime_get(), 0, 6) === 'image/') {
 						// Images are allowed "data:" URLs with mime-types such as 'image/jpeg'
-					} else if ($type == 'url' || $type == 'url-img') {
+					} else if ($type === 'url' || $type === 'url-img') {
 						if (!($parameters[$k] instanceof url) && !($parameters[$k] instanceof url_immutable)) {
 							throw new error_exception('Parameter ' . ($k + 1) . ' should be a URL object.', debug_dump($parameters[$k]) . "\n" . implode('?', $this->template_html));
 						}
-					} else if ($type == 'int') {
+					} else if ($type === 'int') {
 						if (!is_int($parameters[$k])) {
 							throw new error_exception('Parameter ' . ($k + 1) . ' should be an integer.', debug_dump($parameters[$k]) . "\n" . implode('?', $this->template_html));
 						}
-					} else if ($type == 'ref') {
+					} else if ($type === 'ref') {
 						foreach (explode(' ', $parameters[$k]) as $ref) {
 							$ref = trim($ref);
 							if (!preg_match('/^[a-z][a-z0-9\-\_]+$/i', $ref)) { // Simple strings aren't checked outside of debug mode, but it might catch something during development.
 								throw new error_exception('Parameter ' . ($k + 1) . ' should be one or more valid references.', debug_dump($ref) . "\n" . implode('?', $this->template_html));
 							}
 						}
-					} else if ($type == 'datetime') {
+					} else if ($type === 'datetime') {
 						if (!preg_match('/^[0-9TWZPHMS \:\-\.\+]+$/i', $parameters[$k])) { // Could be better, but not important, as simple strings aren't checked outside of debug mode, and shouldn't be executed as JS by the browser... T=Time, W=Week, Z=Zulu, and PTHMS for duration
 							throw new error_exception('Parameter ' . ($k + 1) . ' should be a valid datetime.', debug_dump($parameters[$k]) . "\n" . implode('?', $this->template_html));
 						}
@@ -252,7 +252,7 @@
 
 		public function __construct($value, $source) {
 			$this->value = $value;
-			if ($source != 'createdByHtmlTemplateClass') {
+			if ($source !== 'createdByHtmlTemplateClass') {
 				exit_with_error('Do not create a "html_template_immutable" object directly, use a "html_template" helper.');
 			}
 		}
