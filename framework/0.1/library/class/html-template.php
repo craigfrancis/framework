@@ -53,7 +53,7 @@
 					'ins'        => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
 					'blockquote' => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
 					'q'          => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
-					'a'          => ['id' => 'ref', 'class' => 'ref', 'href' => 'url'],
+					'a'          => ['id' => 'ref', 'class' => 'ref', 'href' => 'url', 'target' => ['_blank'], 'rel' => ['noopener', 'noreferrer', 'nofollow']],
 					'img'        => ['id' => 'ref', 'class' => 'ref', 'src' => 'url-img', 'alt' => 'text', 'width' => 'int', 'height' => 'int'],
 					'time'       => ['id' => 'ref', 'class' => 'ref', 'datetime' => 'datetime'],
 					'data'       => ['id' => 'ref', 'class' => 'ref', 'value' => 'text'],
@@ -189,7 +189,20 @@
 				foreach ($this->template_parameter_types as $k => $type) {
 					if (!isset($parameters[$k])) {
 						// Ignore this missing parameter, should be picked up next.
-					} else if ($type == 'text') {
+					} else if (is_array($type)) {
+						$valid = true;
+						if (!in_array($parameters[$k], $type)) {
+							foreach (preg_split('/ +/', $parameters[$k]) as $token) { // supporting "space-separated tokens"
+								if (!in_array($token, $type)) {
+									$valid = false;
+									break;
+								}
+							}
+						}
+						if (!$valid) {
+							throw new error_exception('Parameter ' . ($k + 1) . ' can only support the values "' . implode('", "', $type) . '".', debug_dump($parameters[$k]) . "\n" . implode('?', $this->template_html));
+						}
+					} else if ($type === 'text') {
 						// Nothing to check
 					} else if ($type === 'url-img' && ($parameters[$k] instanceof url_data) && substr($parameters[$k]->mime_get(), 0, 6) === 'image/') {
 						// Images are allowed "data:" URLs with mime-types such as 'image/jpeg'
