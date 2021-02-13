@@ -54,7 +54,7 @@
 			$template = array_shift($params);
 
 			if (!$template) {
-				$template = new_selection('Template', array_keys($template_paths));
+				$template = input_select_option('Template', 'Select template', array_keys($template_paths));
 			}
 
 			if (!isset($template_paths[$template])) {
