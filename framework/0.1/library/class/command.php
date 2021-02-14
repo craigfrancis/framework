@@ -118,19 +118,22 @@
 				}
 
 				if (substr($executable, 1) !== '/') {
-					foreach (($this->paths ?? explode(':', ($_SERVER['PATH'] ?? ''))) as $path) {
+					$paths = ($this->paths ?? explode(':', ($_SERVER['PATH'] ?? '')));
+					foreach ($paths as $path) {
 						$test = $path . '/' . $executable;
 						if (is_file($test)) {
 							$executable = $test;
 						}
 					}
+				} else {
+					$paths = 'N/A';
 				}
 
 				if (!is_executable($executable)) {
 					if (is_file($executable)) {
-						throw new error_exception('The command is not executable.', $executable . "\n\n" . $command);
+						throw new error_exception('The command is not executable.', $executable . "\n\n" . debug_dump($paths) . "\n\n" . $command);
 					} else {
-						throw new error_exception('The command does not exist.', $executable . "\n\n" . $command);
+						throw new error_exception('The command does not exist.', $executable . "\n\n" . debug_dump($paths) . "\n\n" . $command);
 					}
 				}
 
