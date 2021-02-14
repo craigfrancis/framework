@@ -420,6 +420,7 @@
 								<head>
 									<meta charset="' . html(config::get('output.charset')) . '" />
 									<title>Loading</title>
+									<meta name="viewport" content="width=device-width, initial-scale=1" />
 									' . $refresh_html . '
 									' . $css_html . '
 								</head>
