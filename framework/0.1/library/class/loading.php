@@ -275,7 +275,7 @@
 					$this->running = false;
 
 					if ($done_url !== NULL) {
-						session::set($this->session_prefix . 'done_url', $done_url);
+						session::set($this->session_prefix . 'done_url', strval($done_url)); // Can't store an object (url) in the session
 					}
 
 					session::close(); // Always close, as cleanup would have re-opened
