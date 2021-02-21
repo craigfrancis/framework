@@ -342,10 +342,9 @@ exit_with_error('Cannot return keys at the moment'); // TODO [secrets-keys] - Ne
 				//--------------------------------------------------
 				// Paths
 
-					$folder_main = config::get('secrets.folder');
-					$folder_data = $folder_main . '/data';
+					$folder_data = config::get('secrets.folder');
 
-					$variables_path = $folder_main . '/variables.json';
+					$variables_path = APP_ROOT . '/library/setup/secrets.json';
 
 				//--------------------------------------------------
 				// Values

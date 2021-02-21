@@ -5,30 +5,25 @@
 		//--------------------------------------------------
 		// Check folder
 
-			$folder_main = config::get('secrets.folder');
-			$folder_data = $folder_main . '/data';
+			$folder_data = config::get('secrets.folder');
 
-			foreach ([$folder_main, $folder_data] as $folder) {
-
-				if (!is_dir($folder)) {
-					mkdir($folder, 0755);
-					if (!is_dir($folder)) {
-						throw new error_exception('Could not create a folder for the encryption keys', $folder);
-					}
+			if (!is_dir($folder_data)) {
+				mkdir($folder_data, 0755);
+				if (!is_dir($folder_data)) {
+					throw new error_exception('Could not create a folder for the encryption keys', $folder_data);
 				}
+			}
 
-				if (!is_writable($folder)) {
-					$account_owner = posix_getpwuid(fileowner($folder));
-					$account_process = posix_getpwuid(posix_geteuid());
-					throw new error_exception('The encryption keys folder cannot be written to (check ownership).', $folder . "\n" . 'Current owner: ' . $account_owner['name'] . "\n" . 'Current process: ' . $account_process['name']);
-				}
-
+			if (!is_writable($folder_data)) {
+				$account_owner = posix_getpwuid(fileowner($folder_data));
+				$account_process = posix_getpwuid(posix_geteuid());
+				throw new error_exception('The encryption keys folder cannot be written to (check ownership).', $folder_data . "\n" . 'Current owner: ' . $account_owner['name'] . "\n" . 'Current process: ' . $account_process['name']);
 			}
 
 		//--------------------------------------------------
 		// Variables file
 
-			$variables_path = $folder_main . '/variables.json';
+			$variables_path = APP_ROOT . '/library/setup/secrets.json';
 
 			if (is_file($variables_path)) {
 				$current_variables = file_get_contents($variables_path);
@@ -341,7 +336,7 @@ debug($current_variables);
 
 			} else if ($action == 'check') {
 
-// TODO [secrets] - Check to see if any values in variables.json are not in the data file (use line 2, so there is no need to call the API).
+// TODO [secrets] - Check to see if any values in secrets.json are not in the data file (use line 2, so there is no need to call the API).
 
 			} else if ($action == 'export') {
 
@@ -666,7 +661,7 @@ debug($current_variables);
 			exit();
 		}
 
-		$data_path = config::get('secrets.folder') . '/data/' . safe_file_name($response_data['identifier']);
+		$data_path = config::get('secrets.folder') . '/' . safe_file_name($response_data['identifier']);
 
 		file_put_contents($data_path, $response_data['data'] . "\n" . $response_data['fields'] . "\n");
 

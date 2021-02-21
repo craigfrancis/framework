@@ -67,9 +67,9 @@ During development, starting on `stage` (development server), the developer will
 
 Where `type` is either 'key' or 'value'.
 
-The name and type is stored in `/private/secrets/variables.json`.
+The name and type is stored in `/app/library/setup/secrets.json`.
 
-The value is then encrypted, and stored to a file in `/private/secrets/data/`.
+The value is then encrypted, and stored to a file in `/private/secrets/`.
 
 ---
 
@@ -188,9 +188,8 @@ This results in a file structure such as:
 
     400 /etc/prime-config-key
 
-    755 /www/.../private/secrets/
-    644 /www/.../private/secrets/variables.json
+    644 /www/.../app/library/setup/secrets.json
 
-    755 /www/.../private/secrets/data/
-    644 /www/.../private/secrets/data/sha256-ec5770f0d969dd27
-    644 /www/.../private/secrets/data/sha256-32e9bf1ce9aa0672
+    755 /www/.../private/secrets/
+    644 /www/.../private/secrets/sha256-ec5770f0d969dd27
+    644 /www/.../private/secrets/sha256-32e9bf1ce9aa0672
