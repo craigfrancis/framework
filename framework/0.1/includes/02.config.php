@@ -250,7 +250,7 @@
 				}
 			}
 
-// TODO [secrets] - Use secrets::get() instead
+// TODO [secrets] - Use secrets::get() or secrets::key_get() instead
 
 			public static function get_encrypted($value) {
 				$key = getenv('PRIME_CONFIG_KEY');

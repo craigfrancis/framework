@@ -1,35 +1,38 @@
 
  -h
- --help            To get this help.
+ --help             To get this help.
 
  -d[=level]
- --debug[=level]   Turn on debugging, and optionally set level (e.g. 3).
+ --debug[=level]    Turn on debugging, and optionally set level (e.g. 3).
 
  -c[=name]
- --config[=name]   Show configuration.
+ --config[=name]    Show configuration.
 
- --config-encrypt  Encrypt a value, entered at the prompt.
+ --config-encrypt   Encrypt a value, entered at the prompt.
+
+ -s[=action]
+ --secrets[=action] Secret init/add/remove/check/export/import.
 
  -g[=name]
- --gateway[=name]  Call the gateway "name", or list the gateways.
+ --gateway[=name]   Call the gateway "name", or list the gateways.
 
  -m
- --maintenance     Run the maintenance scripts.
+ --maintenance      Run the maintenance scripts.
 
  -i
- --install         Run install process.
+ --install          Run install process.
 
- --new[=params]    Add new thing (e.g. unit).
+ --new[=params]     Add new thing (e.g. unit).
 
  -p
- --permissions     Correct file and folder permissions.
+ --permissions      Correct file and folder permissions.
 
- --check[=mode]    Check for issues, such as 'db' collation/engines.
+ --check[=mode]     Check for issues, such as 'db' collation/engines.
 
- --dump[=mode]     Save 'dir' and/or 'db' structure to the setup folder.
+ --dump[=mode]      Save 'dir' and/or 'db' structure to the setup folder.
 
- --diff[=mode]     Compare saved 'dir' and/or 'db' to the current site.
+ --diff[=mode]      Compare saved 'dir' and/or 'db' to the current site.
 
- --reset           Reset the website with dummy data.
+ --reset            Reset the website with dummy data.
 
- --upload=server   Upload to server (demo or live).
+ --upload=server    Upload to server (demo or live).

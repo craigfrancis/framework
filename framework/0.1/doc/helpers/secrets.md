@@ -155,7 +155,7 @@ TODO [secrets] - Not complete yet... also, can the list of current key ID's be e
 
 ## Main Key Rotation
 
-    ./cli --secrets=rotate-main"
+    ./cli --secrets=rotate-main
 
 TODO [secrets]
 

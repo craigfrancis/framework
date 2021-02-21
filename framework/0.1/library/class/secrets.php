@@ -1,14 +1,15 @@
 <?php
 
 		//--------------------------------------------------
-		// This class is primarily used to return values as they are
-		// needed for the website to function (via the 'get' method).
+		// This class is primarily used to return values as
+		// they are needed for the website to function,
+		// using the 'get' and 'key_get' methods.
 		//
-		// The other methods are used by the CLI to set variables, and
-		// export/import backups.
+		// The other methods are used by the CLI to set
+		// variables, and export/import encrypted backups.
 		//
-		// This class does all of the encryption work to keep the
-		// secrets safe.
+		// This class does all of the encryption work to
+		// keep the secrets safe.
 		//--------------------------------------------------
 
 	class secrets_base extends check {
@@ -22,10 +23,13 @@
 		//--------------------------------------------------
 		// Get
 
-				// Don't bother checking against variables.json,
-				// if the file exists, as any errors raised here
-				// are likely to just cause more issues; e.g.
-				// when setting the secrets for the first time.
+				// Don't bother checking 'secrets.json' for
+				// the variable type, or if it even exists.
+				//
+				// The file might not exist (initial setup,
+				// upload, or the site might not use this
+				// feature), or the secret might be in the
+				// process of being created.
 
 			public static function get($name, $default = NULL) {
 
@@ -219,7 +223,7 @@ exit_with_error('Cannot return keys at the moment'); // TODO [secrets-keys] - Ne
 					return [
 							'error'      => false,
 							'data'       => $encrypted,
-							'fields'     => json_encode(array_keys($data['values'])),
+							'fields'     => json_encode(array_keys($data['values'])), // Don't know the type of the other variables at this point, so just provide names.
 							'identifier' => $data['identifier'],
 						];
 

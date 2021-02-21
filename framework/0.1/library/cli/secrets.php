@@ -3,7 +3,7 @@
 	function secrets_run($params) {
 
 		//--------------------------------------------------
-		// Check folder
+		// Check data folder
 
 			$folder_data = config::get('secrets.folder');
 
