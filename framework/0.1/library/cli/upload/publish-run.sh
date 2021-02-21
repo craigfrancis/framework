@@ -24,7 +24,9 @@
 
 	# TODO [secrets]
 
+	# Check all of the secrets exist... remember we don't know which secrets file to check (ENV stores the key), so would probably involve the API? don't think a 'current' symlink would work during a key rotation.
 
+	# Would it be worth doing this via PHP, as multiple calls to ./cli could be slower... e.g. maybe have a `./cli --publish`?
 
 #--------------------------------------------------
 # Checking
