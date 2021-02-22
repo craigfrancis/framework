@@ -223,9 +223,20 @@ exit_with_error('Cannot return keys at the moment'); // TODO [secrets-keys] - Ne
 					return [
 							'error'      => false,
 							'data'       => $encrypted,
-							'fields'     => json_encode(array_keys($data['values'])), // Don't know the type of the other variables at this point, so just provide names.
 							'identifier' => $data['identifier'],
 						];
+
+			}
+
+			public static function data_backup_key($key) {
+
+				list($key_public, $key_secret) = encryption::key_asymmetric_create();
+
+				return [
+						'error' => false,
+						'public' => $key_public,
+						'secret' => encryption::encode($key_secret, $key),
+					];
 
 			}
 
@@ -235,7 +246,7 @@ exit_with_error('Cannot return keys at the moment'); // TODO [secrets-keys] - Ne
 				// Check export key
 
 					if (!in_array(encryption::key_type_get($export_key_value), ['KA1P', 'KA2P'])) {
-						return ['error' => 'export_key'];
+						return ['error' => 'Invalid export key'];
 					}
 
 				//--------------------------------------------------
@@ -283,17 +294,19 @@ exit_with_error('Cannot return keys at the moment'); // TODO [secrets-keys] - Ne
 
 			}
 
-			public static function data_import($key, $import_key_value, $import_data) {
+			public static function data_import($key, $import_key_encrypted, $import_data) {
 
 				//--------------------------------------------------
 				// Check import key
+
+					$import_key_value = encryption::decode($import_key_encrypted, $key);
 
 					if (!in_array(encryption::key_type_get($import_key_value), ['KA1S', 'KA2S'])) {
 						return ['error' => 'Invalid import key, it should be a secret key.'];
 					}
 
 				//--------------------------------------------------
-				// Import
+				// Import data
 
 					$import_data = json_decode($import_data, true);
 					if (!is_array($import_data)) {
@@ -302,16 +315,65 @@ exit_with_error('Cannot return keys at the moment'); // TODO [secrets-keys] - Ne
 
 					$data = self::data_get($key, true); // It's fine if the data file does not exist yet.
 
-					$notices = [];
+				//--------------------------------------------------
+				// Variables
+
+					$variables_add = [];
+					$variables_edit = [];
+
+					if (is_readable($data['variables_path'])) {
+						$variables = file_get_contents($data['variables_path']);
+						$variables = json_decode($variables, true);
+						if (!is_array($variables)) {
+							$variables = []; // Just assume it's all gone wrong, and the import (backup) will provide all of the details.
+						}
+					} else {
+						$variables = [];
+					}
+
+					foreach (($import_data['variables'] ?? []) as $name => $details) {
+
+						if (!array_key_exists($name, $variables)) {
+
+							$variables[$name] = $details;
+
+							$variables_add[] = $name;
+
+						} else {
+
+							foreach ($details as $detail => $new_value) {
+								$old_value = ($variables[$name][$detail] ?? NULL);
+								if ($old_value !== $new_value) {
+									$variables[$name][$detail] = $new_value;
+									$variables_edit[] = ['name' => $name, 'detail' => $detail, 'old' => $old_value, 'new' => $new_value];
+								}
+							}
+
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Import
+
+					$data_notices = [];
 
 					foreach (($import_data['data'] ?? []) as $name => $value) {
 
-						$data['values'][$name] = json_decode(encryption::decode($value, $import_key_value), true);
+						if (!array_key_exists($name, $variables)) {
 
-						if (array_key_exists($name, $data['values'])) {
-							$notices[] = 'Replacing secret "' . $name . '"';
+							$data_notices[] = 'Skipping unrecognised secret "' . $name . '"'; // Should never happen, the import (backup) should at the very least define.
+
 						} else {
-							$notices[] = 'Importing secret "' . $name . '"';
+
+							if (array_key_exists($name, $data['values'])) {
+								$data_notices[] = 'Replacing secret "' . $name . '"';
+							} else {
+								$data_notices[] = 'Importing secret "' . $name . '"';
+							}
+
+							$data['values'][$name] = json_decode(encryption::decode($value, $import_key_value), true);
+
 						}
 
 					}
@@ -325,11 +387,13 @@ exit_with_error('Cannot return keys at the moment'); // TODO [secrets-keys] - Ne
 				// Return
 
 					return [
-							'error'      => false,
-							'data'       => $encrypted,
-							'fields'     => json_encode(array_keys($data['values'])),
-							'identifier' => $data['identifier'],
-							'notices'    => $notices,
+							'error'          => false,
+							'variables'      => json_encode($variables, JSON_PRETTY_PRINT),
+							'variables_add'  => $variables_add,
+							'variables_edit' => $variables_edit,
+							'data'           => $encrypted,
+							'data_notices'   => $data_notices,
+							'identifier'     => $data['identifier'],
 						];
 
 			}
@@ -346,7 +410,8 @@ exit_with_error('Cannot return keys at the moment'); // TODO [secrets-keys] - Ne
 				//--------------------------------------------------
 				// Paths
 
-					$folder_data = config::get('secrets.folder');
+					$main_folder = config::get('secrets.folder');
+					$data_folder = $main_folder . '/data';
 
 					$variables_path = APP_ROOT . '/library/setup/secrets.json';
 
@@ -358,9 +423,7 @@ exit_with_error('Cannot return keys at the moment'); // TODO [secrets-keys] - Ne
 						// the key is valid, and create a path that's not easily guessable.
 
 					$data_identifier = NULL;
-					$values_encrypted = NULL;
 					$values_decrypted = [];
-					$fields_json = NULL;
 
 					if ($key && is_file($variables_path)) { // The variables file determines if the secrets helper is being used.
 
@@ -368,10 +431,10 @@ exit_with_error('Cannot return keys at the moment'); // TODO [secrets-keys] - Ne
 						// Data file, based on the keys identifier
 
 							$files = [];
-							if (($handle = opendir($folder_data)) !== false) {
+							if (($handle = opendir($data_folder)) !== false) {
 								while (($file = readdir($handle)) !== false) {
 									if (substr($file, 0, 1) != '.') {
-										$files[$file] = $folder_data . '/' . $file;
+										$files[$file] = $data_folder . '/' . $file;
 									}
 								}
 								closedir($handle);
@@ -390,24 +453,26 @@ exit_with_error('Cannot return keys at the moment'); // TODO [secrets-keys] - Ne
 						// Parsing
 
 							if ($data_path !== NULL) {
-								list($values_encrypted, $fields_json) = array_pad(array_filter(explode("\n", file_get_contents($data_path))), 2, '');
-							}
 
-							if ($values_encrypted) {
-								$values_decrypted = encryption::decode($values_encrypted, $key);
-								$values_decrypted = json_decode($values_decrypted, true);
-								if (!is_array($values_decrypted)) {
-									throw new error_exception('Parse error when trying to decode secret data', $data_path);
+								$values_encrypted = file_get_contents($data_path);
+
+								if ($values_encrypted) {
+									$values_decrypted = encryption::decode($values_encrypted, $key);
+									$values_decrypted = json_decode($values_decrypted, true);
+									if (!is_array($values_decrypted)) {
+										throw new error_exception('Parse error when trying to decode secret data', $data_path);
+									}
 								}
+
 							}
 
-						//--------------------------------------------------
-						// Default identifier, used during initial setup
+					}
 
-							if ($data_identifier === NULL) {
-								$data_identifier = encryption::key_identifier_get($key);
-							}
+				//--------------------------------------------------
+				// Default identifier, used during initial setup
 
+					if ($key && $data_identifier === NULL) {
+						$data_identifier = encryption::key_identifier_get($key);
 					}
 
 				//--------------------------------------------------
@@ -416,7 +481,6 @@ exit_with_error('Cannot return keys at the moment'); // TODO [secrets-keys] - Ne
 					return [
 							'identifier'     => $data_identifier,
 							'values'         => $values_decrypted,
-							'fields_json'    => $fields_json, // Only used when during a 'check', to ensure all variables have a value.
 							'variables_path' => $variables_path,
 						];
 

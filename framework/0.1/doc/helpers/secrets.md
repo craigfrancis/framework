@@ -167,6 +167,7 @@ TODO [secrets]
 - Replace key in "/etc/prime-config-key", with a mv to a backup file using the current timestamp?
 - Check `PRIME_CONFIG_KEY` has been updated (Apache restart? like "framework-opcache-clear"? check by passing hash, get back a pass/fail?)
 - Remove all old value files (if previous rotate failed there may be more than 1).
+- Update "backup.key-import"
 
 Support servers with multiple projects using this same key.
 

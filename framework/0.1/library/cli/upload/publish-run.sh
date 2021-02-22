@@ -18,24 +18,30 @@
 	CURRENT=`date '+%Y_%m_%d'`;
 	FOLDERS="app httpd framework";
 
+	cd "${DST_PATH}/upload/files/";
+
+	rm -f "./cli";
+	ln -s "./framework/0.1/cli/run.sh" "./cli";
+	chmod 755 "./cli";
+
 #--------------------------------------------------
 # Check Secrets
 #--------------------------------------------------
 
-	# TODO [secrets]
+	if [[ -f "${DST_PATH}/upload/files/app/library/setup/secrets.json" ]]; then
 
-	# Check all of the secrets exist... remember we don't know which secrets file to check (ENV stores the key), so would probably involve the API? don't think a 'current' symlink would work during a key rotation.
+		echo;
+		echo 'Check Secrets...';
 
-	# Would it be worth doing this via PHP, as multiple calls to ./cli could be slower... e.g. maybe have a `./cli --publish`?
+		./cli --secrets=check | awk '{ print "    " $0;}';
+
+		echo -e "  \033[1;34mDone\033[0m";
+
+	fi
 
 #--------------------------------------------------
 # Checking
 #--------------------------------------------------
-
-	cd "${DST_PATH}/upload/files/";
-	rm -f "./cli";
-	ln -s "./framework/0.1/cli/run.sh" "./cli";
-	chmod 755 "./cli";
 
 	CONTINUE="false";
 

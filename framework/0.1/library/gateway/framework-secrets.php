@@ -31,7 +31,11 @@
 //--------------------------------------------------
 // Actions
 
-	if ($action == 'export') {
+	if ($action == 'backup_key') {
+
+		$result = secrets::data_backup_key($key);
+
+	} else if ($action == 'export') {
 
 		$export_key = request('export_key', 'POST');
 

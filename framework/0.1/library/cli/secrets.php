@@ -1,136 +1,321 @@
 <?php
 
-	function secrets_run($params) {
+	class cli_secrets_base extends check {
 
 		//--------------------------------------------------
-		// Check data folder
+		// Variables
 
-			$folder_data = config::get('secrets.folder');
+			protected $main_folder = NULL;
+			protected $data_folder = NULL;
+			protected $variables_path = NULL;
+			protected $variables_current = [];
 
-			if (!is_dir($folder_data)) {
-				mkdir($folder_data, 0755);
-				if (!is_dir($folder_data)) {
-					throw new error_exception('Could not create a folder for the encryption keys', $folder_data);
-				}
-			}
-
-			if (!is_writable($folder_data)) {
-				$account_owner = posix_getpwuid(fileowner($folder_data));
-				$account_process = posix_getpwuid(posix_geteuid());
-				throw new error_exception('The encryption keys folder cannot be written to (check ownership).', $folder_data . "\n" . 'Current owner: ' . $account_owner['name'] . "\n" . 'Current process: ' . $account_process['name']);
-			}
+			protected $key_path = NULL;
+			private $key_value = NULL;
 
 		//--------------------------------------------------
-		// Variables file
+		// Setup
 
-			$variables_path = APP_ROOT . '/library/setup/secrets.json';
+			public function __construct($config = []) {
+				$this->setup($config);
+			}
 
-			if (is_file($variables_path)) {
-				$current_variables = file_get_contents($variables_path);
-				$current_variables = json_decode($current_variables, true);
-			} else {
-				$current_variables = [];
+			protected function setup($config) {
+
+				//--------------------------------------------------
+				// Data folder
+
+					$this->main_folder = config::get('secrets.folder');
+					$this->data_folder = $this->main_folder . '/data';
+
+					foreach ([$this->main_folder, $this->data_folder] as $folder) {
+
+						if (!is_dir($folder)) {
+							mkdir($folder, 0755);
+							if (!is_dir($folder)) {
+								throw new error_exception('Could not create a folder for the encryption keys', $folder);
+							}
+						}
+
+						if (!is_writable($folder)) {
+							$account_owner = posix_getpwuid(fileowner($folder));
+							$account_process = posix_getpwuid(posix_geteuid());
+							throw new error_exception('The encryption keys folder cannot be written to (check ownership).', $folder . "\n" . 'Current owner: ' . $account_owner['name'] . "\n" . 'Current process: ' . $account_process['name']);
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Variables
+
+					$this->variables_path = APP_ROOT . '/library/setup/secrets.json';
+
+					if (is_file($this->variables_path)) {
+						$this->variables_current = file_get_contents($this->variables_path);
+						$this->variables_current = json_decode($this->variables_current, true);
+						if (!is_array($this->variables_current)) {
+							throw new error_exception('The secrets.json file does not contain valid JSON.', $this->variables_path);
+						}
+					}
+
+				//--------------------------------------------------
+				// Config key
+
+					//--------------------------------------------------
+					// File exists
+
+						$this->key_path = '/etc/prime-config-key';
+
+						if (!is_file($this->key_path)) {
+
+// TODO [secrets] - Creating /etc/prime-config-key
+
+// - If already root, do this automatically? or after a prompt?
+// - If not root, use the shell script, via $this->key_create(), $command->exec(), with sudo?
+// - Otherwise print contents to create file.
+
+							echo "\n";
+							echo 'Missing key file: ' . $this->key_path . "\n";
+							echo "\n";
+							$this->key_example_print();
+							exit();
+
+						}
+
+					//--------------------------------------------------
+					// Permission checks
+
+						$config_key_owner = fileowner($this->key_path);
+						$config_key_group = filegroup($this->key_path);
+						$config_key_permissions = substr(sprintf('%o', fileperms($this->key_path)), -4);
+
+// TODO [secrets] - On 'stage', would a 'framework-db-dump' work, so this file can be owned by root as well?
+
+						$permission_changes = [];
+						if ($config_key_owner != 0 && SERVER != 'stage') $permission_changes[] = 'chown 0 ' . $this->key_path;
+						if ($config_key_group != 0) $permission_changes[] = 'chgrp 0 ' . $this->key_path;
+						if ($config_key_permissions !== '0400') $permission_changes[] = 'chmod 0400 ' . $this->key_path;
+						if (count($permission_changes) > 0) {
+							echo "\n";
+							echo "\033[1;31m" . 'Warning:' . "\033[0m" . ' The config key file should use:' . "\n";
+							echo "\n";
+							foreach ($permission_changes as $permission_change) {
+								echo $permission_change . "\n";
+							}
+							echo "\n";
+							if (SERVER != 'stage') {
+								return;
+							}
+						}
+
+					//--------------------------------------------------
+					// Is loaded into Apache
+
+						if (is_dir('/usr/local/opt/httpd/bin')) {
+							$envvars_path = '/usr/local/opt/httpd/bin/envvars';
+						} else {
+							$envvars_path = '/etc/apache2/envvars';
+						}
+
+						if (!is_file($envvars_path)) {
+							echo "\n";
+							echo 'Cannot find Apache envvars file: ' . $envvars_path . "\n";
+							echo "\n";
+							return;
+						}
+
+						$envvars_content = @file_get_contents($envvars_path);
+						$envvars_line = '. ' . $this->key_path;
+
+						if (strpos($envvars_content, $envvars_line) === false) {
+							echo "\n";
+							echo 'Missing config key file in Apache envvars file: ' . $envvars_path . "\n";
+							echo "\n";
+							echo '##########' . "\n";
+							echo $envvars_line . "\n";
+							echo '##########' . "\n";
+							echo "\n";
+							echo 'Your Apache config should also include:' . "\n";
+							echo "\n";
+							echo '  <VirtualHost>' . "\n";
+							echo '    ...' . "\n";
+							echo '    SetEnv PRIME_CONFIG_KEY ${PRIME_CONFIG_KEY}' . "\n";
+							echo '  </VirtualHost>' . "\n";
+							echo "\n";
+							return;
+						}
+
+					//--------------------------------------------------
+					// Attempt to get key value
+
+						$this->key_value = trim(getenv('PRIME_CONFIG_KEY'));
+
+						if (!$this->key_value) {
+
+							if (is_readable($this->key_path)) {
+
+								$this->key_value = $this->key_cleanup(file_get_contents($this->key_path));
+
+							} else if (config::get('output.domain')) {
+
+								$this->key_value = NULL; // Use the API
+
+							} else {
+
+								$this->key_value = ''; // Not available
+
+							}
+
+						}
+
 			}
 
 		//--------------------------------------------------
 		// Key
 
-			//--------------------------------------------------
-			// File exists
-
-				$config_key_path = '/etc/prime-config-key';
-
-				if (!is_file($config_key_path)) {
-
-// TODO [secrets] - Creating /etc/prime-config-key
-
-// - If already root, do this automatically? or after a prompt?
-// - If not root, use the shell script, via secrets_key_create(), $command->exec(), with sudo?
-// - Otherwise print contents to create file.
-
-					echo "\n";
-					echo 'Missing key file: ' . $config_key_path . "\n";
-					echo "\n";
-					secrets_key_example_print();
-					exit();
-
-				}
-
-			//--------------------------------------------------
-			// Permission checks
-
-				$config_key_owner = fileowner($config_key_path);
-				$config_key_group = filegroup($config_key_path);
-				$config_key_permissions = substr(sprintf('%o', fileperms($config_key_path)), -4);
-
-// TODO [secrets] - On 'stage', would a 'framework-db-dump' work, so this file can be owned by root as well?
-
-				$permission_changes = [];
-				if ($config_key_owner != 0 && SERVER != 'stage') $permission_changes[] = 'chown 0 ' . $config_key_path;
-				if ($config_key_group != 0) $permission_changes[] = 'chgrp 0 ' . $config_key_path;
-				if ($config_key_permissions != '0400') $permission_changes[] = 'chmod 0400 ' . $config_key_path;
-				if (count($permission_changes) > 0) {
-					echo "\n";
-					echo "\033[1;31m" . 'Warning:' . "\033[0m" . ' The config key file should use:' . "\n";
-					echo "\n";
-					foreach ($permission_changes as $permission_change) {
-						echo $permission_change . "\n";
-					}
-					echo "\n";
-					if (SERVER != 'stage') {
-						return;
-					}
-				}
-
-			//--------------------------------------------------
-			// Is loaded into Apache
-
-				if (is_dir('/usr/local/opt/httpd/bin')) {
-					$envvars_path = '/usr/local/opt/httpd/bin/envvars';
-				} else {
-					$envvars_path = '/etc/apache2/envvars';
-				}
-
-				if (!is_file($envvars_path)) {
-					echo "\n";
-					echo 'Cannot find Apache envvars file: ' . $envvars_path . "\n";
-					echo "\n";
-					return;
-				}
-
-				$envvars_content = @file_get_contents($envvars_path);
-				$envvars_line = '. ' . $config_key_path;
-
-				if (strpos($envvars_content, $envvars_line) === false) {
-					echo "\n";
-					echo 'Missing config key file in Apache envvars file: ' . $envvars_path . "\n";
-					echo "\n";
-					echo '##########' . "\n";
-					echo $envvars_line . "\n";
-					echo '##########' . "\n";
-					echo "\n";
-					echo 'Your Apache config should also include:' . "\n";
-					echo "\n";
-					echo '  <VirtualHost>' . "\n";
-					echo '    ...' . "\n";
-					echo '    SetEnv PRIME_CONFIG_KEY ${PRIME_CONFIG_KEY}' . "\n";
-					echo '  </VirtualHost>' . "\n";
-					echo "\n";
-					return;
-				}
-
-		//--------------------------------------------------
-		// Actions
-
-			$params = explode(',', $params);
-
-			$action = array_shift($params);
-
-			if ($action != 'check') {
-				$key = secrets_key_get($config_key_path);
+			public function key_example_print() {
+				echo 'Try creating with the following line:' . "\n";
+				echo "\n";
+				echo '##########' . "\n";
+				echo $this->key_example();
+				echo '##########' . "\n";
 			}
 
-			if ($action == 'add' || $action == 'remove') {
+			public function key_example() {
+				return 'export PRIME_CONFIG_KEY=' . encryption::key_symmetric_create();
+			}
+
+			private function key_create() {
+
+				// $new_key_value = encryption::key_symmetric_create();
+				// $new_key_identifier = encryption::key_identifier_get($new_key_value);
+				//
+				// $command = new command();
+				// $command->stdin_set($new_key_value);
+				// $command->exec('sudo -k', [
+				// 		FRAMEWORK_ROOT . '/library/cli/secrets/new-key.sh',
+				// 		$new_key_identifier,
+				// 		$this->key_path,
+				// 		1,
+				// 	]);
+				//
+				// debug($command->stdout_get());
+
+			}
+
+			private function key_cleanup($key) {
+
+				if (($pos = strpos($key, '=')) !== false) { // Remove the export + name prefix
+					$key = substr($key, ($pos + 1));
+				}
+
+				$key = trim($key);
+
+				if ($key !== '' && !in_array(encryption::key_type_get($key), ['KS1', 'KS2'])) {
+					echo "\n";
+					echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Unrecognised key type' . "\n";
+					echo "\n";
+					exit();
+				}
+
+				return $key;
+
+			}
+
+		//--------------------------------------------------
+		// Run action
+
+			public function run($params) {
+
+				//--------------------------------------------------
+				// Parameters, and action
+
+					$params = explode(',', $params);
+
+					$action = array_shift($params);
+
+				//--------------------------------------------------
+				// Required key
+
+					if ($this->key_value || $this->key_value === NULL) {
+
+						// The key value has been set, or is NULL (use the API)
+
+					} else if ($action !== 'check') {
+
+						echo "\n";
+						echo 'Cannot access config key file ' . $this->key_path . "\n";
+						echo "\n";
+						echo 'Either:' . "\n";
+						echo '1) Set $config[\'output.domain\']' . "\n";
+						echo '2) Run via sudo' . "\n";
+						echo '3) Enter the key' . "\n";
+						echo "\n";
+						echo 'Key: ';
+						$this->key_value = $this->key_cleanup(fgets(STDIN));
+
+						if ($this->key_value === '') {
+							echo "\n";
+							if (is_readable($this->key_path)) {
+								echo 'Empty key file: ' . $this->key_path . "\n";
+								echo "\n";
+								$this->key_example_print();
+							}
+							exit();
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Actions
+
+					if ($action === 'add' || $action === 'remove') {
+
+						if (!config::get('secrets.editable')) {
+
+							echo "\n";
+							echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Cannot ' . $action . ' variables on this server.' . "\n";
+							echo "\n";
+							echo 'See config \'secrets.editable\', typically only editable on stage.' . "\n";
+							echo "\n";
+							exit();
+
+						}
+
+						$this->run_update($action, true, $params);
+
+					} else if ($action === 'check') {
+
+						$this->run_check($params);
+
+					} else if ($action === 'backup-key') {
+
+						$this->backup_key_print($params);
+
+					} else if ($action === 'export') {
+
+						$this->run_export($params);
+
+					} else if ($action === 'import') {
+
+						$this->run_import($params);
+
+					} else {
+
+						exit_with_error('Unrecognised action "' . $action . '"');
+
+					}
+
+			}
+
+			public function run_update($action, $variables_editable = false, $params = []) { // 'add' or 'remove' (when editable); or 'add' a value when doing a check (when variables are not editable, and a value is missing)
+
+				//--------------------------------------------------
+				// Action
+
+					if (!in_array($action, ['add', 'remove'])) {
+						exit_with_error('Invalid cli_secrets->run_update action');
+					}
 
 				//--------------------------------------------------
 				// Name
@@ -151,28 +336,86 @@
 				//--------------------------------------------------
 				// Type
 
+					$input_type = array_shift($params);
+
 					$types = ['value', 'key'];
 
-					if (array_key_exists($name, $current_variables)) {
+					if (array_key_exists($name, $this->variables_current)) {
+						$type = $this->variables_current[$name]['type'];
+					} else {
+						$type = NULL;
+					}
 
-						$type = $current_variables[$name]['type'];
+					if ($variables_editable) {
 
-						$test_type = array_shift($params);
-						if ($test_type !== NULL && $test_type !== $type) {
-							throw new error_exception('The secret "' . $name . '" currently uses the type "' . $type . '"');
+						if ($type !== NULL) { // Already exists; if a param is specifying a type, check it still matches.
+
+							if ($input_type !== NULL && $input_type !== $type) {
+								throw new error_exception('The secret "' . $name . '" currently uses the type "' . $type . '"');
+							}
+
+						} else { // Variable doesn't currently exist
+
+							if ($action === 'remove') {
+
+								exit_with_error('Unrecognised secret "' . $name . '"');
+
+							} else {
+
+								$type = $input_type;
+
+								if (!in_array($type, $types)) {
+									echo "\n";
+									$type = input_select_option('Types', 'Select Type', $types);
+								}
+
+							}
+
 						}
 
-					} else if ($action == 'remove') {
+					} else { // Variables themselves are not editable (only the values are)
 
-						exit_with_error('Unrecognised secret "' . $name . '"');
+						if ($type === NULL) {
+							throw new error_exception('The secret "' . $name . '" is unrecognised.');
+						}
 
-					} else {
+					}
 
-						$type = array_shift($params);
+				//--------------------------------------------------
+				// Key Index
 
-						if (!in_array($type, $types)) {
+					$key_index = NULL;
+
+					if ($type === 'key') {
+
+						$key_index = trim(array_shift($params)); // Provided on the command line... could be 0 to append.
+
+						if (!$key_index && $key_index !== '0') {
+
+							if ($action === 'remove') {
+								echo "\n";
+								echo "\033[1;34m" . 'Note:' . "\033[0m" . ' Type "all" to remove all keys.' . "\n";
+								echo "\n";
+							} else {
+								echo "\n";
+								echo "\033[1;34m" . 'Note:' . "\033[0m" . ' Leave blank to be appended.' . "\n";
+								echo "\n";
+							}
+
+							echo 'Key Index: ';
+							$key_index = trim(fgets(STDIN));
 							echo "\n";
-							$type = input_select_option('Types', 'Select Type', $types);
+
+						}
+
+						if ($action !== 'remove' || $key_index !== 'all') {
+							$key_index = intval($key_index);
+						}
+
+						if ($action === 'remove' && $key_index === 0) {
+							echo "\033[1;31m" . 'Error:' . "\033[0m" . ' No index specified' . "\n";
+							echo "\n";
+							return;
 						}
 
 					}
@@ -182,9 +425,9 @@
 
 					$value = NULL;
 
-					if ($action != 'remove') {
+					if ($action !== 'remove') {
 
-						if ($type == 'key') {
+						if ($type === 'key') {
 							echo "\n";
 							echo "\033[1;34m" . 'Note:' . "\033[0m" . ' Leave blank to generate a new symmetric key.' . "\n";
 							echo "\n";
@@ -198,7 +441,7 @@
 
 						echo "\n";
 
-						if ($type == 'key') {
+						if ($type === 'key') {
 
 							if ($value == '') {
 								$value = encryption::key_symmetric_create();
@@ -215,92 +458,43 @@
 					}
 
 				//--------------------------------------------------
-				// Key Index
-
-					$key_index = NULL;
-
-					if ($type == 'key') {
-
-						if ($action == 'remove') {
-							$key_index = array_shift($params); // Provided on the command line.
-							if ($key_index === NULL) {
-								echo "\n";
-								echo "\033[1;34m" . 'Note:' . "\033[0m" . ' Type "all" to remove all keys.' . "\n";
-								echo "\n";
-							}
-						} else {
-							echo "\n";
-							echo "\033[1;34m" . 'Note:' . "\033[0m" . ' Leave blank to be appended.' . "\n";
-							echo "\n";
-						}
-
-						if ($key_index === NULL) {
-							echo 'Key Index: ';
-							$key_index = trim(fgets(STDIN));
-							echo "\n";
-						}
-
-						if ($action != 'remove' || $key_index != 'all') {
-							$key_index = intval($key_index);
-						}
-
-						if ($action == 'remove' && $key_index === 0) {
-							echo "\033[1;31m" . 'Error:' . "\033[0m" . ' No index specified' . "\n";
-							echo "\n";
-							return;
-						}
-
-					}
-
-				//--------------------------------------------------
 				// Recording variables
 
-					if (SERVER == 'stage') {
-debug($current_variables);
-						if ($action == 'remove') {
+					if ($variables_editable) {
 
-							if ($type == 'key' && $key_index != 'all') {
-								unset($current_variables[$name][$key_index]);
+						if ($action === 'remove') {
+
+							if ($type === 'key' && $key_index !== 'all') {
+								unset($this->variables_current[$name][$key_index]);
 							} else {
-								unset($current_variables[$name]);
+								unset($this->variables_current[$name]);
 							}
 
-						} else if ($action == 'add' && !array_key_exists($name, $current_variables)) {
+						} else if ($action === 'add' && !array_key_exists($name, $this->variables_current)) { // Type won't have changed, should keep the 'created' timestamp.
 
 							$now = new timestamp();
 
-							$current_variables[$name] = [
+							$this->variables_current[$name] = [
 									'type' => $type,
 									'created' => $now->format('c'),
 								];
 
 						}
-debug($current_variables);
-						file_put_contents($variables_path, json_encode($current_variables, JSON_PRETTY_PRINT));
 
-					} else {
-
-// TODO [secrets] - Cannot change the variables file ... probably should check the variable exists?
+						file_put_contents($this->variables_path, json_encode($this->variables_current, JSON_PRETTY_PRINT));
 
 					}
 
 				//--------------------------------------------------
 				// Encrypt
 
-					if ($key) {
+					if ($this->key_value) {
 
-						$response_data = secrets::data_value_update($key, $action, $name, $type, $value, $key_index);
-
-						if ($response_data['error'] !== false) {
-							echo "\n";
-							echo $response_data['error'] . "\n";
-							echo "\n";
-							exit();
-						}
+						$response_data = secrets::data_value_update($this->key_value, $action, $name, $type, $value, $key_index);
 
 					} else {
 
-						$response_data = secrets_api_call([
+						$response_data = $this->api_call([
 								'action'    => $action,
 								'name'      => $name,
 								'type'      => $type,
@@ -308,23 +502,11 @@ debug($current_variables);
 								'key_index' => $key_index,
 							]);
 
-						if ($response_data['error'] !== false) {
-							echo "\n";
-							echo 'Error from framework-secrets API:' . "\n" . ' ' . $response_data['error'] . "\n";
-							echo "\n";
-							exit();
-						}
-
 					}
 
-				//--------------------------------------------------
-				// Error
-
-					$error = ($response_data['error'] ?? NULL);
-
-					if ($error !== false) {
+					if ($response_data['error'] !== false) {
 						echo "\n";
-						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $error . "\n";
+						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response_data['error'] . "\n";
 						echo "\n";
 						exit();
 					}
@@ -332,172 +514,200 @@ debug($current_variables);
 				//--------------------------------------------------
 				// Save
 
-					secrets_data_save($response_data);
+					$this->data_save($response_data);
 
-			} else if ($action == 'check') {
+			}
+
+			public function run_check($params = []) {
+
+
+// debug($this->variables_path);
 
 // TODO [secrets] - Check to see if any values in secrets.json are not in the data file (use line 2, so there is no need to call the API).
 
-			} else if ($action == 'export') {
+
+
+
+// Check all of the secrets exist... remember we don't know which secrets file to check (ENV stores the key), so would probably involve the API? don't think a 'current' symlink would work during a key rotation.
+
+// Would it be worth doing this via PHP, as multiple calls to ./cli could be slower... e.g. maybe have a `./cli --publish`?
+
+
+			}
+
+			public function run_export($params = []) {
 
 				//--------------------------------------------------
 				// Export Key
 
-					$export_key = array_shift($params);
+					$backup_key_path = $this->main_folder . '/backup.key-export';
 
-					// if (!$export_key) {
-					// 	echo "\n";
-					// 	echo 'Export Public Key: ';
-					// 	$export_key = trim(fgets(STDIN));
-					// }
+					if (is_readable($backup_key_path)) {
 
-				//--------------------------------------------------
-				// Request
+						$export_key = file_get_contents($backup_key_path);
 
-					if ($export_key != '') { // Not provided, don't even try
+					} else {
 
-						if ($key) {
+						echo "\n";
+						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Missing Export Key' . "\n";
+						echo "\n";
+						echo 'On your backup system, run:' . "\n";
+						echo "\n";
+						echo '  ./cli --secrets=backup-key' . "\n";
+						echo "\n";
+						echo 'Export Public Key: ';
+						$export_key = trim(fgets(STDIN));
+						echo "\n";
 
-							$response_data = secrets::data_export($key, $export_key);
-
-						} else {
-
-							$response_data = secrets_api_call([
-									'action' => 'export',
-									'export_key' => $export_key,
-								]);
-
-							if ($response_data['error'] !== false && $response_data['error'] !== 'export_key') {
-								echo "\n";
-								echo 'Error from framework-secrets API:' . "\n" . ' ' . $response_data['error'] . "\n";
-								echo "\n";
-								exit();
-							}
-
+						if ($export_key == '') {
+							exit();
 						}
+
+						if (!in_array(encryption::key_type_get($export_key), ['KA1P', 'KA2P'])) {
+							echo "\n";
+							echo "\033[1;31m" . 'Error:' . "\033[0m" . ' The export key is invalid (should be a public key).' . "\n";
+							echo "\n";
+							exit();
+						}
+
+						file_put_contents($backup_key_path, $export_key . "\n");
 
 					}
 
 				//--------------------------------------------------
-				// Error
+				// Request
 
-					$error = ($response_data['error'] ?? NULL);
+					if ($this->key_value) {
 
-					if ($export_key == '' || $error === 'export_key') {
+						$response_data = secrets::data_export($this->key_value, $export_key);
 
+					} else {
+
+						$response_data = $this->api_call([
+								'action' => 'export',
+								'export_key' => $export_key,
+							]);
+
+					}
+
+					if ($response_data['error'] !== false) {
 						echo "\n";
-						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Exporting can only be done with a public key' . "\n";
-						echo "\n";
-						echo 'Why not use this key pair...' . "\n";
-						echo "\n";
-						list($example_key_public, $example_key_secret) = encryption::key_asymmetric_create();
-						echo '  Pubic:  ' . $example_key_public . "\n";
-						echo '  Secret: ' . $example_key_secret . "\n";
-						echo "\n";
-						echo 'You can use the secret key to import, but it must be kept a secret.' . "\n";
+						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response_data['error'] . "\n";
 						echo "\n";
 						exit();
-
-					} else if ($error !== false) {
-
-						echo "\n";
-						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $error . "\n";
-						echo "\n";
-						exit();
-
 					}
 
 				//--------------------------------------------------
 				// Export
 
-					echo $response_data['data'] . "\n";
-					return;
+					file_put_contents($this->main_folder . '/backup.json', $response_data['data'] . "\n");
 
-			} else if ($action == 'import') {
+			}
+
+			public function run_import($params = []) {
+
+				//--------------------------------------------------
+				// Import key
+
+					$backup_key_path = $this->main_folder . '/backup.key-import';
+
+					if (is_readable($backup_key_path)) {
+
+						$import_key = file_get_contents($backup_key_path);
+
+					} else {
+
+						echo "\n";
+						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Missing Import Key' . "\n";
+						echo "\n";
+						echo '  ' . $backup_key_path . "\n";
+						echo "\n";
+						exit();
+
+					}
 
 				//--------------------------------------------------
 				// Import values
 
-// Shouldn't provide the secret key on the command line (ps, and ~/.bash_history)
+					$backup_file = $this->main_folder . '/backup.json';
 
-					$import_key = array_shift($params);
-					$import_data = trim(stream_get_contents(STDIN));
-
-					if ($import_key == '' || $import_data == '') {
+					if (!is_readable($backup_file)) {
 						echo "\n";
-						if ($import_key == '') {
-							echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Missing import key.' . "\n";
-						}
-						if ($import_data == '') {
-							echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Missing import data.' . "\n";
-						}
+						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Cannot read backup file:' . "\n";
 						echo "\n";
-						echo 'Try:' . "\n";
-						echo '  ./cli --secrets=import,' . ($import_key ? $import_key : "\033[1;34m" . 'KA2S.0.ABCDE...' . "\033[0m") . ' < /path/to/file' . "\n";
-						echo "\n";
+						echo '  ' . $backup_file . "\n";
 						echo "\n";
 						exit();
 					}
 
-				//--------------------------------------------------
-				// Variables
+					$import_data = trim(file_get_contents($backup_file));
 
-					if (SERVER == 'stage') {
-
-// if ($xxx['type'] !== $type) {
-// 	throw new error_exception('When editing the secret "' . $variable . '", the type changed.', $xxx['type'] . ' !== ' . $type);
-// }
-
-
-
-//						file_put_contents($variables_path, json_encode($current_variables, JSON_PRETTY_PRINT));
-
-					} else {
-
-// Cannot change the variables file ... probably should check the variable exists?
-
+					if ($import_data == '') {
+						echo "\n";
+						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Empty backup file:' . "\n";
+						echo "\n";
+						echo '  ' . $backup_file . "\n";
+						echo "\n";
+						exit();
 					}
 
 				//--------------------------------------------------
 				// Request
 
-					if ($key) {
+					if ($this->key_value) {
 
-						$response_data = secrets::data_import($key, $import_key, $import_data);
+						$response_data = secrets::data_import($this->key_value, $import_key, $import_data);
 
 					} else {
 
-						$response_data = secrets_api_call([
-								'action' => 'import',
-								'import_key' => $import_key,
+						$response_data = $this->api_call([
+								'action'      => 'import',
+								'import_key'  => $import_key,
 								'import_data' => $import_data,
 							]);
 
-						if ($response_data['error'] !== false && $response_data['error'] !== 'import_key') {
-							echo "\n";
-							echo 'Error from framework-secrets API:' . "\n" . ' ' . $response_data['error'] . "\n";
-							echo "\n";
-							exit();
+					}
+
+					if ($response_data['error'] !== false) {
+						echo "\n";
+						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response_data['error'] . "\n";
+						echo "\n";
+						exit();
+					}
+
+					$notices = ($response_data['data_notices'] ?? []);
+
+				//--------------------------------------------------
+				// Variables
+
+					if (config::get('secrets.editable')) {
+
+						file_put_contents($this->variables_path, $response_data['variables']);
+
+						foreach (($response_data['variables_add'] ?? []) as $name) {
+							$notices[] = 'Added variable "' . $name . '"';
+						}
+
+						foreach (($response_data['variables_edit'] ?? []) as $info) {
+							$notices[] = 'Updated variable "' . $info['name'] . '" so "' . $info['detail'] . '" changed from "' . $info['old'] . '" to "' . $info['new'] . '"';
+						}
+
+					} else {
+
+						foreach (($response_data['variables_add'] ?? []) as $name) {
+							$notices[] = 'Ignored variable "' . $name . '" addition, but the secret was still imported.';
+						}
+
+						foreach (($response_data['variables_edit'] ?? []) as $info) {
+							$notices[] = 'Ignored variable "' . $info['name'] . '" change where "' . $info['detail'] . '" remains as "' . $info['old'] . '", and was not changed to "' . $info['new'] . '"';
 						}
 
 					}
 
 				//--------------------------------------------------
-				// Error
-
-					$error = ($response_data['error'] ?? NULL);
-
-					if ($error !== false) {
-						echo "\n";
-						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $error . "\n";
-						echo "\n";
-						exit();
-					}
-
-				//--------------------------------------------------
 				// Save
 
-					secrets_data_save($response_data);
+					$this->data_save($response_data);
 
 				//--------------------------------------------------
 				// Details
@@ -506,7 +716,6 @@ debug($current_variables);
 					echo "\033[1;34m" . 'Note:' . "\033[0m" . ' Data Imported:' . "\n";
 					echo "\n";
 
-					$notices = ($response_data['notices'] ?? []);
 					foreach ($notices as $notice) {
 						echo '- ' . $notice . "\n";
 					}
@@ -516,161 +725,119 @@ debug($current_variables);
 
 					echo "\n";
 
-			} else {
-
-				exit_with_error('Unrecognised action "' . $action . '"');
-
 			}
 
-	}
+		//--------------------------------------------------
+		// Support functions
 
-	function secrets_key_get($file_path) {
+			public function backup_key_print($params = []) {
 
-		$key = getenv('PRIME_CONFIG_KEY');
-		if ($key) {
-			return $key;
-		}
+				$export_path = $this->main_folder . '/backup.key-export';
+				$import_path = $this->main_folder . '/backup.key-import';
 
-		$file_readable = is_readable($file_path);
+				if (is_readable($export_path)) {
 
-		if ($file_readable) {
+					$export_key = trim(file_get_contents($export_path));
 
-			$file_content = file_get_contents($file_path);
+				} else {
 
-		} else if (config::get('output.domain')) {
+					if ($this->key_value) {
 
-			return NULL; // Use the API
+						$response_data = secrets::data_backup_key($this->key_value);
 
-		} else {
+					} else {
 
-			echo "\n";
-			echo 'Cannot access config key file ' . $file_path . "\n";
-			echo "\n";
-			echo 'Either:' . "\n";
-			echo '1) Set $config[\'output.domain\']' . "\n";
-			echo '2) Run via sudo' . "\n";
-			echo '3) Enter the key' . "\n";
-			echo "\n";
-			echo 'Key: ';
-			$file_content = trim(fgets(STDIN));
+						$response_data = $this->api_call([
+								'action' => 'backup_key',
+							]);
 
-		}
+					}
 
-		if (($pos = strpos($file_content, '=')) !== false) {
-			$file_content = substr($file_content, ($pos + 1));
-		}
+					if ($response_data['error'] !== false) {
+						echo "\n";
+						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response_data['error'] . "\n";
+						echo "\n";
+						exit();
+					}
 
-		$file_content = trim($file_content);
+					file_put_contents($export_path, $response_data['public'] . "\n");
+					file_put_contents($import_path, $response_data['secret'] . "\n"); // Not that secret, it's still encrypted
 
-		if ($file_content == '') {
-			echo "\n";
-			if ($file_readable) {
-				echo 'Empty key file: ' . $file_path . "\n";
+					$export_key = trim($response_data['public']);
+
+				}
+
 				echo "\n";
-				secrets_key_example_print();
+				echo 'The export public key is:' . "\n";
+				echo "\n";
+				echo '  ' . $export_key . "\n";
+				echo "\n";
+
 			}
-			exit();
-		}
 
-		if (!in_array(encryption::key_type_get($file_content), ['KS1', 'KS2'])) {
-			echo "\n";
-			echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Unrecognised key type' . "\n";
-			echo "\n";
-			exit();
-		}
+			private function api_call($request_data) {
 
-		return $file_content;
+				list($auth_id, $auth_value, $auth_path) = gateway::framework_api_auth_start('framework-secrets');
 
-	}
+				$gateway_url = gateway_url('framework-secrets');
 
-	function secrets_key_example_print() {
-		echo 'Try creating with the following line:' . "\n";
-		echo "\n";
-		echo '##########' . "\n";
-		echo secrets_key_example();
-		echo '##########' . "\n";
-	}
+				$request_data['auth_id'] = $auth_id;
+				$request_data['auth_value'] = $auth_value;
 
-	function secrets_key_example() {
-		return 'export PRIME_CONFIG_KEY=' . encryption::key_symmetric_create();
-	}
+				$error = false;
 
-	function secrets_key_create() {
+				$connection = new connection();
+				$connection->exit_on_error_set(false);
+				$connection->post($gateway_url, $request_data);
 
-		// $main_key_path = '/etc/prime-config-key';
-		//
-		// $new_key_value = encryption::key_symmetric_create();
-		// $new_key_identifier = encryption::key_identifier_get($new_key_value);
-		//
-		// $command = new command();
-		// $command->stdin_set($new_key_value);
-		// $command->exec('sudo -k ' . FRAMEWORK_ROOT . '/library/cli/secrets/new-key.sh', [
-		// 		$new_key_identifier,
-		// 		$main_key_path,
-		// 		1,
-		// 	]);
-		//
-		// debug($command->stdout_get());
+				if (intval($connection->response_code_get()) !== 200) {
+					$error = 'Cannot call the framework-secrets API' . "\n\n-----\n" . $connection->error_message_get() . "\n-----\n" . $connection->error_details_get() . "\n-----\n" . $connection->response_headers_get() . "\n\n" . $connection->response_data_get() . "\n-----";
+				} else {
+					$response_json = $connection->response_data_get();
+					$response_data = json_decode($response_json, true);
+					if (!is_array($response_data)) {
+						$error = 'Invalid response' . "\n\n-----\n\n" . $response_json;
+					} else if ($response_data['error'] !== false) {
+						$error = $response_data['error']; // Only return the error
+					}
+				}
 
-	}
+				gateway::framework_api_auth_end($auth_path);
 
-	function secrets_api_call($request_data) {
+				if ($error !== false) {
+					return ['error' => $error];
+				} else {
+					return $response_data;
+				}
 
-		list($auth_id, $auth_value, $auth_path) = gateway::framework_api_auth_start('framework-secrets');
-
-		$gateway_url = gateway_url('framework-secrets');
-
-		$request_data['auth_id'] = $auth_id;
-		$request_data['auth_value'] = $auth_value;
-
-		$error = false;
-
-		$connection = new connection();
-		$connection->exit_on_error_set(false);
-		$connection->post($gateway_url, $request_data);
-
-		if ($connection->response_code_get() != 200) {
-			$error = 'Cannot call the framework-secrets API' . "\n\n-----\n" . $connection->error_message_get() . "\n-----\n" . $connection->error_details_get() . "\n-----\n" . $connection->response_headers_get() . "\n\n" . $connection->response_data_get() . "\n-----";
-		} else {
-			$response_json = $connection->response_data_get();
-			$response_data = json_decode($response_json, true);
-			if (!is_array($response_data)) {
-				$error = 'Invalid response' . "\n\n-----\n\n" . $response_json;
-			} else if ($response_data['error'] !== false) {
-				$error = $response_data['error']; // Only return the error
 			}
-		}
 
-		gateway::framework_api_auth_end($auth_path);
+			private function data_save($response_data) {
 
-		if ($error !== false) {
-			return ['error' => $error];
-		} else {
-			return $response_data;
-		}
+				if (!$response_data['data']) {
+					echo 'Could not encrypt the secret.' . "\n";
+					echo "\n";
+					echo 'Response:' . "\n";
+					echo debug_dump($response_data);
+					exit();
+				}
 
-	}
+				$data_path = $this->data_folder . '/' . safe_file_name($response_data['identifier']);
 
-	function secrets_data_save($response_data) {
+				if (is_file($data_path)) {
+					copy($data_path, $data_path . '.old'); // Extra backup, probably more relevant when doing a big import.
+				}
 
-		if (!$response_data['data'] || !$response_data['fields']) {
-			echo 'Could not encrypt the secret.' . "\n";
-			echo "\n";
-			echo 'Response:' . "\n";
-			echo debug_dump($response_data);
-			exit();
-		}
+				file_put_contents($data_path, $response_data['data'] . "\n"); // No point adding a list of fields in plain text (for upload quick check), because the key is needed to know which data file to read.
 
-		$data_path = config::get('secrets.folder') . '/' . safe_file_name($response_data['identifier']);
-
-		file_put_contents($data_path, $response_data['data'] . "\n" . $response_data['fields'] . "\n");
+			}
 
 	}
 
 //--------------------------------------------------
 // Exporting with a password
 //
-// 	function secrets_export($password, $secrets) {
+// 	public function export($password, $secrets) {
 //
 // 		$config = [
 // 				'size'      => SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_IETF_KEYBYTES,
@@ -706,7 +873,7 @@ debug($current_variables);
 //
 // 	}
 //
-// 	function secrets_import($password, $data) {
+// 	public function import($password, $data) {
 //
 // 		$data = json_decode($data, true);
 // 		$config = array_map('base64_decode', $data['config']);

@@ -207,7 +207,8 @@
 
 						require_once(FRAMEWORK_ROOT . '/library/cli/secrets.php');
 
-						secrets_run($option_value);
+						$cli_secrets = new cli_secrets();
+						$cli_secrets->run($option_value);
 
 						break;
 

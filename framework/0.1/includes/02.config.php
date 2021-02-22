@@ -475,6 +475,7 @@
 	// Secrets
 
 		config::set_default('secrets.folder', PRIVATE_ROOT . '/secrets');
+		config::set_default('secrets.editable', (SERVER == 'stage'));
 
 	//--------------------------------------------------
 	// Cookie
