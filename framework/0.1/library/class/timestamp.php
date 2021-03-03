@@ -67,7 +67,7 @@
 					if (($pos = strpos($attributes['datetime'], 'T00:00:00')) !== false) {
 						$attributes['datetime'] = substr($attributes['datetime'], 0, $pos);
 					}
-					return html_tag('time', $attributes) . nl2br(html($this->format($format_text))) . '</time>';
+					return ht(html_tag('time', $attributes) . '?</time>', [$this->format($format_text)]);
 				}
 			}
 
