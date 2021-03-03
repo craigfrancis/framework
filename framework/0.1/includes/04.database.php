@@ -173,6 +173,7 @@
 
 			} catch (exception $e) {
 
+				$this->statement = NULL;
 				$this->result = false;
 
 				$error = $e;
