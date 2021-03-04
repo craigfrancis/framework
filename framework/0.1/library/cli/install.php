@@ -168,12 +168,19 @@
 
 			$temp_folder = PRIVATE_ROOT . '/tmp';
 			if (is_dir($temp_folder)) {
-				foreach (glob($temp_folder . '/*') as $folder) {
-					if (!in_array(pathinfo($folder, PATHINFO_FILENAME), ['form-file'])) { // These folders are cleaned by unlink_old_files() at another time.
-						rrmdir($folder);
-						clearstatcache();
-						if (is_dir($folder)) {
-							exit_with_error('Cannot delete/empty the /private/tmp/ folder', $folder);
+				foreach (glob($temp_folder . '/*') as $tmp_path) {
+					if (!in_array(pathinfo($tmp_path, PATHINFO_FILENAME), ['form-file'])) { // These folders are cleaned by unlink_old_files() at another time.
+						if (is_dir($tmp_path)) {
+							rrmdir($tmp_path);
+							clearstatcache();
+							if (is_dir($tmp_path)) {
+								exit_with_error('Cannot delete the /private/tmp/ folder', $tmp_path);
+							}
+						} else {
+							unlink($tmp_path);
+							if (is_dir($tmp_path)) {
+								exit_with_error('Cannot delete the /private/tmp/ file', $tmp_path);
+							}
 						}
 					}
 				}
