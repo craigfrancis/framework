@@ -489,6 +489,16 @@
 					$this->send_prep();
 
 				//--------------------------------------------------
+				// Recipients
+
+					if (!is_array($recipients)) {
+						if (is_object($recipients) && ($recipients instanceof email || !method_exists($recipients, '__toString'))) {
+							exit_with_error('The email recipients is not an array or email address.');
+						}
+						$recipients = [strval($recipients)];
+					}
+
+				//--------------------------------------------------
 				// Testing support
 
 					$email_testing = config::get('email.testing');
@@ -525,10 +535,6 @@
 
 				//--------------------------------------------------
 				// Send
-
-					if (!is_array($recipients)) {
-						$recipients = array($recipients);
-					}
 
 					foreach ($recipients as $recipient) {
 						$this->_send_mail($recipient, $subject, $build['content'], $headers);
