@@ -489,13 +489,11 @@
 					$this->send_prep();
 
 				//--------------------------------------------------
-				// Recipients
+				// Sanity check $recipients, before it gets
+				// replaced with the testing value.
 
-					if (!is_array($recipients)) {
-						if (is_object($recipients) && ($recipients instanceof email || !method_exists($recipients, '__toString'))) {
-							exit_with_error('The email recipients is not an array or email address.');
-						}
-						$recipients = [strval($recipients)];
+					if (is_object($recipients) && ($recipients instanceof email || !method_exists($recipients, '__toString'))) {
+						exit_with_error('The email recipients is not an array or email address.');
 					}
 
 				//--------------------------------------------------
@@ -517,6 +515,13 @@
 							$this->bcc_emails[$bcc_id]['email'] = $email_testing;
 						}
 
+					}
+
+				//--------------------------------------------------
+				// Recipients is an array
+
+					if (!is_array($recipients)) {
+						$recipients = [strval($recipients)];
 					}
 
 				//--------------------------------------------------
