@@ -45,9 +45,8 @@
 	// PHP
 
 		$controller_class = str_replace('/', '_', $crud_path);
-		if (substr($controller_class, 0, 1) == '_') {
-			$controller_class = substr($controller_class, 1);
-		}
+		$controller_class = str_replace('-', '_', $controller_class);
+		$controller_class = trim($controller_class, '_');
 
 		$controller_php = file_get_contents(FRAMEWORK_ROOT . '/library/cli/new/crud/controller.php');
 		$controller_php = str_replace('[CLASS_NAME]', $controller_class, $controller_php);
