@@ -1588,7 +1588,7 @@
 						if (isset($attributes['text'])) {
 							$attributes['html'] = html($attributes['text']);
 							if (isset($attributes['url'])) {
-								$attributes['html'] = '<a href="' . html($attributes['url']) . '">' . $attributes['html'] . '</a>';
+								$attributes['html'] = '<a href="' . html($attributes['url']) . '"' . (isset($attributes['class']) ? ' class="' . html($attributes['class']) . '"' : '') . '>' . $attributes['html'] . '</a>';
 							}
 						}
 
