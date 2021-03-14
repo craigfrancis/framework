@@ -2080,6 +2080,10 @@
 					$csp['trusted-types'] = $trusted_types;
 				}
 
+				if (strpos(config::get('request.browser'), 'Chrome-Lighthouse') !== false && is_array($csp)) {
+					$csp['connect-src'][] = '/robots.txt'; // To keep Lighthouse happy
+				}
+
 				http_csp_header($csp);
 
 			}
