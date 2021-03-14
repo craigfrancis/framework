@@ -2081,7 +2081,7 @@
 				}
 
 				if (strpos(config::get('request.browser'), 'Chrome-Lighthouse') !== false && is_array($csp)) {
-					$csp['style-src'][] = "'sha256-TyNUDnhSZIj6eZZqS6qqchxBN4+zTRUU+TkPeIxxT1I='"; // Some kind of inline style?
+					$csp['style-src'][] = "'sha256-TyNUDnhSZIj6eZZqS6qqchxBN4+zTRUU+TkPeIxxT1I='"; // TODO: Remove when fixed - https://github.com/GoogleChrome/lighthouse/issues/11862
 					$csp['connect-src'][] = '/robots.txt'; // Lighthouse cannot collect this for the SEO check
 				}
 
