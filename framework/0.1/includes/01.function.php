@@ -2081,7 +2081,8 @@
 				}
 
 				if (strpos(config::get('request.browser'), 'Chrome-Lighthouse') !== false && is_array($csp)) {
-					$csp['connect-src'][] = '/robots.txt'; // To keep Lighthouse happy
+					$csp['style-src'][] = 'sha256-TyNUDnhSZIj6eZZqS6qqchxBN4+zTRUU+TkPeIxxT1I='; // Some kind of inline style?
+					$csp['connect-src'][] = '/robots.txt'; // Lighthouse cannot collect this for the SEO check
 				}
 
 				http_csp_header($csp);
