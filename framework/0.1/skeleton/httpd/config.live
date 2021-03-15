@@ -90,7 +90,10 @@
 
 		# Require all granted
 
-		php_admin_flag engine off
+		# php_admin_flag engine off
+		<Files "*.php">
+			SetHandler none
+		</Files>
 
 		ForceType application/octet-stream
 		Header set Content-Disposition attachment
