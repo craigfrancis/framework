@@ -924,7 +924,7 @@
 						}
 
 						if (in_array('cookie', $checks) && trim(cookie::get('f')) == '') { // The cookie just needs to exist, where it's marked SameSite=Strict
-							$csrf_errors[] = 'Cookie-[SameSite]-[' . implode('/', array_keys($_COOKIE)) . ']';
+							$csrf_errors[] = 'MissingCookie = ' . implode('/', array_keys($_COOKIE));
 							$csrf_report = true;
 						}
 
@@ -932,15 +932,17 @@
 							$fetch_values = config::get('request.fetch');
 							foreach ($this->fetch_allowed as $field => $allowed) {
 								if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
-									$csrf_errors[] = 'SecFetch-[' . $field . ']-[' . $fetch_values[$field] . ']-[' . (in_array($fetch_values[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ']';
+									$csrf_errors[] = 'Sec-Fetch-' . ucfirst($field) . ' = "' . $fetch_values[$field] . '" (' . (in_array($fetch_values[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ')';
 									$csrf_report = true;
 								}
 							}
+						} else {
+							$fetch_values = NULL;
 						}
 
 						if ($csrf_errors) {
 							if ($csrf_report) {
-								report_add('CSRF error via SecFetch/SameSite checks (' . ($csrf_block ? 'user asked to re-submit' : 'not blocked') . ').' . "\n\n" . debug_dump($csrf_errors), 'error');
+								report_add('CSRF error via SecFetch/SameSite checks (' . ($csrf_block ? 'user asked to re-submit' : 'not blocked') . ').' . "\n\n" . 'Errors = ' . debug_dump($csrf_errors) . "\n\n" . 'Sec-Fetch Values = ' . debug_dump($fetch_values) . "\n\n" . ' Sec-Fetch Allowed = ' . debug_dump($this->fetch_allowed), 'error');
 							}
 							if ($csrf_block) {
 								$this->_field_error_add_html(-1, $this->csrf_error_html, implode('/', $csrf_errors));
