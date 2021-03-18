@@ -195,9 +195,13 @@
 			//--------------------------------------------------
 			// Pagination item count
 
-				$row_count = $db->fetch('SELECT FOUND_ROWS()');
+				if ($paginator) {
 
-				$paginator->item_count_set($row_count, true);
+					$row_count = $db->fetch('SELECT FOUND_ROWS()');
+
+					$paginator->item_count_set($row_count, true);
+
+				}
 
 			//--------------------------------------------------
 			// Links
