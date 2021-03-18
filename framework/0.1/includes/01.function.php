@@ -1770,6 +1770,13 @@
 //--------------------------------------------------
 // CSP header
 
+		// e.g.
+		//  http_csp_header();
+		//  http_csp_header('none');
+		//  http_csp_header('img');
+		//  http_csp_header('pdf');
+		//  http_csp_header(['default-src' => "'self'"], ['enforced' => true]);
+
 	function http_csp_header($csp = NULL, $config = []) {
 
 		if (is_string($csp) && ($csp === 'none' || $csp === 'img' || $csp === 'pdf')) {
