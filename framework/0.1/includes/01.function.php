@@ -1248,7 +1248,9 @@
 			}
 		}
 
-		http_csp_header('none');
+		config::set('output.csp_directives', 'none');
+
+		http_system_headers();
 
 		header('Location: ' . head($url), true, $config['code']);
 
@@ -2075,14 +2077,18 @@
 
 				$csp = config::get('output.csp_directives');
 
-				$trusted_types = config::get('output.js_trusted_types'); // Final version might not go in CSP header.
-				if (is_array($trusted_types)) {
-					$csp['trusted-types'] = $trusted_types;
-				}
+				if (is_array($csp)) {
 
-				if (strpos(config::get('request.browser'), 'Chrome-Lighthouse') !== false && is_array($csp)) {
-					$csp['style-src'][] = "'sha256-TyNUDnhSZIj6eZZqS6qqchxBN4+zTRUU+TkPeIxxT1I='"; // TODO: Remove when fixed - https://github.com/GoogleChrome/lighthouse/issues/11862
-					$csp['connect-src'][] = '/robots.txt'; // Lighthouse cannot collect this for the SEO check
+					$trusted_types = config::get('output.js_trusted_types'); // Final version might not go in CSP header.
+					if (is_array($trusted_types)) {
+						$csp['trusted-types'] = $trusted_types;
+					}
+
+					if (strpos(config::get('request.browser'), 'Chrome-Lighthouse') !== false) {
+						$csp['style-src'][] = "'sha256-TyNUDnhSZIj6eZZqS6qqchxBN4+zTRUU+TkPeIxxT1I='"; // TODO: Remove when fixed - https://github.com/GoogleChrome/lighthouse/issues/11862
+						$csp['connect-src'][] = '/robots.txt'; // Lighthouse cannot collect this for the SEO check
+					}
+
 				}
 
 				http_csp_header($csp);
