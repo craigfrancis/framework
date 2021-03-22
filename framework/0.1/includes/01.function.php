@@ -1241,6 +1241,7 @@
 
 		$output = ob_get_clean_all();
 		if ($output != '' || headers_sent()) {
+			$next_html .= "\n" . '<p>Cannot redirect automatically (' . (headers_sent() ? 'headers already sent' : 'output buffer content') . ').</p>';
 			if (function_exists('debug_exit')) {
 				debug_exit($output . $next_html);
 			} else {
