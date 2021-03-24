@@ -459,14 +459,11 @@
 			}
 
 			public function js_add_async($path, $extra_attributes = []) {
+				$this->js_add($path, array_merge(['async' => 'async'], $extra_attributes), 'head');
+			}
 
-				$attributes = ['async'];
-				foreach ($extra_attributes as $name => $value) {
-					$attributes[$name] = $value;
-				}
-
-				$this->js_add($path, $attributes, 'head');
-
+			public function js_add_defer($path, $extra_attributes = []) {
+				$this->js_add($path, array_merge(['defer' => 'defer'], $extra_attributes), 'head');
 			}
 
 			public function js_add_trusted($path, $extra_attributes = []) {
