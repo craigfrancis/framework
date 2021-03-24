@@ -6,15 +6,30 @@
 //
 // 	$command = new command();
 // 	$command->stdin_set('Stdin Text');
-// 	$command->stdout_file_set('/tmp/test-stdout', 'w');
-// 	$command->stderr_file_set('/tmp/test-stderr', 'w');
+// 	// $command->stdout_file_set('/tmp/test-stdout', 'w');
+// 	// $command->stderr_file_set('/tmp/test-stderr', 'w');
 //
 // 	$exit_code = $command->exec('/path/to/command.sh --arg=?', [
 // 			'aaa',
 // 			'bbb',
 // 		]);
 //
+// 	debug($command->stderr_get());
 // 	debug($command->stdout_get());
+//
+// Check pending process on a slow command:
+//
+// 	$success = $command->exec_start('/path/to/command.sh', []);
+// 	if ($success) {
+// 		usleep(200000);
+// 		debug($command->exec_pending_get());
+// 		usleep(200000);
+// 		debug($command->exec_pending_get());
+// 		usleep(200000);
+// 		debug($command->exec_end());
+// 	}
+//
+//--------------------------------------------------
 //
 // Review:
 //   https://github.com/craigfrancis/php-is-literal-rfc#solution-cli-injection
@@ -47,6 +62,7 @@
 		protected $time_total = NULL;
 		protected $pipes = [];
 		protected $process = NULL;
+		protected $blocking = NULL;
 		protected $exit_status = NULL;
 		protected $exit_code = NULL;
 
@@ -70,6 +86,9 @@
 		}
 
 		public function stdout_get() {
+			if ($this->stdout_value === NULL) {
+				throw new error_exception('Cannot return stdout via this setup'); // Via exec_start/exec_pending_get, or using stdout_file_set
+			}
 			return $this->stdout_value;
 		}
 
@@ -82,6 +101,9 @@
 		}
 
 		public function stderr_get() {
+			if ($this->stderr_value === NULL) {
+				throw new error_exception('Cannot return stderr via this setup'); // Via exec_start/exec_pending_get, or using stderr_file_set
+			}
 			return $this->stderr_value;
 		}
 
@@ -195,6 +217,8 @@
 
 				$this->time_start = microtime(true);
 
+				$this->blocking = true;
+
 				$this->process = proc_open($command, $descriptors, $this->pipes, $this->env_cwd, $this->env_variables);
 
 				$success = (is_resource($this->process) === true);
@@ -213,22 +237,44 @@
 
 		}
 
+		public function exec_pending_get() { // Not really been tested/used properly yet (will probably change)
+
+			$output = [
+					'stdout' => ['id' => 1],
+					'stderr' => ['id' => 2],
+				];
+
+			if ($this->blocking) {
+				$this->blocking = false;
+				foreach ($output as $stream => $info) {
+					stream_set_blocking($this->pipes[$info['id']], false);
+				}
+			}
+
+			foreach ($output as $stream => $info) {
+				$output[$stream]['meta'] = stream_get_meta_data($this->pipes[$info['id']]);
+				$output[$stream]['data'] = stream_get_contents($this->pipes[$info['id']]);
+			}
+
+			$output['status'] = proc_get_status($this->process);
+
+			return $output;
+
+		}
+
 		public function exec_end() {
 
 			//--------------------------------------------------
 			// Close pipes
 
+				if ($this->blocking) {
+					if (!$this->stdout_file) $this->stdout_value = stream_get_contents($this->pipes[1]);
+					if (!$this->stderr_file) $this->stderr_value = stream_get_contents($this->pipes[2]);
+				}
+
 				fclose($this->pipes[0]);
-
-				if (!$this->stdout_file) {
-					$this->stdout_value = stream_get_contents($this->pipes[1]);
-					fclose($this->pipes[1]);
-				}
-
-				if (!$this->stderr_file) {
-					$this->stderr_value = stream_get_contents($this->pipes[2]);
-					fclose($this->pipes[2]);
-				}
+				fclose($this->pipes[1]);
+				fclose($this->pipes[2]);
 
 			//--------------------------------------------------
 			// Exist
