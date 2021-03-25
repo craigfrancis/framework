@@ -492,6 +492,8 @@
 				// Sanity check $recipients, before it gets
 				// replaced with the testing value.
 
+						// e.g. not $email->send($email);
+
 					if (is_object($recipients) && ($recipients instanceof email || !method_exists($recipients, '__toString'))) {
 						exit_with_error('The email recipients is not an array or email address.');
 					}
