@@ -1,13 +1,12 @@
 <?php
 
-	// require_once(FRAMEWORK_ROOT . '/library/tests/class-html-template.php');
-
 	class html_template_base extends check { // Not called 'template_html' as the naming convention (type at the end) would imply that it's a HTML String... whereas this is a Template Object.
 
 		//--------------------------------------------------
 		// Variables
 
 			protected $template_html = [];
+			protected $template_contexts = [];
 			protected $template_end = NULL;
 			protected $template_parameters = NULL;
 			protected $template_parameter_types = [];
@@ -84,7 +83,7 @@
 						// The HTML must include parameters in a Quoted Attribute, or it's own HTML Tag.
 						// It only uses simple HTML Encoding - which is why attributes must be quoted, to avoid '<img src=? />' being used with 'x onerror=evil-js'
 
-					$this->template_html = preg_split('/(?<=(>)|(\'|"))\?(?=(?(1)<|\2))/', $template_html);
+					$this->template_html = preg_split('/(?<=(>)|(\'|"))\?(?=(?(1)<\/|\2))/', $template_html);
 					$this->template_end = (count($this->template_html) - 1);
 
 						// Positive lookbehind assertion.
@@ -94,6 +93,27 @@
 						// Positive lookahead assertion.
 						//   When sub-pattern (1) matched, look for a '<'.
 						//   Otherwise look for the same quote mark (2).
+
+				//--------------------------------------------------
+				// Guessed context for parameters (i.e. use nl2br?)
+
+						// Use the HTML afterwards, where it's easier to get the end tag,
+						// as the start tag may be multiple parameters away.
+						//   <em class="?">?</em>
+
+					$this->template_contexts = [];
+
+					for ($k = 1; $k <= $this->template_end; $k++) { // 1 to ignore the first section
+						if (substr($this->template_html[$k], 0, 1) === '<') {
+							if (preg_match('/^<\/([a-z0-9\-]+)>/i', $this->template_html[$k], $matches)) {
+								$this->template_contexts[] = $matches[1];
+							} else {
+								throw new error_exception('Placeholder ' . $k . ' is not followed by a valid closing tag', $template_html);
+							}
+						} else {
+							$this->template_contexts[] = NULL; // It should be an attribute (single or double quotes).
+						}
+					}
 
 				//--------------------------------------------------
 				// Primitive tag and attribute checking
@@ -237,7 +257,11 @@
 					$html .= $template_html;
 					if ($k < $this->template_end) {
 						if (array_key_exists($k, $parameters)) { // Could be NULL
-							$html .= nl2br(html($parameters[$k]));
+							if (in_array($this->template_contexts[$k], [NULL, 'pre'])) { // Assumed context, with NULL for an attribute
+								$html .= html($parameters[$k]);
+							} else {
+								$html .= nl2br(html($parameters[$k]));
+							}
 						} else {
 							throw new error_exception('Missing parameter ' . ($k + 1), implode('?', $this->template_html));
 						}
@@ -284,5 +308,7 @@
 		}
 
 	}
+
+	// require_once(FRAMEWORK_ROOT . '/library/tests/class-html-template.php');
 
 ?>

@@ -264,6 +264,30 @@
 
 		echo "\n\n";
 
+		$html  = '<div class="?">' . "\n";
+		$html .= '<a href="?" class="?" data-value="?">?</a>' . "\n";
+		$html .= '<span>?</span>' . "\n";
+		$html .= '</div>' . "\n";
+		$html .= '<div><pre>?</pre></div>' . "\n";
+		$html .= '<div><p>?</p></div>';
+
+		$parameters = [
+			'p-class',
+			url('/'),
+			'a-class',
+			'a'    . "\n" . 'value', // No <br />
+			'a'    . "\n" . 'text', // Yes <br />
+			'span' . "\n" . 'text', // Yes <br />
+			'pre'  . "\n" . 'text', // No <br />
+			'para' . "\n" . 'text', // Yes <br />
+		];
+
+		echo ht($html, $parameters); // Show that attributes and <pre> text does not use <br />
+
+	//--------------------------------------------------
+
+		echo "\n\n";
+
 		$parsing_tests = [
 				['<span>?</span>',                            []],
 				['<span>?</span>',                            ['Good', 'Extra']],
@@ -275,6 +299,7 @@
 				['<span class=">" attr>?</span>',             ['MyText']],
 				['<span class="<">?</span>',                  ['MyText']],
 				['<span@abc>?</span>',                        ['MyText']],
+				['<pre>?</pre x>',                            ['MyText']],
 				['<script>?</script>',                        ['EvilValue']],
 				['<a href="/" onclick="abc">?</a>',           ['EvilValue']],
 				['<meta http-equiv="refresh" content="?" />', ['EvilValue']],
