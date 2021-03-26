@@ -144,14 +144,22 @@
 		//--------------------------------------------------
 		// View
 
-			public function view_set_html($html) {
-				$this->view_html = $html;
-				$this->view_folders = NULL;
-				$this->view_path = NULL; // Not empty string
+			public function view_add($value) {
+				if ($value instanceof html_template || $value instanceof html_template_immutable) {
+					$this->view_html = $value->html();
+				} else {
+					$this->view_html = nl2br(html($value));
+				}
 			}
 
 			public function view_add_html($html) {
 				$this->view_html .= $html;
+			}
+
+			public function view_set_html($html) {
+				$this->view_html = $html;
+				$this->view_folders = NULL;
+				$this->view_path = NULL; // Not empty string
 			}
 
 			public function view_get_html() {
