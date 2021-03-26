@@ -861,10 +861,12 @@
 		if (config::get('request.method') == 'POST') { // If user clicks back after seeing login form it might be as a GET request, so don't loose their POST data from before.
 			session::set('save_request_data', $_POST);
 		}
-		if (!($url instanceof url)) {
-			$url = url($url); // Ensures that url.prefix can be applied.
+		if ($url !== NULL) { // If the redirect needs to be handled elsewhere (e.g. via the $loading helper)
+			if (!($url instanceof url)) {
+				$url = url($url); // Ensures that url.prefix can be applied.
+			}
+			redirect($url);
 		}
-		redirect($url);
 	}
 
 	function save_request_restore($current_user = NULL) {

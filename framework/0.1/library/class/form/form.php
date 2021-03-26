@@ -963,7 +963,7 @@
 				//--------------------------------------------------
 				// Saved value
 
-					if (!$this->form_submitted && $this->saved_values_available()) {
+					if (!$this->form_submitted && $this->saved_values_available() && $this->saved_message_html !== NULL) {
 						$this->_field_error_add_html(-1, $this->saved_message_html);
 					}
 
