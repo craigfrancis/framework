@@ -288,15 +288,17 @@
 				$this->session_concurrent = $config['session_concurrent'];
 
 				$identification = NULL; // Don't remember their identification.
-				$auth_config = NULL;
 				$password_validation = true; // We aren't checking the password
 				$extra_data = [];
-				$forced_login = true; // TODO: Check that this is stored, then $auth->_session_end() should NOT expire other sessions.
 
-debug($auth_config); // TODO: Setup a fake auth_config for a forced login
-exit();
+				$auth_config = [
+						'ph'   => '',   // Password Hash
+						'pu'   => NULL, // Password Updated
+						'ips'  => [],   // IP's allowed to login from
+						'totp' => NULL, // Time-based One Time Password
+					];
 
-				$this->_session_start($this->user_id, $identification, $auth_config, $password_validation, $extra_data, $forced_login);
+				$this->_session_start($this->user_id, $identification, 'forced', $password_validation, $extra_data);
 
 				$this->session_concurrent = $system_session_concurrent;
 
@@ -982,7 +984,7 @@ exit();
 
 			}
 
-			public function _session_start($user_id, $identification, $auth, $password_validation, $extra_data = [], $forced = false) { // See auth_login or auth_register (do not call directly)
+			public function _session_start($user_id, $identification, $auth, $password_validation, $extra_data = []) { // See auth_login or auth_register (do not call directly)
 
 				//--------------------------------------------------
 				// Config
@@ -1002,34 +1004,38 @@ exit();
 				//--------------------------------------------------
 				// Limit
 
-					if (!is_array($auth)) {
-						exit_with_error('The "auth" value for user "' . $user_id . '" is damaged', debug_dump($auth)); // If it's NULL, then it's probably due to failing to parse.
-					}
-
-					if ($forced) {
+					if ($auth === 'forced') {
 
 						$limit_ref = 'forced';
 						$limit_extra = NULL;
 
-					} else if (count($auth['ips']) > 0 && !in_array(config::get('request.ip'), $auth['ips'])) {
-
-						$limit_ref = 'ip';
-						$limit_extra = $auth['ips'];
-
-					} else if ($auth['totp'] !== NULL) { // Must run TOTP check before checking their password quality.
-
-						$limit_ref = 'totp';
-						$limit_extra = NULL;
-
-					} else if ($password_validation !== true) {
-
-						$limit_ref = 'password';
-						$limit_extra = $password_validation;
-
 					} else {
 
-						$limit_ref = ''; // All good
-						$limit_extra = NULL;
+						if (!is_array($auth)) {
+							exit_with_error('The "auth" value for user "' . $user_id . '" is damaged', debug_dump($auth)); // If it's NULL, then it's probably due to failing to parse.
+						}
+
+						if (count($auth['ips']) > 0 && !in_array(config::get('request.ip'), $auth['ips'])) {
+
+							$limit_ref = 'ip';
+							$limit_extra = $auth['ips'];
+
+						} else if ($auth['totp'] !== NULL) { // Must run TOTP check before checking their password quality.
+
+							$limit_ref = 'totp';
+							$limit_extra = NULL;
+
+						} else if ($password_validation !== true) {
+
+							$limit_ref = 'password';
+							$limit_extra = $password_validation;
+
+						} else {
+
+							$limit_ref = ''; // All good
+							$limit_extra = NULL;
+
+						}
 
 					}
 
@@ -1113,7 +1119,7 @@ exit();
 
 					if ($user_id) {
 
-// debug($this->session_info_data); // TODO: Skip if 'limit' is set to 'forced' (admin logged in).
+// debug($this->session_info_data); // TODO: Skip if 'limit' is set to 'forced' (admin logged in), as this should NOT expire other sessions.
 
 						if ($this->session_concurrent === true) {
 							$this->expire('session', $user_id, ['session_id' => $session_id]);
@@ -1794,14 +1800,14 @@ exit();
 
 				if (is_array($secret_values)) { // or not NULL
 
-					return array_merge(array(
-							'ph'   => '',      // Password Hash
-							'pu'   => NULL,    // Password Updated
-							'ips'  => [], // IP's allowed to login from
-							'totp' => NULL,    // Time-based One Time Password
-						), $secret_values, array(
+					return array_merge([
+							'ph'   => '',   // Password Hash
+							'pu'   => NULL, // Password Updated
+							'ips'  => [],   // IP's allowed to login from
+							'totp' => NULL, // Time-based One Time Password
+						], $secret_values, [
 							'v' => $version, // Version
-						));
+						]);
 
 				} else {
 
