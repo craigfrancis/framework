@@ -895,7 +895,14 @@
 
 				if ($session_previous) {
 
-					$message_html = 'You last logged in on ' . $session_previous['last_used']->html('l jS F Y \a\t g:ia');
+					$last_iso = $session_previous['last_used']->format('Y-m-d');
+					if ($now->format('Y-m-d') == $last_iso) {
+						$message_html = 'You last logged in today at ' . $session_previous['last_used']->html('g:ia');
+					} else if ($now->clone('-24 hours')->format('Y-m-d') == $last_iso) {
+						$message_html = 'You last logged in yesterday at ' . $session_previous['last_used']->html('g:ia');
+					} else {
+						$message_html = 'You last logged in on ' . $session_previous['last_used']->html('l jS F Y \a\t g:ia');
+					}
 
 					if (!$session_previous['browser_changed']) {
 
