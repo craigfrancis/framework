@@ -1235,14 +1235,18 @@
 
 				}
 
-				$sql = 'UPDATE
-							' . $db->escape_table($db_table) . '
-						SET
-							deleted = ?
-						WHERE
-							' . $where_sql;
+				if ($db_table !== NULL) { // e.g. no password reset table
 
-				$db->query($sql, $parameters);
+					$sql = 'UPDATE
+								' . $db->escape_table($db_table) . '
+							SET
+								deleted = ?
+							WHERE
+								' . $where_sql;
+
+					$db->query($sql, $parameters);
+
+				}
 
 			}
 
