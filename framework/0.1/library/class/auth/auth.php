@@ -945,7 +945,7 @@
 
 					if ($row = $db->fetch_row($sql, $parameters)) {
 
-						$message_html = 'This is the first time you have logged in to this website.';
+						$message_html = 'This is the first time you have logged in to this website.'; // The account created within the window when session records are kept.
 
 						$warning = false;
 
