@@ -1477,7 +1477,7 @@
 
 					$db_id = 0;
 					$db_auth = NULL;
-					$db_pass = NULL;
+					$db_pass = '';
 
 					if ($row = $db->fetch_row($sql, $parameters)) {
 
@@ -1488,8 +1488,8 @@
 							if (!$db_auth) {
 								$error = 'failure_decryption';
 							}
-						} else if (strlen(trim($row['pass'])) > 1) {
-							$db_pass = $row['pass']; // The auth field is blank, and a TEMPORARY plain text password is in the pass field.
+						} else {
+							$db_pass = strval($row['pass']); // The auth field is blank, and a TEMPORARY plain text password is in the pass field.
 						}
 
 					}
@@ -1559,7 +1559,7 @@
 
 							}
 
-						} else if ($db_pass && $db_pass == $password) {
+						} else if (trim($db_pass) !== '' && $db_pass === $password) {
 
 							$valid = true;
 							$rehash = true;
