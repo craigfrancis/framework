@@ -1481,7 +1481,7 @@
 
 					if ($row = $db->fetch_row($sql, $parameters)) {
 
-						$db_id = $row['id'];
+						$db_id = intval($row['id']);
 
 						if ($row['auth']) {
 							$db_auth = auth::secret_parse($db_id, $row['auth']); // Returns NULL on failure
@@ -1504,16 +1504,16 @@
 						$where_sql = [];
 						$parameters = [];
 
-						if ($this->lockout_mode === NULL || $this->lockout_mode == 'user') {
+						if ($this->lockout_mode === NULL || $this->lockout_mode === 'user') {
 							$where_sql[] = 's.user_id = ?';
 							$parameters[] = intval($db_id);
 						}
-						if ($this->lockout_mode === NULL || $this->lockout_mode == 'ip') {
+						if ($this->lockout_mode === NULL || $this->lockout_mode === 'ip') {
 							$where_sql[] = 's.ip = ?';
 							$parameters[] = config::get('request.ip');
 						}
 
-						if (count($where_sql) == 0) {
+						if (count($where_sql) === 0) {
 							exit_with_error('Unknown lockout mode (' . $this->lockout_mode . ')');
 						}
 
@@ -1545,7 +1545,7 @@
 					$valid = false; // Always assume this password is not valid.
 					$rehash = true; // Always assume a rehash is needed.
 
-					if ($error != 'failure_repetition') { // Anti denial of service (get rid of them as soon as possible, don't even sleep).
+					if ($error !== 'failure_repetition') { // Anti denial of service (get rid of them as soon as possible, don't even sleep).
 
 						$start = microtime(true);
 
@@ -1553,7 +1553,7 @@
 
 							$valid = password::verify($password, $db_auth['ph'], $db_id);
 
-							if ($db_auth['v'] == auth::$secret_version && !password::needs_rehash($db_auth['ph'])) {
+							if ($db_auth['v'] === auth::$secret_version && !password::needs_rehash($db_auth['ph'])) {
 
 								$rehash = false; // All looks good, no need to re-hash.
 
@@ -1578,8 +1578,8 @@
 				//--------------------------------------------------
 				// Result
 
-					if ($error == '') {
-						if ($db_id == 0) {
+					if ($error === '') {
+						if ($db_id === 0) {
 
 							$error = 'failure_identification';
 
@@ -1680,7 +1680,7 @@
 
 				$max_length = (isset($config['max_length']) ? $config['max_length'] : $this->identification_max_length);
 
-				if ($this->identification_type_get() == 'username') {
+				if ($this->identification_type_get() === 'username') {
 					$field = new form_field_text($form, $config['label'], $config['name']);
 				} else {
 					$field = new form_field_email($form, $config['label'], $config['name']);
