@@ -115,6 +115,11 @@
 						$url = strval($url); // Handle url object
 					}
 
+					$path = $url;
+					if (($pos = strpos($path, '?')) !== false) {
+						$path = substr($path, 0, $pos);
+					}
+
 					if (is_array($name)) { // Second argument passed in config array
 						$config = $name;
 						$name = NULL;
@@ -143,6 +148,7 @@
 				// Add
 
 					$this->navigation[$this->current_group]['links'][$this->current_index]['url'] = $url;
+					$this->navigation[$this->current_group]['links'][$this->current_index]['path'] = $path;
 					$this->navigation[$this->current_group]['links'][$this->current_index]['name'] = $name;
 					$this->navigation[$this->current_group]['links'][$this->current_index]['config'] = $config;
 
@@ -198,21 +204,21 @@
 
 						foreach ($this->navigation as $group_id => $group_info) {
 							foreach ($group_info['links'] as $link_id => $link_info) {
-								if ($link_info['url'] !== NULL) {
+								if ($link_info['path'] !== NULL) {
 
-									$url_len = strlen($link_info['url']);
+									$path_len = strlen($link_info['path']);
 
-									if ($link_info['config']['selected'] !== false && $url_len > $selected_len) {
+									if ($link_info['config']['selected'] !== false && $path_len > $selected_len) {
 
-										if ($link_info['url'] == '/') {
+										if ($link_info['path'] == '/') {
 											$match = ($this->path == '/');
 										} else {
-											$match = (substr($this->path, 0, $url_len) == $link_info['url']);
+											$match = (substr($this->path, 0, $path_len) == $link_info['path']);
 										}
 
 										if ($match) {
 											$selected_id = $link_id;
-											$selected_len = $url_len;
+											$selected_len = $path_len;
 										}
 
 									}
