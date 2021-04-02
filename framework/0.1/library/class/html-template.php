@@ -303,6 +303,10 @@
 			return $this->value;
 		}
 
+		public function html() { // So objects that get a html_template or html_template_immutable can use it in the same way.
+			return $this->value;
+		}
+
 		public function jsonSerialize() { // If JSON encoded, fall back to being a simple string (typically going to the browser or API)
 			return $this->value;
 		}
