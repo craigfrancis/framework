@@ -293,11 +293,28 @@
 			}
 
 			public static function array_set($variable, $key, $value) {
+
+					// e.g.
+					//  config::array_set('example', 'A', 1);
+					//  config::array_set('example', 'B', 2);
+					//  config::array_set('example', 'C', 'D', 3); <-- Walking further into the array
+
 				$obj = config::instance_get();
-				if (!isset($obj->store[$variable]) || !is_array($obj->store[$variable])) {
-					$obj->store[$variable] = [];
+
+				$args = func_get_args();
+				$count = (count($args) - 1); // Last arg is the $value
+
+				$ref = &$obj->store;
+				for ($k = 0; $k < $count; $k++) {
+					$key = $args[$k];
+					if (!isset($ref[$key]) || !is_array($ref[$key])) {
+						$ref[$key] = [];
+					}
+					$ref = &$ref[$key];
 				}
-				$obj->store[$variable][$key] = $value;
+
+				$ref = $args[$count];
+
 			}
 
 			public static function array_get($variable, $key, $default = NULL) {
