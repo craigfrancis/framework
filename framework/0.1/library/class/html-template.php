@@ -232,7 +232,7 @@
 					} else if ($type === 'url-img' && ($parameters[$k] instanceof url_data) && substr($parameters[$k]->mime_get(), 0, 6) === 'image/') {
 						// Images are allowed "data:" URLs with mime-types such as 'image/jpeg'
 					} else if ($type === 'url' || $type === 'url-img') {
-						if (!($parameters[$k] instanceof url) && !($parameters[$k] instanceof url_immutable)) {
+						if (!($parameters[$k] instanceof url) && !($parameters[$k] instanceof url_immutable) && $parameters[$k] !== '#') {
 							throw new error_exception('Parameter ' . ($k + 1) . ' should be a URL object.', debug_dump($parameters[$k]) . "\n" . implode('?', $this->template_html));
 						}
 					} else if ($type === 'int') {
