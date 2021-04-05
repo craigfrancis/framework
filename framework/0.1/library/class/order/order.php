@@ -130,9 +130,7 @@
 
 					$db = $this->db_get();
 
-					$this->form = new order_form();
-					$this->form->order_ref_set($this);
-					$this->form->db_set($this->db_get());
+					$this->form = new order_form($this);
 					$this->form->db_save_disable();
 					$this->form->db_table_set_sql($db->escape_table($this->db_table_main));
 

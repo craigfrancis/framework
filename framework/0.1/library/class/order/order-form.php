@@ -13,11 +13,12 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function init() {
+			public function __construct($order) {
+				$this->order_obj = $order; // So the form can call $this->db_get() during setup (ref `system_form_dedupe`).
+				parent::__construct();
 			}
 
-			public function order_ref_set($order) {
-				$this->order_obj = $order;
+			public function init() {
 			}
 
 			public function db_get() {

@@ -81,7 +81,7 @@
 		//--------------------------------------------------
 		// Setup
 
-			public function __construct() {
+			public function __construct() { // Do not have any arguments for init, as objects like order_form() need to set their own.
 				$this->setup();
 			}
 
