@@ -60,8 +60,8 @@
 					'br'         => [],
 
 					'svg'        => ['width' => 'int', 'height' => 'int', 'viewBox' => 'text', 'aria-label' => 'text', 'role' => 'text'],
-					'rect'       => ['width' => 'int', 'height' => 'int', 'x' => 'int', 'y' => 'int', 'fill' => 'text'],
-					'image'      => ['width' => 'int', 'height' => 'int', 'x' => 'int', 'y' => 'int', 'href' => 'url'],
+					'rect'       => ['width' => 'int', 'height' => 'int', 'x' => 'int', 'y' => 'int', 'fill' => 'text', 'stroke' => 'text', 'stroke-width' => 'int'],
+					'image'      => ['width' => 'int', 'height' => 'int', 'x' => 'int', 'y' => 'int', 'href' => 'url', 'aria-hidden' => ['true', 'false'], 'visibility' => ['true', 'false']],
 				];
 
 			protected $parameters = [];
