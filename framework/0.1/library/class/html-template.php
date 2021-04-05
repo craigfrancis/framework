@@ -58,6 +58,10 @@
 					'data'       => ['id' => 'ref', 'class' => 'ref', 'value' => 'text'],
 					'input'      => ['id' => 'ref', 'class' => 'ref', 'type' => ['submit', 'button'], 'name' => 'ref', 'value' => 'text'],
 					'br'         => [],
+
+					'svg'        => ['width' => 'int', 'height' => 'int', 'viewBox' => 'text', 'aria-label' => 'text', 'role' => 'text'],
+					'rect'       => ['width' => 'int', 'height' => 'int', 'x' => 'int', 'y' => 'int', 'fill' => 'text'],
+					'image'      => ['width' => 'int', 'height' => 'int', 'x' => 'int', 'y' => 'int', 'href' => 'url'],
 				];
 
 			protected $parameters = [];
