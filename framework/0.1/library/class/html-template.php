@@ -11,6 +11,7 @@
 			protected $template_parameters = NULL;
 			protected $template_parameter_types = [];
 			protected $template_allowed = [ // Do not allow <script>, <style>, <link>, <object>, <embed> tags; or attributes that can include JS (e.g. style, onload, dynsrc)... although some can accept url(x) values
+
 					'meta'       => ['name' => 'text', 'content' => 'text'], // Do not allow <meta http-equiv="">, e.g. Refresh, Set-Cookie
 					'div'        => ['id' => 'ref', 'class' => 'ref', 'role' => 'text', 'title' => 'text', 'tabindex' => 'int'],
 					'span'       => ['id' => 'ref', 'class' => 'ref', 'role' => 'text', 'title' => 'text', 'tabindex' => 'int'],
@@ -60,8 +61,10 @@
 					'br'         => [],
 
 					'svg'        => ['width' => 'int', 'height' => 'int', 'viewBox' => 'text', 'aria-label' => 'text', 'role' => 'text'],
-					'rect'       => ['width' => 'int', 'height' => 'int', 'x' => 'int', 'y' => 'int', 'fill' => 'text', 'stroke' => 'text', 'stroke-width' => 'int'],
 					'image'      => ['width' => 'int', 'height' => 'int', 'x' => 'int', 'y' => 'int', 'href' => 'url', 'aria-hidden' => ['true', 'false'], 'visibility' => ['visible', 'hidden']],
+					'rect'       => ['width' => 'int', 'height' => 'int', 'x' => 'int', 'y' => 'int', 'fill' => 'text', 'stroke' => 'text', 'stroke-width' => 'int'],
+					'text'       => ['x' => 'int', 'y' => 'int', 'text-anchor' => ['middle'], 'dominant-baseline' => ['middle']],
+
 				];
 
 			protected $parameters = [];
