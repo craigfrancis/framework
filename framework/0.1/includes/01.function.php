@@ -545,9 +545,7 @@
 
 	function is_email($email, $domain_check = true) {
 
-		$format_valid = preg_match('/^\w[-=.+\'\w]*@(\w[-._\w]*\.[a-zA-Z]{2,}.*)$/', $email, $matches);
-
-// TODO: Allows 'example@example.com extra' due to the '.*' at the end
+		$format_valid = preg_match('/^\w[-=.+\'\w]*@(\w[-._\w]*\.[a-zA-Z]{2,})$/', $email, $matches); // The RegExp used to end '{2,}.*)$', not sure why it had '.*' at the end, as it allowed 'example@example.com extra'
 
 		if ($format_valid) {
 
