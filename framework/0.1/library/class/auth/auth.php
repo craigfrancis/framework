@@ -1659,7 +1659,7 @@
 								'browser'   => config::get('request.browser'),
 								'tracker'   => browser_tracker_get(),
 								'hash_time' => floatval($this->hash_time), // See notes in $auth->_session_start() as to why this is ok.
-								'limit'     => 'error',
+								'limit'     => 'error:' . $error,
 								'created'   => $now,
 								'last_used' => $now,
 								'deleted'   => '0000-00-00 00:00:00',
