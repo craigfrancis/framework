@@ -517,7 +517,7 @@
 
 					$parameters[] = date('Y-m-d H:i:s', (time() - $this->lockout_timeout));
 
-					if ($db->num_rows($sql, $parameters) >= $this->lockout_attempts) { // Once every 30 seconds, for the 30 minutes
+					if ($db->num_rows($sql, $parameters) >= $this->lockout_attempts) {
 						$error = 'failure_repetition';
 					} else {
 						$error = '';
