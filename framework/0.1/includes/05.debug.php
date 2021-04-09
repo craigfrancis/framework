@@ -399,6 +399,34 @@
 	}
 
 //--------------------------------------------------
+// Error emails
+
+	function send_error_emails() {
+
+		$error_email = config::get('debug.error_send', true); // Could be set to false (to disable), or a different email address.
+		if ($error_email === true) {
+			$error_email = config::get('email.error');
+		}
+
+		$errors = config::get('debug.errors');
+
+		if ($error_email && is_array($errors) && count($errors) > 0) {
+
+			$email = new email();
+			$email->default_style_set(NULL);
+			$email->subject_set('System PHP Errors: ' . config::get('output.domain'));
+			$email->request_table_add();
+			$email->body_add("\n" . implode("\n", $errors));
+
+			$email->send($error_email);
+
+		}
+
+		config::set('debug.errors', []);
+
+	}
+
+//--------------------------------------------------
 // Error handler
 
 	function error_handler($err_no, $err_str, $err_file, $err_line, $err_context = NULL) {
@@ -473,6 +501,11 @@
 				error_log($error_message);
 
 				config::array_push('debug.errors', $error_message);
+
+				if (config::get('debug.error_shutdown_registered') !== true) {
+					config::set('debug.error_shutdown_registered', true);
+					register_shutdown_function('send_error_emails');
+				}
 
 			}
 
@@ -1041,28 +1074,6 @@
 		// End debug
 
 			function debug_shutdown() {
-
-				//--------------------------------------------------
-				// Email errors
-
-					$error_email = config::get('debug.error_send', true); // Could be set to false (to disable), or a different email address.
-					if ($error_email === true) {
-						$error_email = config::get('email.error');
-					}
-
-					$errors = config::get('debug.errors');
-
-					if ($error_email && is_array($errors) && count($errors) > 0) {
-
-						$email = new email();
-						$email->default_style_set(NULL);
-						$email->subject_set('System PHP Errors: ' . config::get('output.domain'));
-						$email->request_table_add();
-						$email->body_add("\n" . implode("\n", $errors));
-
-						$email->send($error_email);
-
-					}
 
 				//--------------------------------------------------
 				// Ignore
