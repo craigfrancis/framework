@@ -18,7 +18,7 @@
 			protected $session_ref = 'user'; // Allow different user log-in mechanics, e.g. "admin"
 			protected $session_length = 1800; // 30 minutes, or set to 0 for indefinite length
 			protected $session_ip_lock = false; // By default this is disabled (AOL users)
-			protected $session_browser_tracker = false; // Store a browser tracker, useful to show user about browser changing
+			protected $session_browser_tracker = false; // Store a browser tracker, useful to show user about browser changing via $auth->session_previous_message_get() or $auth->session_previous_get()
 			protected $session_concurrent = false; // Close previous sessions on new session start
 			protected $session_cookies = false; // Use sessions by default
 			protected $session_history = 7776000; // Keep session data for X seconds (defaults to 90 days)
@@ -27,6 +27,14 @@
 			private $session_info_data = NULL; // Please use $auth->session_info_get();
 			private $session_info_available = false;
 			private $session_pass = NULL;
+
+			protected $browser_tracker = [ // Could be set to true/false to completely enable/disable.
+					'session'  => NULL, // Default from $this->session_browser_tracker, for backwards compatibility
+					'remember' => true,
+					'register' => true,
+					'update'   => true,
+					'reset'    => false, // Password resets often involve a different browser (e.g. an email clients in-app browser)
+				];
 
 			private $hash_time = NULL;
 
@@ -214,6 +222,18 @@
 				return $this->password_min_length;
 			}
 
+			public function browser_tracker_enabled($type) {
+				if (is_array($this->browser_tracker)) {
+					$enabled = $this->browser_tracker[$type];
+					if ($type === 'session' && $enabled === NULL) {
+						$enabled = $this->session_browser_tracker;
+					}
+				} else {
+					$enabled = $this->browser_tracker; // Set to a generic boolean?
+				}
+				return ($enabled !== false); // Defaults to true
+			}
+
 		//--------------------------------------------------
 		// User
 
@@ -355,17 +375,22 @@
 					$remember_pass = random_key(40);
 					$remember_hash = quick_hash_create($remember_pass);
 
-					$db->insert($db_remember_table, array(
+					$values = [
 							'id'      => '',
 							'token'   => $remember_hash,
 							'ip'      => config::get('request.ip'),
 							'browser' => config::get('request.browser'),
-							'tracker' => browser_tracker_get(),
 							'user_id' => $this->session_info_data['user_id'],
 							'created' => $now,
 							'expired' => $expires,
 							'deleted' => '0000-00-00 00:00:00',
-						));
+						];
+
+					if ($this->browser_tracker_enabled('remember')) {
+						$values['tracker'] = browser_tracker_get();
+					}
+
+					$db->insert($db_remember_table, $values);
 
 					$remember_id = $db->insert_id();
 
@@ -867,11 +892,17 @@
 
 					if ($row = $db->fetch_row($sql, $parameters)) {
 
-						$this->session_previous = array(
+						if ($this->browser_tracker_enabled('session')) {
+							$browser_changed = browser_tracker_changed($row['tracker']); // Don't use UA string, it changes too often.
+						} else {
+							$browser_changed = NULL;
+						}
+
+						$this->session_previous = [
 								'last_used' => new timestamp($row['last_used'], 'db'),
 								'location_changed' => ($row['ip'] != config::get('request.ip')),
-								'browser_changed' => browser_tracker_changed($row['tracker']), // Don't use UA string, it changes too often.
-							);
+								'browser_changed' => $browser_changed,
+							];
 
 					} else {
 
@@ -1071,7 +1102,7 @@
 							'deleted'       => '0000-00-00 00:00:00',
 						];
 
-					if ($this->session_browser_tracker) {
+					if ($this->browser_tracker_enabled('session')) {
 						$values['tracker'] = browser_tracker_get();
 					}
 
@@ -1652,18 +1683,23 @@
 
 						$now = new timestamp();
 
-						$db->insert($db_session_table, array(
+						$values = [
 								'token'     => '', // Will remain blank to record failure
 								'user_id'   => $db_id,
 								'ip'        => $request_ip,
 								'browser'   => config::get('request.browser'),
-								'tracker'   => browser_tracker_get(),
 								'hash_time' => floatval($this->hash_time), // See notes in $auth->_session_start() as to why this is ok.
 								'limit'     => 'error:' . $error,
 								'created'   => $now,
 								'last_used' => $now,
 								'deleted'   => '0000-00-00 00:00:00',
-							));
+							];
+
+						if ($this->browser_tracker_enabled('session')) {
+							$values['tracker'] = browser_tracker_get();
+						}
+
+						$db->insert($db_session_table, $values);
 
 					}
 

@@ -646,17 +646,22 @@
 
 						$now = new timestamp();
 
-						$db->insert($this->db_update_table, array(
+						$values = [
 								'id'      => '',
 								'token'   => $update_hash,
 								'ip'      => config::get('request.ip'),
 								'browser' => config::get('request.browser'),
-								'tracker' => browser_tracker_get(),
 								'user_id' => $this->details['user_id'],
 								'email'   => $this->details['confirm_email'],
 								'created' => $now,
 								'deleted' => '0000-00-00 00:00:00',
-							));
+							];
+
+						if ($this->auth->browser_tracker_enabled('update')) {
+							$values['tracker'] = browser_tracker_get();
+						}
+
+						$db->insert($this->db_update_table, $values);
 
 						$update_id = $db->insert_id();
 

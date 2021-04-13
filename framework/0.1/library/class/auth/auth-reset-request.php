@@ -311,18 +311,23 @@
 							$reset_hash = '';
 						}
 
-						$db->insert($this->db_reset_table, array(
+						$values = [
 								'id'      => '',
 								'token'   => $reset_hash,
 								'ip'      => config::get('request.ip'),
 								'browser' => config::get('request.browser'),
-								'tracker' => browser_tracker_get(),
 								'user_id' => $reset['user_id'],
 								'email'   => $this->details['email'], // Not $reset['email'], as that can be found by the user_id.
 								'created' => $now,
 								'used'    => '0000-00-00 00:00:00',
 								'deleted' => '0000-00-00 00:00:00',
-							));
+							];
+
+						if ($this->auth->browser_tracker_enabled('reset')) {
+							$values['tracker'] = browser_tracker_get();
+						}
+
+						$db->insert($this->db_reset_table, $values);
 
 						$reset_id = $db->insert_id();
 

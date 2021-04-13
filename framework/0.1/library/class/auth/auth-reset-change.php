@@ -117,7 +117,12 @@
 
 					if (($row = $db->fetch_row($sql, $parameters)) && (quick_hash_verify($reset_pass, $row['token']))) {
 
-						$row['browser_changed'] = browser_tracker_changed($row['tracker']); // Don't use UA string, it changes too often.
+						if ($this->auth->browser_tracker_enabled('reset')) {
+							$row['browser_changed'] = browser_tracker_changed($row['tracker']); // Don't use UA string, it changes too often.
+						} else {
+							$row['browser_changed'] = NULL;
+						}
+
 						$row['valid'] = NULL; // Not checked yet
 
 						unset($row['tracker']);
@@ -264,10 +269,9 @@
 				// Config
 
 					$config = array_merge(array(
-							'form'                => NULL,
-							'login'               => true,
-							'login_browser_check' => false,
-							'session_restore'     => NULL,
+							'form'            => NULL,
+							'login'           => true,
+							'session_restore' => NULL,
 						), $config);
 
 					if ($this->details === NULL) {
@@ -359,7 +363,7 @@
 						// CSRF like), so the victim is logged into an
 						// account the attacker controls.
 
-					if ($config['login_browser_check'] === true && $this->details['browser_changed']) {
+					if ($this->details['browser_changed'] === true) { // false or NULL is fine (this is now disabled by default)
 
 						$limit_ref = 'browser';
 						$limit_extra = NULL;
