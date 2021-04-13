@@ -153,7 +153,7 @@
 				$browser_tracker = random_key(40);
 			}
 
-			cookie::set('b', $browser_tracker, ['expires' => '+3 hours', 'same_site' => 'Lax', 'update' => true]); // Always re-send, not linked to session_history
+			cookie::set('b', $browser_tracker, ['expires' => '+7 days', 'same_site' => 'Lax', 'update' => true]); // Always re-send, not linked to session_history
 
 			config::set('request.browser_tracker', $browser_tracker);
 
