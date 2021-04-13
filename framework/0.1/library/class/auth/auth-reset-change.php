@@ -264,9 +264,10 @@
 				// Config
 
 					$config = array_merge(array(
-							'form'            => NULL,
-							'login'           => true,
-							'session_restore' => NULL,
+							'form'                => NULL,
+							'login'               => true,
+							'login_browser_check' => false,
+							'session_restore'     => NULL,
 						), $config);
 
 					if ($this->details === NULL) {
@@ -346,7 +347,19 @@
 				//--------------------------------------------------
 				// Login the user
 
-					if ($this->details['browser_changed']) {
+						// The browser check is disabled by default now,
+						// as users often start the process in one browser
+						// and complete in another (e.g. their email clients
+						// in-app browser).
+						//
+						// It protects against an attacker creating an
+						// account, starting the password reset process,
+						// and getting the victim to complete (either
+						// sending them a link directly, or via something
+						// CSRF like), so the victim is logged into an
+						// account the attacker controls.
+
+					if ($config['login_browser_check'] === true && $this->details['browser_changed']) {
 
 						$limit_ref = 'browser';
 						$limit_extra = NULL;
