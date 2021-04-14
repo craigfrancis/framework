@@ -1830,7 +1830,7 @@
 			$csp['require-trusted-types-for'] = "'script'";
 		}
 
-		if (($config['report'] || !$config['enforced']) && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
+		if ($config['report'] && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
 			if ($config['report'] === true) {
 				$config['report'] = gateway_url('csp-report');
 			}
