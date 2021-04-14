@@ -440,6 +440,8 @@ exit_with_error('Cannot return keys at the moment'); // TODO [secrets-keys] - Ne
 								closedir($handle);
 							}
 
+// TODO [secrets-keys] - With the old encryption::_key_get(), if the /private/keys/ was 700, the key file appeared to not exist (confusing error)... worth checking all possible permission issues (although the files no longer use permissions to restrict access, instead using encryption).
+
 							$data_path = NULL;
 							if (count($files) > 0) {
 								$result = encryption::key_identifier_match($key, array_keys($files));
