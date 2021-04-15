@@ -190,6 +190,9 @@
 						'autocomplete' => 'new-password',
 					)));
 
+				$this->record->_fields_add('pass'); // To keep the record helper happy, ref field "was not collected to compare against".
+				$this->record->_fields_add('auth');
+
 				return $this->field_password_new_1;
 
 			}
