@@ -136,7 +136,9 @@
 							//   '<img />' for self closing tags
 							//   '<tag attribute="attribute">' for boolean attributes.
 
-						$old = libxml_use_internal_errors(true); // "Disabling will also clear any existing libxml errors"
+						$old = libxml_use_internal_errors(true); // "Disabling will also clear any existing libxml errors"...
+
+						libxml_clear_errors(); // ... Turns out it doesn't
 
 						$html_prefix = '<?xml version="1.0" encoding="' . xml(config::get('output.charset')) . '"?><html>';
 						$html_suffix = '</html>';
