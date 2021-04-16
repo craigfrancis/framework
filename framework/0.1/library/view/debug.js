@@ -330,7 +330,7 @@
 						'types': [
 								'deprecation',
 								'intervention',
-								'feature-policy-violation'
+								'permissions-policy-violation'
 							],
 						'buffered': true
 					}).observe();

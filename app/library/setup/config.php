@@ -95,13 +95,11 @@
 
 	$config['output.framing'] = 'DENY'; // or SAMEORIGIN
 
-	$config['output.fp_enabled'] = true;
-
 	$config['output.referrer_policy'] = 'same-origin';
 
 	$config['output.xss_reflected'] = 'block';
 
-	$config['output.fp_enabled'] = true;
+	$config['output.pp_enabled'] = true;
 
 	$config['output.csp_enabled'] = true;
 	$config['output.csp_enforced'] = true;

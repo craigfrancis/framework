@@ -79,98 +79,85 @@
 		}
 
 	//--------------------------------------------------
-	// Default feature policy
+	// Default permissions policy
 
-		$config['output.fp_directives'] = [
+		$config['output.pp_directives'] = [
 
-					// https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/feature_policy/feature_policy_features.json5
-					//
-					// Find:     \s+{[\s\n]+name: "[^"]+",[\s\n]+feature_policy_name: "([^"]+)",([\s\n]+feature_default: "[^"]+",)?([\s\n]+depends_on: \["?([^\]]+?)"?\],?)?[\s\n]+},
-					// Replace:  '$1' => [], // $4\n
+				'accelerometer'                      => [],
+				'autoplay'                           => [],
+				'camera'                             => [],
+				'ch-device-memory'                   => [],
+				'ch-downlink'                        => [],
+				'ch-dpr'                             => [],
+				'ch-ect'                             => [],
+				'ch-lang'                            => [],
+				'ch-rtt'                             => [],
+				'ch-ua'                              => [],
+				'ch-ua-arch'                         => [],
+				'ch-ua-full-version'                 => [],
+				'ch-ua-mobile'                       => [],
+				'ch-ua-model'                        => [],
+				'ch-ua-platform'                     => [],
+				'ch-ua-platform-version'             => [],
+				'ch-viewport-width'                  => [],
+				'ch-width'                           => [],
+				'clipboard-read'                     => [],
+				'clipboard-write'                    => [],
+				'cross-origin-isolated'              => ['self'],
+				'document-domain'                    => [],
+				'encrypted-media'                    => [],
+				'fullscreen'                         => [],
+				'geolocation'                        => [],
+				'gyroscope'                          => [],
+				'hid'                                => [],
+				'magnetometer'                       => [],
+				'microphone'                         => [],
+				'midi'                               => [],
+				'payment'                            => [],
+				'publickey-credentials-get'          => [],
+				'screen-wake-lock'                   => [],
+				'serial'                             => [],
+				'usb'                                => [],
+				'xr-spatial-tracking'                => [],
 
-				'accelerometer'                         => [], //
-				// 'ambient-light-sensor'               => [], // SensorExtraClasses
-				'autoplay'                              => [], //
-				'camera'                                => [], //
-				'ch-dpr'                                => [], // FeaturePolicyForClientHints
-				'ch-device-memory'                      => [], // FeaturePolicyForClientHints
-				'ch-downlink'                           => [], // FeaturePolicyForClientHints
-				'ch-ect'                                => [], // FeaturePolicyForClientHints
-				'ch-lang'                               => [], // FeaturePolicyForClientHints
-				'ch-rtt'                                => [], // FeaturePolicyForClientHints
-				'ch-ua'                                 => [], // FeaturePolicyForClientHints
-				'ch-ua-arch'                            => [], // FeaturePolicyForClientHints
-				'ch-ua-platform'                        => [], // FeaturePolicyForClientHints
-				'ch-ua-model'                           => [], // FeaturePolicyForClientHints
-				'ch-ua-mobile'                          => [], // FeaturePolicyForClientHints
-				'ch-ua-full-version'                    => [], // FeaturePolicyForClientHints
-				'ch-ua-platform-version'                => [], // FeaturePolicyForClientHints
-				'ch-viewport-width'                     => [], // FeaturePolicyForClientHints
-				'ch-width'                              => [], // FeaturePolicyForClientHints
-				'clipboard-read'                        => [], //
-				'clipboard-write'                       => [], //
-				// 'conversion-measurement'             => [], // ConversionMeasurement
-				'cross-origin-isolated'                 => ["'self'"], // CrossOriginIsolation, should be allowed, this is a good thing
-				// 'display-capture'                    => [], // GetCurrentBrowsingContextMedia
-				'document-domain'                       => [], //
-				'encrypted-media'                       => [], //
-				// 'execution-while-out-of-viewport'    => [], // FreezeFramesOnVisibility
-				// 'execution-while-not-rendered'       => [], // FreezeFramesOnVisibility
-				// 'focus-without-user-activation'      => [], // BlockingFocusWithoutUserActivation, Does not effect top-level documents (yet?), just content in an iframe.
-				'fullscreen'                            => [], //
-				// 'frobulate'                          => [], // OriginTrialsSampleAPI
-				// 'gamepad'                            => [], // RestrictGamepadAccess
-				'geolocation'                           => [], //
-				'gyroscope'                             => [], //
-				'hid'                                   => [], // WebHID, The WebHID API enables web applications to request access to HID devices.
-				// 'idle-detection'                     => [], // IdleDetection
-				// 'interest-cohort'                    => [], // InterestCohortFeaturePolicy
-				'magnetometer'                          => [], //
-				'microphone'                            => [], //
-				'midi'                                  => [], //
-				// 'otp-credentials'                    => [], // WebOTPAssertionFeaturePolicy
-				'payment'                               => [], // PaymentRequest
-				// 'picture-in-picture'                 => [], // PictureInPictureAPI, +[Risky]
-				'publickey-credentials-get'             => [], // WebAuthenticationGetAssertionFeaturePolicy
-				'screen-wake-lock'                      => [], // WakeLock
-				'serial'                                => [], // Serial
-				// 'storage-access-api'                 => [], // StorageAccessAPI
-				// 'sync-xhr'                           => [], // +[Risky]
-				// 'trust-token-redemption'             => [], // TrustTokens
-				'usb'                                   => [], // WebUSB
-				// 'vertical-scroll'                    => [], // ExperimentalProductivityFeatures
-				// 'web-share'                          => [], // WebShare
-				'xr-spatial-tracking'                   => [], // WebXR, Was "xr": https://chromium.googlesource.com/chromium/src/+/1b4eae88d6a915034f405d8a88551f9b6a7b35ca
+				// 'picture-in-picture'              => [], // Risky
+				// 'sync-xhr'                        => [], // Risky
 
-				// 'top-navigation'                     => [], // Removed 07-12-2020: https://chromium.googlesource.com/chromium/src/+/942f73a1dc456e3901bb49bfaa24e036a7c0f135 - Was FeaturePolicyForSandbox
-				// 'scripts'                            => [], // Removed 07-12-2020: https://chromium.googlesource.com/chromium/src/+/942f73a1dc456e3901bb49bfaa24e036a7c0f135 - Was FeaturePolicyForSandbox
-				// 'pointer-lock'                       => [], // Removed 07-12-2020: https://chromium.googlesource.com/chromium/src/+/942f73a1dc456e3901bb49bfaa24e036a7c0f135 - Was FeaturePolicyForSandbox
-				// 'popups'                             => [], // Removed 07-12-2020: https://chromium.googlesource.com/chromium/src/+/942f73a1dc456e3901bb49bfaa24e036a7c0f135 - Was FeaturePolicyForSandbox
-				// 'presentation'                       => [], // Removed 07-12-2020: https://chromium.googlesource.com/chromium/src/+/942f73a1dc456e3901bb49bfaa24e036a7c0f135 - Was FeaturePolicyForSandbox
-				// 'modals'                             => [], // Removed 07-12-2020: https://chromium.googlesource.com/chromium/src/+/942f73a1dc456e3901bb49bfaa24e036a7c0f135 - Was FeaturePolicyForSandbox
-				// 'orientation-lock'                   => [], // Removed 07-12-2020: https://chromium.googlesource.com/chromium/src/+/942f73a1dc456e3901bb49bfaa24e036a7c0f135 - Was FeaturePolicyForSandbox
-				// 'forms'                              => [], // Removed 07-12-2020: https://chromium.googlesource.com/chromium/src/+/942f73a1dc456e3901bb49bfaa24e036a7c0f135 - Was FeaturePolicyForSandbox
-				// 'downloads'                          => [], // Removed 07-12-2020: https://chromium.googlesource.com/chromium/src/+/942f73a1dc456e3901bb49bfaa24e036a7c0f135 - Was FeaturePolicyForSandbox, was "downloads-without-user-activation"
-				// 'sync-script'                        => [], // Removed 25-08-2020: https://chromium.googlesource.com/chromium/src/+/aab733a40c44173b21f13534f416704a1b8ee4a6 - Was ExperimentalProductivityFeatures, moved to Document Policy
-				// 'document-write'                     => [], // Removed 25-08-2020: https://chromium.googlesource.com/chromium/src/+/2e7eccbe66a302a95a4971df30db08b1abe6628c - Was ExperimentalProductivityFeatures, moved to Document Policy
-				// 'lazyload'                           => [], // Removed 03-06-2020: https://chromium.googlesource.com/chromium/src/+/1480a9a150c2c96bd624ad5d1f3aa809cbb40b09
-				// 'loading-frame-default-eager'        => [], // Removed 03-06-2020: https://chromium.googlesource.com/chromium/src/+/1480a9a150c2c96bd624ad5d1f3aa809cbb40b09
-				// 'font-display-late-swap'             => [], // Removed 05-05-2020: https://chromium.googlesource.com/chromium/src/+/05a30b0c83096ffa208434e35f4a04d1ca524737
-				// 'layout-animations'                  => [], // Removed 06-04-2020: https://chromium.googlesource.com/chromium/src/+/18d53120bc9184d31c61b5c3d5ad1cac4528d3a1
-				// 'unsized-media'                      => [], // Removed 13-03-2020: https://chromium.googlesource.com/chromium/src/+/c32d950bb5a62aa5189bf9a6f6323e7dcfc97d62
-				// 'oversized-images'                   => [], // Removed 10-03-2020: https://chromium.googlesource.com/chromium/src/+/c6b8d7bcec465425bc23df5e8066094208910f83 - Was ExperimentalProductivityFeaturesEnabled, Was 'max-downscaling-image'
-				// 'unoptimized-lossless-images'        => [], // Removed 10-03-2020: https://chromium.googlesource.com/chromium/src/+/c6b8d7bcec465425bc23df5e8066094208910f83
-				// 'unoptimized-lossless-images-strict' => [], // Removed 10-03-2020: https://chromium.googlesource.com/chromium/src/+/c6b8d7bcec465425bc23df5e8066094208910f83
-				// 'unoptimized-lossy-images'           => [], // Removed 10-03-2020: https://chromium.googlesource.com/chromium/src/+/c6b8d7bcec465425bc23df5e8066094208910f83 - Was ExperimentalProductivityFeaturesEnabled, Was 'image-compression': https://chromium.googlesource.com/chromium/src/+/f91910eba0d6f1d81dc2ec39255b5ad348b39dc6
-				// 'document-access'                    => [], // Removed 03-12-2019: https://chromium.googlesource.com/chromium/src/+/78196eaec1f2c663a719ed7ab4cc9f368d9ca141
-				// 'vr'                                 => [], // Removed 23-10-2019: https://chromium.googlesource.com/chromium/src/+/6b783608ee8f511047323c9f6e64d22cd5dde7cb
-				// 'speaker'                            => [], // Removed 22-07-2019: https://chromium.googlesource.com/chromium/src/+/d9af2becddc1b592e4aeff52db12e9d0d09fbe79
-				// 'legacy-image-formats'               => [], // Removed 29-03-2019: https://chromium.googlesource.com/chromium/src/+/a7ed373a087d07f91d9a58c03da1739d48e7f7ea
-				// 'cookie'                             => [], // Removed 14-06-2018: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
-				// 'domain'                             => [], // Removed 14-06-2018: https://chromium.googlesource.com/chromium/src/+/ce77e4b6d9bc40b34aa45e2297495ba4376754b0
-				// 'vibrate'                            => [], // Removed 15-02-2018: https://chromium.googlesource.com/chromium/src/+/6684fb7780bea4dacdcb12b14a9b56894e07cbfb
+				// 'ambient-light-sensor'            => [], // SensorExtraClasses
+				// 'conversion-measurement'          => [], // ConversionMeasurement
+				// 'display-capture'                 => [], // GetCurrentBrowsingContextMedia
+				// 'execution-while-not-rendered'    => [], // FreezeFramesOnVisibility
+				// 'execution-while-out-of-viewport' => [], // FreezeFramesOnVisibility
+				// 'focus-without-user-activation'   => [], // BlockingFocusWithoutUserActivation
+				// 'frobulate'                       => [], // OriginTrialsSampleAPI
+				// 'gamepad'                         => [], // RestrictGamepadAccess
+				// 'idle-detection'                  => [], // IdleDetection
+				// 'interest-cohort'                 => [], // InterestCohortFeaturePolicy
+				// 'otp-credentials'                 => [], // WebOTPAssertionFeaturePolicy
+				// 'storage-access-api'              => [], // StorageAccessAPI
+				// 'trust-token-redemption'          => [], // TrustTokens
+				// 'vertical-scroll'                 => [], // ExperimentalPolicies
+				// 'web-share'                       => [], // WebShare
 
 			];
+
+	//--------------------------------------------------
+	// Default document policy
+
+		// $config['output.dp_directives'] = [
+		// 		'document-domain'                => '?0',
+		// 		'document-write'                 => '?0',
+		// 		'font-display-late-swap'         => '?0',
+		// 		'force-load-at-top'              => '?0',
+		// 		'js-profiling'                   => '?0',
+		// 		'layout-animations'              => '?0',
+		// 		'lossless-images-max-bpp'        => '0',
+		// 		'lossless-images-strict-max-bpp' => '0',
+		// 		'lossy-images-max-bpp'           => '0',
+		// 		'oversized-images'               => '0',
+		// 		'sync-script'                    => '?0',
+		// 		'unsized-media'                  => '?0',
+		// 	];
 
 	//--------------------------------------------------
 	// App config
@@ -447,7 +434,7 @@
 		config::set_default('output.csp_report', false);
 		config::set_default('output.csp_directives', array('default-src' => array("'self'")));
 
-		config::set_default('output.fp_enabled', false);
+		config::set_default('output.pp_enabled', false);
 
 		config::set_default('output.favicon_url',  ASSET_URL  . '/img/global/favicon.ico');
 		config::set_default('output.favicon_path', ASSET_ROOT . '/img/global/favicon.ico');

@@ -973,6 +973,21 @@
 	}
 
 //--------------------------------------------------
+// Origin get
+
+	function origin_get() { // Should only be used by the framework, when 'output.origin' might not have been set yet.
+
+		$origin = config::get('output.origin');
+		if ($origin === NULL) {
+			require_once(FRAMEWORK_ROOT . '/library/misc/origin.php');
+			$origin = config::get('output.origin');
+		}
+
+		return $origin;
+
+	}
+
+//--------------------------------------------------
 // Jobs
 
 	function job_get($name) {
@@ -1729,46 +1744,6 @@
 	}
 
 //--------------------------------------------------
-// Policy header
-
-	function http_policy_values($policies) {
-
-		$output = [];
-
-		$origin = config::get('output.origin');
-		if ($origin === NULL) { // Normally set, but some locations (like routes.php) would be too early.
-			require_once(FRAMEWORK_ROOT . '/library/misc/origin.php');
-			$origin = config::get('output.origin');
-		}
-
-		foreach ($policies as $directive => $value) {
-			if ($value !== NULL) {
-				if (is_array($value)) {
-					foreach ($value as $k => $v) {
-						if (str_starts_with($v, '/')) {
-							$value[$k] = $origin . $v;
-						}
-					}
-					if (config::get('debug.level') > 0) {
-						if (count($value) > count(array_unique($value))) {
-							exit_with_error('Duplicate policy values for "' . $directive . '"', debug_dump($value));
-						}
-					}
-					$value = implode(' ', $value);
-				}
-				if ($value == '') {
-					$output[] = $directive . " 'none'";
-				} else {
-					$output[] = $directive . ' ' . str_replace('"', "'", $value);
-				}
-			}
-		}
-
-		return $output;
-
-	}
-
-//--------------------------------------------------
 // CSP header
 
 		// e.g.
@@ -1780,93 +1755,129 @@
 
 	function http_csp_header($csp = NULL, $config = []) {
 
-		if (is_string($csp) && ($csp === 'none' || $csp === 'img' || $csp === 'pdf')) {
-			$default = [
-					'default-src' => "'none'",
-					'base-uri'    => "'none'",
-					'form-action' => "'none'",
-				];
-			if ($csp === 'img' || $csp === 'pdf') {
-				$default['style-src'] = "'unsafe-inline'"; // For Chrome inline viewing
-				if ($csp === 'img') {
-					$default['img-src'] = (isset($config['url']) ? $config['url'] : "'self'");
-				} else if ($csp === 'pdf') {
-					$default['img-src'] = ['/favicon.ico'];
-					$default['object-src'] = (isset($config['url']) ? $config['url'] : "'self'");
-					$default['plugin-types'] = 'application/pdf';
+		//--------------------------------------------------
+		// Config
+
+			if (is_string($csp) && ($csp === 'none' || $csp === 'img' || $csp === 'pdf')) {
+				$default = [
+						'default-src' => "'none'",
+						'base-uri'    => "'none'",
+						'form-action' => "'none'",
+					];
+				if ($csp === 'img' || $csp === 'pdf') {
+					$default['style-src'] = "'unsafe-inline'"; // For Chrome inline viewing
+					if ($csp === 'img') {
+						$default['img-src'] = (isset($config['url']) ? $config['url'] : "'self'");
+					} else if ($csp === 'pdf') {
+						$default['img-src'] = ['/favicon.ico'];
+						$default['object-src'] = (isset($config['url']) ? $config['url'] : "'self'");
+						$default['plugin-types'] = 'application/pdf';
+					}
+				}
+				$csp = $default;
+			}
+
+			$config = array_merge([
+					'enforced'  => config::get('output.csp_enforced', false),
+					'report'    => config::get('output.csp_report', false),
+					'framing'   => config::get('output.framing'),
+					'integrity' => config::get('output.integrity'),
+				], $config);
+
+			if ($config['enforced']) {
+				$header = 'Content-Security-Policy';
+			} else {
+				$header = 'Content-Security-Policy-Report-Only';
+			}
+
+			if ($config['framing']) {
+				$framing = strtoupper($config['framing']);
+				if ($framing == 'DENY') {
+					$csp['frame-ancestors'] = "'none'";
+				} else if ($framing == 'SAMEORIGIN') {
+					$csp['frame-ancestors'] = "'self'";
 				}
 			}
-			$csp = $default;
-		}
 
-		$config = array_merge([
-				'enforced'  => config::get('output.csp_enforced', false),
-				'report'    => config::get('output.csp_report', false),
-				'framing'   => config::get('output.framing'),
-				'integrity' => config::get('output.integrity'),
-			], $config);
+			// Removed https://github.com/w3c/webappsec-subresource-integrity/pull/82 ... and in Chrome 85 http://crbug.com/618924
+			// if (is_array($config['integrity'])) {
+			// 	$csp['require-sri-for'] = implode(' ', $config['integrity']);
+			// }
 
-		if ($config['enforced']) {
-			$header = 'Content-Security-Policy';
-		} else {
-			$header = 'Content-Security-Policy-Report-Only';
-		}
-
-		if ($config['framing']) {
-			$framing = strtoupper($config['framing']);
-			if ($framing == 'DENY') {
-				$csp['frame-ancestors'] = "'none'";
-			} else if ($framing == 'SAMEORIGIN') {
-				$csp['frame-ancestors'] = "'self'";
+			if (isset($csp['trusted-types'])) {
+				$csp['require-trusted-types-for'] = "'script'";
 			}
-		}
 
-		// Removed https://github.com/w3c/webappsec-subresource-integrity/pull/82 ... and in Chrome 85 http://crbug.com/618924
-		// if (is_array($config['integrity'])) {
-		// 	$csp['require-sri-for'] = implode(' ', $config['integrity']);
-		// }
-
-		if (isset($csp['trusted-types'])) {
-			$csp['require-trusted-types-for'] = "'script'";
-		}
-
-		if ($config['report'] && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
-			if ($config['report'] === true) {
-				$config['report'] = gateway_url('csp-report');
+			if ($config['report'] && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
+				if ($config['report'] === true) {
+					$config['report'] = gateway_url('csp-report');
+				}
+				$csp['report-uri'] = $config['report'];
 			}
-			$csp['report-uri'] = $config['report'];
-		}
 
-		$csp = http_policy_values($csp);
+		//--------------------------------------------------
+		// CSP output array
 
-		// if (config::get('output.csp_disown_opener', true)) {
-		// 	$csp[] = 'disown-opener';
-		// }
+			$output = [];
+			$origin = origin_get(); // Normally 'output.origin' has been set, but some locations (like routes.php) would be too early.
 
-		if (https_only()) {
-			$csp[] = 'block-all-mixed-content';
-		}
+			foreach ($csp as $directive => $value) {
+				if ($value !== NULL) {
+					if (is_array($value)) {
+						foreach ($value as $k => $v) {
+							if (str_starts_with($v, '/')) {
+								$value[$k] = $origin . $v;
+							}
+						}
+						if (config::get('debug.level') > 0) {
+							if (count($value) > count(array_unique($value))) {
+								exit_with_error('Duplicate CSP policy values for "' . $directive . '"', debug_dump($value));
+							}
+						}
+						$value = implode(' ', $value);
+					}
+					if ($value == '') {
+						$output[] = $directive . " 'none'";
+					} else {
+						$output[] = $directive . ' ' . str_replace('"', "'", $value);
+					}
+				}
+			}
 
-		header($header . ': ' . head(implode('; ', $csp)));
+			// if (config::get('output.csp_disown_opener', true)) {
+			// 	$output[] = 'disown-opener';
+			// }
 
-		if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
+			if (https_only()) {
+				$output[] = 'block-all-mixed-content';
+			}
 
-			debug_require_db_table(DB_PREFIX . 'system_report_csp', '
-					CREATE TABLE [TABLE] (
-						document_uri varchar(80) NOT NULL,
-						blocked_uri varchar(80) NOT NULL,
-						violated_directive varchar(80) NOT NULL,
-						referrer tinytext NOT NULL,
-						original_policy text NOT NULL,
-						data_raw text NOT NULL,
-						ip tinytext NOT NULL,
-						browser tinytext NOT NULL,
-						created datetime NOT NULL,
-						updated datetime NOT NULL,
-						PRIMARY KEY (document_uri,blocked_uri,violated_directive)
-					);');
+		//--------------------------------------------------
+		// Send
 
-		}
+			header($header . ': ' . head(implode('; ', $output)));
+
+		//--------------------------------------------------
+		// Debug
+
+			if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
+
+				debug_require_db_table(DB_PREFIX . 'system_report_csp', '
+						CREATE TABLE [TABLE] (
+							document_uri varchar(80) NOT NULL,
+							blocked_uri varchar(80) NOT NULL,
+							violated_directive varchar(80) NOT NULL,
+							referrer tinytext NOT NULL,
+							original_policy text NOT NULL,
+							data_raw text NOT NULL,
+							ip tinytext NOT NULL,
+							browser tinytext NOT NULL,
+							created datetime NOT NULL,
+							updated datetime NOT NULL,
+							PRIMARY KEY (document_uri,blocked_uri,violated_directive)
+						);');
+
+			}
 
 	}
 
@@ -2055,31 +2066,51 @@
 			}
 
 		//--------------------------------------------------
-		// Feature policy
+		// Permissions-Policy
 
-			if (config::get('output.fp_enabled') === true) {
+			if (config::get('output.pp_enabled') === true) {
 
-					// https://crbug.com/623682
-					//
-					// Chrome to first implement:
-					// - fullscreen
-					// - payments
-					// - vibration
-					// https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/uKO1CwiY3ts
-					//
-					// document.querySelector(".row.submit input").onclick = function() { document.documentElement.requestFullscreen(); return false };
-					// document.querySelector(".row.submit input").onclick = function() { document.documentElement.webkitRequestFullscreen(); return false };
-					//
-					// navigator.geolocation.getCurrentPosition(function(position){console.log(position.coords)});
+				$policies = [];
 
-				$policies = http_policy_values(config::get('output.fp_directives'));
+				$origin = origin_get(); // Normally 'output.origin' has been set, but some locations (like routes.php) would be too early.
 
-				header('Feature-Policy: ' . head(implode('; ', $policies)));
+				foreach (config::get('output.pp_directives') as $directive => $values) {
+					if (is_array($values)) { // e.g. not NULL
+
+						foreach ($values as $k => $v) {
+							if ($v !== 'self' && $v !== '*') {
+								$values[$k] = '"' . (str_starts_with($v, '/') ? $origin : '') . $v . '"';
+							}
+						}
+
+						if (config::get('debug.level') > 0) {
+							if (count($values) > count(array_unique($values))) {
+								exit_with_error('Duplicate permission policy values for "' . $directive . '"', debug_dump($values));
+							}
+						}
+
+						$policies[] = $directive . '=(' . implode(' ', $values) . ')';
+
+					}
+				}
+
+				header('Permissions-Policy: ' . head(implode(', ', $policies)));
 
 			}
 
 		//--------------------------------------------------
-		// Content security policy
+		// Document-Policy
+
+			// if (config::get('output.dp_enabled') === true) {
+			// 	$policies = [];
+			// 	foreach (config::get('output.dp_directives') as $directive => $value) {
+			// 		$policies[] = $directive . '=' . $value;
+			// 	}
+			// 	header('Document-Policy: ' . head(implode(', ', $policies)));
+			// }
+
+		//--------------------------------------------------
+		// Content-Security-Policy
 
 			if (config::get('output.csp_enabled') === true) {
 

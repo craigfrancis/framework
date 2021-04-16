@@ -417,27 +417,39 @@
 			}
 
 		//--------------------------------------------------
-		// Feature policy
+		// Policy sources
 
 			public function fp_source_add($directive, $sources) {
+				$this->_source_add('output.fp_directives', 'Feature-Policy', $directive, $sources);
+			}
+
+			public function pp_source_add($directive, $sources) {
+				$this->_source_add('output.pp_directives', 'Permissions-Policy', $directive, $sources);
+			}
+
+			public function dp_source_add($directive, $sources) {
+				$this->_source_add('output.dp_directives', 'Document-Policy', $directive, $sources);
+			}
+
+			public function _source_add($config_name, $display_name, $directive, $sources) {
 
 				if ($this->headers_sent) {
-					exit_with_error('Cannot add to the "' . $directive . '" Feature Policy (header already sent).');
+					exit_with_error('Cannot add to the "' . $directive . '" ' . $display_name . ' (header already sent).');
 				}
 
 				if (!is_array($sources)) {
-					$sources = array($sources);
+					$sources = [$sources];
 				}
 
-				$fp = config::get('output.fp_directives');
+				$new_values = config::get($config_name);
 
-				if (!isset($fp[$directive])) {
-					exit_with_error('Unrecognised "' . $directive . '" Feature Policy.');
+				if (!isset($new_values[$directive])) {
+					exit_with_error('Unrecognised "' . $directive . '" ' . $display_name . '.');
 				}
 
-				$fp[$directive] = array_merge($fp[$directive], $sources);
+				$new_values[$directive] = array_merge($new_values[$directive], $sources);
 
-				config::set('output.fp_directives', $fp);
+				config::set($config_name, $new_values);
 
 			}
 
