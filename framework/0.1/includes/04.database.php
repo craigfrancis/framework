@@ -75,7 +75,11 @@
 			foreach ($values as $value) {
 				$parameters[] = [$type, $value];
 			}
-			return substr(str_repeat('?,', $count), 0, -1);
+			$sql = '?';
+			for ($k = 1; $k < $count; $k++) { // Must use concat for is_literal() check
+				$sql .= ',?';
+			}
+			return $sql;
 		}
 
 		public function query($sql, $parameters = NULL, $run_debug = true, $exit_on_error = true) {
