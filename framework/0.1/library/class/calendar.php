@@ -498,10 +498,20 @@
 					$today_date = $today_timestamp->format('Y-m-d');
 
 					$loop_timestamp = $this->data_start;
+					$loop_end = $this->data_end;
+
+					if ($this->config['mode'] === 'month') {
+						while ($loop_timestamp->format('N') != 1) {
+							$loop_timestamp = $loop_timestamp->clone('-1 day');
+						}
+						while ($loop_end->format('N') != 1) { // Looking for a Monday, because it's LESS THAN this end date.
+							$loop_end = $loop_end->clone('+1 day');
+						}
+					}
 
 					$k = 0;
 
-					while ($loop_timestamp < $this->data_end) {
+					while ($loop_timestamp < $loop_end) {
 
 						//--------------------------------------------------
 						// Details
