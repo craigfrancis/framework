@@ -545,11 +545,15 @@
 
 	function is_email($email, $domain_check = true) {
 
-		$format_valid = preg_match('/^(?:[a-z0-9!#$%&\'\*\+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'\*\+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(\w[-._\w]*\.[a-zA-Z]{2,})$/i', $email, $matches);
+		$format_valid = preg_match('/^(?:[a-z0-9\.!#$%&\'\*\+\/=?^_`{|}~-]+|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(\w[-._\w]*\.[a-zA-Z]{2,})$/i', $email, $matches);
 
 			// The RegExp used to:
 			// - End '{2,}.*)$', not sure why it had '.*' at the end, as it allowed 'example@example.com extra'
 			// - Start '\w[-=.+\'\w]*@', but got too restrictive (missing #), so now following RFC 5322 (emailregex.com), but keeping the simplistic domain matching bit (don't want IP addresses).
+			//
+			// Also vaguely following:
+			//   https://html.spec.whatwg.org/multipage/input.html#email-state-(type=email)
+			//   /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
 
 		if ($format_valid) {
 
