@@ -5,6 +5,8 @@
 		//--------------------------------------------------
 		// Variables
 
+			protected $step_value = 1; // Can use useful to set to 60 or 3600 (so seconds or minutes are not collected).
+
 			protected $value_provided = false;
 			protected $value_timestamp = NULL;
 
@@ -125,6 +127,32 @@
 
 			}
 
+			public function step_value_set($error, $step = 1) {
+				$this->step_value_set_html(to_safe_html($error), $step);
+			}
+
+			public function step_value_set_html($error_html, $step = 1) {
+
+				if ($this->form_submitted && $this->value !== '') {
+
+						// Not written yet, just copied from form_field_number
+
+					// $value = $this->value_clean;
+					//
+					// if ($this->min_value !== NULL) {
+					// 	$value += $this->min_value; // HTML step starts at the min value
+					// }
+					//
+					// if (abs((round($value / $step) * $step) - $value) > 0.00001) { // ref 'epsilon' on https://php.net/manual/en/language.types.float.php
+					// 	$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', $step, $error_html));
+					// }
+
+				}
+
+				$this->step_value = $step;
+
+			}
+
 		//--------------------------------------------------
 		// Value
 
@@ -183,7 +211,7 @@
 
 				$attributes = parent::_input_attributes();
 
-				$attributes['step'] = 1; // Google Chrome 51 will complain if a min/max value is set, and the seconds are different from them (no min/max, then seconds cannot be set).
+				$attributes['step'] = $this->step_value; // Google Chrome 51 will complain if a min/max value is set, and the seconds are different from them (no min/max, then seconds cannot be set).
 
 				if ($this->min_timestamp !== NULL) {
 					$attributes['min'] = $this->min_timestamp->format('Y-m-d\TH:i:s');
