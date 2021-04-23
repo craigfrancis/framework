@@ -21,6 +21,8 @@
 
 			public function field_identification_get($form, $config = []) {
 
+				$form->saved_values_ignore(); // Whatever has been stored (if anything), should be ignored while logging in.
+
 				$this->form = $form;
 
 				$this->field_identification = $this->auth->_field_identification_get($form, array_merge(array(

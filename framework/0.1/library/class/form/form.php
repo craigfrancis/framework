@@ -60,6 +60,7 @@
 			private $dedupe_data = NULL;
 			private $saved_values_data = NULL;
 			private $saved_values_used = NULL;
+			private $saved_values_ignore = NULL;
 			private $saved_message_html = 'Please submit this form again.';
 			private $csrf_token = NULL;
 			private $csrf_error_html = 'The request did not appear to come from a trusted source, please try again.';
@@ -646,9 +647,13 @@
 				$this->saved_message_html = $message_html;
 			}
 
+			public function saved_values_ignore() { // The login form will skip them (should not be used, but also preserve them for the login redirect).
+				$this->saved_values_ignore = true;
+			}
+
 			public function saved_values_available() {
 
-				if ($this->form_passive) {
+				if ($this->form_passive || $this->saved_values_ignore === true) {
 					return false;
 				}
 
@@ -678,11 +683,7 @@
 
 					$this->saved_values_used = true;
 
-					session::delete('save_request_user');
-					session::delete('save_request_url');
-					session::delete('save_request_created');
-					session::delete('save_request_used');
-					session::delete('save_request_data');
+					save_request_reset();
 
 				}
 
