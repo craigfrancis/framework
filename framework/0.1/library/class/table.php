@@ -145,6 +145,10 @@
 				$this->class_name = $class_name;
 			}
 
+			public function class_add($class_name) {
+				$this->class_name .= ($this->class_name == '' ? '' : ' ') . $class_name;
+			}
+
 			public function charset_output_set($charset) {
 				$this->charset_output = $charset;
 			}
@@ -1125,28 +1129,20 @@
 
 					if ($mode === NULL && config::get('debug.level') > 0 && request('debug') !== 'false') {
 
-						if (!$this->id_value) {
-							$this->id_set('table_' . $this->table_id);
-						}
+						$this->wrapper_class_set('table_debug_output');
 
-						$output_html  = $this->html();
-						$output_html .= '<style>';
-						$output_html .= '#' . html($this->id_value) . ' { border-collapse: collapse; border-spacing: 0; }';
-						$output_html .= '#' . html($this->id_value) . ' caption { margin: 0 0 0.5em 0; }';
-						$output_html .= '#' . html($this->id_value) . ' thead span.sort { font-size: 0.75em; }';
-						$output_html .= '#' . html($this->id_value) . ' thead th { background-color: #DDD; }';
-						$output_html .= '#' . html($this->id_value) . ' tr:nth-child(even) { background-color: #F7F7F7; }';
-						$output_html .= '#' . html($this->id_value) . ' tr:hover { background-color: #FFD; }';
-						$output_html .= '#' . html($this->id_value) . ' th { border: 1px solid #000; padding: 2px 4px; white-space: nowrap; vertical-align: top; }';
-						$output_html .= '#' . html($this->id_value) . ' td { border: 1px solid #000; padding: 2px 4px; white-space: nowrap; vertical-align: top; }';
-						$output_html .= '</style>';
-
+						$output_html = $this->html();
 						if (config::get('request.method') == 'GET') {
-							$output_html .= '<p>Debug view / <a href="' . html(url(array('debug' => 'false'))) . '">Download CSV</a></p>';
+							$output_html .= '<p>Debug View | <a href="' . html(url(array('debug' => 'false'))) . '">Download CSV</a></p>';
 						}
+
+						$css_path = FRAMEWORK_ROOT . '/library/view/table.css';
+						$css_url = gateway_url('framework-file', filemtime($css_path) . '-table.css');
+						$css_integrity = 'sha256-' . base64_encode(hash('sha256', file_get_contents($css_path), true));
 
 						$response = response_get('html');
-						$response->csp_source_add('style-src',  array('"unsafe-inline"'));
+						$response->css_add($css_url, ['integrity' => $css_integrity]);
+						$response->csp_source_add('style-src', $css_url);
 						$response->template_path_set(FRAMEWORK_ROOT . '/library/template/blank.ctp');
 						$response->view_set_html($output_html);
 						$response->send(); // So we can see the debug output.
