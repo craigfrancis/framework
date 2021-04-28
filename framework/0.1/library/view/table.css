@@ -1,0 +1,10 @@
+
+.table_debug_output { overflow-x: auto; }
+.table_debug_output table { border-collapse: collapse; border-spacing: 0; }
+.table_debug_output table caption { margin: 0 0 0.5em 0; text-align: left; }
+.table_debug_output table thead span.sort { font-size: 0.75em; }
+.table_debug_output table thead th { background-color: #DDD; }
+.table_debug_output table tr:nth-child(even) { background-color: #F7F7F7; }
+.table_debug_output table tr:hover { background-color: #FFD; }
+.table_debug_output table th { border: 1px solid #000; padding: 2px 4px; white-space: nowrap; vertical-align: top; }
+.table_debug_output table td { border: 1px solid #000; padding: 2px 4px; white-space: nowrap; vertical-align: top; }

@@ -302,6 +302,8 @@
 
 					file_put_contents($agents_path, $agents_plist);
 
+					chmod($agents_path, 0644);
+
 				//--------------------------------------------------
 				// Watch symlink (to show where it's installed)
 
