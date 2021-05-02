@@ -110,6 +110,7 @@
 				'geolocation'                        => [],
 				'gyroscope'                          => [],
 				'hid'                                => [],
+				'interest-cohort'                    => [], // Technically not enabled (InterestCohortFeaturePolicy)
 				'magnetometer'                       => [],
 				'microphone'                         => [],
 				'midi'                               => [],
@@ -132,7 +133,6 @@
 				// 'frobulate'                       => [], // OriginTrialsSampleAPI
 				// 'gamepad'                         => [], // RestrictGamepadAccess
 				// 'idle-detection'                  => [], // IdleDetection
-				// 'interest-cohort'                 => [], // InterestCohortFeaturePolicy
 				// 'otp-credentials'                 => [], // WebOTPAssertionFeaturePolicy
 				// 'storage-access-api'              => [], // StorageAccessAPI
 				// 'trust-token-redemption'          => [], // TrustTokens
