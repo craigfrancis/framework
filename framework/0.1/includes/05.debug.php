@@ -412,10 +412,12 @@
 
 		if ($error_email && is_array($errors) && count($errors) > 0) {
 
+			$email_values = config::get('debug.report_values', []);
+
 			$email = new email();
 			$email->default_style_set(NULL);
 			$email->subject_set('System PHP Errors: ' . config::get('output.domain'));
-			$email->request_table_add();
+			$email->request_table_add($email_values, 'Y-m-d H:i:s - D jS M');
 			$email->body_add("\n" . implode("\n", $errors));
 
 			$email->send($error_email);
