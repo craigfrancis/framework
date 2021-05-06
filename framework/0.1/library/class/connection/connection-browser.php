@@ -55,6 +55,10 @@
 				$this->debug = $debug;
 			}
 
+			public function timeout_set($seconds) {
+				$this->connection->timeout_set($seconds);
+			}
+
 			public function user_agent_get() {
 				return $this->user_agent;
 			}
