@@ -49,7 +49,7 @@
 			return '`' . str_replace('`', '', $table) . '`';
 		}
 
-		public function sql_implode($sql_parts, $sql_type, $default) {
+		public function sql_implode($sql_parts, $sql_type, $default = 'true') {
 			$sql = '';
 			foreach ($sql_parts as $sql_part) {
 				if ($sql !== '') {
