@@ -552,6 +552,8 @@
 							$session_pass = '';
 						}
 
+						$literal_aliases = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'];
+
 						if ($session_id > 0) {
 
 							$sql = 'SELECT
@@ -565,7 +567,7 @@
 							$k = 0;
 							foreach ($config['fields'] as $field) {
 								$sql .= ',
-										m.' . $db->escape_field($field) . ' AS extra_' . ++$k;
+										m.' . $db->escape_field($field) . ' AS extra_' . $literal_aliases[++$k];
 							}
 
 							$sql .= '
@@ -637,7 +639,7 @@
 										$k = 0;
 										$extra_data = [];
 										foreach ($config['fields'] as $field) {
-											$extra_data[$field] = $row['extra_' . ++$k];
+											$extra_data[$field] = $row['extra_' . $literal_aliases[++$k]];
 										}
 
 										$this->session_pass = $session_pass;
