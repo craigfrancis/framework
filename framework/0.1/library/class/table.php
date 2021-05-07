@@ -279,7 +279,17 @@
 
 				$order_by_sql = $this->sort_field_get();
 
-				if (preg_match('/^([^,]+)(,.*)$/', $order_by_sql, $matches)) {
+				if (is_array($order_by_sql)) {
+					$return_sql = '';
+					foreach ($order_by_sql as $sql) {
+						if ($return_sql === '') {
+							$return_sql = $sql . ' ' . $this->sort_order_get();
+						} else {
+							$return_sql .= ', ' . $sql;
+						}
+					}
+					return $return_sql;
+				} else if (preg_match('/^([^,]+)(,.*)$/', $order_by_sql, $matches)) {
 					return $matches[1] . ' ' . $this->sort_order_get() . $matches[2];
 				} else {
 					return $order_by_sql . ' ' . $this->sort_order_get();
