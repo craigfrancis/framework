@@ -158,7 +158,7 @@
 							} else {
 								$dest = NULL; // Not provided, e.g. user re-loaded page
 							}
-						} else if (substr($dest, 0, 3) == '%2F') {
+						} else if (substr(strval($dest), 0, 3) == '%2F') {
 							$dest = urldecode($dest); // In a 'passive' form, the form isn't 'submitted', so hidden_value() isn't used, and the URL-encoded value (needed to overcome limits on hidden input fields), is not decoded.
 						}
 
@@ -402,7 +402,7 @@
 			}
 
 			public function dest_redirect($default_url, $config = []) {
-				$url = $this->dest_url_get();
+				$url = strval($this->dest_url_get());
 				if (substr($url, 0, 1) != '/') { // Must have a value, and must be for this site. Where a scheme-relative URL "//example.com" won't work, as the domain would be prefixed.
 					$url = $default_url;
 				}

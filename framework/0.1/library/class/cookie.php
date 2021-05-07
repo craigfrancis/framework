@@ -29,7 +29,7 @@
 				$config = array_merge(array(
 						'expires'   => 0, // Session cookie
 						'path'      => '/',
-						'domain'    => NULL,
+						'domain'    => '',
 						'secure'    => https_only(),
 						'http_only' => true,
 						'same_site' => NULL,
@@ -111,7 +111,7 @@
 			//--------------------------------------------------
 			// Check it has been defined in "manifest.json"
 
-				if (config::get('debug.level') >= 3 && $value !== NULL) { // Don't test when deleting the cookie
+				if (config::get('debug.level') >= 3 && $value != '') { // Don't test when deleting the cookie
 
 					$manifest_path = PUBLIC_ROOT . '/manifest.json';
 
@@ -224,7 +224,7 @@
 
 			$config['expires'] = '-24 hours';
 
-			return self::set($variable, NULL, $config);
+			return self::set($variable, '', $config); // Blank value to delete, not NULL
 
 		}
 

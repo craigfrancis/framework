@@ -133,7 +133,7 @@
 
 				$error_html = str_replace('XXX', $size, $error_html);
 
-				if ($this->form_submitted && strlen($this->value) > $size) {
+				if ($this->form_submitted && strlen(strval($this->value)) > $size) {
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 

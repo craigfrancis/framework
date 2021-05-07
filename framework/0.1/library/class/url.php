@@ -214,7 +214,7 @@
 
 			private function _query_build($values) {
 				$values = array_filter($values, array($this, '_query_filter'));
-				return http_build_query($values, NULL, '&', PHP_QUERY_RFC3986);
+				return http_build_query($values, '', '&', PHP_QUERY_RFC3986);
 			}
 
 			private function _query_filter($value) {

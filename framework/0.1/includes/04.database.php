@@ -673,7 +673,7 @@
 					'*', // Wildcard operator
 					'(', // Brackets are used for grouping and subexpressions; and they can also cause a syntax error, e.g. "aaa(bbb".
 					')',
-				], ' ', $search);
+				], ' ', strval($search));
 
 			$words = split_words($search);
 

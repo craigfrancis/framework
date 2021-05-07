@@ -525,7 +525,7 @@
 
 	function debug($variable = NULL) {
 
-		if (config::get('output.mime') == 'application/xhtml+xml') {
+		if (!headers_sent() && config::get('output.mime') == 'application/xhtml+xml') {
 			mime_set('text/html');
 		}
 

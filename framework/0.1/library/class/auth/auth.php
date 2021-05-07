@@ -665,7 +665,7 @@
 
 							$remember_token = cookie::get($this->remember_cookie_name);
 
-							if (($pos = strpos($remember_token, '-')) !== false) {
+							if (($pos = strpos(strval($remember_token), '-')) !== false) {
 
 								$remember_id = intval(substr($remember_token, 0, $pos));
 								$remember_pass = substr($remember_token, ($pos + 1));

@@ -163,7 +163,7 @@
 
 				$this->sort_name = $name;
 
-				$sort = request($this->sort_name);
+				$sort = strval(request($this->sort_name));
 				if (preg_match('/^([0-9]+)(A|D)$/', $sort, $matches)) {
 					$this->sort_request_id = $matches[1];
 					$this->sort_request_order = $matches[2];
