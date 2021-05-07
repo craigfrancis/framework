@@ -46,7 +46,13 @@
 		}
 
 		public function escape_table($table) {
-			return '`' . str_replace('`', '', $table) . '`';
+			if (function_exists('is_literal') && is_literal($table) !== true) {
+				exit_with_error('The table name "' . $table . '" must be a literal');
+			}
+			if (strpos($table, '`') !== false) {
+				exit_with_error('The table name "' . $table . '" cannot contain a backtick character');
+			}
+			return '`' . $table . '`';
 		}
 
 		public function sql_implode($sql_parts, $sql_type, $default = 'true') {
