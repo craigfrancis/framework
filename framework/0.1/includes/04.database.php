@@ -40,13 +40,37 @@
 		}
 
 		public function escape_field($field) {
-			$field_sql = '`' . str_replace('`', '', $field) . '`'; // Back tick is an illegal character
-			$field_sql = str_replace('.', '`.`', $field_sql); // Allow table definition
+			if (!is_array($field)) { // Use an array for the table alias
+				if (function_exists('is_literal')) {
+					$field = [$field];
+				} else {
+					$field = explode('.', $field); // Legacy
+				}
+			}
+			$field_sql = '';
+			foreach ($field as $name) {
+				if (function_exists('is_literal') && is_literal($name) !== true) {
+					exit_with_error('The field name "' . $name . '" must be a literal');
+				}
+				if (strpos($name, '`') !== false) {
+					exit_with_error('The field name "' . $name . '" cannot contain a backtick character');
+				}
+				if ($field_sql !== '') {
+					$field_sql .= '.';
+				}
+				$field_sql .= '`' . $name . '`';
+			}
 			return $field_sql;
 		}
 
 		public function escape_table($table) {
-			return '`' . str_replace('`', '', $table) . '`';
+			if (function_exists('is_literal') && is_literal($table) !== true) {
+				exit_with_error('The table name "' . $table . '" must be a literal');
+			}
+			if (strpos($table, '`') !== false) {
+				exit_with_error('The table name "' . $table . '" cannot contain a backtick character');
+			}
+			return '`' . $table . '`';
 		}
 
 		public function sql_implode($sql_parts, $sql_type, $default = 'true') {
@@ -97,10 +121,14 @@
 			return $sql;
 		}
 
-		public function query($sql, $parameters = NULL, $run_debug = true, $exit_on_error = true) {
+		public function query($sql, $parameters = NULL, $run_debug = true) {
+
+			if (function_exists('is_literal') && $run_debug !== false && !is_literal($sql)) {
+				debug($sql);
+			}
 
 			if ($run_debug && function_exists('debug_database')) {
-				$this->result = debug_database($this, $sql, $parameters, $exit_on_error);
+				$this->result = debug_database($this, $sql, $parameters);
 				return $this->result;
 			}
 
@@ -199,7 +227,7 @@
 
 			}
 
-			if (!$this->result && $exit_on_error) {
+			if (!$this->result) {
 				$this->_error($error, $sql, $parameters);
 			}
 
@@ -406,15 +434,21 @@
 					}
 				}
 
-				$sql = 'SHOW FULL COLUMNS FROM ' . $table_sql;
+				$sql = 'SHOW FULL COLUMNS FROM ' . $table_sql; // Cannot use $this->escape_table() because the record helper already does this
+				$parameters = [];
 
 				if ($field !== NULL) {
+					if (function_exists('is_literal') && is_literal($field) !== true) {
+						exit_with_error('The field name "' . $field . '" must be a literal');
+					}
 					$sql .= ' LIKE "' . $this->escape_like($field) . '"'; // Cannot use parameters in a SHOW query.
 				}
 
 				$details = [];
 
-				foreach ($this->fetch_all($sql) as $row) {
+				$result = $this->query($sql, $parameters, false); // No debug
+
+				foreach ($this->fetch_all($result) as $row) {
 
 					$type = $row['Type'];
 
@@ -531,35 +565,51 @@
 				exit_with_error('An array of field values needs to be provided to the database.', 'Value: ' . debug_dump($values));
 			}
 
-			$fields_sql = implode(', ', array_map(array($this, 'escape_field'), array_keys($values)));
+			$fields_sql = '';
+			foreach ($values as $field => $value) {
+				if ($fields_sql !== '') {
+					$fields_sql .= ', ';
+				}
+				$fields_sql .= $this->escape_field($field);
+			}
 
-			$values_sql = [];
+			$values_sql = '';
 			foreach ($values as $value) {
+				if ($values_sql !== '') {
+					$values_sql .= ', ';
+				}
 				if ($value === NULL) {
-					$values_sql[] = 'NULL';
+					$values_sql .= 'NULL';
 				} else {
-					$values_sql[] = '?';
+					$values_sql .= '?';
 					$parameters[] = $value;
 				}
 			}
 
-			$insert_sql = 'INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . implode(', ', $values_sql) . ')';
+			$insert_sql = 'INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $values_sql . ')';
 
 			if ($on_duplicate !== NULL) {
 				if (is_array($on_duplicate)) {
 
-					$set_sql = [];
+					$set_sql = '';
 					foreach ($on_duplicate as $field_name => $field_value) {
+						if ($set_sql !== '') {
+							$set_sql .= ', ';
+						}
 						if ($field_value === NULL) {
-							$set_sql[] = $this->escape_field($field_name) . ' = NULL';
+							$set_sql .= $this->escape_field($field_name) . ' = NULL';
 						} else {
-							$set_sql[] = $this->escape_field($field_name) . ' = ?';
+							$set_sql .= $this->escape_field($field_name) . ' = ?';
 							$parameters[] = $field_value;
 						}
 					}
-					$insert_sql .= ' ON DUPLICATE KEY UPDATE ' . implode(', ', $set_sql);
+					$insert_sql .= ' ON DUPLICATE KEY UPDATE ' . $set_sql;
 
 				} else {
+
+					if (function_exists('is_literal') && is_literal($on_duplicate) !== true) {
+						exit_with_error('The on_duplicate string "' . $on_duplicate . '" must be a literal');
+					}
 
 					$insert_sql .= ' ON DUPLICATE KEY UPDATE ' . $on_duplicate; // Dangerous but allows "count = (count + 1)"
 
@@ -574,26 +624,40 @@
 
 			$parameters = [];
 
-			$fields = array_keys(reset($records));
+			reset($records);
+			$first = key($records);
+			$fields_sql = '';
+			$fields = [];
+			foreach ($records[$first] as $field => $value) {
+				if ($fields_sql !== '') {
+					$fields_sql .= ', ';
+				}
+				$fields_sql .= $this->escape_field($field);
+				$fields[] = $field;
+			}
 
-			$fields_sql = implode(', ', array_map(array($this, 'escape_field'), $fields));
-
-			$records_sql = [];
+			$records_sql = '';
 			foreach ($records as $values) {
-				$values_sql = [];
+				if ($records_sql !== '') {
+					$records_sql .= '), (';
+				}
+				$values_sql = '';
 				foreach ($fields as $field) {
+					if ($values_sql !== '') {
+						$values_sql .= ', ';
+					}
 					if (!isset($values[$field]) || $values[$field] === NULL) {
-						$values_sql[] = 'NULL';
+						$values_sql .= 'NULL';
 					} else {
-						$values_sql[] = '?';
+						$values_sql .= '?';
 						$parameters[] = $values[$field];
 					}
 				}
-				$records_sql[] = implode(', ', $values_sql);
+				$records_sql .= $values_sql;
 			}
 
-			if (count($records_sql) > 0) {
-				return $this->query('INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . implode('), (', $records_sql) . ')', $parameters);
+			if ($records_sql !== '') {
+				return $this->query('INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $records_sql . ')', $parameters);
 			}
 
 		}
@@ -604,14 +668,17 @@
 				exit_with_error('An array of field values needs to be provided to the database.', 'Value: ' . debug_dump($values));
 			}
 
-			$set_sql = [];
+			$set_sql = '';
 			$set_parameters = [];
 			foreach ($values as $field_name => $field_value) {
-				$set_sql[] = $this->escape_field($field_name) . ' = ?';
+				if ($set_sql !== '') {
+					$set_sql .= ',';
+				}
+				$set_sql .= $this->escape_field($field_name) . ' = ?';
 				$set_parameters[] = $field_value;
 			}
 
-			$sql = 'UPDATE ' . $table_sql . ' SET ' . implode(', ', $set_sql) . ' WHERE ' . $where_sql;
+			$sql = 'UPDATE ' . $table_sql . ' SET ' . $set_sql . ' WHERE ' . $where_sql;
 
 			return $this->query($sql, array_merge($set_parameters, $parameters));
 
@@ -626,15 +693,17 @@
 			} else if ($fields === NULL) {
 				$fields_sql = '*';
 			} else {
-				$fields_sql = implode(', ', array_map(array($this, 'escape_field'), array_unique($fields)));
+				$fields_sql = '';
+				foreach ($fields as $field) {
+					if ($fields_sql !== '') {
+						$fields_sql .= ', ';
+					}
+					$fields_sql .= $this->escape_field($field);
+				}
 			}
 
 			if (is_array($where_sql)) {
-				if (count($where_sql) > 0) {
-					$where_sql = '(' . implode(') AND (', $where_sql) . ')';
-				} else {
-					$where_sql = 'true';
-				}
+				$where_sql = $db->sql_implode($where_sql, 'AND');
 			}
 
 			$sql = 'SELECT ' . $fields_sql . ' FROM ' . $table_sql . ' WHERE ' . $where_sql;
@@ -727,7 +796,13 @@
 			$search_query = implode(' ', $search_query);
 			if ($search_query) {
 				if (is_array($field)) {
-					$fields_sql = implode(', ', array_map([$this, 'escape_field'], $field));
+					$fields_sql = '';
+					foreach ($field as $name) {
+						if ($fields_sql !== '') {
+							$fields_sql .= ', ';
+						}
+						$fields_sql .= $this->escape_field($name);
+					}
 				} else {
 					$fields_sql = $this->escape_field($field);
 				}
