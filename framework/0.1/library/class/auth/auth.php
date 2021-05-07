@@ -1563,13 +1563,15 @@
 
 						$created_after = new timestamp((0 - $this->lockout_timeout) . ' seconds');
 
+						$where_sql = $db->sql_implode($where_sql, 'OR');
+
 						$sql = 'SELECT
 									1
 								FROM
 									' . $db->escape_table($db_session_table) . ' AS s
 								WHERE
 									(
-										' . implode(' OR ', $where_sql) . '
+										' . $where_sql . '
 									) AND
 									s.token = "" AND
 									s.created > ? AND

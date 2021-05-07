@@ -311,6 +311,8 @@
 							}
 						}
 
+						$where_sql = $db->sql_implode($where_sql, 'OR');
+
 						$sql = 'UPDATE
 									' . DB_PREFIX . 'system_holiday AS sh
 								SET
@@ -319,7 +321,7 @@
 									sh.source = "gov.uk" AND
 									sh.deleted = "0000-00-00 00:00:00" AND
 									(
-										' . implode(') OR (', $where_sql) . '
+										' . $where_sql . '
 									)';
 
 						$db->query($sql, $parameters);

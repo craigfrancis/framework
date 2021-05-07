@@ -501,6 +501,8 @@
 
 					if (count($where_sql) == 0) {
 						exit_with_error('Unknown lockout mode (' . $this->lockout_mode . ')');
+					} else {
+						$where_sql = $db->sql_implode($where_sql, 'OR');
 					}
 
 					$sql = 'SELECT
@@ -508,9 +510,7 @@
 							FROM
 								' . $db->escape_table($this->user_obj->db_table_session) . '
 							WHERE
-								(
-									' . implode(' OR ', $where_sql) . '
-								) AND
+								(' . $where_sql . ') AND
 								pass = "" AND
 								created > ? AND
 								deleted = "0000-00-00 00:00:00"';
