@@ -234,7 +234,7 @@
 				//--------------------------------------------------
 				// Country
 
-					$country = strtolower($country);
+					$country = strtolower(strval($country));
 
 					if ($country == NULL || $country == 'uk') {
 						$country = 'gb'; // Google Maps

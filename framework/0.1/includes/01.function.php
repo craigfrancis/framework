@@ -452,7 +452,7 @@
 
 	function split_words($text) {
 		$words = [];
-		foreach (preg_split('/\s+/u', $text) as $word) { // Only on whitespace, so not "O'Brien"
+		foreach (preg_split('/\s+/u', strval($text)) as $word) { // Only on whitespace, so not "O'Brien"
 			$word = preg_replace('/^\W*(.*?)\W*$/u', '$1', $word); // Trim non-word characters from start/end (e.g. "A, B" or "A - B" or "A 'B'" to only "A" and "B")
 			if (strlen($word) > 0) {
 				$words[] = $word;

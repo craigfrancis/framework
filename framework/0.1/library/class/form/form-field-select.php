@@ -288,7 +288,7 @@
 					$db_values = $this->db_field_value_get();
 
 					if ($this->multiple) {
-						$db_values = explode(',', $db_values); // Commas are not valid characters in enum/set fields.
+						$db_values = explode(',', strval($db_values)); // Commas are not valid characters in enum/set fields.
 					} else {
 						$db_values = array($db_values);
 					}

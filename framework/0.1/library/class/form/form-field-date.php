@@ -270,7 +270,7 @@
 
 							$value = NULL;
 
-						} else if (preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})/', $value, $matches)) { // Should also match "2001-01-00"
+						} else if (preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})/', strval($value), $matches)) { // Should also match "2001-01-00"
 
 							return array(
 									'D' => intval($matches[3]),
@@ -280,7 +280,7 @@
 
 						} else {
 
-							$value = strtotime($value);
+							$value = strtotime(strval($value));
 							if ($value == 943920000) { // "1999-11-30 00:00:00", same as the database "0000-00-00 00:00:00"
 								$value = NULL;
 							}
