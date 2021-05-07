@@ -318,7 +318,12 @@
 			public function html_input() {
 				if ($this->input_single === true) {
 
-					$value = $this->_value_string($this->_value_print_get());
+					$value = $this->_value_print_get();
+					if ($value) {
+						$value = $this->_value_string($value);
+					} else {
+						$value = '';
+					}
 
 					return $this->_html_input(array('value' => $value, 'type' => 'date'));
 
