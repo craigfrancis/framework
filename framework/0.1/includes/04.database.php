@@ -49,6 +49,21 @@
 			return '`' . str_replace('`', '', $table) . '`';
 		}
 
+		public function sql_implode($sql_parts, $sql_type, $default) {
+			$sql = '';
+			foreach ($sql_parts as $sql_part) {
+				if ($sql !== '') {
+					$sql .= ') ' . $sql_type . ' (';
+				}
+				$sql .= $sql_part;
+			}
+			if ($sql !== '') {
+				return '(' . $sql . ')';
+			} else {
+				return $default;
+			}
+		}
+
 		public function parameter_like(&$parameters, $val, $count = 0) { // $db->parameter_like($parameters, $word, 2);
 			$val = str_replace('\\', '\\\\', $val);
 			$val = str_replace('_', '\_', $val);
