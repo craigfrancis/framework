@@ -672,15 +672,18 @@
 				exit_with_error('An array of field values needs to be provided to the database.', 'Value: ' . debug_dump($values));
 			}
 
-			$set_sql = [];
+			$set_sql = '';
 			$set_parameters = [];
 			foreach ($values as $field_name => $field_value) {
-				$set_sql[] = $this->escape_field($field_name) . ' = ?';
+				if ($set_sql !== '') {
+					$set_sql .= ',';
+				}
+				$set_sql .= $this->escape_field($field_name) . ' = ?';
 				$set_parameters[] = $field_value;
 			}
 			$parameters = array_merge($set_parameters, $parameters);
 
-			$sql = 'UPDATE ' . $table_sql . ' SET ' . implode(', ', $set_sql) . ' WHERE ' . $where_sql;
+			$sql = 'UPDATE ' . $table_sql . ' SET ' . $set_sql . ' WHERE ' . $where_sql;
 
 			return $this->query($sql, $parameters);
 
