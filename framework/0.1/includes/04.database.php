@@ -2,6 +2,10 @@
 
 	class db extends check {
 
+		const SKIP_DEBUG = 1;
+		const SKIP_LITERAL_CHECK = 2;
+		const SKIP_ERROR_HANDLER = 4;
+
 		private $result = NULL;
 		private $statement = NULL;
 		private $affected_rows = NULL;
@@ -103,10 +107,10 @@
 			return $sql;
 		}
 
-		public function query($sql, $parameters = NULL, $run_debug = true, $exit_on_error = true) {
+		public function query($sql, $parameters = NULL, $skip_flags = NULL) {
 
-			if ($run_debug && function_exists('debug_database')) {
-				$this->result = debug_database($this, $sql, $parameters, $exit_on_error);
+			if (!($skip_flags & self::SKIP_DEBUG) && function_exists('debug_database')) {
+				$this->result = debug_database($this, $sql, $parameters, $skip_flags);
 				return $this->result;
 			}
 
@@ -205,7 +209,7 @@
 
 			}
 
-			if (!$this->result && $exit_on_error) {
+			if (!$this->result && !($skip_flags & self::SKIP_ERROR_HANDLER)) {
 				$this->_error($error, $sql, $parameters);
 			}
 
@@ -420,7 +424,9 @@
 
 				$details = [];
 
-				foreach ($this->fetch_all($sql) as $row) {
+				$result = $this->query($sql, $parameters, (db::SKIP_LITERAL_CHECK));
+
+				foreach ($this->fetch_all($result) as $row) {
 
 					$type = $row['Type'];
 

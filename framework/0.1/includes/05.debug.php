@@ -753,7 +753,7 @@
 
 				$db = db_get();
 
-				$db->query('SHOW TABLES LIKE "' . $db->escape($table) . '"', NULL, false); // No debug, and parameters are not supported in "SHOW TABLES" (MySQL 5.7)
+				$db->query('SHOW TABLES LIKE "' . $db->escape($table) . '"', NULL, (db::SKIP_DEBUG | db::SKIP_LITERAL_CHECK)); // Parameters are not supported in "SHOW TABLES" (MySQL 5.7)
 				if ($db->num_rows() == 0) {
 					if (php_sapi_name() == 'cli' || config::get('output.mime') == 'text/plain') {
 						exit('Missing table "' . $table . '":' . "\n\n" . str_replace('[TABLE]', $table, $sql) . "\n\n");
@@ -766,13 +766,13 @@
 
 			}
 
-			function debug_database($db, $sql, $parameters, $exit_on_error) {
+			function debug_database($db, $sql, $parameters, $skip_flags) {
 
 				//--------------------------------------------------
 				// Skip if disabled debugging
 
 					if (config::get('debug.db') !== true) {
-						return $db->query($sql, $parameters, false, $exit_on_error);
+						return $db->query($sql, $parameters, (db::SKIP_DEBUG | $skip_flags));
 					}
 
 				//--------------------------------------------------
@@ -899,7 +899,7 @@
 
 					if ($select_query) {
 
-						$result = $db->query('EXPLAIN ' . $sql, $parameters, false, false); // No debug, and don't exit on error
+						$result = $db->query('EXPLAIN ' . $sql, $parameters, (db::SKIP_DEBUG | db::SKIP_ERROR_HANDLER));
 
 						if ($result) {
 							$explain = $db->fetch_all($result);
@@ -960,7 +960,7 @@
 
 							foreach (config::get('debug.db_required_fields') as $required_field) {
 
-								$result = $db->query('SHOW COLUMNS FROM ' . $table[1] . ' LIKE "' . $required_field . '"', NULL, false, false); // No debug, and don't exit on error
+								$result = $db->query('SHOW COLUMNS FROM ' . $table[1] . ' LIKE "' . $required_field . '"', NULL, (db::SKIP_DEBUG | db::SKIP_LITERAL_CHECK | db::SKIP_ERROR_HANDLER));
 
 								if ($result && $row = $db->fetch_row($result)) {
 
@@ -1036,7 +1036,7 @@
 
 					$time_start = microtime(true);
 
-					$result = $db->query($sql, $parameters, false, $exit_on_error);
+					$result = $db->query($sql, $parameters, (db::SKIP_DEBUG | $skip_flags));
 
 					$time_check = round(($time_start - $time_init), 3);
 					$time_query = round((microtime(true) - $time_start), 3);
