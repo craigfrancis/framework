@@ -435,8 +435,12 @@
 				}
 
 				$sql = 'SHOW FULL COLUMNS FROM ' . $table_sql;
+				$parameters = [];
 
 				if ($field !== NULL) {
+					if (function_exists('is_literal') && is_literal($field) !== true) {
+						exit_with_error('The field name "' . $field . '" must be a literal');
+					}
 					$sql .= ' LIKE "' . $this->escape_like($field) . '"'; // Cannot use parameters in a SHOW query.
 				}
 
