@@ -543,7 +543,13 @@
 				exit_with_error('An array of field values needs to be provided to the database.', 'Value: ' . debug_dump($values));
 			}
 
-			$fields_sql = implode(', ', array_map(array($this, 'escape_field'), array_keys($values)));
+			$fields_sql = '';
+			foreach ($values as $field => $value) {
+				if ($fields_sql !== '') {
+					$fields_sql .= ', ';
+				}
+				$fields_sql .= $this->escape_field($field);
+			}
 
 			$values_sql = [];
 			foreach ($values as $value) {
@@ -586,9 +592,17 @@
 
 			$parameters = [];
 
-			$fields = array_keys(reset($records));
-
-			$fields_sql = implode(', ', array_map(array($this, 'escape_field'), $fields));
+			reset($records);
+			$first = key($records);
+			$fields_sql = '';
+			$fields = [];
+			foreach ($records[$first] as $field => $value) {
+				if ($fields_sql !== '') {
+					$fields_sql .= ', ';
+				}
+				$fields_sql .= $this->escape_field($field);
+				$fields[] = $field;
+			}
 
 			$records_sql = [];
 			foreach ($records as $values) {
@@ -638,7 +652,13 @@
 			} else if ($fields === NULL) {
 				$fields_sql = '*';
 			} else {
-				$fields_sql = implode(', ', array_map(array($this, 'escape_field'), array_unique($fields)));
+				$fields_sql = '';
+				foreach ($fields as $field) {
+					if ($fields_sql !== '') {
+						$fields_sql .= ', ';
+					}
+					$fields_sql .= $this->escape_field($field);
+				}
 			}
 
 			if (is_array($where_sql)) {
@@ -739,7 +759,13 @@
 			$search_query = implode(' ', $search_query);
 			if ($search_query) {
 				if (is_array($field)) {
-					$fields_sql = implode(', ', array_map([$this, 'escape_field'], $field));
+					$fields_sql = '';
+					foreach ($field as $name) {
+						if ($fields_sql !== '') {
+							$fields_sql .= ', ';
+						}
+						$fields_sql .= $this->escape_field($name);
+					}
 				} else {
 					$fields_sql = $this->escape_field($field);
 				}
