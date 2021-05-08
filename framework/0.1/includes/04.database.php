@@ -44,8 +44,26 @@
 		}
 
 		public function escape_field($field) {
-			$field_sql = '`' . str_replace('`', '', $field) . '`'; // Back tick is an illegal character
-			$field_sql = str_replace('.', '`.`', $field_sql); // Allow table definition
+			if (!is_array($field)) { // Use an array for the table alias
+				if (function_exists('is_literal')) {
+					$field = [$field];
+				} else {
+					$field = explode('.', $field); // Legacy
+				}
+			}
+			$field_sql = '';
+			foreach ($field as $name) {
+				if (function_exists('is_literal') && is_literal($name) !== true) {
+					exit_with_error('The field name "' . $name . '" must be a literal');
+				}
+				if (strpos($name, '`') !== false) {
+					exit_with_error('The field name "' . $name . '" cannot contain a backtick character');
+				}
+				if ($field_sql !== '') {
+					$field_sql .= '.';
+				}
+				$field_sql .= '`' . $name . '`';
+			}
 			return $field_sql;
 		}
 
