@@ -127,6 +127,23 @@
 
 		public function query($sql, $parameters = NULL, $skip_flags = NULL) {
 
+			if (SERVER == 'stage' && !($skip_flags & self::SKIP_LITERAL_CHECK) && function_exists('is_literal') && !is_literal($sql)) {
+				foreach (debug_backtrace() as $called_from) {
+					if (isset($called_from['file']) && !str_starts_with($called_from['file'], FRAMEWORK_ROOT)) {
+						break;
+					}
+				}
+				echo "\n";
+				echo '<div>' . "\n";
+				echo '	<h1>Error</h1>' . "\n";
+				echo '	<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>' . "\n";
+				echo '	<p>The following SQL has been tainted.</p>' . "\n";
+				echo '	<hr />' . "\n";
+				echo '	<p><pre>' . "\n\n" . html($sql) . "\n\n" . '</pre></p>' . "\n";
+				echo '</div>' . "\n";
+				exit();
+			}
+
 			if (!($skip_flags & self::SKIP_DEBUG) && function_exists('debug_database')) {
 				$this->result = debug_database($this, $sql, $parameters, $skip_flags);
 				return $this->result;
