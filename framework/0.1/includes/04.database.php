@@ -573,40 +573,50 @@
 				$fields_sql .= $this->escape_field($field);
 			}
 
-			$values_sql = [];
+			$values_sql = '';
 			foreach ($values as $value) {
+				if ($values_sql !== '') {
+					$values_sql .= ', ';
+				}
 				if ($value === NULL) {
-					$values_sql[] = 'NULL';
+					$values_sql .= 'NULL';
 				} else {
-					$values_sql[] = '?';
+					$values_sql .= '?';
 					$parameters[] = $value;
 				}
 			}
 
-			$insert_sql = 'INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . implode(', ', $values_sql) . ')';
+			$sql = 'INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $values_sql . ')';
 
 			if ($on_duplicate !== NULL) {
 				if (is_array($on_duplicate)) {
 
-					$set_sql = [];
+					$set_sql = '';
 					foreach ($on_duplicate as $field_name => $field_value) {
+						if ($set_sql !== '') {
+							$set_sql .= ', ';
+						}
 						if ($field_value === NULL) {
-							$set_sql[] = $this->escape_field($field_name) . ' = NULL';
+							$set_sql .= $this->escape_field($field_name) . ' = NULL';
 						} else {
-							$set_sql[] = $this->escape_field($field_name) . ' = ?';
+							$set_sql .= $this->escape_field($field_name) . ' = ?';
 							$parameters[] = $field_value;
 						}
 					}
-					$insert_sql .= ' ON DUPLICATE KEY UPDATE ' . implode(', ', $set_sql);
+					$sql .= ' ON DUPLICATE KEY UPDATE ' . $set_sql;
 
 				} else {
 
-					$insert_sql .= ' ON DUPLICATE KEY UPDATE ' . $on_duplicate; // Dangerous but allows "count = (count + 1)"
+					if (function_exists('is_literal') && is_literal($on_duplicate) !== true) {
+						exit_with_error('The on_duplicate string "' . $on_duplicate . '" must be a literal');
+					}
+
+					$sql .= ' ON DUPLICATE KEY UPDATE ' . $on_duplicate; // Dangerous but allows "count = (count + 1)"
 
 				}
 			}
 
-			return $this->query($insert_sql, $parameters);
+			return $this->query($sql, $parameters);
 
 		}
 
