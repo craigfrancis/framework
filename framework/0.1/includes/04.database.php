@@ -636,22 +636,32 @@
 				$fields[] = $field;
 			}
 
-			$records_sql = [];
+			$records_sql = '';
 			foreach ($records as $values) {
-				$values_sql = [];
+				if ($records_sql !== '') {
+					$records_sql .= '), (';
+				}
+				$values_sql = '';
 				foreach ($fields as $field) {
+					if ($values_sql !== '') {
+						$values_sql .= ', ';
+					}
 					if (!isset($values[$field]) || $values[$field] === NULL) {
-						$values_sql[] = 'NULL';
+						$values_sql .= 'NULL';
 					} else {
-						$values_sql[] = '?';
+						$values_sql .= '?';
 						$parameters[] = $values[$field];
 					}
 				}
-				$records_sql[] = implode(', ', $values_sql);
+				$records_sql .= $values_sql;
 			}
 
-			if (count($records_sql) > 0) {
-				return $this->query('INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . implode('), (', $records_sql) . ')', $parameters);
+			if ($records_sql !== '') {
+
+				$sql = 'INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $records_sql . ')';
+
+				return $this->query($sql, $parameters);
+
 			}
 
 		}
