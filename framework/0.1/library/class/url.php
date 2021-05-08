@@ -180,7 +180,7 @@
 					foreach ($query as $name => $value) {
 						$pos = strpos($output, '/:' . $name . '/');
 						if ($pos !== false) {
-							$output = substr($output, 0, ($pos + 1)) . rawurlencode($value) . ($value === NULL ? '' : '/') . substr($output, $pos + strlen($name) + 3);
+							$output = substr($output, 0, ($pos + 1)) . rawurlencode(strval($value)) . ($value === NULL ? '' : '/') . substr($output, $pos + strlen($name) + 3);
 							unset($query[$name]);
 						} else if ($value === NULL) {
 							unset($query[$name]);
