@@ -662,11 +662,7 @@
 			}
 
 			if (is_array($where_sql)) {
-				if (count($where_sql) > 0) {
-					$where_sql = '(' . implode(') AND (', $where_sql) . ')';
-				} else {
-					$where_sql = 'true';
-				}
+				$where_sql = $db->sql_implode($where_sql, 'AND');
 			}
 
 			$sql = 'SELECT ' . $fields_sql . ' FROM ' . $table_sql . ' WHERE ' . $where_sql;
