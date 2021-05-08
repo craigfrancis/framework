@@ -658,10 +658,11 @@
 				$set_sql[] = $this->escape_field($field_name) . ' = ?';
 				$set_parameters[] = $field_value;
 			}
+			$parameters = array_merge($set_parameters, $parameters);
 
 			$sql = 'UPDATE ' . $table_sql . ' SET ' . implode(', ', $set_sql) . ' WHERE ' . $where_sql;
 
-			return $this->query($sql, array_merge($set_parameters, $parameters));
+			return $this->query($sql, $parameters);
 
 		}
 
@@ -693,7 +694,9 @@
 			if (isset($options['order_sql'])) $sql .= ' ORDER BY ' . $options['order_sql'];
 			if (isset($options['limit_sql'])) $sql .= ' LIMIT '    . $options['limit_sql'];
 
-			return $this->query($sql, (isset($options['parameters']) ? $options['parameters'] : NULL));
+			$parameters = (isset($options['parameters']) ? $options['parameters'] : NULL);
+
+			return $this->query($sql, $parameters);
 
 		}
 
