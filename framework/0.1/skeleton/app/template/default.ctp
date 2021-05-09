@@ -18,13 +18,13 @@
 
 ?>
 <!DOCTYPE html>
-<html lang="<?= html($response->lang_get()) ?>" xml:lang="<?= html($response->lang_get()) ?>" xmlns="http://www.w3.org/1999/xhtml">
+<html id="<?= html($response->page_id_get()) ?>" lang="<?= html($response->lang_get()) ?>" xml:lang="<?= html($response->lang_get()) ?>" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
 	<?= $response->head_get_html(); ?>
 
 </head>
-<body id="<?= html($response->page_id_get()) ?>">
+<body>
 
 	<div id="page_wrapper">
 
