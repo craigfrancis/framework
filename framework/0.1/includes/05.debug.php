@@ -789,9 +789,10 @@
 				// Query type
 
 					$select_query = preg_match('/^\W*SELECT.*FROM/is', $sql); // Check for "non-word" characters, as it may contain brackets, e.g. a UNION... And don't debug queries without a table, e.g. SELECT FOUND_ROWS();
+					$select_no_cache = ($select_query && strpos($sql, 'SQL_NO_CACHE') === false);
 
-					if ($select_query && strpos($sql, 'SQL_NO_CACHE') === false) {
-						$sql = preg_replace('/^\W*SELECT/', '$0 SQL_NO_CACHE', $sql);
+					if ($select_no_cache) {
+						$skip_flags = ($skip_flags | db::SKIP_CACHE);
 					}
 
 				//--------------------------------------------------
@@ -799,7 +800,12 @@
 
 					$indent = 0;
 					$query_lines = [];
-					$query_text = preg_replace('/\) (AND|OR) \(/', "\n$0\n", $sql); // Could be better, just breaking up the keyword searching sections.
+					$query_text = $sql;
+
+					if ($select_no_cache) {
+						$query_text = preg_replace('/^\W*SELECT/', '$0 SQL_NO_CACHE', $query_text); // Note that this was sent to the database
+					}
+					$query_text = preg_replace('/\) (AND|OR) \(/', "\n$0\n", $query_text); // Could be better, just breaking up the keyword searching sections.
 
 					foreach (explode("\n", $query_text) as $line_text) {
 

@@ -5,6 +5,7 @@
 		const SKIP_DEBUG = 1;
 		const SKIP_LITERAL_CHECK = 2;
 		const SKIP_ERROR_HANDLER = 4;
+		const SKIP_CACHE = 8;
 
 		private $result = NULL;
 		private $statement = NULL;
@@ -147,6 +148,10 @@
 			if (!($skip_flags & self::SKIP_DEBUG) && function_exists('debug_database')) {
 				$this->result = debug_database($this, $sql, $parameters, $skip_flags);
 				return $this->result;
+			}
+
+			if ($skip_flags & self::SKIP_CACHE) {
+				$sql = preg_replace('/^\W*SELECT/', '$0 SQL_NO_CACHE', $sql);
 			}
 
 			$error = NULL;
