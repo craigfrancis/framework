@@ -899,7 +899,12 @@
 
 					if ($select_query) {
 
-						$result = $db->query('EXPLAIN ' . $sql, $parameters, (db::SKIP_DEBUG | db::SKIP_ERROR_HANDLER));
+							// Cannot run after the query has been executed
+							// as it would change affected_rows(). Cannot
+							// keep the literal check here, as it implies
+							// any mistakes earlier are due to this query.
+
+						$result = $db->query('EXPLAIN ' . $sql, $parameters, (db::SKIP_DEBUG | db::SKIP_LITERAL_CHECK | db::SKIP_ERROR_HANDLER));
 
 						if ($result) {
 							$explain = $db->fetch_all($result);
