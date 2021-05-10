@@ -34,7 +34,7 @@
 		// Value
 
 			public function value_set($value) {
-				if ($value instanceof html_template || $value instanceof html_template_immutable) {
+				if ($value instanceof html_template || $value instanceof html_safe_value) {
 					$this->value_html = $value->html();
 					$this->value = html_decode($this->value_html);
 				} else {

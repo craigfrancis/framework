@@ -175,7 +175,7 @@
 	}
 
 	function to_safe_html($input) {
-		if ($input instanceof html_template || $input instanceof html_template_immutable) {
+		if ($input instanceof html_template || $input instanceof html_safe_value) {
 			return $input;
 		} else {
 			return nl2br(html($input));
@@ -205,6 +205,36 @@
 			}
 		}
 		return $html . ($tag == 'input' || $tag == 'link' ? ' />' : '>');
+	}
+
+	class html_safe_value implements JsonSerializable {
+
+		private $value = NULL;
+
+		public function __construct($value) {
+			if (!str_starts_with(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'], FRAMEWORK_ROOT)) {
+				trigger_error('Only the framework can create a new html_safe_value()', E_USER_NOTICE);
+				// exit_with_error('Only the framework can create a new html_safe_value()');
+			}
+			$this->value = $value;
+		}
+
+		public function _debug_dump() {
+			return 'html_safe_value("' . $this->value . '")';
+		}
+
+		public function __toString() {
+			return $this->value;
+		}
+
+		public function html() { // So objects that get a html_template or html_safe_value can use it in the same way.
+			return $this->value;
+		}
+
+		public function jsonSerialize() { // If JSON encoded, fall back to being a simple string (typically going to the browser or API)
+			return $this->value;
+		}
+
 	}
 
 	function base64_encode_rfc4648($text) {

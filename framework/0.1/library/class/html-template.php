@@ -127,6 +127,23 @@
 
 					if (config::get('debug.level') > 0) {
 
+						if (SERVER == 'stage' && function_exists('is_literal') && !is_literal($template_html)) {
+							foreach (debug_backtrace() as $called_from) {
+								if (isset($called_from['file']) && !str_starts_with($called_from['file'], FRAMEWORK_ROOT)) {
+									break;
+								}
+							}
+							echo "\n";
+							echo '<div>' . "\n";
+							echo '	<h1>Error</h1>' . "\n";
+							echo '	<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>' . "\n";
+							echo '	<p>The following HTML has been tainted.</p>' . "\n";
+							echo '	<hr />' . "\n";
+							echo '	<p><pre>' . "\n\n" . html($template_html) . "\n\n" . '</pre></p>' . "\n";
+							echo '</div>' . "\n";
+							exit();
+						}
+
 							// Your HTML should be valid XML,
 							// as it ensures strict/valid nesting,
 							// attributes are quoted (important!),
@@ -279,7 +296,7 @@
 					}
 				}
 
-				return new html_template_immutable($html, 'createdByHtmlTemplateClass');
+				return new html_safe_value($html);
 
 			}
 
@@ -290,35 +307,6 @@
 			public function _debug_dump() {
 				return 'html_template("' . implode('?', $this->template_html) . '"' . ($this->parameters ? ', ' . debug_dump($this->parameters) : '') . ')';
 			}
-
-	}
-
-	class html_template_immutable implements JsonSerializable {
-
-		private $value = NULL;
-
-		public function __construct($value, $source) {
-			$this->value = $value;
-			if ($source !== 'createdByHtmlTemplateClass') {
-				exit_with_error('Do not create a "html_template_immutable" object directly, use a "html_template" helper.');
-			}
-		}
-
-		public function _debug_dump() {
-			return 'html_template_immutable("' . $this->value . '")';
-		}
-
-		public function __toString() {
-			return $this->value;
-		}
-
-		public function html() { // So objects that get a html_template or html_template_immutable can use it in the same way.
-			return $this->value;
-		}
-
-		public function jsonSerialize() { // If JSON encoded, fall back to being a simple string (typically going to the browser or API)
-			return $this->value;
-		}
 
 	}
 

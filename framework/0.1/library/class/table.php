@@ -1277,7 +1277,7 @@
 		}
 
 		public function cell_add($content = '', $config = [], $b = []) {
-			if ($content instanceof html_template || $content instanceof html_template_immutable) {
+			if ($content instanceof html_template || $content instanceof html_safe_value) {
 				$this->_cell_add_raw(NULL, $content, $config, $b);
 			} else if ($content instanceof timestamp) {
 				$this->_cell_add_raw(NULL, $content->html($config['timestamp_format'], ($config['timestamp_null'] ?? '-')), $config, $b); // 'timestamp_format' is required, to make this easy to in projects.
