@@ -250,7 +250,11 @@
 			}
 
 			protected function _value_string($value) {
-				return str_pad(intval($value['Y']), 4, '0', STR_PAD_LEFT) . '-' . str_pad(intval($value['M']), 2, '0', STR_PAD_LEFT) . '-' . str_pad(intval($this->input_day ? $value['D'] : 1), 2, '0', STR_PAD_LEFT);
+				if ($value !== NULL) {
+					return str_pad(intval($value['Y']), 4, '0', STR_PAD_LEFT) . '-' . str_pad(intval($value['M']), 2, '0', STR_PAD_LEFT) . '-' . str_pad(intval($this->input_day ? $value['D'] : 1), 2, '0', STR_PAD_LEFT);
+				} else {
+					return NULL;
+				}
 			}
 
 			protected function _value_parse($value, $month = NULL, $year = NULL) {
