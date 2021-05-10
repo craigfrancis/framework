@@ -968,7 +968,7 @@
 			// Charset
 
 				$collation = config::get('db.collation');
-				if (($pos = strpos($collation, '_')) !== false) {
+				if (($pos = strpos(strval($collation), '_')) !== false) {
 					$charset = substr($collation, 0, $pos);
 				} else {
 					$charset = NULL;

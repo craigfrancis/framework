@@ -429,7 +429,7 @@
 			}
 
 			public function html_extra() {
-				$extra_html = $this->config['extra_html'];
+				$extra_html = strval($this->config['extra_html']);
 				$extra_html = str_replace('[PAGE_NUMBER]', html($this->page_number_get()), $extra_html);
 				$extra_html = str_replace('[PAGE_COUNT]', html($this->page_count_get()), $extra_html);
 				$extra_html = str_replace('[ITEM_COUNT]', html($this->item_count_get()), $extra_html);

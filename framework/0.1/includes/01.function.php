@@ -88,7 +88,7 @@
 
 	function csrf_token_change($token = '') {
 
-		$token = trim($token);
+		$token = trim(strval($token));
 
 		if ($token == '') {
 			$token = random_key(15);
