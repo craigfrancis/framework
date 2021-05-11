@@ -526,7 +526,7 @@
 
 							if ($prep_result !== false && $job->halt_maintenance_run() === false) {
 
-								$job_output_html .= trim($job->run());
+								$job_output_html .= trim(strval($job->run()));
 
 							}
 

@@ -1631,7 +1631,7 @@
 		if ($config['path']) {
 
 			if ($config['xsend'] === NULL) {
-				$x_send_path = config::get('output.xsend_path'); // Should match XSendFilePath in Apache config
+				$x_send_path = strval(config::get('output.xsend_path')); // Should match XSendFilePath in Apache config
 				if (strlen($x_send_path) > strlen(ROOT) && str_starts_with($config['path'], $x_send_path)) { // Try to be as specific as possible
 					$config['xsend'] = true;
 				}
