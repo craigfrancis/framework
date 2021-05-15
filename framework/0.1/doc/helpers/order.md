@@ -44,7 +44,7 @@ Edit basket with 'quantity' select or input fields
 
 			$order->items_update();
 
-			if (strtolower(trim(request('button'))) == 'update totals') {
+			if (strtolower(trim(strval(request('button')))) == 'update totals') {
 				redirect(url('/basket/'));
 			} else {
 				redirect(url('/basket/checkout/'));
