@@ -125,7 +125,7 @@
 				// 'sync-xhr'                        => [], // Risky
 
 				// 'ambient-light-sensor'            => [], // SensorExtraClasses
-				// 'conversion-measurement'          => [], // ConversionMeasurement
+				// 'attribution-reporting'           => [], // ConversionMeasurement, was named 'conversion-measurement' - https://github.com/chromium/chromium/commit/7a48dde0857eccf6f61397a962c8532869b861f2
 				// 'display-capture'                 => [], // GetCurrentBrowsingContextMedia
 				// 'execution-while-not-rendered'    => [], // FreezeFramesOnVisibility
 				// 'execution-while-out-of-viewport' => [], // FreezeFramesOnVisibility
