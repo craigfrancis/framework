@@ -729,6 +729,10 @@
 				return $items;
 			}
 
+			public function item_cache_reset() {
+				$this->order_items = NULL;
+			}
+
 			public function items_get() {
 
 				//--------------------------------------------------
