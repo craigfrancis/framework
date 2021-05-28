@@ -1005,11 +1005,16 @@
 					$this->_email_customer('order-payment-received');
 
 				//--------------------------------------------------
+				// Payment received
+
+					if (!isset($values['payment_received'])) {
+						$values['payment_received'] = new timestamp();
+					}
+
+				//--------------------------------------------------
 				// Store
 
-					$this->values_set(array_merge($values, array(
-							'payment_received' => new timestamp(),
-						)));
+					$this->values_set($values);
 
 			}
 
@@ -1028,11 +1033,16 @@
 					$this->_email_customer('order-payment-settled');
 
 				//--------------------------------------------------
+				// Payment settled
+
+					if (!isset($values['payment_settled'])) {
+						$values['payment_settled'] = new timestamp();
+					}
+
+				//--------------------------------------------------
 				// Store
 
-					$this->values_set(array_merge($values, array(
-							'payment_settled' => new timestamp(),
-						)));
+					$this->values_set($values);
 
 			}
 
@@ -1051,11 +1061,16 @@
 					$this->_email_customer('order-processed');
 
 				//--------------------------------------------------
+				// Processed
+
+					if (!isset($values['processed'])) {
+						$values['processed'] = new timestamp();
+					}
+
+				//--------------------------------------------------
 				// Store
 
-					$this->values_set(array_merge($values, array(
-							'processed' => new timestamp(),
-						)));
+					$this->values_set($values);
 
 			}
 
