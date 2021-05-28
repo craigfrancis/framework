@@ -205,7 +205,7 @@
 						return $return;
 					}
 
-					if (preg_match('/^([0-9]{1,2}):([0-9]{1,2})(:([0-9]{1,2}))?$/', $value, $matches)) {
+					if (preg_match('/^([0-9]{1,2}):([0-9]{1,2})(:([0-9]{1,2}))?$/', strval($value), $matches)) {
 						return array(
 								'H' => intval($matches[1]),
 								'I' => intval($matches[2]),

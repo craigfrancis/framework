@@ -149,7 +149,7 @@
 
 			$browser_tracker = cookie::get('b');
 
-			if (strlen($browser_tracker) != 40) {
+			if (strlen(strval($browser_tracker)) != 40) {
 				$browser_tracker = random_key(40);
 			}
 
