@@ -91,6 +91,7 @@
 				'ch-dpr'                             => [],
 				'ch-ect'                             => [],
 				'ch-lang'                            => [],
+				'ch-prefers-color-scheme'            => [],
 				'ch-rtt'                             => [],
 				'ch-ua'                              => [],
 				'ch-ua-arch'                         => [],
