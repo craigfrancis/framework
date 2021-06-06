@@ -1863,7 +1863,7 @@
 				if ($value !== NULL) {
 					if (is_array($value)) {
 						foreach ($value as $k => $v) {
-							if (str_starts_with($v, '/')) {
+							if (str_starts_with(strval($v), '/')) {
 								$value[$k] = $origin . $v;
 							}
 						}
