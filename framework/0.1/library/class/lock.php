@@ -117,6 +117,40 @@
 
 			}
 
+			public function debug_info_get() {
+
+				$return = [
+						'type'        => $this->lock_type,
+						'ref'         => $this->lock_ref,
+						'path'        => $this->lock_path,
+						'exists'      => file_exists($this->lock_path),
+						'data_active' => $this->data_get(NULL, 'active'),
+						'data_file'   => $this->data_get(NULL, 'file'),
+						'time_out'    => $this->time_out,
+						'fstat'       => NULL,
+					];
+
+				if ($this->lock_fp) {
+					$info = fstat($this->lock_fp);
+					$return['fstat'] = [
+							'uid' => $info['uid'],
+							'gid' => $info['gid'],
+							'size' => $info['size'],
+							'mode' => $info['mode'],
+							'nlink' => $info['nlink'],
+							'mtime' => $info['mtime'],
+							'ctime' => $info['ctime'],
+						];
+				}
+
+				return $return;
+
+			}
+
+			public function _debug_dump() {
+				return $this->debug_info_get();
+			}
+
 		//--------------------------------------------------
 		// Process
 
