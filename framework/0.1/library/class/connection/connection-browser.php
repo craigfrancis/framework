@@ -11,6 +11,7 @@
 
 			protected $connection = NULL;
 			protected $debug = false;
+			protected $redirects_follow = true;
 			protected $user_agent = NULL;
 			protected $encoding_accept_type = NULL;
 			protected $encoding_accept_decode = false;
@@ -57,6 +58,10 @@
 
 			public function timeout_set($seconds) {
 				$this->connection->timeout_set($seconds);
+			}
+
+			public function redirects_follow_set($redirects_follow) {
+				$this->redirects_follow = $redirects_follow;
 			}
 
 			public function user_agent_get() {
@@ -874,7 +879,7 @@
 							$method = 'GET';
 							$data = '';
 
-					} while (($url = $this->connection->response_header_get('Location')) !== NULL);
+					} while (($this->redirects_follow) && (($url = $this->connection->response_header_get('Location')) !== NULL));
 
 				//--------------------------------------------------
 				// Referrer
