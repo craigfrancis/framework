@@ -343,13 +343,13 @@
 							} else {
 								$value = [
 										'label' => $value[0], // The form class will use an array just incase there are two fields with the same label
-										'text' => $value[1],
+										'text' => strval($value[1]),
 									];
 							}
 						} else {
 							$value = [
 									'label' => $label,
-									'text' => $value,
+									'text' => strval($value),
 								];
 						}
 
@@ -800,7 +800,7 @@
 
 					$content_text = str_replace('[SUBJECT]', $this->subject_text, $content_text);
 					$content_text = str_replace('[BODY]', $this->body_text, $content_text);
-					$content_text = str_replace('[URL]', $this->template_url, $content_text);
+					$content_text = str_replace('[URL]', strval($this->template_url), $content_text);
 
 					foreach ($this->template_values_text as $name => $value) {
 						$content_text = str_replace('[' . $name . ']', $value, $content_text);
@@ -896,7 +896,7 @@
 				// Variables
 
 					$content_html = str_replace('[SUBJECT]', html($subject), $content_html);
-					$content_html = str_replace('[URL]', html($this->template_url), $content_html);
+					$content_html = str_replace('[URL]', html(strval($this->template_url)), $content_html);
 
 					foreach ($this->template_values_html as $name => $html) {
 						$content_html = str_replace('[' . $name . ']', $html, $content_html);
