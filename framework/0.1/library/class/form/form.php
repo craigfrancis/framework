@@ -449,11 +449,14 @@
 
 				if ($this->form_submitted) {
 
-					$config = array_merge(array(
+					$config = array_merge([
 							'content_values' => [],
-							'db_field' => NULL,
-							'db_insert' => false,
-						), $config);
+							'db_field'       => NULL,
+							'db_insert'      => false,
+							'time_min'       => 5,
+							'time_max'       => (60*60*3),
+							'force_check'    => false,
+						], $config);
 
 					$content_values = $config['content_values'];
 					foreach ($content_values as $key => $value) {
@@ -470,12 +473,12 @@
 					$timestamp_original = request('o');
 					if (preg_match('/^[0-9]{10,}$/', $timestamp_original)) {
 						$timestamp_diff = (time() - $timestamp_original);
-						$timestamp_spam = ($timestamp_diff < 5 || $timestamp_diff > (60*60*3));
+						$timestamp_spam = ($timestamp_diff < $config['time_min'] || $timestamp_diff > $config['time_max']);
 					} else {
 						$timestamp_spam = true; // Missing or invalid value
 					}
 
-					if ($content_spam || $timestamp_spam) {
+					if ($content_spam || $timestamp_spam || $config['force_check']) {
 
 						list($field_human, $is_human) = $this->human_check_field_get($label, $error);
 
