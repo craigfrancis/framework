@@ -37,6 +37,7 @@
 			return 'data:' . $this->value['mime'] . ';base64,' . base64_encode($this->value['data']);
 		}
 
+		#[ReturnTypeWillChange]
 		public function jsonSerialize() { // If JSON encoded, fall back to being a simple string (typically going to the browser or API)
 			return $this->__toString();
 		}

@@ -42,6 +42,7 @@
 				return $this->null; // Can be false, true, or the value that caused it to be NULL (e.g. 0000-00-00)
 			}
 
+			#[ReturnTypeWillChange]
 			public function format($format, $null_value = NULL) {
 				if ($this->null) {
 					return $null_value;
@@ -86,6 +87,7 @@
 				return $clone;
 			}
 
+			#[ReturnTypeWillChange]
 			public function modify($modify, $show_error = true) {
 				// if (SERVER == 'stage' && $show_error) {
 				// 	$called_from = debug_backtrace();
@@ -117,6 +119,7 @@
 		//--------------------------------------------------
 		// Create from format
 
+			#[ReturnTypeWillChange]
 			static function createFromFormat($format, $time, $timezone = NULL) {
 				if ($timezone === NULL) {
 					$timezone = config::get('output.timezone');

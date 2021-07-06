@@ -101,7 +101,7 @@
 					$post_values = $_POST;
 					foreach (['password', 'pass', 'csrf'] as $remove) {
 						if (isset($post_values[$remove])) {
-							$post_values[$remove] = '-';
+							$post_values[$remove] = '[REMOVED]';
 						}
 					}
 					$email_values['Post'] = json_encode($post_values, JSON_PRETTY_PRINT);
