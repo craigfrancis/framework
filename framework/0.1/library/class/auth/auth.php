@@ -1829,7 +1829,10 @@
 
 // TODO [secrets-keys]
 					if (!encryption::key_exists(auth::$secret_key)) {
-						exit_with_error('The encryption key "' . auth::$secret_key . '" does not exist.');
+						encryption::key_symmetric_create(auth::$secret_key);
+						if (!encryption::key_exists(auth::$secret_key)) {
+							exit_with_error('The encryption key "' . auth::$secret_key . '" does not exist.');
+						}
 					}
 
 					try {
