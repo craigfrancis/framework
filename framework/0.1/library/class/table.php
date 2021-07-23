@@ -290,6 +290,9 @@
 					}
 					return $return_sql;
 				} else if (preg_match('/^([^,]+)(,.*)$/', $order_by_sql, $matches)) {
+					if (function_exists('is_literal')) {
+						exit_with_error('Cannot work with is_literal() and a string for ORDER BY, use an array instead.');
+					}
 					return $matches[1] . ' ' . $this->sort_order_get() . $matches[2];
 				} else {
 					return $order_by_sql . ' ' . $this->sort_order_get();

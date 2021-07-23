@@ -62,7 +62,7 @@
 
 						ksort($url_query); // Must be in ascending order
 
-						$url_query = http_build_query($url_query, null, '&', PHP_QUERY_RFC3986); // Must use '%20' for spaces, not '+'
+						$url_query = http_build_query($url_query, '', '&', PHP_QUERY_RFC3986); // Must use '%20' for spaces, not '+'
 
 					//--------------------------------------------------
 					// Final
