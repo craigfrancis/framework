@@ -996,7 +996,12 @@
 
 		private function _error($error, $sql = NULL, $parameters = NULL) {
 
+			$error_code = NULL;
+
 			if ($error instanceof exception) {
+				if ($error instanceof mysqli_sql_exception) {
+					$error_code = $error->getCode();
+				}
 				$error = $error->getCode() . ': ' . $error->getMessage();
 			}
 
@@ -1017,6 +1022,10 @@
 
 				config::set('db.error_thrown', true);
 
+				if ($error_code == 1062) {
+					throw new db_duplicate_entry_exception('An error has occurred with the database.', $error . $hidden_info);
+				}
+
 				throw new error_exception('An error has occurred with the database.', $error . $hidden_info);
 
 			} else if (REQUEST_MODE == 'cli') {
@@ -1036,6 +1045,9 @@
 
 		}
 
+	}
+
+	class db_duplicate_entry_exception extends error_exception {
 	}
 
 ?>

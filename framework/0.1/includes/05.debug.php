@@ -375,30 +375,6 @@
 	}
 
 //--------------------------------------------------
-// Error exception
-
-	class error_exception extends exception {
-
-		protected $hidden_info;
-		protected $backtrace;
-
-		public function __construct($message, $hidden_info = '', $code = 0) {
-			$this->message = $message;
-			$this->hidden_info = $hidden_info;
-			$this->backtrace = debug_backtrace();
-		}
-
-		public function getHiddenInfo() {
-			return $this->hidden_info;
-		}
-
-		public function getBacktrace() {
-			return $this->backtrace;
-		}
-
-	}
-
-//--------------------------------------------------
 // Error emails
 
 	function send_error_emails() {
