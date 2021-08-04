@@ -95,6 +95,7 @@
 				'ch-rtt'                             => [],
 				'ch-ua'                              => [],
 				'ch-ua-arch'                         => [],
+				'ch-ua-bitness'                      => [],
 				'ch-ua-full-version'                 => [],
 				'ch-ua-mobile'                       => [],
 				'ch-ua-model'                        => [],
@@ -115,6 +116,7 @@
 				'magnetometer'                       => [],
 				'microphone'                         => [],
 				'midi'                               => [],
+				'otp-credentials'                    => ['self'],
 				'payment'                            => [],
 				'publickey-credentials-get'          => [],
 				'screen-wake-lock'                   => [],
@@ -134,7 +136,6 @@
 				// 'frobulate'                       => [], // OriginTrialsSampleAPI
 				// 'gamepad'                         => [], // RestrictGamepadAccess
 				// 'idle-detection'                  => [], // IdleDetection
-				// 'otp-credentials'                 => [], // WebOTPAssertionFeaturePolicy
 				// 'storage-access-api'              => [], // StorageAccessAPI
 				// 'trust-token-redemption'          => [], // TrustTokens
 				// 'vertical-scroll'                 => [], // ExperimentalPolicies
