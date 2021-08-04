@@ -230,7 +230,7 @@
 
 								foreach ($a_key_field_info as $a_name => $a_value) {
 
-									if ($a_name == 'index_comment' || $a_name == 'ignored') {
+									if (in_array(strtolower($a_name), ['index_comment', 'ignored'])) {
 										continue; // Ignore
 									}
 
