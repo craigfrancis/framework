@@ -178,14 +178,14 @@
 				$dest = $this->file_path_get($id, $ext);
 				$this->_writable_check(dirname($dest));
 				copy($path, $dest);
-				chmod($dest, octdec(config::get('file.default_permission', 666)));
+				@chmod($dest, octdec(config::get('file.default_permission', 666)));
 			}
 
 			public function file_save_contents($id, $contents, $ext = NULL) {
 				$dest = $this->file_path_get($id, $ext);
 				$this->_writable_check(dirname($dest));
 				file_put_contents($dest, $contents);
-				chmod($dest, octdec(config::get('file.default_permission', 666)));
+				@chmod($dest, octdec(config::get('file.default_permission', 666)));
 			}
 
 			public function file_save_image($id, $path, $ext = NULL) { // Use image_save() to have different image versions.
