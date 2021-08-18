@@ -115,7 +115,11 @@
 
 			}
 
-			session::send_cookie();
+			if (!headers_sent()) {
+
+				session::send_cookie(); // Not necessary, but cleanup the now useless cookie
+
+			}
 
 		}
 
