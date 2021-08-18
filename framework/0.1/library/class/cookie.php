@@ -135,7 +135,7 @@
 
 				if ($native) {
 
-					return setcookie($variable_full, $value, $config['expires'], $config['path'], $config['domain'], $config['secure'], $config['http_only']);
+					return setcookie($variable_full, strval($value), $config['expires'], $config['path'], $config['domain'], $config['secure'], $config['http_only']);
 
 				} else {
 
