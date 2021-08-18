@@ -222,7 +222,7 @@
 
 							session::destroy();
 
-							exit_with_error('Your session is not valid for this website', '"' . $session_key . '" != "' . $config_key . '" / ' . count($_SESSION));
+							exit_with_error('Your session is not valid for this website', '"' . $session_key . '", ' . count($_SESSION));
 
 						}
 
