@@ -548,7 +548,7 @@
 
 					$return = copy($path_src, $path_dst); // Don't unlink/rename, as the same file may have been uploaded multiple times.
 
-					chmod($path_dst, octdec(config::get('file.default_permission', 666)));
+					@chmod($path_dst, octdec(config::get('file.default_permission', 666)));
 
 					return $return;
 
