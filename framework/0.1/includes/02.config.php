@@ -115,6 +115,7 @@
 				'gyroscope'                          => [],
 				'hid'                                => [],
 				'interest-cohort'                    => [], // Technically not enabled (InterestCohortFeaturePolicy)
+				'idle-detection'                     => [],
 				'magnetometer'                       => [],
 				'microphone'                         => [],
 				'midi'                               => [],
