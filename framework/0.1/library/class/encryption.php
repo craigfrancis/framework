@@ -65,7 +65,7 @@
 
 			public static function upgradable($thing) {
 
-				list($type) = explode('.', $thing);
+				list($type) = explode('.', strval($thing));
 
 				if ($type === 'KS2' || $type === 'ES2') {
 
@@ -157,7 +157,7 @@
 
 			public static function key_type_get($key) {
 
-				list($key_type, $key_id, $key_value) = array_pad(explode('.', $key, 3), 3, NULL);
+				list($key_type, $key_id, $key_value) = array_pad(explode('.', strval($key), 3), 3, NULL);
 
 				if (in_array($key_type, ['KS1', 'KS2', 'KA1P', 'KA1S', 'KA2P', 'KA2S']) && $key_value != '') {
 					return $key_type;
@@ -435,10 +435,10 @@
 
 			public static function decode($input, $key1, $key2 = NULL) {
 
-				list($input_type, $input_keys, $input_1, $input_2, $input_3, $input_4) = array_pad(explode('.', $input), 6, NULL);
+				list($input_type, $input_keys, $input_1, $input_2, $input_3, $input_4) = array_pad(explode('.', strval($input)), 6, NULL);
 
 				if ($input_type === NULL || $input_keys === NULL) {
-					throw new error_exception('The encrypted data does not include the necessary metadata.', 'Type = ' . debug_dump($input_type) . "\n" . 'Keys = ' . debug_dump($input_keys) . "\n" . 'Input = ' . strlen($input));
+					throw new error_exception('The encrypted data does not include the necessary metadata.', 'Type = ' . debug_dump($input_type) . "\n" . 'Keys = ' . debug_dump($input_keys) . "\n" . 'Input = ' . strlen(strval($input)));
 				}
 
 				list($key1_id, $key2_id) = array_pad(explode('-', $input_keys, 2), 2, -1);
@@ -668,7 +668,7 @@
 				if ($result !== true) {
 					throw new error_exception('Could not decrypt the AES keys with the secret key', openssl_error_string());
 				} else {
-					list($data_key, $hmac_key, $iv) = array_pad(explode('.', $data_keys), 3, NULL);
+					list($data_key, $hmac_key, $iv) = array_pad(explode('.', strval($data_keys)), 3, NULL);
 					$data_key = base64_decode_rfc4648($data_key);
 					$hmac_key = base64_decode_rfc4648($hmac_key);
 					$iv = base64_decode_rfc4648($iv);
@@ -782,7 +782,7 @@
 				if ($result !== true) {
 					throw new error_exception('Could not decrypt the HMAC with the senders public key', openssl_error_string());
 				} else {
-					list($hmac_value, $iv) = array_pad(explode('.', $data_info), 2, NULL);
+					list($hmac_value, $iv) = array_pad(explode('.', strval($data_info)), 2, NULL);
 					$hmac_value = base64_decode_rfc4648($hmac_value);
 					$iv = base64_decode_rfc4648($iv);
 				}
@@ -792,7 +792,7 @@
 				if ($result !== true) {
 					throw new error_exception('Could not decrypt the AES keys with the recipients secret key', openssl_error_string());
 				} else {
-					list($data_key, $hmac_key) = array_pad(explode('.', $data_info), 2, NULL);
+					list($data_key, $hmac_key) = array_pad(explode('.', strval($data_info)), 2, NULL);
 					$data_key = base64_decode_rfc4648($data_key);
 					$hmac_key = base64_decode_rfc4648($hmac_key);
 				}
@@ -919,7 +919,7 @@
 
 				}
 
-				list($key_type, $key_extracted_id, $key_value) = array_pad(explode('.', $key_encoded, 3), 3, NULL);
+				list($key_type, $key_extracted_id, $key_value) = array_pad(explode('.', strval($key_encoded), 3), 3, NULL);
 
 				if ($key_id == 0) { // During asymmetric encoding, the provided public key specifies which ID to use.
 					$key_id = $key_extracted_id;
