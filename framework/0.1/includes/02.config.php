@@ -101,7 +101,7 @@
 				'ch-ua-model'                        => [],
 				'ch-ua-platform'                     => [],
 				'ch-ua-platform-version'             => [],
-				'ch-ua-reduced'                      => [],
+				// 'ch-ua-reduced'                   => [], // Added in Chrome 94, origin-trial in 95?
 				'ch-viewport-width'                  => [],
 				'ch-width'                           => [],
 				'clipboard-read'                     => [],
