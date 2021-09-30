@@ -662,9 +662,6 @@
 
 			$records_sql = '';
 			foreach ($records as $values) {
-				if ($records_sql !== '') {
-					$records_sql .= '), (';
-				}
 				$values_sql = '';
 				foreach ($fields as $field) {
 					if ($values_sql !== '') {
@@ -677,9 +674,11 @@
 						$parameters[] = $values[$field];
 					}
 				}
+				if ($records_sql !== '') {
+					$records_sql .= '), (';
+				}
 				$records_sql .= $values_sql;
 			}
-
 			if ($records_sql !== '') {
 
 				$sql = 'INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $records_sql . ')';
