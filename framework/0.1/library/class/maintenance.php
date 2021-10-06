@@ -260,17 +260,19 @@
 				//--------------------------------------------------
 				// Mark as done
 
+					$end_timestamp = new timestamp();
+
 					$sql = 'UPDATE
-									' . DB_PREFIX . 'system_maintenance
-								SET
-									run_end = ?
-								WHERE
-									run_end = "0000-00-00 00:00:00"
-								LIMIT
-									1';
+								' . DB_PREFIX . 'system_maintenance
+							SET
+								run_end = ?
+							WHERE
+								run_end = "0000-00-00 00:00:00"
+							LIMIT
+								1';
 
 					$parameters = [];
-					$parameters[] = $now;
+					$parameters[] = $end_timestamp;
 
 					$db->query($sql, $parameters);
 
