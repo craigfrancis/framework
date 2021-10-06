@@ -350,7 +350,7 @@
 						if (is_array($value)) {
 							$this->autofocus = (count(array_filter($value)) == 0); // Where $value may be [0,0,0] on a date field (when the form is submitted).
 						} else {
-							$this->autofocus = ($value == '');
+							$this->autofocus = (strval($value) == '');
 						}
 					}
 				}

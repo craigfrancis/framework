@@ -90,7 +90,7 @@
 
 			protected function _value_print_get() {
 
-				$value = parent::_value_print_get();
+				$value = parent::_value_print_get(); // form_field_number will try to use parse_number() to return an int or float.
 
 				if ($this->trim_decimal && fmod($value, 1) == 0) {
 					$decimal_places = 0;

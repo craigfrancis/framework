@@ -76,12 +76,13 @@
 
 			protected function _value_print_get() {
 				if ($this->value === NULL) {
+					$true_value = ($this->text_value_true !== NULL ? $this->text_value_true : true);
 					if ($this->db_field_name !== NULL) {
 						$db_value = $this->db_field_value_get();
 					} else {
-						$db_value = '';
+						$db_value = NULL;
 					}
-					return (($db_value) == ($this->text_value_true !== NULL ? $this->text_value_true : true));
+					return ($true_value == $db_value);
 				}
 				return $this->value;
 			}

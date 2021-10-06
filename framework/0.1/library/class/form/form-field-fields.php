@@ -250,7 +250,7 @@
 					if ($this->db_field_name !== NULL) {
 						$db_value = $this->db_field_value_get();
 					} else {
-						$db_value = '';
+						$db_value = NULL;
 					}
 					return $this->_value_parse($db_value);
 				}
@@ -273,7 +273,7 @@
 				if (is_array($value)) {
 					return $value;
 				} else {
-					return json_decode($value, true);
+					return json_decode($value, true); // Array
 				}
 			}
 

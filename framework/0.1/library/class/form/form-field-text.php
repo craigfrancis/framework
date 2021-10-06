@@ -155,9 +155,9 @@
 			protected function _value_print_get() {
 				if ($this->value === NULL) {
 					if ($this->db_field_name !== NULL) {
-						$db_value = strval($this->db_field_value_get()); // Cannot be NULL, otherwise value_hidden_get() will return NULL, and then a field with print_hidden_set(true) will not get a hidden field.
+						$db_value = $this->db_field_value_get();
 					} else {
-						$db_value = '';
+						$db_value = NULL;
 					}
 					return $db_value;
 				}
@@ -166,7 +166,7 @@
 
 			public function value_hidden_get() {
 				if ($this->print_hidden) {
-					return $this->_value_print_get();
+					return strval($this->_value_print_get()); // Cannot be NULL, as a field with print_hidden_set(true) will not get a hidden field.
 				} else {
 					return NULL;
 				}
@@ -228,7 +228,7 @@
 		// HTML
 
 			public function html_input() {
-				$html = $this->_html_input(array('value' => $this->_value_print_get()));
+				$html = $this->_html_input(['value' => strval($this->_value_print_get())]);
 				if ($this->input_list_id !== NULL) {
 					$html .= '<datalist id="' . html($this->input_list_id) . '">';
 					foreach ($this->input_list_options as $id => $value) {

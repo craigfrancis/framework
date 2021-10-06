@@ -33,7 +33,7 @@
 			public function _input_by_key_attributes($key) {
 
 				if ($this->value_print_cache === NULL) {
-					$this->value_print_cache = $this->_value_print_get();
+					$this->value_print_cache = $this->_value_print_get(); // form_field_select always returns an array (not NULL)
 				}
 
 				$attributes = ($this->options_attributes[$key] ?? []); // Takes least precedence

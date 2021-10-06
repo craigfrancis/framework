@@ -159,7 +159,8 @@
 
 			protected function _value_print_get() {
 
-				$value = parent::_value_print_get(); // Value from $this->value, saved_value, or database
+				$value = parent::_value_print_get(); // Value from $this->value (request, saved_value, or hidden_value); or database.
+
 				$value_clean = parse_number($value);
 
 				if ($value_clean !== NULL) {
