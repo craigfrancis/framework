@@ -270,7 +270,8 @@
 
 					$sql = 'SELECT
 								m.' . $db->escape_field($this->db_main_fields['id']) . ' AS id,
-								m.' . $db->escape_field($this->db_main_fields['identification']) . ' AS identification
+								m.' . $db->escape_field($this->db_main_fields['identification']) . ' AS identification,
+								m.' . $db->escape_field($db_main_field_email) . ' AS email
 							FROM
 								' . $db->escape_table($this->db_main_table) . ' AS m
 							WHERE
@@ -285,6 +286,7 @@
 						$resets[] = [
 								'user_id' => $row['id'],
 								'identification' => $row['identification'],
+								'email' => $row['email'], // Available irrespective of it being a email or username login.
 							];
 
 					}
@@ -297,6 +299,7 @@
 						$resets[-1] = [
 								'user_id' => 0,
 								'identification' => NULL,
+								'email' => NULL,
 							];
 
 					}
@@ -342,7 +345,13 @@
 				//--------------------------------------------------
 				// Return
 
-					return [$this->details['email'], $resets];
+						// Do not return $this->details['email'],
+						// because that's what the user wrote,
+						// and isn't necessarily what's in the
+						// database (e.g. case-insensitive table,
+						// homographs, etc)
+
+					return [$resets]; // Use an array for constancy, and incase additional details should be returned.
 
 			}
 
