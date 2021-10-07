@@ -108,11 +108,24 @@
 
 					foreach ($this->input_order as $field) {
 						if (isset($this->format_html[$field])) {
-							$format_html[] = '<label for="' . html($this->id) . '_' . html($field) . '">' . $this->format_html[$field] . '</label>';
+							$label_html = $this->format_html[$field];
+						} else if (!is_array($this->input_config[$field]['options'])) { // Not using a <select> field.
+							$label_html = html($this->input_config[$field]['label']);
+						} else {
+							$label_html = NULL;
+						}
+						if ($label_html) {
+							$format_html[] = '<label for="' . html($this->id) . '_' . html($field) . '">' . $label_html . '</label>';
 						}
 					}
 
-					return implode($this->format_html['separator'], $format_html);
+					$format_html = implode($this->format_html['separator'], $format_html);
+
+					if (isset($this->format_html['suffix'])) {
+						$format_html .= $this->format_html['suffix'];
+					}
+
+					return $format_html;
 
 				}
 
@@ -347,7 +360,16 @@
 				parent::_post_validation();
 
 				if ($this->invalid_error_set == false) {
-					exit('<p>You need to call "invalid_error_set", on the field "' . $this->label_html . '"</p>');
+					$options_exist = false;
+					foreach ($this->fields as $field) {
+						if (is_array($this->input_config[$field]['options'])) {
+							$options_exist = true;
+							break;
+						}
+					}
+					if ($options_exist) {
+						exit('<p>You need to call "invalid_error_set", on the field "' . $this->label_html . '"</p>');
+					}
 				}
 
 			}
@@ -449,7 +471,7 @@
 					$attributes['autocomplete'] = 'bday-' . $field_name[$field];
 				}
 
-				if (isset($input_config['options'])) {
+				if (is_array($input_config['options'])) {
 
 					$html = html_tag('select', array_merge($this->_input_attributes(), $attributes));
 
