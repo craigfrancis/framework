@@ -300,7 +300,7 @@
 				if (is_array($value)) {
 					return $value;
 				} else {
-					return json_decode($value, true); // Array
+					return json_decode(strval($value), true); // Array
 				}
 			}
 
