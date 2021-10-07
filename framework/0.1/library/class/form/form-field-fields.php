@@ -177,6 +177,20 @@
 
 			}
 
+			public function input_add_complete() { // Call after ->input_add(), after all of the input fields have been added (all need to be provided)
+
+				if ($this->value_provided === NULL) {
+					$this->value_provided = true;
+					foreach ($this->fields as $field) {
+						$value = (isset($this->value[$field]) ? $this->value[$field] : NULL);
+						if ($value === NULL || (is_array($this->input_config[$field]['options']) && $value == '')) {
+							$this->value_provided = false;
+						}
+					}
+				}
+
+			}
+
 			public function input_order_set($order) {
 				foreach ($order as $field) {
 					if (!in_array($field, $this->fields)) {
@@ -301,15 +315,7 @@
 
 				if ($this->form_submitted) {
 
-					if ($this->value_provided === NULL) {
-						$this->value_provided = true;
-						foreach ($this->fields as $field) {
-							$value = (isset($this->value[$field]) ? $this->value[$field] : NULL);
-							if ($value === NULL || (is_array($this->input_config[$field]['options']) && $value == '')) {
-								$this->value_provided = false;
-							}
-						}
-					}
+					$this->input_add_complete(); // Should be called manually, but historically value_provided used to be checked here.
 
 					if (!$this->value_provided) {
 						$this->form->_field_error_set_html($this->form_field_uid, $error_html);
@@ -498,7 +504,7 @@
 
 				} else {
 
-					$value = ($input_value === NULL ? NULL : $input_value[$field]);
+					$value = (isset($input_value[$field]) ? $input_value[$field] : NULL);
 
 					if ($input_config['pad_length'] > 0) {
 						if ($value !== NULL && $value !== '') {
