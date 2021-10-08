@@ -672,6 +672,7 @@ $start = microtime(true);
 
 						if ($context) {
 							$error_details[] = 'Self signed certificates can use the "connection.insecure_domains" config array.';
+							$error_details[] = $context;
 						}
 
 						$error_details = debug_dump($error_details);
