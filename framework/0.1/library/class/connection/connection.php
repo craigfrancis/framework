@@ -671,7 +671,7 @@ $start = microtime(true);
 						}
 
 						if ($context) {
-							$error_details[] = 'Self signed certificates can use the "connection.insecure_domains" config array.';
+							$error_details[] = 'Servers with Self-Signed or missing Intermediate certificates, can use the "connection.insecure_domains" config array.'; // Intermediate's can be downloaded via "Authority Information Access certificate extension" (AIA), which isn't always supported.
 							$error_details[] = $context;
 						}
 
