@@ -734,9 +734,9 @@ report_add('Deprecated: $api->return_xml() ... just call mime_set(), then exit w
 
 			}
 
-			protected function return_error($error) {
+			protected function return_error($error, $http_error_code = 400) {
 
-				http_response_code(500);
+				http_response_code($http_error_code); // 400 = Generic "Bad Request"
 
 				$this->return_json(['error' => $error]);
 
