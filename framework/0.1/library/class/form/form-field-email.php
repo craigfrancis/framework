@@ -5,6 +5,8 @@
 		//--------------------------------------------------
 		// Variables
 
+			protected $multiple = false;
+
 			protected $domain_check = true;
 			protected $domain_error_html = NULL;
 			protected $domain_error_skip_value = '';
@@ -36,6 +38,14 @@
 			public function check_domain_set($check_domain) {
 				report_add('Deprecated: The email field check_domain_set() is being re-named to domain_check_set()', 'notice');
 				$this->domain_check_set($check_domain);
+			}
+
+			public function multiple_set($multiple) {
+				$this->multiple = $multiple;
+			}
+
+			public function multiple_get() {
+				return $this->multiple;
 			}
 
 		//--------------------------------------------------
@@ -87,27 +97,58 @@
 
 				if ($this->form_submitted && $this->value != '') {
 
-					$valid = is_email($this->value, ($this->domain_check ? -1 : false)); // -1 to return the type of failure (-1 for format, -2 for domain check)
+					if ($this->multiple) {
 
-					if ($valid !== true) {
+						$emails = array_filter(array_map('trim', explode(',', $this->value)));
 
-						if ($this->domain_error_html && $valid === -2) {
+						$this->value = implode(',', $emails); // Cleanup any whitespace characters (browsers generally do this automatically).
 
-							$this->domain_error_skip_show = true;
+					} else {
 
-							if (!$this->domain_error_skip_html || $this->domain_error_skip_value != $this->value) {
-								$this->form->_field_error_set_html($this->form_field_uid, $this->domain_error_html);
+						$emails = [$this->value];
+
+					}
+
+					foreach ($emails as $email) {
+
+						$valid = is_email($email, ($this->domain_check ? -1 : false)); // -1 to return the type of failure (-1 for format, -2 for domain check)
+
+						if ($valid !== true) {
+
+							if ($this->domain_error_html && $valid === -2) {
+
+								$this->domain_error_skip_show = true;
+
+								if (!$this->domain_error_skip_html || $this->domain_error_skip_value != $email) {
+									$this->form->_field_error_set_html($this->form_field_uid, $this->domain_error_html);
+								}
+
+							} else {
+
+								$this->form->_field_error_set_html($this->form_field_uid, $this->format_error_html);
+
 							}
-
-						} else {
-
-							$this->form->_field_error_set_html($this->form_field_uid, $this->format_error_html);
 
 						}
 
 					}
 
 				}
+
+			}
+
+		//--------------------------------------------------
+		// Attributes
+
+			protected function _input_attributes() {
+
+				$attributes = parent::_input_attributes();
+
+				if ($this->multiple) {
+					$attributes['multiple'] = 'multiple';
+				}
+
+				return $attributes;
 
 			}
 
