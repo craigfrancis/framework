@@ -336,11 +336,11 @@
 					if ($this->config['mode'] == 'month') {
 
 						$back_link_timestamp = $this->focus_start->clone('-1 month');
-						$back_link_url = $this->base_url->get(array('month' => $back_link_timestamp->format('n'), 'year' => $back_link_timestamp->format('o')));
+						$back_link_url = $this->base_url->get(array('month' => $back_link_timestamp->format('n'), 'year' => $back_link_timestamp->format('Y')));
 						$back_link_text = $back_link_timestamp->format('F');
 
 						$next_link_timestamp = $this->focus_start->clone('+1 month');
-						$next_link_url = $this->base_url->get(array('month' => $next_link_timestamp->format('n'), 'year' => $next_link_timestamp->format('o')));
+						$next_link_url = $this->base_url->get(array('month' => $next_link_timestamp->format('n'), 'year' => $next_link_timestamp->format('Y')));
 						$next_link_text = $next_link_timestamp->format('F');
 
 					} else {
