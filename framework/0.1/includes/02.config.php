@@ -115,6 +115,7 @@
 				'hid'                                => [],
 				'interest-cohort'                    => [], // Technically not enabled (InterestCohortFeaturePolicy)
 				'idle-detection'                     => [],
+				'keyboard-map'                       => [],
 				'magnetometer'                       => [],
 				'microphone'                         => [],
 				'midi'                               => [],
