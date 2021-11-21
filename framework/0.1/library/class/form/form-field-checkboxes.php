@@ -10,6 +10,7 @@
 			protected $options_info_id = [];
 			protected $options_info_html = NULL;
 			protected $options_disabled = NULL;
+			protected $options_suffix_html = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -43,6 +44,14 @@
 
 			public function options_info_set_html($options_info_html) {
 				$this->options_info_html = $options_info_html;
+			}
+
+			public function options_suffix_set($options_suffix) {
+				$this->options_suffix_set_html(array_map('to_safe_html', $options_suffix));
+			}
+
+			public function options_suffix_set_html($options_suffix_html) {
+				$this->options_suffix_html = $options_suffix_html;
 			}
 
 			public function options_disabled_set($options_disabled) {
@@ -155,6 +164,9 @@
 								' . $this->html_input_by_key($key) . '
 								' . $this->html_label_by_key($key, NULL, $label_tag) . $option_info_html . '
 							</' . html($this->input_wrapper_tag) . '>';
+					if (isset($this->options_suffix_html[$key])) {
+						$html .= $this->options_suffix_html[$key];
+					}
 				}
 				return $html;
 			}
