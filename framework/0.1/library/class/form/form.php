@@ -936,7 +936,11 @@
 							$fetch_values = config::get('request.fetch');
 							foreach ($this->fetch_allowed as $field => $allowed) {
 								if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
-									$csrf_errors[] = 'Sec-Fetch-' . ucfirst($field) . ' = "' . $fetch_values[$field] . '" (' . (in_array($fetch_values[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ')';
+									if ($this->form_passive && $field == 'site' && $fetch_values[$field] == 'cross-site' && config::get('request.referrer') == '') {
+										$csrf_errors[] = 'Sec-Fetch-' . ucfirst($field) . ' = "' . $fetch_values[$field] . '" (can-ignore-cross-site?)';
+									} else {
+										$csrf_errors[] = 'Sec-Fetch-' . ucfirst($field) . ' = "' . $fetch_values[$field] . '" (' . (in_array($fetch_values[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ')';
+									}
 									$csrf_report = true;
 								}
 							}
