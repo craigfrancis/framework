@@ -751,7 +751,7 @@
 									$class .= ' ' . $col_class[$col_id];
 								}
 
-								$class = trim($class);
+								$class = trim(strval($class));
 								if ($class != '') {
 									$attributes_html .= ' class="' . html($class) . '"';
 								}
