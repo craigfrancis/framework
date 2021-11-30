@@ -934,14 +934,14 @@
 
 						if (in_array('fetch', $checks) && $this->fetch_allowed !== false) {
 							$fetch_values = config::get('request.fetch');
-							foreach ($this->fetch_allowed as $field => $allowed) {
-								if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
-									if ($this->form_passive && $field == 'site' && $fetch_values[$field] == 'cross-site' && config::get('request.referrer') == '') {
-										$csrf_errors[] = 'Sec-Fetch-' . ucfirst($field) . ' = "' . $fetch_values[$field] . '" (can-ignore-cross-site?)';
-									} else {
+							if ($this->form_passive && $fetch_values['dest'] == 'document' && $fetch_values['mode'] == 'navigate' && $fetch_values['site'] == 'cross-site' && config::get('request.referrer') == '') {
+								// For a passive form, request from another website (maybe email link), top level navigation... probably fine, as a timing attack shouldn't be possible.
+							} else {
+								foreach ($this->fetch_allowed as $field => $allowed) {
+									if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
 										$csrf_errors[] = 'Sec-Fetch-' . ucfirst($field) . ' = "' . $fetch_values[$field] . '" (' . (in_array($fetch_values[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ')';
+										$csrf_report = true;
 									}
-									$csrf_report = true;
 								}
 							}
 						} else {
