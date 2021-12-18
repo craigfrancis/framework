@@ -37,14 +37,18 @@ This uses the [session helper](../../doc/helpers/session.md) to store the loadin
 		// or return false if not running.
 
 	if ($form->submitted()) {
-		if ($form->valid()) {
 
-			// $loading->refresh_url_set('/../');
-				// If you need to change the url (e.g. adding an id)
+		// Any extra validation
 
-			$loading->start('Starting action');
-				// This string will replace [MESSAGE] in the template,
+		if ($form->valid() && !$loading->start('Starting action')) {
+
+				// The start string will replace [MESSAGE] in the template,
 				// or you can use an array for multiple tags.
+
+			$form->error_add('Already processing');
+		}
+
+		if ($form->valid()) {
 
 			sleep(5);
 
@@ -76,30 +80,24 @@ If you have a process that shouldn't allow multiple users to run it at the same 
 
 	if ($form->submitted()) {
 
-		if ($loading->locked()) {
-			$form->error_add('Already processing');
+		// Any extra validation
+
+		if ($form->valid() && !$loading->start('Starting action')) {
+			$form->error_add('Could not open lock');
 		}
 
 		if ($form->valid()) {
 
-			if ($loading->start('Starting action')) {
+			sleep(5);
 
-				sleep(5);
+			$loading->update('Updating progress');
 
-				$loading->update('Updating progress');
+			sleep(5);
 
-				sleep(5);
+			$loading->done('/../');
+				// If you specify a URL, it will perform a redirect.
 
-				$loading->done('/../');
-					// If you specify a URL, it will perform a redirect.
-
-				exit();
-
-			} else {
-
-				$form->error_add('Could not open lock');
-
-			}
+			exit();
 
 		}
 
