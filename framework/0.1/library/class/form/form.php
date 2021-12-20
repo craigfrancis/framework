@@ -26,6 +26,7 @@
 			private $wrapper_tag = 'fieldset';
 			private $print_page_setup = NULL; // Current page being setup in code.
 			private $print_page_submit = NULL; // Current page the user submitted.
+			private $print_page_skipped = false;
 			private $print_page_valid = true;
 			private $print_group = NULL;
 			private $print_group_tag = 'h2';
@@ -322,6 +323,8 @@
 			}
 
 			public function print_page_skip($page) { // If there is an optional page, this implies that it has been submitted, before calling the next print_page_start()
+
+				$this->print_page_skipped = true;
 
 				if ($page == 1) {
 					$this->form_submitted = true;
@@ -798,7 +801,7 @@
 			}
 
 		//--------------------------------------------------
-		// Errors
+		// CSRF
 
 			public function csrf_error_set($error) {
 				$this->csrf_error_set_html(to_safe_html($error));
@@ -912,49 +915,59 @@
 
 					if ($this->form_submitted && $this->csrf_error_html != NULL) { // Cant type check, as html() will convert NULL to string
 
-						if ($this->form_passive) {
-							$checks = config::get('form.csrf_passive_checks', []);
+						if ($this->print_page_skipped === true && config::get('request.method') == 'GET' && $this->form_method == 'POST') {
+
+							// This multi-page form isn't complete yet, so don't show a CSRF error.
+
+							// e.g. A GET request has been made, for a form that uses POST, where the request skips to a later 'page' in the process.
+
 						} else {
-							$checks = ['token', 'fetch'];
-						}
 
-						if (in_array('token', $checks)) {
-							$csrf_token = request('csrf', $this->form_method);
-							if (!csrf_challenge_check($csrf_token, $this->form_action, $this->csrf_token)) {
-								cookie::require_support();
-								$csrf_errors[] = 'Token-[' . $this->csrf_token . ']-[' . $this->form_method . ']-[' . $csrf_token . ']';
-								$csrf_block = true;
-							}
-						}
-
-						if (in_array('cookie', $checks) && trim(cookie::get('f')) == '') { // The cookie just needs to exist, where it's marked SameSite=Strict
-							$csrf_errors[] = 'MissingCookie = ' . implode('/', array_keys($_COOKIE));
-							$csrf_report = true;
-						}
-
-						if (in_array('fetch', $checks) && $this->fetch_allowed !== false) {
-							$fetch_values = config::get('request.fetch');
-							if ($this->form_passive && $fetch_values['dest'] == 'document' && $fetch_values['mode'] == 'navigate' && $fetch_values['site'] == 'cross-site' && config::get('request.referrer') == '') {
-								// For a passive form, request from another website (maybe email link), top level navigation... probably fine, as a timing attack shouldn't be possible.
+							if ($this->form_passive) {
+								$checks = config::get('form.csrf_passive_checks', []);
 							} else {
-								foreach ($this->fetch_allowed as $field => $allowed) {
-									if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
-										$csrf_errors[] = 'Sec-Fetch-' . ucfirst($field) . ' = "' . $fetch_values[$field] . '" (' . (in_array($fetch_values[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ')';
-										$csrf_report = true;
-									}
+								$checks = ['token', 'fetch'];
+							}
+
+							if (in_array('token', $checks)) {
+								$csrf_token = request('csrf', $this->form_method);
+								if (!csrf_challenge_check($csrf_token, $this->form_action, $this->csrf_token)) {
+									cookie::require_support();
+									$csrf_errors[] = 'Token-[' . $this->csrf_token . ']-[' . $this->form_method . ']-[' . $csrf_token . ']';
+									$csrf_block = true;
 								}
 							}
-						} else {
-							$fetch_values = NULL;
-						}
 
-						if ($csrf_errors) {
-							if ($csrf_report) {
-								report_add('CSRF error via SecFetch/SameSite checks (' . ($csrf_block ? 'user asked to re-submit' : 'not blocked') . ').' . "\n\n" . 'Errors = ' . debug_dump($csrf_errors) . "\n\n" . 'Sec-Fetch Values = ' . debug_dump($fetch_values) . "\n\n" . ' Sec-Fetch Allowed = ' . debug_dump($this->fetch_allowed), 'error');
+							if (in_array('cookie', $checks) && trim(cookie::get('f')) == '') { // The cookie just needs to exist, where it's marked SameSite=Strict
+								$csrf_errors[] = 'MissingCookie = ' . implode('/', array_keys($_COOKIE));
+								$csrf_report = true;
 							}
-							if ($csrf_block) {
-								$this->_field_error_add_html(-1, $this->csrf_error_html, implode('/', $csrf_errors));
+
+							if (in_array('fetch', $checks) && $this->fetch_allowed !== false) {
+								$fetch_values = config::get('request.fetch');
+								if ($this->form_passive && $fetch_values['dest'] == 'document' && $fetch_values['mode'] == 'navigate' && $fetch_values['site'] == 'cross-site' && config::get('request.referrer') == '') {
+									// For a passive form, request from another website (maybe email link), top level navigation... probably fine, as a timing attack shouldn't be possible.
+								} else {
+									foreach ($this->fetch_allowed as $field => $allowed) {
+										if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
+											$csrf_errors[] = 'Sec-Fetch-' . ucfirst($field) . ' = "' . $fetch_values[$field] . '" (' . (in_array($fetch_values[$field], $this->fetch_known[$field]) ? 'known' : 'unknown') . ')';
+											$csrf_report = true;
+										}
+									}
+								}
+							} else {
+								$fetch_values = NULL;
 							}
+
+							if ($csrf_errors) {
+								if ($csrf_report) {
+									report_add('CSRF error via SecFetch/SameSite checks (' . ($csrf_block ? 'user asked to re-submit' : 'not blocked') . ').' . "\n\n" . 'Errors = ' . debug_dump($csrf_errors) . "\n\n" . 'Sec-Fetch Values = ' . debug_dump($fetch_values) . "\n\n" . ' Sec-Fetch Allowed = ' . debug_dump($this->fetch_allowed), 'error');
+								}
+								if ($csrf_block) {
+									$this->_field_error_add_html(-1, $this->csrf_error_html, implode('/', $csrf_errors));
+								}
+							}
+
 						}
 
 					}
