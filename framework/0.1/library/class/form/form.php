@@ -321,7 +321,7 @@
 
 			}
 
-			public function print_page_skip($page) { // If there is an optional page, this implys that it has been submitted, before calling the next print_page_start()
+			public function print_page_skip($page) { // If there is an optional page, this implies that it has been submitted, before calling the next print_page_start()
 
 				if ($page == 1) {
 					$this->form_submitted = true;
