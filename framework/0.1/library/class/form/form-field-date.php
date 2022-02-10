@@ -329,6 +329,8 @@
 						$value = '';
 					}
 
+// Use min/max attributes, like in `form_field_datetime`?
+
 					return $this->_html_input(array('value' => $value, 'type' => 'date'));
 
 				} else {
