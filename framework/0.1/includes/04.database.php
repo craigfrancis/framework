@@ -178,6 +178,7 @@
 
 						if ($parameters) {
 							$ref_types = '';
+							$ref_values = [];
 							foreach ($parameters as $key => $value) {
 								if (is_array($value)) { // Type specified, e.g. $parameters[] = intval($var);
 									$ref_types .= $value[0];
