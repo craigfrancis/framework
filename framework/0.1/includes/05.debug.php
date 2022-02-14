@@ -67,8 +67,8 @@
 				$log_values['code'] = $response_code_value;
 				$log_values['time'] = FRAMEWORK_END;
 
-				if (array_key_exists('db_query', $log_values)) $log_values['db_query'] = config::get('debug.time_query');
-				if (array_key_exists('db_check', $log_values)) $log_values['db_check'] = config::get('debug.time_check');
+				if (array_key_exists('db_query', $log_values)) $log_values['db_query'] = number_format(config::get('debug.time_query'), 3, '.', '');
+				if (array_key_exists('db_check', $log_values)) $log_values['db_check'] = number_format(config::get('debug.time_check'), 3, '.', '');
 
 				if (($fp = fopen($log_file, 'a')) !== false) {
 					fputcsv($fp, $log_values);
