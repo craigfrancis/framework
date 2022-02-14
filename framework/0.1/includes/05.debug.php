@@ -63,11 +63,15 @@
 					$response_code_value .= '-' . $response_code_extra;
 				}
 
-				log_value('time', FRAMEWORK_END);
-				log_value('code', $response_code_value);
+				$log_values = config::get('debug.log_values');
+				$log_values['code'] = $response_code_value;
+				$log_values['time'] = FRAMEWORK_END;
+
+				if (array_key_exists('db_query', $log_values)) $log_values['db_query'] = config::get('debug.time_query');
+				if (array_key_exists('db_check', $log_values)) $log_values['db_check'] = config::get('debug.time_check');
 
 				if (($fp = fopen($log_file, 'a')) !== false) {
-					fputcsv($fp, config::get('debug.log_values'));
+					fputcsv($fp, $log_values);
 					fclose($fp);
 				}
 
