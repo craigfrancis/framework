@@ -160,11 +160,7 @@
 
 			try {
 
-				if (function_exists('debug_log_db')) {
-					$time_start = microtime(true);
-				} else {
-					$time_start = NULL;
-				}
+				$time_start = microtime(true);
 
 				if (function_exists('mysqli_stmt_get_result')) { // When mysqlnd is installed - There is no way I'm using bind_result(), where the values from the database should stay in their array (ref fetch_assoc), and work around are messy.
 
@@ -237,9 +233,9 @@
 
 				}
 
-				if ($time_start) {
-					debug_log_db(round((microtime(true) - $time_start), 3), $sql); // This is higher than `debug.time_query`, because debug does not run for every query (e.g. SHOW COLUMNS and EXPLAIN)
-				}
+				$query_time = round((microtime(true) - $time_start), 3);
+
+				config::set('db.query_time', (config::get('db.query_time', 0) + $query_time));
 
 			} catch (exception $e) {
 
