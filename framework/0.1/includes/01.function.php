@@ -764,7 +764,7 @@
 			// UK: https://en.wikipedia.org/wiki/UK_postcodes
 			// A9 9AA | A99 9AA | AA9 9AA | AA99 9AA | A9A 9AA | AA9A 9AA | BFPO 99
 
-			$postcode = preg_replace('/[^A-Z0-9]/', '', strtoupper($postcode));
+			$postcode = preg_replace('/[^A-Z0-9]/', '', strtoupper(strval($postcode)));
 
 			if (preg_match('/^([A-Z](?:\d[A-Z\d]?|[A-Z]\d[A-Z\d]?))(\d[A-Z]{2})$/', $postcode, $matches)) {
 
