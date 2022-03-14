@@ -507,7 +507,9 @@
 					$where_sql = $this->config['where_sql'];
 					$parameters = $this->config['where_parameters'];
 
-					$where_sql .= ' AND
+// Concat to keep is_literal() happy...
+
+					$where_sql = $where_sql . ' AND
 						' . $db->escape_field($this->config['field_postcode_sql']) . ' != ""';
 
 					if ($min_accuracy == 0) {
@@ -586,7 +588,9 @@
 
 									$where_sql = $this->config['where_sql'];
 
-									$where_sql .= ' AND
+// Concat to keep is_literal() happy...
+
+									$where_sql = $where_sql . ' AND
 										' . $this->config['field_id'] . ' = ?';
 
 									$parameters = [];
