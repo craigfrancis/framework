@@ -176,7 +176,7 @@
 							$ref_types = '';
 							$ref_values = [];
 							foreach ($parameters as $key => $value) {
-								if (is_array($value)) { // Type specified, e.g. $parameters[] = intval($var);
+								if (is_array($value)) { // Type specified, e.g. $parameters[] = ['i', $var];
 									$ref_types .= $value[0];
 									$ref_values[] = &$parameters[$key][1]; // Must be a reference
 								} else {
@@ -216,7 +216,18 @@
 						$k = 0;
 						while (($pos = strpos($sql, '?', $offset)) !== false) {
 							if (isset($parameters[$k])) {
-								$sql_value = $this->escape_string($parameters[$k][1]);
+								if (is_array($parameters[$k])) { // Type specified, e.g. $parameters[] = ['i', $var];
+									$sql_type = $parameters[$k][0];
+									$sql_value = $parameters[$k][1];
+								} else {
+									$sql_type = (is_int($parameters[$k]) ? 'i' : 's');
+									$sql_value = $parameters[$k];
+								}
+								if ($sql_type === 'i') {
+									$sql_value = intval($sql_value);
+								} else {
+									$sql_value = $this->escape_string($sql_value);
+								}
 								$sql = substr($sql, 0, $pos) . $sql_value . substr($sql, ($pos + 1));
 								$offset = ($pos + strlen($sql_value));
 								$k++;

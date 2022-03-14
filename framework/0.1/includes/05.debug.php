@@ -884,7 +884,7 @@
 
 					$explain = NULL;
 
-					if ($select_query) {
+					if (($select_query) && (!is_array($parameters) || count($parameters) < 1000)) {
 
 							// Cannot run after the query has been executed
 							// as it would change affected_rows(). Cannot
