@@ -467,7 +467,7 @@
 							1';
 
 				if ($row = $db->fetch_row($sql, $parameters)) {
-					$db_id = $row['id'];
+					$db_id = intval($row['id']);
 					$db_hash = $row['password']; // Blank password (disabled account) excluded in query (above)
 				} else {
 					$db_id = 0;
@@ -569,7 +569,7 @@
 
 							}
 
-							return $db_id; // Success
+							return intval($db_id); // Success
 
 						} else {
 

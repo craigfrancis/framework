@@ -291,7 +291,7 @@
 				//--------------------------------------------------
 				// Process
 
-					if ($form->valid() && $result) {
+					if ($form->valid() && is_int($result) && $result > 0) {
 
 						$this->user_id = $result;
 
@@ -846,7 +846,9 @@
 
 								$result = $this->auth->verify(NULL, $password_value);
 
-								if ($result <= 0) {
+								if (is_int($result) && $result > 0) {
+									// Valid result
+								} else {
 									$password_ref->error_add($this->text['save_details_invalid_password']);
 								}
 
