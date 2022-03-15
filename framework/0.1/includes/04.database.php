@@ -82,7 +82,8 @@
 			$sql = '';
 			foreach ($sql_parts as $sql_part) {
 				if ($sql !== '') {
-					$sql .= ') ' . $sql_type . ' (';
+// Concat to keep is_literal() happy...
+					$sql = $sql . ') ' . $sql_type . ' (';
 				}
 				$sql .= $sql_part;
 			}

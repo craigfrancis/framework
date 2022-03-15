@@ -165,8 +165,8 @@
 					$pi = pi();
 					$radius = 6371; // earth's mean radius in km
 
-					$radians_lat1 = ($point['latitude'] * $pi / 180);
-					$radians_long1 = ($point['longitude'] * $pi / 180);
+					$radians_lat1 = (floatval($point['latitude']) * $pi / 180);
+					$radians_long1 = (floatval($point['longitude']) * $pi / 180);
 
 					foreach ($locations as $id => $location) {
 
