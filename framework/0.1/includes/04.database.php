@@ -590,6 +590,8 @@
 
 		private function _insert($table_sql, $values, $on_duplicate = NULL, $on_duplicate_parameters = []) {
 
+// TODO: What about duplicating a record with `SELECT * FROM table WHERE ...`, because the field names in $values will not be literal strings.
+
 			$parameters = [];
 
 			if (!is_array($values)) {
