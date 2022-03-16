@@ -68,6 +68,13 @@
 			return $field_sql;
 		}
 
+		private function _escape_field_non_literal($field) {
+			if (strpos($field, '`') !== false) {
+				exit_with_error('The field name "' . $field . '" cannot contain a backtick character');
+			}
+			return '`' . $field . '`';
+		}
+
 		public function escape_table($table) {
 			if (function_exists('is_literal') && is_literal($table) !== true) {
 				exit_with_error('The table name "' . $table . '" must be a literal');
@@ -590,8 +597,6 @@
 
 		private function _insert($table_sql, $values, $on_duplicate = NULL, $on_duplicate_parameters = []) {
 
-// TODO: What about duplicating a record with `SELECT * FROM table WHERE ...`, because the field names in $values will not be literal strings.
-
 			$parameters = [];
 
 			if (!is_array($values)) {
@@ -603,7 +608,7 @@
 				if ($fields_sql !== '') {
 					$fields_sql .= ', ';
 				}
-				$fields_sql .= $this->escape_field($field);
+				$fields_sql .= $this->_escape_field_non_literal($field);
 			}
 
 			$values_sql = '';
@@ -630,9 +635,9 @@
 							$set_sql .= ', ';
 						}
 						if ($field_value === NULL) {
-							$set_sql .= $this->escape_field($field_name) . ' = NULL';
+							$set_sql .= $this->_escape_field_non_literal($field_name) . ' = NULL';
 						} else {
-							$set_sql .= $this->escape_field($field_name) . ' = ?';
+							$set_sql .= $this->_escape_field_non_literal($field_name) . ' = ?';
 							$parameters[] = $field_value;
 						}
 					}
@@ -651,7 +656,7 @@
 				}
 			}
 
-			return $this->query($sql, $parameters);
+			return $this->query($sql, $parameters, self::SKIP_LITERAL_CHECK); // e.g. 'SELECT * FROM table', modify some values, and then db->insert($copy);
 
 		}
 
