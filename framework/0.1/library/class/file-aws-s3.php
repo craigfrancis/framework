@@ -238,6 +238,7 @@ Abbreviations:
 								}
 								if ($backup_folder) { // On the backup server, use this delete marker to remove the local file (externally 'aws sync' will get the files from S3, without using the dangerous '--delete' option).
 									$backup_path = $backup_folder . $file_path_suffix;
+// TODO: Maybe move to a folder named after the current date, then delete that folder after X days?
 									if (is_file($backup_path)) unlink($backup_path);
 									if (is_file($backup_path)) throw new error_exception('Could not remove a deleted file from the backup folder.', $backup_path);
 								}
