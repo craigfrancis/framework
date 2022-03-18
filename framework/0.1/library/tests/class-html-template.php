@@ -135,6 +135,48 @@
 
 		echo ht(implode("\n", $html), $parameters);
 
+	//--------------------------------------------------
+
+		echo "\n\n";
+		echo "--------------------------------------------------";
+		echo "\n\n";
+
+			// A reminder on how unsafe this function is!
+
+		$template = ht('<img src="?" onerror="?" /> <script>?</script>');
+		$template->unsafe_allow_node('img', ['onerror' => 'text']); // NEVER DO THIS!
+		$template->unsafe_allow_node('script'); // NEVER DO THIS!
+
+		$parameters = [];
+		$parameters[] = url('/');
+		$parameters[] = 'alert();';
+		$parameters[] = 'alert();';
+
+		echo $template->html($parameters);
+
+	//--------------------------------------------------
+
+		echo "\n\n";
+		echo "--------------------------------------------------";
+		echo "\n\n";
+
+		$template = ht('<svg width="?" height="?" viewBox="?" aria-label="?" role="img" xmlns="http://www.w3.org/2000/svg"><rect x="?" y="?" width="?" height="?" fill="?" /></svg>');
+		$template->unsafe_allow_node('svg',  ['width' => 'int', 'height' => 'int', 'viewBox' => 'text', 'aria-label' => 'text', 'role' => 'text']);
+		$template->unsafe_allow_node('rect', ['width' => 'int', 'height' => 'int', 'x' => 'int', 'y' => 'int', 'fill' => 'text']);
+
+		$parameters = [];
+		$parameters[] = 200;
+		$parameters[] = 200;
+		$parameters[] = '0 0 200 200';
+		$parameters[] = 'My Image';
+		$parameters[] = 50;
+		$parameters[] = 50;
+		$parameters[] = 100;
+		$parameters[] = 100;
+		$parameters[] = 'red';
+
+		echo $template->html($parameters);
+
 //--------------------------------------------------
 // Timings
 
@@ -226,8 +268,6 @@
 
 		$debug = config::get('debug.level');
 
-		config::set('debug.level', 0); // Temporarily disable debugging, which checks this is valid XML, and the parameter context.
-
 		$link = ht(implode("\n", [
 				'#0  ?',
 				'#0 x?<',
@@ -247,9 +287,11 @@
 				'#0 \'?"',
 			]));
 
-		config::set('debug.level', $debug);
+		config::set('debug.level', 0); // Temporarily disable debugging, which checks this is valid XML, and the parameter context.
 
 		echo $link->html([1, 2, 3]);
+
+		config::set('debug.level', $debug);
 
 	//--------------------------------------------------
 
