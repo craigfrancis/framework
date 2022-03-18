@@ -35,7 +35,7 @@
 		$folder_listing = shell_exec('find ' . escapeshellarg($folder_path) . ' -mindepth 1 -type d ! -path "*/.*" 2>&1');
 		$folder_children = [];
 
-		foreach (explode("\n", $folder_listing) as $path) {
+		foreach (explode("\n", strval($folder_listing)) as $path) {
 			if (substr($path, 0, $folder_path_length) == $folder_path) {
 				$path = substr($path, ($folder_path_length + 1));
 				if ($path != 'tmp' && substr($path, 0, 4) != 'tmp/' && substr($path, 0, 6) != 'cache/') { // 'tmp' will be created anyway, and their contents don't need folders creating.
