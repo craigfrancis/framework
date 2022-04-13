@@ -13,7 +13,7 @@
 			protected $blank_name_error_set = false;
 
 			protected $files = [];
-			protected $file_current = NULL;
+			protected $file_current = 0;
 			protected $uploaded = NULL;
 
 		//--------------------------------------------------
@@ -88,7 +88,7 @@
 				// Config
 
 					$this->uploaded = (count($this->files) > 0); // Shortcut
-					$this->file_current = NULL;
+					$this->file_current = 0;
 
 			}
 
@@ -432,12 +432,15 @@
 		// Status
 
 			public function uploaded() {
-				if ($this->file_current === NULL || $this->multiple === false) {
-					$this->file_current = 0;
-				} else {
-					$this->file_current++;
-				}
 				return (isset($this->files[$this->file_current]));
+			}
+
+			public function upload_next() { // For multi-file uploads
+				$this->file_current++;
+			}
+
+			public function upload_reset() {
+				$this->file_current = 0;
 			}
 
 		//--------------------------------------------------
@@ -557,9 +560,6 @@
 			}
 
 			protected function _file_info_get($field) {
-				if ($this->file_current === NULL) {
-					$this->file_current = 0;
-				}
 				if (isset($this->files[$this->file_current][$field])) {
 					return $this->files[$this->file_current][$field];
 				} else {
