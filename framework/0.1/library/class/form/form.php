@@ -1503,7 +1503,7 @@
 								if ($field_group === NULL) {
 									$field_groups = array(NULL);
 									break;
-								} else {
+								} else if ($field_group !== false) { // When using $form->print_group_start(false);
 									$field_groups[] = $field_group;
 								}
 							}
