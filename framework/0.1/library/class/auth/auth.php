@@ -1616,7 +1616,7 @@
 
 						$hash_sleep = (0.1 - $this->hash_time); // Should always take at least 0.1 seconds (100ms)... NOTE: the password_verify() function (from PHP) will return fast if the hash is unrecognised/invalid.
 						if ($hash_sleep > 0) {
-							usleep($hash_sleep * 1000000);
+							usleep(round($hash_sleep * 1000000));
 						}
 
 					}
