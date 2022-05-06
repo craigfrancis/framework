@@ -92,6 +92,7 @@
 				'ch-ect'                             => [],
 				'ch-prefers-color-scheme'            => [],
 				'ch-rtt'                             => [],
+				'ch-save-data'                       => [],
 				'ch-ua'                              => [],
 				'ch-ua-arch'                         => [],
 				'ch-ua-bitness'                      => [],
