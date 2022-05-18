@@ -306,7 +306,9 @@
 
 			protected function _input_attributes() {
 				$attributes = parent::_input_attributes();
-				$attributes['accept'] = 'image/*';
+				if (!isset($attributes['accept'])) {
+					$attributes['accept'] = 'image/*';
+				}
 				return $attributes;
 			}
 

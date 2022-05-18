@@ -14,6 +14,7 @@
 
 			protected $files = [];
 			protected $file_current = 0;
+			protected $file_mime_accept = NULL;
 			protected $uploaded = NULL;
 
 		//--------------------------------------------------
@@ -370,6 +371,8 @@
 					}
 				}
 
+				$this->file_mime_accept = $types;
+
 			}
 
 			public function allowed_file_types_ext_set($error, $types) {
@@ -612,6 +615,10 @@
 
 				if ($this->multiple) {
 					$attributes['multiple'] = 'multiple';
+				}
+
+				if ($this->file_mime_accept !== NULL && count($this->file_mime_accept) == 1) {
+					$attributes['accept'] = reset($this->file_mime_accept);
 				}
 
 				return $attributes;
