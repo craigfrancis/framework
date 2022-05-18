@@ -27,7 +27,7 @@
 					'p'          => ['id' => 'ref', 'class' => 'ref'],
 					'ul'         => ['id' => 'ref', 'class' => 'ref'],
 					'ol'         => ['id' => 'ref', 'class' => 'ref', 'start' => 'int'],
-					'li'         => ['id' => 'ref', 'class' => 'ref'],
+					'li'         => ['id' => 'ref', 'class' => 'ref', 'value' => 'int'],
 					'dl'         => ['id' => 'ref', 'class' => 'ref'],
 					'dt'         => ['id' => 'ref', 'class' => 'ref'],
 					'dd'         => ['id' => 'ref', 'class' => 'ref'],
