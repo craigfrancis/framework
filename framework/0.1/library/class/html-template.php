@@ -57,7 +57,7 @@
 					'blockquote' => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
 					'q'          => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
 					'a'          => ['id' => 'ref', 'class' => 'ref', 'href' => 'url', 'target' => ['_blank'], 'rel' => ['noopener', 'noreferrer', 'nofollow']],
-					'img'        => ['id' => 'ref', 'class' => 'ref', 'src' => 'url-img', 'alt' => 'text', 'width' => 'int', 'height' => 'int'],
+					'img'        => ['id' => 'ref', 'class' => 'ref', 'src' => 'url-img', 'alt' => 'text', 'width' => 'int', 'height' => 'int', 'srcset' => 'text', 'sizes' => 'text'],
 					'time'       => ['id' => 'ref', 'class' => 'ref', 'datetime' => 'datetime'],
 					'data'       => ['id' => 'ref', 'class' => 'ref', 'value' => 'text'],
 					'input'      => ['id' => 'ref', 'class' => 'ref', 'type' => ['submit', 'button'], 'name' => 'ref', 'value' => 'text'],
