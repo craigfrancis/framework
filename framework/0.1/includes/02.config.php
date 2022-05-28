@@ -113,11 +113,13 @@
 				'document-domain'                    => [],
 				'encrypted-media'                    => [],
 				'fullscreen'                         => [],
+				'gamepad'                            => [], // RestrictGamepadAccess
 				'geolocation'                        => [],
 				'gyroscope'                          => [],
 				'hid'                                => [],
 				'idle-detection'                     => [],
 				'keyboard-map'                       => [],
+				'local-fonts'                        => [],
 				'magnetometer'                       => [],
 				'microphone'                         => [],
 				'midi'                               => [],
@@ -141,7 +143,6 @@
 				// 'execution-while-out-of-viewport' => [], // FreezeFramesOnVisibility
 				// 'focus-without-user-activation'   => [], // BlockingFocusWithoutUserActivation
 				// 'frobulate'                       => [], // OriginTrialsSampleAPI
-				// 'gamepad'                         => [], // RestrictGamepadAccess
 				// 'idle-detection'                  => [], // IdleDetection
 				// 'storage-access-api'              => [], // StorageAccessAPI
 				// 'trust-token-redemption'          => [], // TrustTokens
