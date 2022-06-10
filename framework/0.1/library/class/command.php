@@ -125,6 +125,13 @@
 		public function exec_start($command, $parameters = []) {
 
 			//--------------------------------------------------
+			// Is Literal
+
+				if (function_exists('is_literal') && is_literal($command) !== true) {
+					exit_with_error('The command must be a literal', $command);
+				}
+
+			//--------------------------------------------------
 			// Executable
 
 				$run_direct = true;
