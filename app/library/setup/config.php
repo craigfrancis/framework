@@ -118,6 +118,14 @@
 		$config['output.csp_directives']['connect-src'][] = 'https://www.google-analytics.com';
 	}
 
+	$config['loading.default.csp_directives'] = [
+			'default-src' => "'none'",
+			'base-uri'    => "'none'",
+			'form-action' => "'none'",
+			'img-src'     => ['/favicon.ico'],
+			'style-src'   => [], // Defaults to 'none'
+		];
+
 	if (SERVER != 'stage') {
 		$config['output.ct_enabled'] = true;
 	}

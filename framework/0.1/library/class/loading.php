@@ -13,13 +13,6 @@
 			private $lock = NULL;
 			private $running = false;
 			private $session_prefix = NULL;
-			private $csp_directives = [ // If you want to add framing, use ... config::set('output.framing', 'SAMEORIGIN')
-					'default-src' => "'none'",
-					'base-uri'    => "'none'",
-					'form-action' => "'none'",
-					'img-src'     => ['/favicon.ico'],
-					'style-src'   => [], // Defaults to 'none'
-				];
 
 		//--------------------------------------------------
 		// Setup
@@ -55,6 +48,7 @@
 							'lock'              => NULL,
 							'lock_type'         => NULL,
 							'lock_ref'          => NULL,
+							'csp_directives'    => NULL,
 						);
 
 					$default_config = array_merge($default_config, config::get_all('loading.default'));
@@ -410,7 +404,9 @@
 							if (is_file(ASSET_ROOT . $css_file)) {
 								$css_url = timestamp_url(ASSET_URL . '/css/global/loading.css');
 								$css_html = '<link rel="stylesheet" type="text/css" href="' . html($css_url) . '" media="all" />';
-								$this->csp_directives['style-src'][] = $css_url;
+								if (is_array($this->config['csp_directives'])) {
+									$this->config['csp_directives']['style-src'][] = $css_url;
+								}
 							} else {
 								$css_html = '';
 							}
@@ -492,7 +488,9 @@
 				//--------------------------------------------------
 				// System headers
 
-					config::set('output.csp_directives', $this->csp_directives);
+					if (is_array($this->config['csp_directives'])) {
+						config::set('output.csp_directives', $this->config['csp_directives']);
+					}
 
 					http_system_headers();
 
