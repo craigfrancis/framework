@@ -436,7 +436,7 @@
 
 		config::set_default('output.ct_enabled', false);
 		config::set_default('output.ct_enforced', false);
-		config::set_default('output.ct_max_age', 3); // Not 0, so we can also check resources (e.g. images)
+		config::set_default('output.ct_max_age', 3600); // Not 0, so we can also check resources (e.g. images)
 		config::set_default('output.ct_report', false);
 
 		config::set_default('output.csp_enabled', true);

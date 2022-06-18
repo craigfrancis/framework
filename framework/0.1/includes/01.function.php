@@ -2089,7 +2089,7 @@
 			if (config::get('output.ct_enabled') === true) {
 
 				$ct_values = [];
-				$ct_values[] = 'max-age=' . config::get('output.ct_max_age', 0);
+				$ct_values[] = 'max-age=' . config::get('output.ct_max_age', 3600);
 
 				if (config::get('output.ct_enforced', false) === true) {
 					$ct_values[] = 'enforce';
@@ -2100,7 +2100,7 @@
 					$ct_values[] = 'report-uri="' . $report_uri . '"';
 				}
 
-				header('Expect-CT: ' . head(implode('; ', $ct_values)));
+				header('Expect-CT: ' . head(implode(', ', $ct_values)));
 
 			}
 
