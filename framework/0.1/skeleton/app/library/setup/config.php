@@ -113,8 +113,6 @@
 
 	$config['output.framing'] = 'DENY'; // SAMEORIGIN or ALLOW
 
-	$config['output.xss_reflected'] = 'block';
-
 	$config['output.csp_enabled'] = true;
 	$config['output.csp_enforced'] = true;
 	$config['output.csp_directives'] = [

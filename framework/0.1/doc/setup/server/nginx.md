@@ -48,7 +48,6 @@ Still a work in progress...
 		resolver 8.8.8.8;
 
 		add_header 'X-Frame-Options' 'deny';
-		add_header 'X-XSS-Protection' '1; mode=block';
 		add_header 'X-Content-Type-Options' 'nosniff';
 		add_header 'Strict-Transport-Security' 'max-age=31536000; includeSubDomains';
 

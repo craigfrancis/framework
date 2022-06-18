@@ -69,8 +69,6 @@ Some special cases though:
 
 - **`output.framing`**: For basic [Framing protection](../../doc/security/framing.md).
 
-- **`output.xss_reflected`**: For basic [XSS protection](../../doc/security/xss.md).
-
 - **`output.csp_*`**: For [CSP setup](../../doc/security/csp.md).
 
 - **`output.js_*`**: For [JavaScript setup](../../doc/setup/resources.md).

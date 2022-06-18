@@ -12,7 +12,6 @@
 		ErrorLog /www/live/company.project/logs/error_log
 
 		# Header always set X-Frame-Options: DENY
-		# Header always set X-XSS-Protection: "1; mode=block"
 		Header always set X-Content-Type-Options: nosniff
 		Header always set Strict-Transport-Security: "max-age=31536000; includeSubDomains"
 		Header always set Cross-Origin-Resource-Policy: "same-origin"
