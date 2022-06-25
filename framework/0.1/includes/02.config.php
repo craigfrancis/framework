@@ -85,6 +85,7 @@
 
 				'accelerometer'                      => [],
 				'autoplay'                           => [],
+				'bluetooth'                          => [],
 				'camera'                             => [],
 				'ch-device-memory'                   => [],
 				'ch-downlink'                        => [],
