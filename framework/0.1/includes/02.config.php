@@ -19,7 +19,7 @@
 		$config['request.https']     = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on');
 		$config['request.method']    = (isset($_SERVER['REQUEST_METHOD'])  ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET');
 		$config['request.port']      = (isset($_SERVER['SERVER_PORT'])     ? strtoupper($_SERVER['SERVER_PORT'])    : '');
-		$config['request.domain']    = (isset($_SERVER['HTTP_HOST'])       ? $_SERVER['HTTP_HOST']       : '');
+		$config['request.domain']    = (isset($_SERVER['SERVER_NAME'])     ? $_SERVER['SERVER_NAME']     : ''); // HTTP_HOST can include a port number
 		$config['request.uri']       = (isset($_SERVER['REQUEST_URI'])     ? $_SERVER['REQUEST_URI']     : './');
 		$config['request.query']     = (isset($_SERVER['QUERY_STRING'])    ? $_SERVER['QUERY_STRING']    : '');
 		$config['request.browser']   = (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
