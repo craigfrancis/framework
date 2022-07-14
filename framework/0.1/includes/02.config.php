@@ -48,7 +48,9 @@
 			$config['request.domain'] = ''; // Remove hostname default, set in git post-commit hook (ref clear OpCache)
 			$config['request.url'] = 'file://..' . $uri; // Don't expose ROOT, but show the relative path
 		} else {
-			$config['request.url'] = ($config['request.https'] ? 'https://' : 'http://') . $config['request.domain'] . $uri;
+			$config['request.url']  = ($config['request.https'] ? 'https://' : 'http://') . $config['request.domain'];
+			$config['request.url'] .= ($config['request.port'] == ($config['request.https'] ? 443 : 80) ? '' : ':' . $config['request.port']);
+			$config['request.url'] .= $uri;
 		}
 
 		unset($uri, $path, $pos);
