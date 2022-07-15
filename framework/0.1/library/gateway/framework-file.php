@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // Requested file
 
-	$file_name = trim($this->sub_path_get(), '/');
+	$file_name = trim(strval($this->sub_path_get()), '/');
 	$file_name = preg_replace('/^[0-9]+-/', '', $file_name); // Remove timestamp
 
 //--------------------------------------------------

@@ -8,7 +8,7 @@
 
 		if (config::get('debug.level') > 0) {
 			$response = response_get();
-			echo '<p>' . html(str_replace(ROOT, '', $response->view_path_get())) . '</p>';
+			echo '<p>' . html(str_replace(ROOT, '', strval($response->view_path_get()))) . '</p>';
 		}
 
 	?>
