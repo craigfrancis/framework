@@ -18,6 +18,8 @@
 		//--------------------------------------------------
 		// Fields
 
+// Not finished yet... used during login, when the account password no longer passes `validate_password()` (e.g. min length has changed), this page will be used to set a new password.
+
 			public function field_password_1_get($form, $config = []) {
 
 				$this->form = $form;
