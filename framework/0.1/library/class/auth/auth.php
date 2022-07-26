@@ -1491,7 +1491,11 @@
 
 					list($db_main_table, $db_main_fields, $db_main_where_sql) = $this->db_table_get('main');
 
+					list($db_session_table) = $this->db_table_get('session');
+
 					$error = '';
+
+					$request_ip = config::get('request.ip');
 
 				//--------------------------------------------------
 				// Account details
@@ -1541,9 +1545,7 @@
 				//--------------------------------------------------
 				// Too many failed logins?
 
-					if ($this->lockout_attempts > 0) {
-
-						list($db_session_table) = $this->db_table_get('session');
+					if ($this->lockout_attempts > 0 && !in_array($request_ip, config::get('auth.ip_allowed', []))) {
 
 						$where_sql = [];
 						$parameters = [];
@@ -1554,7 +1556,7 @@
 						}
 						if ($this->lockout_mode === NULL || $this->lockout_mode === 'ip') {
 							$where_sql[] = 's.ip = ?';
-							$parameters[] = config::get('request.ip');
+							$parameters[] = $request_ip;
 						}
 
 						if (count($where_sql) === 0) {
@@ -1679,33 +1681,25 @@
 				//--------------------------------------------------
 				// Record failure
 
-					$request_ip = config::get('request.ip');
+					$now = new timestamp();
 
-					if (!in_array($request_ip, config::get('auth.ip_allowed', []))) {
+					$values = [
+							'token'     => '', // Blank to record failure
+							'user_id'   => $db_id,
+							'ip'        => $request_ip,
+							'browser'   => config::get('request.browser'),
+							'hash_time' => floatval($this->hash_time), // See notes in $auth->_session_start() as to why this is ok.
+							'limit'     => 'error:' . $error,
+							'created'   => $now,
+							'last_used' => $now,
+							'deleted'   => '0000-00-00 00:00:00',
+						];
 
-						$db = $this->db_get();
-
-						$now = new timestamp();
-
-						$values = [
-								'token'     => '', // Will remain blank to record failure
-								'user_id'   => $db_id,
-								'ip'        => $request_ip,
-								'browser'   => config::get('request.browser'),
-								'hash_time' => floatval($this->hash_time), // See notes in $auth->_session_start() as to why this is ok.
-								'limit'     => 'error:' . $error,
-								'created'   => $now,
-								'last_used' => $now,
-								'deleted'   => '0000-00-00 00:00:00',
-							];
-
-						if ($this->browser_tracker_enabled('session')) {
-							$values['tracker'] = browser_tracker_get();
-						}
-
-						$db->insert($db_session_table, $values);
-
+					if ($this->browser_tracker_enabled('session')) {
+						$values['tracker'] = browser_tracker_get();
 					}
+
+					$db->insert($db_session_table, $values);
 
 				//--------------------------------------------------
 				// Return error string
