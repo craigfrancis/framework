@@ -848,7 +848,7 @@
 				//--------------------------------------------------
 				// Return
 
-					return $output_html;
+					return new html_safe_value($output_html);
 
 			}
 
