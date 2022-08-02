@@ -33,27 +33,21 @@
 				'user' => (isset($_SERVER['HTTP_SEC_FETCH_USER']) ? $_SERVER['HTTP_SEC_FETCH_USER'] : NULL),
 			];
 
-		$uri = $config['request.uri'];
-		$pos = strpos($uri, '?');
+		if (REQUEST_MODE == 'cli') {
+			$config['request.domain'] = ''; // Remove hostname default, set in git post-commit hook (ref clear OpCache)
+		}
+
+		$pos = strpos($config['request.uri'], '?');
 		if ($pos !== false) {
-			$path = substr($uri, 0, $pos);
+			$path = substr($config['request.uri'], 0, $pos);
 		} else {
-			$path = $uri;
+			$path = $config['request.uri'];
 		}
 
 		$config['request.path'] = $path;
 		$config['request.folders'] = path_to_array($path);
 
-		if (REQUEST_MODE == 'cli') {
-			$config['request.domain'] = ''; // Remove hostname default, set in git post-commit hook (ref clear OpCache)
-			$config['request.url'] = 'file://..' . $uri; // Don't expose ROOT, but show the relative path
-		} else {
-			$config['request.url']  = ($config['request.https'] ? 'https://' : 'http://') . $config['request.domain'];
-			$config['request.url'] .= ($config['request.port'] == ($config['request.https'] ? 443 : 80) ? '' : ':' . $config['request.port']);
-			$config['request.url'] .= $uri;
-		}
-
-		unset($uri, $path, $pos);
+		unset($path, $pos);
 
 	//--------------------------------------------------
 	// URL
@@ -179,6 +173,17 @@
 
 		if (is_file($include_path)) {
 			require_once($include_path);
+		}
+
+	//--------------------------------------------------
+	// Request URL
+
+		if (REQUEST_MODE == 'cli') {
+			$config['request.url'] = 'file://..' . $config['request.uri']; // Don't expose ROOT, but show the relative path
+		} else {
+			$config['request.url']  = ($config['request.https'] ? 'https://' : 'http://') . $config['request.domain'];
+			$config['request.url'] .= ($config['request.port'] == ($config['request.https'] ? 443 : 80) ? '' : ':' . $config['request.port']);
+			$config['request.url'] .= $config['request.uri'];
 		}
 
 //--------------------------------------------------
