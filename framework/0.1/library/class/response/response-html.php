@@ -1044,6 +1044,10 @@
 		//--------------------------------------------------
 		// Head HTML
 
+			public function head_add($head) { // Should use ht(), so the HTML can be checked as a literal-string.
+				$this->head_html .= to_safe_html($head);
+			}
+
 			public function head_add_html($html) {
 				$this->head_html .= $html;
 			}
