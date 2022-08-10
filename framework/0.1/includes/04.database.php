@@ -170,7 +170,19 @@
 
 				$time_start = microtime(true);
 
-				if (function_exists('mysqli_stmt_get_result')) { // When mysqlnd is installed - There is no way I'm using bind_result(), where the values from the database should stay in their array (ref fetch_assoc), and work around are messy.
+				if (function_exists('mysqli_execute_query')) {
+
+					if ($parameters) { // Remove specified types, e.g. $parameters[] = ['i', $var]; ... no longer used
+						foreach ($parameters as $key => $value) {
+							if (is_array($value)) {
+								$parameters[$key] = $value[1];
+							}
+						}
+					}
+
+					$this->result = mysqli_execute_query($this->link, $sql, $parameters);
+
+				} else if (function_exists('mysqli_stmt_get_result')) { // When mysqlnd is installed - There is no way I'm using bind_result(), where the values from the database should stay in their array (ref fetch_assoc), and work around are messy.
 
 					if ($this->statement) {
 						$this->statement->close(); // Must be cleared before re-assigning... https://bugs.php.net/bug.php?id=78932
