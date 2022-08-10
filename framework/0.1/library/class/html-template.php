@@ -16,6 +16,7 @@
 			protected $template_allowed = [ // Do not allow <script>, <style>, <link>, <object>, <embed> tags; or attributes that can include JS (e.g. style, onload, dynsrc)... although some can accept url(x) values
 
 					'meta'       => ['name' => 'text', 'content' => 'text'], // Do not allow <meta http-equiv="">, e.g. Refresh, Set-Cookie
+					'link'       => ['rel' => ['preload', 'prefetch', 'prerender', 'canonical', 'next'], 'as' => ['image', 'font', 'track', 'video', 'audio'], 'href' => 'url', 'fetchpriority' => ['high', 'low']],
 					'div'        => ['id' => 'ref', 'class' => 'ref', 'role' => 'text', 'title' => 'text', 'tabindex' => 'int'],
 					'span'       => ['id' => 'ref', 'class' => 'ref', 'role' => 'text', 'title' => 'text', 'tabindex' => 'int'],
 					'h1'         => ['id' => 'ref', 'class' => 'ref'],
@@ -59,7 +60,7 @@
 					'a'          => ['id' => 'ref', 'class' => 'ref', 'href' => 'url', 'target' => ['_blank'], 'rel' => ['noopener', 'noreferrer', 'nofollow']],
 					'picture'    => ['id' => 'ref', 'class' => 'ref'],
 					'source'     => ['id' => 'ref', 'class' => 'ref', 'src' => 'url-img', 'srcset' => 'text', 'sizes' => 'text', 'type' => 'text'],
-					'img'        => ['id' => 'ref', 'class' => 'ref', 'src' => 'url-img', 'srcset' => 'text', 'sizes' => 'text', 'alt' => 'text', 'width' => 'int', 'height' => 'int'],
+					'img'        => ['id' => 'ref', 'class' => 'ref', 'src' => 'url-img', 'srcset' => 'text', 'sizes' => 'text', 'alt' => 'text', 'width' => 'int', 'height' => 'int', 'fetchpriority' => ['high', 'low']],
 					'time'       => ['id' => 'ref', 'class' => 'ref', 'datetime' => 'datetime'],
 					'data'       => ['id' => 'ref', 'class' => 'ref', 'value' => 'text'],
 					'input'      => ['id' => 'ref', 'class' => 'ref', 'type' => ['submit', 'button'], 'name' => 'ref', 'value' => 'text'],
