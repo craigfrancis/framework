@@ -205,11 +205,21 @@
 		//--------------------------------------------------
 		// Support functions
 
-			public function login_redirect($url) {
+			public function login_redirect($url, $config = []) {
+
+				if (($config['dest_readable'] ?? true) === true) {
+					if (!($url instanceof url)) {
+						$url = url($url); // Ensures that url.prefix can be applied.
+					}
+					$url->param_set('dest', config::get('request.uri'));
+					$url->dest_readable_set(true);
+				}
+
 				save_request_redirect($url, $this->last_login_get());
+
 			}
 
-			public function require_login() {
+			public function require_login($config = []) {
 				if ($this->user_id == 0) {
 					$this->login_redirect($this->login_url);
 				}
