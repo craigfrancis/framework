@@ -17,6 +17,7 @@
 			private $format = NULL;
 			private $scheme = NULL;
 			private $schemes = array('http', 'https', 'mailto');
+			private $dest_readable = false;
 
 		//--------------------------------------------------
 		// Setup
@@ -154,6 +155,10 @@
 				$this->fragment = $value; // rawurlencode() breaks the PDF anchor '/path/to/file.pdf#page=4', and links such as GMail's '#inbox/1a1a1a1a1a1a1a1a'
 			}
 
+			public function dest_readable_set($value) {
+				$this->dest_readable = $value;
+			}
+
 		//--------------------------------------------------
 		// Get
 
@@ -192,7 +197,20 @@
 					}
 
 					if (count($query) > 0) {
+						$dest_readable = ($this->dest_readable ? ($query['dest'] ?? NULL) : NULL);
+						if ($dest_readable) {
+							unset($query['dest']);
+							$dest_readable = rawurlencode($dest_readable);
+							$dest_readable = str_replace('%2F', '/', $dest_readable);
+								// https://en.wikipedia.org/wiki/Percent-encoding
+								// In the "query" component of a URI (the part after a ? character), for example, / is still considered
+								// a reserved character but it normally has no reserved purpose, unless a particular URI scheme says
+								// otherwise. The character does not need to be percent-encoded when it has no reserved purpose.
+						}
 						$query = $this->_query_build($query);
+						if ($dest_readable) {
+							$query .= ($query ? '&' : '') . 'dest=' . $dest_readable;
+						}
 						if ($query != '') {
 							$output .= '?' . $query;
 						}

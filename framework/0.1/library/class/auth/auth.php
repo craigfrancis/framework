@@ -799,9 +799,19 @@
 				return is_array($this->session_info_data); // Not NULL (hasn't used $auth->session_get()), or false (not logged in).
 			}
 
-			public function session_required($login_url) {
+			public function session_required($login_url, $config = []) {
 				if (!$this->session_info_available) { // There is no limit, or it was specified via $auth->session_limited_get().
+
+					if (($config['dest_readable'] ?? true) === true) {
+						if (!($login_url instanceof url)) {
+							$login_url = url($login_url); // Ensures that url.prefix can be applied.
+						}
+						$login_url->param_set('dest', config::get('request.uri'));
+						$login_url->dest_readable_set(true);
+					}
+
 					save_request_redirect($login_url, $this->last_identification_get());
+
 				}
 			}
 
