@@ -102,6 +102,7 @@
 				// 'ch-ua-reduced'                   => [], // Added in Chrome 94, origin-trial in 95?
 				'ch-ua-wow64'                        => [],
 				'ch-viewport-width'                  => [],
+				'ch-viewport-height'                 => [],
 				'ch-width'                           => [],
 				'clipboard-read'                     => [],
 				'clipboard-write'                    => [],
