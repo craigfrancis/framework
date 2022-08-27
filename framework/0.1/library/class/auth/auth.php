@@ -45,7 +45,7 @@
 			protected $email_max_length = 100;
 			protected $password_min_length = 6; // A balance between security and usability.
 			protected $password_max_length = 250; // CRYPT_BLOWFISH truncates to 72 characters anyway.
-			protected $last_cookie_name = 'u'; // Or set to NULL to not remember.
+			protected $last_cookie_name = NULL; // e.g. 'u' to remember.
 			protected $last_cookie_path = '/';
 			protected $remember_cookie_name = NULL;
 			protected $remember_cookie_path = '/';
