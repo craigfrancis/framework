@@ -1317,6 +1317,14 @@
 
 	}
 
+	function dest_redirect($default_url, $config = []) {
+		$url = strval(request('dest'));
+		if (substr($url, 0, 1) != '/') { // Must have a value, and must be for this site. Where a scheme-relative URL "//example.com" won't work, as the domain would be prefixed.
+			$url = $default_url;
+		}
+		redirect($url, $config);
+	}
+
 //--------------------------------------------------
 // System redirect
 
