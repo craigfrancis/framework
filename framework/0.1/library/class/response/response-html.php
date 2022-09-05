@@ -1135,10 +1135,14 @@
 					$favicon_url = config::get('output.favicon_url');
 
 					if ($favicon_url !== NULL) {
+						$type = http_mime_type($favicon_url);
+						if ($type == 'image/vnd.microsoft.icon') {
+							$type = 'image/x-icon'; // Better IE Support
+						}
 						if (config::get('output.timestamp_url', false)) {
 							$favicon_url = timestamp_url($favicon_url);
 						}
-						$html .= "\n\t" . '<link rel="shortcut icon" type="image/x-icon" href="' . html($favicon_url) . '" />';
+						$html .= "\n\t" . '<link rel="icon" type="' . html($type) . '" href="' . html($favicon_url) . '" />';
 					}
 
 				//--------------------------------------------------
