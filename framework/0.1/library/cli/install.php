@@ -178,7 +178,7 @@
 				// 			}
 				// 		} else {
 				// 			unlink($tmp_path);
-				// 			if (is_dir($tmp_path)) {
+				// 			if (is_file($tmp_path) || is_link($tmp_path) || is_dir($tmp_path)) {
 				// 				exit_with_error('Cannot delete the /private/tmp/ file', $tmp_path);
 				// 			}
 				// 		}
