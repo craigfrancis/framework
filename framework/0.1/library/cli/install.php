@@ -164,26 +164,26 @@
 			}
 
 		//--------------------------------------------------
-		// Empty the /tmp/ folder
+		// Check the /tmp/ folder
 
 			$temp_folder = PRIVATE_ROOT . '/tmp';
 			if (is_dir($temp_folder)) {
-				foreach (glob($temp_folder . '/*') as $tmp_path) {
-					if (!in_array(pathinfo($tmp_path, PATHINFO_FILENAME), ['form-file'])) { // These folders are cleaned by unlink_old_files() at another time.
-						if (is_dir($tmp_path)) {
-							rrmdir($tmp_path);
-							clearstatcache();
-							if (is_dir($tmp_path)) {
-								exit_with_error('Cannot delete the /private/tmp/ folder', $tmp_path);
-							}
-						} else {
-							unlink($tmp_path);
-							if (is_dir($tmp_path)) {
-								exit_with_error('Cannot delete the /private/tmp/ file', $tmp_path);
-							}
-						}
-					}
-				}
+				// foreach (glob($temp_folder . '/*') as $tmp_path) {
+				// 	if (!in_array(pathinfo($tmp_path, PATHINFO_FILENAME), ['form-file'])) { // These folders are cleaned by unlink_old_files() at another time.
+				// 		if (is_dir($tmp_path)) {
+				// 			rrmdir($tmp_path);
+				// 			clearstatcache();
+				// 			if (is_dir($tmp_path)) {
+				// 				exit_with_error('Cannot delete the /private/tmp/ folder', $tmp_path);
+				// 			}
+				// 		} else {
+				// 			unlink($tmp_path);
+				// 			if (is_dir($tmp_path)) {
+				// 				exit_with_error('Cannot delete the /private/tmp/ file', $tmp_path);
+				// 			}
+				// 		}
+				// 	}
+				// }
 			} else {
 				@mkdir($temp_folder, 0777);
 				if (!is_dir($path)) {
