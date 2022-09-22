@@ -82,6 +82,10 @@
 
 			}
 
+			public function time_out_set($time_out) {
+				$this->lock->time_out_set($time_out);
+			}
+
 			public function refresh_url_set($url) {
 				$this->config['refresh_url'] = $url;
 			}
