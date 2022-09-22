@@ -85,7 +85,7 @@
 				if ($this->lock_fp && flock($this->lock_fp, LOCK_EX)) {
 
 					$info = fstat($this->lock_fp);
-					if ($info['nlink'] > 0) {
+					if ($info['nlink'] > 0) { // Number of hard links to the file
 
 						if (is_array($field)) {
 							$this->lock_data = array_merge($this->lock_data, $field);
@@ -176,10 +176,10 @@
 
 						flock($this->lock_fp, LOCK_UN);
 
-						if ($info['nlink'] > 0) {
+						if ($info['nlink'] > 0) { // Number of hard links to the file
 							return true; // File still exists on filesystem (not unlinked by another process)
 						} else {
-							return false; // Lost the lock, someone else has unlinked it.
+							return false; // Lost the lock, someone else has unlinked it
 						}
 
 					}
@@ -233,7 +233,7 @@
 
 						if (flock($this->lock_fp, LOCK_EX)) { // Waits for lock
 							$info = fstat($this->lock_fp);
-							if ($info['nlink'] == 0) {
+							if ($info['nlink'] == 0) { // Number of hard links to the file
 								flock($this->lock_fp, LOCK_UN);
 								$valid = false; // Another process just did an unlink() on this file
 							}
@@ -279,7 +279,7 @@
 
 					if (flock($this->lock_fp, LOCK_EX)) {
 						$info = fstat($this->lock_fp);
-						if ($info['nlink'] > 0) {
+						if ($info['nlink'] > 0) { // Number of hard links to the file
 							unlink($this->lock_path); // Don't delete if another process now has the lock
 						}
 						flock($this->lock_fp, LOCK_UN);
