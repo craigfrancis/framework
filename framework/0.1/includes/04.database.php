@@ -684,7 +684,7 @@
 				if ($fields_sql !== '') {
 					$fields_sql .= ', ';
 				}
-				$fields_sql .= $this->escape_field($field);
+				$fields_sql .= $this->_escape_field_non_literal($field);
 				$fields[] = $field;
 			}
 
@@ -711,7 +711,7 @@
 
 				$sql = 'INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $records_sql . ')';
 
-				return $this->query($sql, $parameters);
+				return $this->query($sql, $parameters, self::SKIP_LITERAL_CHECK);
 
 			}
 
@@ -729,14 +729,14 @@
 				if ($set_sql !== '') {
 					$set_sql .= ',';
 				}
-				$set_sql .= $this->escape_field($field_name) . ' = ?';
+				$set_sql .= $this->_escape_field_non_literal($field_name) . ' = ?';
 				$set_parameters[] = $field_value;
 			}
 			$parameters = array_merge($set_parameters, $parameters);
 
 			$sql = 'UPDATE ' . $table_sql . ' SET ' . $set_sql . ' WHERE ' . $where_sql;
 
-			return $this->query($sql, $parameters);
+			return $this->query($sql, $parameters, self::SKIP_LITERAL_CHECK);
 
 		}
 
@@ -754,7 +754,7 @@
 					if ($fields_sql !== '') {
 						$fields_sql .= ', ';
 					}
-					$fields_sql .= $this->escape_field($field);
+					$fields_sql .= $this->_escape_field_non_literal($field);
 				}
 			}
 
@@ -770,7 +770,7 @@
 
 			$parameters = (isset($options['parameters']) ? $options['parameters'] : NULL);
 
-			return $this->query($sql, $parameters);
+			return $this->query($sql, $parameters, self::SKIP_LITERAL_CHECK);
 
 		}
 
