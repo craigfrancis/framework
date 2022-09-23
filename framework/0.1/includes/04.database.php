@@ -668,7 +668,7 @@
 				}
 			}
 
-			return $this->query($sql, $parameters, self::SKIP_LITERAL_CHECK); // e.g. 'SELECT * FROM table', modify some values, and then db->insert($copy);
+			return $this->query($sql, $parameters, self::SKIP_LITERAL_CHECK); // Accept non-literals to support 'SELECT * FROM table', modify some values, and then db->insert($copy)... otherwise use $db->query($sql, $parameters, (db::SKIP_LITERAL_CHECK));
 
 		}
 
@@ -684,7 +684,7 @@
 				if ($fields_sql !== '') {
 					$fields_sql .= ', ';
 				}
-				$fields_sql .= $this->_escape_field_non_literal($field);
+				$fields_sql .= $this->escape_field($field);
 				$fields[] = $field;
 			}
 
@@ -711,7 +711,7 @@
 
 				$sql = 'INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $records_sql . ')';
 
-				return $this->query($sql, $parameters, self::SKIP_LITERAL_CHECK);
+				return $this->query($sql, $parameters);
 
 			}
 
@@ -729,14 +729,14 @@
 				if ($set_sql !== '') {
 					$set_sql .= ',';
 				}
-				$set_sql .= $this->_escape_field_non_literal($field_name) . ' = ?';
+				$set_sql .= $this->escape_field($field_name) . ' = ?';
 				$set_parameters[] = $field_value;
 			}
 			$parameters = array_merge($set_parameters, $parameters);
 
 			$sql = 'UPDATE ' . $table_sql . ' SET ' . $set_sql . ' WHERE ' . $where_sql;
 
-			return $this->query($sql, $parameters, self::SKIP_LITERAL_CHECK);
+			return $this->query($sql, $parameters);
 
 		}
 
@@ -754,7 +754,7 @@
 					if ($fields_sql !== '') {
 						$fields_sql .= ', ';
 					}
-					$fields_sql .= $this->_escape_field_non_literal($field);
+					$fields_sql .= $this->escape_field($field);
 				}
 			}
 
@@ -770,7 +770,7 @@
 
 			$parameters = (isset($options['parameters']) ? $options['parameters'] : NULL);
 
-			return $this->query($sql, $parameters, self::SKIP_LITERAL_CHECK);
+			return $this->query($sql, $parameters);
 
 		}
 
