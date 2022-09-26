@@ -821,7 +821,7 @@
 
 							if ($this->encoding_accept_type == 'gzip' && $this->encoding_accept_decode === true) {
 
-								$encoding = strtolower(trim($this->connection->response_header_get('Content-Encoding')));
+								$encoding = strtolower(trim(strval($this->connection->response_header_get('Content-Encoding'))));
 								if ($encoding == 'gzip') {
 									if (function_exists('gzdecode')) {
 										$decoded = @gzdecode($this->current_data);
