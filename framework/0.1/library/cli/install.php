@@ -198,7 +198,7 @@
 				clearstatcache();
 
 				if (substr(sprintf('%o', fileperms($temp_folder)), -3) !== '777') {
-					echo 'chmod 777 ' . escapeshellarg($temp_folder) . "\n";
+					echo "\n" . 'chmod 777 ' . escapeshellarg($temp_folder) . "\n";
 				}
 
 			}
