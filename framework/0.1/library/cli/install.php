@@ -191,7 +191,7 @@
 				}
 			}
 
-			echo sprintf('%o', fileperms($temp_folder));
+			echo substr(sprintf('%o', fileperms($temp_folder)), -3);
 
 			if (is_writable($temp_folder)) { // PHP 8.1 does not suppress warnings
 				@chmod($temp_folder, 0777);
