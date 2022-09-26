@@ -506,8 +506,20 @@
 
 		$config_key_path = '/etc/prime-config-key';
 
-		if (@is_file($config_key_path) &&
-			@is_readable($config_key_path)) {
+		$error_reporting = error_reporting(0);
+
+		$is_readable = (@is_file($config_key_path) && @is_readable($config_key_path)); // PHP 8 will not suppress the 'open_basedir' with @
+
+		error_reporting($error_reporting);
+
+		debug_note([
+				'type' => 'C',
+				'heading' => 'Configuration',
+				'lines' => ['Path ' . $config_key_path . ' = ' . ($is_readable ? 'Y' : 'N')],
+				'class' => 'debug_plain debug_keys',
+			]);
+
+		if ($is_readable) {
 
 			debug_note([
 					'type' => 'L',
@@ -528,7 +540,7 @@
 
 		}
 
-		unset($config_key_path);
+		unset($config_key_path, $is_readable, $error_reporting);
 
 		debug_note([
 				'type' => 'C',
