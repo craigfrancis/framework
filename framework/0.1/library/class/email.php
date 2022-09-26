@@ -294,7 +294,7 @@
 					];
 
 				$original_time = request('o');
-				if (preg_match('/^[0-9]{10,}$/', $original_time)) {
+				if (preg_match('/^[0-9]{10,}$/', strval($original_time))) {
 					$original_time = date($date_format, $original_time) . ' (' . timestamp_to_human((time() - $original_time), 2, true) . ')';
 				}
 				if ($original_time !== NULL) {
