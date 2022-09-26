@@ -191,10 +191,16 @@
 				}
 			}
 
-			echo substr(sprintf('%o', fileperms($temp_folder)), -3);
+			if (substr(sprintf('%o', fileperms($temp_folder)), -3) !== '777') {
 
-			if (is_writable($temp_folder)) { // PHP 8.1 does not suppress warnings
-				@chmod($temp_folder, 0777);
+				@chmod($temp_folder, 0777); // PHP 8.1 does not suppress warnings
+
+				clearstatcache();
+
+				if (substr(sprintf('%o', fileperms($temp_folder)), -3) !== '777') {
+					echo 'chmod 777 ' . escapeshellarg($temp_folder) . "\n";
+				}
+
 			}
 
 			if (is_dir(PRIVATE_ROOT . '/.svn')) {
