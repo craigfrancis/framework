@@ -417,7 +417,7 @@
 		//--------------------------------------------------
 		// If disabled
 
-			if (error_reporting() == 0) { // (as much granularity as I want to check for)
+			if (!(error_reporting() & $err_no)) { // No longer 0 for the @ operator in PHP 8 https://www.php.net/manual/en/migration80.incompatible.php#:~:text=The%20%40%20operator%20will%20no%20longer%20silence
 				return;
 			}
 
