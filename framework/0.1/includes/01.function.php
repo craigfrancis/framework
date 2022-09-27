@@ -247,7 +247,7 @@
 	}
 
 	function xml($text) {
-		return str_replace(array('&', '"', "'", '<', '>', "\0"), array('&amp;', '&quot;', '&apos;', '&lt;', '&gt;', ''), $text);
+		return str_replace(array('&', '"', "'", '<', '>', "\0"), array('&amp;', '&quot;', '&apos;', '&lt;', '&gt;', ''), strval($text));
 	}
 
 	function csv($text) {
