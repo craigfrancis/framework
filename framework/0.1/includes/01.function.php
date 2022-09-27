@@ -1571,8 +1571,12 @@
 				'csp'     => NULL,
 			], $config);
 
-		if (!$config['path'] && !$config['content']) {
+		if ($config['path'] === NULL && $config['content'] === NULL) {
 			exit_with_error('Either a "path" or "content" is required when calling http_download()');
+		}
+
+		if ($config['path'] && !is_file($config['path'])) {
+			exit_with_error('The "path" for http_download() is not valid', $config['path']);
 		}
 
 		if (!$config['name']) {
