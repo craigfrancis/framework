@@ -19,7 +19,7 @@
 		}
 	}
 
-	$val = request('background');
+	$val = strval(request('background'));
 	if (preg_match('/^[0-9a-f]{6}$/i', $val)) {
 		$config['background'] = $val;
 	}
