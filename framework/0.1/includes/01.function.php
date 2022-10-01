@@ -259,6 +259,7 @@
 	}
 
 	function safe_file_name($name, $allow_ext = false, $replace_character = '') {
+		$name = strval($name); // Not NULL
 		if ($allow_ext && preg_match('/^(.*[^\.].*)(\.[a-zA-Z0-9]+)$/', $name, $matches)) {
 			$name = $matches[1];
 			$ext = $matches[2];
