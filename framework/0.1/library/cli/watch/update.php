@@ -100,6 +100,20 @@
 					$file_contents = preg_replace('/^[ \t]+/m', '', $file_contents); // Remove whitespace at the start
 					$file_contents = str_replace(';}', '}', $file_contents); // Remove unnecessary ;'s
 
+					if (preg_match('/[ \t]*:root *{([^}]*)}\s/i', $file_contents, $root_match)) { // Replace "var(--name)" with values defined in ":root { ... }"
+						$match_all = true;
+						foreach (array_map('trim', explode("\n", $root_match[1])) as $line) {
+							if (preg_match('/(--[a-z\-]+) *: *([^;]+);/', $line, $line_match)) {
+								$file_contents = str_replace('var(' . $line_match[1] . ')', $line_match[2], $file_contents);
+							} else if ($line != '') {
+								$match_all = false;
+							}
+						}
+						if ($match_all) {
+							$file_contents = str_replace($root_match[0], '', $file_contents);
+						}
+					}
+
 					$file_dest = ROOT . str_replace('/css/', '/min/css/', $path);
 
 					$result = 'Framework CSS Min';
