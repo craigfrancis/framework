@@ -37,6 +37,7 @@
 			// https://www.w3.org/TR/webauthn/
 			// https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API#Examples
 			// https://www.imperialviolet.org/2018/03/27/webauthn.html
+			// https://www.imperialviolet.org/2022/09/22/passkeys.html
 
 			//--------------------------------------------------
 			// https://webauthndemo.appspot.com
