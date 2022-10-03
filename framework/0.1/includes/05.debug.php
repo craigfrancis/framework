@@ -485,9 +485,20 @@
 
 				config::array_push('debug.errors', $error_message);
 
-				if (config::get('debug.error_shutdown_registered') !== true) {
+				if ($err_no === E_DEPRECATED && preg_match('/Passing null to parameter #.* of type .* is deprecated/', $err_str)) {
+
+					// The stupid NULL coercion problem in PHP 8.1
+					//    https://wiki.php.net/rfc/null_coercion_consistency
+					//
+					// Don't sent an email about it, just rely on the error_log(),
+					// and mass apply strval() once a week.
+
+				} else if (config::get('debug.error_shutdown_registered') !== true) {
+
 					config::set('debug.error_shutdown_registered', true);
+
 					register_shutdown_function('send_error_emails');
+
 				}
 
 			}
