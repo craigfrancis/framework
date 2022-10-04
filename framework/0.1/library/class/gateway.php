@@ -762,7 +762,7 @@ report_add('Deprecated: $api->return_xml() ... just call mime_set(), then exit w
 			protected function error_harmless($error) {
 				if ($error !== NULL) {
 
-					report_add($error, 'error');
+					report_add($error, 'notice');
 
 					if (REQUEST_MODE == 'cli' || config::get('debug.level') > 0) {
 						echo ucfirst($this->api) . ' - Harmless Error:' . "\n";
