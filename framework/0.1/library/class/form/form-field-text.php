@@ -105,8 +105,7 @@
 			public function min_length_set_html($error_html, $size = 1) {
 
 				$error_html = str_replace('XXX', $size, $error_html);
-
-				if ($this->form_submitted && strlen(trim($this->value)) < $size) {
+				if ($this->form_submitted && strlen(trim(strlen($this->value))) < $size) {
 					$this->form->_field_error_set_html($this->form_field_uid, $error_html);
 				}
 
