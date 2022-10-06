@@ -397,9 +397,9 @@
 				return [];
 			}
 
-			public function email_title_get() {
+			public function email_title_get($info = NULL) {
 				$now = new timestamp();
-				return ref_to_human($this->job_name) . ' @ ' . $now->format('Y-m-d H:i:s');
+				return ref_to_human($this->job_name) . ($info ? ' - ' . $info : '') . ' @ ' . $now->format('Y-m-d H:i:s');
 			}
 
 			public function should_run() {
@@ -560,7 +560,7 @@
 						//--------------------------------------------------
 						// Email
 
-							$email_title = $job->email_title_get();
+							$email_title = $job->email_title_get(($error ? $error[0] : NULL));
 							$email_addresses = $job->email_addresses_get();
 
 						//--------------------------------------------------
