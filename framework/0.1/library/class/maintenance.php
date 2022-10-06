@@ -397,9 +397,9 @@
 				return [];
 			}
 
-			public function email_title_get($info = NULL) {
+			public function email_title_get() {
 				$now = new timestamp();
-				return ref_to_human($this->job_name) . ($info ? ' - ' . $info : '') . ' @ ' . $now->format('Y-m-d H:i:s');
+				return ref_to_human($this->job_name) . ' @ ' . $now->format('Y-m-d H:i:s');
 			}
 
 			public function should_run() {
@@ -535,10 +535,18 @@
 							$job_output_html = ob_get_clean() . $job_output_html;
 
 						//--------------------------------------------------
+						// Email
+
+							$email_title = $job->email_title_get();
+							$email_addresses = $job->email_addresses_get();
+
+						//--------------------------------------------------
 						// Error
 
 							$error = $job->error_get();
 							if ($error) {
+
+								$email_title .= ' - ' . $error[0];
 
 								$error_type = $error[0] . ' Error [' . $this->job_name . ']:';
 
@@ -556,12 +564,6 @@
 								$job_output_html = rtrim($error_html . $job_output_html);
 
 							}
-
-						//--------------------------------------------------
-						// Email
-
-							$email_title = $job->email_title_get(($error ? $error[0] : NULL));
-							$email_addresses = $job->email_addresses_get();
 
 						//--------------------------------------------------
 						// Halt of maintenance run
