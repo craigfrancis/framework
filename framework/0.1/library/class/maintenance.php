@@ -433,7 +433,7 @@
 			protected function error_harmless($error = NULL) {
 				if ($error !== NULL) {
 
-					report_add($error, 'notice', false); // Don't send the email, will be done later
+					report_add($error, 'error', false); // Don't send the email, will be done later
 
 					$this->error_type = 'Harmless';
 					$this->error_message = $error;
