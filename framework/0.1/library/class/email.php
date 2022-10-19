@@ -354,7 +354,7 @@
 						}
 
 						if (!isset($value['html'])) {
-							$value['html'] = nl2br(html($value['text']));
+							$value['html'] = str_replace('  ', ' &#xA0;', nl2br(html($value['text'])));
 						}
 
 						if ($value['html'] == '') {

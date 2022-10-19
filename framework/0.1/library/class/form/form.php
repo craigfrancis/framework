@@ -238,7 +238,7 @@
 				$this->form_button_name = $name;
 			}
 
-			public function form_passive_set($passive, $method = NULL) { // Always considered as "submitted" and drops the "csrf" check... good for a search form.
+			public function form_passive_set($passive, $method = NULL) { // Always considered as "submitted" and uses "form.csrf_passive_checks"... good for a search form.
 				$this->form_passive = ($passive == true);
 				$this->form_button_name = ($this->form_passive ? NULL : 'button'); // As passive we don't need to know which button is pressed (just adds cruft to url)
 				if ($method !== NULL) {
@@ -961,7 +961,7 @@
 
 							if ($csrf_errors) {
 								if ($csrf_report) {
-									report_add('CSRF error via SecFetch/SameSite checks (' . ($csrf_block ? 'user asked to re-submit' : 'not blocked') . ').' . "\n\n" . 'Errors = ' . debug_dump($csrf_errors) . "\n\n" . 'Sec-Fetch Values = ' . debug_dump($fetch_values) . "\n\n" . ' Sec-Fetch Allowed = ' . debug_dump($this->fetch_allowed), 'error');
+									report_add('CSRF error via SecFetch/SameSite checks (' . ($csrf_block ? 'user asked to re-submit' : 'not blocked') . ').' . "\n\n" . 'Errors = ' . debug_dump($csrf_errors) . "\n\n" . 'Passive = ' . ($this->form_passive ? 'True' : 'False') . "\n\n" . 'Sec-Fetch Provided Values = ' . debug_dump($fetch_values) . "\n\n" . ' Sec-Fetch Allowed Values = ' . debug_dump($this->fetch_allowed), 'error');
 								}
 								if ($csrf_block) {
 									$this->_field_error_add_html(-1, $this->csrf_error_html, implode('/', $csrf_errors));
