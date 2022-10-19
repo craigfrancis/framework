@@ -64,7 +64,7 @@
 					if ($values) {
 						$heading = 'h' . ($values['level'] + 1);
 						return '
-							<' . html($heading) . '>' . nl2br(html($values['text'])) . '</' . html($heading) . '>';
+							<' . html($heading) . '>' . text_to_html($values['text']) . '</' . html($heading) . '>';
 					}
 
 			}

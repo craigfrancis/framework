@@ -769,7 +769,7 @@
 								if ($cell_info['html'] !== NULL) {
 									$content_html = $cell_info['html'];
 								} else {
-									$content_html = nl2br(html($cell_info['text']));
+									$content_html = text_to_html($cell_info['text']);
 								}
 
 								if ($content_html === '' || $content_html === NULL) {

@@ -39,7 +39,7 @@
 					$this->value = html_decode($this->value_html);
 				} else {
 					$this->value = $value;
-					$this->value_html = nl2br(html($value));
+					$this->value_html = text_to_html($value);
 				}
 			}
 
@@ -82,7 +82,7 @@
 				if ($this->value_html !== NULL) {
 					return $this->value_html;
 				} else if ($this->db_field_name !== NULL) {
-					return nl2br(html($this->db_field_value_get()));
+					return text_to_html($this->db_field_value_get());
 				} else {
 					return '';
 				}

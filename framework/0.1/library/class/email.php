@@ -125,7 +125,7 @@
 
 			public function template_value_set($name, $value) {
 				$this->template_values_text[$name] = $value;
-				$this->template_values_html[$name] = nl2br(html($value));
+				$this->template_values_html[$name] = text_to_html($value);
 			}
 
 			public function template_value_get($name) {
@@ -255,7 +255,7 @@
 
 			public function body_add($content_text) {
 				$this->body_text .= $content_text;
-				$this->body_html .= nl2br(html($content_text));
+				$this->body_html .= text_to_html($content_text);
 			}
 
 			public function body_text_add($content_text) { // NOTE: This should not be body_add_text, as the text and html parts of an email are separate.
@@ -354,7 +354,7 @@
 						}
 
 						if (!isset($value['html'])) {
-							$value['html'] = str_replace('  ', ' &#xA0;', nl2br(html($value['text'])));
+							$value['html'] = text_to_html($value['text']);
 						}
 
 						if ($value['html'] == '') {

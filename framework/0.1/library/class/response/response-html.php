@@ -148,7 +148,7 @@
 				if ($value instanceof html_template || $value instanceof html_safe_value) {
 					$this->view_html = $value->html();
 				} else {
-					$this->view_html = nl2br(html($value));
+					$this->view_html = text_to_html($value);
 				}
 			}
 

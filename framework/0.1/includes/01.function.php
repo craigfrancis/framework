@@ -178,8 +178,12 @@
 		if ($input instanceof html_template || $input instanceof html_safe_value) {
 			return $input;
 		} else {
-			return nl2br(html($input));
+			return text_to_html($input);
 		}
+	}
+
+	function text_to_html($text) {
+		return str_replace('  ', ' &#xA0;', nl2br(html($text)));
 	}
 
 	function html($text) {

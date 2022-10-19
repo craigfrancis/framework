@@ -274,7 +274,7 @@
 		//--------------------------------------------------
 		// Hidden HTML
 
-			$hidden_html = nl2br(html($hidden_info));
+			$hidden_html = text_to_html($hidden_info);
 
 			$hidden_html = preg_replace('/(You have an error in your SQL syntax; .+) near &apos;(.+?)&apos; at line [0-9]+(.*)\2/ims', '\1.\3<strong>\2</strong>', $hidden_html);
 
@@ -354,12 +354,12 @@
 							</head>
 							<body id="p_error">
 								<h1>System Error</h1>
-								<p>' . nl2br(html($message)) . '</p>';
+								<p>' . text_to_html($message) . '</p>';
 
 						if ($hidden_info != '') {
 							echo '
 								<hr />
-								<div>' . nl2br(html($hidden_info)) . '</div>'; // Don't use <pre>, SQL can have very long lines.
+								<div>' . text_to_html($hidden_info) . '</div>'; // Don't use <pre>, SQL can have very long lines.
 						}
 
 						echo '
@@ -752,7 +752,7 @@
 					} else {
 						http_response_code(500);
 						mime_set('text/html');
-						exit('Missing table <strong>' . html($table) . '</strong>:<br /><br />' . nl2br(html(trim(str_replace('[TABLE]', $table, $sql)))));
+						exit('Missing table <strong>' . html($table) . '</strong>:<br /><br />' . text_to_html(trim(str_replace('[TABLE]', $table, $sql))));
 					}
 				}
 
