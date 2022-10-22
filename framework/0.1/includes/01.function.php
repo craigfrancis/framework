@@ -798,7 +798,7 @@
 
 	function format_telephone_number($number) {
 
-		if (strlen(preg_replace('/[^0-9]/', '', $number)) < 6) {
+		if (strlen(preg_replace('/[^0-9]/', '', strval($number))) < 6) {
 
 				// 1234 Street Name
 				// Ex Directory
