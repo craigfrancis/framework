@@ -318,8 +318,9 @@
 					// 		'Label_1B' => 'Value',
 					// 		'Label_1C' => 'Value',
 					//
-					// 		['Label_2', 'Value'], // Example from form class, note the duplicate label values.
+					// 		['Label_2', 'Value'], // Example from form class, note this allows duplicate label values.
 					// 		['Label_2', "A\nB"],
+					// 		['Label_2', ht('<a href="?">?</a>', [$url, $text])],
 					//
 					// 		'Label_3' => ['text' => 'Value', 'html' => '<strong>Value</strong>'],
 					//
@@ -340,17 +341,28 @@
 								if (!isset($value['label'])) {
 									$value['label'] = $label;
 								}
+							} else if ($value[1] instanceof html_template || $value[1] instanceof html_safe_value) {
+								$html = $value[1]->html();
+								$value = [
+										'label' => $value[0],
+										'text' => trim(strip_tags($html)),
+										'html' => $html,
+									];
 							} else {
 								$value = [
 										'label' => $value[0], // The form class will use an array just incase there are two fields with the same label
-										'text' => strval($value[1]),
+										'text' => $value[1],
 									];
 							}
 						} else {
 							$value = [
 									'label' => $label,
-									'text' => strval($value),
+									'text' => $value,
 								];
+						}
+
+						if ($value['text'] === NULL) {
+							continue; // e.g. using request_table_add(), but setting 'Method' to NULL to remove.
 						}
 
 						if (!isset($value['html'])) {
