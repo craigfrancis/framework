@@ -496,7 +496,7 @@
 
 							}
 
-							if ($data != '') {
+							if ($data != '' || $method == 'POST') {
 
 								$headers[] = 'Content-Length: ' . strlen($data);
 
