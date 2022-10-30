@@ -88,6 +88,7 @@
 				'ch-dpr'                             => [],
 				'ch-ect'                             => [],
 				'ch-prefers-color-scheme'            => [],
+				'ch-prefers-reduced-motion'          => [],
 				'ch-rtt'                             => [],
 				'ch-save-data'                       => [],
 				'ch-ua'                              => [],
