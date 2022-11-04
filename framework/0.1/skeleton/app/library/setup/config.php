@@ -140,10 +140,6 @@
 			'style-src'   => [], // Defaults to 'none'
 		];
 
-	if (SERVER != 'stage') {
-		$config['output.ct_enabled'] = true;
-	}
-
 //--------------------------------------------------
 // Tracking
 

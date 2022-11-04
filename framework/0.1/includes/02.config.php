@@ -443,7 +443,6 @@
 		config::set_default('output.integrity', false); // Set to true to be added automatically, or ['script', 'style'] so it's added to CSP "require-sri-for" as well.
 		config::set_default('output.referrer_policy', 'strict-origin-when-cross-origin'); // Added in Chrome 61.0.3130.0
 
-		config::set_default('output.ct_enabled', false);
 		config::set_default('output.ct_enforced', false);
 		config::set_default('output.ct_max_age', 3600); // Not 0, so we can also check resources (e.g. images)
 		config::set_default('output.ct_report', false);
