@@ -278,7 +278,7 @@
 				}
 
 				error_send('permission-denied', [
-						'record' => (['config' => $this->config, 'values' => $this->values]),
+						'record' => ['config' => $this->config, 'values' => $this->values],
 					]);
 
 			}
@@ -346,7 +346,7 @@
 						} else if ($this->config['deleted'] && $this->values['deleted'] != '0000-00-00 00:00:00') {
 
 							$error_config = [
-									'record' => (['config' => $this->config, 'values' => $this->values]),
+									'record' => ['config' => $this->config, 'values' => $this->values],
 									'timestamp' => new timestamp($this->values['deleted'], 'db'),
 								];
 
