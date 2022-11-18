@@ -265,21 +265,21 @@
 
 			protected function auth_check($method, $values) {
 
-				if ($method !== 'values_get' || $values === false) {
-					return;
-				}
-
-				$table = $this->table_get_short();
-
-				if ($table == 'example') {
-					if (USER_TYPE === 'admin' || $values['created_by'] == USER_ID) {
-						return;
-					}
-				}
-
-				error_send('permission-denied', [
-						'record' => ['config' => $this->config, 'values' => $this->values],
-					]);
+				// if ($method !== 'values_get' || $values === false) {
+				// 	return;
+				// }
+				//
+				// $table = $this->table_get_short();
+				//
+				// if ($table == 'example') {
+				// 	if (USER_TYPE === 'admin' || $values['created_by'] == USER_ID) {
+				// 		return;
+				// 	}
+				// }
+				//
+				// error_send('permission-denied', [
+				// 		'record' => ['config' => $this->config, 'values' => $this->values],
+				// 	]);
 
 			}
 
