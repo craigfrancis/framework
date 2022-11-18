@@ -263,8 +263,27 @@
 				}
 			}
 
+			protected function auth_check($method, $values) {
+
+				if ($method !== 'values_get' || $values === false) {
+					return;
+				}
+
+				$table = $this->table_get_short();
+
+				if ($table == 'example') {
+					if (USER_TYPE === 'admin' || $values['created_by'] == USER_ID) {
+						return;
+					}
+				}
+
+				error_send('permission-denied', []);
+
+			}
+
 			public function values_get() {
 				if ($this->values === NULL) {
+
 					if ($this->where_sql === NULL) {
 
 						$this->values = false; // Lock... where clause not specified in time.
@@ -338,6 +357,9 @@
 						}
 
 					}
+
+					$this->auth_check('value_get', $this->values);
+
 				}
 				return $this->values;
 			}
