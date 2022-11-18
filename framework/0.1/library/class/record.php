@@ -360,7 +360,7 @@
 
 					}
 
-					$this->auth_check('value_get', $this->values);
+					$this->auth_check('values_get', $this->values);
 
 				}
 				return $this->values;
