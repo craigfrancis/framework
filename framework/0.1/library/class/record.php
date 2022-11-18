@@ -277,7 +277,9 @@
 					}
 				}
 
-				error_send('permission-denied', []);
+				error_send('permission-denied', [
+						'record' => (['config' => $this->config, 'values' => $this->values]),
+					]);
 
 			}
 
