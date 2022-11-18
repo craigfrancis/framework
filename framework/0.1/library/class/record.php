@@ -26,7 +26,7 @@
 
 			public function __construct($config) {
 
-				$this->setup(array_merge(array(
+				$this->setup(array_merge([
 
 						'fields' => [],
 						'fields_sql' => NULL, // Currently not available
@@ -53,7 +53,7 @@
 
 						'db' => NULL,
 
-					), $config));
+					], $config));
 
 			}
 
@@ -142,13 +142,13 @@
 			// public function where_set($where) {
 			//
 			// 	Could pass in an array...
-			// 		array(
-			// 				'OR' => array(
-			// 						'moderation' => 'new',
-			// 						'moderation' => 'pending', // Notice the duplicate keys
-			// 					),
-			// 				'deleted !=' => '0000-00-00 00:00:00' // Why does the key contain more than the field name?
-			// 			);
+			// 		[
+			// 			'OR' => [
+			// 					'moderation' => 'new',
+			// 					'moderation' => 'pending', // Notice the duplicate keys
+			// 				],
+			// 			'deleted !=' => '0000-00-00 00:00:00' // Why does the key contain more than the field name?
+			// 		];
 			//
 			// If we did do arrays, how would easily show the following
 			// in an easy to write/read way:
@@ -346,7 +346,7 @@
 						} else if ($this->config['deleted'] && $this->values['deleted'] != '0000-00-00 00:00:00') {
 
 							$error_config = [
-									'record' => (array('config' => $this->config, 'values' => $this->values)),
+									'record' => (['config' => $this->config, 'values' => $this->values]),
 									'timestamp' => new timestamp($this->values['deleted'], 'db'),
 								];
 
@@ -635,9 +635,9 @@
 				//--------------------------------------------------
 				// Save
 
-					$values = array(
+					$values = [
 							'deleted' => new timestamp(),
-						);
+						];
 
 					$db->update($table_sql, $values, $this->where_sql, $this->where_parameters);
 
@@ -685,12 +685,12 @@
 
 			protected function log_values_get($field, $old_value, $new_value) {
 
-				return array_merge($this->config['log_values'], array(
+				return array_merge($this->config['log_values'], [
 							'field' => $field,
 							'old_value' => strval($old_value),
 							'new_value' => strval($new_value),
 							'created' => new timestamp(),
-						));
+						]);
 
 			}
 
