@@ -124,7 +124,7 @@
 
 			}
 
-			protected function table_get_short() {
+			protected function table_get() {
 				$table = $this->config['table'];
 				if (!$table) {
 					$table = strval($this->table_sql); // Not NULL
@@ -132,7 +132,11 @@
 						$table = $matches[1];
 					}
 				}
-				return prefix_replace(DB_PREFIX, '', $table);
+				return $table;
+			}
+
+			protected function table_get_short() {
+				return prefix_replace(DB_PREFIX, '', $this->table_get());
 			}
 
 			// public function where_set($where) {
