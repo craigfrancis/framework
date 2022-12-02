@@ -293,6 +293,9 @@
 					} else if ($this->config['single'] === true) {
 
 						$this->values = [];
+						if ($this->config['where_id']) {
+							$this->values[$this->config['where_field']] = $this->config['where_id'];
+						}
 						foreach ($this->config['fields'] as $field) {
 							$this->values[$field] = '';
 						}
@@ -355,6 +358,12 @@
 							}
 
 							error_send('deleted', $error_config);
+
+						} else {
+
+							if ($this->config['where_id'] && !isset($this->values[$this->config['where_field']])) {
+								$this->values[$this->config['where_field']] = $this->config['where_id'];
+							}
 
 						}
 
