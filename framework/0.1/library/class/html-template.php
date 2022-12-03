@@ -18,6 +18,7 @@
 					'meta'       => ['name' => 'text', 'content' => 'text'], // Do not allow <meta http-equiv="">, e.g. Refresh, Set-Cookie
 					'link'       => ['rel' => ['preload', 'prefetch', 'prerender', 'canonical', 'next'], 'as' => ['image', 'font', 'track', 'video', 'audio'], 'href' => 'url', 'fetchpriority' => ['high', 'low']],
 					'div'        => ['id' => 'ref', 'class' => 'ref', 'role' => 'text', 'title' => 'text', 'tabindex' => 'int', 'inert' => ['inert']],
+					'section'    => ['id' => 'ref', 'class' => 'ref', 'role' => 'text', 'title' => 'text', 'tabindex' => 'int', 'inert' => ['inert']],
 					'span'       => ['id' => 'ref', 'class' => 'ref', 'role' => 'text', 'title' => 'text', 'tabindex' => 'int'],
 					'h1'         => ['id' => 'ref', 'class' => 'ref'],
 					'h2'         => ['id' => 'ref', 'class' => 'ref'],
