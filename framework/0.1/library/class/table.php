@@ -1230,7 +1230,7 @@
 		// Support functions
 
 			private function _html_to_text($html, $max_width = NULL) {
-				$text = html_decode(strip_tags($html));
+				$text = html_decode(strip_tags(strval($html)));
 				if ($max_width !== NULL) {
 					$text = explode("\n", wordwrap($text, $max_width, "\n", true));
 				}
