@@ -51,6 +51,8 @@
 
 						'deleted' => false, // False, never allow deleted records; NULL, do not check; True/Array/etc, check and use error_send('deleted')
 
+						'deleted_by' => NULL,
+
 						'db' => NULL,
 
 					], $config));
@@ -647,6 +649,10 @@
 					$values = [
 							'deleted' => new timestamp(),
 						];
+
+					if ($this->config['deleted_by'] !== NULL) {
+						$values['deleted_by'] = $this->config['deleted_by'];
+					}
 
 					$db->update($table_sql, $values, $this->where_sql, $this->where_parameters);
 
