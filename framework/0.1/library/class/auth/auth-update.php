@@ -73,6 +73,10 @@
 
 			}
 
+			public function form_set($form) { // Only used if not using one of the field_*_get() methods.
+				$this->form = $form;
+			}
+
 			public function password_old_check($check) {
 				$this->password_old_check = $check;
 			}
@@ -248,7 +252,7 @@
 
 					} else if ($this->form === NULL || $values !== NULL) {
 
-						exit_with_error('Cannot call $auth_update->validate() without using any form fields, or providing an array of values.');
+						exit_with_error('Cannot call $auth_update->validate() without using any form fields, or providing an array of values, or using $auth_update->form_set().');
 
 					} else if (!$this->form->valid()) { // Basic checks such as required fields, and CSRF
 
@@ -268,9 +272,9 @@
 							$values[$k] = strval($field->value_get()); // No NULL values (especially password_new_2)
 						}
 
-						if (count($values) == 0) {
-							exit_with_error('You must call one of the $auth_update->field_*_get() methods before $auth_update->validate().');
-						}
+						// if (count($values) == 0) {
+						// 	exit_with_error('You must call one of the $auth_update->field_*_get() methods before $auth_update->validate().');
+						// }
 
 					}
 
