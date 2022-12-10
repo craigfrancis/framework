@@ -951,7 +951,7 @@
 				//--------------------------------------------------
 				// Return
 
-					return $content_html;
+					return new html_safe_value($content_html);
 
 			}
 
