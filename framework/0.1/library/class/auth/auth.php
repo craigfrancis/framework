@@ -1439,7 +1439,7 @@
 		//--------------------------------------------------
 		// Validation
 
-			public function validate_identification_unique($identification, $user_id) {
+			public function validate_identification_unique($identification, $ignore_user_id = NULL) {
 
 				$db = $this->db_get();
 
@@ -1458,13 +1458,13 @@
 
 				$parameters = [];
 				$parameters[] = $identification;
-				$parameters[] = intval(($user_id === NULL ? 0 : $user_id));
+				$parameters[] = intval(($ignore_user_id === NULL ? 0 : $ignore_user_id));
 
 				return ($db->num_rows($sql, $parameters) == 0);
 
 			}
 
-			public function validate_identification($identification, $user_id) {
+			public function validate_identification($identification, $user_id = NULL) {
 
 				// Could set additional complexity requirements (e.g. username must only contain letters)
 

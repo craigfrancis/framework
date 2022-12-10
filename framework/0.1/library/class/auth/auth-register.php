@@ -204,8 +204,8 @@
 					//--------------------------------------------------
 					// Identification
 
-						$result = $this->auth->validate_identification($identification, NULL);
-						$unique = $this->auth->validate_identification_unique($identification, NULL);
+						$result = $this->auth->validate_identification($identification);
+						$unique = $this->auth->validate_identification_unique($identification);
 
 						$identification_username = ($this->auth->identification_type_get() == 'username');
 
@@ -514,7 +514,7 @@
 
 							$identification_value = $row[$this->db_fields['identification']];
 
-							if (!$this->auth->validate_identification_unique($identification_value, NULL)) {
+							if (!$this->auth->validate_identification_unique($identification_value)) {
 								return false; // e.g. Someone registered twice, and followed both links (should be fine to show normal 'link expired' message).
 							}
 
