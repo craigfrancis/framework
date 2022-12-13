@@ -23,6 +23,7 @@
 			protected $field_password_new_1 = NULL;
 			protected $field_password_new_2 = NULL;
 			protected $field_password_new_required = false; // Don't set directly, just call $auth_update->field_password_1_get($form, ['required' => true]);
+			protected $split_confirm = NULL;
 
 			public function __construct($auth) {
 
@@ -234,10 +235,34 @@
 					$confirm_valid = true;
 					$confirm_email = $this->confirm_email;
 
+					$identification_username = ($this->auth->identification_type_get() == 'username');
+
 				//--------------------------------------------------
 				// User
 
-					list($current_user_id, $current_identification, $current_source) = $this->auth->user_get();
+					if ($this->split_confirm !== NULL) {
+
+						if ($identification_username) {
+							exit_with_error('The auth_update use of split_confirm has not been setup to work with usernames');
+						}
+
+						$current_user_id = $this->split_confirm['user_id'];
+						$current_identification = $this->split_confirm['email'];
+
+						// Act like the admin page, which will 'set' the user, so:
+						//  - Identification is checked (unique)
+						//  - Old 'auth' is returned, incase the password is changed (keeps other values).
+						//  - Don't check recently sent confirmations (this the confirmation step, after the email has been sent).
+						//  - Don't 'remember_identification'
+						//  - Maybe not the correct default, but don't 'expire_records'
+
+						$current_source = 'set';
+
+					} else {
+
+						list($current_user_id, $current_identification, $current_source) = $this->auth->user_get();
+
+					}
 
 					if ($current_user_id === NULL) {
 						exit_with_error('Cannot call $auth_update->validate() when the user is not logged in, or $auth->user_set() has not been used.');
@@ -263,6 +288,12 @@
 						$fields = [];
 						$values = [];
 
+						if ($this->split_confirm !== NULL) {
+							$values['identification'] = $this->split_confirm['email'];
+						} else if ($this->field_identification !== NULL) {
+							$fields['identification'] = $this->field_identification;
+						}
+
 						if ($this->field_identification !== NULL) $fields['identification'] = $this->field_identification;
 						if ($this->field_password_old !== NULL)   $fields['password_old']   = $this->field_password_old;
 						if ($this->field_password_new_1 !== NULL) $fields['password_new_1'] = $this->field_password_new_1;
@@ -286,7 +317,6 @@
 
 						$identification_new = NULL;
 						$identification_unique = NULL;
-						$identification_username = ($this->auth->identification_type_get() == 'username');
 
 						if (array_key_exists('identification', $values)) {
 
@@ -339,7 +369,7 @@
 						}
 
 					//--------------------------------------------------
-					// Old password
+					// Old auth (password)
 
 						$auth_config = NULL;
 
@@ -488,13 +518,14 @@
 					if (count($errors) == 0) {
 
 						$this->details = array(
-								'identification' => $identification_new,
-								'password' => $password_new,
-								'confirm_valid' => $confirm_valid,
-								'confirm_email' => $confirm_email,
-								'user_set' => ($current_source == 'set'),
-								'user_id' => $current_user_id,
-								'auth' => $auth_config,
+								'identification'          => $identification_new,
+								'password'                => $password_new,
+								'confirm_valid'           => $confirm_valid,
+								'confirm_email'           => $confirm_email,
+								'remember_identification' => ($current_source !== 'set'), // Default to remembering login details when user is editing their own profile, not the admin using $auth->user_set();
+								'expire_records'          => ($password_new !== NULL && $password_new !== '' && $current_source !== 'set'),
+								'user_id'                 => $current_user_id,
+								'auth'                    => $auth_config,
 							);
 
 						return true;
@@ -503,7 +534,11 @@
 
 						foreach ($errors as $field => $error) {
 							if ($field == 'identification') {
-								$this->field_identification->error_add($error);
+								if ($this->field_identification) {
+									$this->field_identification->error_add($error);
+								} else {
+									$this->form->error_add($error);
+								}
 							} else if ($field == 'password_old') {
 								$this->field_password_old->error_add($error);
 							} else if ($field == 'password_new_1') {
@@ -576,7 +611,7 @@
 					}
 
 					if ($config['remember_identification'] === NULL) {
-						$config['remember_identification'] = ($this->details['user_set'] == false); // Default to remembering login details when user is editing their own profile, not the admin using $auth->user_set();
+						$config['remember_identification'] = $this->details['remember_identification'];
 					}
 
 				//--------------------------------------------------
@@ -624,7 +659,7 @@
 				//--------------------------------------------------
 				// Expire... on user changing their password
 
-					if ($this->details['password'] && !$this->details['user_set']) {
+					if ($this->details['expire_records']) {
 
 						$this->auth->expire('remember', $this->details['user_id']); // No remembered user records should exist (malicious user might own it)
 						$this->auth->expire('session', $this->details['user_id'], ['session_keep' => $this->auth->session_id_get()]); // Only this session should remain be active.
@@ -698,12 +733,10 @@
 				// Config
 
 					$config = array_merge(array(
-							'email_field' => 'email',
+							'complete' => true,
 						), $config);
 
 					$db = $this->auth->db_get();
-
-					$now = new timestamp();
 
 					if (preg_match('/^([0-9]+)-(.+)$/', $update_token, $matches)) {
 						$update_id = $matches[1];
@@ -719,6 +752,7 @@
 				// If valid
 
 					$sql = 'SELECT
+								u.id,
 								u.token,
 								u.user_id,
 								u.email
@@ -734,60 +768,17 @@
 
 					if (($row = $db->fetch_row($sql, $parameters)) && (quick_hash_verify($update_pass, $row['token']))) {
 
-						//--------------------------------------------------
-						// Still unique
+						if ($config['complete']) {
 
-							if (!$this->auth->validate_identification_unique($row['email'], $row['user_id'])) {
-								return false;
-							}
+							return $this->confirm_complete($row, $config);
 
-						//--------------------------------------------------
-						// Mark as used (don't use expire function)
+						} else {
 
-							$sql = 'UPDATE
-										' . $db->escape_table($this->db_update_table) . ' AS u
-									SET
-										u.deleted = ?
-									WHERE
-										u.id = ? AND
-										u.deleted = "0000-00-00 00:00:00"';
+							$this->split_confirm = $row; // e.g. Admin creates account, email sent, and user enters their password on the confirm page.
 
-							$parameters = [];
-							$parameters[] = $now;
-							$parameters[] = intval($update_id);
+							return $row;
 
-							$db->query($sql, $parameters);
-
-							$success = ($db->affected_rows() == 1);
-
-						//--------------------------------------------------
-						// Update
-
-							if ($success) {
-
-								if ($this->auth->identification_type_get() == 'username') {
-									$email_field = $config['email_field'];
-								} else {
-									$email_field = $this->db_main_fields['identification'];
-								}
-
-								$record = record_get($this->db_main_table, $row['user_id'], [$email_field]);
-
-								$record->save([$email_field => $row['email']]);
-
-							}
-
-						//--------------------------------------------------
-						// Expire... all other confirmations for this user
-
-							if ($success) {
-								$this->auth->expire('update', $row['user_id']);
-							}
-
-						//--------------------------------------------------
-						// Return
-
-							return true;
+						}
 
 					}
 
@@ -795,6 +786,78 @@
 				// Failure
 
 					return false;
+
+			}
+
+			public function confirm_complete($details, $config = []) {
+
+				//--------------------------------------------------
+				// Config
+
+					$config = array_merge(array(
+							'email_field' => 'email',
+						), $config);
+
+					$db = $this->auth->db_get();
+
+					$now = new timestamp();
+
+					$update_id = intval($details['id']);
+
+				//--------------------------------------------------
+				// Still unique
+
+					if (!$this->auth->validate_identification_unique($details['email'], $details['user_id'])) {
+						return false;
+					}
+
+				//--------------------------------------------------
+				// Mark as used (don't use expire function)
+
+					$sql = 'UPDATE
+								' . $db->escape_table($this->db_update_table) . ' AS u
+							SET
+								u.deleted = ?
+							WHERE
+								u.id = ? AND
+								u.deleted = "0000-00-00 00:00:00"';
+
+					$parameters = [];
+					$parameters[] = $now;
+					$parameters[] = intval($update_id);
+
+					$db->query($sql, $parameters);
+
+					$success = ($db->affected_rows() == 1);
+
+				//--------------------------------------------------
+				// Update
+
+					if ($success) {
+
+						if ($this->auth->identification_type_get() == 'username') {
+							$email_field = $config['email_field'];
+						} else {
+							$email_field = $this->db_main_fields['identification'];
+						}
+
+						$record = record_get($this->db_main_table, $details['user_id'], [$email_field]);
+
+						$record->save([$email_field => $details['email']]);
+
+					}
+
+				//--------------------------------------------------
+				// Expire... all other confirmations for this user
+
+					if ($success) {
+						$this->auth->expire('update', $details['user_id']);
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return true;
 
 			}
 

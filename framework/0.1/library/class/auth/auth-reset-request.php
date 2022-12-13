@@ -44,6 +44,10 @@
 
 			}
 
+			public function form_set($form) { // Only used if not using one of the field_*_get() methods.
+				$this->form = $form;
+			}
+
 		//--------------------------------------------------
 		// Fields
 
@@ -76,15 +80,18 @@
 				//--------------------------------------------------
 				// Config
 
-					if ($this->auth->session_get() !== false) {
-						exit_with_error('Cannot call $auth_reset_request->validate() when the user is logged in.');
-					}
-
 					$this->details = false;
 
 					$errors = [];
 
 					$db = $this->auth->db_get();
+
+				//--------------------------------------------------
+				// Validation
+
+					if ($this->auth->session_open() !== false) {
+						exit_with_error('Cannot call $auth_reset_request->validate() when the user is logged in.');
+					}
 
 				//--------------------------------------------------
 				// Values

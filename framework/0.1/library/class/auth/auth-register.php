@@ -18,6 +18,7 @@
 			protected $field_password_2 = NULL;
 			protected $field_password_required = false; // Don't set directly, just call $auth_register->field_password_1_get($form, ['required' => true]);
 			protected $field_remember_user = NULL;
+			protected $split_confirm = NULL;
 
 			public function __construct($auth) {
 
@@ -31,6 +32,10 @@
 					list($this->db_table, $this->db_fields, $this->db_where_sql) = $this->auth->db_table_get('main');
 				}
 
+			}
+
+			public function form_set($form) { // Only used if not using one of the field_*_get() methods.
+				$this->form = $form;
 			}
 
 			public function record_get() {
@@ -137,15 +142,18 @@
 				//--------------------------------------------------
 				// Config
 
-					if ($this->auth->session_open() !== false) {
-						exit_with_error('Cannot call $auth_register->validate() when the user is logged in.');
-					}
-
 					$this->details = false;
 
 					$errors = [];
 
 					$confirm_valid = true;
+
+				//--------------------------------------------------
+				// Validation
+
+					if ($this->auth->session_open() !== false) {
+						exit_with_error('Cannot call $auth_register->validate() when the user is logged in.');
+					}
 
 				//--------------------------------------------------
 				// Values
@@ -169,6 +177,8 @@
 							if ($identification == '') {
 								$identification = NULL; // The table will use UNIQUE on the identification field, so a 'min_length' of 0 will need to be NULL.
 							}
+						} else if ($this->split_confirm !== NULL) {
+							$identification = $this->split_confirm[$this->db_fields['identification']];
 						} else {
 							exit_with_error('You must call $auth_register->field_identification_get() before $auth_register->validate().');
 						}
@@ -219,7 +229,7 @@
 
 // TODO: When adding the admin 'set' mode, look at how auth-update will show them an error message (the admin can see that, but may still want a confirmation email... maybe via a confirm_email_set method?).
 
-						} else if ((!$unique) && ($identification_username || !$this->confirm_enabled)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
+						} else if ((!$unique) && ($identification_username || !$this->confirm_enabled || $this->split_confirm !== NULL)) { // Can show error message for a non-unique username, but shouldn't for email address (ideally send an email via confirmation process).
 
 							$errors['identification'] = $this->auth->text_get('failure_identification_current');
 
@@ -283,7 +293,11 @@
 
 						foreach ($errors as $field => $error) {
 							if ($field == 'identification') {
-								$this->field_identification->error_add($error);
+								if ($this->field_identification) {
+									$this->field_identification->error_add($error);
+								} else {
+									$this->form->error_add($error);
+								}
 							} else if ($field == 'password_1') {
 								$this->field_password_1->error_add($error);
 							} else if ($field == 'password_2') {
@@ -399,8 +413,6 @@
 
 					if ($this->details['password'] != '' && $this->details['confirm_valid']) { // Only store the auth (password) if the confirmation will succeed (account does not already exist).
 
-						$db = $this->auth->db_get();
-
 						$auth_config = [];
 
 						// Only enable if this is needed...
@@ -475,12 +487,10 @@
 				// Config
 
 					$config = array_merge(array(
-							'login' => true,
+							'complete' => true,
 						), $config);
 
 					$db = $this->auth->db_get();
-
-					$now = new timestamp();
 
 					if (preg_match('/^([0-9]+)-(.+)$/', $register_token, $matches)) {
 						$register_id = $matches[1];
@@ -509,121 +519,17 @@
 
 					if (($row = $db->fetch_row($sql, $parameters)) && (quick_hash_verify($register_pass, $row[$this->db_fields['token']]))) {
 
-						//--------------------------------------------------
-						// Identification
+						if ($config['complete']) {
 
-							$identification_value = $row[$this->db_fields['identification']];
+							return $this->confirm_complete($row, $config);
 
-							if (!$this->auth->validate_identification_unique($identification_value)) {
-								return false; // e.g. Someone registered twice, and followed both links (should be fine to show normal 'link expired' message).
-							}
+						} else {
 
-						//--------------------------------------------------
-						// Delete registration record
+							$this->split_confirm = $row; // e.g. Admin creates account, email sent, and user enters their password on the confirm page.
 
-							$sql = 'UPDATE
-										' . $db->escape_table($this->db_table) . ' AS r
-									SET
-										r.' . $db->escape_field($this->db_fields['deleted']) . ' = ?,
-										r.' . $db->escape_field($this->db_fields['password']) . ' = "",
-										r.' . $db->escape_field($this->db_fields['auth']) . ' = ""
-									WHERE
-										r.' . $db->escape_field($this->db_fields['id']) . ' = ? AND
-										' . $this->db_where_sql;
+							return $row;
 
-							$parameters = [];
-							$parameters[] = $now;
-							$parameters[] = intval($register_id);
-
-							$db->query($sql, $parameters);
-
-							$success = ($db->affected_rows() == 1);
-
-						//--------------------------------------------------
-						// Copy record
-
-							$user_id = false;
-
-							if ($success) {
-
-								//--------------------------------------------------
-								// Main table
-
-									list($db_main_table, $db_main_fields, $db_main_where_sql) = $this->auth->db_table_get('main'); // Must be explicitly 'main'
-
-								//--------------------------------------------------
-								// Cleanup
-
-									$values = $row;
-									unset($values[$this->db_fields['id']]);
-									unset($values[$this->db_fields['token']]);
-									unset($values[$this->db_fields['ip']]);
-									unset($values[$this->db_fields['browser']]);
-									unset($values[$this->db_fields['tracker']]);
-
-									$values[$db_main_fields['created']] = $now;
-									$values[$db_main_fields['edited']] = $now;
-
-								//--------------------------------------------------
-								// Add new record
-
-									$db->insert($db_main_table, $values);
-
-									$user_id = $db->insert_id();
-
-								//--------------------------------------------------
-								// Re-encode auth value... with the correct user_id,
-								// and to ensure all auth values are present.
-
-									$auth_config = auth::secret_parse($register_id, $row[$this->db_fields['auth']]);
-
-									$auth_encoded = auth::secret_encode($user_id, $auth_config);
-
-									$sql = 'UPDATE
-												' . $db->escape_table($db_main_table) . ' AS m
-											SET
-												m.' . $db->escape_field($db_main_fields['auth']) . ' = ?
-											WHERE
-												m.' . $db->escape_field($db_main_fields['id']) . ' = ? AND
-												' . $db_main_where_sql;
-
-									$parameters = [];
-									$parameters[] = $auth_encoded;
-									$parameters[] = intval($user_id);
-
-									$db->query($sql, $parameters);
-
-							}
-
-						//--------------------------------------------------
-						// Start session
-
-							if ($success && $user_id) {
-
-								if ($this->auth->browser_tracker_enabled('register') && browser_tracker_changed($row[$this->db_fields['tracker']])) {
-
-										// Don't auto login if they are using a different browser.
-										// We don't want an evil actor creating an account, and putting the
-										// registration link on their website (e.g. an image), as that would
-										// cause the victims browser to trigger the registration, and log
-										// them into an account the attacker controls.
-
-									$this->auth->last_identification_set(NULL); // Clear the last login cookie, just in case they have logged in before.
-
-								} else if ($config['login']) {
-
-									$password_validation = true; // Has just passed $auth->validate_password()
-
-									list($limit_ref, $limit_extra) = $this->auth->_session_start($user_id, $identification_value, $auth_config, $password_validation);
-
-								}
-
-							}
-
-						//--------------------------------------------------
-						// Return
-
-							return $user_id;
+						}
 
 					}
 
@@ -631,6 +537,153 @@
 				// Failure
 
 					return false;
+
+			}
+
+			public function confirm_complete($details, $config = []) {
+
+				//--------------------------------------------------
+				// Config
+
+					$config = array_merge(array(
+							'login' => true,
+						), $config);
+
+					$db = $this->auth->db_get();
+
+					$now = new timestamp();
+
+					$register_id = intval($details['id']);
+
+				//--------------------------------------------------
+				// Identification
+
+					$identification_value = $details[$this->db_fields['identification']];
+
+					if (!$this->auth->validate_identification_unique($identification_value)) {
+						return false; // e.g. Someone registered twice, and followed both links (should be fine to show normal 'link expired' message).
+					}
+
+				//--------------------------------------------------
+				// Delete registration record
+
+					$sql = 'UPDATE
+								' . $db->escape_table($this->db_table) . ' AS r
+							SET
+								r.' . $db->escape_field($this->db_fields['deleted']) . ' = ?,
+								r.' . $db->escape_field($this->db_fields['password']) . ' = "",
+								r.' . $db->escape_field($this->db_fields['auth']) . ' = ""
+							WHERE
+								r.' . $db->escape_field($this->db_fields['id']) . ' = ? AND
+								' . $this->db_where_sql;
+
+					$parameters = [];
+					$parameters[] = $now;
+					$parameters[] = intval($register_id);
+
+					$db->query($sql, $parameters);
+
+					$success = ($db->affected_rows() == 1);
+
+				//--------------------------------------------------
+				// Copy record
+
+					$user_id = false;
+
+					if ($success) {
+
+						//--------------------------------------------------
+						// Main table
+
+							list($db_main_table, $db_main_fields, $db_main_where_sql) = $this->auth->db_table_get('main'); // Must be explicitly 'main'
+
+						//--------------------------------------------------
+						// Cleanup
+
+							$values = $details;
+							unset($values[$this->db_fields['id']]);
+							unset($values[$this->db_fields['token']]);
+							unset($values[$this->db_fields['ip']]);
+							unset($values[$this->db_fields['browser']]);
+							unset($values[$this->db_fields['tracker']]);
+
+							$values[$db_main_fields['created']] = $now;
+							$values[$db_main_fields['edited']] = $now;
+
+						//--------------------------------------------------
+						// Add new record
+
+							$db->insert($db_main_table, $values);
+
+							$user_id = $db->insert_id();
+
+						//--------------------------------------------------
+						// Re-encode auth value... with the correct user_id,
+						// and to ensure all auth values are present.
+
+							$current_auth = $details[$this->db_fields['auth']];
+
+							if ($current_auth == '' && isset($this->details['password']) && $this->details['password'] != '') {
+
+								$auth_config = [];
+
+								$auth_encoded = auth::secret_encode($user_id, $auth_config, $this->details['password']);
+
+								$auth_config = auth::secret_parse($user_id, $auth_encoded);
+
+							} else {
+
+								$auth_config = auth::secret_parse($register_id, $current_auth);
+
+								$auth_encoded = auth::secret_encode($user_id, $auth_config);
+
+							}
+
+							$sql = 'UPDATE
+										' . $db->escape_table($db_main_table) . ' AS m
+									SET
+										m.' . $db->escape_field($db_main_fields['auth']) . ' = ?
+									WHERE
+										m.' . $db->escape_field($db_main_fields['id']) . ' = ? AND
+										' . $db_main_where_sql;
+
+							$parameters = [];
+							$parameters[] = $auth_encoded;
+							$parameters[] = intval($user_id);
+
+							$db->query($sql, $parameters);
+
+					}
+
+				//--------------------------------------------------
+				// Start session
+
+					if ($success && $user_id) {
+
+						if ($this->auth->browser_tracker_enabled('register') && browser_tracker_changed($details[$this->db_fields['tracker']])) {
+
+								// Don't auto login if they are using a different browser.
+								// We don't want an evil actor creating an account, and putting the
+								// registration link on their website (e.g. an image), as that would
+								// cause the victims browser to trigger the registration, and log
+								// them into an account the attacker controls.
+
+							$this->auth->last_identification_set(NULL); // Clear the last login cookie, just in case they have logged in before.
+
+						} else if ($config['login']) {
+
+							$password_validation = true; // Has just passed $auth->validate_password()
+
+							list($limit_ref, $limit_extra) = $this->auth->_session_start($user_id, $identification_value, $auth_config, $password_validation);
+
+						}
+
+					}
+
+				//--------------------------------------------------
+				// Return
+
+					return $user_id;
 
 			}
 

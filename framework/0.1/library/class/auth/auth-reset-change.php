@@ -69,12 +69,15 @@
 				//--------------------------------------------------
 				// Config
 
-					if ($this->auth->session_get() !== false) {
-						exit_with_error('Cannot call $auth_reset_change->active() when the user is logged in.');
-					}
-
 					$this->details = false;
 					$this->record = NULL;
+
+				//--------------------------------------------------
+				// Validation
+
+					if ($this->auth->session_open() !== false) {
+						exit_with_error('Cannot call $auth_reset_change->active() when the user is logged in.');
+					}
 
 				//--------------------------------------------------
 				// Reset ID
@@ -155,6 +158,10 @@
 
 					return ($this->details !== false);
 
+			}
+
+			public function identification_get() {
+				return ($this->details['identification'] ?? NULL);
 			}
 
 			public function validate($password_1 = NULL, $password_2 = NULL) {
