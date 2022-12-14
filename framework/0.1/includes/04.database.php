@@ -1051,6 +1051,18 @@
 
 				config::set('db.error_thrown', true);
 
+				if (config::get('debug.level') > 0) {
+
+					debug_note([
+							'type' => 'L',
+							'colour' => '#FCC',
+							'class'  => 'debug_sql',
+							'heading' => $error,
+							'text' => $sql . ($parameters ? "\n\n" . debug_dump($parameters) : ''),
+						]);
+
+				}
+
 				if ($error_code == 1062) {
 					throw new db_duplicate_entry_exception('An error has occurred with the database.', $error . $hidden_info);
 				}
