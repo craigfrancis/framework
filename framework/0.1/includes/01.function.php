@@ -183,7 +183,7 @@
 	}
 
 	function text_to_html($text) {
-		return str_replace('  ', ' &#xA0;', nl2br(html($text)));
+		return new html_safe_value(str_replace('  ', ' &#xA0;', nl2br(html($text))));
 	}
 
 	function html($text) {
