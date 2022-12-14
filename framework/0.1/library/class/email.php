@@ -28,8 +28,10 @@
 			protected $template_edit_function = NULL;
 			protected $body_text = '';
 			protected $body_html = '';
+			protected $body_html_safe = true;
 			protected $content_text = NULL;
 			protected $content_html = NULL;
+			protected $content_html_safe = true;
 			protected $default_style = NULL;
 			protected $default_bulk = true;
 			protected $boundaries = [];
@@ -273,10 +275,14 @@
 
 			public function body_html_add($content_html) {
 				$this->body_html .= $content_html;
+				if (!($content_html instanceof html_template || $content_html instanceof html_safe_value) && (!function_exists('is_literal') || !is_literal($content_html))) {
+					$this->body_html_safe = false;
+				}
 			}
 
 			public function body_html_set($content_html) {
 				$this->body_html = $content_html;
+				$this->body_html_safe = ($content_html instanceof html_template || $content_html instanceof html_safe_value || (function_exists('is_literal') && is_literal($content_html)));
 			}
 
 			public function request_table_add($values = [], $date_format = 'l jS F Y, g:i:sa') {
@@ -347,11 +353,10 @@
 									$value['label'] = $label;
 								}
 							} else if ($value[1] instanceof html_template || $value[1] instanceof html_safe_value) {
-								$html = $value[1]->html();
 								$value = [
 										'label' => $value[0],
-										'text' => trim(strip_tags($html)),
-										'html' => $html,
+										'text' => trim(strip_tags($value[1]->html())),
+										'html' => $value[1],
 									];
 							} else {
 								$value = [
@@ -372,6 +377,8 @@
 
 						if (!isset($value['html'])) {
 							$value['html'] = text_to_html($value['text']);
+						} else if (!($value['html'] instanceof html_template || $value['html'] instanceof html_safe_value) && (!function_exists('is_literal') || !is_literal($value['html']))) {
+							$this->body_html_safe = false;
 						}
 
 						if ($value['html'] == '') {
@@ -421,6 +428,7 @@
 
 			public function html_set($html) {
 				$this->content_html = $html;
+				// $this->content_html_safe = ($html instanceof html_template || $html instanceof html_safe_value || (function_exists('is_literal') && is_literal($html)));
 			}
 
 		//--------------------------------------------------
@@ -866,6 +874,8 @@
 				//--------------------------------------------------
 				// Ensure it is a full HTML document.
 
+					$html_safe = $this->body_html_safe;
+
 					if (strtoupper(substr(trim($this->body_html), 0, 9)) == '<!DOCTYPE') {
 
 						$content_html = $this->body_html;
@@ -917,6 +927,9 @@
 
 					foreach ($this->template_values_html as $name => $html) {
 						$content_html = str_replace('[' . $name . ']', $html, $content_html);
+						if (!($html instanceof html_template || $html instanceof html_safe_value) && (!function_exists('is_literal') || !is_literal($html))) {
+							$html_safe = false;
+						}
 					}
 
 					if ($this->subject_text == '') {
@@ -951,12 +964,17 @@
 
 					if ($this->template_edit_function !== NULL) {
 						$content_html = call_user_func($this->template_edit_function, $content_html, 'html', $this);
+						$html_safe = false; // Might be fine, but not sure.
 					}
 
 				//--------------------------------------------------
 				// Return
 
-					return new html_safe_value($content_html);
+					if ($html_safe) {
+						return new html_safe_value($content_html);
+					} else {
+						return $content_html;
+					}
 
 			}
 
