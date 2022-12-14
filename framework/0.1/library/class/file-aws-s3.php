@@ -417,7 +417,6 @@ Abbreviations:
 				$plain_path = $this->folder_path_get('pf', $plain_name);
 
 				copy($path, $plain_path);
-
 				// TODO: chmod($plain_path, octdec(600));
 
 				$plain_content = file_get_contents($plain_path);
