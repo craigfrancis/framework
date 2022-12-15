@@ -169,15 +169,119 @@ Abbreviations:
 			// 	$this->config[$key] = $value;
 			// }
 
+			public function file_process($file) {
+				return [];
+			}
+
 			public function cleanup() {
 
+				//--------------------------------------------------
+				// Config
 
-exit('TODO'); // Have this delete local cache files... but also handle deleting of actual files... once the file has been marked as deleted for X days, then actually remove from AWS?
+					$db = db_get();
 
-// Maybe this should also upload the files... as in, during _file_save(), it just stores the local (unencrypted) copy,
-// and this process looks for any records with an empty "info" field. It would need to handle file_import() differently.
-// It might need to use a Message Queue system (e.g. RabbitMQ, Redis, Beanstalkd, Iron.io MQ, Kafka)
+					$now = new timestamp();
+
+				//--------------------------------------------------
+				// Unprocessed files
+
+					$info_key = NULL;
+
+					foreach ($this->_file_info_get('unprocessed') as $file_id => $file) {
+
+						//--------------------------------------------------
+						// Encrypt
+
+							$info = $this->_file_info_details($file['info']);
+
+							if (is_file($info['plain_path'])) {
+								$plain_content = file_get_contents($info['plain_path']);
+							} else {
+								throw new error_exception('Cannot find the unencrypted file for uploading', $info['plain_path'] . "\n" . 'ID:' . $file_id);
+							}
+
+							if ($file['info']['v'] == 1) {
+								$encrypted_content = sodium_crypto_aead_chacha20poly1305_ietf_encrypt($plain_content, $file_id, base64_decode($file['info']['fn']), base64_decode($file['info']['fk'])); // since PHP 7.2.0
+							} else {
+								throw new error_exception('Unrecognised encryption version "' . $file['info']['v'] . '".', 'ID:' . $file_id);
+							}
+
+								// Not using encryption::encode() as it base64 encodes the content (33% increase in file size),
+								// and adds extra details (like storing the key type) which will be stored in the database instead.
+
+						//--------------------------------------------------
+						// Content
+
+							$encrypted_hash = hash($this->config['file_hash'], $encrypted_content);
+							$encrypted_name = $this->_file_name_get($encrypted_hash);
+							$encrypted_path = $this->_folder_path_get('ef', $encrypted_name);
+
+							// if ($save_local) {
+								file_put_contents($encrypted_path, $encrypted_content);
+								chmod($encrypted_path, octdec(600));
+							// }
+
+						//--------------------------------------------------
+						// Upload to AWS S3
+
+							$this->_aws_request([
+									'method'    => 'PUT',
+									'content'   => $encrypted_content,
+									'file_name' => $encrypted_name,
+									'acl'       => 'private',
+								]);
+
+						//--------------------------------------------------
+						// Project specific processing (e.g. virus checker)
+
+							$limited_file = $file;
+
+							$limited_file['path'] = $info['plain_path'];
+
+							unset($limited_file['info']); // Possibly sensitive info... delete for now.
+
+							$new_values = $this->file_process($limited_file);
+
+						//--------------------------------------------------
+						// Updated info
+
+							if ($info_key === NULL) {
+								$info_key = $this->config['info_key'];
+// TODO [secrets-keys]
+								if (!encryption::key_exists($info_key)) {
+									throw new error_exception('Cannot find encryption key "' . $info_key . '"');
+								}
+							}
+
+							$new_values['info'] = $file['info'];
+							$new_values['info']['eh'] = $encrypted_hash;
+							$new_values['info'] = encryption::encode(json_encode($new_values['info']), $info_key, $file_id);
+
+						//--------------------------------------------------
+						// Update
+
+							$where_sql = '
+								id = ? AND
+								deleted = "0000-00-00 00:00:00"';
+
+							$parameters = [];
+							$parameters[] = intval($file_id);
+
+							$new_values['processed'] = $now;
+
+							$db->update($this->config['table_sql'], $new_values, $where_sql, $parameters);
+
+					}
+
+return;
+
+
+
+// TODO: Have this delete local cache files... but also handle deleting of actual files... once the file has been marked as deleted for X days, then actually remove from AWS?
+
+// Could use a Message Queue system (e.g. RabbitMQ, Redis, Beanstalkd, Iron.io MQ, Kafka)?
 // https://stackoverflow.com/questions/74809611/php-message-queue-for-low-volume-jobs
+
 
 				$local_max_age = $this->config['local_max_age'];
 				$local_max_age = strtotime($local_max_age);
@@ -246,53 +350,65 @@ exit('TODO'); // Have this delete local cache files... but also handle deleting 
 
 			public function file_get($file_id) {
 
+				$file_id = intval($file_id);
+
 				$file = $this->_file_info_get($file_id);
 
-				if (!is_file($file['info']['plain_path'])) {
+				$info = $this->_file_info_details($file['info']);
 
-					if (!is_file($file['info']['encrypted_path'])) {
+				if (!is_file($info['plain_path'])) {
 
-						if ($file['info']['backup_path']) {
+					if ($info['encrypted_path'] === NULL) {
 
-							$encrypted_content = @file_get_contents($file['info']['backup_path']);
+						throw new error_exception('Could not return encrypted version of the file.', 'NULL' . "\n" . 'ID:' . $file_id);
+					}
+
+					if (!is_file($info['encrypted_path'])) {
+
+						if ($info['backup_path']) {
+
+							$encrypted_content = @file_get_contents($info['backup_path']);
 
 						} else {
 
 							$encrypted_content = $this->_aws_request([
 									'method'    => 'GET',
-									'file_name' => $file['info']['encrypted_name'],
+									'file_name' => $info['encrypted_name'],
 								]);
 
 						}
 
 						if ($encrypted_content !== false) {
-							file_put_contents($file['info']['encrypted_path'], $encrypted_content);
-							chmod($file['info']['encrypted_path'], octdec(600));
+							file_put_contents($info['encrypted_path'], $encrypted_content);
+							chmod($info['encrypted_path'], octdec(600));
 						}
 
 					}
 
-					if (!is_file($file['info']['encrypted_path'])) {
-						throw new error_exception('Could not return file.', $file['info']['encrypted_path'] . "\n" . 'ID:' . $file_id);
+					if (!is_file($info['encrypted_path'])) {
+						throw new error_exception('Could not return encrypted version of the file.', $info['encrypted_path'] . "\n" . 'ID:' . $file_id);
 					}
 
-					$plain_content = file_get_contents($file['info']['encrypted_path']);
+					$plain_content = file_get_contents($info['encrypted_path']);
 					if ($file['info']['v'] == 1) {
 						$plain_content = sodium_crypto_aead_chacha20poly1305_ietf_decrypt($plain_content, $file_id, base64_decode($file['info']['fn']), base64_decode($file['info']['fk']));
+					} else {
+						throw new error_exception('Unrecognised encryption version "' . $file['info']['v'] . '".', 'ID:' . $file_id);
 					}
-					file_put_contents($file['info']['plain_path'], $plain_content);
-					chmod($file['info']['plain_path'], octdec(600));
+					file_put_contents($info['plain_path'], $plain_content);
+					chmod($info['plain_path'], octdec(600));
 
 				}
 
-				touch($file['info']['plain_path']); // File still being used, don't remove in cleanup()
-				touch($file['info']['encrypted_path']);
+				touch($info['plain_path']); // File still being used, don't remove in cleanup()
 
-				$file['path'] = $file['info']['plain_path'];
+				if ($info['encrypted_path']) {
+					touch($info['encrypted_path']);
+				}
+
+				$file['path'] = $info['plain_path'];
 
 				unset($file['info']); // Possibly sensitive info... delete for now.
-				unset($file['id']); // Not needed?
-				unset($file['deleted']); // Not needed?
 
 				return $file;
 
@@ -300,21 +416,25 @@ exit('TODO'); // Have this delete local cache files... but also handle deleting 
 
 			public function file_exists($file_id) {
 
+				$file_id = intval($file_id);
+
 				$file = $this->_file_info_get($file_id);
 
-				if (is_file($file['info']['encrypted_path'])) { // We have a local copy already (fast), cannot use plain text path as 2 identical files may exist.
+				$info = $this->_file_info_details($file['info']);
+
+				if (is_file($info['encrypted_path'])) { // We have a local copy already (fast), cannot use plain text path as 2 identical files may exist.
 					return true;
 				}
 
-				if ($file['info']['backup_path']) {
+				if ($info['backup_path']) {
 
-					$result = file_exists($file['info']['backup_path']);
+					$result = file_exists($info['backup_path']);
 
 				} else {
 
 					$result = $this->_aws_request([
 							'method'    => 'HEAD',
-							'file_name' => $file['info']['encrypted_name'],
+							'file_name' => $info['encrypted_name'],
 						]);
 
 				}
@@ -395,21 +515,25 @@ exit('TODO'); // See cleanup method above
 				//--------------------------------------------------
 				// Remove on AWS
 
+					$file_id = intval($file_id);
+
 					$file = $this->_file_info_get($file_id);
+
+					$info = $this->_file_info_details($file['info']);
 
 					$result = $this->_aws_request([
 							'method'    => 'DELETE',
-							'file_name' => $file['info']['encrypted_name'],
+							'file_name' => $info['encrypted_name'],
 						]);
 
 				//--------------------------------------------------
 				// Remove local
 
-					if (is_file($file['info']['plain_path']))     unlink($file['info']['plain_path']);
-					if (is_file($file['info']['encrypted_path'])) unlink($file['info']['encrypted_path']);
+					if (is_file($info['plain_path']))     unlink($info['plain_path']);
+					if (is_file($info['encrypted_path'])) unlink($info['encrypted_path']);
 
-					if (is_file($file['info']['plain_path']))     throw new error_exception('Unable to delete file', $file['info']['plain_path']     . "\n" . 'ID:' . $file_id);
-					if (is_file($file['info']['encrypted_path'])) throw new error_exception('Unable to delete file', $file['info']['encrypted_path'] . "\n" . 'ID:' . $file_id);
+					if (is_file($info['plain_path']))     throw new error_exception('Unable to delete file', $info['plain_path']     . "\n" . 'ID:' . $file_id);
+					if (is_file($info['encrypted_path'])) throw new error_exception('Unable to delete file', $info['encrypted_path'] . "\n" . 'ID:' . $file_id);
 
 				//--------------------------------------------------
 				// Record deleted, so backup server can use rsync
@@ -418,7 +542,7 @@ exit('TODO'); // See cleanup method above
 				// files as positive indicators that the file can
 				// be deleted.
 
-					touch($this->_folder_path_get('ed', $file['info']['encrypted_name']));
+					touch($this->_folder_path_get('ed', $info['encrypted_name']));
 
 			}
 
@@ -467,10 +591,6 @@ exit('TODO'); // See cleanup method above
 
 			private function _file_info_get($file_id) {
 
-
-// TODO: Maybe add a private cache of values? reduce work for file_exists()?, then file_get()?
-
-
 				$info_key = $this->config['info_key'];
 // TODO [secrets-keys]
 				if (!encryption::key_exists($info_key)) {
@@ -481,51 +601,61 @@ exit('TODO'); // See cleanup method above
 
 				$files = [];
 
-				$file_ids = (is_array($file_id) ? $file_id : [$file_id]);
+				$parameters = [];
 
-				foreach (array_chunk($file_ids, 500) as $file_ids_chunk) {
+				if ($file_id == 'unprocessed') {
+					$where_sql = 'f.processed = "0000-00-00 00:00:00"';
+				} else {
+					$where_sql = 'f.id = ?';
+					$parameters[] = intval($file_id);
+				}
 
-					$parameters = [];
+				$sql = 'SELECT
+							f.*
+						FROM
+							' . $this->config['table_sql'] . ' AS f
+						WHERE
+							' . $where_sql . ' AND
+							f.deleted = "0000-00-00 00:00:00"';
 
-					$in_sql = $db->parameter_in($parameters, 'i', $file_ids_chunk);
+				foreach ($db->fetch_all($sql, $parameters) as $row) {
 
-					$sql = 'SELECT
-								f.*
-							FROM
-								' . $this->config['table_sql'] . ' AS f
-							WHERE
-								f.id IN (' . $in_sql . ') AND
-								f.deleted = "0000-00-00 00:00:00"';
+					$row['info'] = encryption::decode($row['info'], $info_key, $row['id']);
+					$row['info'] = json_decode($row['info'], true);
 
-					foreach ($db->fetch_all($sql, $parameters) as $row) {
-
-						$row['info'] = encryption::decode($row['info'], $info_key, $row['id']);
-						$row['info'] = json_decode($row['info'], true);
-
-						$row['info']['plain_name'] = $this->_file_name_get($row['info']['ph']);
-						$row['info']['plain_path'] = $this->_folder_path_get('pf', $row['info']['plain_name']);
-
-						$row['info']['encrypted_name'] = $this->_file_name_get($row['info']['eh']);
-						$row['info']['encrypted_path'] = $this->_folder_path_get('ef', $row['info']['encrypted_name']);
-
-						$backup_root = $this->config['backup_root'];
-						if ($backup_root !== NULL) {
-							$row['info']['backup_path'] = $backup_root . '/' . $row['info']['encrypted_name'];
-						} else {
-							$row['info']['backup_path'] = NULL;
-						}
-
-						$files[$row['id']] = $row;
-
-					}
+					$files[$row['id']] = $row;
 
 				}
 
-				if (is_array($file_id)) {
+				if ($file_id == 'unprocessed') {
 					return $files;
 				} else {
 					return ($files[$file_id] ?? NULL);
 				}
+
+			}
+
+			private function _file_info_details($info) {
+
+				$return['plain_name'] = $this->_file_name_get($info['ph']);
+				$return['plain_path'] = $this->_folder_path_get('pf', $return['plain_name']);
+
+				if (isset($info['eh'])) {
+					$return['encrypted_name'] = $this->_file_name_get($info['eh']);
+					$return['encrypted_path'] = $this->_folder_path_get('ef', $return['encrypted_name']);
+				} else {
+					$return['encrypted_name'] = NULL;
+					$return['encrypted_path'] = NULL;
+				}
+
+				$backup_root = $this->config['backup_root'];
+				if ($backup_root !== NULL && $return['encrypted_name'] !== NULL) {
+					$return['backup_path'] = $backup_root . '/' . $return['encrypted_name'];
+				} else {
+					$return['backup_path'] = NULL;
+				}
+
+				return $return;
 
 			}
 
@@ -554,52 +684,25 @@ exit('TODO'); // See cleanup method above
 
 					$db = db_get();
 
-					$db->insert($this->config['table_sql'], array_merge($extra_details, [
-							'id'      => '',
-							'info'    => '', // Populated later, once the $file_id is known (for the encryption $additional_data, so this value can only be used for this record).
-							'created' => $now,
-						]));
+					$values = array_merge($extra_details, [
+							'id'        => '',
+							'info'      => '', // Populated later, once the $file_id is known (for the encryption $additional_data, so this value can only be used for this record).
+							'created'   => $now,
+							'processed' => '0000-00-00 00:00:00',
+						]);
+
+					$db->insert($this->config['table_sql'], $values);
 
 					$file_id = intval($db->insert_id());
 
 				//--------------------------------------------------
 				// File key
 
-					$file_key = sodium_crypto_aead_chacha20poly1305_ietf_keygen();
-
-				//--------------------------------------------------
-				// Encrypt
-
 					$version = 1;
 
 					$file_nonce = random_bytes(SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_IETF_NPUBBYTES);
 
-					$encrypted_content = sodium_crypto_aead_chacha20poly1305_ietf_encrypt($plain_content, $file_id, $file_nonce, $file_key); // since PHP 7.2.0
-
-						// Not using encryption::encode() as it base64 encodes the content (33% increase in file size),
-						// and adds extra details (like storing the key type) which will be stored in the database instead.
-
-				//--------------------------------------------------
-				// Content
-
-					$encrypted_hash = hash($this->config['file_hash'], $encrypted_content);
-					$encrypted_name = $this->_file_name_get($encrypted_hash);
-					$encrypted_path = $this->_folder_path_get('ef', $encrypted_name);
-
-					if ($save_local) {
-						file_put_contents($encrypted_path, $encrypted_content);
-						chmod($encrypted_path, octdec(600));
-					}
-
-				//--------------------------------------------------
-				// Upload to AWS S3
-
-					$this->_aws_request([
-							'method'    => 'PUT',
-							'content'   => $encrypted_content,
-							'file_name' => $encrypted_name,
-							'acl'       => 'private',
-						]);
+					$file_key = sodium_crypto_aead_chacha20poly1305_ietf_keygen();
 
 				//--------------------------------------------------
 				// Store info
@@ -609,7 +712,7 @@ exit('TODO'); // See cleanup method above
 							'fk' => base64_encode($file_key),
 							'fn' => base64_encode($file_nonce),
 							'ph' => $plain_hash,
-							'eh' => $encrypted_hash,
+							'eh' => NULL,
 						];
 
 					$info = encryption::encode(json_encode($info), $info_key, $file_id);
