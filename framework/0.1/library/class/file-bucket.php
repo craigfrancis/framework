@@ -280,7 +280,7 @@ Abbreviations:
 
 								$where_sql = '
 									id = ? AND
-									deleted = "0000-00-00 00:00:00"';
+									deleted = deleted';
 
 								$parameters = [];
 								$parameters[] = intval($file_id);
@@ -623,10 +623,19 @@ exit('TODO'); // See cleanup method above
 				$parameters = [];
 
 				if ($file_id == 'unprocessed') {
-					$where_sql = 'f.processed = "0000-00-00 00:00:00"';
+
+					$where_sql = '
+						f.processed = "0000-00-00 00:00:00" AND
+						f.deleted = f.deleted';
+
 				} else {
-					$where_sql = 'f.id = ?';
+
+					$where_sql = '
+						f.id = ? AND
+						f.deleted = "0000-00-00 00:00:00"';
+
 					$parameters[] = intval($file_id);
+
 				}
 
 				$sql = 'SELECT
@@ -634,8 +643,7 @@ exit('TODO'); // See cleanup method above
 						FROM
 							' . $this->config['table_sql'] . ' AS f
 						WHERE
-							' . $where_sql . ' AND
-							f.deleted = "0000-00-00 00:00:00"';
+							' . $where_sql;
 
 				foreach ($db->fetch_all($sql, $parameters) as $row) {
 
