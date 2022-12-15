@@ -138,8 +138,7 @@ Abbreviations:
 
 					if (isset($this->config['aws_access_secret'])) {
 						try {
-// TODO [secrets-keys]
-							$access_secret = config::value_decrypt($this->config['aws_access_secret']);
+							$access_secret = config::value_decrypt($this->config['aws_access_secret']); // TODO [secrets-keys]
 						} catch (exception $e) {
 							$access_secret = NULL;
 						}
@@ -169,7 +168,8 @@ Abbreviations:
 			// 	$this->config[$key] = $value;
 			// }
 
-			public function file_process($file) {
+			public function files_process($files) {
+				// Receives all files, as programs like clamscan (ClamAV) can take a while to startup.
 				return [];
 			}
 
@@ -185,91 +185,111 @@ Abbreviations:
 				//--------------------------------------------------
 				// Unprocessed files
 
-					$info_key = NULL;
+					$unprocessed_files_full = [];
+					$unprocessed_files_info = [];
+					$unprocessed_files_partial = [];
 
 					foreach ($this->_file_info_get('unprocessed') as $file_id => $file) {
 
-						//--------------------------------------------------
-						// Encrypt
+						$info = $this->_file_info_details($file['info']);
 
-							$info = $this->_file_info_details($file['info']);
+						$partial = $file;
+						$partial['path'] = $info['plain_path'];
+						unset($partial['info']); // Possibly sensitive info... delete for now.
 
-							if (is_file($info['plain_path'])) {
-								$plain_content = file_get_contents($info['plain_path']);
-							} else {
-								throw new error_exception('Cannot find the unencrypted file for uploading', $info['plain_path'] . "\n" . 'ID:' . $file_id);
-							}
+						$unprocessed_files_full[$file_id] = $file;
+						$unprocessed_files_info[$file_id] = $info;
+						$unprocessed_files_partial[$file_id] = $partial;
 
-							if ($file['info']['v'] == 1) {
-								$encrypted_content = sodium_crypto_aead_chacha20poly1305_ietf_encrypt($plain_content, $file_id, base64_decode($file['info']['fn']), base64_decode($file['info']['fk'])); // since PHP 7.2.0
-							} else {
-								throw new error_exception('Unrecognised encryption version "' . $file['info']['v'] . '".', 'ID:' . $file_id);
-							}
+					}
 
-								// Not using encryption::encode() as it base64 encodes the content (33% increase in file size),
-								// and adds extra details (like storing the key type) which will be stored in the database instead.
+					if (count($unprocessed_files_full) > 0) {
 
-						//--------------------------------------------------
-						// Content
+						$info_key = $this->config['info_key'];
+						if (!encryption::key_exists($info_key)) { // TODO [secrets-keys]
+							throw new error_exception('Cannot find encryption key "' . $info_key . '"');
+						}
 
-							$encrypted_hash = hash($this->config['file_hash'], $encrypted_content);
-							$encrypted_name = $this->_file_name_get($encrypted_hash);
-							$encrypted_path = $this->_folder_path_get('ef', $encrypted_name);
+						$new_values_all = $this->files_process($unprocessed_files_partial);
 
-							// if ($save_local) {
-								file_put_contents($encrypted_path, $encrypted_content);
-								chmod($encrypted_path, octdec(600));
-							// }
+						foreach ($unprocessed_files_full as $file_id => $file) {
 
-						//--------------------------------------------------
-						// Upload to AWS S3
+							//--------------------------------------------------
+							// Info
 
-							$this->_aws_request([
-									'method'    => 'PUT',
-									'content'   => $encrypted_content,
-									'file_name' => $encrypted_name,
-									'acl'       => 'private',
-								]);
+								$new_values = ($new_values_all[$file_id] ?? []);
 
-						//--------------------------------------------------
-						// Project specific processing (e.g. virus checker)
+								$info = $unprocessed_files_info[$file_id];
 
-							$limited_file = $file;
+							//--------------------------------------------------
+							// If not deleted
 
-							$limited_file['path'] = $info['plain_path'];
+								if (($new_values['deleted'] ?? '0000-00-00 00:00:00') == '0000-00-00 00:00:00') {
 
-							unset($limited_file['info']); // Possibly sensitive info... delete for now.
+									//--------------------------------------------------
+									// Encrypt
 
-							$new_values = $this->file_process($limited_file);
+										if (is_file($info['plain_path'])) {
+											$plain_content = file_get_contents($info['plain_path']);
+										} else {
+											throw new error_exception('Cannot find the unencrypted file for uploading', $info['plain_path'] . "\n" . 'ID:' . $file_id);
+										}
 
-						//--------------------------------------------------
-						// Updated info
+										if ($file['info']['v'] == 1) {
+											$encrypted_content = sodium_crypto_aead_chacha20poly1305_ietf_encrypt($plain_content, $file_id, base64_decode($file['info']['fn']), base64_decode($file['info']['fk'])); // since PHP 7.2.0
+										} else {
+											throw new error_exception('Unrecognised encryption version "' . $file['info']['v'] . '".', 'ID:' . $file_id);
+										}
 
-							if ($info_key === NULL) {
-								$info_key = $this->config['info_key'];
-// TODO [secrets-keys]
-								if (!encryption::key_exists($info_key)) {
-									throw new error_exception('Cannot find encryption key "' . $info_key . '"');
+											// Not using encryption::encode() as it base64 encodes the content (33% increase in file size),
+											// and adds extra details (like storing the key type) which will be stored in the database instead.
+
+									//--------------------------------------------------
+									// Content
+
+										$encrypted_hash = hash($this->config['file_hash'], $encrypted_content);
+										$encrypted_name = $this->_file_name_get($encrypted_hash);
+										$encrypted_path = $this->_folder_path_get('ef', $encrypted_name);
+
+										// if ($save_local) {
+											file_put_contents($encrypted_path, $encrypted_content);
+											chmod($encrypted_path, octdec(600));
+										// }
+
+									//--------------------------------------------------
+									// Upload to AWS S3
+
+										$this->_aws_request([
+												'method'    => 'PUT',
+												'content'   => $encrypted_content,
+												'file_name' => $encrypted_name,
+												'acl'       => 'private',
+											]);
+
+									//--------------------------------------------------
+									// Updated info
+
+										$new_values['info'] = $file['info'];
+										$new_values['info']['eh'] = $encrypted_hash;
+										$new_values['info'] = encryption::encode(json_encode($new_values['info']), $info_key, $file_id);
+
 								}
-							}
 
-							$new_values['info'] = $file['info'];
-							$new_values['info']['eh'] = $encrypted_hash;
-							$new_values['info'] = encryption::encode(json_encode($new_values['info']), $info_key, $file_id);
+							//--------------------------------------------------
+							// Update
 
-						//--------------------------------------------------
-						// Update
+								$where_sql = '
+									id = ? AND
+									deleted = "0000-00-00 00:00:00"';
 
-							$where_sql = '
-								id = ? AND
-								deleted = "0000-00-00 00:00:00"';
+								$parameters = [];
+								$parameters[] = intval($file_id);
 
-							$parameters = [];
-							$parameters[] = intval($file_id);
+								$new_values['processed'] = $now;
 
-							$new_values['processed'] = $now;
+								$db->update($this->config['table_sql'], $new_values, $where_sql, $parameters);
 
-							$db->update($this->config['table_sql'], $new_values, $where_sql, $parameters);
+						}
 
 					}
 
@@ -592,8 +612,7 @@ exit('TODO'); // See cleanup method above
 			private function _file_info_get($file_id) {
 
 				$info_key = $this->config['info_key'];
-// TODO [secrets-keys]
-				if (!encryption::key_exists($info_key)) {
+				if (!encryption::key_exists($info_key)) { // TODO [secrets-keys]
 					throw new error_exception('Cannot find encryption key "' . $info_key . '"');
 				}
 
@@ -672,8 +691,7 @@ exit('TODO'); // See cleanup method above
 				// Info key
 
 					$info_key = $this->config['info_key'];
-// TODO [secrets-keys]
-					if (!encryption::key_exists($info_key)) {
+					if (!encryption::key_exists($info_key)) { // TODO [secrets-keys]
 						encryption::key_symmetric_create($info_key);
 					}
 
