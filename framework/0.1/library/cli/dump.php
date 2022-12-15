@@ -38,7 +38,7 @@
 		foreach (explode("\n", strval($folder_listing)) as $path) {
 			if (substr($path, 0, $folder_path_length) == $folder_path) {
 				$path = substr($path, ($folder_path_length + 1));
-				if ($path != 'tmp' && substr($path, 0, 4) != 'tmp/' && substr($path, 0, 6) != 'cache/') { // 'tmp' will be created anyway, and their contents don't need folders creating.
+				if ($path != 'tmp' && substr($path, 0, 4) != 'tmp/' && substr($path, 0, 6) != 'cache/' && substr($path, 0, 12) != 'file-bucket/') { // 'tmp' will be created anyway, and their contents don't need folders creating.
 					$folder_children[] = $path;
 				}
 			}
