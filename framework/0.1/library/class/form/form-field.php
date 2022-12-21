@@ -465,7 +465,7 @@
 
 				$this->db_field_info = $record->field_get($field_name); // Will exit_with_error if invalid.
 
-				$record->_fields_add($field_name); // Temp (only until all projects use the record helper)
+				$record->field_name_add($field_name); // Temp (only until all projects use the record helper)
 
 			}
 

@@ -232,12 +232,17 @@
 			// 	}
 			// }
 
-			public function _fields_add($field) { // DO NOT USE, only for the form helper till all projects use records.
+			public function _fields_add($field) { // DO NOT USE, was only for the form helper, but other use-cases have been found.
+report_add('Deprecated: Use $record->field_name_add() now', 'notice');
 				$this->config['fields'][] = $field;
 			}
 
 		//--------------------------------------------------
-		// Returning
+		// Fields
+
+			public function field_name_add($field) { // e.g. if adding fields to a HTML Form, you can specify the DB Fields as needed, before $record->values_get() is called.
+				$this->config['fields'][] = $field;
+			}
 
 			public function field_names_get() {
 				return $this->config['fields'];
