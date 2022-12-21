@@ -393,7 +393,7 @@
 			public function value_set($field, $value) {
 				$this->new_values[$field] = $value;
 				// if ($this->values !== NULL) {
-				// 	$this->values[$field] = $value; // Does not work with log_table
+				// 	$this->values[$field] = $value; // Done after $record->save(), and does not work with log_table.
 				// }
 			}
 
