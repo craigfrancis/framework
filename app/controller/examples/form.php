@@ -73,7 +73,7 @@
 				$type_name = request('type');
 				$type_path = APP_ROOT . '/library/examples/form/' . safe_file_name($type_name) . '.php';
 
-				if (!is_file($type_path)) {
+				if (strlen($type_name) > 20 || !is_file($type_path)) {
 					error_send('page-not-found');
 					exit();
 				}
