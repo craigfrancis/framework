@@ -402,9 +402,9 @@
 				//--------------------------------------------------
 				// Compression
 
-					if (extension_loaded('zlib')) {
-						ob_start('ob_gzhandler');
-					}
+					// if (extension_loaded('zlib')) {
+					// 	ob_start('ob_gzhandler');
+					// }
 
 				//--------------------------------------------------
 				// Cached minified JS or CSS

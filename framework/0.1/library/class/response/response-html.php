@@ -1231,6 +1231,7 @@
 
 					if (function_exists('apache_setenv')) {
 						apache_setenv('no-gzip', 1);
+						apache_setenv('no-brotli', 1);
 					}
 
 					// And when using PHP-FPM and Apache, use something like:
