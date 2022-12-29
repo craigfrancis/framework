@@ -85,6 +85,13 @@
 		vertical-align: top;
 	}
 
+	textarea,
+	input {
+		font: inherit;
+		letter-spacing: inherit;
+		word-spacing: inherit;
+	}
+
 /*--------------------------------------------------*/
 /* Generic Classes                                  */
 
