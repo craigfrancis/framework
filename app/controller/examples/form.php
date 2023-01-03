@@ -70,7 +70,7 @@
 			//--------------------------------------------------
 			// Example type path
 
-				$type_name = request('type');
+				$type_name = strval(request('type'));
 				$type_path = APP_ROOT . '/library/examples/form/' . safe_file_name($type_name) . '.php';
 
 				if (strlen($type_name) > 20 || !is_file($type_path)) {
