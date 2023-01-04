@@ -236,6 +236,15 @@
 
 						break;
 
+					// case 'e':
+					// case 'errands':
+					//
+					// 	config::set('output.mode', 'errand');
+					//
+					//
+					//
+					// 	break;
+
 					case 'm':
 					case 'maintenance':
 
