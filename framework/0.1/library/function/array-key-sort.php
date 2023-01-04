@@ -27,16 +27,16 @@
 				$this->key = $key;
 			}
 			public function strcmp($a, $b) { // String comparison
-				return strcmp($a[$this->key], $b[$this->key]);
+				return strcmp((string) $a[$this->key], (string) $b[$this->key]);
 			}
 			public function strcasecmp($a, $b) { // Case-insensitive string comparison
-				return strcasecmp($a[$this->key], $b[$this->key]);
+				return strcasecmp((string) $a[$this->key], (string) $b[$this->key]);
 			}
 			public function strnatcmp($a, $b) { // String comparisons using a "natural order" algorithm
-				return strnatcmp($a[$this->key], $b[$this->key]);
+				return strnatcmp((string) $a[$this->key], (string) $b[$this->key]);
 			}
 			public function strnatcasecmp($a, $b) { // Case insensitive string comparisons using a "natural order" algorithm
-				return strnatcasecmp($a[$this->key], $b[$this->key]);
+				return strnatcasecmp((string) $a[$this->key], (string) $b[$this->key]);
 			}
 			public function numeric($a, $b) {
 				if ($a[$this->key] == $b[$this->key]) {
