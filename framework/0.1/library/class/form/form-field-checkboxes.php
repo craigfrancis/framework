@@ -7,6 +7,7 @@
 
 			protected $value_print_cache = NULL;
 			protected $option_values_html = [];
+			protected $options_group_id = [];
 			protected $options_info_id = [];
 			protected $options_info_html = NULL;
 			protected $options_disabled = NULL;
@@ -147,28 +148,87 @@
 		// HTML input
 
 			public function html_input() {
+
 				$label_tag = ($this->input_wrapper_tag == 'label' ? 'span' : NULL);
-				$html = '';
+
 				if ($this->label_option != '') { // Could be NULL or ''
-					$html .= '
+					$label_html = '
 							<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . ' input_label">
 								' . $this->html_input_by_key(NULL) . '
 								' . $this->html_label_by_key(NULL, NULL, $label_tag) . '
 							</' . html($this->input_wrapper_tag) . '>';
+				} else {
+					$label_html = '';
 				}
+
+				if ($this->options_group !== NULL) {
+					foreach (array_unique($this->options_group) as $opt_group) {
+						$this->options_group_id[$opt_group] = $this->form->_field_tag_id_get();
+					}
+				}
+
+				$option_html = [];
 				foreach ($this->option_values as $key => $value) {
 					$option_info_html = $this->html_info_by_key($key); // Allow the ID to be added to "aria-describedby"
 					$option_disabled = (isset($this->options_disabled[$key]) && $this->options_disabled[$key] === true);
-					$html .= '
+					$option_html[$key] = '
 							<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . ' ' . html('key_' . human_to_ref($key)) . ' ' . html('value_' . human_to_ref($value)) . ($option_disabled ? ' option_disabled' : '') . '">
 								' . $this->html_input_by_key($key) . '
 								' . $this->html_label_by_key($key, NULL, $label_tag) . $option_info_html . '
 							</' . html($this->input_wrapper_tag) . '>';
 					if (isset($this->options_suffix_html[$key])) {
-						$html .= $this->options_suffix_html[$key];
+						$option_html[$key] .= $this->options_suffix_html[$key];
 					}
 				}
+
+				$used_keys = [];
+				$group_html = '';
+
+				if ($this->options_group !== NULL) {
+					foreach (array_unique($this->options_group) as $opt_group) {
+
+						if ($opt_group !== NULL) {
+							$group_html .= '
+								<fieldset class="optgroup">
+									<legend id="' . html($this->options_group_id[$opt_group]) . '">' . html($opt_group) . '</legend>';
+						}
+
+						foreach (array_keys($this->options_group, $opt_group) as $key) {
+							if ($key === '') {
+
+								$group_html .= $label_html;
+
+								$label_html = '';
+
+							} else if (isset($option_html[$key])) {
+
+								$used_keys[] = $key;
+
+								$group_html .= $option_html[$key];
+
+							}
+						}
+
+						if ($opt_group !== NULL) {
+							$group_html .= '
+								</fieldset>';
+						}
+
+					}
+				}
+
+				$html = $label_html;
+
+				foreach ($this->option_values as $key => $value) {
+					if (!in_array($key, $used_keys)) {
+						$html .= $option_html[$key];
+					}
+				}
+
+				$html .= $group_html;
+
 				return $html;
+
 			}
 
 			public function html_input_by_value($value) {
@@ -189,7 +249,12 @@
 				$attributes = $this->_input_by_key_attributes($key);
 
 				if (isset($this->options_info_id[$key])) {
-					$attributes['aria-describedby'] .= ' ' . $this->options_info_id[$key]; // Should already be set, so append is ok.
+					$attributes['aria-describedby'] .= ' ' . $this->options_info_id[$key];
+				}
+
+				$group_ref = ($this->options_group[$key] ?? NULL);
+				if ($group_ref && isset($this->options_group_id[$group_ref])) {
+					$attributes['aria-describedby'] .= ' ' . $this->options_group_id[$group_ref]; // Should already be set, so append is ok.
 				}
 
 				return html_tag('input', $attributes);
@@ -234,7 +299,8 @@
 
 			public function html_info_by_key($key) {
 				if (isset($this->options_info_html[$key])) {
-					$this->options_info_id[$key] = ($id = $this->form->_field_tag_id_get());
+					$id = $this->form->_field_tag_id_get();
+					$this->options_info_id[$key] = $id;
 					return '
 									<span class="info" id="' . html($id) . '">' . $this->options_info_html[$key] . '</span>';
 				} else {
