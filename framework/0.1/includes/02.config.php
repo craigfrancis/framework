@@ -117,6 +117,7 @@
 				'gyroscope'                          => [],
 				'hid'                                => [],
 				'idle-detection'                     => [],
+				'identity-credentials-get'           => [],
 				'keyboard-map'                       => [],
 				'local-fonts'                        => [],
 				'magnetometer'                       => [],
