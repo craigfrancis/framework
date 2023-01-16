@@ -77,6 +77,8 @@
 	//--------------------------------------------------
 	// Default permissions policy
 
+			// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5;bpv=1
+
 		$config['output.pp_directives'] = [
 
 				'accelerometer'                      => [],
@@ -109,7 +111,6 @@
 				'clipboard-write'                    => [],
 				'cross-origin-isolated'              => ['self'],
 				'display-capture'                    => [],
-				'document-domain'                    => [],
 				'encrypted-media'                    => [],
 				'fullscreen'                         => [],
 				'gamepad'                            => [], // RestrictGamepadAccess
@@ -136,6 +137,7 @@
 				// 'picture-in-picture'              => [], // Risky
 				// 'sync-xhr'                        => [], // Risky
 
+				// 'document-domain'                 => [], // DocumentDomain, https://source.chromium.org/chromium/chromium/src/+/09ae39cb337e46a2f97a763e57986154b8af91eb
 				// 'ambient-light-sensor'            => [], // SensorExtraClasses
 				// 'attribution-reporting'           => [], // ConversionMeasurement, was named 'conversion-measurement' - https://github.com/chromium/chromium/commit/7a48dde0857eccf6f61397a962c8532869b861f2
 				// 'display-capture'                 => [], // GetCurrentBrowsingContextMedia
