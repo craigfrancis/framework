@@ -28,7 +28,7 @@
 
 		if ($form->submitted(1)) {
 
-			if (strtolower(trim($field_name->value_get())) == 'craig') {
+			if (strtolower(trim(strval($field_name->value_get()))) == 'craig') {
 				$field_name->error_add('Cannot be called "Craig".');
 			}
 
@@ -54,7 +54,7 @@
 
 			if ($form->submitted(2)) {
 
-				if (strtolower(trim($field_address->value_get())) == '123') {
+				if (strtolower(trim(strval($field_address->value_get()))) == '123') {
 					$field_name->error_add('Cannot use address "123".');
 				}
 

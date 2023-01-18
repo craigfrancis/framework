@@ -22,7 +22,7 @@
 
 		if ($form->submitted(1)) {
 
-			$name = strtolower(trim($field_name->value_get()));
+			$name = strtolower(trim(strval($field_name->value_get())));
 
 			if ($name == 'craig') {
 				$field_name->error_add('Cannot be called "Craig".');
