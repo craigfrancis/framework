@@ -353,7 +353,7 @@
 					$request_token = request('amp;t'); // Bad email clients, double html-encoding
 				}
 
-				if (preg_match('/^([0-9]+)-(.+)$/', $request_token, $matches)) {
+				if (preg_match('/^([0-9]+)-(.+)$/', strval($request_token), $matches)) {
 					$request_id = $matches[1];
 					$request_pass = $matches[2];
 				} else {
