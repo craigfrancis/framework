@@ -1605,7 +1605,11 @@
 						$k++;
 
 						if (!is_array($attributes)) {
-							$attributes = array('value' => $attributes);
+							if ($attributes instanceof html_template || $attributes instanceof html_safe_value) {
+								$attributes = ['html' => $attributes];
+							} else {
+								$attributes = ['value' => $attributes];
+							}
 						}
 
 						if (isset($attributes['text'])) {
