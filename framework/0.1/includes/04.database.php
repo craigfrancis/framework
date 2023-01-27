@@ -897,26 +897,35 @@
 			//--------------------------------------------------
 			// Config
 
-				$prefix = 'db.';
+				$config = [
+						'name'       => config::get('db.name'),
+						'host'       => config::get('db.host'),
+						'user'       => config::get('db.user'),
+						'pass'       => secrets::get('db.pass'),
+						'persistent' => config::get('db.persistent'),
+						'ca_file'    => config::get('db.ca_file'),
+					];
+
+				if ($config['pass'] === NULL) {
+					$config['pass'] = config::get_decrypted('db.pass'); // TODO [secrets-cleanup], where this also effectively does config::get()
+				}
+
 				if ($this->connection != 'default') {
-					$prefix .= $this->connection . '.';
+					$config = array_merge($config, config::get_all('db.' . $this->connection));
+					if ($config['pass'] === NULL) {
+						$config['pass'] = secrets::get('db.' . $this->connection . '.pass');
+					}
+					if ($config['pass'] === NULL) {
+						$config['pass'] = config::get_decrypted('db.' . $this->connection . '.pass'); // TODO [secrets-cleanup], where this also effectively does config::get()
+					}
 				}
 
-				$name = config::get($prefix . 'name');
-				$host = config::get($prefix . 'host');
-				$user = config::get($prefix . 'user');
-
-				$pass = secrets::get($prefix . 'pass');
-				if ($pass === NULL) {
-					$pass = config::get_decrypted($prefix . 'pass'); // TODO [secrets-cleanup], where this also effectively does config::get()
+				if ($config['pass'] === NULL) {
+					$this->_error('Unknown database password (config "db.pass")');
 				}
 
-				if ($pass === NULL) {
-					$this->_error('Unknown database password (config "' . $prefix . 'pass")');
-				}
-
-				if ($host != 'localhost' && config::get($prefix . 'persistent', true) === true) {
-					$host = 'p:' . $host;
+				if ($config['host'] != 'localhost' && ($config['persistent'] ?? true) === true) {
+					$config['host'] = 'p:' . $config['host'];
 				}
 
 				if (!function_exists('mysqli_real_connect')) {
@@ -935,9 +944,8 @@
 
 				$this->link = mysqli_init();
 
-				$ca_file = config::get($prefix . 'ca_file');
-				if ($ca_file) {
-					mysqli_ssl_set($this->link, NULL, NULL, $ca_file, NULL, NULL);
+				if ($config['ca_file']) {
+					mysqli_ssl_set($this->link, NULL, NULL, $config['ca_file'], NULL, NULL);
 				}
 
 			//--------------------------------------------------
@@ -954,10 +962,10 @@
 					}
 
 					try {
-						if ($ca_file) {
-							$result = mysqli_real_connect($this->link, $host, $user, $pass, $name, NULL, NULL, MYSQLI_CLIENT_SSL);
+						if ($config['ca_file']) {
+							$result = mysqli_real_connect($this->link, $config['host'], $config['user'], $config['pass'], $config['name'], NULL, NULL, MYSQLI_CLIENT_SSL);
 						} else {
-							$result = mysqli_real_connect($this->link, $host, $user, $pass, $name);
+							$result = mysqli_real_connect($this->link, $config['host'], $config['user'], $config['pass'], $config['name']);
 						}
 					} catch (mysqli_sql_exception $e) {
 						$result = false;
@@ -990,7 +998,7 @@
 					debug_log_time('DBC', $time);
 				}
 				if (config::get('debug.level') >= 4) {
-					debug_progress('Database Connect ' . $time . ($ca_file ? ' +TLS' : ''));
+					debug_progress('Database Connect ' . $time . ($config['ca_file'] ? ' +TLS' : ''));
 				}
 
 			//--------------------------------------------------
