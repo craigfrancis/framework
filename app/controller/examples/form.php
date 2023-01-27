@@ -49,7 +49,7 @@
 
 					$example_info[] = array(
 							'name' => $example,
-							'url_basic' => $url_base->get(array('type' => $example)),
+							'url_basic' => $url_base->get(['type' => $example]),
 							'url_database' => $url_base->get(array('type' => $example, 'database' => 'true')),
 						);
 

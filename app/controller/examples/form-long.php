@@ -319,7 +319,7 @@
 								//--------------------------------------------------
 								// Next page
 
-									redirect(http_url('/contact/thank-you/', array('id' => $record_id)));
+									redirect(http_url('/contact/thank-you/', ['id' => $record_id]));
 
 							}
 

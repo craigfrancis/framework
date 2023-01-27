@@ -88,7 +88,7 @@
 							//--------------------------------------------------
 							// Next page
 
-								redirect($config['dest_url']->get(array('id' => $record_id)));
+								redirect($config['dest_url']->get(['id' => $record_id]));
 
 						}
 

@@ -45,7 +45,7 @@
 				$security_string_nav->link_add('/doc/security/strings/path-manipulation/', 'Path manipulation');
 
 				$security_nav = new nav();
-				$security_nav->link_add('/doc/security/strings/', 'Strings', array('child' => $security_string_nav));
+				$security_nav->link_add('/doc/security/strings/', 'Strings', ['child' => $security_string_nav]);
 				$security_nav->link_add('/doc/security/csrf/', 'Cross site request forgery');
 				$security_nav->link_add('/doc/security/xss/', 'Cross site scripting');
 				$security_nav->link_add('/doc/security/framing/', 'Site framing'); // X-Frame-Options header
@@ -55,7 +55,7 @@
 				$security_nav->link_add('/doc/security/files/', 'File uploads'); // Uploading a php file to a public location, or images containing exploits.
 				$security_nav->link_add('/doc/security/sessions/', 'Sessions'); // Uploading a php file to a public location, or images containing exploits.
 
-				$section_nav->link_add('/doc/security/', 'Security', array('child' => $security_nav));
+				$section_nav->link_add('/doc/security/', 'Security', ['child' => $security_nav]);
 
 			//--------------------------------------------------
 			// Setup
@@ -71,7 +71,7 @@
 
 				$setup_nav = new nav();
 				$setup_nav->link_add('/doc/setup/structure/', 'Structure');
-				$setup_nav->link_add('/doc/setup/server/', 'Server', array('child' => $server_nav));
+				$setup_nav->link_add('/doc/setup/server/', 'Server', ['child' => $server_nav]);
 				$setup_nav->link_add('/doc/setup/views/', 'Views');
 				$setup_nav->link_add('/doc/setup/templates/', 'Templates');
 				$setup_nav->link_add('/doc/setup/units/', 'Units');
@@ -81,12 +81,12 @@
 				$setup_nav->link_add('/doc/setup/jobs/', 'Jobs');
 				$setup_nav->link_add('/doc/setup/config/', 'Config');
 				$setup_nav->link_add('/doc/setup/constants/', 'Constants');
-				$setup_nav->link_add('/doc/setup/resources/', 'Resources', array('child' => $resources_nav));
+				$setup_nav->link_add('/doc/setup/resources/', 'Resources', ['child' => $resources_nav]);
 				$setup_nav->link_add('/doc/setup/debug/', 'Debug');
 				$setup_nav->link_add('/doc/setup/bootstrap/', 'Bootstrap');
 				$setup_nav->link_add('/doc/setup/cli/', 'CLI');
 
-				$section_nav->link_add('/doc/setup/', 'Setup', array('child' => $setup_nav));
+				$section_nav->link_add('/doc/setup/', 'Setup', ['child' => $setup_nav]);
 
 			//--------------------------------------------------
 			// System
@@ -98,7 +98,7 @@
 				$system_nav->link_add('/doc/system/uploading/', 'Uploading');
 				$system_nav->link_add('/doc/system/tester/', 'Tester');
 
-				$section_nav->link_add('/doc/system/', 'System', array('child' => $system_nav));
+				$section_nav->link_add('/doc/system/', 'System', ['child' => $system_nav]);
 
 			//--------------------------------------------------
 			// Helpers
@@ -128,8 +128,8 @@
 
 				$form_nav = new nav();
 				$form_nav->link_add('/doc/helpers/form/', 'Introduction');
-				$form_nav->link_add('/doc/helpers/form/setup/', 'Setup', array('child' => $form_setup_nav));
-				$form_nav->link_add('/doc/helpers/form/fields/', 'Fields', array('child' => $form_fields_nav));
+				$form_nav->link_add('/doc/helpers/form/setup/', 'Setup', ['child' => $form_setup_nav]);
+				$form_nav->link_add('/doc/helpers/form/fields/', 'Fields', ['child' => $form_fields_nav]);
 
 				$helpers_nav = new nav();
 				$helpers_nav->link_add('/doc/helpers/cms-text/', 'CMS Text');
@@ -139,7 +139,7 @@
 				$helpers_nav->link_add('/doc/helpers/email/', 'Email');
 				$helpers_nav->link_add('/doc/helpers/encryption/', 'Encryption');
 				$helpers_nav->link_add('/doc/helpers/file/', 'File');
-				$helpers_nav->link_add('/doc/helpers/form/', 'Form'); // , array('child' => $form_nav)
+				$helpers_nav->link_add('/doc/helpers/form/', 'Form'); // , ['child' => $form_nav]
 				$helpers_nav->link_add('/doc/helpers/gpg/', 'GPG');
 				$helpers_nav->link_add('/doc/helpers/image/', 'Image');
 				$helpers_nav->link_add('/doc/helpers/loading/', 'Loading');
@@ -158,7 +158,7 @@
 				$helpers_nav->link_add('/doc/helpers/url/', 'URL');
 				$helpers_nav->link_add('/doc/helpers/user/', 'User');
 
-				$section_nav->link_add('/doc/helpers/', 'Helpers', array('child' => $helpers_nav));
+				$section_nav->link_add('/doc/helpers/', 'Helpers', ['child' => $helpers_nav]);
 
 			//--------------------------------------------------
 			// Notes
@@ -169,7 +169,7 @@
 				$notes_nav->link_add('/doc/notes/basic-site/', 'Basic Site');
 				$notes_nav->link_add('/doc/notes/short-variables/', 'Short Variables');
 
-				$section_nav->link_add('/doc/notes/', 'Notes', array('child' => $notes_nav));
+				$section_nav->link_add('/doc/notes/', 'Notes', ['child' => $notes_nav]);
 
 		} else if (request_folder_get(0) == 'examples') {
 
