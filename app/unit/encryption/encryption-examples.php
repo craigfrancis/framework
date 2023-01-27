@@ -3,7 +3,7 @@
 	class encryption_examples_unit extends unit {
 
 		protected $config = array(
-				'example_ref' => array('default' => NULL),
+				'example_ref' => ['default' => NULL],
 				'examples_url' => ['type' => 'url'],
 			);
 

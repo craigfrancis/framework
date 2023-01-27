@@ -48,7 +48,7 @@
 					// $field_type->print_hidden_set(true);
 					$field_type->db_field_set('type');
 					// $field_type->db_field_set('type', 'key');
-					// $field_type->options_set(array('user' => 'User', 'admin' => 'Admin', 'test' => 'Beta'));
+					// $field_type->options_set(['user' => 'User', 'admin' => 'Admin', 'test' => 'Beta']);
 					$field_type->label_option_set('');
 					$field_type->required_error_set('Your type is required.');
 

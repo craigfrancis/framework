@@ -110,7 +110,7 @@
 				$preserved = (request('preserved') == 'true');
 
 				if ($preserved) {
-					$response->view_set_html('<a href="' . html(url(array('preserved' => NULL))) . '">Return to form</a>');
+					$response->view_set_html('<a href="' . html(url(['preserved' => NULL])) . '">Return to form</a>');
 					$response->send();
 					exit();
 				}

@@ -9,7 +9,7 @@
 	$field->input_order_set(array('Y', 'M', 'D'));
 	$field->input_separator_set(' / ');
 	$field->format_set(['separator' => '-']);
-	// $field->format_set(array('separator' => '-', 'D' => 'Day', 'M' => 'Month', 'Y' => 'Year'));
+	// $field->format_set(['separator' => '-', 'D' => 'Day', 'M' => 'Month', 'Y' => 'Year']);
 	// $field->format_set('Year/Month/Day'); // But this looses the <label> tags.
 
 ?>
