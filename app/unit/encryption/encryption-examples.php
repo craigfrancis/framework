@@ -4,7 +4,7 @@
 
 		protected $config = array(
 				'example_ref' => array('default' => NULL),
-				'examples_url' => array('type' => 'url'),
+				'examples_url' => ['type' => 'url'],
 			);
 
 		protected function setup($config) {

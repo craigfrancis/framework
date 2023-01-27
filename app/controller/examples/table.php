@@ -55,7 +55,7 @@
 					exit();
 				}
 
-				$response->set('download_url', url(array('download' => 'true')));
+				$response->set('download_url', url(['download' => 'true']));
 
 			//--------------------------------------------------
 			// Variables

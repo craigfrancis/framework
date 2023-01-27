@@ -3,7 +3,7 @@
 	class contact_form_unit extends unit {
 
 		protected $config = array(
-				'dest_url' => array('type' => 'url'),
+				'dest_url' => ['type' => 'url'],
 			);
 
 		protected function authenticate($config) {

@@ -211,7 +211,7 @@
 					// Preserve value method
 
 						if ($field_preserve->value_get()) {
-							save_request_redirect(url(array('preserved' => 'true')));
+							save_request_redirect(url(['preserved' => 'true']));
 						}
 
 					//--------------------------------------------------
