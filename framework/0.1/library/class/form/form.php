@@ -455,7 +455,7 @@
 					$config = array_merge([
 							'content_values' => [],
 							'db_field'       => NULL,
-							'db_insert'      => false,
+							'db_insert'      => false, // Still insert when found to be spam (for logging purposes); can also be an array e.g. ['deleted' => $now]
 							'time_min'       => 5,
 							'time_max'       => (60*60*3),
 							'force_check'    => false,
@@ -489,8 +489,16 @@
 							$field_human->db_field_set($config['db_field']); // Set the field to enum('', 'true', 'false') where a blank value shows they did not see this field.
 						}
 
-						if (!$is_human && $config['db_field'] && $config['db_insert'] === true) {
-							$this->db_insert();
+						if (!$is_human && $config['db_field']) {
+							if (is_array($config['db_insert'])) {
+								foreach ($config['db_insert'] as $field => $value) {
+									$this->db_value_set($field, $value);
+								}
+								$config['db_insert'] = true;
+							}
+							if ($config['db_insert'] === true) {
+								$this->db_insert();
+							}
 						}
 
 					}
