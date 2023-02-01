@@ -431,7 +431,7 @@
 
 	function prefix_match($prefix, $string) {
 		if (PHP_VERSION_ID >= 80000) {
-			trigger_error('Please replace prefix_match(), as PHP 8 provides str_starts_with(); but pleas note, the arguments are reversed.', E_USER_NOTICE);
+			trigger_error('Please replace prefix_match(), as PHP 8 provides str_starts_with(); but please note, the arguments are reversed.', E_USER_NOTICE);
 		}
 		return (strncmp($string, $prefix, strlen($prefix)) === 0);
 	}
