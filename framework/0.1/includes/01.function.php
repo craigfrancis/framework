@@ -431,7 +431,7 @@
 
 	function prefix_match($prefix, $string) {
 		if (PHP_VERSION_ID >= 80000) {
-			trigger_error('Please use str_starts_with(), as prefix_match() has been deprecated (to match PHP 8).', E_USER_NOTICE);
+			trigger_error('Please replace prefix_match(), as PHP 8 provides str_starts_with(); but pleas note, the arguments are reversed.', E_USER_NOTICE);
 		}
 		return (strncmp($string, $prefix, strlen($prefix)) === 0);
 	}
