@@ -75,7 +75,7 @@
 
 			}
 
-			public function format_error_set($error) {
+			public function format_error_set($error) { // To provide an override to the domain_check, try using $field->domain_error_set('The email address does not end with a valid domain (the bit after the @ sign).', 'Skip Check?');
 				$this->format_error_set_html(to_safe_html($error));
 			}
 
