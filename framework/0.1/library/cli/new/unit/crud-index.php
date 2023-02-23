@@ -49,15 +49,6 @@
 				}
 
 			//--------------------------------------------------
-			// Columns
-
-				$columns = ['name'];
-
-				if ($config['delete_url']) {
-					$columns[] = 'delete';
-				}
-
-			//--------------------------------------------------
 			// Table
 
 				$table = new table();
@@ -68,8 +59,8 @@
 				// $table->sort_preserve_set(true);
 				// $table->anchor_set('results');
 
-				if (in_array('name',   $columns)) $table->heading_add('Name', 'name', 'text');
-				if (in_array('delete', $columns)) $table->heading_add('', NULL, 'action');
+				$table->heading_add('Name', 'name', 'text');
+				$table->heading_add('', NULL, 'action');
 
 			//--------------------------------------------------
 			// Source
@@ -175,9 +166,8 @@
 					// Add row
 
 						$table_row = new table_row($table);
-
-						if (in_array('name',   $columns)) $table_row->cell_add_link($edit_url, $row['name']);
-						if (in_array('delete', $columns)) $table_row->cell_add_link($delete_url, 'Delete');
+						$table_row->cell_add_link($edit_url, $row['name']);
+						$table_row->cell_add_link($delete_url, 'Delete');
 
 				}
 
