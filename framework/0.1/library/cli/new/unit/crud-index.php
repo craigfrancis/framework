@@ -207,17 +207,19 @@
 			// Links
 
 				$links_html = [];
+				$links_parameters = [];
 
 				if ($config['download']) {
-					$export_url = url(['output' => 'csv']);
-					$links_html[] = '<a href="' . html($export_url) . '">download</a>';
+					$links_html[] = '<a href="?">download</a>';
+					$links_parameters[] = url(['output' => 'csv']);
 				}
 
 				if ($config['add_url']) {
-					$links_html[] = '<a href="' . html($config['add_url']) . '"' . ($config['autofocus'] == 'add' ? ' autofocus="autofocus"' : '') . '>add item</a>';
+					$links_html[] = '<a href="?"' . ($config['autofocus'] == 'add' ? ' autofocus="autofocus"' : '') . '>add item</a>';
+					$links_parameters[] = $config['add_url'];
 				}
 
-				$this->set('links_html', implode(', ', $links_html));
+				$this->set('links_html', ht(implode(', ', $links_html), $links_parameters));
 
 			//--------------------------------------------------
 			// Variables
