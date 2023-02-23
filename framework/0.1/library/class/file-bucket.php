@@ -374,6 +374,10 @@ return;
 
 				$file = $this->_file_info_get($file_id);
 
+				if ($file === NULL) {
+					return NULL;
+				}
+
 				$info = $this->_file_info_details($file['info']);
 
 				if (!is_file($info['plain_path'])) {
