@@ -382,8 +382,9 @@
 					}
 
 					if ($this->label_option !== NULL && $this->select_size == 1 && !$this->multiple) {
+						$label_class = ($this->options_class[''] ?? '');
 						$label_html = '
-										<option value="">' . ($this->label_option === '' ? '&#xA0;' : html($this->label_option)) . '</option>'; // Value must be blank for HTML5
+										<option value=""' . ($label_class ? ' class="' . html($label_class) . '"' : '') . '>' . ($this->label_option === '' ? '&#xA0;' : html($this->label_option)) . '</option>'; // Value must be blank for HTML5
 					} else {
 						$label_html = '';
 					}
