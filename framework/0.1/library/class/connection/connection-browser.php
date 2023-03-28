@@ -422,10 +422,20 @@
 
 							} else if ($name != '' && $type != 'file') {
 
-								$this->form['fields'][$name] = array(
+								$value = $input->getAttribute('value');
+								$options = NULL;
+
+								if ($type === 'checkbox') {
+									$options = [$value];
+									$value = NULL;
+								}
+
+								$this->form['fields'][$name] = [
 										'type' => 'input',
-										'value' => $input->getAttribute('value'),
-									);
+										'input' => $type,
+										'value' => $value,
+										'options' => $options,
+									];
 
 							}
 
@@ -514,9 +524,17 @@
 				}
 
 				if ($value === NULL) {
+
 					unset($this->form['fields'][$name]);
+
 				} else {
+
+					if ($value === true && $field['type'] == 'input' && $field['input'] == 'checkbox' && is_array($field['options']) && count($field['options']) == 1) {
+						$value = reset($field['options']);
+					}
+
 					$this->form['fields'][$name]['value'] = $value;
+
 				}
 
 			}
