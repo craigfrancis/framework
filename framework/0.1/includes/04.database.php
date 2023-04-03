@@ -950,6 +950,7 @@
 				$error_messages = [];
 				$error_reporting = error_reporting(0); // With PHP 8.1 and/or MariaDB 10.6; with persistent (SSL?) connections, to a remote server, there is a fair amount of "PHP Warning: mysqli_real_connect(): SSL: Connection reset by peer"
 
+				$host = NULL;
 				$start = microtime(true);
 
 				do {
@@ -1016,7 +1017,7 @@
 					debug_log_time('DBC', $time);
 				}
 				if (config::get('debug.level') >= 4) {
-					debug_progress('Database Connect ' . $time . ($config['ca_file'] ? ' +TLS' : ''));
+					debug_progress('Database Connect ' . $time . ($config['ca_file'] ? ' +TLS' : '') . ': ' . $host);
 				}
 
 			//--------------------------------------------------
