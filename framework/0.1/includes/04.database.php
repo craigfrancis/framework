@@ -966,6 +966,7 @@
 							// AWS RDS uses DNS with a 5 second TTL, and a ~60ms lookup time (not good when you have a processing budget of 100ms).
 							$dns_cache_dir = '/etc/dns-cache/';
 							$dns_cache_path = realpath($dns_cache_dir . $host);
+							$host_log[] = $dns_cache_path;
 							if ($dns_cache_path !== false && str_starts_with($dns_cache_path, $dns_cache_dir)) { // Can't see how this would happen, but ensure we are still within the dir (e.g. host does not start "../")
 								$host = trim(file_get_contents($dns_cache_path));
 								if ($host === '') {
@@ -1019,7 +1020,7 @@
 					debug_log_time('DBC', $time);
 				}
 				if (config::get('debug.level') >= 4) {
-					debug_progress('Database Connect ' . $time . ($config['ca_file'] ? ' +TLS' : '') . ' = ' . implode(', ', $host_log));
+					debug_progress('Database Connect ' . $time . ($config['ca_file'] ? ' +TLS' : '') . ' - ' . implode(', ', $host_log));
 				}
 
 			//--------------------------------------------------
