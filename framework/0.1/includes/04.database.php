@@ -1017,7 +1017,7 @@
 					debug_log_time('DBC', $time);
 				}
 				if (config::get('debug.level') >= 4) {
-					debug_progress('Database Connect ' . $time . ($config['ca_file'] ? ' +TLS' : '') . ': ' . $host);
+					debug_progress('Database Connect ' . $time . ($config['ca_file'] ? ' +TLS' : '') . ' - ' . $host);
 				}
 
 			//--------------------------------------------------
