@@ -924,15 +924,9 @@
 					$this->_error('Unknown database password (config "db.pass")');
 				}
 
-				if ($config['host'] != 'localhost' && ($config['persistent'] ?? true) === true) {
-					$config['host'] = 'p:' . $config['host'];
-				}
-
 				if (!function_exists('mysqli_real_connect')) {
 					$this->_error('PHP does not have MySQLi support');
 				}
-
-				$start = microtime(true);
 
 			//--------------------------------------------------
 			// Report mode
@@ -956,17 +950,38 @@
 				$error_messages = [];
 				$error_reporting = error_reporting(0); // With PHP 8.1 and/or MariaDB 10.6; with persistent (SSL?) connections, to a remote server, there is a fair amount of "PHP Warning: mysqli_real_connect(): SSL: Connection reset by peer"
 
+				$start = microtime(true);
+
 				do {
 
 					if ($k > 0) {
 						usleep(500000); // Half a second
 					}
 
+					$host = $config['host'];
+					if ($host !== 'localhost') {
+						if ($k === 0) {
+							// AWS RDS uses DNS with a 5 second TTL, and a ~60ms lookup time (not good when you have a processing budget of 100ms).
+							//
+							// $dns_cache_dir = '/etc/dns-cache/';
+							// $dns_cache_path = realpath($dns_cache_dir . $host);
+							// if ($dns_cache_path !== false && str_starts_with($dns_cache_path, $dns_cache_dir)) { // Can't see how this would happen, but ensure we are still within the dir (e.g. host does not start "../")
+							// 	$host = trim(file_get_contents($dns_cache_path));
+							// 	if ($host === '') {
+							// 		$host = $config['host'];
+							// 	}
+							// }
+						}
+						if (($config['persistent'] ?? true) === true) {
+							$host = 'p:' . $host;
+						}
+					}
+
 					try {
 						if ($config['ca_file']) {
-							$result = mysqli_real_connect($this->link, $config['host'], $config['user'], $config['pass'], $config['name'], NULL, NULL, MYSQLI_CLIENT_SSL);
+							$result = mysqli_real_connect($this->link, $host, $config['user'], $config['pass'], $config['name'], NULL, NULL, MYSQLI_CLIENT_SSL);
 						} else {
-							$result = mysqli_real_connect($this->link, $config['host'], $config['user'], $config['pass'], $config['name']);
+							$result = mysqli_real_connect($this->link, $host, $config['user'], $config['pass'], $config['name']);
 						}
 					} catch (mysqli_sql_exception $e) {
 						$result = false;
