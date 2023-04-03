@@ -948,6 +948,8 @@
 					mysqli_ssl_set($this->link, NULL, NULL, $config['ca_file'], NULL, NULL);
 				}
 
+				mysqli_options($this->link, MYSQLI_OPT_CONNECT_TIMEOUT, 3);
+
 			//--------------------------------------------------
 			// Connect
 
@@ -959,7 +961,17 @@
 				do {
 
 					if ($k > 0) {
+
+						$dns_cache_update = '/usr/local/bin/dns-cache-update';
+						if (is_file($dns_cache_update)) {
+							$output = [];
+							$return = NULL;
+							exec('sudo ' . $dns_cache_update . ' 2>&1', $output, $return);
+							$error_messages[] = $return . ' : ' . implode('\n', $output);
+						}
+
 						usleep(500000); // Half a second
+
 					}
 
 					try {
@@ -1001,7 +1013,7 @@
 					debug_log_time('DBC', $time);
 				}
 				if (config::get('debug.level') >= 4) {
-					debug_progress('Database Connect ' . $time . ($config['ca_file'] ? ' +TLS' : ''));
+					debug_progress('Database Connect ' . $time . ($config['ca_file'] ? ' +TLS' : '') . (count($error_messages) > 0 ? ' - ' . implode(', ', $error_messages) : ''));
 				}
 
 			//--------------------------------------------------
