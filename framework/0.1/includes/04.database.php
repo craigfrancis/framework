@@ -977,9 +977,9 @@
 							$host = 'p:' . $host;
 						}
 					}
+					$host_log[] = $host;
 
 					try {
-						$host_log[] = $host;
 						if ($config['ca_file']) {
 							$result = mysqli_real_connect($this->link, $host, $config['user'], $config['pass'], $config['name'], NULL, NULL, MYSQLI_CLIENT_SSL);
 						} else {
@@ -1019,7 +1019,7 @@
 					debug_log_time('DBC', $time);
 				}
 				if (config::get('debug.level') >= 4) {
-					debug_progress('Database Connect ' . $time . ($config['ca_file'] ? ' +TLS' : '') . ' - ' . implode(', ', $host_log));
+					debug_progress('Database Connect ' . $time . ($config['ca_file'] ? ' +TLS' : '') . ' = ' . implode(', ', $host_log));
 				}
 
 			//--------------------------------------------------
