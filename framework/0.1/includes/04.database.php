@@ -954,7 +954,6 @@
 			// Connect
 
 				$k = 0;
-				$error_number = NULL;
 				$error_messages = [];
 				$error_reporting = error_reporting(0); // With PHP 8.1 and/or MariaDB 10.6; with persistent (SSL?) connections, to a remote server, there is a fair amount of "PHP Warning: mysqli_real_connect(): SSL: Connection reset by peer"
 
@@ -973,6 +972,8 @@
 						usleep(500000); // Half a second
 
 					}
+
+					$error_number = NULL;
 
 					try {
 						if ($config['ca_file']) {
