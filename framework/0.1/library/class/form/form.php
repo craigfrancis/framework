@@ -1088,6 +1088,10 @@
 						exit_with_error('You need to call "db_record_set" or "db_table_set_sql" on the form object');
 					}
 
+					foreach ($this->fields as $field) {
+						$field->_db_field_value_update();
+					}
+
 					if (is_array($record)) {
 
 						if (count($this->db_values) > 0) {
@@ -1098,16 +1102,12 @@
 
 					} else {
 
-						foreach ($this->db_values as $name => $value) {
+						foreach ($this->db_values as $name => $value) { // Values from db_value_set() replace those from $this->fields.
 							$record->value_set($name, $value);
 						}
 
 						$records = array($record);
 
-					}
-
-					foreach ($this->fields as $field) {
-						$field->_db_field_value_update();
 					}
 
 					foreach ($records as $record) {
