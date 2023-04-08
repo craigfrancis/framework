@@ -130,7 +130,7 @@
 				'screen-wake-lock'                   => [],
 				'serial'                             => [],
 				'usb'                                => [],
-				'window-placement'                   => [],
+				'window-management'                  => [],
 				'xr-spatial-tracking'                => [],
 
 				// 'interest-cohort'                 => [], // InterestCohortFeaturePolicy, "Topics" replaces the "obsolete FLoC code" - https://chromium.googlesource.com/chromium/src/+/9255aecd4114c0b3da4016f641316367112adb53
