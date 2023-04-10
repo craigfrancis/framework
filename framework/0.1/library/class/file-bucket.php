@@ -383,8 +383,7 @@ return;
 				if (!is_file($info['plain_path'])) {
 
 					if ($info['encrypted_path'] === NULL) {
-
-						throw new error_exception('Could not return encrypted version of the file.', 'NULL' . "\n" . 'ID:' . $file_id);
+						throw new error_exception('Could not return encrypted version of the file.', 'NULL' . "\n" . 'File ID: ' . $file_id);
 					}
 
 					if (!is_file($info['encrypted_path'])) {
@@ -410,14 +409,14 @@ return;
 					}
 
 					if (!is_file($info['encrypted_path'])) {
-						throw new error_exception('Could not return encrypted version of the file.', $info['encrypted_path'] . "\n" . 'ID:' . $file_id);
+						throw new error_exception('Could not return encrypted version of the file.', $info['encrypted_path'] . "\n" . 'File ID: ' . $file_id);
 					}
 
 					$plain_content = file_get_contents($info['encrypted_path']);
 					if ($file['info']['v'] == 1) {
 						$plain_content = sodium_crypto_aead_chacha20poly1305_ietf_decrypt($plain_content, $file_id, base64_decode($file['info']['fn']), base64_decode($file['info']['fk']));
 					} else {
-						throw new error_exception('Unrecognised encryption version "' . $file['info']['v'] . '".', 'ID:' . $file_id);
+						throw new error_exception('Unrecognised encryption version "' . $file['info']['v'] . '".', 'File ID: ' . $file_id);
 					}
 					file_put_contents($info['plain_path'], $plain_content);
 					chmod($info['plain_path'], octdec(600));
@@ -473,7 +472,7 @@ return;
 			public function file_save($path, $extra_details = []) {
 
 				if ($this->config['backup_root'] !== NULL) {
-					throw new error_exception('On the backup server, a bucket file cannot be saved (created).');
+					throw new error_exception('On the backup server, a bucket file cannot be saved (path).');
 				}
 
 				$plain_hash = hash_file($this->config['file_hash'], $path);
@@ -556,8 +555,8 @@ exit('TODO'); // See cleanup method above
 					if (is_file($info['plain_path']))     unlink($info['plain_path']);
 					if (is_file($info['encrypted_path'])) unlink($info['encrypted_path']);
 
-					if (is_file($info['plain_path']))     throw new error_exception('Unable to delete file', $info['plain_path']     . "\n" . 'ID:' . $file_id);
-					if (is_file($info['encrypted_path'])) throw new error_exception('Unable to delete file', $info['encrypted_path'] . "\n" . 'ID:' . $file_id);
+					if (is_file($info['plain_path']))     throw new error_exception('Unable to delete file', $info['plain_path']     . "\n" . 'File ID: ' . $file_id);
+					if (is_file($info['encrypted_path'])) throw new error_exception('Unable to delete file', $info['encrypted_path'] . "\n" . 'File ID: ' . $file_id);
 
 				//--------------------------------------------------
 				// Record deleted, so backup server can use rsync
