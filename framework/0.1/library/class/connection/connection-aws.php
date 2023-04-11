@@ -108,7 +108,7 @@
 
 					foreach ($request_headers as $key => $value) {
 						$key = strtolower($key);
-						if ($key !== 'authorization') {
+						if ($key !== 'connection' && $key !== 'authorization') {
 							$headers_canonical[] = $key . ':' . $value;
 							$headers_signed[] = $key;
 							if ($key !== 'host') {
