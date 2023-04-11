@@ -84,7 +84,7 @@ debug($request_headers);
 				//--------------------------------------------------
 				// Headers
 
-					array_change_key_case($request_headers, CASE_LOWER); // Must be lowercase
+					$request_headers = array_change_key_case($request_headers, CASE_LOWER); // Must be lowercase
 
 					if (!isset($request_headers['content-type'])) {
 						$request_headers['content-type'] = 'application/octet-stream';
