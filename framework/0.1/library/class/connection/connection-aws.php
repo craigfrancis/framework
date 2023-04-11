@@ -40,7 +40,8 @@
 				// Cleanup
 
 					$request_headers = $this->headers_get();
-
+debug('---');
+debug($request_headers);
 					$this->reset();
 
 					if (!$this->access_id)   exit_with_error('Missing call to $connection_aws->access_set()');
@@ -117,7 +118,9 @@
 							}
 						}
 					}
-
+debug($headers_canonical);
+debug($headers_signed);
+debug($headers_send);
 					$headers_canonical = implode("\n", $headers_canonical) . "\n"; // "Add the canonical headers, followed by a newline character"
 					$headers_signed = implode(';', $headers_signed);
 
