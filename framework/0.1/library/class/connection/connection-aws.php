@@ -40,7 +40,7 @@
 				// Cleanup
 
 					$request_headers = $this->headers_get();
-debug($request_headers);
+
 					$this->reset();
 
 					if (!$this->access_id)   exit_with_error('Missing call to $connection_aws->access_set()');
@@ -83,12 +83,14 @@ debug($request_headers);
 				//--------------------------------------------------
 				// Headers
 
-					if (!isset($request_headers['Content-Type'])) {
-						$request_headers['Content-Type'] = 'application/octet-stream';
+					array_change_key_case($request_headers, CASE_LOWER); // Must be lowercase
+
+					if (!isset($request_headers['content-type'])) {
+						$request_headers['content-type'] = 'application/octet-stream';
 					}
 
-					$request_headers['Date'] = $request_time;
-					$request_headers['Host'] = $this->service_host;
+					$request_headers['date'] = $request_time;
+					$request_headers['host'] = $this->service_host;
 
 				//--------------------------------------------------
 				// Data
@@ -107,8 +109,7 @@ debug($request_headers);
 					$headers_send = [];
 
 					foreach ($request_headers as $key => $value) {
-						$key = strtolower($key);
-						if ($key !== 'connection' && $key !== 'authorization') {
+						if ($key !== 'authorization') {
 							$headers_canonical[] = $key . ':' . $value;
 							$headers_signed[] = $key;
 							if ($key !== 'host') {
@@ -116,8 +117,7 @@ debug($request_headers);
 							}
 						}
 					}
-debug($headers_canonical);
-debug($headers_send);
+
 					$headers_canonical = implode("\n", $headers_canonical) . "\n"; // "Add the canonical headers, followed by a newline character"
 					$headers_signed = implode(';', $headers_signed);
 
