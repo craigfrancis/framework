@@ -833,7 +833,7 @@ $chunk_log[] = 'End: ' . $byte;
 
 							$length_remaining = ($length - strlen($response_data));
 
-							if ($length_remaining <= 0) {
+							if ($length_remaining <= 0 || feof($connection)) { // EOF check needed for HEAD requests, where Content-Length is specified, but no body exists.
 								break; // EOF may never come, especially on a keep-alive connection, or when the remote server is using the 'loading' helper.
 							}
 
