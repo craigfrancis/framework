@@ -39,6 +39,8 @@
 				//--------------------------------------------------
 				// Cleanup
 
+					$request_headers = $this->headers_get();
+
 					$this->reset();
 
 					if (!$this->access_id)   exit_with_error('Missing call to $connection_aws->access_set()');
@@ -80,8 +82,6 @@
 
 				//--------------------------------------------------
 				// Headers
-
-					$request_headers = $this->headers_get();
 
 					if (!isset($request_headers['Content-Type'])) {
 						$request_headers['Content-Type'] = 'application/octet-stream';
