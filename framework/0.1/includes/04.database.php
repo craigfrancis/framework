@@ -961,6 +961,8 @@
 
 					if ($k > 0) {
 
+						usleep(500000); // Half a second
+
 						$dns_cache_update = '/usr/local/bin/dns-cache-update';
 						if (is_file($dns_cache_update)) {
 							$output = [];
@@ -968,8 +970,6 @@
 							exec('sudo ' . $dns_cache_update . ' 2>&1', $output, $return);
 							$error_messages[] = $return . ' : ' . implode('\n', $output);
 						}
-
-						usleep(500000); // Half a second
 
 					}
 
@@ -987,9 +987,10 @@
 						$error_messages[] = $error_number . ': ' . $e->getMessage();
 					}
 
-				} while (!$result && ($error_number == 2002 || $error_number == 1045) && SERVER != 'stage' && (++$k < 3));
+				} while (!$result && ($error_number == 2002 || $error_number == 1040 || $error_number == 1045) && SERVER != 'stage' && (++$k < 3));
 
 					// 2002 Connection error, e.g. "Temporary failure in name resolution" or "Can't connect to local MySQL server through socket"
+					// 1040 Too many connections.
 					// 1045 Access denied for user, e.g. using persistent connections and the remote server restarts.
 
 				if (!$result) {
