@@ -108,10 +108,12 @@
 
 					foreach ($request_headers as $key => $value) {
 						$key = strtolower($key);
-						$headers_canonical[] = $key . ':' . $value;
-						$headers_signed[] = $key;
-						if ($key != 'host') {
-							$headers_send[$key] = $value;
+						if ($key !== 'authorization') {
+							$headers_canonical[] = $key . ':' . $value;
+							$headers_signed[] = $key;
+							if ($key !== 'host') {
+								$headers_send[$key] = $value;
+							}
 						}
 					}
 
