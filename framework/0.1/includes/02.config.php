@@ -129,6 +129,7 @@
 				'publickey-credentials-get'          => [],
 				'screen-wake-lock'                   => [],
 				'serial'                             => [],
+				'trust-token-redemption'             => [],
 				'usb'                                => [],
 				'window-management'                  => [],
 				'xr-spatial-tracking'                => [],
