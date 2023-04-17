@@ -1352,7 +1352,7 @@
 
 		$db = db_get();
 
-		if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
+		if (config::get('debug.level') > 0 && config::get('db.host') !== NULL && config::get('output.site_available') !== false) {
 
 			debug_require_db_table(DB_PREFIX . 'system_redirect', '
 					CREATE TABLE [TABLE] (
@@ -1917,7 +1917,7 @@
 		//--------------------------------------------------
 		// Debug
 
-			if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
+			if (config::get('debug.level') > 0 && config::get('db.host') !== NULL && config::get('output.site_available') !== false) {
 
 				debug_require_db_table(DB_PREFIX . 'system_report_csp', '
 						CREATE TABLE [TABLE] (

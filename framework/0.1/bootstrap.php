@@ -120,7 +120,7 @@
 						// Must be inside the try/catch, incase the
 						// database connection fails.
 
-					if (config::get('debug.level') > 0 && config::get('db.host') !== NULL) {
+					if (config::get('debug.level') > 0 && config::get('db.host') !== NULL && config::get('output.site_available') !== false) {
 
 						// $db = db_get();
 						//
