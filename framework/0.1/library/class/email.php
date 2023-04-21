@@ -828,7 +828,7 @@
 					$content_text = str_replace('[URL]', strval($this->template_url), $content_text);
 
 					foreach ($this->template_values_text as $name => $value) {
-						$content_text = str_replace('[' . $name . ']', $value, $content_text);
+						$content_text = str_replace('[' . $name . ']', strval($value), $content_text);
 					}
 
 				//--------------------------------------------------
