@@ -86,7 +86,6 @@ Abbreviations:
 
 	'pf' - Plain     folder for Files (a temp folder)
 	'ef' - Encrypted folder for Files
-	'ed' - Encrypted folder for Deletes
 
 /*--------------------------------------------------*/
 
@@ -113,6 +112,8 @@ Abbreviations:
 					$this->config = array_merge($this->config, [
 							'name'              => NULL,
 							'local_max_age'     => '-30 days',
+							'delete_delay_file' => '-6 months',
+							'delete_delay_db'   => '-7 years',
 							'table_sql'         => DB_PREFIX . 'system_file_bucket',
 							'main_root'         => PRIVATE_ROOT . '/file-bucket',
 							'backup_root'       => NULL, // e.g. /path/to/backup
@@ -169,11 +170,14 @@ Abbreviations:
 			// }
 
 			public function files_process($files) {
-				// Receives all files, as programs like clamscan (ClamAV) can take a while to startup.
+				// For the project to extend - Receives all files, as programs like clamscan (ClamAV) can take a while to startup.
 				return [];
 			}
 
-			public function cleanup() {
+			public function cleanup($full_cleanup = false) {
+
+// Could use a Message Queue system (e.g. RabbitMQ, Redis, Beanstalkd, Iron.io MQ, Kafka)... to be run shortly after upload (not */5 min cron)
+// https://stackoverflow.com/questions/74809611/php-message-queue-for-low-volume-jobs
 
 				//--------------------------------------------------
 				// Config
@@ -183,185 +187,311 @@ Abbreviations:
 					$now = new timestamp();
 
 				//--------------------------------------------------
-				// Unprocessed files
+				// New files
 
-					$unprocessed_files_full = [];
-					$unprocessed_files_info = [];
-					$unprocessed_files_partial = [];
+					if ($this->config['backup_root'] === NULL) { // Not Backup Server
 
-					foreach ($this->_file_info_get('unprocessed') as $file_id => $file) {
+						//--------------------------------------------------
+						// Process new files
 
-						$info = $this->_file_info_details($file['info']);
+							$unprocessed_files_full = [];
+							$unprocessed_files_partial = [];
 
-						$partial = $file;
-						$partial['path'] = $info['plain_path'];
-						unset($partial['info']); // Possibly sensitive info... delete for now.
+							foreach ($this->_file_db_get('process') as $file_id => $file) {
 
-						$unprocessed_files_full[$file_id] = $file;
-						$unprocessed_files_info[$file_id] = $info;
-						$unprocessed_files_partial[$file_id] = $partial;
+								$plain_path = $this->_file_path_get('pf', $file['info']['ph']);
 
-					}
+								$file['path'] = $plain_path;
 
-					if (count($unprocessed_files_full) > 0) {
+								$partial = $file;
+								unset($partial['info']); // Possibly sensitive info... delete for now.
 
-						$info_key = $this->config['info_key'];
-						if (!encryption::key_exists($info_key)) { // TODO [secrets-keys]
-							throw new error_exception('Cannot find encryption key "' . $info_key . '"');
-						}
+								$unprocessed_files_full[$file_id] = $file;
+								$unprocessed_files_partial[$file_id] = $partial;
 
-						$new_values_all = $this->files_process($unprocessed_files_partial);
+							}
 
-						foreach ($unprocessed_files_full as $file_id => $file) {
+							if (count($unprocessed_files_full) > 0) {
 
-							//--------------------------------------------------
-							// Info
+								$info_key = $this->config['info_key'];
+								if (!encryption::key_exists($info_key)) { // TODO [secrets-keys]
+									throw new error_exception('Cannot find encryption key "' . $info_key . '"');
+								}
 
-								$new_values = ($new_values_all[$file_id] ?? []);
+								$new_values_all = $this->files_process($unprocessed_files_partial);
 
-								$info = $unprocessed_files_info[$file_id];
-
-							//--------------------------------------------------
-							// If not deleted
-
-								if (($new_values['deleted'] ?? '0000-00-00 00:00:00') == '0000-00-00 00:00:00') {
+								foreach ($unprocessed_files_full as $file_id => $file) {
 
 									//--------------------------------------------------
-									// Encrypt
+									// New values, from `files_process()`
 
-										if (is_file($info['plain_path'])) {
-											$plain_content = file_get_contents($info['plain_path']);
-										} else {
-											throw new error_exception('Cannot find the unencrypted file for uploading', $info['plain_path'] . "\n" . 'ID:' . $file_id);
+										$new_values = ($new_values_all[$file_id] ?? []);
+
+									//--------------------------------------------------
+									// Upload...
+									//   If not already done by `file_import()`
+									//   If not already deleted by `files_process()`
+
+										if (!isset($file['info']['eh']) && ($new_values['deleted'] ?? '0000-00-00 00:00:00') == '0000-00-00 00:00:00') {
+
+											if (is_file($file['path'])) {
+												$plain_content = file_get_contents($file['path']);
+											} else {
+												throw new error_exception('Cannot find the unencrypted file for uploading', $file['path'] . "\n" . 'File ID: ' . $file_id);
+											}
+
+											$new_info = $this->_file_upload($file['info'], $file_id, $plain_content);
+
+											$new_values['info'] = encryption::encode(json_encode($new_info), $info_key, $file_id);
+
+											unset($plain_content);
+
 										}
 
-										if ($file['info']['v'] == 1) {
-											$encrypted_content = sodium_crypto_aead_chacha20poly1305_ietf_encrypt($plain_content, $file_id, base64_decode($file['info']['fn']), base64_decode($file['info']['fk'])); // since PHP 7.2.0
-										} else {
-											throw new error_exception('Unrecognised encryption version "' . $file['info']['v'] . '".', 'ID:' . $file_id);
-										}
-
-											// Not using encryption::encode() as it base64 encodes the content (33% increase in file size),
-											// and adds extra details (like storing the key type) which will be stored in the database instead.
-
 									//--------------------------------------------------
-									// Content
+									// Update
 
-										$encrypted_hash = hash($this->config['file_hash'], $encrypted_content);
-										$encrypted_name = $this->_file_name_get($encrypted_hash);
-										$encrypted_path = $this->_folder_path_get('ef', $encrypted_name);
+										$where_sql = '
+											id = ? AND
+											deleted = deleted';
 
-										// if ($save_local) {
-											file_put_contents($encrypted_path, $encrypted_content);
-											chmod($encrypted_path, octdec(600));
-										// }
+										$parameters = [];
+										$parameters[] = intval($file_id);
 
-									//--------------------------------------------------
-									// Upload to AWS S3
+										$new_values['processed'] = $now;
 
-										$this->_aws_request([
-												'method'    => 'PUT',
-												'content'   => $encrypted_content,
-												'file_name' => $encrypted_name,
-												'acl'       => 'private',
-											]);
-
-									//--------------------------------------------------
-									// Updated info
-
-										$new_values['info'] = $file['info'];
-										$new_values['info']['eh'] = $encrypted_hash;
-										$new_values['info'] = encryption::encode(json_encode($new_values['info']), $info_key, $file_id);
+										$db->update($this->config['table_sql'], $new_values, $where_sql, $parameters);
 
 								}
 
-							//--------------------------------------------------
-							// Update
+							}
 
-								$where_sql = '
-									id = ? AND
-									deleted = deleted';
+						//--------------------------------------------------
+						// Files to remove
+
+							if ($full_cleanup) {
+								foreach ($this->_file_db_get('remove') as $file_id => $file) {
+									if (isset($file['info']['eh'])) {
+
+										//--------------------------------------------------
+										// Remove from AWS
+debug('AWS DELETE: ' . $file_id . ' = ' . $file['info']['eh']);
+											// $this->_aws_request([
+											// 		'method'         => 'DELETE',
+											// 		'encrypted_hash' => $file['info']['eh'],
+											// 	]);
+
+										//--------------------------------------------------
+										// Record as removed
+
+											$sql = 'UPDATE
+														' . $this->config['table_sql'] . ' AS f
+													SET
+														f.removed = ?
+													WHERE
+														f.id = ? AND
+														f.removed = "0000-00-00 00:00:00" AND
+														f.deleted = f.deleted';
+
+											$parameters = [];
+											$parameters[] = $now;
+											$parameters[] = $file_id;
+
+											$db->query($sql, $parameters);
+
+									}
+								}
+							}
+
+						//--------------------------------------------------
+						// Delete records
+
+								// Delayed, so backup server can remove its
+								// copies of the encrypted files).
+
+							if ($full_cleanup) {
+
+								$delete_delay_file = new timestamp($this->config['delete_delay_file']);
+								$delete_delay_db = new timestamp($this->config['delete_delay_db']);
+
+								if ($delete_delay_db > $delete_delay_file || $delete_delay_file->diff($delete_delay_db)->days < (7*3)) {
+									throw new error_exception('The delete delay between File and DB should be greater.', $delete_delay_file . "\n" . $delete_delay_db);
+								}
+
+								$sql = 'DELETE FROM
+											' . $this->config['table_sql'] . '
+										WHERE
+											deleted != "0000-00-00 00:00:00" AND
+											removed != "0000-00-00 00:00:00" AND
+											removed < ?';
 
 								$parameters = [];
-								$parameters[] = intval($file_id);
+								$parameters[] = $delete_delay_db;
 
-								$new_values['processed'] = $now;
+								$db->query($sql, $parameters);
 
-								$db->update($this->config['table_sql'], $new_values, $where_sql, $parameters);
-
-						}
-
-					}
-
-return;
-
-
-
-// TODO: Have this delete local cache files... but also handle deleting of actual files... once the file has been marked as deleted for X days, then actually remove from AWS?
-
-// Could use a Message Queue system (e.g. RabbitMQ, Redis, Beanstalkd, Iron.io MQ, Kafka)?
-// https://stackoverflow.com/questions/74809611/php-message-queue-for-low-volume-jobs
-
-
-				$local_max_age = $this->config['local_max_age'];
-				$local_max_age = strtotime($local_max_age);
-
-				$limit_check = strtotime('-3 hours');
-				if ($local_max_age > $limit_check) {
-					throw new error_exception('The "local_max_age" should be longer.');
-				}
-
-				$base_folders = [];
-				foreach (['pf', 'ef', 'ed'] as $folder) {
-					$base_folders[$folder] = $this->_folder_path_get($folder);
-				}
-
-				$encrypted_folder = $base_folders['ef'];
-				$backup_root = $this->config['backup_root'];
-
-				foreach ($base_folders as $folder => $path) {
-					foreach (glob($path . '/*') as $sub_path) {
-
-						if (!is_dir($sub_path)) {
-							throw new error_exception('Unexpected non-folder, should just contain sub-folders', $sub_path);
-						}
-						$empty = true;
-
-						foreach (glob($sub_path . '/*') as $file_path) {
-
-							if ($folder == 'ed') { // A folder to positively record files that have been deleted; not done for 'plain' files, as the same file can be uploaded by different people.
-								$file_path_suffix = str_replace($path, '', $file_path);
-								if (strlen($file_path_suffix) != 66) { // 64 character hash (sha256), with two '/' separators (1 leading, 1 after the second hash character).
-									throw new error_exception('Wrong length of file_path_suffix', $path . "\n" . $file_path . "\n" . $file_path_suffix);
-								}
-								if (is_file($encrypted_folder . $file_path_suffix)) {
-									throw new error_exception('An encrypted file still exists, even though it has been marked as deleted.', $encrypted_folder . $file_path_suffix);
-								}
-								if ($backup_root) { // On the backup server, use this delete marker to remove the local file (externally 'aws sync' will get the files from S3, without using the dangerous '--delete' option).
-									$backup_path = $backup_root . $file_path_suffix;
-// TODO: Maybe move to a folder named after the current date, then delete that folder after X days?
-									if (is_file($backup_path)) unlink($backup_path);
-									if (is_file($backup_path)) throw new error_exception('Could not remove a deleted file from the backup folder.', $backup_path);
-								}
 							}
 
-							$file_age = filemtime($file_path);
-							if (!is_file($file_path)) {
-								throw new error_exception('This folder should only contain files.', $sub_path . "\n" . $file_path);
-							} else if ($file_age < $local_max_age) {
-								unlink($file_path); // Hasn't been accessed for a while, delete local copy.
-							} else {
-								$empty = false;
+						//--------------------------------------------------
+						// Clear local 'plain' cache
+
+							if ($full_cleanup) {
+
+								$local_max_age = $this->config['local_max_age'];
+								$local_max_age = strtotime($local_max_age);
+
+								$limit_check = strtotime('-3 hours');
+								if ($local_max_age > $limit_check) {
+									throw new error_exception('The "local_max_age" should be longer.');
+								}
+
+								$path = $this->_file_path_get('pf');
+
+								foreach (glob($path . '/*') as $sub_path) {
+
+									if (!is_dir($sub_path)) {
+										throw new error_exception('Unexpected non-folder, should just contain sub-folders', $sub_path);
+									}
+									$empty = true;
+
+									foreach (glob($sub_path . '/*') as $file_path) {
+
+										$file_age = filemtime($file_path);
+										if (!is_file($file_path)) {
+											throw new error_exception('This folder should only contain files.', $sub_path . "\n" . $file_path);
+										} else if ($file_age < $local_max_age) {
+debug('CLEANUP: ' . $file_path);
+//											unlink($file_path); // Hasn't been accessed for a while, delete local copy.
+										} else {
+											$empty = false;
+										}
+
+									}
+
+									if ($empty) {
+										rmdir($sub_path);
+									}
+
+								}
+
 							}
 
-						}
+					} else { // Backup Server
 
-						if ($empty) {
-							rmdir($sub_path);
-						}
+						//--------------------------------------------------
+						// Find files to download
+
+							if ($full_cleanup) {
+
+								$offset = 0;
+								$limit = 10;
+// $limit = 4;
+								$to_download = [];
+
+								do {
+
+									$files = $this->_file_db_get('processed', $offset++, $limit);
+
+									$continue = false;
+
+									foreach ($files as $file_id => $file) {
+
+										if (isset($file['info']['eh'])) {
+
+											$encrypted_path = $this->_file_path_get('ef', $file['info']['eh']);
+
+											if (!is_file($encrypted_path)) {
+
+												$continue = true;
+
+												$to_download[$file_id] = [
+														'info'           => $file['info'],
+														'encrypted_path' => $encrypted_path,
+													];
+
+											}
+
+										}
+
+									}
+
+								} while (count($files) == $limit && $continue);
+
+								$to_download = array_reverse($to_download, true); // Download oldest files first (so it's resumable if the process does not complete).
+
+								foreach ($to_download as $file_id => $file) {
+
+									$encrypted_content = $this->_file_download($file['info'], $file_id);
+
+									$encrypted_hash = hash($this->config['file_hash'], $encrypted_content);
+
+									if (!hash_equals($encrypted_hash, $file['info']['eh'])) {
+										throw new error_exception('Hash check failed', $encrypted_hash . "\n" . $file['info']['eh'] . "\n" . 'File ID: ' . $file_id);
+									}
+
+									file_put_contents($file['encrypted_path'], $encrypted_content);
+
+									chmod($file['encrypted_path'], octdec(600));
+
+								}
+
+							}
+
+						//--------------------------------------------------
+						// Find files to remove
+
+							if ($full_cleanup) {
+
+								$offset = 0;
+								$limit = 10;
+$limit = 2;
+
+								$to_remove = [];
+
+								do {
+
+									$files = $this->_file_db_get('removed', $offset++, $limit);
+
+									$continue = false;
+
+									foreach ($files as $file_id => $file) {
+
+										if (isset($file['info']['eh'])) {
+
+											$encrypted_path = $this->_file_path_get('ef', $file['info']['eh']);
+
+											if (is_file($encrypted_path)) {
+
+												$continue = true;
+
+												$to_remove[$file_id] = [
+														'info'           => $file['info'],
+														'encrypted_path' => $encrypted_path,
+													];
+
+											}
+
+										}
+
+									}
+
+								} while (count($files) == $limit && $continue);
+
+								$to_remove = array_reverse($to_remove, true);
+debug('UNLINK: ' . debug_dump($to_remove));
+								foreach ($to_remove as $file_id => $file) { // Remove oldest files first (so it's resumable if the process does not complete).
+
+									// unlink($file['encrypted_path']);
+									//
+									// if (is_file($file['encrypted_path'])) {
+									// 	throw new error_exception('Unable to delete file', $file['encrypted_path'] . "\n" . 'File ID: ' . $file_id);
+									// }
+
+								}
+
+							}
 
 					}
-				}
 
 			}
 
@@ -372,64 +502,62 @@ return;
 
 				$file_id = intval($file_id);
 
-				$file = $this->_file_info_get($file_id);
+				$file = $this->_file_db_get($file_id);
 
 				if ($file === NULL) {
 					return NULL;
 				}
 
-				$info = $this->_file_info_details($file['info']);
+				$encrypted_content = NULL;
 
-				if (!is_file($info['plain_path'])) {
+				if ($this->config['backup_root'] !== NULL) {
 
-					if ($info['encrypted_path'] === NULL) {
-						throw new error_exception('Could not return encrypted version of the file.', 'NULL' . "\n" . 'File ID: ' . $file_id);
-					}
-
-					if (!is_file($info['encrypted_path'])) {
-
-						if ($info['backup_path']) {
-
-							$encrypted_content = @file_get_contents($info['backup_path']);
-
-						} else {
-
-							$encrypted_content = $this->_aws_request([
-									'method'    => 'GET',
-									'file_name' => $info['encrypted_name'],
-								]);
-
-						}
-
-						if ($encrypted_content !== false) {
-							file_put_contents($info['encrypted_path'], $encrypted_content);
-							chmod($info['encrypted_path'], octdec(600));
-						}
-
-					}
-
-					if (!is_file($info['encrypted_path'])) {
-						throw new error_exception('Could not return encrypted version of the file.', $info['encrypted_path'] . "\n" . 'File ID: ' . $file_id);
-					}
-
-					$plain_content = file_get_contents($info['encrypted_path']);
-					if ($file['info']['v'] == 1) {
-						$plain_content = sodium_crypto_aead_chacha20poly1305_ietf_decrypt($plain_content, $file_id, base64_decode($file['info']['fn']), base64_decode($file['info']['fk']));
+					if (isset($file['info']['eh'])) {
+						$encrypted_path = $this->_file_path_get('ef', $file['info']['eh']);
 					} else {
-						throw new error_exception('Unrecognised encryption version "' . $file['info']['v'] . '".', 'File ID: ' . $file_id);
+						throw new error_exception('Encrypted version of the file does not currently exist.', 'NULL' . "\n" . 'File ID: ' . $file_id);
 					}
-					file_put_contents($info['plain_path'], $plain_content);
-					chmod($info['plain_path'], octdec(600));
+
+					if (is_file($encrypted_path)) {
+						$encrypted_content = file_get_contents($encrypted_path);
+						if ($encrypted_content === false) {
+							throw new error_exception('Could not get encrypted contents of the file.', $encrypted_path . "\n" . 'File ID: ' . $file_id);
+						}
+					} else {
+						throw new error_exception('Encrypted version of the file does not currently exist.', $encrypted_path . "\n" . 'File ID: ' . $file_id);
+					}
+
+					$plain_content = $this->_file_decrypt($file['info'], $file_id, $encrypted_content);
+
+					$plain_file = tmpfile();
+
+					fwrite($plain_file, $plain_content);
+
+					$plain_path = stream_get_meta_data($plain_file)['uri'];
+
+				} else {
+
+					$plain_path = $this->_file_path_get('pf', $file['info']['ph']);
+
+					if (is_file($plain_path)) {
+
+						touch($plain_path); // File still being used, don't remove in cleanup()
+
+					} else {
+
+						$encrypted_content = $this->_file_download($file['info'], $file_id);
+
+						$plain_content = $this->_file_decrypt($file['info'], $file_id, $encrypted_content);
+
+						file_put_contents($plain_path, $plain_content);
+
+						chmod($plain_path, octdec(600));
+
+					}
 
 				}
 
-				touch($info['plain_path']); // File still being used, don't remove in cleanup()
-
-				if ($info['encrypted_path']) {
-					touch($info['encrypted_path']);
-				}
-
-				$file['path'] = $info['plain_path'];
+				$file['path'] = $plain_path;
 
 				unset($file['info']); // Possibly sensitive info... delete for now.
 
@@ -441,28 +569,35 @@ return;
 
 				$file_id = intval($file_id);
 
-				$file = $this->_file_info_get($file_id);
+				$file = $this->_file_db_get($file_id);
 
-				$info = $this->_file_info_details($file['info']);
+				if ($file !== NULL) {
 
-				if (is_file($info['encrypted_path'])) { // We have a local copy already (fast), cannot use plain text path as 2 identical files may exist.
-					return true;
+					if ($this->config['backup_root'] !== NULL) {
+
+						$encrypted_path = $this->_file_path_get('ef', $file['info']['eh']);
+
+						if (is_file($encrypted_path)) {
+							return true;
+						}
+
+					} else {
+
+						$plain_path = $this->_file_path_get('pf', $file['info']['ph']);
+
+						if (is_file($plain_path)) {
+							return true;
+						}
+
+						if (isset($file['info']['eh'])) {
+							return $this->_file_remote_exists($file['info'], $file_id);
+						}
+
+					}
+
 				}
 
-				if ($info['backup_path']) {
-
-					$result = file_exists($info['backup_path']);
-
-				} else {
-
-					$result = $this->_aws_request([
-							'method'    => 'HEAD',
-							'file_name' => $info['encrypted_name'],
-						]);
-
-				}
-
-				return $result;
+				return false;
 
 			}
 
@@ -476,48 +611,42 @@ return;
 				}
 
 				$plain_hash = hash_file($this->config['file_hash'], $path);
-				$plain_name = $this->_file_name_get($plain_hash);
-				$plain_path = $this->_folder_path_get('pf', $plain_name);
+				$plain_path = $this->_file_path_get('pf', $plain_hash);
 
 				copy($path, $plain_path);
 				chmod($plain_path, octdec(600));
 
-				$plain_content = file_get_contents($plain_path);
-
-				return $this->_file_save($plain_hash, $plain_content, true, $extra_details);
+				return $this->_file_db_insert($plain_hash, $extra_details);
 
 			}
 
-			public function file_save_contents($plain_content, $extra_details = []) {
+			public function file_save_contents($content, $extra_details = []) {
 
 				if ($this->config['backup_root'] !== NULL) {
-					throw new error_exception('On the backup server, a bucket file cannot be saved (created).');
+					throw new error_exception('On the backup server, a bucket file cannot be saved (content).');
 				}
 
-				$plain_hash = hash($this->config['file_hash'], $plain_content);
-				$plain_name = $this->_file_name_get($plain_hash);
-				$plain_path = $this->_folder_path_get('pf', $plain_name);
+				$plain_hash = hash($this->config['file_hash'], $content);
+				$plain_path = $this->_file_path_get('pf', $plain_hash);
 
-				file_put_contents($plain_path, $plain_content);
+				file_put_contents($plain_path, $content);
 				chmod($plain_path, octdec(600));
 
-				return $this->_file_save($plain_hash, $plain_content, true, $extra_details);
+				return $this->_file_db_insert($plain_hash, $extra_details);
 
 			}
 
 			public function file_import($path, $extra_details = []) { // Use to import into S3 only (no local copy), used during initial setup where there is a large number of files.
 
 				if ($this->config['backup_root'] !== NULL) {
-					throw new error_exception('On the backup server, a bucket file cannot be saved.');
+					throw new error_exception('On the backup server, a bucket file cannot be imported.');
 				}
 
-				$plain_hash = hash_file($this->config['file_hash'], $path);
-				$plain_name = $this->_file_name_get($plain_hash);
-				$plain_path = $this->_folder_path_get('pf', $plain_name);
+				$plain_content = file_get_contents($path);
 
-				$plain_content = file_get_contents($plain_path);
+				$plain_hash = hash($this->config['file_hash'], $plain_content);
 
-				return $this->_file_save($plain_hash, $plain_content, false, $extra_details);
+				return $this->_file_db_insert($plain_hash, $extra_details, $plain_content);
 
 			}
 
@@ -526,66 +655,54 @@ return;
 
 			public function file_delete($file_id) {
 
-exit('TODO'); // See cleanup method above
-
 				//--------------------------------------------------
-				// Not available when using a backup path
+				// Not available on the backup server
 
 					if ($this->config['backup_root'] !== NULL) {
 						throw new error_exception('On the backup server, a bucket file cannot be deleted.');
 					}
 
 				//--------------------------------------------------
-				// Remove on AWS
+				// Mark as deleted
 
-					$file_id = intval($file_id);
+					$db = db_get();
 
-					$file = $this->_file_info_get($file_id);
+					$sql = 'UPDATE
+								' . $this->config['table_sql'] . ' AS f
+							SET
+								f.deleted = ?
+							WHERE
+								f.id = ? AND
+								f.deleted = "0000-00-00 00:00:00"';
 
-					$info = $this->_file_info_details($file['info']);
+					$parameters = [];
+					$parameters[] = timestamp();
+					$parameters[] = intval($file_id);
 
-					$result = $this->_aws_request([
-							'method'    => 'DELETE',
-							'file_name' => $info['encrypted_name'],
-						]);
-
-				//--------------------------------------------------
-				// Remove local
-
-					if (is_file($info['plain_path']))     unlink($info['plain_path']);
-					if (is_file($info['encrypted_path'])) unlink($info['encrypted_path']);
-
-					if (is_file($info['plain_path']))     throw new error_exception('Unable to delete file', $info['plain_path']     . "\n" . 'File ID: ' . $file_id);
-					if (is_file($info['encrypted_path'])) throw new error_exception('Unable to delete file', $info['encrypted_path'] . "\n" . 'File ID: ' . $file_id);
-
-				//--------------------------------------------------
-				// Record deleted, so backup server can use rsync
-				// from AWS without using "--delete" (a bad option
-				// if the bucket is seen as empty), then use these
-				// files as positive indicators that the file can
-				// be deleted.
-
-					touch($this->_folder_path_get('ed', $info['encrypted_name']));
+					$db->query($sql, $parameters);
 
 			}
 
 		//--------------------------------------------------
 		// Support functions
 
-			private function _folder_path_get($kind = NULL, $sub_path = NULL) {
-				$path = $this->config['main_root'];
-				$parts = [];
-				if ($kind) {
-					$parts[] = $kind;
-					if ($sub_path) {
-						foreach (explode('/', $sub_path) as $part) {
-							$parts[] = $part;
-						}
-					}
+			private function _file_path_get($kind, $hash = NULL) {
+
+				if ($this->config['backup_root'] !== NULL) {
+					$path = $this->config['backup_root'];
+				} else {
+					$path = $this->config['main_root'];
 				}
+
+				$parts = [$kind];
+				if ($hash !== NULL) { // Match unpacked (loose object) structure found in git.
+					$parts[] = substr($hash, 0, 2);
+					$parts[] = substr($hash, 2);
+				}
+
 				$k = 0;
 				do {
-					$folder = ($k++ < 3);
+					$folder = ($k++ < 3); // e.g. "pf" and "41" are folders in "/private/file-bucket/pf/41/6059bcfb38c630cd1cebd56052f8605a2f37deb12b73e8ad3e47185f35de3d"
 					if ($folder) {
 						if (!is_dir($path)) {
 							@mkdir($path, 0777, true); // Most installs will write as the "apache" user, which is a problem if the normal user account can't edit/delete these files.
@@ -602,17 +719,12 @@ exit('TODO'); // See cleanup method above
 						}
 					}
 				} while (($sub_folder = array_shift($parts)) !== NULL && $path = $path . '/' . safe_file_name($sub_folder));
+
 				return $path;
+
 			}
 
-			private function _file_name_get($hash) {
-				return implode('/', [
-						substr($hash, 0, 2), // Match unpacked (loose object) structure found in git.
-						substr($hash, 2),
-					]);
-			}
-
-			private function _file_info_get($file_id) {
+			private function _file_db_get($file_id, $offset = NULL, $limit = 100) {
 
 				$info_key = $this->config['info_key'];
 				if (!encryption::key_exists($info_key)) { // TODO [secrets-keys]
@@ -621,32 +733,94 @@ exit('TODO'); // See cleanup method above
 
 				$db = db_get();
 
-				$files = [];
-
 				$parameters = [];
-
-				if ($file_id == 'unprocessed') {
-
-					$where_sql = '
-						f.processed = "0000-00-00 00:00:00" AND
-						f.deleted = f.deleted';
-
-				} else {
-
-					$where_sql = '
-						f.id = ? AND
-						f.deleted = "0000-00-00 00:00:00"';
-
-					$parameters[] = intval($file_id);
-
-				}
 
 				$sql = 'SELECT
 							f.*
 						FROM
-							' . $this->config['table_sql'] . ' AS f
+							' . $this->config['table_sql'] . ' AS f';
+
+				if ($file_id === 'process') {
+
+					$sql .= '
 						WHERE
-							' . $where_sql;
+							f.processed = "0000-00-00 00:00:00" AND
+							f.deleted = f.deleted
+						ORDER BY
+							f.id ASC';
+
+				} else if ($file_id === 'processed') {
+
+						// Still get DELETED files that haven't exceeded the
+						// delay (ref backup server keeping a copy).
+
+						// Use ORDER to support a file getting processed between
+						// calls (there may be repetition, but no skipping files)
+
+					$sql .= '
+						WHERE
+							f.processed != "0000-00-00 00:00:00" AND
+							(
+								f.deleted = "0000-00-00 00:00:00" OR
+								f.deleted >= ?
+							)
+						ORDER BY
+							f.processed DESC,
+							f.id DESC';
+
+					$parameters[] = new timestamp($this->config['delete_delay_file']);
+
+				} else if ($file_id === 'remove') {
+
+					$sql .= '
+						WHERE
+							f.deleted != "0000-00-00 00:00:00" AND
+							f.deleted < ? AND
+							f.removed = "0000-00-00 00:00:00"
+						ORDER BY
+							f.deleted ASC,
+							f.id DESC';
+
+					$parameters[] = new timestamp($this->config['delete_delay_file']);
+
+				} else if ($file_id === 'removed') {
+
+					$sql .= '
+						WHERE
+							f.deleted != "0000-00-00 00:00:00" AND
+							f.deleted < ? AND
+							f.removed != "0000-00-00 00:00:00"
+						ORDER BY
+							f.removed DESC,
+							f.id DESC';
+
+					$parameters[] = new timestamp($this->config['delete_delay_file']);
+
+				} else {
+
+					$file_id = intval($file_id);
+
+					$sql .= '
+						WHERE
+							f.id = ? AND
+							f.deleted = "0000-00-00 00:00:00"';
+
+					$parameters[] = $file_id;
+
+				}
+
+				if ($offset !== NULL) {
+
+					$sql .= '
+						LIMIT
+							?, ?';
+
+					$parameters[] = ($offset * $limit);
+					$parameters[] = $limit;
+
+				}
+
+				$files = [];
 
 				foreach ($db->fetch_all($sql, $parameters) as $row) {
 
@@ -657,42 +831,18 @@ exit('TODO'); // See cleanup method above
 
 				}
 
-				if ($file_id == 'unprocessed') {
-					return $files;
-				} else {
+				if (is_int($file_id)) {
 					return ($files[$file_id] ?? NULL);
+				} else {
+					return $files;
 				}
 
 			}
 
-			private function _file_info_details($info) {
-
-				$return['plain_name'] = $this->_file_name_get($info['ph']);
-				$return['plain_path'] = $this->_folder_path_get('pf', $return['plain_name']);
-
-				if (isset($info['eh'])) {
-					$return['encrypted_name'] = $this->_file_name_get($info['eh']);
-					$return['encrypted_path'] = $this->_folder_path_get('ef', $return['encrypted_name']);
-				} else {
-					$return['encrypted_name'] = NULL;
-					$return['encrypted_path'] = NULL;
-				}
-
-				$backup_root = $this->config['backup_root'];
-				if ($backup_root !== NULL && $return['encrypted_name'] !== NULL) {
-					$return['backup_path'] = $backup_root . '/' . $return['encrypted_name'];
-				} else {
-					$return['backup_path'] = NULL;
-				}
-
-				return $return;
-
-			}
-
-			private function _file_save($plain_hash, $plain_content, $save_local, $extra_details = []) {
+			private function _file_db_insert($plain_hash, $extra_details = [], $plain_content = NULL) {
 
 				//--------------------------------------------------
-				// Not available when using a backup path
+				// Not available on the backup server
 
 					if ($this->config['backup_root'] !== NULL) {
 						throw new error_exception('On the backup server, a bucket file cannot be saved.');
@@ -713,11 +863,12 @@ exit('TODO'); // See cleanup method above
 
 					$db = db_get();
 
-					$values = array_merge($extra_details, [
-							'id'        => '',
-							'info'      => '', // Populated later, once the $file_id is known (for the encryption $additional_data, so this value can only be used for this record).
+					$values = array_merge([
 							'created'   => $now,
 							'processed' => '0000-00-00 00:00:00',
+						], $extra_details, [
+							'id'        => '',
+							'info'      => '', // Populated later, once the $file_id is known (for the encryption $additional_data, so this value can only be used for this record).
 						]);
 
 					$db->insert($this->config['table_sql'], $values);
@@ -734,7 +885,7 @@ exit('TODO'); // See cleanup method above
 					$file_key = sodium_crypto_aead_chacha20poly1305_ietf_keygen();
 
 				//--------------------------------------------------
-				// Store info
+				// Info
 
 					$info = [
 							'v'  => $version,
@@ -744,7 +895,17 @@ exit('TODO'); // See cleanup method above
 							'eh' => NULL,
 						];
 
-					$info = encryption::encode(json_encode($info), $info_key, $file_id);
+				//--------------------------------------------------
+				// Upload
+
+					if ($plain_content !== NULL) {
+						$info = $this->_file_upload($info, $file_id, $plain_content);
+					}
+
+					$encrypted_info = encryption::encode(json_encode($info), $info_key, $file_id);
+
+				//--------------------------------------------------
+				// Save info
 
 					$sql = 'UPDATE
 								' . $this->config['table_sql'] . ' AS f
@@ -755,7 +916,7 @@ exit('TODO'); // See cleanup method above
 								f.deleted = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = $info;
+					$parameters[] = $encrypted_info;
 					$parameters[] = intval($file_id);
 
 					$db->query($sql, $parameters);
@@ -767,6 +928,85 @@ exit('TODO'); // See cleanup method above
 
 			}
 
+			private function _file_upload($info, $file_id, $content) {
+
+				//--------------------------------------------------
+				// Not available on the backup server
+
+					if ($this->config['backup_root'] !== NULL) {
+						throw new error_exception('On the backup server, a bucket file cannot be uploaded.');
+					}
+
+				//--------------------------------------------------
+				// Encrypt
+
+					if ($info['v'] == 1) {
+						$encrypted_content = sodium_crypto_aead_chacha20poly1305_ietf_encrypt($content, $file_id, base64_decode($info['fn']), base64_decode($info['fk'])); // since PHP 7.2.0
+					} else {
+						throw new error_exception('Unrecognised encryption version "' . $info['v'] . '".', 'File ID: ' . $file_id);
+					}
+
+						// Not using encryption::encode() as it base64 encodes the content (33% increase in file size),
+						// and adds extra details (like storing the key type) which will be stored in the database instead.
+
+				//--------------------------------------------------
+				// Content
+
+					$encrypted_hash = hash($this->config['file_hash'], $encrypted_content);
+
+				//--------------------------------------------------
+				// Upload to AWS S3
+
+					$this->_aws_request([
+							'method'         => 'PUT',
+							'content'        => $encrypted_content,
+							'encrypted_hash' => $encrypted_hash,
+							'acl'            => 'private',
+						]);
+
+				//--------------------------------------------------
+				// Encrypt info
+
+					$info['eh'] = $encrypted_hash;
+
+					return $info;
+
+			}
+
+			private function _file_remote_exists($info, $file_id) {
+
+				return $this->_aws_request([
+						'method'         => 'HEAD',
+						'encrypted_hash' => $info['eh'],
+					]);
+
+			}
+
+			private function _file_download($info, $file_id) {
+
+				$encrypted_content = $this->_aws_request([
+						'method'         => 'GET',
+						'encrypted_hash' => $info['eh'],
+					]);
+
+				if ($encrypted_content === false) {
+					throw new error_exception('Could not get encrypted contents of the file.', 'AWS' . "\n" . 'File ID: ' . $file_id);
+				}
+
+				return $encrypted_content;
+
+			}
+
+			private function _file_decrypt($info, $file_id, $encrypted_content) {
+
+				if ($info['v'] == 1) {
+					return sodium_crypto_aead_chacha20poly1305_ietf_decrypt($encrypted_content, $file_id, base64_decode($info['fn']), base64_decode($info['fk']));
+				} else {
+					throw new error_exception('Unrecognised encryption version "' . $info['v'] . '".', 'File ID: ' . $file_id);
+				}
+
+			}
+
 			private function _aws_request($request) {
 
 				//--------------------------------------------------
@@ -775,27 +1015,25 @@ exit('TODO'); // See cleanup method above
 					$this->connection->reset();
 
 					if (isset($request['acl'])) {
+
 						$this->connection->header_set('x-amz-acl', $request['acl']);
+
 					}
 
-					if (isset($request['aes-key'])) {
-
-						$this->connection->header_set('x-amz-server-side-encryption-customer-algorithm', 'AES256');
-						$this->connection->header_set('x-amz-server-side-encryption-customer-key', base64_encode($request['aes-key']));
-						$this->connection->header_set('x-amz-server-side-encryption-customer-key-MD5', base64_encode(hash('md5', $request['aes-key'], true)));
-
-					} else if ($request['method'] == 'PUT') {
+					if ($request['method'] == 'PUT') {
 
 						$this->connection->header_set('x-amz-server-side-encryption', 'AES256');
+
+						$this->connection->header_set('x-amz-checksum-sha256', base64_encode(hex2bin($request['encrypted_hash'])));
 
 					}
 
 				//--------------------------------------------------
 				// Request
 
-					$url = url('/' . $request['file_name']);
+					$url = '/' . substr($request['encrypted_hash'], 0, 2) . '/' . substr($request['encrypted_hash'], 2); // Match unpacked (loose object) structure found in git.
 
-					$result = $this->connection->request($url, $request['method'], ($request['content'] ?? ''));
+					$result = $this->connection->request(url($url), $request['method'], ($request['content'] ?? ''));
 
 					if ($result !== true) {
 						throw new error_exception('Failed connection to AWS', $this->connection->error_message_get());
