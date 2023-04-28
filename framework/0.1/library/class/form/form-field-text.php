@@ -49,7 +49,7 @@
 
 						if ($this->value !== NULL) {
 							if (config::get('form.auto_trim', true)) {
-								$this->value = trim($this->value);
+								$this->value = trim(strval($this->value));
 							}
 							if (config::get('form.auto_clean_whitespace', false)) {
 								$this->value = clean_whitespace($this->value);

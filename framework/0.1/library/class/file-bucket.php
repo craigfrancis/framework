@@ -368,9 +368,9 @@ debug('CLEANUP: ' . $file_path);
 
 									}
 
-									if ($empty) {
-										rmdir($sub_path);
-									}
+//									if ($empty) {
+//										rmdir($sub_path);
+//									}
 
 								}
 
