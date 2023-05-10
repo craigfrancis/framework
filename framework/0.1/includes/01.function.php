@@ -1624,7 +1624,6 @@
 						'default-src' => "'none'",
 						'base-uri'    => "'none'",
 						'form-action' => "'none'",
-						'style-src'   => "'unsafe-inline'", // For Chrome inline viewing
 					];
 
 				if ($config['mime'] == 'application/pdf') {
@@ -1822,7 +1821,6 @@
 						'form-action' => "'none'",
 					];
 				if ($csp === 'img' || $csp === 'pdf') {
-					$default['style-src'] = "'unsafe-inline'"; // For Chrome inline viewing
 					if ($csp === 'img') {
 						$default['img-src'] = (isset($config['url']) ? $config['url'] : "'self'");
 					} else if ($csp === 'pdf') {
