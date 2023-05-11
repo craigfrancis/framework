@@ -1632,6 +1632,7 @@
 					$csp['img-src'] = ['/favicon.ico'];
 				} else {
 					$csp['img-src'] = "'self'";
+					$csp['style-src'] = "'unsafe-inline'"; // For Chrome inline viewing
 				}
 
 			}
@@ -1823,6 +1824,7 @@
 				if ($csp === 'img' || $csp === 'pdf') {
 					if ($csp === 'img') {
 						$default['img-src'] = (isset($config['url']) ? $config['url'] : "'self'");
+						$default['style-src'] = "'unsafe-inline'"; // For Chrome inline viewing
 					} else if ($csp === 'pdf') {
 						$default['img-src'] = ['/favicon.ico'];
 						$default['object-src'] = (isset($config['url']) ? $config['url'] : "'self'");
