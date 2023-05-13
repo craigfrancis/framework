@@ -187,7 +187,7 @@
 				if (!function_exists('normalizer_normalize')) {
 					exit_with_error('Cannot normalise passwords, as the normalizer_normalize() function does not exist.');
 				}
-				$password = normalizer_normalize($password, Normalizer::FORM_KD);
+				$password = normalizer_normalize(strval($password), Normalizer::FORM_KD);
 			}
 
 			if (PASSWORD_DEFAULT === NULL && $algorithm === PASSWORD_DEFAULT) { // Support PHP 7.4.0, where PASSWORD_DEFAULT is set to NULL... https://bugs.php.net/bug.php?id=78969
@@ -257,7 +257,7 @@
 					//
 					//--------------------------------------------------
 
-				$password = base64_encode(hash('sha384', $password, true));
+				$password = base64_encode(hash('sha384', strval($password), true));
 
 			}
 
