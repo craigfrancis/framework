@@ -179,12 +179,12 @@
 
 					$send_cookie = true;
 
-					$start = microtime(true);
+					$start = hrtime(true);
 
 					$result = session_start();
 
 					if (function_exists('debug_log_time')) {
-						$time = round((microtime(true) - $start), 5);
+						$time = round(hrtime_diff($start), 5);
 						if ($time > 0.001) {
 							debug_log_time('SESS', $time);
 						}

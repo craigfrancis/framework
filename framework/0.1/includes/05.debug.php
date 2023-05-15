@@ -595,7 +595,7 @@
 // Debug run time
 
 	function debug_time_elapsed() {
-		return round((microtime(true) - FRAMEWORK_START), 3);
+		return round(hrtime_diff(FRAMEWORK_START), 3);
 	}
 
 	function debug_time_format($time) {
@@ -770,7 +770,7 @@
 				//--------------------------------------------------
 				// Full time
 
-					$time_init = microtime(true);
+					$time_init = hrtime(true);
 
 				//--------------------------------------------------
 				// Query tainted
@@ -1037,12 +1037,12 @@
 				//--------------------------------------------------
 				// Run query
 
-					$time_start = microtime(true);
+					$time_start = hrtime(true);
 
 					$result = $db->query($sql, $parameters, (db::SKIP_DEBUG | $skip_flags));
 
-					$time_check = round(($time_start - $time_init), 3);
-					$time_query = round((microtime(true) - $time_start), 3);
+					$time_check = round(hrtime_diff($time_init, $time_start), 3);
+					$time_query = round(hrtime_diff($time_start), 3);
 
 					if ($select_query && $result) {
 						$result_rows = $db->num_rows($result);

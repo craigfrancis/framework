@@ -598,10 +598,10 @@
 			}
 
 			foreach (array('MX', 'A') as $type) {
-				$start = microtime(true);
+				$start = hrtime(true);
 				$valid = checkdnsrr($matches[1] . '.', $type);
 				if (function_exists('debug_log_time')) {
-					debug_log_time('DNS' . $type, round((microtime(true) - $start), 3));
+					debug_log_time('DNS' . $type, round(hrtime_diff($start), 3));
 				}
 				if ($valid) {
 					return true;
@@ -986,6 +986,16 @@
 			config::set('cms_text', $cms_text);
 		}
 		return $cms_text->html($config);
+	}
+
+//--------------------------------------------------
+// High resolution time diff
+
+	function hrtime_diff($hr_start, $hr_end = NULL) {
+		if ($hr_end === NULL) {
+			$hr_end = hrtime(true);
+		}
+		return (($hr_end - $hr_start) / 1000000000);
 	}
 
 //--------------------------------------------------

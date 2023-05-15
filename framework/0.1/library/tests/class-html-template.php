@@ -197,20 +197,20 @@
 
 	//--------------------------------------------------
 
-		$start = microtime(true);
+		$start = hrtime(true);
 
 		$k = 0;
 		while (++$k < $iterations) {
 			$html = '<p>Hi <span>' . html($parameters[0]) . '</span>, what do you think about <a href="' . html($parameters[1]) . '">' . html($parameters[2]) . '</a>?</p>';
 		}
 
-		$time_plain = (microtime(true) - $start);
+		$time_plain = hrtime_diff($start);
 
 		echo "\n " . number_format($time_plain, $decimals) . 's';
 
 	//--------------------------------------------------
 
-		$start = microtime(true);
+		$start = hrtime(true);
 
 		$link = ht($template_html);
 
@@ -219,13 +219,13 @@
 			$html = $link->html($parameters);
 		}
 
-		$time_template = (microtime(true) - $start);
+		$time_template = hrtime_diff($start);
 
 		echo "\n " . number_format($time_template, $decimals) . 's +' . round(((($time_template / $time_plain) * 100) - 100)) . '%';
 
 	//--------------------------------------------------
 
-		$start = microtime(true);
+		$start = hrtime(true);
 
 		$k = 0;
 		while (++$k < $iterations) {
@@ -233,20 +233,20 @@
 			$html = $link->html($parameters);
 		}
 
-		$time_template = (microtime(true) - $start);
+		$time_template = hrtime_diff($start);
 
 		echo "\n " . number_format($time_template, $decimals) . 's +' . round(((($time_template / $time_plain) * 100) - 100)) . '%';
 
 	//--------------------------------------------------
 
-		$start = microtime(true);
+		$start = hrtime(true);
 
 		$k = 0;
 		while (++$k < $iterations) {
 			$html = ht($template_html, $parameters)->html();
 		}
 
-		$time_template = (microtime(true) - $start);
+		$time_template = hrtime_diff($start);
 
 		echo "\n " . number_format($time_template, $decimals) . 's +' . round(((($time_template / $time_plain) * 100) - 100)) . '%';
 

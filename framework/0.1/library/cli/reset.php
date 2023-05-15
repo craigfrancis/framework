@@ -305,13 +305,13 @@
 
 					foreach ($round_tables as $table) {
 
-						$start = microtime(true);
+						$start = hrtime(true);
 
 						echo '    ' . str_pad($table . ': ', $length);
 
 						$tables[$table]['class']->setup();
 
-						$time = round((microtime(true) - $start), 4);
+						$time = round(hrtime_diff($start), 4);
 						$total += $time;
 
 						echo 'Done - ' . number_format($time, 4) . "\n";
@@ -331,7 +331,7 @@
 
 					foreach ($round_tables as $table) {
 
-						$start = microtime(true);
+						$start = hrtime(true);
 
 						echo '    ' . str_pad($table . ': ', $length);
 
@@ -379,7 +379,7 @@
 
 							}
 
-							$time = round((microtime(true) - $start), 4);
+							$time = round(hrtime_diff($start), 4);
 							$total += $time;
 
 							echo 'Done - ' . number_format($time, 4) . ' (' . number_format($record_count) . ')' . "\n";
@@ -410,7 +410,7 @@
 			foreach ($table_rounds as $round_id => $round_tables) {
 				foreach ($round_tables as $table) {
 
-					$start = microtime(true);
+					$start = hrtime(true);
 
 					echo '    ' . str_pad($table . ': ', $length);
 
@@ -422,7 +422,7 @@
 
 						$db->insert_many($tables[$table]['table_sql'], $records);
 
-						$time = round((microtime(true) - $start), 4);
+						$time = round(hrtime_diff($start), 4);
 						$total += $time;
 
 						echo 'Done - ' . number_format($time, 4) . ' (' . number_format($record_count) . ')' . "\n";
@@ -456,13 +456,13 @@
 				foreach ($round_tables as $table) {
 					if (method_exists($tables[$table]['class'], 'cleanup')) {
 
-						$start = microtime(true);
+						$start = hrtime(true);
 
 						echo '    ' . str_pad($table . ': ', $length);
 
 						$tables[$table]['class']->cleanup();
 
-						$time = round((microtime(true) - $start), 4);
+						$time = round(hrtime_diff($start), 4);
 						$total += $time;
 						$found = true;
 

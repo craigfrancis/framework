@@ -3,7 +3,7 @@
 //--------------------------------------------------
 // Start time
 
-	define('FRAMEWORK_START', microtime(true));
+	define('FRAMEWORK_START', hrtime(true));
 
 //--------------------------------------------------
 // Error reporting

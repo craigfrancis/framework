@@ -38,7 +38,7 @@
 
 				$this->test_name = $test;
 				$this->test_path = $this->tester_path . '/' . safe_file_name($this->test_name) . '.php';
-				$this->test_start = microtime(true);
+				$this->test_start = hrtime(true);
 				$this->test_output = [];
 
 				ob_start();
@@ -58,7 +58,7 @@
 
 				$this->tester_output[] = array(
 						'test' => $this->test_name,
-						'time' => (microtime(true) - $this->test_start),
+						'time' => hrtime_diff($this->test_start),
 						'output' => $this->test_output,
 					);
 

@@ -342,7 +342,7 @@
 						//--------------------------------------------------
 						// Ask
 
-							$start = microtime(true);
+							$start = hrtime(true);
 
 							$contents = file_get_contents(url('https://maps.google.com/maps/api/geocode/xml', array(
 									'address' => $search_query,
@@ -356,7 +356,7 @@
 								usleep(200000); // 200ms, to keep Google happy (limited to 5 requests per second, or 2500 per day).
 							}
 
-							$time = round((microtime(true) - $start), 3);
+							$time = round(hrtime_diff($start), 3);
 
 						//--------------------------------------------------
 						// Extract

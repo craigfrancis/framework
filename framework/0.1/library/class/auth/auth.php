@@ -1605,7 +1605,7 @@
 
 					if ($error !== 'failure_repetition') { // Anti denial of service (get rid of them as soon as possible, don't even sleep).
 
-						$start = microtime(true);
+						$start = hrtime(true);
 
 						if ($db_auth) { // If we have an auth value, we only use that.
 
@@ -1624,7 +1624,7 @@
 
 						}
 
-						$this->hash_time = round((microtime(true) - $start), 4);
+						$this->hash_time = round(hrtime_diff($start), 4);
 
 						$hash_sleep = (0.1 - $this->hash_time); // Should always take at least 0.1 seconds (100ms)... NOTE: the password_verify() function (from PHP) will return fast if the hash is unrecognised/invalid.
 						if ($hash_sleep > 0) {

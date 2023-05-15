@@ -168,7 +168,7 @@
 
 			try {
 
-				$time_start = microtime(true);
+				$time_start = hrtime(true);
 
 				if (function_exists('mysqli_execute_query')) {
 
@@ -264,7 +264,7 @@
 
 				}
 
-				$query_time = round((microtime(true) - $time_start), 3);
+				$query_time = round(hrtime_diff($time_start), 3);
 
 				config::set('db.query_time', (config::get('db.query_time', 0) + $query_time));
 
@@ -932,7 +932,7 @@
 					$this->_error('PHP does not have MySQLi support');
 				}
 
-				$start = microtime(true);
+				$start = hrtime(true);
 
 			//--------------------------------------------------
 			// Report mode
@@ -1010,7 +1010,7 @@
 			//--------------------------------------------------
 			// Slow
 
-				$time = round((microtime(true) - $start), 5);
+				$time = round(hrtime_diff($start), 5);
 				if (function_exists('debug_log_time') && $time > 0.01) {
 					debug_log_time('DBC', $time);
 				}

@@ -621,7 +621,7 @@
 				// Connection
 
 $chunk_timings = [];
-$start = microtime(true);
+$start = hrtime(true);
 
 					$error = false;
 					$error_number = 0;
@@ -683,8 +683,8 @@ $start = microtime(true);
 						return $this->error($error, $error_details);
 					}
 
-$chunk_timings[] = round((microtime(true) - $start), 4);
-$start = microtime(true);
+$chunk_timings[] = round(hrtime_diff($start), 4);
+$start = hrtime(true);
 
 				//--------------------------------------------------
 				// Receive
@@ -736,8 +736,8 @@ $k++;
 
 					}
 
-$chunk_timings[] = round((microtime(true) - $start), 4);
-$start = microtime(true);
+$chunk_timings[] = round(hrtime_diff($start), 4);
+$start = hrtime(true);
 
 $chunk_log = [];
 $chunk_log[] = $chunk_timings;

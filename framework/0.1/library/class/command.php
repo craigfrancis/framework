@@ -222,7 +222,7 @@
 			//--------------------------------------------------
 			// Run
 
-				$this->time_start = microtime(true);
+				$this->time_start = hrtime(true);
 
 				$this->blocking = true;
 
@@ -290,7 +290,7 @@
 
 				$this->exit_code = proc_close($this->process);
 
-				$this->time_total = (microtime(true) - $this->time_start);
+				$this->time_total = hrtime_diff($this->time_start);
 
 				if (!$this->exit_status['running']) {
 					$this->exit_code = $this->exit_status['exitcode']; // proc_close() will return -1 if... reading from a pipe (stream_get_contents), or using proc_get_status() at the wrong time.
