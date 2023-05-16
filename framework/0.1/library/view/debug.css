@@ -142,7 +142,6 @@
 		color: #A00;
 	}
 
-	#debug_output .debug_notes .note.debug_sql .value,
 	#debug_output .debug_notes .note.debug_sql .note_text,
 	#debug_output .debug_notes .note.debug_sql .note_time,
 	#debug_output .debug_notes .note.debug_sql .note_rows,
