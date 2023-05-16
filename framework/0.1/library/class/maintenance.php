@@ -75,7 +75,7 @@
 				//--------------------------------------------------
 				// Cleanup
 
-					$archive_date = new timestamp('-2 months'); // Some jobs only run once a month, so needs some overlap
+					$archive_date = new timestamp('-2 months, 00:00:00'); // Some jobs only run once a month, so needs some overlap
 
 					$sql = 'DELETE FROM
 								' . DB_PREFIX . 'system_maintenance
@@ -88,15 +88,19 @@
 
 					$db->query($sql, $parameters);
 
-					$sql = 'DELETE FROM
-								' . DB_PREFIX . 'system_maintenance_job
-							WHERE
-								created < ?';
+					if ($db->affected_rows() > 0) { // Don't bother if no change (next query can be slow)
 
-					$parameters = [];
-					$parameters[] = $archive_date;
+						$sql = 'DELETE FROM
+									' . DB_PREFIX . 'system_maintenance_job
+								WHERE
+									created < ?';
 
-					$db->query($sql, $parameters);
+						$parameters = [];
+						$parameters[] = $archive_date;
+
+						$db->query($sql, $parameters);
+
+					}
 
 				//--------------------------------------------------
 				// Clear old (but still open) run records
