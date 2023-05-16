@@ -1057,7 +1057,6 @@
 					config::array_push('debug.notes', array(
 							'type'    => 'L',
 							'colour'  => '#CCF',
-							'class'   => 'debug_sql',
 							'elapsed' => debug_time_format(debug_time_elapsed() - config::get('debug.time_check')),
 							'file'    => ['path' => str_replace(ROOT, '', $called_from['file']), 'line' => $called_from['line']],
 							'text'    => $query_formatted,
@@ -1065,6 +1064,7 @@
 							'rows'    => $result_rows,
 							'table'   => $explain,
 							'list'    => $result_list,
+							'class'   => 'debug_sql',
 						));
 
 				//--------------------------------------------------
