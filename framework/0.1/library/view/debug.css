@@ -38,7 +38,7 @@
 	}
 
 	#debug_output {
-		margin: 10px 0 0 0;
+		margin: 1em 0 0 0;
 		padding: 0;
 		clear: both;
 	}
@@ -127,7 +127,7 @@
 
 	#debug_output .debug_notes .note.note_heading .note_text,
 	#debug_output .debug_notes .note.note_heading .note_lines {
-		padding-left: 10px;
+		padding-left: 1em;
 	}
 
 	#debug_output .debug_notes .note pre {
@@ -135,15 +135,28 @@
 	}
 
 	#debug_output .debug_notes .note.debug_sql .note_text {
-		padding: 10px 0;
+		padding: 1em 0;
 	}
 
 	#debug_output .debug_notes .note.debug_sql .value {
 		color: #A00;
 	}
 
+	#debug_output .debug_notes .note.debug_sql .value,
+	#debug_output .debug_notes .note.debug_sql .note_text,
+	#debug_output .debug_notes .note.debug_sql .note_time,
+	#debug_output .debug_notes .note.debug_sql .note_rows,
+	#debug_output .debug_notes .note.debug_sql .note_table,
+	#debug_output .debug_notes .note.debug_sql .note_list {
+		margin-left: 1em;
+	}
+
+	#debug_output .debug_notes .note.debug_sql .note_list {
+		margin-left: 2.5em;
+	}
+
 	#debug_output .debug_notes .note ul {
-		margin: 10px 0 5px 2em;
+		margin: 1em 0 5px 2em;
 	}
 
 	#debug_output .debug_notes .note table {
@@ -151,7 +164,7 @@
 		border-width: 0 1px 1px 0;
 		border-style: solid;
 		border-color: #000;
-		margin: 10px 0 0 0;
+		margin: 1em 0 0 0;
 	}
 
 	#debug_output .debug_notes .note table th,
