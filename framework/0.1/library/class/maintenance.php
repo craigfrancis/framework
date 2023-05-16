@@ -267,16 +267,16 @@
 					$end_timestamp = new timestamp();
 
 					$sql = 'UPDATE
-								' . DB_PREFIX . 'system_maintenance
+								' . DB_PREFIX . 'system_maintenance AS sm
 							SET
-								run_end = ?
+								sm.run_end = ?
 							WHERE
-								run_end = "0000-00-00 00:00:00"
-							LIMIT
-								1';
+								sm.id = ? AND
+								sm.run_end = "0000-00-00 00:00:00"';
 
 					$parameters = [];
 					$parameters[] = $end_timestamp;
+					$parameters[] = $this->run_id;
 
 					$db->query($sql, $parameters);
 
