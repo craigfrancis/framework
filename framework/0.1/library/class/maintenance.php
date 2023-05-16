@@ -106,13 +106,13 @@
 				// Clear old (but still open) run records
 
 					$sql = 'SELECT
-								id,
-								run_start
+								sm.id,
+								sm.run_start
 							FROM
-								' . DB_PREFIX . 'system_maintenance
+								' . DB_PREFIX . 'system_maintenance AS sm
 							WHERE
-								run_end = "0000-00-00 00:00:00" AND
-								run_start < ?';
+								sm.run_end = "0000-00-00 00:00:00" AND
+								sm.run_start < ?';
 
 					$parameters = [];
 					$parameters[] = timestamp('-2 hours');
@@ -178,10 +178,10 @@
 					$sql = 'SELECT
 								1
 							FROM
-								' . DB_PREFIX . 'system_maintenance
+								' . DB_PREFIX . 'system_maintenance AS sm
 							WHERE
-								run_end = "0000-00-00 00:00:00" OR
-								run_end = ?';
+								sm.run_end = "0000-00-00 00:00:00" OR
+								sm.run_end = ?';
 
 					$parameters = [];
 					$parameters[] = $now;
