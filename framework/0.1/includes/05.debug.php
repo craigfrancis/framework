@@ -668,11 +668,11 @@
 				$time = debug_time_format(debug_time_elapsed() - config::get('debug.time_check'));
 
 				debug_note([
-						'type' => 'L',
+						'type'   => 'L',
 						'colour' => '#CCC',
-						'file' => NULL,
-						'time' => NULL,
-						'text' => ($time . ' - ' . $label),
+						'file'   => NULL,
+						'time'   => NULL,
+						'text'   => ($time . ' - ' . $label),
 					]);
 
 			}
@@ -707,7 +707,6 @@
 					}
 
 					$default_file = NULL;
-					$default_time = NULL;
 
 					if (!$system_call) {
 
@@ -716,18 +715,17 @@
 								'line' => $called_from['line'],
 							];
 
-						$default_time = debug_time_format(debug_time_elapsed() - config::get('debug.time_check'));
-
 					}
 
 				//--------------------------------------------------
 				// Note
 
 					$note = array_merge([
-							'type'   => 'L',
-							'colour' => ($system_call ? '#CCC' : '#FFC'),
-							'file'   => $default_file,
-							'time'   => $default_time,
+							'type'    => 'L',
+							'colour'  => ($system_call ? '#CCC' : '#FFC'),
+							'elapsed' => debug_time_format(debug_time_elapsed() - config::get('debug.time_check')),
+							'file'    => $default_file,
+							'time'    => NULL,
 						], $note);
 
 					config::array_push('debug.notes', $note);
@@ -1057,15 +1055,16 @@
 				// Create debug output
 
 					config::array_push('debug.notes', array(
-							'type'   => 'L',
-							'colour' => '#CCF',
-							'class'  => 'debug_sql',
-							'file'   => ['path' => str_replace(ROOT, '', $called_from['file']), 'line' => $called_from['line']],
-							'text'   => $query_formatted,
-							'time'   => debug_time_format($time_query),
-							'rows'   => $result_rows,
-							'table'  => $explain,
-							'list'   => $result_list,
+							'type'    => 'L',
+							'colour'  => '#CCF',
+							'class'   => 'debug_sql',
+							'elapsed' => debug_time_format(debug_time_elapsed() - config::get('debug.time_check')),
+							'file'    => ['path' => str_replace(ROOT, '', $called_from['file']), 'line' => $called_from['line']],
+							'text'    => $query_formatted,
+							'time'    => debug_time_format($time_query),
+							'rows'    => $result_rows,
+							'table'   => $explain,
+							'list'    => $result_list,
 						));
 
 				//--------------------------------------------------
@@ -1140,7 +1139,7 @@
 								}
 
 								if (isset($note['file'])) {
-									$output_text .= $note['file']['path'] . ' (line ' . $note['file']['line'] . ')' . "\n\n";
+									$output_text .= (($note['elapsed'] ?? '') ? $note['elapsed'] . ' - ' : '') . $note['file']['path'] . ' (line ' . $note['file']['line'] . ')' . "\n\n";
 								}
 
 								if (isset($note['text'])) {

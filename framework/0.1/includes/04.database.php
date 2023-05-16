@@ -1079,11 +1079,11 @@
 				if (config::get('debug.level') > 0) {
 
 					debug_note([
-							'type' => 'L',
-							'colour' => '#FCC',
-							'class'  => 'debug_sql',
+							'type'    => 'L',
+							'colour'  => '#FCC',
+							'class'   => 'debug_sql',
 							'heading' => $error,
-							'text' => $sql . ($parameters ? "\n\n" . debug_dump($parameters) : ''),
+							'text'    => $sql . ($parameters ? "\n\n" . debug_dump($parameters) : ''),
 						]);
 
 				}

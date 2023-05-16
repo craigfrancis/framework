@@ -123,6 +123,9 @@
 				note_node.textContent = note.file.path;
 				note_content = document.createElement('div');
 				note_content.setAttribute('class', 'note_file');
+				if (note.elapsed) {
+					note_content.appendChild(document.createTextNode(note.elapsed + ' - '));
+				}
 				note_content.appendChild(note_node);
 				note_content.appendChild(document.createTextNode(' (line ' + note.file.line + ')'));
 				note_div.appendChild(note_content);
