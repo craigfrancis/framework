@@ -448,34 +448,41 @@
 		//--------------------------------------------------
 		// Error type
 
-			switch ($err_no) { // From "Johan 'Josso' Jensen" on https://php.net/set_error_handler
-				case E_DEPRECATED:
-				case E_USER_DEPRECATED:
-					$error_type = 'Deprecated';
-				break;
-				case E_NOTICE:
-				case E_USER_NOTICE:
-					$error_type = 'Notice';
-				break;
-				case E_WARNING:
-				case E_USER_WARNING:
-				case E_COMPILE_WARNING:
-				case E_RECOVERABLE_ERROR:
-					$error_type = 'Warning';
-				break;
-				case E_PARSE:
+				// https://github.com/php/php-src/blob/8d0345d94ef98bfe29df264b338aeef16ddefda9/main/main.c#L1286
+
+			switch ($err_no) {
 				case E_ERROR:
 				case E_CORE_ERROR:
 				case E_COMPILE_ERROR:
 				case E_USER_ERROR:
-					$error_type = 'Fatal Error';
-				break;
+					$error_type = 'Fatal error';
+					break;
+				case E_RECOVERABLE_ERROR:
+					$error_type = 'Recoverable fatal error';
+					break;
+				case E_WARNING:
+				case E_CORE_WARNING:
+				case E_COMPILE_WARNING:
+				case E_USER_WARNING:
+					$error_type = 'Warning';
+					break;
+				case E_PARSE:
+					$error_type = 'Parse error';
+					break;
+				case E_NOTICE:
+				case E_USER_NOTICE:
+					$error_type = 'Notice';
+					break;
 				case E_STRICT:
-					$error_type = 'Strict';
-				break;
+					$error_type = 'Strict Standards';
+					break;
+				case E_DEPRECATED:
+				case E_USER_DEPRECATED:
+					$error_type = 'Deprecated';
+					break;
 				default:
-					$error_type = 'Unknown';
-				break;
+					$error_type = 'Unknown error';
+					break;
 			}
 
 		//--------------------------------------------------
