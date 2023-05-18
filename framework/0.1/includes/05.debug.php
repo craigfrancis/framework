@@ -449,17 +449,29 @@
 		// Error type
 
 			switch ($err_no) { // From "Johan 'Josso' Jensen" on https://php.net/set_error_handler
+				case E_DEPRECATED:
+				case E_USER_DEPRECATED:
+					$error_type = 'Deprecated';
+				break;
 				case E_NOTICE:
 				case E_USER_NOTICE:
 					$error_type = 'Notice';
 				break;
 				case E_WARNING:
 				case E_USER_WARNING:
+				case E_COMPILE_WARNING:
+				case E_RECOVERABLE_ERROR:
 					$error_type = 'Warning';
 				break;
+				case E_PARSE:
 				case E_ERROR:
+				case E_CORE_ERROR:
+				case E_COMPILE_ERROR:
 				case E_USER_ERROR:
 					$error_type = 'Fatal Error';
+				break;
+				case E_STRICT:
+					$error_type = 'Strict';
 				break;
 				default:
 					$error_type = 'Unknown';
