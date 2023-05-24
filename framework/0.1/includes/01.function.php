@@ -208,7 +208,7 @@
 				}
 			}
 		}
-		return $html . ($tag == 'input' || $tag == 'link' ? ' />' : '>');
+		return new html_safe_value($html . ($tag == 'input' || $tag == 'link' ? ' />' : '>'));
 	}
 
 	class html_safe_value implements JsonSerializable {
