@@ -304,7 +304,9 @@
 						$html .= $template_html;
 						if ($k < $this->template_split_end) {
 							if (array_key_exists($k, $parameters)) { // Could be NULL
-								if (in_array($this->template_contexts[$k], [NULL, 'pre'])) { // Assumed context, with NULL for an attribute
+								if (($this->template_contexts[$k] !== NULL) && ($parameters[$k] instanceof html_template || $parameters[$k] instanceof html_safe_value)) { // Not an attribute
+									$html .= $parameters[$k];
+								} else if (in_array($this->template_contexts[$k], [NULL, 'pre'])) { // Assumed context, with NULL for an attribute
 									$html .= html($parameters[$k]);
 								} else {
 									$html .= nl2br(html($parameters[$k]));
