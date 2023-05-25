@@ -208,7 +208,7 @@
 				}
 			}
 		}
-		return new html_safe_value($html . ($tag == 'input' || $tag == 'link' ? ' />' : '>'));
+		return new html_safe_value($html . ($tag == 'input' || $tag == 'link' ? ' />' : '>')); // Not ideal, as some attributes are not safe (e.g. <a href="?">)
 	}
 
 	class html_safe_value implements JsonSerializable {
