@@ -81,8 +81,8 @@
 				$this->values[$name] = $value;
 			}
 
-			public function file_add($field_name, $file_name, $content) {
-				$this->files[] = [$field_name, $file_name, $content];
+			public function file_add($field_name, $file_name, $content, $mime_type = NULL) {
+				$this->files[] = [$field_name, $file_name, $content, $mime_type];
 			}
 
 			public function header_set($name, $value) {
@@ -461,7 +461,7 @@
 											$data[] = '--' . head($boundary) . "\n" . 'Content-Disposition: form-data; name="' . head($value[0]) . '"' . "\n\n" . $value[1];
 										}
 										foreach ($this->files as $value) {
-											$data[] = '--' . head($boundary) . "\n" . 'Content-Disposition: form-data; name="' . head($value[0]) . '"; filename="' . head($value[1]) . '"' . "\n\n" . $value[2];
+											$data[] = '--' . head($boundary) . "\n" . 'Content-Disposition: form-data; name="' . head($value[0]) . '"; filename="' . head($value[1]) . '";' . "\n" . 'Content-Length: ' . strlen($value[2]) . ';' . ($value[3] ? "\n" . 'Content-Type: ' . $value[3] . ';' : '') . "\n\n" . $value[2];
 										}
 										$data = implode("\n", $data) . "\n" . '--' . head($boundary) . '--';
 
