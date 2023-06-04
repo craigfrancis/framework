@@ -11,6 +11,7 @@
 			protected $empty_file_error_set = false;
 			protected $partial_file_error_set = false;
 			protected $blank_name_error_set = false;
+			protected $long_name_error_set = false;
 
 			protected $files = [];
 			protected $file_current = 0;
@@ -431,6 +432,27 @@
 
 			}
 
+			public function long_name_error_set($error, $length = 50) {
+				$this->long_name_error_set_html(to_safe_html($error), $length);
+			}
+
+			public function long_name_error_set_html($error_html, $length = 50) {
+
+				$error_html = str_replace('XXX', $length, $error_html);
+
+				if ($this->uploaded) {
+					foreach ($this->files as $id => $file) {
+						if (strlen($file['name']) > $length) {
+							$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+							$this->files[$id]['preserve'] = false;
+						}
+					}
+				}
+
+				$this->long_name_error_set = true;
+
+			}
+
 		//--------------------------------------------------
 		// Status
 
@@ -595,6 +617,10 @@
 
 				if ($this->blank_name_error_set == false) { // Provide default
 					$this->blank_name_error_set('The uploaded file for "' . strtolower($this->label_html) . '" does not have a filename.');
+				}
+
+				if ($this->long_name_error_set == false) { // Provide default
+					$this->long_name_error_set('The uploaded file for "' . strtolower($this->label_html) . '" has a filename that is too long (max XXX characters).');
 				}
 
 			}
