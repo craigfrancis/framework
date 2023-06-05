@@ -169,8 +169,13 @@ Abbreviations:
 			// 	$this->config[$key] = $value;
 			// }
 
+			public function file_values($values) {
+				// For the project to extend - Receives values just before inserting into the database.
+				return $values;
+			}
+
 			public function files_process($files) {
-				// For the project to extend - Receives all files, as programs like clamscan (ClamAV) can take a while to startup.
+				// For the project to extend - Receives details about all files during cleanup, as programs like clamscan (ClamAV) can take a while to startup.
 				return [];
 			}
 
@@ -863,13 +868,13 @@ debug('UNLINK: ' . debug_dump($to_remove));
 
 					$db = db_get();
 
-					$values = array_merge([
+					$values = $this->file_values(array_merge([
 							'created'   => $now,
 							'processed' => '0000-00-00 00:00:00',
-						], $extra_details, [
-							'id'        => '',
-							'info'      => '', // Populated later, once the $file_id is known (for the encryption $additional_data, so this value can only be used for this record).
-						]);
+						], $extra_details));
+
+					$values['id']   = ''; // Set automatically, via `auto_increment`
+					$values['info'] = ''; // Populated later, once the id is known (for the encryption $additional_data, so this value can only be used for this record).
 
 					$db->insert($this->config['table_sql'], $values);
 
