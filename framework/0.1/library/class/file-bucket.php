@@ -122,6 +122,7 @@ Abbreviations:
 							'aws_region'        => NULL,
 							'aws_access_id'     => NULL,
 							'aws_access_secret' => NULL,
+							'aws_folders'       => false,
 						], config::get_all('file-bucket'));
 
 					if (is_array($config)) {
@@ -1036,7 +1037,11 @@ debug('UNLINK: ' . debug_dump($to_remove));
 				//--------------------------------------------------
 				// Request
 
-					$url = '/' . substr($request['encrypted_hash'], 0, 2) . '/' . substr($request['encrypted_hash'], 2); // Match unpacked (loose object) structure found in git.
+					if ($this->config['aws_folders'] === true) {
+						$url = '/' . substr($request['encrypted_hash'], 0, 2) . '/' . substr($request['encrypted_hash'], 2); // Match unpacked (loose object) structure found in git.
+					} else {
+						$url = '/' . $request['encrypted_hash'];
+					}
 
 					$result = $this->connection->request(url($url), $request['method'], ($request['content'] ?? ''));
 
