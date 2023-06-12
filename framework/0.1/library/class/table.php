@@ -281,12 +281,9 @@
 
 				if (is_array($order_by_sql)) {
 					$return_sql = '';
+					$order_sql = $this->sort_order_get(); // Repeat the same ASC/DESC for each field, also avoids mixing (which causes the index to not be used).
 					foreach ($order_by_sql as $sql) {
-						if ($return_sql === '') {
-							$return_sql = $sql . ' ' . $this->sort_order_get();
-						} else {
-							$return_sql .= ', ' . $sql;
-						}
+						$return_sql .= ($return_sql == '' ? '' : ', ') . $sql . ' ' . $order_sql;
 					}
 					return $return_sql;
 				} else if (preg_match('/^([^,]+)(,.*)$/', $order_by_sql, $matches)) {
