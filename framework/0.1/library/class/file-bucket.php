@@ -155,6 +155,7 @@ Abbreviations:
 
 					$this->connection = new connection_aws();
 					$this->connection->exit_on_error_set(false);
+					$this->connection->timeout_set(5);
 					$this->connection->access_set($this->config['aws_access_id'], $access_secret);
 					$this->connection->service_set('s3', $this->config['aws_region'], $this->config['name']);
 
