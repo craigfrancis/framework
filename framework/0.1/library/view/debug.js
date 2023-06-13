@@ -89,7 +89,8 @@
 			note_div,
 			note_content,
 			note_item,
-			note_node;
+			note_node,
+			note_strong;
 
 		for (var note_count = 0, note_length = notes.length; note_count < note_length; note_count++) {
 
@@ -155,9 +156,12 @@
 			}
 
 			if (note.time) {
+				note_strong = document.createElement('strong');
+				note_strong.textContent = note.time;
 				note_content = document.createElement('div');
 				note_content.setAttribute('class', 'note_time');
-				note_content.appendChild(document.createTextNode('Time: ' + note.time));
+				note_content.textContent = 'Time: ';
+				note_content.appendChild(note_strong);
 				note_div.appendChild(note_content);
 			}
 
