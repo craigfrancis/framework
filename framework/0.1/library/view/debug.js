@@ -158,6 +158,9 @@
 			if (note.time) {
 				note_strong = document.createElement('strong');
 				note_strong.textContent = note.time;
+				if (note.time.match(/^[0-9]+\.?[0-9]*$/)) {
+					note_strong.setAttribute('class', (parseFloat(note.time) > 0.01 ? ' note_time_slow' : 'note_time_quick'));
+				}
 				note_content = document.createElement('div');
 				note_content.setAttribute('class', 'note_time');
 				note_content.textContent = 'Time: ';

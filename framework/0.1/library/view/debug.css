@@ -150,6 +150,14 @@
 		margin-left: 1em;
 	}
 
+	#debug_output .debug_notes .note.debug_sql .note_time_quick {
+		color: #00F;
+	}
+
+	#debug_output .debug_notes .note.debug_sql .note_time_slow {
+		color: #A00;
+	}
+
 	#debug_output .debug_notes .note.debug_sql .note_list {
 		margin-left: 2.5em;
 	}
