@@ -138,10 +138,6 @@
 		padding: 1em 0;
 	}
 
-	#debug_output .debug_notes .note.debug_sql .value {
-		color: #A00;
-	}
-
 	#debug_output .debug_notes .note.debug_sql .note_text,
 	#debug_output .debug_notes .note.debug_sql .note_time,
 	#debug_output .debug_notes .note.debug_sql .note_rows,
@@ -150,6 +146,7 @@
 		margin-left: 1em;
 	}
 
+	#debug_output .debug_notes .note.debug_sql .value,
 	#debug_output .debug_notes .note.debug_sql .note_time_quick {
 		color: #00F;
 	}
