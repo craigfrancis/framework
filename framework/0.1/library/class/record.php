@@ -635,6 +635,31 @@ report_add('Deprecated: Use $record->field_name_add() now', 'notice');
 
 			}
 
+			public function update_edited() { // e.g. a sub-record has been edited, and the main record needs to reflect that.
+
+				$db = $this->db_get();
+
+				if ($this->config['single'] === true) { // A single row per field
+					exit_with_error('Cannot currently run update_edited on a record in "single" mode.');
+				}
+
+				$old_values = $this->values_get();
+				if ($old_values === false) { // e.g. The where_sql is NULL... or it has been set, but it does not match a record.
+					exit_with_error('Cannot currently run update_edited on a new record.');
+				}
+
+				$table_sql = $this->table_sql . ($this->config['table_alias'] === NULL ? '' : ' AS ' . $this->config['table_alias']);
+
+				$new_values = [
+						'edited' => timestamp(),
+					];
+
+				$db->update($table_sql, $new_values, $this->where_sql, $this->where_parameters);
+
+				$this->values = array_merge($this->values, $new_values);
+
+			}
+
 			public function delete() {
 
 				//--------------------------------------------------
