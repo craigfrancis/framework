@@ -1110,9 +1110,15 @@
 
 					}
 
+					$changed = false;
+
 					foreach ($records as $record) {
-						$record->save();
+						if ($record->save() === true) {
+							$changed = true;
+						}
 					}
+
+					return $changed;
 
 			}
 

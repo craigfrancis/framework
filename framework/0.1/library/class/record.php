@@ -418,6 +418,8 @@ report_add('Deprecated: Use $record->field_name_add() now', 'notice');
 
 					$now = new timestamp();
 
+					$changed = false;
+
 				//--------------------------------------------------
 				// Merge new values
 
@@ -467,6 +469,8 @@ report_add('Deprecated: Use $record->field_name_add() now', 'notice');
 
 							foreach ($new_values as $field => $new_value) {
 								if (!array_key_exists($field, $old_values) || log_value_different($old_values[$field], $new_value)) {
+
+									$changed = true;
 
 									if ($this->config['log_table']) { // A separate table for the log, when dealing with a lot of records.
 
@@ -632,6 +636,11 @@ report_add('Deprecated: Use $record->field_name_add() now', 'notice');
 					$this->values = array_merge($this->values, $new_values);
 
 					$this->new_values = [];
+
+				//--------------------------------------------------
+				// Changed
+
+					return $changed;
 
 			}
 
