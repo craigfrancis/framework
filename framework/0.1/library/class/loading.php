@@ -13,6 +13,7 @@
 			private $lock = NULL;
 			private $running = false;
 			private $session_prefix = NULL;
+			private $disabled = false;
 
 		//--------------------------------------------------
 		// Setup
@@ -80,6 +81,14 @@
 
 					$this->session_prefix = 'loading.' . base64_encode(isset($config['ref']) ? $config['ref'] : config::get('request.path')) . '.';
 
+			}
+
+			public function disabled_set($disabled) {
+				$this->disabled = ($disabled == true);
+			}
+
+			public function disabled_get() {
+				return $this->disabled;
 			}
 
 			public function time_out_set($time_out) {
@@ -187,6 +196,10 @@
 
 			public function start($variables) {
 
+				if ($this->disabled) {
+					return true; // Pretend this was successful
+				}
+
 				$time = time(); // All the same
 
 				if ($this->lock) {
@@ -233,6 +246,7 @@
 			public function update($variables) {
 
 				if ($this->running) {
+
 					if ($this->lock) {
 
 						if ($this->lock->check()) { // Don't use open, if we have lost the lock we need to stop
@@ -256,6 +270,11 @@
 						return true;
 
 					}
+
+				} else if ($this->disabled) {
+
+					return true; // Pretend this was successful
+
 				}
 
 				return false;
