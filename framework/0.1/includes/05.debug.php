@@ -131,7 +131,7 @@
 				}
 				$included_size = 0;
 				foreach ($files as $id => $file) {
-					if (is_file($file['path'] ?? NULL)) {
+					if (is_file($file['path'] ?? '')) {
 						if (!isset($file['name'])) $file['name'] = basename($file['path']);
 						if (!isset($file['size'])) $file['size'] = filesize($file['path']);
 					} else if (isset($file['data'])) {
