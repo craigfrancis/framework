@@ -486,6 +486,8 @@ $limit = 2;
 
 								$to_remove = array_reverse($to_remove, true);
 debug('UNLINK: ' . debug_dump($to_remove));
+// Rather than unlink now, why not move to a different folder, touch, and then use file mtime to delete after X days... maybe store with the record data/json?
+
 								foreach ($to_remove as $file_id => $file) { // Remove oldest files first (so it's resumable if the process does not complete).
 
 									// unlink($file['encrypted_path']);
