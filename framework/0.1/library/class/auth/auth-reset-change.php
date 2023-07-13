@@ -70,7 +70,6 @@
 				// Config
 
 					$this->details = false;
-					$this->record = NULL;
 
 				//--------------------------------------------------
 				// Validation
@@ -140,16 +139,22 @@
 
 					if ($this->details) {
 
-						$this->record = record_get($this->db_main_table, $this->details['user_id'], [
-								$this->db_main_fields['identification'],
-								$this->db_main_fields['password'],
-								$this->db_main_fields['auth'],
-							]);
+						$sql = 'SELECT
+									m.' . $db->escape_field($this->db_main_fields['identification']) . ' AS identification,
+									m.' . $db->escape_field($this->db_main_fields['auth']) . ' AS auth
+								FROM
+									' . $db->escape_table($this->db_main_table) . ' AS m
+								WHERE
+									m.' . $db->escape_field($this->db_main_fields['id']) . ' = ? AND
+									' . $this->db_main_where_sql;
 
-						$row = $this->record->values_get();
+						$parameters = [];
+						$parameters[] = intval($this->details['user_id']);
 
-						$this->details['auth'] = auth::secret_parse($this->details['user_id'], $row[$this->db_main_fields['auth']]);
-						$this->details['identification'] = $row[$this->db_main_fields['identification']];
+						$row = $db->fetch_row($sql, $parameters);
+
+						$this->details['auth'] = auth::secret_parse($this->details['user_id'], $row['auth']);
+						$this->details['identification'] = $row['identification'];
 
 					}
 
@@ -339,10 +344,20 @@
 
 						$auth_encoded = auth::secret_encode($this->details['user_id'], $this->details['auth'], $this->details['password']);
 
-						$this->record->save([
-								$this->db_main_fields['password'] => '',
-								$this->db_main_fields['auth'] => $auth_encoded,
-							]);
+						$sql = 'UPDATE
+									' . $db->escape_table($this->db_main_table) . ' AS m
+								SET
+									m.' . $db->escape_field($this->db_main_fields['password']) . ' = "",
+									m.' . $db->escape_field($this->db_main_fields['auth']) . ' = ?
+								WHERE
+									m.' . $db->escape_field($this->db_main_fields['id']) . ' = ? AND
+									' . $this->db_main_where_sql;
+
+						$parameters = [];
+						$parameters[] = $auth_encoded;
+						$parameters[] = intval($this->details['user_id']);
+
+						$db->query($sql, $parameters);
 
 					}
 
