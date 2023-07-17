@@ -829,7 +829,7 @@
 				// Try to tidy up "oo00000000000" or "OI000 000000", but not "c/o 00000 000000"
 
 			$chars = preg_split('//u', $number, -1, PREG_SPLIT_NO_EMPTY); // UTF-8 character splitting
-			$length = count($chars);
+			$length = ($chars === false ? 0 : count($chars));
 			$dividers = array(' ', '(', ')', '-');
 
 			for ($k = 0; $k < $length; $k++) {
