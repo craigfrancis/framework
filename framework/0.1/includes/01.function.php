@@ -247,7 +247,7 @@
 	}
 
 	function base64_decode_rfc4648($encoded) {
-		return base64_decode(strtr($encoded, '-_', '+/'));
+		return base64_decode(strtr(strval($encoded), '-_', '+/'));
 	}
 
 	function xml($text) {
