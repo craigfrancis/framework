@@ -19,6 +19,7 @@
 			private $form_passive = false;
 			private $form_submitted = false;
 			private $autocomplete = NULL;
+			private $autocomplete_default = NULL;
 			private $disabled = false;
 			private $readonly = false;
 			private $autofocus = false;
@@ -210,14 +211,6 @@
 				return $this->form_class;
 			}
 
-			public function form_autocomplete_set($autocomplete) {
-				$this->autocomplete = $autocomplete;
-			}
-
-			public function form_autocomplete_get() {
-				return $this->autocomplete;
-			}
-
 			public function form_button_set($text = NULL) {
 				$this->form_button = $text;
 			}
@@ -250,6 +243,22 @@
 
 			public function form_passive_get() {
 				return $this->form_passive;
+			}
+
+			public function form_autocomplete_set($autocomplete) {
+				$this->autocomplete = $autocomplete;
+			}
+
+			public function form_autocomplete_get() {
+				return $this->autocomplete;
+			}
+
+			public function autocomplete_default_set($autocomplete) {
+				$this->autocomplete_default = $autocomplete;
+			}
+
+			public function autocomplete_default_get() {
+				return $this->autocomplete_default;
 			}
 
 			public function disabled_set($disabled) {

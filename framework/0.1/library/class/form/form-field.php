@@ -112,6 +112,7 @@
 					$this->label_prefix_html = $form->label_prefix_get_html();
 					$this->label_suffix_html = $form->label_suffix_get_html();
 
+					$this->autocomplete = $form->autocomplete_default_get();
 					$this->disabled = $form->disabled_get();
 					$this->readonly = $form->readonly_get();
 					$this->print_group = $form->print_group_get();
