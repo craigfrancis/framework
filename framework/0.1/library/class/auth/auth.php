@@ -1617,6 +1617,11 @@
 
 							}
 
+						} else if (preg_match('/^\$?(\$(1|2a|2x|2y|5|6|argon2i|argon2id)\$.+)$/', $db_pass) && password::verify($password, $db_pass, $db_id) === true) { // https://www.php.net/crypt, with optional leading $ to show it's been normalised
+
+							$valid = true;
+							$rehash = true;
+
 						} else if (trim($db_pass) !== '' && $db_pass === $password) {
 
 							$valid = true;
