@@ -443,7 +443,8 @@
 				if ($this->uploaded) {
 					foreach ($this->files as $id => $file) {
 						if (strlen($file['name']) > $length) {
-							$this->form->_field_error_set_html($this->form_field_uid, $error_html);
+							$html = str_replace('[FILE_NAME]', $file['name'], $error_html);
+							$this->form->_field_error_set_html($this->form_field_uid, $html);
 							$this->files[$id]['preserve'] = false;
 						}
 					}
@@ -620,7 +621,7 @@
 				}
 
 				if ($this->long_name_error_set == false) { // Provide default
-					$this->long_name_error_set('The uploaded file for "' . strtolower($this->label_html) . '" has a filename that is too long (max XXX characters).');
+					$this->long_name_error_set('The uploaded file "[FILE_NAME]", has a filename that is too long (max XXX characters).'); // for "' . strtolower($this->label_html) . '"
 				}
 
 			}
