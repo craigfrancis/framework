@@ -432,11 +432,11 @@
 
 			}
 
-			public function long_name_error_set($error, $length = 50) {
+			public function long_name_error_set($error, $length = 100) {
 				$this->long_name_error_set_html(to_safe_html($error), $length);
 			}
 
-			public function long_name_error_set_html($error_html, $length = 50) {
+			public function long_name_error_set_html($error_html, $length = 100) {
 
 				$error_html = str_replace('XXX', $length, $error_html);
 
