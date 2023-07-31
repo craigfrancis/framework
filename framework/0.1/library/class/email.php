@@ -23,6 +23,7 @@
 			protected $attachments = [];
 			protected $template_path = NULL;
 			protected $template_url = NULL;
+			protected $template_conditional = [];
 			protected $template_values_text = [];
 			protected $template_values_html = [];
 			protected $template_edit_function = NULL;
@@ -125,6 +126,23 @@
 				return $this->template_url;
 			}
 
+			public function template_conditional_set($name, $show) { // e.g. "<!--[if EXAMPLE]><p>Some conditional content.</p><![endif]-->"
+				$this->template_conditional[$name] = $show;
+			}
+
+			private function _template_conditional_parse($content) {
+				preg_match_all('/<!--\[if ([a-zA-Z0-9_\-]+)\]>(.*?)<!\[endif\]-->(\n\n)?/ms', $content, $matches, PREG_SET_ORDER);
+				foreach ($matches as $match) {
+					if (($this->template_conditional[$match[1]] ?? false) === true) {
+						$replace = $match[2] . ($match[3] ?? '');
+					} else {
+						$replace = '';
+					}
+					$content = str_replace($match[0], $replace, $content);
+				}
+				return $content;
+			}
+
 			public function template_value_set($name, $value) {
 				$this->template_values_text[$name] = $value;
 				$this->template_values_html[$name] = text_to_html($value);
@@ -152,7 +170,9 @@
 
 					$template_file = $this->template_path . '/index.txt';
 					if (is_file($template_file)) {
-						return file_get_contents($template_file);
+						$template_text = file_get_contents($template_file);
+						$template_text = $this->_template_conditional_parse($template_text);
+						return $template_text;
 					} else {
 						exit_with_error('Cannot find template file: ' . $template_file);
 					}
@@ -175,7 +195,9 @@
 
 					$template_file = $this->template_path . '/index.html';
 					if (is_file($template_file)) {
-						return file_get_contents($template_file);
+						$template_html = file_get_contents($template_file);
+						$template_html = $this->_template_conditional_parse($template_html);
+						return $template_html;
 					} else {
 						exit_with_error('Cannot find template file: ' . $template_file);
 					}
