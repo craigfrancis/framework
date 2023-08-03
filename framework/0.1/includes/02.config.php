@@ -136,6 +136,8 @@
 				'run-ad-auction'                     => [],
 				'screen-wake-lock'                   => [],
 				'serial'                             => [],
+				'shared-storage'                     => [],
+				'shared-storage-select-url'          => [],
 				'usb'                                => [],
 				'window-management'                  => [],
 				'xr-spatial-tracking'                => [],
