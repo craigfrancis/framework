@@ -82,6 +82,7 @@
 		$config['output.pp_directives'] = [
 
 				'accelerometer'                      => [],
+				'attribution-reporting'              => [],
 				'autoplay'                           => [],
 				'bluetooth'                          => [],
 				'camera'                             => [],
@@ -119,6 +120,8 @@
 				'hid'                                => [],
 				'idle-detection'                     => [],
 				'identity-credentials-get'           => [],
+				'interest-cohort'                    => [],
+				'join-ad-interest-group'             => [],
 				'keyboard-map'                       => [],
 				'local-fonts'                        => [],
 				'magnetometer'                       => [],
@@ -126,9 +129,11 @@
 				'midi'                               => [],
 				'otp-credentials'                    => ['self'],
 				'payment'                            => [],
+				'private-aggregation'                => [],
 				'private-state-token-issuance'       => [],
 				'private-state-token-redemption'     => [],
 				'publickey-credentials-get'          => [],
+				'run-ad-auction'                     => [],
 				'screen-wake-lock'                   => [],
 				'serial'                             => [],
 				'usb'                                => [],
