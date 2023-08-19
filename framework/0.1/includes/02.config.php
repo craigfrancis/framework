@@ -97,6 +97,7 @@
 				'ch-ua'                              => [],
 				'ch-ua-arch'                         => [],
 				'ch-ua-bitness'                      => [],
+				'ch-ua-form-factor'                  => [],
 				'ch-ua-full-version'                 => [],
 				'ch-ua-full-version-list'            => [],
 				'ch-ua-mobile'                       => [],
