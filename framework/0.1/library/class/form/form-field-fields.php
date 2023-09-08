@@ -426,9 +426,18 @@
 					}
 
 					if ($label_html != '') {
-						return $this->label_prefix_html . '<label for="' . html($this->id) . '_' . html($field) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . ($required_mark_position == 'left' && $required_mark_html !== NULL ? $required_mark_html : '') . $label_html . ($required_mark_position == 'right' && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>' . $this->label_suffix_html;
+
+						$for = $this->id;
+						if (!isset($this->input_single) || !$this->input_single) {
+							$for .= '_' . $field;
+						}
+
+						return $this->label_prefix_html . '<label for="' . html($for) . '"' . ($this->label_class === NULL ? '' : ' class="' . html($this->label_class) . '"') . '>' . ($required_mark_position == 'left' && $required_mark_html !== NULL ? $required_mark_html : '') . $label_html . ($required_mark_position == 'right' && $required_mark_html !== NULL ? $required_mark_html : '') . '</label>' . $this->label_suffix_html;
+
 					} else {
+
 						return '';
+
 					}
 
 			}
