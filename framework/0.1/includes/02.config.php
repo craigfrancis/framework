@@ -149,7 +149,7 @@
 				// 'interest-cohort'                 => [], // InterestCohortFeaturePolicy, "Topics" replaces the "obsolete FLoC code" - https://chromium.googlesource.com/chromium/src/+/9255aecd4114c0b3da4016f641316367112adb53
 				// 'picture-in-picture'              => [], // Risky
 				// 'sync-xhr'                        => [], // Risky
-				// 'unload'                        => [], // Risky
+				// 'unload'                          => [], // Risky
 
 				// 'document-domain'                 => [], // DocumentDomain, https://source.chromium.org/chromium/chromium/src/+/09ae39cb337e46a2f97a763e57986154b8af91eb
 				// 'ambient-light-sensor'            => [], // SensorExtraClasses
