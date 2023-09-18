@@ -31,7 +31,7 @@
 
 			// $config['db.setup'] = array(
 			// 		'image' => array(
-			// 				'engine' => 'MyISAM',
+			// 				'engine' => 'InnoDB',
 			// 				'collation' => 'utf8mb4_unicode_ci',
 			// 				'fields' => array(
 			// 						'ref' => array('collation' => 'utf8mb4_bin'),
@@ -42,8 +42,8 @@
 			$database_setup = config::get('db.setup', []);
 
 			$default_setup = array(
-					'engine' => config::get('db.engine', 'InnoDB'), // or MyISAM... for FULLTEXT search before MySQL 5.6.4, faster COUNT(*) on the whole table (e.g. no WHERE), 'INSERT DELAYED' before MySQL 5.7 (now not supported), ability to 'ALTER TABLE table AUTO_INCREMENT=1'
-					'collation' => config::get('db.collation', 'utf8mb4_uca1400_ai_ci'), // Avoid general, is faster, but more error prone.
+					'engine' => config::get('db.engine', 'InnoDB'), // or `MyISAM` for FULLTEXT search before MySQL 5.6.4, 'INSERT DELAYED' before MySQL 5.7 (now not supported), ability to 'ALTER TABLE table AUTO_INCREMENT=1', faster COUNT(*) on the whole table (e.g. no WHERE).
+					'collation' => config::get('db.collation', 'utf8mb4_unicode_ci'), // Change to `utf8mb4_uca1400_ai_ci` when it's supported (needs 10.10.2; currently Ubuntu 22.04.3 LTS uses 10.6.12)...  avoid utf8mb4_general_ci, while it is faster, it's more error prone
 					'fields' => [],
 				);
 
