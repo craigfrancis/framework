@@ -51,10 +51,36 @@
 			$notes_collation = [];
 			$update_sql = [];
 
+			$db = db_get();
+
+		//--------------------------------------------------
+		// Database setup
+
+			$database_name = config::get('db.name', NULL);
+
+			if ($database_name) {
+
+				$sql = 'SELECT default_character_set_name, default_collation_name FROM information_schema.schemata WHERE schema_name = ?';
+
+				$parameters = [];
+				$parameters[] = $database_name;
+
+				if ($row = $db->fetch_row($sql, $parameters)) {
+
+					$character_set = check_character_set($default_setup['collation']);
+
+					if ($row['default_character_set_name'] != $character_set || $row['default_collation_name'] != $default_setup['collation']) {
+
+						$update_sql[] = 'ALTER DATABASE ' . $db->escape_table($database_name) . ' DEFAULT CHARACTER SET "' . $character_set . '" COLLATE "' . $default_setup['collation'] . '";';
+
+					}
+
+				}
+
+			}
+
 		//--------------------------------------------------
 		// For each table
-
-			$db = db_get();
 
 			foreach ($db->fetch_all('SHOW TABLE STATUS') as $row) {
 				if (str_starts_with($row['Name'], DB_PREFIX)) {
