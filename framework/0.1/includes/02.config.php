@@ -141,6 +141,7 @@
 				'serial'                             => [],
 				'shared-storage'                     => [],
 				'shared-storage-select-url'          => [],
+				'storage-access'                     => [],
 				'usb'                                => [],
 				'window-management'                  => [],
 				'window-placement'                   => [],
