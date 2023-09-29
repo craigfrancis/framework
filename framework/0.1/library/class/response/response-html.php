@@ -1464,7 +1464,7 @@
 						debug_progress('Template Start Send');
 					}
 
-					if (config::get('debug.level') > 0 && config::get('debug.show') && in_array($mime_type, array('text/html', 'application/xhtml+xml'))) {
+					if (config::get('debug.level') > 0 && config::get('debug.show') && in_array($mime_type, array('text/html', 'application/xhtml+xml')) && config::get('session.key') !== NULL) { // On scratch pad, the session key is not set.
 
 						session::start();
 
