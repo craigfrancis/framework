@@ -307,13 +307,25 @@
 				$this->body_html_safe = ($content_html instanceof html_template || $content_html instanceof html_safe_value || (function_exists('is_literal') && is_literal($content_html)));
 			}
 
-			public function request_table_add($values = [], $date_format = 'l jS F Y, g:i:sa') {
+			public function request_table_add($values = [], $config = []) {
+
+				if (!is_array($config)) {
+					$config = ['date_format' => $config];
+				}
+
+				$config = array_merge([
+						'date_format'    => 'Y-m-d H:i:s - D jS M',
+						'inc_post_data'  => false,
+						'inc_post_files' => false,
+						'inc_files'      => [],
+						'inc_file_limit' => 1048576, // 1MB
+					], $config);
 
 				$uri = config::get('request.uri');
 				$url = http_url();
 
 				$request_values = [
-						'Sent'      => date($date_format),
+						'Sent'      => date($config['date_format']),
 						'Loaded'    => NULL,
 						'Website'   => config::get('output.origin'),
 						'Method'    => config::get('request.method'),
@@ -328,12 +340,61 @@
 
 				$original_time = request('o');
 				if (preg_match('/^[0-9]{10,}$/', strval($original_time))) {
-					$original_time = date($date_format, $original_time) . ' (' . timestamp_to_human((time() - $original_time), 2, true) . ')';
+					$original_time = date($config['date_format'], $original_time) . ' (' . timestamp_to_human((time() - $original_time), 2, true) . ')';
 				}
 				if ($original_time !== NULL) {
 					$request_values['Loaded'] = $original_time;
 				} else {
 					unset($request_values['Loaded']); // Temporary
+				}
+
+				if ($config['inc_post_data'] === true && config::get('request.method') == 'POST') {
+					$post_values = $_POST;
+					foreach (['password', 'pass', 'csrf'] as $remove) {
+						if (isset($post_values[$remove])) {
+							$post_values[$remove] = '[REMOVED]';
+						}
+					}
+					$request_values['Post'] = json_encode($post_values, JSON_PRETTY_PRINT);
+				}
+
+				$files = $config['inc_files'];
+				if ($config['inc_post_files'] === true) {
+					foreach ($_FILES as $field => $file) {
+						if (is_array($file['name'])) { // When input name is an array, e.g. <input type="file" name="example[]" />
+							foreach ($file['name'] as $id => $name) {
+								$field_full = $field . '[' . $id . ']';
+								$row = ['name' => $name, 'type' => $file['type'][$id], 'error' => $file['error'][$id], 'size' => $file['size'][$id], 'field' => $field_full];
+								$row['path'] = (config::array_get('request.file_paths', $field_full) ?? $file['tmp_name'][$id]); // If form_field_file has moved it to 'file_tmp_folder', then use 'path'.
+								$files[] = $row;
+							}
+						} else {
+							$file['field'] = $field;
+							$file['path'] = (config::array_get('request.file_paths', $field) ?? $file['tmp_name']);
+							$files[] = $file;
+						}
+					}
+				}
+				$included_size = 0;
+				foreach ($files as $id => $file) {
+					if (is_file($file['path'] ?? '')) {
+						if (!isset($file['name'])) $file['name'] = basename($file['path']);
+						if (!isset($file['size'])) $file['size'] = filesize($file['path']);
+					} else if (isset($file['data'])) {
+						if (!isset($file['name'])) $file['name'] = 'N/A';
+						if (!isset($file['size'])) $file['size'] = strlen($file['data']);
+					} else {
+						$file['include'] = false;
+					}
+					$value = (($file['field'] ?? '') != '' ? $file['field'] . ': ' : '') . $file['name'] . ' (' . $file['size'] . ' bytes' . (isset($file['type']) ? ', ' . $file['type'] : '') . (isset($file['error']) ? ', Error:' . $file['error'] : '') . ')';
+					if (($file['include'] ?? true) === true) {
+						$included_size += $file['size'];
+						if ($included_size < $config['inc_file_limit']) {
+							$data = ($file['data'] ?? file_get_contents($file['path']));
+							$value .= "\n\n" . wordwrap(base64_encode($data), 75, "\n", true);
+						}
+					}
+					$request_values['File ' . ($id + 1)] = $value;
 				}
 
 				$this->values_table_add(array_merge($request_values, $values));
