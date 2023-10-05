@@ -668,7 +668,7 @@
 					} else {
 						$file_names = array_shift($file_names);
 					}
-					$this->info_html = $file_names . ($this->info_html ? ' | ' . $this->info_html : '');
+					$this->info_html = html($file_names) . ($this->info_html ? ' | ' . $this->info_html : '');
 				}
 
 				return parent::html_info($indent);
