@@ -68,6 +68,10 @@
 
 				$table = array_pop($row);
 
+				if (DB_PREFIX != '' && !str_starts_with($table, DB_PREFIX)) {
+					continue;
+				}
+
 				$table_sql = $db->escape_table($table);
 
 				$tables[$table] = array(
