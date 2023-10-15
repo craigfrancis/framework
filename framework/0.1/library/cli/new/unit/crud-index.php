@@ -176,7 +176,7 @@
 
 				if ($output_csv) {
 
-					$table->charset_output_set('ISO-8859-1');
+					// $table->charset_output_set('ISO-8859-1');
 					$table->csv_download('File.csv');
 					exit();
 

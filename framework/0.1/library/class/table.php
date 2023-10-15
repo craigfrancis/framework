@@ -1122,7 +1122,11 @@
 				// Correct charset
 
 					if ($csv_output && $this->charset_output !== NULL && $this->charset_output != $this->charset_input) {
+
+						// While much faster as a single call, this can cause issues; e.g. going to ISO-8859-1, and the data containing smart quotes, which get converted to normal quotes (breaks the CSV encoding)
+
 						$csv_output = @iconv($this->charset_input, $this->charset_output . '//TRANSLIT', $csv_output);
+
 					}
 
 				//--------------------------------------------------
