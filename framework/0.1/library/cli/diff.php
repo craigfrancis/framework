@@ -122,7 +122,7 @@
 				$details[$table] = [];
 
 				if (!isset($b[$table])) {
-					if (DB_PREFIX == '' || !str_starts_with($table, DB_PREFIX)) {
+					if (DB_PREFIX == '' || str_starts_with($table, DB_PREFIX)) {
 						$details[$table][] = 'Table: Missing in current database.';
 					}
 					continue;
