@@ -1049,7 +1049,7 @@ debug('UNLINK: ' . debug_dump($to_remove));
 					$result = $this->connection->request(url($url), $request['method'], ($request['content'] ?? ''));
 
 					if ($result !== true) {
-						throw new error_exception('Failed connection to AWS', $this->connection->error_message_get());
+						throw new error_exception('Failed connection to AWS', $this->connection->error_message_get() . "\n\n" . $this->connection->error_details_get());
 					}
 
 				//--------------------------------------------------
