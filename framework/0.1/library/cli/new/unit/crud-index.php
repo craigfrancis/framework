@@ -105,18 +105,16 @@
 
 				if ($config['paginate']) {
 
-					// $sql = 'SELECT
-					// 			COUNT(i.id)
-					// 		FROM
-					// 			' . $from_sql . '
-					// 		WHERE
-					// 			' . $where_sql;
-					//
-					// $result_count = $db->fetch($sql, $parameters);
-					//
-					// $paginator = new paginator($result_count);
+					$sql = 'SELECT
+								COUNT(i.id)
+							FROM
+								' . $from_sql . '
+							WHERE
+								' . $where_sql;
 
-					$paginator = new paginator();
+					$result_count = $db->fetch($sql, $parameters);
+
+					$paginator = new paginator($result_count);
 
 				} else {
 
@@ -127,7 +125,7 @@
 			//--------------------------------------------------
 			// Query
 
-				$sql = 'SELECT SQL_CALC_FOUND_ROWS
+				$sql = 'SELECT
 							i.id,
 							i.name
 						FROM
@@ -179,17 +177,6 @@
 					// $table->charset_output_set('ISO-8859-1');
 					$table->csv_download('File.csv');
 					exit();
-
-				}
-
-			//--------------------------------------------------
-			// Pagination item count
-
-				if ($paginator) {
-
-					$row_count = $db->fetch('SELECT FOUND_ROWS()');
-
-					$paginator->item_count_set($row_count, true);
 
 				}
 
