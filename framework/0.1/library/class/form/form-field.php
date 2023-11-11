@@ -512,7 +512,7 @@
 					}
 
 					if ($this->db_field_info['null']) {
-						if ($this->db_field_info['type'] == 'int' && $field_value === '') {
+						if ($field_value === '' && in_array($this->db_field_info['type'], ['int', 'decimal'])) {
 							$field_value = NULL; // e.g. number field setting an empty string (not 0).
 						}
 					} else {
