@@ -96,7 +96,7 @@
 
 					$file_contents = file_get_contents(ROOT . $path);
 					$file_contents = preg_replace('#/\*.*?\*/#s', '', $file_contents); // Remove comments
-					$file_contents = preg_replace('/[ \t]*([{}|:;,])[ \t]+/', '$1', $file_contents); // Remove whitespace (keeping newlines)
+					$file_contents = preg_replace('/[ \t]*([{}:;,])[ \t]+/', '$1', $file_contents); // Remove whitespace (keeping newlines)
 					$file_contents = preg_replace('/^[ \t]+/m', '', $file_contents); // Remove whitespace at the start
 					$file_contents = str_replace(';}', '}', $file_contents); // Remove unnecessary ;'s
 
