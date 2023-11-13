@@ -134,6 +134,21 @@
 
 							$this->_cleanup();
 
+							if (function_exists('report_add')) {
+								report_add('Loading Error:' . "\n\n" . debug_dump($error), 'error');
+							}
+
+							$contact_email = config::get('email.error_display'); // A different email address to show customers
+							if (!$contact_email) {
+								$contact_email = config::get('email.error');
+							}
+							if (is_array($contact_email)) {
+								$contact_email = reset($contact_email);
+							}
+							if ($contact_email) {
+								$error['contact_email'] = $contact_email;
+							}
+
 							if (function_exists('response_get')) {
 								$response = response_get('html');
 								$response->set($error); // Array with 'message' key
