@@ -15,7 +15,8 @@
 
 			protected $files = [];
 			protected $file_current = 0;
-			protected $file_mime_accept = NULL;
+			protected $file_accept_mime = NULL;
+			protected $file_accept_ext = NULL;
 			protected $uploaded = NULL;
 
 		//--------------------------------------------------
@@ -372,7 +373,7 @@
 					}
 				}
 
-				$this->file_mime_accept = $types;
+				$this->file_accept_mime = $types;
 
 			}
 
@@ -390,6 +391,8 @@
 						}
 					}
 				}
+
+				$this->file_accept_ext = $types;
 
 			}
 
@@ -644,8 +647,17 @@
 					$attributes['multiple'] = 'multiple';
 				}
 
-				if ($this->file_mime_accept !== NULL && count($this->file_mime_accept) == 1) {
-					$attributes['accept'] = reset($this->file_mime_accept);
+				$accept = [];
+				if ($this->file_accept_mime !== NULL) {
+					$accept = $this->file_accept_mime;
+				}
+				if ($this->file_accept_ext !== NULL) {
+					foreach ($this->file_accept_ext as $ext) {
+						$accept[] = '.' . $ext;
+					}
+				}
+				if (count($accept) > 0) {
+					$attributes['accept'] = implode(',', $accept);
 				}
 
 				return $attributes;
