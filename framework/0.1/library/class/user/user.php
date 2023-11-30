@@ -77,7 +77,7 @@
 									edited datetime NOT NULL,
 									deleted datetime NOT NULL,
 									PRIMARY KEY (id),
-									UNIQUE KEY ' . $login_field_name . ' (' . $login_field_name . ')
+									UNIQUE KEY ' . $login_field_name . ' (' . $login_field_name . ', deleted)
 								);');
 
 						debug_require_db_table($this->db_table_session, '

@@ -498,7 +498,7 @@
 										' . $db->escape_field($db_main_fields['edited']) . ' datetime NOT NULL,
 										' . $db->escape_field($db_main_fields['deleted']) . ' datetime NOT NULL,
 										PRIMARY KEY (' . $db->escape_field($db_main_fields['id']) . '),
-										UNIQUE KEY ' . $db->escape_field($db_main_fields['identification']) . ' (' . $db->escape_field($db_main_fields['identification']) . ')
+										UNIQUE KEY ' . $db->escape_field($db_main_fields['identification']) . ' (' . $db->escape_field($db_main_fields['identification']) . ', ' . $db->escape_field($db_main_fields['deleted']) . ')
 									);');
 
 // TODO: Maybe add an 'identification' field? so we can check what was typed when users tried to login (easy to check for typos).
