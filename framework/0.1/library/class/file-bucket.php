@@ -216,6 +216,18 @@ Abbreviations:
 								$unprocessed_files_full[$file_id] = $file;
 								$unprocessed_files_partial[$file_id] = $partial;
 
+								if (!is_file($plain_path)) { // If file was added via file_import()
+
+									$encrypted_content = $this->_file_download($file['info'], $file_id);
+
+									$plain_content = $this->_file_decrypt($file['info'], $file_id, $encrypted_content);
+
+									file_put_contents($plain_path, $plain_content);
+
+									chmod($plain_path, octdec(600));
+
+								}
+
 							}
 
 							if (count($unprocessed_files_full) > 0) {
