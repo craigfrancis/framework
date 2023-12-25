@@ -122,7 +122,7 @@
 				if ($label_html === NULL) {
 
 					if ($key === NULL) {
-						$label_html = html($this->label_option);
+						$label_html = to_safe_html($this->label_option);
 					} else if (isset($this->option_values_html[$key])) {
 						$label_html = $this->option_values_html[$key];
 					} else {

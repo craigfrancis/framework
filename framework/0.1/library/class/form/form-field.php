@@ -69,12 +69,12 @@
 				//--------------------------------------------------
 				// Label
 
-					$label_html = html($label);
-
 					$function = $form->label_override_get_function();
 					if ($function !== NULL) {
-						$label_html = call_user_func($function, $label_html, $form, $this);
+						$label = call_user_func($function, $label, $form, $this);
 					}
+
+					$label_html = to_safe_html($label);
 
 				//--------------------------------------------------
 				// Name
