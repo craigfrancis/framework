@@ -355,7 +355,7 @@
 		$route_min = ($matches[4] != '');
 		$route_ext = $matches[5];
 
-		$file_path = realpath(PUBLIC_ROOT . $route_dir . '/' . $route_file . '.' . $route_ext);
+		$file_path = PUBLIC_ROOT . $route_dir . '/' . $route_file . '.' . $route_ext; // Not realpath(), as we might be using a symlink to provide 2 or more sites.
 
 		if (is_readable($file_path) && str_starts_with($file_path, ASSET_ROOT . '/')) { // Must be in the assets folder.
 
