@@ -566,7 +566,11 @@ debug('UNLINK: ' . debug_dump($to_remove));
 
 					} else {
 
-						$encrypted_content = $this->_file_download($file['info'], $file_id);
+						if (isset($file['info']['eh'])) { // The upload to AWS happens later, during cleanup()
+							$encrypted_content = $this->_file_download($file['info'], $file_id);
+						} else {
+							throw new error_exception('Encrypted version of the file does not currently exist.', 'NULL' . "\n" . 'File ID: ' . $file_id);
+						}
 
 						$plain_content = $this->_file_decrypt($file['info'], $file_id, $encrypted_content);
 
