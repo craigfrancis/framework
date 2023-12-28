@@ -86,6 +86,7 @@ Abbreviations:
 
 	'pf' - Plain     folder for Files (a temp folder)
 	'ef' - Encrypted folder for Files
+	'df' - Deleted   folder for Files (on backup server)
 
 /*--------------------------------------------------*/
 
@@ -110,19 +111,20 @@ Abbreviations:
 				// Config
 
 					$this->config = array_merge($this->config, [
-							'name'              => NULL,
-							'local_max_age'     => '-30 days',
-							'delete_delay_file' => '-6 months',
-							'delete_delay_db'   => '-7 years',
-							'table_sql'         => DB_PREFIX . 'system_file_bucket',
-							'main_root'         => PRIVATE_ROOT . '/file-bucket',
-							'backup_root'       => NULL, // e.g. /path/to/backup
-							'file_hash'         => 'sha256',
-							'info_key'          => 'file-bucket',
-							'aws_region'        => NULL,
-							'aws_access_id'     => NULL,
-							'aws_access_secret' => NULL,
-							'aws_folders'       => false,
+							'name'                => NULL,
+							'local_max_age'       => '-30 days',
+							'delete_delay_file'   => '-6 months',
+							'delete_delay_backup' => '-1 year',
+							'delete_delay_db'     => '-7 years',
+							'table_sql'           => DB_PREFIX . 'system_file_bucket',
+							'main_root'           => PRIVATE_ROOT . '/file-bucket',
+							'backup_root'         => NULL, // e.g. /path/to/backup
+							'file_hash'           => 'sha256',
+							'info_key'            => 'file-bucket',
+							'aws_region'          => NULL,
+							'aws_access_id'       => NULL,
+							'aws_access_secret'   => NULL,
+							'aws_folders'         => false,
 						], config::get_all('file-bucket'));
 
 					if (is_array($config)) {
@@ -224,11 +226,12 @@ Abbreviations:
 
 								$file['path'] = $plain_path;
 
-								$partial = $file;
-								unset($partial['info']); // Possibly sensitive info... delete for now.
+								$partial_row = $file['row'];
+								$partial_row['path'] = $plain_path;
+								unset($partial_row['info']); // Possibly sensitive info (even if this value is still encrypted)... delete for now.
 
 								$unprocessed_files_full[$file_id] = $file;
-								$unprocessed_files_partial[$file_id] = $partial;
+								$unprocessed_files_partial[$file_id] = $partial_row;
 
 								if (!is_file($plain_path)) { // If file was added via file_import()
 
@@ -308,11 +311,13 @@ Abbreviations:
 
 										//--------------------------------------------------
 										// Remove from AWS
+
 debug('AWS DELETE: ' . $file_id . ' = ' . $file['info']['eh']);
-											// $this->_aws_request([
-											// 		'method'         => 'DELETE',
-											// 		'encrypted_hash' => $file['info']['eh'],
-											// 	]);
+
+											$this->_aws_request([
+													'method'         => 'DELETE',
+													'encrypted_hash' => $file['info']['eh'],
+												]);
 
 										//--------------------------------------------------
 										// Record as removed
@@ -385,6 +390,7 @@ debug('AWS DELETE: ' . $file_id . ' = ' . $file['info']['eh']);
 									if (!is_dir($sub_path)) {
 										throw new error_exception('Unexpected non-folder, should just contain sub-folders', $sub_path);
 									}
+
 									$empty = true;
 
 									foreach (glob($sub_path . '/*') as $file_path) {
@@ -475,7 +481,7 @@ debug('CLEANUP1: ' . $file_path);
 							}
 
 						//--------------------------------------------------
-						// Find files to remove
+						// Find files to check (still exist, and hash)
 
 							if ($config['full_cleanup'] && is_int($config['check_files'])) {
 
@@ -527,6 +533,7 @@ debug('CLEANUP1: ' . $file_path);
 
 												$to_remove[$file_id] = [
 														'info'           => $file['info'],
+														'row'            => $file['row'],
 														'encrypted_path' => $encrypted_path,
 													];
 
@@ -539,16 +546,74 @@ debug('CLEANUP1: ' . $file_path);
 								} while (count($files) == $limit && $continue);
 
 								$to_remove = array_reverse($to_remove, true);
-debug('UNLINK2: ' . debug_dump($to_remove));
-// Rather than unlink now, why not move to a different folder, touch, and then use file mtime to delete after X days... maybe store with the record data/json?
 
 								foreach ($to_remove as $file_id => $file) { // Remove oldest files first (so it's resumable if the process does not complete).
 
-									// unlink($file['encrypted_path']);
-									//
-									// if (is_file($file['encrypted_path'])) {
-									// 	throw new error_exception('Unable to delete file', $file['encrypted_path'] . "\n" . 'File ID: ' . $file_id);
-									// }
+									$deleted_path = $this->_file_path_get('df', $file['info']['eh']);
+
+									rename($file['encrypted_path'], $deleted_path);
+
+debug('Moved File to DF: ' . $deleted_path);
+
+									if (is_file($file['encrypted_path'])) {
+										throw new error_exception('Unable to delete file', $file['encrypted_path'] . "\n" . 'File ID: ' . $file_id);
+									}
+
+									if (!is_file($deleted_path)) {
+										throw new error_exception('Unable to find deleted file', $deleted_path . "\n" . 'File ID: ' . $file_id);
+									}
+
+									file_put_contents($deleted_path . '-' . time() . '.json', json_encode($file['row'])); // Only keep the 'row', where 'info' is still an encrypted string.
+
+								}
+
+								$path = $this->_file_path_get('df');
+								$delete_delay_check = strtotime('2000-01-01'); // As in, it looks like a valid timestamp (e.g. not 0)
+								$delete_delay_backup = strtotime($this->config['delete_delay_backup']);
+
+								foreach (glob($path . '/*') as $sub_path) {
+
+									if (!is_dir($sub_path)) {
+										throw new error_exception('Unexpected non-folder, should just contain sub-folders', $sub_path);
+									}
+
+									$empty = true;
+
+									foreach (glob($sub_path . '/*.json') as $file_path) {
+
+										if (!is_file($file_path)) {
+
+											throw new error_exception('This folder should only contain files.', $sub_path . "\n" . $file_path);
+
+										} else if (preg_match('/^(.*\/[0-9A-F]{62})-([0-9]+)\.json$/i', $file_path, $matches)) {
+
+											$removed_time = intval($matches[2]);
+
+											if ($removed_time < $delete_delay_backup && $removed_time > $delete_delay_check) {
+debug('Removed JSON: ' . $file_path);
+												unlink($file_path);
+												if (count(glob($matches[1] . '-*.json')) == 0) {
+debug('Removed File: ' . $matches[1]);
+													unlink($matches[1]);
+												}
+
+											} else {
+
+												$empty = false;
+
+											}
+
+										} else {
+
+											throw new error_exception('The JSON files in this folder should have a name with a specific format.', $sub_path . "\n" . $file_path);
+
+										}
+
+									}
+
+									if ($empty) {
+										rmdir($sub_path);
+									}
 
 								}
 
@@ -624,11 +689,11 @@ debug('UNLINK2: ' . debug_dump($to_remove));
 
 				}
 
-				$file['path'] = $plain_path;
+				$file['row']['path'] = $plain_path;
 
-				unset($file['info']); // Possibly sensitive info... delete for now.
+				unset($file['row']['info']); // While it's encrypted, it shouldn't be needed.
 
-				return $file;
+				return $file['row']; // Don't return the decrypted $file['info']
 
 			}
 
@@ -900,10 +965,13 @@ debug('UNLINK2: ' . debug_dump($to_remove));
 
 				foreach ($db->fetch_all($sql, $parameters) as $row) {
 
-					$row['info'] = encryption::decode($row['info'], $info_key, $row['id']);
-					$row['info'] = json_decode($row['info'], true);
+					$info = encryption::decode($row['info'], $info_key, $row['id']);
+					$info = json_decode($info, true);
 
-					$files[$row['id']] = $row;
+					$files[$row['id']] = [
+							'row'  => $row,
+							'info' => $info,
+						];
 
 				}
 
