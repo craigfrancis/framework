@@ -181,7 +181,7 @@ Abbreviations:
 				return [];
 			}
 
-			public function cleanup($full_cleanup = false) {
+			public function cleanup($config = []) {
 
 // Could use a Message Queue system (e.g. RabbitMQ, Redis, Beanstalkd, Iron.io MQ, Kafka)... to be run shortly after upload (not */5 min cron)
 // https://stackoverflow.com/questions/74809611/php-message-queue-for-low-volume-jobs
@@ -192,6 +192,20 @@ Abbreviations:
 					$db = db_get();
 
 					$now = new timestamp();
+
+					if (!is_array($config)) {
+						if (is_bool($config)) {
+							$config = ['full_cleanup' => $config];
+						} else {
+							$config = [];
+						}
+					}
+
+					$config = array_merge([
+							'full_cleanup'   => false,
+							'print_progress' => false,
+							'check_files'    => NULL,
+						], $config);
 
 				//--------------------------------------------------
 				// New files
@@ -234,7 +248,7 @@ Abbreviations:
 
 								$info_key = $this->config['info_key'];
 								if (!encryption::key_exists($info_key)) { // TODO [secrets-keys]
-									throw new error_exception('Cannot find encryption key "' . $info_key . '"');
+									throw new error_exception('Cannot find encryption key "' . $info_key . '"', encryption::key_path_get($info_key));
 								}
 
 								$new_values_all = $this->files_process($unprocessed_files_partial);
@@ -288,7 +302,7 @@ Abbreviations:
 						//--------------------------------------------------
 						// Files to remove
 
-							if ($full_cleanup) {
+							if ($config['full_cleanup']) {
 								foreach ($this->_file_db_get('remove') as $file_id => $file) {
 									if (isset($file['info']['eh'])) {
 
@@ -328,7 +342,7 @@ debug('AWS DELETE: ' . $file_id . ' = ' . $file['info']['eh']);
 								// Delayed, so backup server can remove its
 								// copies of the encrypted files).
 
-							if ($full_cleanup) {
+							if ($config['full_cleanup']) {
 
 								$delete_delay_file = new timestamp($this->config['delete_delay_file']);
 								$delete_delay_db = new timestamp($this->config['delete_delay_db']);
@@ -354,7 +368,7 @@ debug('AWS DELETE: ' . $file_id . ' = ' . $file['info']['eh']);
 						//--------------------------------------------------
 						// Clear local 'plain' cache
 
-							if ($full_cleanup) {
+							if ($config['full_cleanup']) {
 
 								$local_max_age = $this->config['local_max_age'];
 								$local_max_age = strtotime($local_max_age);
@@ -379,7 +393,7 @@ debug('AWS DELETE: ' . $file_id . ' = ' . $file['info']['eh']);
 										if (!is_file($file_path)) {
 											throw new error_exception('This folder should only contain files.', $sub_path . "\n" . $file_path);
 										} else if ($file_age < $local_max_age) {
-debug('CLEANUP: ' . $file_path);
+debug('CLEANUP1: ' . $file_path);
 //											unlink($file_path); // Hasn't been accessed for a while, delete local copy.
 										} else {
 											$empty = false;
@@ -400,11 +414,11 @@ debug('CLEANUP: ' . $file_path);
 						//--------------------------------------------------
 						// Find files to download
 
-							if ($full_cleanup) {
+							if ($config['full_cleanup']) {
 
 								$offset = 0;
 								$limit = 10;
-// $limit = 4;
+
 								$to_download = [];
 
 								do {
@@ -452,6 +466,10 @@ debug('CLEANUP: ' . $file_path);
 
 									chmod($file['encrypted_path'], octdec(600));
 
+									if ($config['print_progress']) {
+										echo $encrypted_hash . "\n";
+									}
+
 								}
 
 							}
@@ -459,11 +477,35 @@ debug('CLEANUP: ' . $file_path);
 						//--------------------------------------------------
 						// Find files to remove
 
-							if ($full_cleanup) {
+							if ($config['full_cleanup'] && is_int($config['check_files'])) {
+
+								$files = $this->_file_db_get('random', 0, $config['check_files']);
+
+								foreach ($files as $file_id => $file) {
+
+									$encrypted_path = $this->_file_path_get('ef', $file['info']['eh']);
+
+									if (!is_file($encrypted_path)) {
+										throw new error_exception('Encrypted backup file missing', $encrypted_path . "\n" . 'File ID: ' . $file_id);
+									}
+
+									$encrypted_hash = hash_file($this->config['file_hash'], $encrypted_path);
+
+									if (!hash_equals($encrypted_hash, $file['info']['eh'])) {
+										throw new error_exception('Encrypted backup file hash error', $encrypted_hash . "\n" . $file['info']['eh'] . "\n" . 'File ID: ' . $file_id);
+									}
+
+								}
+
+							}
+
+						//--------------------------------------------------
+						// Find files to remove
+
+							if ($config['full_cleanup']) {
 
 								$offset = 0;
 								$limit = 10;
-$limit = 2;
 
 								$to_remove = [];
 
@@ -497,7 +539,7 @@ $limit = 2;
 								} while (count($files) == $limit && $continue);
 
 								$to_remove = array_reverse($to_remove, true);
-debug('UNLINK: ' . debug_dump($to_remove));
+debug('UNLINK2: ' . debug_dump($to_remove));
 // Rather than unlink now, why not move to a different folder, touch, and then use file mtime to delete after X days... maybe store with the record data/json?
 
 								foreach ($to_remove as $file_id => $file) { // Remove oldest files first (so it's resumable if the process does not complete).
@@ -753,7 +795,7 @@ debug('UNLINK: ' . debug_dump($to_remove));
 
 				$info_key = $this->config['info_key'];
 				if (!encryption::key_exists($info_key)) { // TODO [secrets-keys]
-					throw new error_exception('Cannot find encryption key "' . $info_key . '"');
+					throw new error_exception('Cannot find encryption key "' . $info_key . '"', encryption::key_path_get($info_key));
 				}
 
 				$db = db_get();
@@ -794,6 +836,15 @@ debug('UNLINK: ' . debug_dump($to_remove));
 							f.id DESC';
 
 					$parameters[] = new timestamp($this->config['delete_delay_file']);
+
+				} else if ($file_id === 'random') {
+
+					$sql .= '
+						WHERE
+							f.processed != "0000-00-00 00:00:00" AND
+							f.deleted = "0000-00-00 00:00:00"
+						ORDER BY
+							RAND()';
 
 				} else if ($file_id === 'remove') {
 
