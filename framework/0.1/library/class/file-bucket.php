@@ -399,17 +399,17 @@ debug('AWS DELETE: ' . $file_id . ' = ' . $file['info']['eh']);
 										if (!is_file($file_path)) {
 											throw new error_exception('This folder should only contain files.', $sub_path . "\n" . $file_path);
 										} else if ($file_age < $local_max_age) {
-debug('CLEANUP1: ' . $file_path);
-//											unlink($file_path); // Hasn't been accessed for a while, delete local copy.
+debug('Remove Cache File: ' . $file_path);
+											unlink($file_path); // Hasn't been accessed for a while, delete local copy.
 										} else {
 											$empty = false;
 										}
 
 									}
 
-//									if ($empty) {
-//										rmdir($sub_path);
-//									}
+									if ($empty) {
+										rmdir($sub_path);
+									}
 
 								}
 
