@@ -1181,7 +1181,13 @@ debug('Removed File: ' . $matches[1]);
 						$url = '/' . $request['encrypted_hash'];
 					}
 
+					$start = hrtime(true);
+
 					$result = $this->connection->request(url($url), $request['method'], ($request['content'] ?? ''));
+
+					if (function_exists('debug_log_time')) {
+						debug_log_time('AWS-' . $request['method'], round(hrtime_diff($start), 3));
+					}
 
 					if ($result !== true) {
 						throw new error_exception('Failed connection to AWS', $this->connection->error_message_get() . "\n\n" . $this->connection->error_details_get());
