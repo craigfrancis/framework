@@ -668,6 +668,8 @@ debug('Removed File: ' . $matches[1]);
 
 					$plain_path = stream_get_meta_data($plain_file)['uri'];
 
+					$file['row']['temp_file_handle'] = $plain_file; // Keep the file handle so it's not automatically removed as soon as there are no remaining references.
+
 				} else {
 
 					$plain_path = $this->_file_path_get('pf', $file['info']['ph']);
