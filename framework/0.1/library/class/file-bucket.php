@@ -470,7 +470,7 @@ debug('Remove Cache File: ' . $file_path);
 
 									file_put_contents($file['encrypted_path'], $encrypted_content);
 
-									chmod($file['encrypted_path'], octdec(600));
+									chmod($file['encrypted_path'], octdec(640)); // Readable by www-data (note, it's still encrypted)
 
 									if ($config['print_progress']) {
 										echo $encrypted_hash . "\n";
