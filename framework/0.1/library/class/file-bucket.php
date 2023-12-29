@@ -563,7 +563,12 @@ debug('Moved File to DF: ' . $deleted_path);
 										throw new error_exception('Unable to find deleted file', $deleted_path . "\n" . 'File ID: ' . $file_id);
 									}
 
-									file_put_contents($deleted_path . '-' . time() . '.json', json_encode($file['row'])); // Only keep the 'row', where 'info' is still an encrypted string.
+									$json_path = $deleted_path . '-' . time() . '.json';
+
+									file_put_contents($json_path, json_encode($file['row'])); // Only keep the 'row', where 'info' is still an encrypted string.
+
+									chmod($deleted_path, octdec(600));
+									chmod($json_path, octdec(600));
 
 								}
 
