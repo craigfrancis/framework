@@ -462,15 +462,19 @@ debug('Remove Cache File: ' . $file_path);
 
 									$encrypted_content = $this->_file_download($file['info'], $file_id);
 
-									$encrypted_hash = hash($this->config['file_hash'], $encrypted_content);
+									file_put_contents($file['encrypted_path'], $encrypted_content);
+
+									if (is_file($file['encrypted_path'])) {
+										$encrypted_hash = hash_file($this->config['file_hash'], $file['encrypted_path']); // Check file was written correctly, instead of `hash(x, $encrypted_content)`
+									} else {
+										$encrypted_hash = 'MissingFile';
+									}
 
 									if (!hash_equals($encrypted_hash, $file['info']['eh'])) {
 										throw new error_exception('Hash check failed', $encrypted_hash . "\n" . $file['info']['eh'] . "\n" . 'File ID: ' . $file_id);
 									}
 
-									file_put_contents($file['encrypted_path'], $encrypted_content);
-
-									chmod($file['encrypted_path'], octdec(640)); // Readable by www-data (note, it's still encrypted)
+									chmod($file['encrypted_path'], octdec(640)); // Readable by www-data, via group (note, the file is still encrypted)
 
 									if ($config['print_progress']) {
 										echo $encrypted_hash . "\n";
