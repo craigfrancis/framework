@@ -841,18 +841,33 @@ debug('Removed File: ' . $matches[1]);
 				do {
 					$folder = ($k++ < 3); // e.g. "pf" and "41" are folders in "/private/file-bucket/pf/41/6059bcfb38c630cd1cebd56052f8605a2f37deb12b73e8ad3e47185f35de3d"
 					if ($folder) {
-						if (!is_dir($path)) {
-							@mkdir($path, 0777, true); // Most installs will write as the "apache" user, which is a problem if the normal user account can't edit/delete these files.
+						if ($this->config['backup_root'] !== NULL) {
 							if (!is_dir($path)) {
-								throw new error_exception('Missing directory', $path);
+								throw new error_exception('Missing directory on backup server', $path);
+							}
+							if (is_writable($path)) {
+								throw new error_exception('Should not be able to write to directory on backup server', $path);
+							}
+						} else {
+							if (!is_dir($path)) {
+								@mkdir($path, 0777, true); // Most installs will write as the "apache" user, which is a problem if the normal user account can't edit/delete these files.
+								if (!is_dir($path)) {
+									throw new error_exception('Missing directory', $path);
+								}
+							}
+							if (!is_writable($path)) {
+								throw new error_exception('Cannot write to directory', $path);
 							}
 						}
-						if (!is_writable($path)) {
-							throw new error_exception('Cannot write to directory', $path);
-						}
-					} else {
-						if (is_file($path) && !is_writable($path)) {
-							throw new error_exception('Cannot write to file', $path);
+					} else if (is_file($path)) {
+						if ($this->config['backup_root'] !== NULL) {
+							if (is_writable($path)) {
+								throw new error_exception('Should not be able to write to file on backup server', $path);
+							}
+						} else {
+							if (!is_writable($path)) {
+								throw new error_exception('Cannot write to file', $path);
+							}
 						}
 					}
 				} while (($sub_folder = array_shift($parts)) !== NULL && $path = $path . '/' . safe_file_name($sub_folder));
