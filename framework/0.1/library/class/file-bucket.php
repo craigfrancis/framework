@@ -859,7 +859,7 @@ debug('Removed File: ' . $matches[1]);
 						if (!is_dir($path)) {
 							throw new error_exception('Missing directory', $path);
 						}
-						if ($this->config['backup_root'] !== NULL) {
+						if ($this->config['backup_root'] !== NULL && REQUEST_MODE != 'cli') {
 							if (is_writable($path)) {
 								throw new error_exception('Should not be able to write to directory on backup server', $path);
 							}
@@ -869,7 +869,7 @@ debug('Removed File: ' . $matches[1]);
 							}
 						}
 					} else if (is_file($path)) {
-						if ($this->config['backup_root'] !== NULL) {
+						if ($this->config['backup_root'] !== NULL && REQUEST_MODE != 'cli') {
 							if (is_writable($path)) {
 								throw new error_exception('Should not be able to write to file on backup server', $path);
 							}
