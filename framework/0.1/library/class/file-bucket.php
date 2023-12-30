@@ -423,7 +423,7 @@ debug('Remove Cache File: ' . $file_path);
 							if ($config['full_cleanup']) {
 
 								$offset = 0;
-								$limit = 10;
+								$limit = 500;
 
 								$to_download = [];
 
@@ -515,7 +515,7 @@ debug('Remove Cache File: ' . $file_path);
 							if ($config['full_cleanup']) {
 
 								$offset = 0;
-								$limit = 10;
+								$limit = 50;
 
 								$to_remove = [];
 
