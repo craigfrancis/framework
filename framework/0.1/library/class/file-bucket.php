@@ -157,7 +157,7 @@ Abbreviations:
 
 					$this->connection = new connection_aws();
 					$this->connection->exit_on_error_set(false);
-					$this->connection->timeout_set(5);
+					$this->connection->timeout_set(10);
 					$this->connection->access_set($this->config['aws_access_id'], $access_secret);
 					$this->connection->service_set('s3', $this->config['aws_region'], $this->config['name']);
 
@@ -378,8 +378,7 @@ debug('AWS DELETE: ' . $file_id . ' = ' . $file['info']['eh']);
 								$local_max_age = $this->config['local_max_age'];
 								$local_max_age = strtotime($local_max_age);
 
-								$limit_check = strtotime('-3 hours');
-								if ($local_max_age > $limit_check) {
+								if ($local_max_age > strtotime('-3 hours')) {
 									throw new error_exception('The "local_max_age" should be longer.');
 								}
 
@@ -423,15 +422,17 @@ debug('Remove Cache File: ' . $file_path);
 							if ($config['full_cleanup']) {
 
 								$offset = 0;
-								$limit = 500;
+								$limit = 100;
 
 								$to_download = [];
 
 								do {
 
-									$files = $this->_file_db_get('processed', $offset++, $limit);
+									$files = $this->_file_db_get('processed', $offset, $limit);
 
-									$continue = false;
+									$offset += $limit;
+
+									$found_files = 0;
 
 									foreach ($files as $file_id => $file) {
 
@@ -439,9 +440,21 @@ debug('Remove Cache File: ' . $file_path);
 
 											$encrypted_path = $this->_file_path_get('ef', $file['info']['eh']);
 
-											if (!is_file($encrypted_path)) {
+											if (is_file($encrypted_path)) {
 
-												$continue = true;
+												$found_files++;
+
+												if ($found_files <= 10) {
+
+													$encrypted_hash = hash_file($this->config['file_hash'], $encrypted_path); // Might as well verify the last few files.
+
+													if (!hash_equals($encrypted_hash, $file['info']['eh'])) {
+														throw new error_exception('Hash check failed (end)', $encrypted_hash . "\n" . $file['info']['eh'] . "\n" . 'File ID: ' . $file_id);
+													}
+
+												}
+
+											} else {
 
 												$to_download[$file_id] = [
 														'info'           => $file['info'],
@@ -454,7 +467,22 @@ debug('Remove Cache File: ' . $file_path);
 
 									}
 
-								} while (count($files) == $limit && $continue);
+									if ($found_files > 0 && $found_files < 10) {
+
+										$continue = true; // Just do a few more, just to be sure.
+										$limit = 10;
+
+									} else {
+
+										$continue = ($found_files == 0 && count($files) == $limit);
+
+										if ($limit < 100000) { // When starting with a new backup disk, it's too slow to keep checking 100 at a time.
+											$limit = ($limit * 10);
+										}
+
+									}
+
+								} while ($continue);
 
 								$to_download = array_reverse($to_download, true); // Download oldest files first (so it's resumable if the process does not complete).
 
@@ -471,7 +499,7 @@ debug('Remove Cache File: ' . $file_path);
 									}
 
 									if (!hash_equals($encrypted_hash, $file['info']['eh'])) {
-										throw new error_exception('Hash check failed', $encrypted_hash . "\n" . $file['info']['eh'] . "\n" . 'File ID: ' . $file_id);
+										throw new error_exception('Hash check failed (random)', $encrypted_hash . "\n" . $file['info']['eh'] . "\n" . 'File ID: ' . $file_id);
 									}
 
 									chmod($file['encrypted_path'], octdec(640)); // Readable by www-data, via group (note, the file is still encrypted)
@@ -515,13 +543,15 @@ debug('Remove Cache File: ' . $file_path);
 							if ($config['full_cleanup']) {
 
 								$offset = 0;
-								$limit = 50;
+								$limit = 100;
 
 								$to_remove = [];
 
 								do {
 
-									$files = $this->_file_db_get('removed', $offset++, $limit);
+									$files = $this->_file_db_get('removed', $offset, $limit);
+
+									$offset += $limit;
 
 									$continue = false;
 
@@ -985,7 +1015,7 @@ debug('Removed File: ' . $matches[1]);
 						LIMIT
 							?, ?';
 
-					$parameters[] = ($offset * $limit);
+					$parameters[] = $offset;
 					$parameters[] = $limit;
 
 				}
