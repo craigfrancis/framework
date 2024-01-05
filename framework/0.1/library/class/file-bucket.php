@@ -428,6 +428,8 @@ debug('Remove Cache File: ' . $file_path);
 
 								do {
 
+									echo 'Check ' . $offset . ' to ' . $limit . "\n";
+
 									$files = $this->_file_db_get('processed', $offset, $limit);
 
 									$offset += $limit;
