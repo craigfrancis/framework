@@ -488,6 +488,8 @@ debug('Remove Cache File: ' . $file_path);
 
 								$to_download = array_reverse($to_download, true); // Download oldest files first (so it's resumable if the process does not complete).
 
+								$k = 0;
+
 								foreach ($to_download as $file_id => $file) {
 
 									$encrypted_content = $this->_file_download($file['info'], $file_id);
@@ -507,7 +509,7 @@ debug('Remove Cache File: ' . $file_path);
 									chmod($file['encrypted_path'], octdec(640)); // Readable by www-data, via group (note, the file is still encrypted)
 
 									if ($config['print_progress']) {
-										echo $encrypted_hash . "\n";
+										echo ++$k . ') ' . $encrypted_hash . "\n";
 									}
 
 								}
