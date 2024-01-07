@@ -502,8 +502,8 @@ debug('Remove Cache File: ' . $file_path);
 										$encrypted_hash = 'MissingFile';
 									}
 
-									if (!hash_equals($encrypted_hash, $file['info']['eh'])) {
-										throw new error_exception('Hash check failed (random)', $encrypted_hash . "\n" . $file['info']['eh'] . "\n" . 'File ID: ' . $file_id);
+									if (!hash_equals($encrypted_hash, $file['info']['eh'])) { // e.g. disk full
+										throw new error_exception('Hash check failed (new)', $encrypted_hash . "\n" . $file['info']['eh'] . "\n" . 'File ID: ' . $file_id);
 									}
 
 									chmod($file['encrypted_path'], octdec(640)); // Readable by www-data, via group (note, the file is still encrypted)
@@ -534,7 +534,7 @@ debug('Remove Cache File: ' . $file_path);
 									$encrypted_hash = hash_file($this->config['file_hash'], $encrypted_path);
 
 									if (!hash_equals($encrypted_hash, $file['info']['eh'])) {
-										throw new error_exception('Encrypted backup file hash error', $encrypted_hash . "\n" . $file['info']['eh'] . "\n" . 'File ID: ' . $file_id);
+										throw new error_exception('Hash check failed (random)', $encrypted_hash . "\n" . $file['info']['eh'] . "\n" . 'File ID: ' . $file_id);
 									}
 
 								}
@@ -686,7 +686,7 @@ debug('Removed File: ' . $matches[1]);
 					if (isset($file['info']['eh'])) {
 						$encrypted_path = $this->_file_path_get('ef', $file['info']['eh']);
 					} else {
-						throw new error_exception('Encrypted version of the file does not currently exist.', 'NULL' . "\n" . 'File ID: ' . $file_id);
+						throw new error_exception('Encrypted hash of the file does not currently exist.', 'NULL' . "\n" . 'File ID: ' . $file_id);
 					}
 
 					if (is_file($encrypted_path)) {
@@ -721,7 +721,7 @@ debug('Removed File: ' . $matches[1]);
 						if (isset($file['info']['eh'])) { // The upload to AWS happens later, during cleanup()
 							$encrypted_content = $this->_file_download($file['info'], $file_id);
 						} else {
-							throw new error_exception('Encrypted version of the file does not currently exist.', 'NULL' . "\n" . 'File ID: ' . $file_id);
+							throw new error_exception('Encrypted hash of the file does not currently exist.', 'NULL' . "\n" . 'File ID: ' . $file_id);
 						}
 
 						$plain_content = $this->_file_decrypt($file['info'], $file_id, $encrypted_content);
