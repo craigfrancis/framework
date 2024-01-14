@@ -680,6 +680,8 @@
 
 				}
 
+				$content = str_replace("\0", "\u{FFFD}", $content); // Avoid mail() ValueError, argument #3, must not contain any null bytes.
+
 				mail($recipient, $subject, $content, $headers, $additional_parameters);
 
 			}
