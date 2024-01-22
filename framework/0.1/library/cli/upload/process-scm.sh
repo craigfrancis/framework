@@ -19,7 +19,7 @@
 		exit 0;
 	fi
 
-	umask 0022;
+	umask 0002;
 
 #--------------------------------------------------
 # SSH control connection
