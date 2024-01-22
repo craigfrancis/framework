@@ -615,6 +615,8 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 
 				file_put_contents($auth_path, quick_hash_create($auth_value . $auth_path));
 
+				chmod($auth_path, octdec(644));
+
 				return [$auth_id, $auth_value, $auth_path];
 
 			}
