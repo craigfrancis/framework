@@ -93,9 +93,9 @@
 		echo "Update project:";
 
 		if [[ "${DST_SOURCE}" == 'git' ]]; then
-			remote_cmd "cd ${DST_PATH} && git pull | awk '/^Already up-to-date/ {print \" \" \" \033[1;34m\" \$0 \"\033[0m\"; next} { print \" \" \" \" \$0; }' && git submodule update --init";
+			remote_cmd "umask 0002 && cd ${DST_PATH} && git pull | awk '/^Already up-to-date/ {print \" \" \" \033[1;34m\" \$0 \"\033[0m\"; next} { print \" \" \" \" \$0; }' && git submodule update --init";
 		else
-			remote_cmd "svn update ${DST_PATH} | awk '{ print \" \" \" \" \$0;}'";
+			remote_cmd "umask 0002 && svn update ${DST_PATH} | awk '{ print \" \" \" \" \$0;}'";
 		fi
 
 	fi
@@ -105,7 +105,7 @@
 		echo;
 		echo "Update framework:";
 
-		remote_cmd "cd \`${CLI_PATH} --config=FRAMEWORK_ROOT\` && git pull | awk '/^Already up-to-date/ {print \" \" \" \033[1;34m\" \$0 \"\033[0m\"; next} { print \" \" \" \" \$0; }'";
+		remote_cmd "umask 0002 && cd \`${CLI_PATH} --config=FRAMEWORK_ROOT\` && git pull | awk '/^Already up-to-date/ {print \" \" \" \033[1;34m\" \$0 \"\033[0m\"; next} { print \" \" \" \" \$0; }'";
 
 	fi
 
