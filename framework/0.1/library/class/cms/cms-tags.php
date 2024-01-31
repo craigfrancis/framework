@@ -130,7 +130,7 @@ class cms_tags_base extends check {
 			$html = str_replace($cMatch[0], $cMatch[3] . ' [' . $cMatch[2] . ']', $html);
 		}
 
-		return trim(strip_tags($html));
+		return trim(html_decode(strip_tags($html)));
 
 	}
 
