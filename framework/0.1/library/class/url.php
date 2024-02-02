@@ -135,12 +135,14 @@
 
 			}
 
-			public function params_get() {
-
+			public function param_get($name, $default = NULL) {
 				$this->_path_cache_update();
+				return ($this->parameters[$name] ?? $default);
+			}
 
+			public function params_get() {
+				$this->_path_cache_update();
 				return $this->parameters;
-
 			}
 
 			public function fragment_get() {
