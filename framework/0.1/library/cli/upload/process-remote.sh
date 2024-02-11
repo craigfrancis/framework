@@ -105,7 +105,7 @@
 	echo;
 	echo 'Uploading prep scripts:';
 
-	remote_cmd "mkdir -p '${DST_PATH}/upload/'";
+	remote_cmd "mkdir -m 0775 -p '${DST_PATH}/upload/'";
 	remote_scp "${FRAMEWORK_ROOT}/library/cli/upload/publish-prep.sh" "${DST_PATH}/upload/publish-prep.sh";
 	remote_scp "${FRAMEWORK_ROOT}/library/cli/upload/publish-run.sh" "${DST_PATH}/upload/publish-run.sh";
 	remote_cmd "chmod 755 ${DST_PATH}/upload/publish-{prep,run}.sh";
