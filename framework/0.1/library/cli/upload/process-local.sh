@@ -61,7 +61,7 @@
 # Create upload folder
 #--------------------------------------------------
 
-	mkdir -p "${DST_PATH}/upload/";
+	mkdir -m 0775 -p "${DST_PATH}/upload/";
 
 #--------------------------------------------------
 # Execute prep script
