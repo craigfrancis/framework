@@ -60,7 +60,7 @@
 					'ins'        => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
 					'blockquote' => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
 					'q'          => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
-					'a'          => ['id' => 'ref', 'class' => 'ref', 'href' => 'url', 'target' => ['_blank'], 'rel' => ['noopener', 'noreferrer', 'nofollow']],
+					'a'          => ['id' => 'ref', 'class' => 'ref', 'href' => 'url', 'target' => ['_blank'], 'rel' => ['noopener', 'noreferrer', 'nofollow'], 'hreflang' => 'text'],
 					'picture'    => ['id' => 'ref', 'class' => 'ref'],
 					'source'     => ['id' => 'ref', 'class' => 'ref', 'src' => 'url-img', 'srcset' => 'text', 'sizes' => 'text', 'type' => 'text'],
 					'img'        => ['id' => 'ref', 'class' => 'ref', 'src' => 'url-img', 'srcset' => 'text', 'sizes' => 'text', 'alt' => 'text', 'title' => 'text', 'width' => 'int', 'height' => 'int', 'fetchpriority' => ['high', 'low'], 'tabindex' => 'int'],
