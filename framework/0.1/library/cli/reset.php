@@ -248,8 +248,6 @@
 
 								$table_rounds[1][] = $table;
 
-								$tables[$table]['path'] = $path;
-
 						}
 
 					}
