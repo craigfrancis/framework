@@ -136,6 +136,7 @@
 				'private-state-token-issuance'       => [],
 				'private-state-token-redemption'     => [],
 				'publickey-credentials-get'          => [],
+				'publickey-credentials-create'       => [],
 				'run-ad-auction'                     => [],
 				'screen-wake-lock'                   => [],
 				'serial'                             => [],
