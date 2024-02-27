@@ -34,7 +34,7 @@
 
 			protected function setup() {
 				$this->connection = new connection();
-				$this->connection->exit_on_error_set(false);
+				$this->connection->exit_on_error_set(false); // Connection won't exit, this object will instead.
 			}
 
 			public function reset() {
