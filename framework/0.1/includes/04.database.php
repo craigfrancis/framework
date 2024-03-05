@@ -963,12 +963,14 @@
 
 						usleep(500000); // Half a second
 
-						$dns_cache_update = '/usr/local/bin/dns-cache-update';
-						if (is_file($dns_cache_update)) {
-							$output = [];
-							$return = NULL;
-							exec('sudo ' . $dns_cache_update . ' 2>&1', $output, $return);
-							$error_messages[] = $return . ' : ' . implode('\n', $output);
+						if ($k == 2) {
+							$dns_cache_update = '/usr/local/bin/dns-cache-update';
+							if (is_file($dns_cache_update)) {
+								$output = [];
+								$return = NULL;
+								exec('sudo ' . $dns_cache_update . ' 2>&1', $output, $return);
+								$error_messages[] = $return . ' : ' . implode('\n', $output);
+							}
 						}
 
 					}
