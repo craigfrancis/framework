@@ -260,7 +260,7 @@
 
 					if ($mode == 'route') {
 
-						$page_id = human_to_ref(config::get('route.path'));
+						$page_id = human_to_ref(config::get('route.path', ''));
 
 					} else if ($mode == 'view') {
 

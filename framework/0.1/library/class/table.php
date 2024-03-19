@@ -885,7 +885,7 @@
 
 						foreach ($this->rows[$row_key]['row']->data as $cell_id => $cell_info) {
 
-							if ($cell_info['text']) {
+							if ($cell_info['text'] !== NULL) {
 								$text = explode("\n", wordwrap($cell_info['text'], $max_width, "\n", true));
 							} else {
 								$text = $this->_html_to_text($cell_info['html'], $max_width);
@@ -1053,7 +1053,7 @@
 
 						foreach ($this->rows[$row_key]['row']->data as $cell_info) {
 
-							$csv_output[] = $this->csv_cleanup($cell_info['text'] ? $cell_info['text'] : $this->_html_to_text($cell_info['html']));
+							$csv_output[] = $this->csv_cleanup($cell_info['text'] !== NULL ? $cell_info['text'] : $this->_html_to_text($cell_info['html']));
 
 							for ($k = 1; $k < $cell_info['colspan']; $k++) {
 								$csv_output[] = '';
