@@ -587,6 +587,10 @@
 				return $fields;
 			}
 
+			public function form_debug() {
+				return $this->form;
+			}
+
 			public function form_submit($button_name = NULL, $button_value = NULL) {
 
 				//--------------------------------------------------
