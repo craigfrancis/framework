@@ -1076,6 +1076,7 @@
 
 			if (class_exists('error_exception') && config::get('db.error_thrown') !== true && $first_error === NULL) {
 
+// TODO: Can we allow multiple duplicate entry errors?
 				config::set('db.error_thrown', true);
 
 				if (config::get('debug.level') > 0) {
