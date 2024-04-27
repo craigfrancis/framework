@@ -113,6 +113,7 @@
 				'ch-width'                           => [],
 				'clipboard-read'                     => [],
 				'clipboard-write'                    => [],
+				'compute-pressure'                   => [],
 				'cross-origin-isolated'              => ['self'],
 				'display-capture'                    => [],
 				'encrypted-media'                    => [],
