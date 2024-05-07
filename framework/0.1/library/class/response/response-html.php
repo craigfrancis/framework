@@ -943,6 +943,7 @@
 						if ($version && substr($file['path'], 0, 1) == '/' && is_file(PUBLIC_ROOT . $file['path'])) {
 
 							$url = timestamp_url($file['path'], filemtime(PUBLIC_ROOT . ($min_path ? $min_path : $file['path'])));
+							$url = strval($url); // Convert from a URL object (for now)
 
 							if ($minify && ($min_path || !$integrity)) {
 								if (substr($url, -4) == '.css' && substr($url, -8) != '.min.css') {

@@ -1017,9 +1017,9 @@
 			$timestamp = filemtime(PUBLIC_ROOT . $url);
 		}
 		if (($p = strrpos($url, '/')) !== false) {
-			return substr($url, 0, ($p + 1)) . intval($timestamp) . '-' . substr($url, ($p + 1));
+			return url(substr($url, 0, ($p + 1)) . intval($timestamp) . '-' . substr($url, ($p + 1)));
 		} else {
-			return $url;
+			return url($url);
 		}
 	}
 
