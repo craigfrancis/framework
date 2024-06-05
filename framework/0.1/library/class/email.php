@@ -350,7 +350,7 @@
 
 				if ($config['inc_post_data'] === true && config::get('request.method') == 'POST') {
 					$post_values = $_POST;
-					foreach (['password', 'pass', 'csrf'] as $remove) {
+					foreach (['password', 'pass', 'password_new', 'password_repeat', 'csrf'] as $remove) {
 						if (isset($post_values[$remove])) {
 							$post_values[$remove] = '[REMOVED]';
 						}
