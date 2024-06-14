@@ -911,7 +911,12 @@
 				}
 
 				if ($this->connection != 'default') {
-					$config = array_merge($config, config::get_all('db.' . $this->connection));
+					$connection = config::get_all('db.' . $this->connection);
+					if (isset($connection['pass'])) { // A value for this connection has been set, but should be encrypted
+						$connection['pass'] = NULL;
+						$config['pass'] = NULL;
+					}
+					$config = array_merge($config, $connection);
 					if ($config['pass'] === NULL) {
 						$config['pass'] = secrets::get('db.' . $this->connection . '.pass');
 					}
