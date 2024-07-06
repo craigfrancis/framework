@@ -275,9 +275,7 @@
 				}
 			}
 
-// TODO [secrets] - Use secrets::get() or secrets::key_get() instead
-
-			public static function get_encrypted($value) {
+			public static function get_encrypted($value) { // TODO [secrets-cleanup] - Use secrets::get() or secrets::key_get() instead
 				$key = getenv('PRIME_CONFIG_KEY');
 				if (!$key) {
 					throw new error_exception('Missing environment variable "PRIME_CONFIG_KEY"');
@@ -285,7 +283,7 @@
 				return encryption::encode($value, $key);
 			}
 
-			public static function get_decrypted($variable, $default = NULL) {
+			public static function get_decrypted($variable, $default = NULL) { // TODO [secrets-cleanup] - Use secrets::get() or secrets::key_get() instead
 				$obj = config::instance_get();
 				if (array_key_exists($variable, $obj->store)) {
 					if (isset($obj->encrypted[$variable]) && $obj->encrypted[$variable]) {
@@ -298,7 +296,7 @@
 				}
 			}
 
-			public static function value_decrypt($value) {
+			public static function value_decrypt($value) { // TODO [secrets-cleanup] - Use secrets::get() or secrets::key_get() instead
 				$key = getenv('PRIME_CONFIG_KEY');
 				if (!$key) {
 					throw new error_exception('Missing environment variable "PRIME_CONFIG_KEY"');
@@ -399,7 +397,7 @@
 //--------------------------------------------------
 // Encrypted config, now we know the SERVER
 
-	if (isset($config_encrypted[SERVER]) && count($config_encrypted) > 0) {
+	if (isset($config_encrypted[SERVER]) && count($config_encrypted) > 0) { // TODO [secrets-cleanup] - Should be able to remove?
 		foreach ($config_encrypted[SERVER] as $name => $value) {
 			config::set($name, $value, true);
 		}

@@ -1,6 +1,6 @@
 <?php
 
-// TODO [secrets] - Should replace this 'config-encrypt.php' script
+// TODO [secrets-cleanup] - Should be able to remove?
 
 	echo "\n";
 

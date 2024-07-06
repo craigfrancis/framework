@@ -171,8 +171,7 @@ Abbreviations:
 
 					if ($this->file->config_exists('aws_access_secret')) {
 						try {
-// TODO [secrets-keys]
-							$access_secret = config::value_decrypt($this->file->config_get('aws_access_secret'));
+							$access_secret = config::value_decrypt($this->file->config_get('aws_access_secret')); // TODO [secrets-keys]
 						} catch (exception $e) {
 							$access_secret = NULL;
 						}
