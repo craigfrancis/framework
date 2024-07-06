@@ -564,10 +564,7 @@
 						}
 
 						if (!in_array(encryption::key_type_get($export_key), ['KA1P', 'KA2P'])) {
-							echo "\n";
-							echo "\033[1;31m" . 'Error:' . "\033[0m" . ' The export key is invalid (should be a public key).' . "\n";
-							echo "\n";
-							exit();
+							exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' The export key is invalid (should be a public key).' . "\n\n");
 						}
 
 						file_put_contents($backup_key_path, $export_key . "\n");
@@ -591,10 +588,7 @@
 					}
 
 					if ($response_data['error'] !== false) {
-						echo "\n";
-						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response_data['error'] . "\n";
-						echo "\n";
-						exit();
+						exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response_data['error'] . '.' . "\n\n");
 					}
 
 				//--------------------------------------------------
@@ -669,10 +663,7 @@
 					}
 
 					if ($response_data['error'] !== false) {
-						echo "\n";
-						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response_data['error'] . "\n";
-						echo "\n";
-						exit();
+						exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response_data['error'] . '.' . "\n\n");
 					}
 
 					$notices = ($response_data['data_notices'] ?? []);
@@ -754,10 +745,7 @@
 					}
 
 					if ($response_data['error'] !== false) {
-						echo "\n";
-						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response_data['error'] . "\n";
-						echo "\n";
-						exit();
+						exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response_data['error'] . '.' . "\n\n");
 					}
 
 					file_put_contents($export_path, $response_data['public'] . "\n");
