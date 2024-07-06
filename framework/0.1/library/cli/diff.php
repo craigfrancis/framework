@@ -27,8 +27,8 @@
 
 					if (REQUEST_MODE == 'cli') {
 						$diff_via_api = true;
-						if (secrets::available() === true) {
-							$diff_via_api = false; // Can access the password, run locally.
+						if (secrets::state() === true) {
+							$diff_via_api = false; // Should be able to access the database password, run locally.
 						}
 						try {
 							if (config::get_decrypted('db.pass') !== NULL) { // TODO [secrets-cleanup]

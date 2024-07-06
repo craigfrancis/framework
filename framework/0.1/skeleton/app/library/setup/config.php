@@ -16,9 +16,6 @@
 			// $config['db.host'] = 'localhost';
 			// $config['db.name'] = 's-company-project';
 			// $config['db.user'] = 'stage';
-			// $config_encrypted[SERVER]['db.pass'] = 'password';
-
-			$config['db.prefix'] = 'tpl_';
 
 		//--------------------------------------------------
 		// Email
@@ -50,9 +47,6 @@
 			// $config['db.host'] = 'localhost';
 			// $config['db.name'] = 's-company-project';
 			// $config['db.user'] = 'demo';
-			// $config_encrypted[SERVER]['db.pass'] = 'password';
-
-			$config['db.prefix'] = 'tpl_';
 
 		//--------------------------------------------------
 		// Email
@@ -75,9 +69,6 @@
 			// $config['db.host'] = 'localhost';
 			// $config['db.name'] = 's-company-project';
 			// $config['db.user'] = 'company';
-			// $config_encrypted[SERVER]['db.pass'] = 'password';
-
-			$config['db.prefix'] = 'tpl_';
 
 		//--------------------------------------------------
 		// Email
@@ -93,6 +84,13 @@
 			$config['output.domain'] = 'www.example.com';
 
 	}
+
+//--------------------------------------------------
+// Database
+
+	$config['db.prefix'] = 'tbl_';
+
+	// $secrets['db.pass'] = ['type' => 'value'];
 
 //--------------------------------------------------
 // Output

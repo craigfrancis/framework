@@ -8,6 +8,7 @@
 
 		$config = [];
 		$config_encrypted = [];
+		$secrets = [];
 
 	//--------------------------------------------------
 	// Request
@@ -513,7 +514,6 @@
 	// Secrets
 
 		config::set_default('secrets.folder', PRIVATE_ROOT . '/secrets');
-		config::set_default('secrets.editable', (SERVER == 'stage'));
 
 	//--------------------------------------------------
 	// Cookie
@@ -568,6 +568,13 @@
 	}
 
 	setlocale(LC_ALL, str_replace('-', '_', config::get('output.lang')) . '.' . config::get('output.charset'));
+
+//--------------------------------------------------
+// Setup secrets
+
+	require_once(FRAMEWORK_ROOT . '/library/class/secrets.php');
+
+	secrets::setup($secrets);
 
 //--------------------------------------------------
 // Extra protection against XXE - not that anyone
