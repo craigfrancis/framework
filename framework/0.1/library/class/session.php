@@ -31,7 +31,7 @@
 
 			session::start();
 
-			if (key_exists($variable, $_SESSION)) {
+			if (array_key_exists($variable, $_SESSION)) {
 				return $_SESSION[$variable];
 			} else {
 				return $default;

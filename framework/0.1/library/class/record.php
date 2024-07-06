@@ -212,7 +212,7 @@
 						exit_with_error('Cannot set the "fields" config after returning the values for a record.');
 					}
 
-				// } else if (key_exists($key, $this->config)) {
+				// } else if (array_key_exists($key, $this->config)) {
 				//
 				// 	$this->config[$key] = $value;
 
@@ -225,7 +225,7 @@
 			}
 
 			// protected function config_get($key, $default = NULL) { // Just going with protected for now, probably could be public.
-			// 	if (key_exists($key, $this->config)) {
+			// 	if (array_key_exists($key, $this->config)) {
 			// 		return $this->config[$key];
 			// 	} else {
 			// 		return $default;
