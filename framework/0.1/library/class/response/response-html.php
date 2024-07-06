@@ -146,14 +146,19 @@
 
 			public function view_add($value) {
 				if ($value instanceof html_template || $value instanceof html_safe_value) {
-					$this->view_html = $value->html();
+					$this->view_html .= $value->html();
 				} else {
-					$this->view_html = text_to_html($value);
+					$this->view_html .= text_to_html($value);
 				}
 			}
 
 			public function view_add_html($html) {
 				$this->view_html .= $html;
+			}
+
+			public function view_set($value) {
+				$this->view_set_html('');
+				$this->view_add($value);
 			}
 
 			public function view_set_html($html) {
