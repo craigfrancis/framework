@@ -135,9 +135,10 @@ Set the [database config](../../doc/system/database.md):
 		$config['db.host'] = 'localhost';
 		$config['db.name'] = 's-company-project';
 		$config['db.user'] = 'stage';
-		$config_encrypted[SERVER]['db.pass'] = 'XXX';
 
 		$config['db.prefix'] = 'tbl_';
+
+		$secrets['db.pass'] = ['type' => 'value'];
 
 Then load the website.
 
