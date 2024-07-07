@@ -1081,9 +1081,6 @@
 
 			if (class_exists('error_exception') && config::get('db.error_thrown') !== true && $first_error === NULL) {
 
-// TODO: Can we allow multiple duplicate entry errors?
-				config::set('db.error_thrown', true);
-
 				if (config::get('debug.level') > 0) {
 
 					debug_note([
@@ -1099,6 +1096,8 @@
 				if ($error_code == 1062) {
 					throw new db_duplicate_entry_exception('An error has occurred with the database.', $error . $hidden_info);
 				}
+
+				config::set('db.error_thrown', true); // Don't throw again, it can create an infinite loop
 
 				throw new error_exception('An error has occurred with the database.', $error . $hidden_info);
 
