@@ -205,6 +205,10 @@
 				return $this->request($url, 'PUT', $data);
 			}
 
+			public function patch($url, $data = '') {
+				return $this->request($url, 'PATCH', $data);
+			}
+
 			public function delete($url, $data = '') {
 				return $this->request($url, 'DELETE', $data);
 			}
