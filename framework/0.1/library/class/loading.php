@@ -50,6 +50,7 @@
 							'lock_type'         => NULL,
 							'lock_ref'          => NULL,
 							'csp_directives'    => NULL,
+							'css_path'          => '/a/css/global/loading.css',
 						);
 
 					$default_config = array_merge($default_config, config::get_all('loading.default'));
@@ -440,9 +441,8 @@
 
 						} else {
 
-							$css_file = '/css/global/loading.css';
-							if (is_file(ASSET_ROOT . $css_file)) {
-								$css_url = timestamp_url(ASSET_URL . '/css/global/loading.css');
+							if (is_file(PUBLIC_ROOT . $this->config['css_path'])) {
+								$css_url = timestamp_url($this->config['css_path']);
 								$css_html = '<link rel="stylesheet" type="text/css" href="' . html($css_url) . '" media="all" />';
 								if (is_array($this->config['csp_directives'])) {
 									$this->config['csp_directives']['style-src'][] = $css_url;
