@@ -128,10 +128,10 @@ If you want to change the layout/content of the loading page, use these files:
 			<link rel="stylesheet" type="text/css" href="<?= html(timestamp_url('/a/css/global/loading.css')) ?>" media="all" />
 		</head>
 		<body>
-			<div id="page_content" role="main">
+			<main id="page_content">
 				<h1>Loading</h1>
 				<p>[MESSAGE]... [[TIME_START]]</p>
-			</div>
+			</main>
 		</body>
 		</html>
 

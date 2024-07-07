@@ -28,13 +28,13 @@
 
 	<div id="page_wrapper">
 
-		<header id="page_header" role="banner">
+		<header id="page_header">
 			<h1><a href="/"><?= html($response->title_get()) ?></a></h1>
 		</header>
 
 		<div id="page_container">
 
-			<nav id="page_navigation" role="navigation">
+			<nav id="page_navigation">
 
 				<h2>Navigation</h2>
 
@@ -42,7 +42,7 @@
 
 			</nav>
 
-			<main id="page_content" role="main">
+			<main id="page_content">
 
 
 

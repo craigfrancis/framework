@@ -22,15 +22,15 @@ After the output from the [view](../../doc/setup/views.md) or [units](../../doc/
 	</head>
 	<body>
 
-		<header id="page_header" role="banner">
+		<header id="page_header">
 			<p><img src="/a/img/logo.png" alt="Site Logo" /></p>
 		</header>
 
-		<nav id="page_navigation" role="navigation">
+		<nav id="page_navigation">
 			<?= $nav->html(); ?>
 		</nav>
 
-		<main id="page_content" role="main">
+		<main id="page_content">
 			<?= $response->view_get_html(); ?>
 		</main>
 

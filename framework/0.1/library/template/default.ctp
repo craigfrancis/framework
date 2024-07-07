@@ -93,13 +93,13 @@
 
 	<div id="page_wrapper">
 
-		<header id="page_header" role="banner">
+		<header id="page_header">
 			<h1><?= html($response->title_get()) ?></h1>
 		</header>
 
 		<div id="page_container">
 
-			<nav id="page_navigation" role="navigation">
+			<nav id="page_navigation">
 
 				<h2>Site Navigation</h2>
 
@@ -107,7 +107,7 @@
 
 			</nav>
 
-			<main id="page_content" role="main">
+			<main id="page_content">
 
 
 
