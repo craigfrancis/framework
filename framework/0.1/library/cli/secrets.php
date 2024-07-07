@@ -172,6 +172,39 @@
 						//
 						// }
 
+						//--------------------------------------------------
+						//
+						// 	if ($this->key_value || $this->key_value === NULL) {
+						//
+						// 		// The key value has been set, or is NULL (use the API)
+						//
+						// 	} else if ($action !== 'check') {
+						//
+						// 		echo "\n";
+						// 		echo 'Cannot access config key file ' . $this->key_path . "\n";
+						// 		echo "\n";
+						// 		echo 'Either:' . "\n";
+						// 		echo '1) Set $config[\'output.domain\']' . "\n";
+						// 		echo '2) Run via sudo' . "\n";
+						// 		echo '3) Enter the key' . "\n";
+						// 		echo "\n";
+						// 		echo 'Key: ';
+						// 		$this->key_value = $this->key_cleanup(fgets(STDIN));
+						//
+						// 		if ($this->key_value === '') {
+						// 			echo "\n";
+						// 			if (is_readable($this->key_path)) {
+						// 				echo 'Empty key file: ' . $this->key_path . "\n";
+						// 				echo "\n";
+						// 				$this->key_example_print();
+						// 			}
+						// 			exit();
+						// 		}
+						//
+						// 	}
+						//
+						//--------------------------------------------------
+
 				//--------------------------------------------------
 				// Action
 
