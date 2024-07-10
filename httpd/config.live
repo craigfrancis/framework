@@ -26,12 +26,11 @@
 
 		RewriteRule ^/\.well-known/acme-challenge/(.*)$ /etc/acme/public/$1 [END]
 
+		RewriteRule ^(.*)/[0-9]{10}-([^/]+)$ $1/$2 [env=immutable]
+
 		RewriteCond %{REQUEST_FILENAME} !/original/
 		RewriteRule ^/a/files/(.*) /www/live/craig.framework/files/$1 [S=1]
 		RewriteRule ^(.*)$ %{DOCUMENT_ROOT}$1
-
-		RewriteCond $1/$2 -f
-		RewriteRule ^(.*)/[0-9]+-([^/]+)$ $1/$2 [L,env=immutable]
 
 		RewriteCond %{REQUEST_FILENAME} !^/a/files/
 		RewriteCond %{REQUEST_FILENAME} !-d
