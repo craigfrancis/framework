@@ -53,9 +53,12 @@
 					$this->value_provided = false;
 
 					if (is_array($this->value)) {
-						foreach ($this->value as $value) {
+						foreach ($this->value as $field => $value) {
 							if ($value !== NULL && $value !== '') {
-								$this->value_provided = true; // Only look for one non-blank value (allowing '0'), as the 'seconds' field probably does not exist.
+								if ($field !== 'H' && $this->value['H'] === '' && $value == 0) {
+									continue; // Special case, if the 'hours' is *blank* (0 is a value for midnight), then the 'minutes' or 'seconds' could be 0, but that can be treated as non-values (e.g. user has set the hours drop down to blank, and left minutes at '00').
+								}
+								$this->value_provided = true; // Look for one non-blank value (i.e. treat '0' as a value); also the 'seconds' field probably does not exist.
 								break;
 							}
 						}
