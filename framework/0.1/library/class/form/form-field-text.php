@@ -73,6 +73,10 @@
 				$this->input_size = $input_size;
 			}
 
+			public function input_mode_set($input_mode) {
+				$this->input_mode = $input_mode;
+			}
+
 			public function input_list_set($options, $id = NULL) {
 				if (count($options) > 0) {
 

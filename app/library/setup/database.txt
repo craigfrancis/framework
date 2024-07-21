@@ -3,13 +3,13 @@
         "fields": {
             "id": {
                 "type": "int",
-                "length": "11",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "auto_increment",
                 "options": null,
-                "definition": "int(11) NOT NULL auto_increment"
+                "definition": "int NOT NULL auto_increment"
             },
             "name": {
                 "type": "tinytext",
@@ -126,13 +126,13 @@
             },
             "number": {
                 "type": "int",
-                "length": "11",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "",
                 "options": null,
-                "definition": "int(11) NOT NULL"
+                "definition": "int NOT NULL"
             },
             "amount": {
                 "type": "float",
@@ -207,7 +207,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 }
             }
         }
@@ -216,63 +217,63 @@
         "fields": {
             "id": {
                 "type": "int",
-                "length": "11",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "auto_increment",
                 "options": null,
-                "definition": "int(11) NOT NULL auto_increment"
+                "definition": "int NOT NULL auto_increment"
             },
             "type_tinyint": {
                 "type": "tinyint",
-                "length": "4",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "",
                 "options": null,
-                "definition": "tinyint(4) NOT NULL"
+                "definition": "tinyint NOT NULL"
             },
             "type_smallint": {
                 "type": "smallint",
-                "length": "6",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "",
                 "options": null,
-                "definition": "smallint(6) NOT NULL"
+                "definition": "smallint NOT NULL"
             },
             "type_mediumint": {
                 "type": "mediumint",
-                "length": "9",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "",
                 "options": null,
-                "definition": "mediumint(9) NOT NULL"
+                "definition": "mediumint NOT NULL"
             },
             "type_int": {
                 "type": "int",
-                "length": "11",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "",
                 "options": null,
-                "definition": "int(11) NOT NULL"
+                "definition": "int NOT NULL"
             },
             "type_bigint": {
                 "type": "bigint",
-                "length": "20",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "",
                 "options": null,
-                "definition": "bigint(20) NOT NULL"
+                "definition": "bigint NOT NULL"
             },
             "type_char5": {
                 "type": "char",
@@ -442,7 +443,7 @@
                 "default": null,
                 "extra": "",
                 "options": null,
-                "definition": "year(4) NOT NULL"
+                "definition": "year NOT NULL"
             },
             "type_bool": {
                 "type": "tinyint",
@@ -525,7 +526,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 }
             }
         }
@@ -534,13 +536,13 @@
         "fields": {
             "id": {
                 "type": "int",
-                "length": "11",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "auto_increment",
                 "options": null,
-                "definition": "int(11) NOT NULL auto_increment"
+                "definition": "int NOT NULL auto_increment"
             },
             "name": {
                 "type": "tinytext",
@@ -660,13 +662,13 @@
             },
             "number": {
                 "type": "int",
-                "length": "11",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "",
                 "options": null,
-                "definition": "int(11) NOT NULL"
+                "definition": "int NOT NULL"
             },
             "amount": {
                 "type": "float",
@@ -735,7 +737,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 }
             }
         }
@@ -810,7 +813,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 },
                 "2": {
                     "non_unique": 0,
@@ -822,7 +826,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 },
                 "3": {
                     "non_unique": 0,
@@ -834,7 +839,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 },
                 "4": {
                     "non_unique": 0,
@@ -846,7 +852,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 }
             }
         }
@@ -855,13 +862,13 @@
         "fields": {
             "id": {
                 "type": "int",
-                "length": "11",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "auto_increment",
                 "options": null,
-                "definition": "int(11) NOT NULL auto_increment"
+                "definition": "int NOT NULL auto_increment"
             },
             "run_start": {
                 "type": "datetime",
@@ -896,7 +903,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 }
             },
             "run_end": {
@@ -910,7 +918,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 }
             }
         }
@@ -919,13 +928,13 @@
         "fields": {
             "id": {
                 "type": "int",
-                "length": "11",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "auto_increment",
                 "options": null,
-                "definition": "int(11) NOT NULL auto_increment"
+                "definition": "int NOT NULL auto_increment"
             },
             "job": {
                 "type": "varchar",
@@ -939,13 +948,13 @@
             },
             "run_id": {
                 "type": "int",
-                "length": "11",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "",
                 "options": null,
-                "definition": "int(11) NOT NULL"
+                "definition": "int NOT NULL"
             },
             "output": {
                 "type": "text",
@@ -980,7 +989,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 }
             },
             "job": {
@@ -994,7 +1004,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 },
                 "2": {
                     "non_unique": 1,
@@ -1006,7 +1017,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 }
             }
         }
@@ -1055,13 +1067,13 @@
             },
             "accuracy": {
                 "type": "int",
-                "length": "11",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "",
                 "options": null,
-                "definition": "int(11) NOT NULL"
+                "definition": "int NOT NULL"
             },
             "created": {
                 "type": "datetime",
@@ -1096,7 +1108,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 },
                 "2": {
                     "non_unique": 0,
@@ -1108,7 +1121,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 }
             }
         }
@@ -1158,7 +1172,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 }
             }
         }
@@ -1213,13 +1228,13 @@
             },
             "requests": {
                 "type": "int",
-                "length": "11",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "",
                 "options": null,
-                "definition": "int(11) NOT NULL"
+                "definition": "int NOT NULL"
             },
             "referrer": {
                 "type": "tinytext",
@@ -1264,7 +1279,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 }
             }
         }
@@ -1273,13 +1289,13 @@
         "fields": {
             "id": {
                 "type": "int",
-                "length": "11",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "auto_increment",
                 "options": null,
-                "definition": "int(11) NOT NULL auto_increment"
+                "definition": "int NOT NULL auto_increment"
             },
             "type": {
                 "type": "tinytext",
@@ -1354,7 +1370,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 }
             }
         }
@@ -1474,7 +1491,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 },
                 "2": {
                     "non_unique": 0,
@@ -1486,7 +1504,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 },
                 "3": {
                     "non_unique": 0,
@@ -1498,7 +1517,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 }
             }
         }
@@ -1507,13 +1527,13 @@
         "fields": {
             "id": {
                 "type": "int",
-                "length": "11",
+                "length": null,
                 "collation": null,
                 "null": false,
                 "default": null,
                 "extra": "auto_increment",
                 "options": null,
-                "definition": "int(11) NOT NULL auto_increment"
+                "definition": "int NOT NULL auto_increment"
             },
             "name": {
                 "type": "tinytext",
@@ -1665,7 +1685,8 @@
                     "index_type": "BTREE",
                     "comment": "",
                     "index_comment": "",
-                    "ignored": "NO"
+                    "visible": "YES",
+                    "expression": null
                 }
             }
         }
