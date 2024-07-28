@@ -100,6 +100,9 @@
 					unset($row['key_name']);
 					unset($row['seq_in_index']);
 					unset($row['cardinality']);
+					unset($row['visible']); // Only MySQL
+					unset($row['expression']); // Only MySQL
+					unset($row['ignored']); // Only MariaDB
 
 					if (isset($tables[$table]['keys'][$name][$seq])) {
 						exit_with_error('Duplicate key name "' . $name . '" in table "' . $table . '"');
