@@ -206,9 +206,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 }
             }
         }
@@ -525,9 +523,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 }
             }
         }
@@ -736,9 +732,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 }
             }
         }
@@ -812,9 +806,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 },
                 "2": {
                     "non_unique": 0,
@@ -825,9 +817,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 },
                 "3": {
                     "non_unique": 0,
@@ -838,9 +828,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 },
                 "4": {
                     "non_unique": 0,
@@ -851,9 +839,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 }
             }
         }
@@ -902,9 +888,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 }
             },
             "run_end": {
@@ -917,9 +901,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 }
             }
         }
@@ -988,9 +970,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 }
             },
             "job": {
@@ -1003,9 +983,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 },
                 "2": {
                     "non_unique": 1,
@@ -1016,9 +994,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 }
             }
         }
@@ -1107,9 +1083,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 },
                 "2": {
                     "non_unique": 0,
@@ -1120,9 +1094,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 }
             }
         }
@@ -1171,9 +1143,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 }
             }
         }
@@ -1278,9 +1248,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 }
             }
         }
@@ -1369,9 +1337,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 }
             }
         }
@@ -1490,9 +1456,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 },
                 "2": {
                     "non_unique": 0,
@@ -1503,9 +1467,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 },
                 "3": {
                     "non_unique": 0,
@@ -1516,9 +1478,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 }
             }
         }
@@ -1684,9 +1644,7 @@
                     "null": "",
                     "index_type": "BTREE",
                     "comment": "",
-                    "index_comment": "",
-                    "visible": "YES",
-                    "expression": null
+                    "index_comment": ""
                 }
             }
         }

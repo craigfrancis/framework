@@ -58,14 +58,20 @@
 
 			foreach ($db->fetch_all('SHOW TABLES') as $row) {
 
-				$table = prefix_replace(DB_PREFIX, '', array_pop($row));
+				$table_name = array_pop($row);
+
+				if (!str_starts_with($table_name, DB_PREFIX)) {
+					continue;
+				}
+
+				$table = prefix_replace(DB_PREFIX, '', $table_name);
 
 				$table_sql = $db->escape_table(DB_PREFIX . $table);
 
 				$fields = $db->fetch_fields($table_sql);
 
 				$field_names = array_keys($fields);
-				$field_names_sql = implode(', ', array_map(array($db, 'escape_field'), $field_names));
+				$field_names_sql = implode(', ', array_map([$db, 'escape_field'], $field_names));
 
 				$field_datetimes = [];
 				$field_dates = [];
@@ -77,7 +83,7 @@
 					}
 				}
 
-				$tables[$table] = array(
+				$tables[$table] = [
 						'name' => 'reset_' . $table,
 						'fields' => $fields,
 						'field_names' => $field_names,
@@ -86,7 +92,7 @@
 						'field_dates' => $field_dates,
 						'table_sql' => $table_sql,
 						'path' => $reset_001_path . '/' . safe_file_name(str_replace('_', '-', $table)) . '.php',
-					);
+					];
 
 			}
 
@@ -110,7 +116,7 @@
 
 					$files = [];
 					foreach (glob($folder . '/*.php') as $path) {
-						$table = str_replace('-', '_', str_replace(array($folder . '/', '.php'), '', $path));
+						$table = str_replace('-', '_', str_replace([$folder . '/', '.php'], '', $path));
 						if (isset($tables[$table])) {
 
 							$tables[$table]['path'] = $path;
@@ -191,7 +197,7 @@
 					if ($line == 'YES') {
 
 						$template = file_get_contents($framework_path . '/blank.php');
-						$auto_types = array('name', 'name_first', 'name_last', 'address_1');
+						$auto_types = ['name', 'name_title', 'name_first', 'name_last', 'address_1'];
 
 						foreach ($unknown_tables as $table) {
 
@@ -211,14 +217,14 @@
 										$value = '\'' . ($table == 'admin' ? 'admin' : 'user') . '-\' . $config[\'id\'],';
 									} else if ($field_name == 'email') {
 										$value = '$config[\'id\'] . \'@example.com\',';
-									} else if ($field_name == 'deleted') {
+									} else if ($field_name == 'deleted' || $field_name == 'archived') {
 										$value = '\'0000-00-00 00:00:00\',';
 									} else if ($field_name == 'edited') {
 										$value = '$this->helper->value_get(\'now\'),';
 									} else if ($field_name == 'created') {
-										$value = '$this->helper->value_get(\'timestamp\', array(\'from\' => \'-2 years\', \'to\' => \'now\')),';
+										$value = '$this->helper->value_get(\'timestamp\', [\'from\' => \'-2 years\', \'to\' => \'now\']),';
 									} else if (substr($field_name, -8) == 'postcode') {
-										$value = '$this->helper->value_get(\'postcode\', array(\'country\' => \'UK\')),';
+										$value = '$this->helper->value_get(\'postcode\', [\'country\' => \'UK\']),';
 									} else if (substr($field_name, -5) == 'phone' || substr($field_name, -6) == 'mobile') {
 										$value = '$this->helper->value_get(\'telephone\'),';
 									} else if (in_array($field_name, $auto_types)) {
@@ -258,11 +264,12 @@
 		// Get classes
 
 			$helper = new reset_db_helper(array(
-					'list_paths' => array(
+					'list_paths' => [
+							'name_title' => FRAMEWORK_ROOT . '/library/lists/names-title.txt', // Do you need a title?
 							'name_first' => FRAMEWORK_ROOT . '/library/lists/names-first.txt',
 							'name_last'  => FRAMEWORK_ROOT . '/library/lists/names-last.txt',
 							'address_1'  => FRAMEWORK_ROOT . '/library/lists/address-1.txt',
-						),
+						],
 				));
 
 			foreach ($table_rounds as $round_id => $round_tables) {
