@@ -173,8 +173,12 @@
 						}
 
 						if ($a_info_value != $b_info_value) {
-							$details[$table][] = 'Field: Changed "' . $a_field_name . '.' . $a_info_name . '" property ("' . $a_info_value . '" != "' . $b_info_value . '").';
-							continue;
+							if ($a_info_name == 'length' && (($a_info_value == '' && $b_info_value != '') || ($a_info_value != '' && $b_info_value == ''))) {
+								// Ignore, MySQL can omit the length if it's the default (MariaDB doesn't)
+							} else {
+								$details[$table][] = 'Field: Changed "' . $a_field_name . '.' . $a_info_name . '" property ("' . $a_info_value . '" != "' . $b_info_value . '").';
+								continue;
+							}
 						}
 
 					}
