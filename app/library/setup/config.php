@@ -82,9 +82,12 @@
 // Output
 
 	$config['output.site_name'] = 'PHP Prime';
-	$config['output.js_min'] = (SERVER != 'stage');
-	$config['output.css_min'] = (SERVER != 'stage');
+
 	$config['output.timestamp_url'] = true;
+	$config['output.integrity']     = ['script', 'style'];
+	$config['output.css_min']       = (SERVER != 'stage');
+	$config['output.js_min']        = (SERVER != 'stage');
+	$config['output.js_combine']    = false;
 
 //--------------------------------------------------
 // Security
