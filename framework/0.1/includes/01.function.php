@@ -1843,10 +1843,13 @@
 					if ($csp === 'img') {
 						$default['img-src'] = (isset($config['url']) ? $config['url'] : "'self'");
 						$default['style-src'] = "'unsafe-inline'"; // For Chrome inline viewing
+						$default['trusted-types'] = [];
 					} else if ($csp === 'pdf') {
 						$default['img-src'] = ['/favicon.ico'];
+						$default['style-src'] = "'unsafe-inline'"; // For Safari inline viewing, https://bugs.webkit.org/show_bug.cgi?id=277416
 						$default['object-src'] = (isset($config['url']) ? $config['url'] : "'self'");
 						$default['plugin-types'] = 'application/pdf';
+						$default['trusted-types'] = [];
 					}
 				}
 				$csp = $default;
