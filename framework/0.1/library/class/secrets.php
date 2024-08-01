@@ -444,12 +444,27 @@
 				$now = new DateTime(); // timestamp not found during setup
 				$now = $now->format('c');
 
+				$max_history = new DateTime('-3 months');
+
 				$key = getenv('PRIME_CONFIG_KEY');
 
 				$store = [
 						'values' => [],
-						'archive' => $obj->archive,
+						'archive' => [],
 					];
+
+				foreach ($obj->archive as $name => $entries) {
+					foreach ($entries as $time => $entry) {
+						try {
+							$time = new DateTime($time);
+							if ($time > $max_history) {
+								$store['archive'][$name][$time->format('c')] = $entry;
+							}
+						} catch (exception $e) {
+						}
+					}
+				}
+				ksort($store['archive']);
 
 				foreach ($obj->variables as $n => $info) {
 
@@ -464,7 +479,21 @@
 						$new['value'] = encryption::encode($info['value'], $key);
 
 						if (count($info['history'] ?? []) > 0) {
-							$new['history'] = $info['history'];
+							$new['history'] = [];
+							foreach ($info['history'] as $time => $entry) {
+								try {
+									$time = new DateTime($time);
+									if ($time > $max_history) {
+										$new['history'][$time->format('c')] = $entry;
+									}
+								} catch (exception $e) {
+								}
+							}
+							if (count($new['history']) > 0) {
+								ksort($new['history']);
+							} else {
+								unset($new['history']);
+							}
 						}
 
 					} else if ($info['type'] === 'key') {
