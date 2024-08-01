@@ -233,6 +233,10 @@
 
 							$obj->variables[$name]['value'] = $data['value'];
 
+							if (count($data['history'] ?? []) > 0) {
+								$obj->variables[$name]['history'] = $data['history'];
+							}
+
 						} else if ($info['type'] === 'key') {
 
 							$obj->variables[$name]['key_type'] = $data['key_type'];
@@ -353,6 +357,23 @@
 					throw new error_exception('Cannot set the secret value "' . $name . '" to NULL');
 				}
 
+				if (($obj->variables[$name]['value'] ?? NULL) !== NULL) {
+
+					$time = ($obj->variables[$name]['edited'] ?? NULL);
+					if ($time === NULL) {
+						$time = ($obj->variables[$name]['created'] ?? NULL);
+					}
+					if ($time === NULL) {
+						$time = new timestamp();
+						$time = $now->format('c');
+					}
+
+					$key = getenv('PRIME_CONFIG_KEY');
+
+					$obj->variables[$name]['history'][$time] = encryption::encode($obj->variables[$name]['value'], $key);
+
+				}
+
 				$obj->variables[$name]['value'] = $value;
 				$obj->variables[$name]['edited'] = NULL;
 
@@ -441,6 +462,10 @@
 						}
 
 						$new['value'] = encryption::encode($info['value'], $key);
+
+						if (count($info['history'] ?? []) > 0) {
+							$new['history'] = $info['history'];
+						}
 
 					} else if ($info['type'] === 'key') {
 
