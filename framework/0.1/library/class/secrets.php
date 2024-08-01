@@ -18,6 +18,7 @@
 		// Variables
 
 			private $variables = NULL;
+			private $archive = NULL;
 			private $file_path = NULL;
 
 		//--------------------------------------------------
@@ -199,13 +200,28 @@
 
 					$data_store = json_decode($data_content, true);
 
+					$re_save = false;
+
 					if (!is_array($data_store)) {
 						throw new error_exception('Parse error when trying to decode secret data', $data_path);
 					}
 
+					$obj->archive = ($data_store['archive'] ?? []);
+
 					foreach ($obj->variables as $name => $info) {
 
-						$data = ($data_store[$name] ?? NULL);
+						$data = ($data_store['values'][$name] ?? NULL);
+
+						if ($data === NULL && array_key_exists($name, $obj->archive)) { // Value missing, but can be restored from the archive.
+							ksort($obj->archive[$name]);
+							$data = end($obj->archive[$name]);
+							$time = key($obj->archive[$name]);
+							unset($obj->archive[$name][$time]);
+							if (count($obj->archive[$name]) == 0) {
+								unset($obj->archive[$name]);
+							}
+							$re_save = true;
+						}
 
 						if ($info['type'] === 'value') {
 
@@ -231,6 +247,23 @@
 						$obj->variables[$name]['created'] = ($data['created'] ?? NULL);
 						$obj->variables[$name]['edited']  = ($data['edited']  ?? NULL);
 
+					}
+
+					foreach (($data_store['values'] ?? []) as $name => $info) { // Values not used, move to the archive
+						if (!array_key_exists($name, $obj->variables)) {
+
+							$now = new DateTime(); // timestamp not found during setup
+							$now = $now->format('c');
+
+							$obj->archive[$name][$now] = $info;
+
+							$re_save = true;
+
+						}
+					}
+
+					if ($re_save) {
+						self::data_save($obj);
 					}
 
 			}
@@ -387,12 +420,16 @@
 
 			private static function data_save($obj) {
 
-				$now = new timestamp();
+				$now = new DateTime(); // timestamp not found during setup
 				$now = $now->format('c');
 
 				$key = getenv('PRIME_CONFIG_KEY');
 
-				$store = [];
+				$store = [
+						'values' => [],
+						'archive' => $obj->archive,
+					];
+
 				foreach ($obj->variables as $n => $info) {
 
 					$new = ['type' => $info['type']];
@@ -431,7 +468,7 @@
 					$new['created'] = $obj->variables[$n]['created'];
 					$new['edited']  = $obj->variables[$n]['edited'];
 
-					$store[$n] = $new;
+					$store['values'][$n] = $new;
 
 				}
 
