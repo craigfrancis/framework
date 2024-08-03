@@ -147,10 +147,12 @@
 				//--------------------------------------------------
 				// File
 
-					$data_folder     = config::get('secrets.folder') . '/data';
-					$data_path       = NULL;
-					$data_content    = NULL;
-					$data_identifier = NULL;
+					$data_folder        = config::get('secrets.folder') . '/data';
+					$data_prefix        = safe_file_name(config::get('secrets.prefix', SERVER) . '-');
+					$data_prefix_length = strlen($data_prefix);
+					$data_path          = NULL;
+					$data_content       = NULL;
+					$data_identifier    = NULL;
 
 					$key = getenv('PRIME_CONFIG_KEY');
 
@@ -163,8 +165,12 @@
 						$files = [];
 						if (($handle = opendir($data_folder)) !== false) {
 							while (($file = readdir($handle)) !== false) {
-								if (substr($file, 0, 1) != '.') {
-									$files[$file] = $data_folder . '/' . $file;
+								if (substr($file, 0, $data_prefix_length) === $data_prefix) {
+
+									$identifier = substr($file, $data_prefix_length);
+
+									$files[$identifier] = $data_folder . '/' . $file;
+
 								}
 							}
 							closedir($handle);
