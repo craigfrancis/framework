@@ -18,7 +18,7 @@
 		// Variables
 
 			private $variables = NULL;
-			private $archive = NULL;
+			private $archive = [];
 			private $file_path = NULL;
 
 		//--------------------------------------------------
