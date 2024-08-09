@@ -157,7 +157,7 @@
 					$key = getenv('PRIME_CONFIG_KEY');
 
 					if (!$key) {
-						exit('Missing environment variable "PRIME_CONFIG_KEY"');
+						exit('Missing environment variable "PRIME_CONFIG_KEY"' . "\n");
 					}
 
 					if (is_dir($data_folder) && is_readable($data_folder)) {
