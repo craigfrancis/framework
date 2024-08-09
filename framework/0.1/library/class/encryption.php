@@ -859,7 +859,7 @@
 			private static function _key_get($name, $key_id = NULL, $asymmetric_type = NULL) {
 
 				if (!is_string($name)) {
-					throw new error_exception('The encryption key must be a string, not an ' . gettype($name) . '.', debug_dump($name));
+					throw new error_exception('The encryption key must be a string, not an ' . gettype($name) . '.', print_r($name, true));
 				}
 
 				if (strlen($name) > self::$key_name_max_length) { // Quick way to identify key_name vs key_encoded

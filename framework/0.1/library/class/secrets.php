@@ -272,9 +272,9 @@
 						}
 					}
 
-					if ($re_save) {
-						self::data_save($obj);
-					}
+					// if ($re_save) {
+					// 	self::data_save($obj);
+					// }
 
 			}
 
