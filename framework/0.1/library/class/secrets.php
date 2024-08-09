@@ -156,7 +156,11 @@
 
 					$key = getenv('PRIME_CONFIG_KEY');
 
-					if ($key && is_dir($data_folder) && is_readable($data_folder)) {
+					if (!$key) {
+						exit('Missing environment variable "PRIME_CONFIG_KEY"');
+					}
+
+					if (is_dir($data_folder) && is_readable($data_folder)) {
 
 							// The identifier allows us to identify which of the data files to use.
 							// Primarily to allow rotation of PRIME_CONFIG_KEY, but also check
