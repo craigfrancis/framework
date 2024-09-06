@@ -309,33 +309,7 @@ Abbreviations:
 								foreach ($this->_file_db_get('remove') as $file_id => $file) {
 									if (isset($file['info']['eh'])) {
 
-										//--------------------------------------------------
-										// Remove from AWS
-
-debug('AWS DELETE: ' . $file_id . ' = ' . $file['info']['eh']);
-
-											$this->_aws_request([
-													'method'         => 'DELETE',
-													'encrypted_hash' => $file['info']['eh'],
-												]);
-
-										//--------------------------------------------------
-										// Record as removed
-
-											$sql = 'UPDATE
-														' . $this->config['table_sql'] . ' AS f
-													SET
-														f.removed = ?
-													WHERE
-														f.id = ? AND
-														f.removed = "0000-00-00 00:00:00" AND
-														f.deleted = f.deleted';
-
-											$parameters = [];
-											$parameters[] = $now;
-											$parameters[] = $file_id;
-
-											$db->query($sql, $parameters);
+										$this->_file_remove($file_id, $file['info']['eh']);
 
 									}
 								}
@@ -854,6 +828,79 @@ debug('Removed File: ' . $matches[1]);
 					$parameters = [];
 					$parameters[] = timestamp();
 					$parameters[] = intval($file_id);
+
+					$db->query($sql, $parameters);
+
+			}
+
+		//--------------------------------------------------
+		// File remove
+
+			public function file_remove($file_id) {
+
+				$file_id = intval($file_id);
+
+				$file = $this->_file_db_get($file_id);
+
+debug($file);
+exit();
+
+				if ($file === NULL) {
+
+					return NULL;
+
+				} else if (isset($file['info']['eh'])) {
+
+					$this->_file_remove($file_id, $file['info']['eh']);
+
+					return true;
+
+				} else {
+
+					return false;
+
+				}
+
+			}
+
+			private function _file_remove($file_id, $file_encrypted_hash) {
+
+				//--------------------------------------------------
+				// Not available on the backup server
+
+					if ($this->config['backup_root'] !== NULL) {
+						throw new error_exception('On the backup server, a bucket file cannot be removed.');
+					}
+
+				//--------------------------------------------------
+				// Remove from AWS
+
+debug('AWS DELETE: ' . $file_id . ' = ' . $file_encrypted_hash);
+
+					$this->_aws_request([
+							'method'         => 'DELETE',
+							'encrypted_hash' => $file_encrypted_hash,
+						]);
+
+				//--------------------------------------------------
+				// Record as removed
+
+					$db = db_get();
+
+					$now = new timestamp();
+
+					$sql = 'UPDATE
+								' . $this->config['table_sql'] . ' AS f
+							SET
+								f.removed = ?
+							WHERE
+								f.id = ? AND
+								f.removed = "0000-00-00 00:00:00" AND
+								f.deleted = f.deleted';
+
+					$parameters = [];
+					$parameters[] = $now;
+					$parameters[] = $file_id;
 
 					$db->query($sql, $parameters);
 
