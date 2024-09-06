@@ -842,14 +842,16 @@ debug('Removed File: ' . $matches[1]);
 
 				$file = $this->_file_db_get($file_id);
 
-debug($file);
-exit();
-
 				if ($file === NULL) {
 
 					return NULL;
 
 				} else if (isset($file['info']['eh'])) {
+
+					$plain_path = $this->_file_path_get('pf', $file['info']['ph']);
+					if (is_file($plain_path)) {
+						unlink($plain_path);
+					}
 
 					$this->_file_remove($file_id, $file['info']['eh']);
 
@@ -884,6 +886,9 @@ debug('AWS DELETE: ' . $file_id . ' = ' . $file_encrypted_hash);
 
 				//--------------------------------------------------
 				// Record as removed
+
+						// Do not clear `info`, the backup server needs
+						// to know the 'eh' to remove the file.
 
 					$db = db_get();
 
