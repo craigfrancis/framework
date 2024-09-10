@@ -193,7 +193,7 @@
 
 					if ($data_path === NULL) {
 						$data_identifier = encryption::key_identifier_get($key);
-						$data_path = $data_folder . '/' . safe_file_name($data_identifier);
+						$data_path = $data_folder . '/' . safe_file_name($data_prefix . $data_identifier);
 					}
 
 					$obj->file_path = $data_path;
