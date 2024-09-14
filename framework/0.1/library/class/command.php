@@ -146,7 +146,7 @@
 					$run_direct = false; // Needs a shell
 				}
 
-				if (substr($executable, 1) !== '/') {
+				if (substr($executable, 0, 1) !== '/') {
 					$paths = ($this->paths ?? explode(':', ($_SERVER['PATH'] ?? '')));
 					foreach ($paths as $path) {
 						$test = $path . '/' . $executable;
