@@ -43,21 +43,17 @@
 
 					$data_folder = config::get('secrets.folder') . '/data';
 
-					foreach ([dirname(dirname($data_folder)), dirname($data_folder), $data_folder] as $folder) {
-
-						if (!is_dir($folder)) {
-							mkdir($folder, 0755);
-							if (!is_dir($folder)) {
-								throw new error_exception('Could not create a folder for the encryption keys', $folder);
-							}
+					if (!is_dir($data_folder)) {
+						mkdir($data_folder, 0755);
+						if (!is_dir($data_folder)) {
+							throw new error_exception('Could not create a folder for the secrets data', $data_folder);
 						}
+					}
 
-						if (!is_writable($folder)) {
-							$account_owner = posix_getpwuid(fileowner($folder));
-							$account_process = posix_getpwuid(posix_geteuid());
-							throw new error_exception('The encryption keys folder cannot be written to (check ownership).', $folder . "\n" . 'Current owner: ' . $account_owner['name'] . "\n" . 'Current process: ' . $account_process['name']);
-						}
-
+					if (!is_writable($data_folder)) {
+						$account_owner = posix_getpwuid(fileowner($data_folder));
+						$account_process = posix_getpwuid(posix_geteuid());
+						throw new error_exception('The secrets data folder cannot be written to (check ownership).', $data_folder . "\n" . 'Current owner: ' . $account_owner['name'] . "\n" . 'Current process: ' . $account_process['name']);
 					}
 
 				//--------------------------------------------------
