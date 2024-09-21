@@ -452,7 +452,7 @@
 							}
 
 							$contents_html = '<!DOCTYPE html>
-								<html lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
+								<html id="p_loading" lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
 								<head>
 									<meta charset="' . html(config::get('output.charset')) . '" />
 									<title>Loading</title>
