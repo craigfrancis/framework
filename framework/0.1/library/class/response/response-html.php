@@ -1037,7 +1037,7 @@
 
 					unset($message['tag'], $message['text']);
 
-					return html_tag($tag, $message) . $text . '</' . html($tag) . '>';
+					return html_tag($tag, $message) . html($text) . '</' . html($tag) . '>';
 
 				} else {
 
