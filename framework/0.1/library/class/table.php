@@ -107,8 +107,13 @@
 			}
 
 			public function caption_set($caption) {
-				$this->caption_text = $caption;
-				$this->caption_html = NULL;
+				if ($caption instanceof html_template || $caption instanceof html_safe_value) {
+					$this->caption_text = NULL;
+					$this->caption_html = $caption;
+				} else {
+					$this->caption_text = $caption;
+					$this->caption_html = NULL;
+				}
 			}
 
 			public function caption_set_html($caption_html) {
