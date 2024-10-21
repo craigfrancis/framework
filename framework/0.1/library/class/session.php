@@ -140,6 +140,17 @@
 			if (config::get('session.id') === NULL) { // Cannot call session_id() to see if the session exists, as it's not reset on session_write_close().
 
 				//--------------------------------------------------
+				// Log start
+
+					// $log = config::get('request.uri');
+					// foreach (debug_backtrace() as $called_from) {
+					// 	if (isset($called_from['file'])) {
+					// 		$log .= "\n" . $called_from['file'] . ':' . $called_from['line'];
+					// 	}
+					// }
+					// error_log($log . "\n");
+
+				//--------------------------------------------------
 				// Config
 
 					$session_name = config::get('session.name');
