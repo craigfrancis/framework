@@ -186,7 +186,7 @@
 
 							if (config::get('debug.level') > 0) {
 
-								if (SERVER == 'stage' && function_exists('is_literal') && !is_literal($this->source_html)) {
+								if (SERVER == 'stage' && function_exists('is_literal') && !is_literal($this->source_html) && config::get('html_template.unsafe_disable_literal_check', false) !== true) {
 									foreach (debug_backtrace() as $called_from) {
 										if (isset($called_from['file']) && !str_starts_with($called_from['file'], FRAMEWORK_ROOT)) {
 											break;
