@@ -372,6 +372,10 @@
 
 	}
 
+	if (PHP_INIT_ERROR) {
+		config::array_push('debug.errors', sprintf('PHP %s: %s in %s on line %d', PHP_INIT_ERROR['type'], PHP_INIT_ERROR['message'], PHP_INIT_ERROR['file'], PHP_INIT_ERROR['line']));
+	}
+
 //--------------------------------------------------
 // Error handler
 

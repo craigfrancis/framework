@@ -10,6 +10,8 @@
 
 	error_reporting(E_ALL); // Don't you dare change this (instead you should learn to program properly).
 
+	define('PHP_INIT_ERROR', error_get_last());
+
 //--------------------------------------------------
 // Version
 
