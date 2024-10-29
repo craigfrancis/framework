@@ -490,7 +490,7 @@
 						if ($value['label'] == '' && $value['text'] == '') {
 
 							$this->body_html .= ' <tr><td colspan="2">&#xA0;</td></tr>' . "\n";
-							$this->body_text .= "\n\n";
+							$this->body_text .= "\n";
 
 						} else {
 
