@@ -324,7 +324,7 @@
 				$uri = config::get('request.uri');
 				$url = http_url();
 
-				$request_values = [
+				$request_values_1 = [
 						'Sent'      => date($config['date_format']),
 						'Loaded'    => NULL,
 						'Website'   => config::get('output.origin'),
@@ -333,6 +333,9 @@
 								'text' => $uri,
 								'html' => '<a href="' . html($url) . '">' . html($uri) . '</a>',
 							],
+					];
+
+				$request_values_2 = [
 						'Referrer'  => config::get('request.referrer'),
 						'Remote'    => config::get('request.ip'),
 						'Reference' => config::get('response.ref'),
@@ -343,9 +346,9 @@
 					$original_time = date($config['date_format'], $original_time) . ' (' . timestamp_to_human((time() - $original_time), 2, true) . ')';
 				}
 				if ($original_time !== NULL) {
-					$request_values['Loaded'] = $original_time;
+					$request_values_1['Loaded'] = $original_time;
 				} else {
-					unset($request_values['Loaded']); // Temporary
+					unset($request_values_1['Loaded']); // Temporary
 				}
 
 				if ($config['inc_post_data'] === true && config::get('request.method') == 'POST') {
@@ -355,7 +358,7 @@
 							$post_values[$remove] = '[REMOVED]';
 						}
 					}
-					$request_values['Post'] = json_encode($post_values, JSON_PRETTY_PRINT);
+					$request_values_2['Post'] = json_encode($post_values, JSON_PRETTY_PRINT);
 				}
 
 				$files = $config['inc_files'];
@@ -394,10 +397,10 @@
 							$value .= "\n\n" . wordwrap(base64_encode($data), 75, "\n", true);
 						}
 					}
-					$request_values['File ' . ($id + 1)] = $value;
+					$request_values_2['File ' . ($id + 1)] = $value;
 				}
 
-				$this->values_table_add(array_merge($request_values, $values));
+				$this->values_table_add(array_merge($request_values_1, $values, $request_values_2));
 
 			}
 

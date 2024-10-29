@@ -353,6 +353,7 @@
 		if ($error_email && is_array($errors) && count($errors) > 0) {
 
 			$email_values = config::get('debug.report_values', []);
+			$email_values['Errors'] = implode("\n", $errors);
 
 			$email = new email();
 			$email->default_style_set(NULL);
@@ -362,8 +363,6 @@
 					'inc_post_data' => true,
 					'inc_post_files' => true,
 				]);
-			$email->body_add("\n" . implode("\n", $errors));
-
 			$email->send($error_email);
 
 		}
