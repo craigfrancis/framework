@@ -372,19 +372,30 @@
 
 	}
 
-	if (PHP_INIT_ERROR) {
-		config::array_push('debug.errors', sprintf('PHP %s: %s in %s on line %d', PHP_INIT_ERROR['type'], PHP_INIT_ERROR['message'], PHP_INIT_ERROR['file'], PHP_INIT_ERROR['line']));
-	}
-
 //--------------------------------------------------
 // Error handler
 
-	function error_handler($err_no, $err_str, $err_file, $err_line, $err_context = NULL) {
+	function error_handler($error) {
+
+		//--------------------------------------------------
+		// Defaults
+
+			$error = array_merge([
+					'number'      => 0,
+					'type'        => NULL,
+					'string'      => '',
+					'file'        => '',
+					'line'        => 0,
+					'context'     => NULL,
+					'log_display' => ini_get('display_errors'),
+					'log_file'    => ini_get('log_errors'),
+					'log_email'   => ini_get('log_errors'),
+				], $error);
 
 		//--------------------------------------------------
 		// If disabled
 
-			if (!(error_reporting() & $err_no)) { // No longer 0 for the @ operator in PHP 8 https://www.php.net/manual/en/migration80.incompatible.php#:~:text=The%20%40%20operator%20will%20no%20longer%20silence
+			if (!(error_reporting() & $error['number'])) { // No longer 0 for the @ operator in PHP 8 https://www.php.net/manual/en/migration80.incompatible.php#:~:text=The%20%40%20operator%20will%20no%20longer%20silence
 				return;
 			}
 
@@ -400,10 +411,10 @@
 						//   ini_set('display_errors', false); - see http://insomanic.me.uk/post/191397106
 						//   html('Testing: ' . chr(254));
 
-						$err_line = $called_from['line'];
-						$err_file = $called_from['file'];
+						$error['line'] = $called_from['line'];
+						$error['file'] = $called_from['file'];
 
-						$err_str .= ' (' . (isset($called_from['args'][0]) ? $called_from['args'][0] : 'NULL') . ')';
+						$error['string'] .= ' (' . (isset($called_from['args'][0]) ? $called_from['args'][0] : 'NULL') . ')';
 
 					}
 
@@ -417,73 +428,83 @@
 
 				// https://github.com/php/php-src/blob/8d0345d94ef98bfe29df264b338aeef16ddefda9/main/main.c#L1286
 
-			switch ($err_no) {
-				case E_ERROR:
-				case E_CORE_ERROR:
-				case E_COMPILE_ERROR:
-				case E_USER_ERROR:
-					$error_type = 'Fatal error';
-					break;
-				case E_RECOVERABLE_ERROR:
-					$error_type = 'Recoverable fatal error';
-					break;
-				case E_WARNING:
-				case E_CORE_WARNING:
-				case E_COMPILE_WARNING:
-				case E_USER_WARNING:
-					$error_type = 'Warning';
-					break;
-				case E_PARSE:
-					$error_type = 'Parse error';
-					break;
-				case E_NOTICE:
-				case E_USER_NOTICE:
-					$error_type = 'Notice';
-					break;
-				case E_STRICT:
-					$error_type = 'Strict Standards';
-					break;
-				case E_DEPRECATED:
-				case E_USER_DEPRECATED:
-					$error_type = 'Deprecated';
-					break;
-				default:
-					$error_type = 'Unknown error';
-					break;
+			if (!$error['type']) {
+				switch ($error['number']) {
+					case E_ERROR:
+					case E_CORE_ERROR:
+					case E_COMPILE_ERROR:
+					case E_USER_ERROR:
+						$error['type'] = 'Fatal error';
+						break;
+					case E_RECOVERABLE_ERROR:
+						$error['type'] = 'Recoverable fatal error';
+						break;
+					case E_WARNING:
+					case E_CORE_WARNING:
+					case E_COMPILE_WARNING:
+					case E_USER_WARNING:
+						$error['type'] = 'Warning';
+						break;
+					case E_PARSE:
+						$error['type'] = 'Parse error';
+						break;
+					case E_NOTICE:
+					case E_USER_NOTICE:
+						$error['type'] = 'Notice';
+						break;
+					case E_STRICT:
+						$error['type'] = 'Strict Standards';
+						break;
+					case E_DEPRECATED:
+					case E_USER_DEPRECATED:
+						$error['type'] = 'Deprecated';
+						break;
+					default:
+						$error['type'] = 'Unknown error';
+						break;
+				}
 			}
 
 		//--------------------------------------------------
 		// Output
 
-			if (ini_get('display_errors')) {
-				echo "\n<br />\n<b>" . html($error_type) . '</b>: ' . html($err_str) . ' in <b>' . html($err_file) . '</b> on line <b>' . html($err_line) . '</b>';
+			if ($error['log_display']) {
+				echo "\n<br />\n<b>" . html($error['type']) . '</b>: ' . html($error['string']) . ' in <b>' . html($error['file']) . '</b> on line <b>' . html($error['line']) . '</b>';
 				echo "<br /><br />\n";
 			}
 
 		//--------------------------------------------------
 		// Log
 
-			if (ini_get('log_errors')) {
+			if ($error['log_file'] || $error['log_email']) {
 
-				$error_message = sprintf('PHP %s: %s in %s on line %d', $error_type, $err_str, $err_file, $err_line);
+				$error_message = sprintf('PHP %s: %s in %s on line %d', $error['type'], $error['string'], $error['file'], $error['line']);
 
-				error_log($error_message);
+				if ($error['log_file']) {
 
-				config::array_push('debug.errors', $error_message);
+					error_log($error_message);
 
-				if ($err_no === E_DEPRECATED && preg_match('/Passing null to parameter #.* of type .* is deprecated/', $err_str)) {
+				}
 
-					// The stupid NULL coercion problem in PHP 8.1
-					//    https://wiki.php.net/rfc/null_coercion_consistency
-					//
-					// Don't sent an email about it, just rely on the error_log(),
-					// and mass apply strval() once a week.
+				if ($error['log_email']) {
 
-				} else if (config::get('debug.error_shutdown_registered') !== true) {
+					config::array_push('debug.errors', $error_message);
 
-					config::set('debug.error_shutdown_registered', true);
+					if ($error['number'] === E_DEPRECATED && preg_match('/Passing null to parameter #.* of type .* is deprecated/', $error['string'])) {
 
-					register_shutdown_function('send_error_emails');
+						// The stupid NULL coercion problem in PHP 8.1
+						//    https://wiki.php.net/rfc/null_coercion_consistency
+						//
+						// Don't sent an email about it, just rely on the error_log(),
+						// and mass apply strval() once a week.
+
+					} else if (config::get('debug.error_shutdown_registered') !== true) {
+
+						config::set('debug.error_shutdown_registered', true);
+
+						register_shutdown_function('send_error_emails');
+
+					}
 
 				}
 
@@ -496,7 +517,30 @@
 
 	}
 
-	set_error_handler('error_handler');
+	set_error_handler(function($err_no, $err_str = '', $err_file = '', $err_line = 0, $err_context = NULL) {
+
+			error_handler([
+					'number'  => $err_no,
+					'string'  => $err_str,
+					'file'    => $err_file,
+					'line'    => $err_line,
+					'context' => $err_context,
+				]);
+
+		});
+
+	if (PHP_INIT_ERROR) { // Add the init error to 'debug.errors' (email)
+
+		error_handler([
+				'number'      => PHP_INIT_ERROR['type'],
+				'string'      => PHP_INIT_ERROR['message'],
+				'file'        => PHP_INIT_ERROR['file'],
+				'line'        => PHP_INIT_ERROR['line'],
+				'log_display' => false, // Already handled by PHP
+				'log_file'    => false, // Already handled by PHP
+			]);
+
+	}
 
 //--------------------------------------------------
 // Quick debug print of a variable
