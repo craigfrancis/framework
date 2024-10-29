@@ -994,8 +994,16 @@
 
 					$input_vars_max = intval(ini_get('max_input_vars'));
 
-					if ($input_vars_max > 0 && $input_vars_max <= count($_REQUEST)) {
+					if ($input_vars_max > 0 && count($_REQUEST) >= $input_vars_max) {
 						exit_with_error('The form submitted too many values for this server.', 'Maximum input variables: ' . $input_vars_max . ' (max_input_vars)');
+					}
+
+				//--------------------------------------------------
+				// Max file uploads
+
+					$file_uploads_max = intval(ini_get('max_file_uploads'));
+					if ($file_uploads_max > 0 && count($_FILES) >= $file_uploads_max && (PHP_INIT_ERROR['type'] ?? 0) === E_WARNING && strpos((PHP_INIT_ERROR['message'] ?? ''), 'Maximum number of allowable file uploads has been exceeded') !== NULL) {
+						exit_with_error('The form submitted too many values for this server.', 'Maximum file uploads: ' . $file_uploads_max . ' (max_file_uploads)');
 					}
 
 				//--------------------------------------------------

@@ -333,12 +333,12 @@
 								'text' => $uri,
 								'html' => '<a href="' . html($url) . '">' . html($uri) . '</a>',
 							],
-					];
-
-				$request_values_2 = [
 						'Referrer'  => config::get('request.referrer'),
 						'Remote'    => config::get('request.ip'),
 						'Reference' => config::get('response.ref'),
+					];
+
+				$request_values_2 = [
 					];
 
 				$original_time = request('o');
