@@ -100,7 +100,10 @@
 			if ($send_email && ($type == 'error' || $type == 'notice') && $error_email !== NULL) {
 
 				$email_values = config::get('debug.report_values', []);
-				$email_values = array_merge($email_values, array('Message' => $message));
+				$email_values['Message'] = $message;
+
+				// array_unshift($email_values, ['label' => '', 'text' => '']);
+				array_push($email_values, ['label' => '', 'text' => '']);
 
 					// config::array_push('debug.report_files', ['path' => '/path/to/file.csv']);
 					// config::array_push('debug.report_files', ['path' => '/path/to/file', 'name' => 'Example.csv', 'type' => 'text/plain']);
@@ -355,7 +358,7 @@
 			$email_values = config::get('debug.report_values', []);
 			$email_values['Errors'] = implode("\n", $errors);
 
-			array_unshift($email_values, ['label' => '', 'text' => '']);
+			// array_unshift($email_values, ['label' => '', 'text' => '']);
 			array_push($email_values, ['label' => '', 'text' => '']);
 
 			$email = new email();
