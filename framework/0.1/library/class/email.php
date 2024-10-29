@@ -487,12 +487,21 @@
 
 					foreach ($clean_values as $value) {
 
-						$this->body_html .= ' <tr><th align="left" valign="top">' . html($value['label']) . '</th><td valign="top">' . $value['html'] . '</td></tr>' . "\n";
+						if ($value['label'] == '' && $value['text'] == '') {
 
-						if (strpos($value['text'], "\n") === false) {
-							$this->body_text .= str_pad($value['label'] . ':', ($label_length + 2)) . $value['text'] . "\n";
+							$this->body_html .= ' <tr><td colspan="2">&#xA0;</td></tr>' . "\n";
+							$this->body_text .= "\n\n";
+
 						} else {
-							$this->body_text .= $value['label'] . ':- ' . "\n\n" . preg_replace('/^/m', '  ', preg_replace('/\r\n?/', "\n", wordwrap($value['text'], 70, "\n"))) . "\n\n";
+
+							$this->body_html .= ' <tr><th align="left" valign="top">' . html($value['label']) . '</th><td valign="top">' . $value['html'] . '</td></tr>' . "\n";
+
+							if (strpos($value['text'], "\n") === false) {
+								$this->body_text .= str_pad($value['label'] . ':', ($label_length + 2)) . $value['text'] . "\n";
+							} else {
+								$this->body_text .= $value['label'] . ':- ' . "\n\n" . preg_replace('/^/m', '  ', preg_replace('/\r\n?/', "\n", wordwrap($value['text'], 70, "\n"))) . "\n\n";
+							}
+
 						}
 
 					}

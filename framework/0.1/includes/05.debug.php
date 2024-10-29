@@ -354,6 +354,7 @@
 
 			$email_values = config::get('debug.report_values', []);
 			$email_values['Errors'] = implode("\n", $errors);
+			$email_values[] = ['label' => '', 'text' => ''];
 
 			$email = new email();
 			$email->default_style_set(NULL);
