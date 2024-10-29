@@ -1002,8 +1002,12 @@
 				// Max file uploads
 
 					$file_uploads_max = intval(ini_get('max_file_uploads'));
-					if ($file_uploads_max > 0 && count($_FILES) >= $file_uploads_max && (PHP_INIT_ERROR['type'] ?? 0) === E_WARNING && strpos((PHP_INIT_ERROR['message'] ?? ''), 'Maximum number of allowable file uploads has been exceeded') !== NULL) {
-						exit_with_error('The form submitted too many values for this server.', 'Maximum file uploads: ' . $file_uploads_max . ' (max_file_uploads)');
+					$file_upload_count = 0;
+					foreach ($_FILES as $file) {
+						$file_upload_count += (is_array($file['tmp_name']) ? count($file['tmp_name']) : 1);
+					}
+					if ($file_uploads_max > 0 && $file_upload_count >= $file_uploads_max && (PHP_INIT_ERROR['type'] ?? 0) === E_WARNING && strpos((PHP_INIT_ERROR['message'] ?? ''), 'Maximum number of allowable file uploads has been exceeded') !== NULL) {
+						exit_with_error('The form submitted too many values for this server.', 'File uploads: ' . $file_upload_count . ', max_file_uploads = ' . $file_uploads_max . "\n\n" . debug_dump($_FILES));
 					}
 
 				//--------------------------------------------------
