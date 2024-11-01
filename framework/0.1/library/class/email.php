@@ -400,6 +400,10 @@
 					$request_values_2['File ' . ($id + 1)] = $value;
 				}
 
+				if (count($values) > 0 && count($request_values_2) > 0) {
+					$values[] = ['label' => '', 'text' => '']; // A dividing line between any provided values, and any additional values.
+				}
+
 				$this->values_table_add(array_merge($request_values_1, $values, $request_values_2));
 
 			}
