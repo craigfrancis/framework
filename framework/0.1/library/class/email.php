@@ -27,6 +27,8 @@
 			protected $template_values_text = [];
 			protected $template_values_html = [];
 			protected $template_edit_function = NULL;
+			protected $head_html = '';
+			protected $head_html_safe = true;
 			protected $body_text = '';
 			protected $body_html = '';
 			protected $body_html_safe = true;
@@ -272,6 +274,21 @@
 						'id' => ($id !== NULL ? $id : (count($this->attachments) + 1)),
 					);
 
+			}
+
+		//--------------------------------------------------
+		// HTML Head ... only really used for <style>
+
+			public function head_html_add($content_html) {
+				$this->head_html .= $content_html;
+				if (!($content_html instanceof html_template || $content_html instanceof html_safe_value) && (!function_exists('is_literal') || !is_literal($content_html))) {
+					$this->head_html_safe = false;
+				}
+			}
+
+			public function head_html_set($content_html) {
+				$this->head_html = $content_html;
+				$this->head_html_safe = ($content_html instanceof html_template || $content_html instanceof html_safe_value || (function_exists('is_literal') && is_literal($content_html)));
 			}
 
 		//--------------------------------------------------
@@ -994,6 +1011,13 @@
 
 							if ($subject != '') {
 								$template_html .= '	<title>[SUBJECT]</title>' . "\n";
+							}
+
+							if ($this->head_html) {
+								$template_html .= $this->head_html . "\n";
+								if (!$this->head_html_safe) {
+									$html_safe = false;
+								}
 							}
 
 							$template_html .= '</head>' . "\n";
