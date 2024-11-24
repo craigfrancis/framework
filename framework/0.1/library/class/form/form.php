@@ -963,7 +963,7 @@
 							if (in_array('fetch', $checks) && $this->fetch_allowed !== false) {
 								$fetch_values = config::get('request.fetch');
 								if ($this->form_passive && $fetch_values['dest'] == 'document' && $fetch_values['mode'] == 'navigate' && $fetch_values['site'] == 'cross-site') {
-									// For a passive form, request from another website (maybe email link), top level navigation... probably fine, as a timing attack shouldn't be possible.
+									$csrf_report = false; // For a passive form, request from another website (maybe email link), top level navigation... probably fine, as a timing attack shouldn't be possible.
 								} else {
 									foreach ($this->fetch_allowed as $field => $allowed) {
 										if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
