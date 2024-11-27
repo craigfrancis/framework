@@ -540,7 +540,7 @@
 					} else if ($type == 'float' || $type == 'double') {
 						$length = NULL; // Not really applicable
 					} else if ($type == 'enum' || $type == 'set') {
-						$options = str_getcsv($info, ',', "'");
+						$options = str_getcsv($info, ',', "'", '\\');
 						$length = count($options);
 					} else {
 						$this->_error('Unknown type "' . $row['Type'] . '" for field "' . $row['Field'] . '"');
