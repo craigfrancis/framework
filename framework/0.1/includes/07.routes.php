@@ -484,11 +484,29 @@
 		$fetch_values = config::get('request.fetch');
 		foreach ($fetch_allowed as $field => $allowed) {
 			if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
-				report_add('Main request Sec-Fetch-' . ucfirst($field) . ', [' . $fetch_values[$field] . '] not in [' . implode(',', $allowed) . ']' . "\n\n" . debug_dump($fetch_values));
-				if (SERVER == 'stage') {
-					http_response_code(403);
-					exit();
-				}
+
+				// report_add('Main request Sec-Fetch-' . ucfirst($field) . ', [' . $fetch_values[$field] . '] not in [' . implode(',', $allowed) . ']' . "\n\n" . debug_dump($fetch_values));
+
+				$header = 'Sec-Fetch-' . ucfirst($field) . ': ' . $fetch_values[$field] . ';';
+
+				$output_html = '<!DOCTYPE html>
+					<html id="p_loading" lang="' . html(config::get('output.lang')) . '" xml:lang="' . html(config::get('output.lang')) . '" xmlns="http://www.w3.org/1999/xhtml">
+					<head>
+						<meta charset="' . html(config::get('output.charset')) . '" />
+						<title>Error</title>
+						<meta name="viewport" content="width=device-width, initial-scale=1" />
+					</head>
+					<body>
+						<h1>Request Error</h1>
+						<p>Invalid Request, please go to the <a href="/">Home Page</a>.</p>
+						<hr />
+						<p>' . html($header) . '</p>
+					</body>
+					</html>';
+
+				http_response_code(403);
+				exit($output_html);
+
 			}
 		}
 		unset($fetch_values, $field, $allowed);
