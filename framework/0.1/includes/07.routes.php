@@ -498,7 +498,7 @@
 					</head>
 					<body>
 						<h1>Request Error</h1>
-						<p>Invalid Request, please go to the <a href="/">Home Page</a>.</p>
+						<p>Please go to the <a href="/">Home Page</a>.</p>
 						<hr />
 						<p>' . html($header) . '</p>
 					</body>
