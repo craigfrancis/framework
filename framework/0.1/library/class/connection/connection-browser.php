@@ -509,7 +509,22 @@
 
 			}
 
-			public function form_field_set($name, $value) {
+			public function form_field_set($name, $value, $force_add = false) {
+
+				if ($force_add !== false && isset($this->form['fields']) && !isset($this->form['fields'][$name])) {
+
+					if (!is_array($force_add)) {
+						$force_add = [];
+					}
+
+					$this->form['fields'][$name] = array_merge([
+							'type'    => 'input',
+							'input'   => '', // text, checkbox, etc
+							'value'   => '',
+							'options' => NULL,
+						], $force_add);
+
+				}
 
 				$field = $this->_form_field_get($name);
 
