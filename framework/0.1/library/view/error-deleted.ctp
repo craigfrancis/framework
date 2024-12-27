@@ -9,7 +9,11 @@
 			$message = 'This ' . (isset($type) ? $type : 'item');
 
 			if (isset($timestamp)) {
-				$message .= ' was deleted on the ' . $timestamp->format('jS F Y, \a\t g:ia') . '.';
+				$message .= ' was deleted on the ' . $timestamp->format('jS F Y, \a\t g:ia');
+				if (isset($by)) {
+					$message .= ', by ' . $by;
+				}
+				$message .= '.';
 			} else {
 				$message .= ' has been deleted.';
 			}
