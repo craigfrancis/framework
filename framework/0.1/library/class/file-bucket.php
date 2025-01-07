@@ -988,8 +988,14 @@ debug('AWS DELETE: ' . $file_id . ' = ' . $file_encrypted_hash);
 
 				if ($file_id === 'process') {
 
+						// Skip any without an `info` value, this happens during the
+						// save process, where the initial record has been created,
+						// but the encryption info (which needs the record ID)
+						// hasn't been set yet.
+
 					$sql .= '
 						WHERE
+							f.info != "" AND
 							f.processed = "0000-00-00 00:00:00" AND
 							f.deleted = f.deleted
 						ORDER BY
