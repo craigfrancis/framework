@@ -5,11 +5,14 @@
 		//--------------------------------------------------
 		// Setup
 
+			protected $rows = [];
+
 			protected $no_records = 'No records found';
 
 			protected $charset_input = NULL;
 			protected $charset_output = NULL;
 
+			private $direct_headings = NULL;
 			private $direct_fp = NULL;
 
 			public function __construct() {
@@ -29,58 +32,89 @@
 			}
 
 		//--------------------------------------------------
-		// Create CSV output
+		// Add rows
 
-			public function string($rows) {
+			public function rows_set($rows) {
+				$this->rows = $rows;
+			}
+
+			public function row_add($row) {
+
+				if ($this->direct_fp !== NULL) {
+
+					if ($this->direct_headings === NULL) {
+						if (array_is_list($row)) {
+							$this->direct_headings = false;
+						} else {
+							$this->direct_headings = true; // array_keys($row)
+							fputcsv($this->direct_fp, array_keys($row));
+						}
+					}
+
+					fputcsv($this->direct_fp, $row);
+					flush();
+
+				} else {
+
+					$this->rows[] = $row;
+
+				}
+
+			}
+
+		//--------------------------------------------------
+		// Output
+
+			public function string() {
 
 				$fp = fopen('php://temp', 'w+');
 
-				return $this->_create($fp, $rows, true);
+				return $this->_create($fp, true);
 
 			}
 
-			public function save($rows, $file_path) {
+			public function save($file_path) {
 
 				$fp = fopen($file_path, 'w');
 
-				return $this->_create($fp, $rows, false);
+				return $this->_create($fp, false);
 
 			}
 
-			public function download($rows, $file_name, $mode = NULL) {
-				$this->_download($file_name, $mode, $this->string($rows));
+			public function download($file_name, $mode = NULL) {
+
+				$this->_download($file_name, $mode, $this->string());
+
 			}
 
-			public function download_direct($rows, $file_name, $mode = NULL) { // Writes directly to stdout, less memory use, but also no Content-Length header
+			public function download_direct($file_name, $mode = NULL) { // Writes directly to stdout, less memory use, but also no Content-Length header
+
 				$this->_download($file_name, $mode, NULL);
+
 				if (php_sapi_name() == 'cli') {
 					$fp = fopen('php://stdout', 'w');
 				} else {
 					$fp = fopen('php://output', 'w');
 				}
-				$this->_create($fp, $rows, false);
+
+				$this->_create($fp, false);
+
 			}
 
-			public function download_start($file_name, $mode = NULL) { // Writes directly to stdout, but one row at a time with $table_csv->download_add($row);
+			public function download_start($file_name, $mode = NULL) { // Writes directly to stdout, but one row at a time with $table_csv->row_add($row);
+
 				$this->_download($file_name, $mode, NULL);
-			}
 
-			public function download_add($row) {
-				if ($this->direct_fp === NULL) {
-					if (php_sapi_name() == 'cli') {
-						$this->direct_fp = fopen('php://stdout', 'w');
-					} else {
-						$this->direct_fp = fopen('php://output', 'w');
-					}
-					if ($this->charset_output === NULL || $this->charset_output === 'UTF-8') {
-						fputs($this->direct_fp, "\xEF\xBB\xBF");
-					}
-					if (!array_is_list($row)) {
-						fputcsv($this->direct_fp, array_keys($row));
-					}
+				if (php_sapi_name() == 'cli') {
+					$this->direct_fp = fopen('php://stdout', 'w');
+				} else {
+					$this->direct_fp = fopen('php://output', 'w');
 				}
-				fputcsv($this->direct_fp, $row);
-				flush();
+
+				if ($this->charset_output === NULL || $this->charset_output === 'UTF-8') {
+					fputs($this->direct_fp, "\xEF\xBB\xBF");
+				}
+
 			}
 
 		//--------------------------------------------------
@@ -140,7 +174,7 @@
 
 			}
 
-			private function _create($fp, $rows, $return_csv) {
+			private function _create($fp, $return_csv) {
 
 				//--------------------------------------------------
 				// UTF-8 BOM, for Excel
@@ -152,12 +186,12 @@
 				//--------------------------------------------------
 				// Add rows
 
-					$first = reset($rows);
+					$first = reset($this->rows);
 					if ($first !== false && !array_is_list($first)) {
 						fputcsv($fp, array_keys($first));
 					}
 
-					foreach ($rows as $row) {
+					foreach ($this->rows as $row) {
 						fputcsv($fp, $row);
 					}
 
