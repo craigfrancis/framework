@@ -86,6 +86,7 @@
 				'attribution-reporting'              => [],
 				'autoplay'                           => [],
 				'bluetooth'                          => [],
+				'browsing-topics'                    => [],
 				'camera'                             => [],
 				'ch-device-memory'                   => [],
 				'ch-downlink'                        => [],
@@ -124,6 +125,8 @@
 				'hid'                                => [],
 				'identity-credentials-get'           => [],
 				'idle-detection'                     => [],
+				'interest-cohort'                    => [], // InterestCohortFeaturePolicy, "Topics" replaces the "obsolete FLoC code" - https://chromium.googlesource.com/chromium/src/+/9255aecd4114c0b3da4016f641316367112adb53
+				'join-ad-interest-group'             => [],
 				'keyboard-map'                       => [],
 				'local-fonts'                        => [],
 				'magnetometer'                       => [],
@@ -134,8 +137,9 @@
 				'private-aggregation'                => [],
 				'private-state-token-issuance'       => [],
 				'private-state-token-redemption'     => [],
-				'publickey-credentials-get'          => [],
 				'publickey-credentials-create'       => [],
+				'publickey-credentials-get'          => [],
+				'run-ad-auction'                     => [],
 				'screen-wake-lock'                   => [],
 				'serial'                             => [],
 				'shared-storage'                     => [],
@@ -145,14 +149,10 @@
 				'window-management'                  => [],
 				'xr-spatial-tracking'                => [],
 
-				// 'interest-cohort'                 => [], // InterestCohortFeaturePolicy, "Topics" replaces the "obsolete FLoC code" - https://chromium.googlesource.com/chromium/src/+/9255aecd4114c0b3da4016f641316367112adb53
 				// 'picture-in-picture'              => [], // Risky
 				// 'sync-xhr'                        => [], // Risky
 				// 'unload'                          => [], // Risky
 
-				// 'browsing-topics'                 => [],
-				// 'join-ad-interest-group'          => [],
-				// 'run-ad-auction'                  => [],
 				// 'document-domain'                 => [], // DocumentDomain, https://source.chromium.org/chromium/chromium/src/+/09ae39cb337e46a2f97a763e57986154b8af91eb
 				// 'ambient-light-sensor'            => [], // SensorExtraClasses
 				// 'attribution-reporting'           => [], // ConversionMeasurement, was named 'conversion-measurement' - https://github.com/chromium/chromium/commit/7a48dde0857eccf6f61397a962c8532869b861f2
