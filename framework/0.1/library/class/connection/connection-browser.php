@@ -187,6 +187,17 @@
 				return $this->error_details;
 			}
 
+			public function error_info_get() {
+
+				return implode("\n\n-----\n\n", [
+						$this->error_message_get(),
+						$this->error_details_get(),
+						$this->request_full_get(),
+						$this->response_full_get(),
+					]);
+
+			}
+
 			private function error($message, $hidden_info = NULL) {
 
 				$this->error_message = $message;
