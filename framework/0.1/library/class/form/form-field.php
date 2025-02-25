@@ -16,6 +16,7 @@
 			protected $wrapper_id = NULL;
 			protected $wrapper_class = '';
 			protected $wrapper_data = [];
+			protected $wrapper_attributes = [];
 			protected $label_html = '';
 			protected $label_aria = NULL;
 			protected $label_prefix_html = '';
@@ -161,6 +162,14 @@
 
 			public function wrapper_data_set($field, $value) {
 				$this->wrapper_data[$field] = $value;
+			}
+
+			public function wrapper_attribute_set($attribute, $value) { // Try to use wrapper_data_set(), this is for things like `dir="rtl"`
+				if ($value === NULL) {
+					unset($this->wrapper_attributes[$attribute]);
+				} else {
+					$this->wrapper_attributes[$attribute] = $value;
+				}
 			}
 
 			public function label_set($label) {
@@ -736,10 +745,10 @@
 					}
 				}
 
-				$wrapper_attributes = array(
+				$wrapper_attributes = array_merge($this->wrapper_attributes, [
 						'id' => $this->wrapper_id,
 						'class' => $this->wrapper_class_get() . ($this->input_first ? ' input_first' : ''),
-					);
+					]);
 
 				foreach ($this->wrapper_data as $field => $value) {
 					$wrapper_attributes['data-' . $field] = $value;
