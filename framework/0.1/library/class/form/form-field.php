@@ -27,6 +27,7 @@
 			protected $input_first = false;
 			protected $input_class = NULL;
 			protected $input_data = [];
+			protected $input_attributes = [];
 			protected $input_wrapper_tag = 'span';
 			protected $input_wrapper_class = 'input';
 			protected $input_described_by = [];
@@ -261,6 +262,14 @@
 
 			public function input_data_set($field, $value) {
 				$this->input_data[$field] = $value;
+			}
+
+			public function input_attribute_set($attribute, $value) { // Try to use input_data_set(), this is for things like `dir="rtl"`
+				if ($value === NULL) {
+					unset($this->input_attributes[$attribute]);
+				} else {
+					$this->input_attributes[$attribute] = $value;
+				}
 			}
 
 			public function input_first_set($first = NULL) {
@@ -603,10 +612,10 @@
 
 			protected function _input_attributes() {
 
-				$attributes = array(
+				$attributes = array_merge($this->input_attributes, [
 						'name' => $this->name,
 						'id' => $this->id,
-					);
+					]);
 
 				foreach ($this->input_data as $field => $value) {
 					$attributes['data-' . $field] = $value;
