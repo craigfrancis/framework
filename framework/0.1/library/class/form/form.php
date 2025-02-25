@@ -220,7 +220,7 @@
 			}
 
 			public function form_attribute_set($attribute, $value) {
-				if ($value == '') {
+				if ($value === NULL) {
 					unset($this->form_attributes[$attribute]);
 				} else {
 					$this->form_attributes[$attribute] = $value;
