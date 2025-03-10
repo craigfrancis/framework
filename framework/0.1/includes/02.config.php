@@ -116,6 +116,8 @@
 				'clipboard-write'                    => [],
 				'compute-pressure'                   => [],
 				'cross-origin-isolated'              => ['self'],
+				'deferred-fetch'                     => [],
+				'deferred-fetch-minimal'             => [],
 				'display-capture'                    => [],
 				'encrypted-media'                    => [],
 				'fullscreen'                         => [],
