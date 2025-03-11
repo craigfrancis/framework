@@ -19,6 +19,7 @@
 			protected $reply_to_email = NULL;
 			protected $reply_to_name = NULL;
 			protected $return_path = NULL;
+			protected $message_id_prefix = NULL;
 			protected $headers = [];
 			protected $attachments = [];
 			protected $template_path = NULL;
@@ -246,6 +247,10 @@
 
 			public function return_path_set($email) {
 				$this->return_path = $email;
+			}
+
+			public function message_id_prefix_set($prefix) {
+				$this->message_id_prefix = $prefix;
 			}
 
 			public function header_set($name, $value) {
@@ -674,8 +679,6 @@
 						$build = $this->_build();
 					}
 
-					$headers = $this->_build_headers($build['headers']);
-
 				//--------------------------------------------------
 				// Subject
 
@@ -684,8 +687,18 @@
 				//--------------------------------------------------
 				// Send
 
+					if (!$this->message_id_prefix) {
+						$headers = $this->_build_headers($build['headers']);
+					}
+
 					foreach ($recipients as $recipient) {
+
+						if ($this->message_id_prefix) {
+							$headers = $this->_build_headers($build['headers']);
+						}
+
 						$this->_send_mail($recipient, $subject, $build['content'], $headers);
+
 					}
 
 				//--------------------------------------------------
@@ -918,7 +931,12 @@
 				foreach (array_merge($headers, $this->headers) as $header => $value) {
 					$headers_text .= head($header) . ': ' . head($value) . "\n";
 				}
-				return trim($headers_text);
+				if ($this->message_id_prefix) {
+					$domain = config::get('output.domain', config::get('request.domain'));
+					$message_id = $this->message_id_prefix . '-' . time() . '-' . strtoupper(random_key(10)) . '@' . $domain;
+					$headers_text .= 'Message-ID: ' . head($message_id);
+				}
+				return rtrim($headers_text);
 			}
 
 		//--------------------------------------------------
