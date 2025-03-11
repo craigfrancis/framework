@@ -933,7 +933,7 @@
 				}
 				if ($this->message_id_prefix) {
 					$domain = config::get('output.domain', config::get('request.domain'));
-					$message_id = $this->message_id_prefix . '-' . time() . '-' . strtoupper(random_key(10)) . '@' . $domain;
+					$message_id = '<' . $this->message_id_prefix . '-' . time() . '-' . strtoupper(random_key(10)) . '@' . $domain . '>';
 					$headers_text .= 'Message-ID: ' . head($message_id);
 				}
 				return rtrim($headers_text);
