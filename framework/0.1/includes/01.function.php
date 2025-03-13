@@ -270,7 +270,7 @@
 		} else {
 			$ext = '';
 		}
-		$file_name = preg_replace('/[^a-zA-Z0-9_\- ]/', $replace_character, $name) . $ext;
+		$file_name = preg_replace('/[^a-zA-Z0-9_\- ]/u', $replace_character, $name) . $ext;
 		if (extension_loaded('taint')) {
 			untaint($file_name);
 		}
