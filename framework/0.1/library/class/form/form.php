@@ -963,7 +963,9 @@
 							if (in_array('fetch', $checks) && $this->fetch_allowed !== false) {
 								$fetch_values = config::get('request.fetch');
 								if ($this->form_passive && $fetch_values['dest'] == 'document' && $fetch_values['mode'] == 'navigate' && $fetch_values['site'] == 'cross-site') {
-									$csrf_report = false; // For a passive form, request from another website (maybe email link), top level navigation... probably fine, as a timing attack shouldn't be possible.
+									$csrf_report = false; // Top level 'navigate' to view a passive form, as a 'document', requested from another website (maybe email link)... but, because it's navigate/document, it's probably fine (a timing attack shouldn't be possible).
+								} else if ($this->form_passive && $fetch_values['dest'] == 'empty' && $fetch_values['mode'] == 'navigate' && $fetch_values['site'] == 'same-origin') {
+									$csrf_report = false; // Not sure why this happens, it might be a prefetch (e.g. https://chromestatus.com/feature/6276236312313856 but mode is not 'no-cors'), or a browser extention doing a fetch()... but, because it's same-origin, it's probably fine.
 								} else {
 									foreach ($this->fetch_allowed as $field => $allowed) {
 										if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
