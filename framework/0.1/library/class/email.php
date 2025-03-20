@@ -601,7 +601,7 @@
 							$secure_content .= 'Version: 1' . "\n";
 							$secure_content .= '' . "\n";
 							$secure_content .= '--' . $boundary . "\n";
-							$secure_content .= 'Content-Type: application/octet-stream; name="encrypted.asc"' . "\n";
+							$secure_content .= 'Content-Type: application/octet-stream' . "\n";
 							$secure_content .= 'Content-Description: OpenPGP encrypted message' . "\n";
 							$secure_content .= 'Content-Disposition: inline; filename="encrypted.asc"' . "\n";
 							$secure_content .= '' . "\n";
@@ -788,13 +788,20 @@
 						$content .= '--' . $this->boundaries[1] . '--' . "\n";
 
 						foreach ($this->attachments as $attachment) {
+
+							$filename_clean = str_replace(['/', '\\'], '', $attachment['name']); // Never allowed
+							$filename_ascii = iconv('UTF-8', 'ASCII//TRANSLIT', $filename_clean); // While safe_file_name will remove bad characters, this will do a better job of converting.
+							$filename_ascii = safe_file_name($filename_ascii, true, '_');
+							$filename_utf8  = NULL; // ($filename_ascii == $filename_clean ? NULL : "UTF-8''" . rawurlencode('X' . $filename_clean));
+
 							$content .= '--' . $this->boundaries[0] . "\n";
-							$content .= 'Content-Type: ' . head(addslashes($attachment['mime'])) . '; name="' . head(addslashes($attachment['name'])) . '"' . "\n";
-							$content .= 'Content-Disposition: attachment; filename="' . head(addslashes($attachment['name'])) . '"' . "\n";
+							$content .= 'Content-Type: ' . head(addslashes($attachment['mime'])) . "\n";
+							$content .= 'Content-Disposition: attachment; filename="' . head(addslashes($filename_ascii)) . '"' . ($filename_utf8 ? '; filename*=' . head($filename_utf8) : '') . "\n";
 							$content .= 'Content-Transfer-Encoding: base64' . "\n";
 							$content .= 'X-Attachment-Id: ' . head(addslashes($attachment['id'])) . "\n";
 							$content .= '' . "\n";
 							$content .= chunk_split(base64_encode($attachment['content'])) . "\n";
+
 						}
 
 						$content .= '--' . $this->boundaries[0] . '--';
