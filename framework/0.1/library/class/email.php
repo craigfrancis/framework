@@ -792,11 +792,11 @@
 							$filename_clean = str_replace(['/', '\\'], '', $attachment['name']); // Never allowed
 							$filename_ascii = iconv('UTF-8', 'ASCII//TRANSLIT', $filename_clean); // While safe_file_name will remove bad characters, this will do a better job of converting.
 							$filename_ascii = safe_file_name($filename_ascii, true, '_');
-							$filename_utf8  = NULL; // ($filename_ascii == $filename_clean ? NULL : "UTF-8''" . rawurlencode('X' . $filename_clean));
+							$filename_utf8  = ($filename_ascii == $filename_clean ? NULL : "UTF-8''" . rawurlencode($filename_clean));
 
 							$content .= '--' . $this->boundaries[0] . "\n";
 							$content .= 'Content-Type: ' . head(addslashes($attachment['mime'])) . "\n";
-							$content .= 'Content-Disposition: attachment; filename="' . head(addslashes($filename_ascii)) . '"' . ($filename_utf8 ? '; filename*=' . head($filename_utf8) : '') . "\n";
+							$content .= 'Content-Disposition: attachment;' . ($filename_utf8 ? ' filename*=' . head($filename_utf8) . ';' : '') . ' filename="' . head(addslashes($filename_ascii)) . '"' . "\n"; // utf8 filename* can be replaced with decoded version, so it must go first.
 							$content .= 'Content-Transfer-Encoding: base64' . "\n";
 							$content .= 'X-Attachment-Id: ' . head(addslashes($attachment['id'])) . "\n";
 							$content .= '' . "\n";
