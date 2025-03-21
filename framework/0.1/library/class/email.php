@@ -792,7 +792,7 @@
 							$filename_clean = str_replace(['/', '\\'], '', $attachment['name']); // Never allowed
 							$filename_ascii = iconv('UTF-8', 'ASCII//TRANSLIT', $filename_clean); // While safe_file_name will remove bad characters, this will do a better job of converting.
 							$filename_ascii = safe_file_name($filename_ascii, true, '_');
-							$filename_utf8  = ($filename_ascii == $filename_clean ? NULL : "UTF-8''" . rawurlencode($filename_clean));
+							$filename_utf8  = ($filename_ascii == $filename_clean ? NULL : "UTF-8''" . rawurlencode($filename_clean)); // Does not really work for Gmail - https://issuetracker.google.com/issues/405140647
 
 							$content .= '--' . $this->boundaries[0] . "\n";
 							$content .= 'Content-Type: ' . head(addslashes($attachment['mime'])) . "\n";
