@@ -796,7 +796,7 @@
 
 							$content .= '--' . $this->boundaries[0] . "\n";
 							$content .= 'Content-Type: ' . head(addslashes($attachment['mime'])) . "\n";
-							$content .= 'Content-Disposition: attachment;' . ($filename_utf8 ? ' filename*=' . head($filename_utf8) . ';' : '') . ' filename="' . head(addslashes($filename_ascii)) . '"' . "\n"; // utf8 filename* can be replaced with decoded version, so it must go first.
+							$content .= 'Content-Disposition: attachment; filename="' . head(addslashes($filename_ascii)) . '"' . ($filename_utf8 ? '; filename*=' . head($filename_utf8) : '') . "\n";
 							$content .= 'Content-Transfer-Encoding: base64' . "\n";
 							$content .= 'X-Attachment-Id: ' . head(addslashes($attachment['id'])) . "\n";
 							$content .= '' . "\n";
