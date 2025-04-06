@@ -88,6 +88,7 @@
 				'bluetooth'                          => [],
 				'browsing-topics'                    => [],
 				'camera'                             => [],
+				'captured-surface-control'           => [],
 				'ch-device-memory'                   => [],
 				'ch-downlink'                        => [],
 				'ch-dpr'                             => [],
