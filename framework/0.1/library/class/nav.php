@@ -116,7 +116,7 @@
 					}
 
 					$path = $url;
-					if (($pos = strpos($path, '?')) !== false) {
+					if (($pos = strpos(strval($path), '?')) !== false) {
 						$path = substr($path, 0, $pos);
 					}
 
@@ -139,9 +139,21 @@
 						$config['selected'] = NULL;
 					}
 
-					if ($name === NULL) {
-						$name = $this->link_name_get_html($url, $config);
-						$config['html'] = true;
+					if (($config['html'] ?? NULL) !== NULL) {
+
+						$name_html = $config['html']; // e.g. $nav->link_add(['html' => '<span>Text</span>']);
+						$name_ref = ''; // Don't use HTML version in class name
+
+					} else if ($name === NULL) {
+
+						$name_html = $this->link_name_get_html($url, $config);
+						$name_ref = ''; // Don't use HTML version in class name
+
+					} else {
+
+						$name_html = html($name);
+						$name_ref = human_to_ref($name);
+
 					}
 
 				//--------------------------------------------------
@@ -149,7 +161,8 @@
 
 					$this->navigation[$this->current_group]['links'][$this->current_index]['url'] = $url;
 					$this->navigation[$this->current_group]['links'][$this->current_index]['path'] = $path;
-					$this->navigation[$this->current_group]['links'][$this->current_index]['name'] = $name;
+					$this->navigation[$this->current_group]['links'][$this->current_index]['name_ref'] = $name_ref;
+					$this->navigation[$this->current_group]['links'][$this->current_index]['name_html'] = $name_html;
 					$this->navigation[$this->current_group]['links'][$this->current_index]['config'] = $config;
 
 				//--------------------------------------------------
@@ -167,8 +180,17 @@
 					$this->current_group++;
 				}
 
-				if (isset($config['html']) && $config['html'] === true) {
-					$name_html = $name;
+				if (is_array($name)) { // First argument passed in config array
+					$config = $name;
+					$name = NULL;
+				}
+
+				if (($config['html'] ?? NULL) !== NULL) {
+					if ($config['html'] === true) {
+						$name_html = $name; // Legacy, do not use $nav->group_add('<span>Text</span>', ['html' => true]);
+					} else {
+						$name_html = $config['html']; // e.g. $nav->group_add(['html' => '<span>Text</span>']);
+					}
 				} else {
 					$name_html = html($name);
 				}
@@ -319,7 +341,7 @@
 							//--------------------------------------------------
 							// Group heading
 
-								if (isset($group_info['name_html']) && $group_info['name_html'] != '') {
+								if (($group_info['name_html'] ?? NULL) !== NULL) {
 
 									$html .= $this->indent . '<h3>' . $group_info['name_html'] . '</h3>';
 
@@ -340,7 +362,6 @@
 										$k++;
 
 										$link_config  = $link_info['config'];
-										$link_encoded = (isset($link_config['html']) && $link_config['html'] === true);
 
 									//--------------------------------------------------
 									// Configuration
@@ -372,11 +393,7 @@
 									//--------------------------------------------------
 									// Class
 
-										if ($link_encoded) {
-											$class = ''; // Don't allow HTML version in class name
-										} else {
-											$class = human_to_ref($link_info['name']);
-										}
+										$class = $link_info['name_ref'];
 
 										if ($k % 2) $class .= ' odd';
 										if ($k == 1) $class .= ' first';
@@ -418,7 +435,7 @@
 									//--------------------------------------------------
 									// Build
 
-										$link_html = ($link_encoded ? $link_info['name'] : html($link_info['name']));
+										$link_html = $link_info['name_html'];
 
 										if ($link_info['url'] !== NULL) {
 											$link_html = '<a href="' . html($link_info['url']) . '"' . $link_attributes_html . '>' . $link_html . '</a>';
