@@ -877,8 +877,6 @@ debug('Removed File: ' . $matches[1]);
 				//--------------------------------------------------
 				// Remove from AWS
 
-debug('AWS DELETE: ' . $file_id . ' = ' . $file_encrypted_hash);
-
 					$this->_aws_request([
 							'method'         => 'DELETE',
 							'encrypted_hash' => $file_encrypted_hash,
