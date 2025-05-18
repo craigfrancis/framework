@@ -907,7 +907,7 @@
 						echo "\n";
 						echo '<div>' . "\n";
 						echo '	<h1>Error</h1>' . "\n";
-						echo '	<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>' . "\n";
+						echo '	<p><strong>' . str_replace(ROOT, '', ($called_from['file'] ?? '')) . '</strong> (line ' . ($called_from['line'] ?? 0) . ')</p>' . "\n";
 						echo '	<p>The following SQL has been tainted.</p>' . "\n";
 						echo '	<hr />' . "\n";
 						echo '	<p><pre>' . "\n\n" . html(implode('', array_column($query_formatted, 1))) . "\n\n" . '</pre></p>' . "\n";
@@ -1029,7 +1029,7 @@
 											echo "\n";
 											echo '<div>' . "\n";
 											echo '	<h1>Error</h1>' . "\n";
-											echo '	<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>' . "\n";
+											echo '	<p><strong>' . str_replace(ROOT, '', ($called_from['file'] ?? '')) . '</strong> (line ' . ($called_from['line'] ?? 0) . ')</p>' . "\n";
 											echo '	<p>Missing reference to "' . html(str_replace('`', '', $required_clause)) . '" column on the table "' . html($table[1]) . '".</p>' . "\n";
 											echo '	<hr />' . "\n";
 											echo '	<p><pre>' . "\n\n" . html(implode('', array_column($query_formatted, 1))) . "\n\n" . '</pre></p>' . "\n";
@@ -1087,7 +1087,7 @@
 							'type'    => 'L',
 							'colour'  => '#CCF',
 							'elapsed' => debug_time_format(debug_time_elapsed() - config::get('debug.time_check')),
-							'file'    => ['path' => str_replace(ROOT, '', $called_from['file']), 'line' => $called_from['line']],
+							'file'    => ['path' => str_replace(ROOT, '', ($called_from['file'] ?? '')), 'line' => ($called_from['line'] ?? 0)],
 							'text'    => $query_formatted,
 							'time'    => debug_time_format($time_query),
 							'rows'    => $result_rows,
