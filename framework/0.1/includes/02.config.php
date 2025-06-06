@@ -108,7 +108,6 @@
 				'ch-ua-model'                        => [],
 				'ch-ua-platform'                     => [],
 				'ch-ua-platform-version'             => [],
-				// 'ch-ua-reduced'                   => [], // Added in Chrome 94, origin-trial in 95?
 				'ch-ua-wow64'                        => [],
 				'ch-viewport-height'                 => [],
 				'ch-viewport-width'                  => [],
@@ -149,8 +148,8 @@
 				'serial'                             => [],
 				'shared-storage'                     => [],
 				'shared-storage-select-url'          => [],
-				'summarizer'                         => [], // For the JS API: summarizer = await Summarizer.create(...)
 				'storage-access'                     => [],
+				'summarizer'                         => [], // For the JS API: summarizer = await Summarizer.create(...)
 				'translator'                         => [], // For the JS API: translator = await Translator.create(...)
 				'usb'                                => [],
 				'window-management'                  => [],
@@ -161,10 +160,11 @@
 				// 'sync-xhr'                        => [], // Risky
 				// 'unload'                          => [], // Risky
 
-				// 'document-domain'                 => [], // DocumentDomain, https://source.chromium.org/chromium/chromium/src/+/09ae39cb337e46a2f97a763e57986154b8af91eb
 				// 'ambient-light-sensor'            => [], // SensorExtraClasses
 				// 'attribution-reporting'           => [], // ConversionMeasurement, was named 'conversion-measurement' - https://github.com/chromium/chromium/commit/7a48dde0857eccf6f61397a962c8532869b861f2
+				// 'ch-ua-reduced'                   => [], // Added in Chrome 94, origin-trial in 95?
 				// 'display-capture'                 => [], // GetCurrentBrowsingContextMedia
+				// 'document-domain'                 => [], // DocumentDomain, https://source.chromium.org/chromium/chromium/src/+/09ae39cb337e46a2f97a763e57986154b8af91eb
 				// 'execution-while-not-rendered'    => [], // FreezeFramesOnVisibility
 				// 'execution-while-out-of-viewport' => [], // FreezeFramesOnVisibility
 				// 'focus-without-user-activation'   => [], // BlockingFocusWithoutUserActivation
