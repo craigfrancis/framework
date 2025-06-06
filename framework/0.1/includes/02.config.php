@@ -131,6 +131,7 @@
 				'interest-cohort'                    => [], // InterestCohortFeaturePolicy, "Topics" replaces the "obsolete FLoC code" - https://chromium.googlesource.com/chromium/src/+/9255aecd4114c0b3da4016f641316367112adb53
 				'join-ad-interest-group'             => [],
 				'keyboard-map'                       => [],
+				'language-detector'                  => [], // For the JS API: detector = await LanguageDetector.create(...)
 				'local-fonts'                        => [],
 				'magnetometer'                       => [],
 				'microphone'                         => [],
@@ -142,14 +143,18 @@
 				'private-state-token-redemption'     => [],
 				'publickey-credentials-create'       => [],
 				'publickey-credentials-get'          => [],
+				'rewriter'                           => [], // TBC
 				'run-ad-auction'                     => [],
 				'screen-wake-lock'                   => [],
 				'serial'                             => [],
 				'shared-storage'                     => [],
 				'shared-storage-select-url'          => [],
+				'summarizer'                         => [], // For the JS API: summarizer = await Summarizer.create(...)
 				'storage-access'                     => [],
+				'translator'                         => [], // For the JS API: translator = await Translator.create(...)
 				'usb'                                => [],
 				'window-management'                  => [],
+				'writer'                             => [], // TBC
 				'xr-spatial-tracking'                => [],
 
 				// 'picture-in-picture'              => [], // Risky
