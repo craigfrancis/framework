@@ -94,7 +94,15 @@
 				}
 
 				if (config::get('output.charset') == 'UTF-8') {
-					$subject = iconv('UTF-8', 'ASCII//TRANSLIT', $subject); // The subject sent to mail() cannot really contain UTF-8 characters (SMTPUTF8 support is poor).
+					$encoded_subject = '';
+					foreach (preg_split('/(£)/', $subject, -1, PREG_SPLIT_DELIM_CAPTURE) as $k => $split) {
+						if ($k % 2) {
+							$encoded_subject .= $split; // Characters that seem to be fine (e.g. £ not doing an ASCII TRANSLIT to GBP).
+						} else {
+							$encoded_subject .= iconv('UTF-8', 'ASCII//TRANSLIT', $split); // The subject sent to mail() cannot really contain UTF-8 characters (SMTPUTF8 support is poor).
+						}
+					}
+					$subject = $encoded_subject;
 				}
 
 				return $subject;
