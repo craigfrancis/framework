@@ -546,7 +546,13 @@
 
 							$class = (isset($this->day_class[$loop_date]) ? $this->day_class[$loop_date] : '');
 							if ($loop_day >= 6) $class .= ' weekend';
-							if ($loop_timestamp >= $this->focus_start && $loop_timestamp < $this->focus_end) $class .= ' focus';
+							if ($loop_timestamp < $this->focus_start) {
+								$class .= ' focus_earlier';
+							} else if ($loop_timestamp >= $this->focus_end) {
+								$class .= ' focus_after';
+							} else {
+								$class .= ' focus';
+							}
 							if ($loop_today) {
 								$class .= ' today';
 							} else if ($loop_timestamp > $today_timestamp) {
