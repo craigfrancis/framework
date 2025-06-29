@@ -30,6 +30,7 @@
 			protected $input_attributes = [];
 			protected $input_wrapper_tag = 'span';
 			protected $input_wrapper_class = 'input';
+			protected $input_prefix_html = '';
 			protected $input_described_by = [];
 			protected $format_class = 'format';
 			protected $format_tag = 'span';
@@ -294,6 +295,18 @@
 
 			public function input_wrapper_class_set($class) {
 				$this->input_wrapper_class = $class;
+			}
+
+			public function input_prefix_set($input_prefix) {
+				$this->input_prefix_set_html(to_safe_html($input_prefix));
+			}
+
+			public function input_prefix_set_html($input_prefix_html) {
+				$this->input_prefix_html = $input_prefix_html;
+			}
+
+			public function input_prefix_get_html() {
+				return $this->input_prefix_html;
 			}
 
 			public function format_default_get_html() {
@@ -740,17 +753,17 @@
 
 				if (method_exists($this, 'html_input_by_key')) {
 					$html = '
-								' . $label_html . $this->html_input() . $format_html . $info_html;
+								' . $label_html . $this->input_prefix_html . $this->html_input() . $format_html . $info_html;
 				} else {
 					$input_html = '<' . html($this->input_wrapper_tag) . ' class="' . html($this->input_wrapper_class) . '">' . $this->html_input() . '</' . html($this->input_wrapper_tag) . '>';
 					if ($this->input_first) {
 						$html = '
 								' . $input_html . '
-								' . $label_html . $format_html . $info_html;
+								' . $this->input_prefix_html . $label_html . $format_html . $info_html;
 					} else {
 						$html = '
 								' . $label_html . '
-								' . $input_html . $format_html . $info_html;
+								' . $this->input_prefix_html . $input_html . $format_html . $info_html;
 					}
 				}
 
