@@ -372,7 +372,7 @@
 					];
 
 				$original_time = request('o');
-				if (preg_match('/^[0-9]{10,}$/', strval($original_time))) {
+				if (!is_array($original_time) && preg_match('/^[0-9]{10,}$/', strval($original_time))) {
 					$original_time = date($config['date_format'], $original_time) . ' (' . timestamp_to_human((time() - $original_time), 2, true) . ')';
 				}
 				if ($original_time !== NULL) {
@@ -467,12 +467,12 @@
 
 					foreach ($values as $label => $value) {
 
-						if (is_array($value)) {
-							if (isset($value['text'])) {
-								if (!isset($value['label'])) {
-									$value['label'] = $label;
-								}
-							} else if ($value[1] instanceof html_template || $value[1] instanceof html_safe_value) {
+						if (is_array($value) && isset($value['text'])) {
+							if (!isset($value['label'])) {
+								$value['label'] = $label;
+							}
+						} else if (is_array($value) && isset($value[1])) {
+							if ($value[1] instanceof html_template || $value[1] instanceof html_safe_value) {
 								$value = [
 										'label' => $value[0],
 										'text' => trim(strip_tags($value[1]->html())),
@@ -493,6 +493,10 @@
 
 						if ($value['text'] === NULL) {
 							continue; // e.g. using request_table_add(), but setting 'Method' to NULL to remove.
+						}
+
+						if (is_array($value['text'])) { // Probably some user changing the HTML to something like <input name="example[]" />, either way it can't be an array.
+							$value['text'] = json_encode($value['text']);
 						}
 
 						if (!isset($value['html'])) {
