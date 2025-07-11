@@ -231,7 +231,8 @@
 		// HTML
 
 			public function html_input() {
-				$html = $this->_html_input(['value' => strval($this->_value_print_get())]);
+				$value = $this->_value_print_get();
+				$html = $this->_html_input(['value' => strval(is_array($value) ? '' : $value)]);
 				if ($this->input_list_id !== NULL) {
 					$html .= '<datalist id="' . html($this->input_list_id) . '">';
 					foreach ($this->input_list_options as $id => $value) {
