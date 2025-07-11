@@ -947,7 +947,8 @@
 							}
 
 							if (in_array('token', $checks)) {
-								$csrf_token = strval(request('csrf', $this->form_method));
+								$csrf_token = request('csrf', $this->form_method);
+								$csrf_token = strval(is_array($csrf_token) ? '' : $csrf_token);
 								if (!csrf_challenge_check($csrf_token, $this->form_action, $this->csrf_token)) {
 									cookie::require_support();
 									$csrf_errors[] = 'Token-[' . $this->csrf_token . ']-[' . $this->form_method . ']-[' . $csrf_token . ']';
