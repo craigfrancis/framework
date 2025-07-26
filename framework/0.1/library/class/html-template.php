@@ -100,15 +100,15 @@
 							$this->template_parameters[] = [$parent->nodeName, NULL];
 						}
 					} else if (!array_key_exists($node->nodeName, $this->template_allowed) && $root !== true) { // Skip for the root node
-						throw new error_exception('HTML Templates cannot use <' . $node->nodeName . '>', $this->source_html);
+						throw new error_exception('HTML Templates cannot use <' . $node->nodeName . '>', debug_dump($this->source_html));
 					} else {
 						if ($node->hasAttributes()) {
 							$allowed_attributes = $this->template_allowed[$node->nodeName];
 							foreach ($node->attributes as $attr) {
 								if (!array_key_exists($attr->nodeName, $allowed_attributes) && !str_starts_with($attr->nodeName, 'data-')) {
-									throw new error_exception('HTML Templates cannot use the "' . $attr->nodeName . '" attribute in <' . $node->nodeName . '>', $this->source_html);
+									throw new error_exception('HTML Templates cannot use the "' . $attr->nodeName . '" attribute in <' . $node->nodeName . '>', debug_dump($this->source_html));
 								} else if ($node->nodeName === 'meta' && $attr->nodeName === 'name' && in_array($attr->nodeValue, ['?', 'referrer'])) {
-									throw new error_exception('HTML Templates cannot allow the "name" attribute in <meta> to be set to "' . $attr->nodeValue . '"', $this->source_html);
+									throw new error_exception('HTML Templates cannot allow the "name" attribute in <meta> to be set to "' . $attr->nodeValue . '"', debug_dump($this->source_html));
 								} else if ($attr->nodeValue === '?') {
 									$this->template_parameters[] = [$node->nodeName, $attr->nodeName];
 								}
@@ -174,7 +174,7 @@
 									if (preg_match('/^<\/([a-z0-9\-]+)>/i', $this->template_split_html[$k], $matches)) {
 										$this->template_contexts[] = $matches[1];
 									} else {
-										throw new error_exception('Placeholder ' . $k . ' is not followed by a valid closing tag', $this->source_html);
+										throw new error_exception('Placeholder ' . $k . ' is not followed by a valid closing tag', debug_dump($this->source_html));
 									}
 								} else {
 									$this->template_contexts[] = NULL; // It should be an attribute (single or double quotes).
@@ -224,7 +224,7 @@
 
 								foreach (libxml_get_errors() as $error) {
 									libxml_clear_errors();
-									throw new error_exception('HTML Templates must be valid XML', trim($error->message) . ' (line ' . $error->line . ':' . (intval($error->column) - strlen($html_prefix)) . ')' . "\n" . $this->source_html);
+									throw new error_exception('HTML Templates must be valid XML', trim($error->message) . ' (line ' . $error->line . ':' . (intval($error->column) - strlen($html_prefix)) . ')' . "\n" . debug_dump($this->source_html));
 								}
 
 								libxml_use_internal_errors($old);
@@ -236,7 +236,7 @@
 								foreach ($this->template_parameters as $k => $p) {
 									$allowed_attributes = ($this->template_allowed[$p[0]] ?? NULL);
 									if ($allowed_attributes === NULL) {
-										throw new error_exception('Placeholder ' . ($k + 1) . ' is for unrecognised tag "' . $p[0] . '"', $this->source_html);
+										throw new error_exception('Placeholder ' . ($k + 1) . ' is for unrecognised tag "' . $p[0] . '"', debug_dump($this->source_html));
 									} else if ($p[1] === NULL) {
 										// Content for a tag, so long as it's not an unsafe tag (e.g. <script>), it should be fine.
 									} else if (($attribute_type = ($allowed_attributes[$p[1]] ?? NULL)) !== NULL) {
@@ -244,7 +244,7 @@
 									} else if (str_starts_with($p[1], 'data-')) {
 										// Can't tell, this is for JS/CSS to read and use.
 									} else {
-										throw new error_exception('Placeholder ' . ($k + 1) . ' is for unrecognised tag "' . $p[0] . '" and attribute "' . $p[1] . '"', $this->source_html);
+										throw new error_exception('Placeholder ' . ($k + 1) . ' is for unrecognised tag "' . $p[0] . '" and attribute "' . $p[1] . '"', debug_dump($this->source_html));
 									}
 								}
 
@@ -269,7 +269,7 @@
 								}
 							}
 							if (!$valid) {
-								throw new error_exception('Parameter ' . ($k + 1) . ' can only support the values "' . implode('", "', $type) . '".', debug_dump($parameters[$k]) . "\n" . $this->source_html);
+								throw new error_exception('Parameter ' . ($k + 1) . ' can only support the values "' . implode('", "', $type) . '".', debug_dump($parameters[$k]) . "\n" . debug_dump($this->source_html));
 							}
 						} else if ($type === 'text') {
 							// Nothing to check
@@ -277,25 +277,25 @@
 							// Images are allowed "data:" URLs with mime-types such as 'image/jpeg'
 						} else if ($type === 'url' || $type === 'url-img') {
 							if (!($parameters[$k] instanceof url) && !($parameters[$k] instanceof url_immutable) && $parameters[$k] !== '#') {
-								throw new error_exception('Parameter ' . ($k + 1) . ' should be a URL object.', debug_dump($parameters[$k]) . "\n" . $this->source_html);
+								throw new error_exception('Parameter ' . ($k + 1) . ' should be a URL object.', debug_dump($parameters[$k]) . "\n" . debug_dump($this->source_html));
 							}
 						} else if ($type === 'int') {
 							if (!is_int($parameters[$k])) {
-								throw new error_exception('Parameter ' . ($k + 1) . ' should be an integer.', debug_dump($parameters[$k]) . "\n" . $this->source_html);
+								throw new error_exception('Parameter ' . ($k + 1) . ' should be an integer.', debug_dump($parameters[$k]) . "\n" . debug_dump($this->source_html));
 							}
 						} else if ($type === 'ref') {
 							foreach (explode(' ', $parameters[$k]) as $ref) {
 								$ref = trim($ref);
 								if (!preg_match('/^[a-z][a-z0-9\-\_]+$/i', $ref)) { // Simple strings aren't checked outside of debug mode, but it might catch something during development.
-									throw new error_exception('Parameter ' . ($k + 1) . ' should be one or more valid references.', debug_dump($ref) . "\n" . $this->source_html);
+									throw new error_exception('Parameter ' . ($k + 1) . ' should be one or more valid references.', debug_dump($ref) . "\n" . debug_dump($this->source_html));
 								}
 							}
 						} else if ($type === 'datetime') {
 							if (!preg_match('/^[0-9TWZPHMS \:\-\.\+]+$/i', $parameters[$k])) { // Could be better, but not important, as simple strings aren't checked outside of debug mode, and shouldn't be executed as JS by the browser... T=Time, W=Week, Z=Zulu, and PTHMS for duration
-								throw new error_exception('Parameter ' . ($k + 1) . ' should be a valid datetime.', debug_dump($parameters[$k]) . "\n" . $this->source_html);
+								throw new error_exception('Parameter ' . ($k + 1) . ' should be a valid datetime.', debug_dump($parameters[$k]) . "\n" . debug_dump($this->source_html));
 							}
 						} else {
-							throw new error_exception('Parameter ' . ($k + 1) . ' has an unknown type.', $type . "\n" . debug_dump($parameters[$k]) . "\n" . $this->source_html);
+							throw new error_exception('Parameter ' . ($k + 1) . ' has an unknown type.', $type . "\n" . debug_dump($parameters[$k]) . "\n" . debug_dump($this->source_html));
 						}
 					}
 
@@ -316,10 +316,10 @@
 									$html .= nl2br(html($parameters[$k]));
 								}
 							} else {
-								throw new error_exception('Missing parameter ' . ($k + 1), $this->source_html);
+								throw new error_exception('Missing parameter ' . ($k + 1), debug_dump($this->source_html));
 							}
 						} else if (isset($parameters[$k])) {
-							throw new error_exception('Extra parameter ' . ($k + 1), $this->source_html);
+							throw new error_exception('Extra parameter ' . ($k + 1), debug_dump($this->source_html));
 						}
 					}
 
