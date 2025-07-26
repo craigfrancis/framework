@@ -177,6 +177,79 @@
 
 		echo $template->html($parameters);
 
+	//--------------------------------------------------
+
+		echo "\n\n";
+		echo "--------------------------------------------------";
+		echo "\n\n";
+
+		$template = ht([
+				'<fieldset>' . "\n" . '  <legend>?</legend>',
+				'</fieldset>',
+			]);
+
+		list($html_start, $html_end) = $template->html(['My Legend']);
+
+		echo $html_start . "\n";
+		echo '  ###' . "\n";
+		echo $html_end;
+
+		echo "\n\n";
+		echo "--------------------------------------------------";
+		echo "\n\n";
+
+		$template = ht([
+				'<figure>',
+				'  <img src="?" alt="?" />',
+				'  <figcaption>?</figcaption>' . "\n" . '</figure>',
+			]);
+
+		list($html_start, $html_img, $html_end) = $template->html([
+				url('/img/example.jpg'),
+				'My Alt',
+				'My Caption',
+			]);
+
+		echo $html_start . "\n";
+		echo '  ###' . "\n";
+		echo $html_img . "\n";
+		echo '  ###' . "\n";
+		echo $html_end;
+
+		echo "\n\n";
+		echo "--------------------------------------------------";
+		echo "\n\n";
+
+		$template = ht([
+				'<main>' . "\n" . '  <h1>?</h1>',
+				'</main>' . "\n" . '<footer>?</footer>',
+			]);
+
+		list($html_start, $html_end) = $template->html(['My Heading', 'My Footer']);
+
+		echo $html_start . "\n";
+		echo '  ###' . "\n";
+		echo $html_end;
+
+		echo "\n\n";
+		echo "--------------------------------------------------";
+		echo "\n\n";
+
+		$template = ht([
+				'<main>' . "\n" . '  <h1>?</h1>',
+				'</main>' . "\n" . '<footer>?</footer>',
+			]);
+
+		list($html_js_start, $html_js_end) = ht(['<div class="js_wrapper">', '</div>'])->html();
+
+		echo $html_js_start . "\n";
+		echo '  ###' . "\n";
+		echo $html_js_end;
+
+		echo "\n\n";
+		echo "--------------------------------------------------";
+		echo "\n\n";
+
 //--------------------------------------------------
 // Timings
 

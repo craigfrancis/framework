@@ -5,11 +5,11 @@
 		//--------------------------------------------------
 		// Variables
 
+			protected $source_string = NULL;
 			protected $source_html = NULL;
 			protected $source_parameters = [];
 
 			protected $template_split_html = NULL;
-			protected $template_split_end = NULL;
 			protected $template_contexts = [];
 			protected $template_parameters = NULL;
 			protected $template_parameter_types = [];
@@ -65,6 +65,8 @@
 					'blockquote' => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
 					'q'          => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
 					'a'          => ['id' => 'ref', 'class' => 'ref', 'href' => 'url', 'target' => ['_blank'], 'rel' => ['noopener', 'noreferrer', 'nofollow'], 'hreflang' => 'text'],
+					'figure'     => ['id' => 'ref', 'class' => 'ref'],
+					'figcaption' => ['id' => 'ref', 'class' => 'ref'],
 					'picture'    => ['id' => 'ref', 'class' => 'ref'],
 					'source'     => ['id' => 'ref', 'class' => 'ref', 'src' => 'url-img', 'srcset' => 'text', 'sizes' => 'text', 'type' => 'text'],
 					'img'        => ['id' => 'ref', 'class' => 'ref', 'src' => 'url-img', 'srcset' => 'text', 'sizes' => 'text', 'alt' => 'text', 'title' => 'text', 'width' => 'int', 'height' => 'int', 'fetchpriority' => ['high', 'low'], 'tabindex' => 'int'],
@@ -79,7 +81,8 @@
 		// Setup
 
 			public function __construct($html, $parameters = []) {
-				$this->source_html = $html;
+				$this->source_string = !is_array($html);
+				$this->source_html = ($this->source_string ? [$html] : $html);
 				$this->source_parameters = $parameters;
 			}
 
@@ -138,70 +141,83 @@
 
 					if ($this->template_split_html === NULL) {
 
-						//--------------------------------------------------
-						// Simple Template HTML split
+						$this->template_split_html = [];
+						$this->template_contexts = [];
 
-								// This does not intend to be a full/proper templating system.
-								// The context of the placeholders is only roughly checked, when in debug mode, via XML parsing.
-								// It uses a RegExp, which is bad for general HTML, but it's fast, and can work with known-good XHTML (in theory).
-								// The HTML must be a safe literal (a trusted string, from the developer, defined in the PHP script).
-								// The HTML must be valid XML (why be lazy/messy?).
-								// The HTML must include parameters in a Quoted Attribute, or it's own HTML Tag.
-								// It only uses simple HTML Encoding - which is why attributes must be quoted, to avoid '<img src=? />' being used with 'x onerror=evil-js'
+						foreach ($this->source_html as $part => $source_html) {
 
-							$this->template_split_html = preg_split('/(?<=(>)|(\'|"))\?(?=(?(1)<\/|\2))/', $this->source_html);
-							$this->template_split_end = (count($this->template_split_html) - 1);
+							//--------------------------------------------------
+							// Simple Template HTML split
 
-								// Positive lookbehind assertion.
-								//   For a '>' (1).
-								//   Or a single/double quote (2).
-								// The question mark for the parameter.
-								// Positive lookahead assertion.
-								//   When sub-pattern (1) matched, look for a '<'.
-								//   Otherwise look for the same quote mark (2).
+									// This does not intend to be a full/proper templating system.
+									// The context of the placeholders is only roughly checked, when in debug mode, via XML parsing.
+									// It uses a RegExp, which is bad for general HTML, but it's fast, and can work with known-good XHTML (in theory).
+									// The HTML must be a safe literal (a trusted string, from the developer, defined in the PHP script).
+									// The HTML must be valid XML (why be lazy/messy?).
+									// The HTML must include parameters in a Quoted Attribute, or it's own HTML Tag.
+									// It only uses simple HTML Encoding - which is why attributes must be quoted, to avoid '<img src=? />' being used with 'x onerror=evil-js'
 
-						//--------------------------------------------------
-						// Guessed context for parameters (i.e. use nl2br?)
+								$this->template_split_html[$part] = preg_split('/(?<=(>)|(\'|"))\?(?=(?(1)<\/|\2))/', $source_html);
 
-								// Use the HTML afterwards, where it's easier to get the end tag,
-								// as the start tag may be multiple parameters away.
-								//   <em class="?">?</em>
+									// Positive lookbehind assertion.
+									//   For a '>' (1).
+									//   Or a single/double quote (2).
+									// The question mark for the parameter.
+									// Positive lookahead assertion.
+									//   When sub-pattern (1) matched, look for a '<'.
+									//   Otherwise look for the same quote mark (2).
 
-							$this->template_contexts = [];
+							//--------------------------------------------------
+							// Guessed context for parameters (i.e. use nl2br?)
 
-							for ($k = 1; $k <= $this->template_split_end; $k++) { // 1 to ignore the first section
-								if (substr($this->template_split_html[$k], 0, 1) === '<') {
-									if (preg_match('/^<\/([a-z0-9\-]+)>/i', $this->template_split_html[$k], $matches)) {
-										$this->template_contexts[] = $matches[1];
+									// Use the HTML afterwards, where it's easier to get the end tag,
+									// as the start tag may be multiple parameters away.
+									//   <em class="?">?</em>
+
+								$end = (count($this->template_split_html[$part]) - 1);
+
+								for ($k = 1; $k <= $end; $k++) { // 1 to ignore the first section
+									if (substr($this->template_split_html[$part][$k], 0, 1) === '<') {
+										if (preg_match('/^<\/([a-z0-9\-]+)>/i', $this->template_split_html[$part][$k], $matches)) {
+											$this->template_contexts[] = $matches[1];
+										} else {
+											throw new error_exception('Placeholder ' . $k . ' is not followed by a valid closing tag', debug_dump($this->source_html));
+										}
 									} else {
-										throw new error_exception('Placeholder ' . $k . ' is not followed by a valid closing tag', debug_dump($this->source_html));
+										$this->template_contexts[] = NULL; // It should be an attribute (single or double quotes).
 									}
-								} else {
-									$this->template_contexts[] = NULL; // It should be an attribute (single or double quotes).
 								}
-							}
 
-						//--------------------------------------------------
-						// Primitive tag and attribute checking
+						}
 
-							if (config::get('debug.level') > 0) {
+						if (config::get('debug.level') > 0) {
 
-								if (SERVER == 'stage' && function_exists('is_literal') && !is_literal($this->source_html) && config::get('html_template.unsafe_disable_literal_check', false) !== true) {
-									foreach (debug_backtrace() as $called_from) {
-										if (isset($called_from['file']) && !str_starts_with($called_from['file'], FRAMEWORK_ROOT)) {
-											break;
+							//--------------------------------------------------
+							// Literal String
+
+								if (function_exists('is_literal')) {
+									foreach ($this->source_html as $part => $source_html) {
+										if (!is_literal($source_html) && config::get('html_template.unsafe_disable_literal_check', false) !== true) {
+											foreach (debug_backtrace() as $called_from) {
+												if (isset($called_from['file']) && !str_starts_with($called_from['file'], FRAMEWORK_ROOT)) {
+													break;
+												}
+											}
+											echo "\n";
+											echo '<div>' . "\n";
+											echo '	<h1>Error</h1>' . "\n";
+											echo '	<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>' . "\n";
+											echo '	<p>The following HTML has been tainted.</p>' . "\n";
+											echo '	<hr />' . "\n";
+											echo '	<p><pre>' . "\n\n" . html($source_html) . "\n\n" . '</pre></p>' . "\n";
+											echo '</div>' . "\n";
+											exit();
 										}
 									}
-									echo "\n";
-									echo '<div>' . "\n";
-									echo '	<h1>Error</h1>' . "\n";
-									echo '	<p><strong>' . str_replace(ROOT, '', $called_from['file']) . '</strong> (line ' . $called_from['line'] . ')</p>' . "\n";
-									echo '	<p>The following HTML has been tainted.</p>' . "\n";
-									echo '	<hr />' . "\n";
-									echo '	<p><pre>' . "\n\n" . html($this->source_html) . "\n\n" . '</pre></p>' . "\n";
-									echo '</div>' . "\n";
-									exit();
 								}
+
+							//--------------------------------------------------
+							// Primitive tag and attribute checking
 
 									// Your HTML should be valid XML,
 									// as it ensures strict/valid nesting,
@@ -220,7 +236,7 @@
 								$html_suffix = '</html>';
 
 								$doc = new DomDocument();
-								$doc->loadXML($html_prefix . $this->source_html . $html_suffix);
+								$doc->loadXML($html_prefix . implode('', $this->source_html) . $html_suffix);
 
 								foreach (libxml_get_errors() as $error) {
 									libxml_clear_errors();
@@ -248,7 +264,7 @@
 									}
 								}
 
-							}
+						}
 
 					}
 
@@ -302,11 +318,15 @@
 				//--------------------------------------------------
 				// Create HTML
 
-					$html = '';
+					$return = [];
 
-					foreach ($this->template_split_html as $k => $template_html) {
-						$html .= $template_html;
-						if ($k < $this->template_split_end) {
+					$k = 0;
+
+					foreach ($this->template_split_html as $part => $template_split_html) {
+						$end_html = array_pop($template_split_html);
+						$html = '';
+						foreach ($template_split_html as $template_html) {
+							$html .= $template_html;
 							if (array_key_exists($k, $parameters)) { // Could be NULL
 								if (($this->template_contexts[$k] !== NULL) && ($parameters[$k] instanceof html_template || $parameters[$k] instanceof html_safe_value)) { // Not an attribute
 									$html .= $parameters[$k];
@@ -318,12 +338,16 @@
 							} else {
 								throw new error_exception('Missing parameter ' . ($k + 1), debug_dump($this->source_html));
 							}
-						} else if (isset($parameters[$k])) {
-							throw new error_exception('Extra parameter ' . ($k + 1), debug_dump($this->source_html));
+							$k++;
 						}
+						$return[] = new html_safe_value($html . $end_html);
 					}
 
-					return new html_safe_value($html);
+					if (isset($parameters[$k])) {
+						throw new error_exception('Extra parameter ' . ($k + 1), debug_dump($this->source_html));
+					}
+
+					return ($this->source_string ? $return[0] : $return);
 
 			}
 
