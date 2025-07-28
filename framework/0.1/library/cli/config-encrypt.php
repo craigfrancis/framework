@@ -29,6 +29,8 @@
 
 	if (is_dir('/usr/local/opt/httpd/bin')) {
 		$envvars_path = '/usr/local/opt/httpd/bin/envvars';
+	} else if (is_dir('/opt/homebrew/opt/httpd/bin')) {
+		$envvars_path = '/opt/homebrew/opt/httpd/bin/envvars';
 	} else {
 		$envvars_path = '/etc/apache2/envvars';
 	}
