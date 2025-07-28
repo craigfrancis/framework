@@ -322,7 +322,7 @@
 						}
 
 						$values = [
-								'id'      => '',
+								'id'      => 0,
 								'token'   => $reset_hash,
 								'ip'      => config::get('request.ip'),
 								'browser' => config::get('request.browser'),

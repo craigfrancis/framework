@@ -689,7 +689,7 @@
 						$now = new timestamp();
 
 						$values = [
-								'id'      => '',
+								'id'      => 0,
 								'token'   => $update_hash,
 								'ip'      => config::get('request.ip'),
 								'browser' => config::get('request.browser'),

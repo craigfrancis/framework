@@ -213,7 +213,7 @@
 				// Store
 
 					$db->insert(DB_PREFIX . 'order_transaction', array(
-							'id'      => '',
+							'id'      => 0,
 							'xml'     => $xml,
 							'created' => new timestamp(),
 						));

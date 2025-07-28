@@ -207,7 +207,7 @@
 				// Create maintenance run record
 
 					$db->insert(DB_PREFIX . 'system_maintenance', [
-							'id'        => '',
+							'id'        => 0,
 							'run_start' => $now,
 							'run_end'   => '0000-00-00 00:00:00',
 						]);

@@ -376,7 +376,7 @@
 					$remember_hash = quick_hash_create($remember_pass);
 
 					$values = [
-							'id'      => '',
+							'id'      => 0,
 							'token'   => $remember_hash,
 							'ip'      => config::get('request.ip'),
 							'browser' => config::get('request.browser'),

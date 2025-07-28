@@ -293,7 +293,7 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 						// Add
 
 							$db->insert(DB_PREFIX . 'gateway_log', array(
-									'id'           => '',
+									'id'           => 0,
 									'gateway'      => $gateway_name,
 									'request_url'  => $gateway_url,
 									'request_data' => debug_dump($data),

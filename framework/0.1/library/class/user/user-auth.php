@@ -622,7 +622,7 @@
 				$now = new timestamp();
 
 				$db->insert($this->user_obj->db_table_main, array(
-						$this->db_table_fields['id'] => '',
+						$this->db_table_fields['id'] => 0,
 						$this->db_table_fields['identification'] => ($identification == '' ? NULL : $identification),
 						$this->db_table_fields['created'] => $now,
 						$this->db_table_fields['edited'] => $now,

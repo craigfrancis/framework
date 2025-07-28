@@ -705,12 +705,12 @@
 
 					if ($edit) {
 
-						$db->insert($this->db_table_item, array_merge($row, $info, array( // Following values must be merged last, do not trust $info array.
-								'id' => '',
+						$db->insert($this->db_table_item, array_merge($row, $info, [ // Following values must be merged last, do not trust $info array.
+								'id'       => 0,
 								'order_id' => $this->order_id,
-								'type' => 'item',
+								'type'     => 'item',
 								'quantity' => $quantity, // Do not change the 'created' date, as the item order on the review page will change.
-							)));
+							]));
 
 					}
 
