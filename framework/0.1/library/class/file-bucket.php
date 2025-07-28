@@ -1130,7 +1130,7 @@ debug('Removed File: ' . $matches[1]);
 							'processed' => '0000-00-00 00:00:00',
 						], $extra_details));
 
-					$values['id']   = ''; // Set automatically, via `auto_increment`
+					$values['id']   = 0; // Set automatically, via `auto_increment`
 					$values['info'] = ''; // Populated later, once the id is known (for the encryption $additional_data, so this value can only be used for this record).
 
 					$db->insert($this->config['table_sql'], $values);
