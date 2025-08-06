@@ -31,8 +31,8 @@ For additional resources (e.g. on a per-page basis) you can also call:
 So for example, Google Maps might require:
 
 	$response = response_get();
-	$response->csp_source_add('style-src',  array('"unsafe-inline"'));
-	$response->csp_source_add('script-src', array('"unsafe-inline"', '"unsafe-eval"', 'https://*.googleapis.com', 'https://*.gstatic.com'));
+	$response->csp_source_add('style-src',  array("'unsafe-inline'"));
+	$response->csp_source_add('script-src', array("'unsafe-inline'", "'unsafe-eval'", 'https://*.googleapis.com', 'https://*.gstatic.com'));
 	$response->csp_source_add('img-src',    array('https://*.googleapis.com', 'https://*.gstatic.com'));
 
 ---
