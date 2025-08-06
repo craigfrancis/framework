@@ -88,6 +88,10 @@
 
 					if (!is_file($controller_path)) {
 						$controller_log[] = $controller_path . ' - absent';
+						if (is_file(CONTROLLER_ROOT . $building_path)) { // If $path is "/admin.php/b/", and is_file("/admin.php.php") fails, but "/admin.php" does exist, we should *not* continue (e.g. "/admin.php/b.php"), this causes an "open_basedir restriction" warning.
+							$controller_log[] = CONTROLLER_ROOT . $building_path . ' - end';
+							break;
+						}
 						continue;
 					}
 
