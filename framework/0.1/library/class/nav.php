@@ -161,6 +161,7 @@
 
 					$this->navigation[$this->current_group]['links'][$this->current_index]['url'] = $url;
 					$this->navigation[$this->current_group]['links'][$this->current_index]['path'] = $path;
+					$this->navigation[$this->current_group]['links'][$this->current_index]['name'] = $name;
 					$this->navigation[$this->current_group]['links'][$this->current_index]['name_ref'] = $name_ref;
 					$this->navigation[$this->current_group]['links'][$this->current_index]['name_html'] = $name_html;
 					$this->navigation[$this->current_group]['links'][$this->current_index]['config'] = $config;
