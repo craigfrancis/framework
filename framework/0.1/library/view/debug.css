@@ -102,6 +102,7 @@
 	}
 
 	#debug_output .debug_notes .note .debug_absent,
+	#debug_output .debug_notes .note .debug_end,
 	#debug_output .debug_notes .note strong.warning {
 		color: #A00;
 		background: inherit;

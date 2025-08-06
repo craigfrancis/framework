@@ -281,6 +281,13 @@
 						} else {
 							$entry[] = ['span', $matches[4]];
 						}
+					} else if (($pos = strrpos($entry, ' - ')) !== false) {
+						$split = [];
+						$split[] = ['span', substr($entry, 0, $pos)];
+						$split[] = ['span', ' - '];
+						$match = substr($entry, ($pos + 3));
+						$split[] = ['span', $match, 'debug_' . $match]; // debug_unchanged, debug_found, debug_absent
+						$entry = $split;
 					}
 					$log[] = $entry;
 				}
