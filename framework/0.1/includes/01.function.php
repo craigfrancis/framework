@@ -1995,9 +1995,14 @@
 
 			if ($last_modified !== NULL) {
 
-				header('Last-Modified: ' . head(gmdate('D, d M Y H:i:s', $last_modified)) . ' GMT');
+				if (!($last_modified instanceof timestamp)) {
+					$last_modified = new timestamp($last_modified);
+				}
+				$last_modified->setTimezone(new DateTimeZone('GMT'));
 
-				if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $last_modified) {
+				header('Last-Modified: ' . head($last_modified->format('D, d M Y H:i:s e')));
+
+				if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $last_modified->format('U')) {
 					http_response_code(304);
 					exit();
 				}
