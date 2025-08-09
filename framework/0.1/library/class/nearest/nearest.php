@@ -373,6 +373,10 @@
 								}
 							}
 
+							if (function_exists('debug_note') && ($result->error_message ?? '') != '') {
+								debug_note('Google Maps Geocode: "' . $result->error_message . '"');
+							}
+
 						//--------------------------------------------------
 						// Log
 
