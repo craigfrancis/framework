@@ -131,7 +131,7 @@
 
 					}
 
-					if (!is_array($this->content) && strlen($cache_name) <= 255) { // Can't use cache (filename too long - assuming ext3), so don't work at all.
+					if (!is_array($this->content) && strlen($cache_name ?? '') <= 255) { // Can't use cache (filename too long - assuming ext3), so don't work at all.
 
 						$this->content = $this->content_get();
 
