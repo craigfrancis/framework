@@ -20,7 +20,7 @@
 			'check::',
 			'dump::',
 			'diff::',
-			'reset',
+			'reset::',
 			'upload:',
 			'confirm-server:',
 		);

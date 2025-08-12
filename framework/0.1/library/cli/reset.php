@@ -6,7 +6,7 @@
 //--------------------------------------------------
 // Reset
 
-	function reset_run() {
+	function reset_run($mode) {
 
 		//--------------------------------------------------
 		// Setup
@@ -34,20 +34,6 @@
 			ini_set('memory_limit', '1024M');
 
 			set_time_limit(30); // Don't time out
-
-		//--------------------------------------------------
-		// Confirm
-
-			echo 'This action will empty the database and fill it with dummy data.' . "\n\n";
-			echo 'Type "YES" to continue: ';
-
-			$line = trim(fgets(STDIN));
-
-			echo "\n";
-
-			if ($line != 'YES') {
-				return;
-			}
 
 		//--------------------------------------------------
 		// Table info
@@ -188,13 +174,13 @@
 				//--------------------------------------------------
 				// Create
 
-					echo "\n" . 'Type "YES" to create: ';
+					echo "\n" . 'Type [Enter] to create: ';
 
 					$line = trim(fgets(STDIN));
 
 					echo "\n";
 
-					if ($line == 'YES') {
+					if ($line == '') {
 
 						$template = file_get_contents($framework_path . '/blank.php');
 						$auto_types = ['name', 'name_title', 'name_first', 'name_last', 'address_1'];
@@ -257,6 +243,26 @@
 						}
 
 					}
+
+			}
+
+		//--------------------------------------------------
+		// Confirm
+
+			if ($mode != 'run') {
+
+				echo 'This action will empty the database and fill it with dummy data.' . "\n\n";
+				echo 'It is possible to use: ' . "\n";
+				echo '  ./cli --reset=run' . "\n\n";
+				echo 'Type "YES" to continue: ';
+
+				$line = trim(fgets(STDIN));
+
+				echo "\n";
+
+				if ($line != 'YES') {
+					return;
+				}
 
 			}
 
