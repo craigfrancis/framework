@@ -135,6 +135,7 @@
 				'magnetometer'                       => [],
 				'microphone'                         => [],
 				'midi'                               => [],
+				'on-device-speech-recognition'       => [],
 				'otp-credentials'                    => ['self'],
 				'payment'                            => [],
 				'private-aggregation'                => [],
@@ -142,7 +143,6 @@
 				'private-state-token-redemption'     => [],
 				'publickey-credentials-create'       => [],
 				'publickey-credentials-get'          => [],
-				'rewriter'                           => [], // TBC
 				'run-ad-auction'                     => [],
 				'screen-wake-lock'                   => [],
 				'serial'                             => [],
@@ -153,7 +153,6 @@
 				'translator'                         => [], // For the JS API: translator = await Translator.create(...)
 				'usb'                                => [],
 				'window-management'                  => [],
-				'writer'                             => [], // TBC
 				'xr-spatial-tracking'                => [],
 
 				// 'picture-in-picture'              => [], // Risky
