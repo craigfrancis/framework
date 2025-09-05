@@ -967,6 +967,10 @@
 									$csrf_report = false; // Top level 'navigate' to view a passive form, as a 'document', requested from another website (maybe email link)... but, because it's navigate/document, it's probably fine (a timing attack shouldn't be possible).
 								} else if ($this->form_passive && $fetch_values['dest'] == 'empty' && $fetch_values['mode'] == 'navigate' && $fetch_values['site'] == 'same-origin') {
 									$csrf_report = false; // Not sure why this happens, it might be a prefetch (e.g. https://chromestatus.com/feature/6276236312313856 but mode is not 'no-cors'), or a browser extention doing a fetch()... but, because it's same-origin, it's probably fine.
+								} else if ($fetch_values['dest'] === 'document' && $fetch_values['mode'] === 'cors' && $fetch_values['site'] === NULL && $fetch_values['user'] === NULL && !in_array('cors', $this->fetch_allowed['mode'])) {
+									$csrf_errors[] = 'BotDetect'; // A spam bot that seems to be mis-configured.
+									$csrf_report = false;
+									$csrf_block = true;
 								} else {
 									foreach ($this->fetch_allowed as $field => $allowed) {
 										if ($fetch_values[$field] != NULL && !in_array($fetch_values[$field], $allowed)) {
