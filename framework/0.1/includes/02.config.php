@@ -133,6 +133,7 @@
 				'join-ad-interest-group'             => [],
 				'keyboard-map'                       => [],
 				'language-detector'                  => [], // For the JS API: detector = await LanguageDetector.create(...)
+				'local-network-access'               => [],
 				'local-fonts'                        => [],
 				'magnetometer'                       => [],
 				'microphone'                         => [],
