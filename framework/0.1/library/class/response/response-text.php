@@ -117,6 +117,10 @@
 
 				}
 
+				config::set('output.csp_directives', 'none'); // Text/CSS/JSON should not be endered as HTML, so the CSP should be 'none'.
+
+				http_system_headers();
+
 				echo $this->content;
 
 			}
