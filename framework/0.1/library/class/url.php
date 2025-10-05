@@ -2,8 +2,6 @@
 
 	// http://www.phpprime.com/doc/helpers/url/
 
-	// require_once(FRAMEWORK_ROOT . '/library/tests/class-url.php');
-
 	class url_base extends check {
 
 		//--------------------------------------------------
@@ -16,7 +14,7 @@
 			private $fragment = NULL;
 			private $format = NULL;
 			private $scheme = NULL;
-			private $schemes = array('http', 'https', 'mailto');
+			private $schemes = ['http', 'https', 'mailto', 'tel'];
 			private $dest_readable = false;
 
 		//--------------------------------------------------
@@ -107,11 +105,10 @@
 			}
 
 			public function scheme_get() {
-				if ($this->scheme !== NULL) {
-					return $this->scheme;
-				} else {
-					return (isset($this->path_data['scheme']) ? $this->path_data['scheme'] : NULL);
+				if ($this->scheme === NULL) {
+					$this->scheme = ($this->path_data['scheme'] ?? NULL);
 				}
+				return $this->scheme;
 			}
 
 			public function path_get() {
@@ -195,51 +192,59 @@
 				//--------------------------------------------------
 				// Parameters
 
-					$query = $this->parameters;
+					if ($this->scheme == 'tel') {
 
-					if (is_array($parameters)) {
-						$query = array_merge($query, $parameters);
-					}
-
-					foreach ($query as $name => $value) {
-						$pos = strpos($output, '/:' . $name . '/');
-						if ($pos !== false) {
-							$output = substr($output, 0, ($pos + 1)) . rawurlencode(strval($value)) . ($value === NULL ? '' : '/') . substr($output, $pos + strlen($name) + 3);
-							unset($query[$name]);
-						} else if ($value === NULL) {
-							unset($query[$name]);
-						} else if (is_array($value)) {
-							$query[$name] = $value; // Array usage: ./path/?a[]=1&a[]=2&a[]=3
-						} else {
-							$query[$name] = strval($value); // Convert url objects to strings
+						$ext = ($this->parameters['ext'] ?? ''); // https://datatracker.ietf.org/doc/html/rfc3966
+						if (preg_match('/^[0-9]+$/', $ext)) {
+							$output .= ';ext=' . $ext;
 						}
-					}
 
-					if (count($query) > 0) {
-						$dest_readable = ($this->dest_readable ? ($query['dest'] ?? NULL) : NULL);
-						if ($dest_readable) {
-							unset($query['dest']);
-							$dest_readable = rawurlencode($dest_readable);
-							$dest_readable = str_replace('%2F', '/', $dest_readable);
-								// https://en.wikipedia.org/wiki/Percent-encoding
-								// In the "query" component of a URI (the part after a ? character), for example, / is still considered
-								// a reserved character but it normally has no reserved purpose, unless a particular URI scheme says
-								// otherwise. The character does not need to be percent-encoded when it has no reserved purpose.
-						}
-						$query = $this->_query_build($query);
-						if ($dest_readable) {
-							$query .= ($query ? '&' : '') . 'dest=' . $dest_readable;
-						}
-						if ($query != '') {
-							$output .= '?' . $query;
-						}
-					}
+					} else {
 
-				//--------------------------------------------------
-				// Fragment
+						$query = $this->parameters;
 
-					if ($this->fragment !== NULL) {
-						$output .= '#' . $this->fragment;
+						if (is_array($parameters)) {
+							$query = array_merge($query, $parameters);
+						}
+
+						foreach ($query as $name => $value) {
+							$pos = strpos($output, '/:' . $name . '/');
+							if ($pos !== false) {
+								$output = substr($output, 0, ($pos + 1)) . rawurlencode(strval($value)) . ($value === NULL ? '' : '/') . substr($output, $pos + strlen($name) + 3);
+								unset($query[$name]);
+							} else if ($value === NULL) {
+								unset($query[$name]);
+							} else if (is_array($value)) {
+								$query[$name] = $value; // Array usage: ./path/?a[]=1&a[]=2&a[]=3
+							} else {
+								$query[$name] = strval($value); // Convert url objects to strings
+							}
+						}
+
+						if (count($query) > 0) {
+							$dest_readable = ($this->dest_readable ? ($query['dest'] ?? NULL) : NULL);
+							if ($dest_readable) {
+								unset($query['dest']);
+								$dest_readable = rawurlencode($dest_readable);
+								$dest_readable = str_replace('%2F', '/', $dest_readable);
+									// https://en.wikipedia.org/wiki/Percent-encoding
+									// In the "query" component of a URI (the part after a ? character), for example, / is still considered
+									// a reserved character but it normally has no reserved purpose, unless a particular URI scheme says
+									// otherwise. The character does not need to be percent-encoded when it has no reserved purpose.
+							}
+							$query = $this->_query_build($query);
+							if ($dest_readable) {
+								$query .= ($query ? '&' : '') . 'dest=' . $dest_readable;
+							}
+							if ($query != '') {
+								$output .= '?' . $query;
+							}
+						}
+
+						if ($this->fragment !== NULL) {
+							$output .= '#' . $this->fragment;
+						}
+
 					}
 
 				//--------------------------------------------------
@@ -306,26 +311,32 @@
 				// No url data provided.
 
 					if (!is_array($this->path_data)) {
+						if ($scheme_http) {
 
-						$this->path_data = array(
-								'path' => $current_path, // Don't use parse_url() as we don't want "//domain/path" being mis-interpreted.
-							);
+							$this->path_data = array(
+									'path' => $current_path, // Don't use parse_url() as we don't want "//domain/path" being mis-interpreted.
+								);
 
-						$query_string = config::get('request.query');
-						if ($query_string !== '' && $query_string !== NULL) {
+							$query_string = config::get('request.query');
+							if ($query_string !== '' && $query_string !== NULL) {
 
-							parse_str($query_string, $parameters);
+								parse_str($query_string, $parameters);
 
-							foreach ($parameters as $key => $value) {
-								if (array_key_exists($key, $this->parameters)) {
-									unset($parameters[$key]); // Already set parameters take priority (don't replace)
+								foreach ($parameters as $key => $value) {
+									if (array_key_exists($key, $this->parameters)) {
+										unset($parameters[$key]); // Already set parameters take priority (don't replace)
+									}
 								}
+
+								$this->parameters = array_merge($parameters, $this->parameters); // Kept parameters go first (not appended at the end).
+
 							}
 
-							$this->parameters = array_merge($parameters, $this->parameters); // Kept parameters go first (not appended at the end).
+						} else {
+
+							exit_with_error('Missing data for a "' . $scheme . '" URL.');
 
 						}
-
 					}
 
 				//--------------------------------------------------
@@ -354,9 +365,13 @@
 						$output = '';
 
 					//--------------------------------------------------
-					// Full format (inc domain)
+					// Scheme, host, etc
 
-						if ($format == 'full') {
+						if ($scheme == 'mailto' || $scheme == 'tel') {
+
+							$output = $scheme . ':';
+
+						} else if ($format == 'full') {
 
 							if ($scheme_http && !isset($this->path_data['host'])) { // If it's a HTTP(S) scheme, for an unset host, we can assume the it's for the current origin.
 
@@ -405,6 +420,7 @@
 									}
 
 							}
+
 						}
 
 					//--------------------------------------------------
@@ -451,6 +467,14 @@
 
 							if (substr($path, -1) == '/' && substr($output, -1) != '/') { // Output could be '../'
 								$output .= '/';
+							}
+
+						} else if ($scheme == 'tel') {
+
+							if (preg_match('/^\+[0-9]+$/', ($this->path_data['path'] ?? ''))) { // https://datatracker.ietf.org/doc/html/rfc3966
+								$output .= $this->path_data['path'];
+							} else {
+								throw new error_exception('When creating a "tel:" URL, start with a "+" (to make it a global-number), and only use digits (to avoid parsing issues)', debug_dump($this->path_data ?? 'NULL'));
 							}
 
 						} else if (isset($this->path_data['path'])) { // e.g. a 'mailto:' URL
@@ -507,5 +531,7 @@
 		}
 
 	}
+
+	// require_once(FRAMEWORK_ROOT . '/library/tests/class-url.php');
 
 ?>

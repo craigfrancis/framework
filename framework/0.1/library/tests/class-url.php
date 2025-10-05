@@ -29,7 +29,11 @@
 	echo '  ' . url('https://www.example.com') . "\n";
 	echo '  ' . url('https://user:pass@www.example.com:80/about/folder/?id=example#anchor', ['id' => 5, 'test' => 't=r&u e']) . "\n";
 	echo '  ' . http_url('./thank-you/') . "\n";
+	echo '  ' . url('mailto:user@example.com') . "\n";
 	echo '  ' . url('mailto:user@example.com', ['subject' => 'My Subject']) . "\n";
+	echo '  ' . url('tel:+1234567890') . "\n";
+	echo '  ' . url('tel:+1234567890#ignored', ['ignored' => 'ignored']) . "\n";
+	echo '  ' . url('tel:+1234567890', ['ext' => '123']) . "\n";
 
 	$example = new url('/news/?d=e#top', 'id', ['id' => 10, 'a' => 'b']);
 	echo "\n";
