@@ -27,7 +27,7 @@
 
 					foreach ($this->files as $id => $file) {
 
-						$dimensions = ($file['path'] == '' ? false : getimagesize($file['path']));
+						$dimensions = ($file['path'] == '' ? false : @getimagesize($file['path'])); // Suppress errors if the uploaded file is malformed.
 						if ($dimensions !== false) {
 
 							if ($dimensions[2] == IMAGETYPE_JPEG) {
