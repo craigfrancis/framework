@@ -225,7 +225,7 @@
 					}
 
 				//--------------------------------------------------
-				// Validate the mime type
+				// Validate file mime
 
 					$mime_types = [];
 
@@ -246,12 +246,12 @@
 					parent::allowed_file_types_mime_set_html($error_html, $mime_types);
 
 				//--------------------------------------------------
-				// Could not use getimagesize
+				// Validate file type (using getimagesize)
 
 					if ($this->uploaded) {
 						foreach ($this->files as $id => $file) {
 
-							if ($file['image_type'] == NULL) {
+							if ($file['image_type'] == NULL) { // Could not use getimagesize
 
 								$this->form->_field_error_set_html($this->form_field_uid, str_replace('XXX', 'invalid image', $error_html), 'ERROR: Failed getimagesize');
 
