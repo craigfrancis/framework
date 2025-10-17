@@ -899,7 +899,7 @@ $chunk_log[] = 'End: ' . $byte;
 
 					$this->response_full = $response_headers_plain . $response_split . ($response_raw ? $response_raw : $response_data);
 
-					if ($chunk_error === false && $response_data !== NULL && !$connection_meta_data['timed_out']) {
+					if ($this->response_full !== '' && $chunk_error === false && !$connection_meta_data['timed_out']) { // Before 2019-09-30, checked if $response_data was NULL, but use string append now, so check response_full (should be headers).
 
 						$this->response_headers_plain = rtrim($response_headers_plain);
 						$this->response_headers_parsed = $response_headers_parsed;
