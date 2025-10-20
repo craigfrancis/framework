@@ -134,6 +134,7 @@
 				'keyboard-map'                       => [],
 				'language-detector'                  => [], // For the JS API: detector = await LanguageDetector.create(...)
 				'local-fonts'                        => [],
+				'local-network-access'               => [],
 				'magnetometer'                       => [],
 				'microphone'                         => [],
 				'midi'                               => [],
