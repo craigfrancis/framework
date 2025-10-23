@@ -755,9 +755,9 @@ $chunk_timings[] = round(hrtime_diff($start), 4);
 $start = hrtime(true);
 
 $chunk_log = [];
+$chunk_log[] = $error_details;
 $chunk_log[] = $chunk_timings;
 $chunk_log[] = $k;
-$chunk_log[] = $error_details;
 $chunk_log[] = $response_headers_parsed;
 $chunk_log[] = $response_headers_plain;
 
@@ -907,29 +907,33 @@ $chunk_log[] = 'End: ' . $byte;
 
 					} else {
 
-						$debug  = 'Host: "' . $this->request_host . '"' . "\n";
-						$debug .= 'Path: "' . $this->request_path . '"' . "\n\n";
-
 						if ($connection_meta_data['timed_out']) {
 							$error = 'Connection timed out.';
-							$debug .= debug_dump($connection_meta_data) . "\n\n";
-							$debug .= '--------------------------------------------------' . "\n\n";
 						} else {
 							$error = 'Invalid response from remote server.';
 						}
 
-$debug .= 'Chunk Log:' . "\n\n";
-$debug .= debug_dump($chunk_log) . "\n\n";
-$debug .= '--------------------------------------------------' . "\n\n";
+						$debug  = 'Host: "' . $this->request_host . '"' . "\n";
+						$debug .= 'Path: "' . $this->request_path . '"' . "\n\n";
+
+						$debug .= '--------------------------------------------------' . "\n\n";
+						$debug .= 'Stream Meta Data:' . "\n\n";
+						$debug .= debug_dump($connection_meta_data) . "\n\n";
+
+						$debug .= '--------------------------------------------------' . "\n\n";
+						$debug .= 'Chunk Log:' . "\n\n";
+						$debug .= debug_dump($chunk_log) . "\n\n";
 
 						if ($chunk_error !== false) {
-							$debug .= 'Chunk Error: ' . $chunk_error . "\n\n";
 							$debug .= '--------------------------------------------------' . "\n\n";
+							$debug .= 'Chunk Error:' . "\n\n";
+							$debug .= debug_dump($chunk_error) . "\n\n";
 						}
 
 						if (is_array($context)) {
-							$debug .= debug_dump($context) . "\n\n";
 							$debug .= '--------------------------------------------------' . "\n\n";
+							$debug .= 'Context:' . "\n\n";
+							$debug .= debug_dump($context) . "\n\n";
 						}
 
 						$cut_request = substr($request, 0, 65000); // Request might include base64 encoded files, so could be quite large.
@@ -937,9 +941,14 @@ $debug .= '--------------------------------------------------' . "\n\n";
 							$cut_request .= '...';
 						}
 
-						$debug .= $cut_request . "\n\n";
 						$debug .= '--------------------------------------------------' . "\n\n";
+						$debug .= 'Request:' . "\n\n";
+						$debug .= $cut_request . "\n\n";
+
+						$debug .= '--------------------------------------------------' . "\n\n";
+						$debug .= 'Response:' . "\n\n";
 						$debug .= $this->response_full . "\n\n";
+
 						$debug .= '--------------------------------------------------' . "\n";
 
 						return $this->error($error, $debug);
