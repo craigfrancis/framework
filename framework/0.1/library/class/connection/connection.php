@@ -880,9 +880,19 @@ $chunk_log[] = 'End: ' . $byte;
 
 					$connection_meta_data = stream_get_meta_data($connection);
 
-					if ($this->request_keep_alive && $error === false && $chunk_error === false) {
+					if ($this->request_keep_alive) {
 
-						$this->connections[$socket_host] = [$context, $connection];
+						if ($error === false && $chunk_error === false) {
+
+							$this->connections[$socket_host] = [$context, $connection];
+
+						} else { // Something went wrong, cannot keep using this connection.
+
+							fclose($connection);
+
+							unset($this->connections[$socket_host]);
+
+						}
 
 					} else {
 
