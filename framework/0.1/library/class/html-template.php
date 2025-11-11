@@ -356,7 +356,7 @@
 			}
 
 			public function _debug_dump() {
-				return 'html_template("' . $this->source_html . '"' . ($this->source_parameters ? ', ' . debug_dump($this->source_parameters) : '') . ')';
+				return 'html_template(' . debug_dump($this->source_html) . '' . ($this->source_parameters ? ', ' . debug_dump($this->source_parameters) : '') . ')';
 			}
 
 	}
