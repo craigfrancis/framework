@@ -15,12 +15,18 @@
 			private $direct_headings = NULL;
 			private $direct_fp = NULL;
 
+			private $field_separator = ',';
+
 			public function __construct() {
 				$this->setup();
 			}
 
 			protected function setup() {
 				$this->charset_input = config::get('output.charset');
+			}
+
+			public function field_separator_set($separator) {
+				$this->field_separator = $separator;
 			}
 
 			public function charset_output_set($charset) {
@@ -47,11 +53,11 @@
 							$this->direct_headings = false;
 						} else {
 							$this->direct_headings = true; // array_keys($row)
-							fputcsv($this->direct_fp, array_keys($row));
+							fputcsv($this->direct_fp, array_keys($row), $this->field_separator);
 						}
 					}
 
-					fputcsv($this->direct_fp, $row);
+					fputcsv($this->direct_fp, $row, $this->field_separator);
 					flush();
 
 				} else {
@@ -188,11 +194,11 @@
 
 					$first = reset($this->rows);
 					if ($first !== false && !array_is_list($first)) {
-						fputcsv($fp, array_keys($first));
+						fputcsv($fp, array_keys($first), $this->field_separator);
 					}
 
 					foreach ($this->rows as $row) {
-						fputcsv($fp, $row);
+						fputcsv($fp, $row, $this->field_separator);
 					}
 
 				//--------------------------------------------------
