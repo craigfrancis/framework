@@ -862,6 +862,27 @@
 				}
 			}
 
+			public function session_mfa_get() {
+				if (!$this->session_info_available) {
+					exit_with_error('Cannot call $auth->session_mfa_get() before $auth->session_get()');
+				}
+				if ($this->session_info_auth === NULL) {
+					exit_with_error('Cannot call $auth->session_mfa_get() with an invalid $auth->session_info_auth value');
+				}
+				if (!is_array($this->session_info_auth)) { // During normal session_get(), where most pages will not need this to be parsed.
+					$this->session_info_auth = auth::secret_parse($this->session_info_data['user_id'], $this->session_info_auth);
+				}
+				$return = [];
+				if (isset($this->session_info_auth['mfa']['sms'])) {
+					$return['sms'] = $this->session_info_auth['mfa']['sms']; // Just return values, e.g. 'db_field', 'number'
+				}
+				if (isset($this->session_info_auth['mfa']['totp'])) {
+					$return['totp'] = [ // Do not return 'secret'
+						];
+				}
+				return $return;
+			}
+
 			public function session_previous_get() {
 
 				if (!$this->session_info_available) {
