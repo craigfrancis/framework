@@ -1256,6 +1256,12 @@
 // Set message (shortcut)
 
 	function message_set($message) {
+		if (!is_array($message)) {
+			$message = ['text' => $message];
+		}
+		if (($message['text'] ?? NULL) instanceof html_template) {
+			$message['text'] = $message['text']->html(); // Convert to 'html_safe_value'
+		}
 		session::set('message', $message);
 	}
 
