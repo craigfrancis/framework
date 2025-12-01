@@ -74,7 +74,7 @@
 
 			public function complete($config = []) {
 
-// After a successful 'totp' or 'password' limited login, use save_request_restore().
+// After a successful TOTP/SMS/PassKey limited login, use save_request_restore().
 
 			}
 

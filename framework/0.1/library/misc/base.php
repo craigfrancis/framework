@@ -51,7 +51,7 @@ class auth_login extends auth_login_base {}
 class auth_logout extends auth_logout_base {}
 class auth_register extends auth_register_base {}
 class auth_login_webauthn extends auth_login_webauthn_base {}
-class auth_login_totp extends auth_login_totp_base {}
+class auth_login_mfa extends auth_login_mfa_base {}
 class auth_reset_request extends auth_reset_request_base {}
 class session extends session_base {}
 class payment_st extends payment_st_base {}

@@ -416,8 +416,8 @@
 						$auth_config = [];
 
 						// Only enable if this is needed...
-						// if ($config['auth_ips'])  $auth_config['ips'] = $config['auth_ips'];
-						// if ($config['auth_totp']) $auth_config['totp'] = $config['auth_totp'];
+						// if ($config['auth_ips']) $auth_config['ips'] = $config['auth_ips'];
+						// if ($config['auth_mfa']) $auth_config['mfa'] = $config['auth_mfa'];
 
 						$auth_encoded = auth::secret_encode($record_id, $auth_config, $this->details['password']);
 

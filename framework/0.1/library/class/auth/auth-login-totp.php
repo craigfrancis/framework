@@ -1,6 +1,6 @@
 <?php
 
-	class auth_login_totp_base extends check {
+	class auth_login_mfa_base extends check {
 
 		//--------------------------------------------------
 		// Variables
@@ -41,7 +41,7 @@
 //   https://www.idontplaydarts.com/2011/07/google-totp-two-factor-authentication-for-php/
 //   https://github.com/Spomky-Labs/otphp/blob/v10.0/src/OTP.php
 
-				debug($this->auth->session_limited_get('totp'));
+				debug($this->auth->session_limited_get('mfa'));
 
 // See auth_reset_change_base...
 
@@ -57,7 +57,7 @@
 
 			public function complete($config = []) {
 
-// After a successful 'totp' or 'password' limited login, use save_request_restore().
+// After a successful TOTP/SMS/PassKey limited login, use save_request_restore().
 
 			}
 

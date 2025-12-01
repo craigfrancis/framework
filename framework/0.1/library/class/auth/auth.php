@@ -312,10 +312,10 @@
 				$extra_data = [];
 
 				$auth_config = [
-						'ph'   => '',   // Password Hash
-						'pu'   => NULL, // Password Updated
-						'ips'  => [],   // IP's allowed to login from
-						'totp' => NULL, // Time-based One Time Password
+						'ph'  => '',   // Password Hash
+						'pu'  => NULL, // Password Updated
+						'ips' => [],   // IP's allowed to login from
+						'mfa' => NULL, // MFA: TOTP (Time-based One Time Password), or SMS, or PassKey.
 					];
 
 				$this->_session_start($this->user_id, $identification, 'forced', $password_validation, $extra_data);
@@ -762,7 +762,7 @@
 
 				}
 
-				if (($this->session_info_data) && ($this->session_info_available || $this->session_info_data['limit'] == '' || $this->session_info_data['limit'] == 'forced')) { // If the limit has been set, it will be for a limited session (e.g. missing 'totp'), so you now need to call $auth->session_limited_get('totp')
+				if (($this->session_info_data) && ($this->session_info_available || $this->session_info_data['limit'] == '' || $this->session_info_data['limit'] == 'forced')) { // If the limit has been set, it will be for a limited session (e.g. missing MFA TOTP/SMS/PassKey), so you now need to call $auth->session_limited_get('mfa')
 
 					$this->session_info_available = true;
 
@@ -1070,9 +1070,9 @@
 							$limit_ref = 'ip';
 							$limit_extra = $auth['ips'];
 
-						} else if ($auth['totp'] !== NULL) { // Must run TOTP check before checking their password quality.
+						} else if ($auth['mfa'] !== NULL) { // Must run MFA check before checking their password quality.
 
-							$limit_ref = 'totp';
+							$limit_ref = 'mfa';
 							$limit_extra = NULL;
 
 						} else if ($password_validation !== true) {
@@ -1861,10 +1861,10 @@
 				if (is_array($secret_values)) { // or not NULL
 
 					return array_merge([
-							'ph'   => '',   // Password Hash
-							'pu'   => NULL, // Password Updated
-							'ips'  => [],   // IP's allowed to login from
-							'totp' => NULL, // Time-based One Time Password
+							'ph'  => '',   // Password Hash
+							'pu'  => NULL, // Password Updated
+							'ips' => [],   // IP's allowed to login from
+							'mfa' => NULL, // MFA: TOTP (Time-based One Time Password), or SMS, or PassKey.
 						], $secret_values, [
 							'v' => $version, // Version
 						]);
@@ -1888,10 +1888,10 @@
 				}
 
 				$secret_values = array_merge(array(
-						'ph'   => '',
-						'pu'   => time(),
-						'ips'  => [],
-						'totp' => NULL,
+						'ph'  => '',
+						'pu'  => time(),
+						'ips' => [],
+						'mfa' => NULL, // MFA: TOTP (Time-based One Time Password), or SMS, or PassKey.
 					), $secret_values);
 
 				if ($new_password) {
