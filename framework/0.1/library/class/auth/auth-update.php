@@ -15,6 +15,7 @@
 			protected $db_main_where_sql = NULL;
 			protected $db_update_table = NULL;
 			protected $details = NULL;
+			protected $mfa_changes = [];
 			protected $password_old_check = true;
 			protected $record = NULL;
 			protected $form = NULL;
@@ -219,6 +220,53 @@
 			}
 
 		//--------------------------------------------------
+		// MFA
+
+			//--------------------------------------------------
+			// SMS
+
+				public function mfa_sms_enable_field($db_field) {
+					$this->mfa_changes['sms'] = [
+							'db_field' => $db_field,
+						];
+				}
+
+				// public function mfa_sms_enable_number($value) {
+				// 	$this->mfa_changes['sms'] = [
+				// 			'number' => $value,
+				// 		];
+				// }
+
+				public function mfa_sms_disable() {
+					$this->mfa_changes['sms'] = NULL;
+				}
+
+			//--------------------------------------------------
+			// TOTP
+
+				public function mfa_totp_enable() {
+
+					$new_secret = random_bytes(10);
+					$new_secret = base32::encode($new_secret);
+
+					$this->mfa_changes['totp'] = [
+							'secret' => $new_secret,
+						];
+
+				}
+
+				public function mfa_totp_disable() {
+					$this->mfa_changes['totp'] = NULL;
+				}
+
+			//--------------------------------------------------
+			// PassKey (webauthn)
+
+				public function mfa_passkey_disable() {
+					$this->mfa_changes['passkey'] = NULL;
+				}
+
+		//--------------------------------------------------
 		// Actions
 
 			public function validate($values = NULL) {
@@ -417,23 +465,6 @@
 								exit_with_error('Cannot call $auth_update->validate() without providing the old password, or calling $auth_update->password_old_check(false).');
 							}
 
-						} else {
-
-							$sql = 'SELECT
-										m.' . $db->escape_field($this->db_main_fields['auth']) . ' AS auth
-									FROM
-										' . $db->escape_table($this->db_main_table) . ' AS m
-									WHERE
-										m.' . $db->escape_field($this->db_main_fields['id']) . ' = ? AND
-										' . $this->db_main_where_sql;
-
-							$parameters = [];
-							$parameters[] = intval($current_user_id);
-
-							if ($row = $db->fetch_row($sql, $parameters)) {
-								$auth_config = auth::secret_parse($current_user_id, $row['auth']);
-							}
-
 						}
 
 					//--------------------------------------------------
@@ -525,7 +556,6 @@
 								'remember_identification' => ($current_source !== 'set'), // Default to remembering login details when user is editing their own profile, not the admin using $auth->user_set();
 								'expire_records'          => ($password_new !== NULL && $password_new !== '' && $current_source !== 'set'),
 								'user_id'                 => $current_user_id,
-								'auth'                    => $auth_config,
 							);
 
 						return true;
@@ -627,12 +657,42 @@
 
 					}
 
-					if ($this->details['password']) { // could be NULL or blank (if not required)
+					if (count($this->mfa_changes) > 0 || $this->details['password']) { // Password could be NULL or blank (if not required)
 
-						$auth_encoded = auth::secret_encode($this->details['user_id'], $this->details['auth'], $this->details['password']);
+						$db = db_get();
+
+						$sql = 'SELECT
+									m.' . $db->escape_field($this->db_main_fields['auth']) . ' AS auth
+								FROM
+									' . $db->escape_table($this->db_main_table) . ' AS m
+								WHERE
+									m.' . $db->escape_field($this->db_main_fields['id']) . ' = ? AND
+									' . $this->db_main_where_sql;
+
+						$parameters = [];
+						$parameters[] = intval($this->details['user_id']);
+
+						if ($row = $db->fetch_row($sql, $parameters)) {
+							$new_auth_config = auth::secret_parse($this->details['user_id'], $row['auth']); // Cannot use $auth_config from $auth->validate_login() as it does not include the password hash (the 'ph' value).
+							if (!is_array($new_auth_config)) {
+								exit_with_error('Invalid auth value from the database for user "' . $this->details['user_id'] . '"');
+							}
+						} else {
+							exit_with_error('Cannot get the auth field from the database for user "' . $this->details['user_id'] . '"');
+						}
+
+						foreach ($this->mfa_changes as $mfa_field => $mfa_value) {
+							if ($mfa_value === NULL) {
+								unset($new_auth_config['mfa'][$mfa_field]);
+							} else {
+								$new_auth_config['mfa'][$mfa_field] = $mfa_value;
+							}
+						}
+
+						$new_auth_encoded = auth::secret_encode($this->details['user_id'], $new_auth_config, $this->details['password']);
 
 						$record->value_set($this->db_main_fields['password'], '');
-						$record->value_set($this->db_main_fields['auth'], $auth_encoded);
+						$record->value_set($this->db_main_fields['auth'], $new_auth_encoded);
 
 					}
 
