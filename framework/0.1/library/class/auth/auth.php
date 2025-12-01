@@ -25,6 +25,7 @@
 			protected $session_previous = NULL;
 
 			private $session_info_data = NULL; // Please use $auth->session_info_get();
+			private $session_info_auth = NULL;
 			private $session_info_available = false;
 			private $session_pass = NULL;
 
@@ -555,7 +556,8 @@
 										s.ip,
 										s.limit,
 										s.logout_token,
-										m.' . $db->escape_field($db_main_fields['identification']) . ' AS identification';
+										m.' . $db->escape_field($db_main_fields['identification']) . ' AS identification,
+										m.' . $db->escape_field($db_main_fields['auth']) . ' AS auth';
 
 							$k = 0;
 							foreach ($config['fields'] as $field) {
@@ -637,14 +639,16 @@
 
 										$this->session_pass = $session_pass;
 
+										$this->session_info_auth = $row['auth'];
+
 										$this->session_info_data = [ // Should not contain the hashed 'token' or 'ip'
-												'id' => $session_id,
-												'user_id' => $row['user_id'],
-												'limit' => $row['limit'],
-												'logout_token' => $row['logout_token'],
+												'id'             => $session_id,
+												'user_id'        => $row['user_id'],
+												'limit'          => $row['limit'],
+												'logout_token'   => $row['logout_token'],
 												'identification' => $row['identification'],
-												'last_used_new' => $now,
-												'extra' => $extra_data,
+												'last_used_new'  => $now,
+												'extra'          => $extra_data,
 											];
 
 								}
@@ -1145,14 +1149,15 @@
 
 					$this->session_pass = $session_pass;
 					$this->session_info_available = ($limit_ref === '');
+					$this->session_info_auth = $auth;
 					$this->session_info_data = [
-							'id' => $session_id,
-							'user_id' => $user_id,
-							'limit' => $limit_ref,
-							'logout_token' => $session_logout_token,
+							'id'             => $session_id,
+							'user_id'        => $user_id,
+							'limit'          => $limit_ref,
+							'logout_token'   => $session_logout_token,
 							'identification' => $identification,
-							'last_used_new' => $now,
-							'extra' => $extra_data,
+							'last_used_new'  => $now,
+							'extra'          => $extra_data,
 						];
 
 				//--------------------------------------------------
