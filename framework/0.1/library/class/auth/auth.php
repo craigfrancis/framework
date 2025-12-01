@@ -311,13 +311,6 @@
 				$password_validation = true; // We aren't checking the password
 				$extra_data = [];
 
-				$auth_config = [
-						'ph'  => '',   // Password Hash
-						'pu'  => NULL, // Password Updated
-						'ips' => [],   // IP's allowed to login from
-						'mfa' => NULL, // MFA: TOTP (Time-based One Time Password), or SMS, or PassKey.
-					];
-
 				$this->_session_start($this->user_id, $identification, 'forced', $password_validation, $extra_data);
 
 				$this->session_concurrent = $system_session_concurrent;
@@ -1058,6 +1051,13 @@
 
 						$limit_ref = 'forced';
 						$limit_extra = NULL;
+
+						$auth = [
+								'ph'  => '',   // Password Hash
+								'pu'  => NULL, // Password Updated
+								'ips' => [],   // IP's allowed to login from
+								'mfa' => NULL, // MFA: TOTP (Time-based One Time Password), or SMS, or PassKey.
+							];
 
 					} else {
 
