@@ -1894,6 +1894,8 @@
 						'mfa' => NULL, // MFA: TOTP (Time-based One Time Password), or SMS, or PassKey.
 					), $secret_values);
 
+				unset($secret_values['totp']); // While setup, this was never used (stored under 'mfa')
+
 				if ($new_password) {
 					$secret_values['ph'] = password::hash($new_password);
 					$secret_values['pu'] = time();
