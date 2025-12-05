@@ -15,7 +15,8 @@
 			protected $db_main_where_sql = NULL;
 			protected $db_update_table = NULL;
 			protected $details = NULL;
-			protected $mfa_changes = [];
+			protected $mfa_add = [];
+			protected $mfa_remove = [];
 			protected $password_old_check = true;
 			protected $record = NULL;
 			protected $form = NULL;
@@ -225,45 +226,47 @@
 			//--------------------------------------------------
 			// SMS
 
-				public function mfa_sms_enable_field($db_field) {
-					$this->mfa_changes['sms'] = [
-							'db_field' => $db_field,
+				public function mfa_sms_setup($config) {
+
+					$this->mfa_add['sms'][] = [
+							'label'    => ($config['label'] ?? NULL),
+							'number'   => ($config['number'] ?? NULL),
+							// 'db_field' => ($config['db_field'] ?? NULL),
 						];
+
 				}
 
-				// public function mfa_sms_enable_number($value) {
-				// 	$this->mfa_changes['sms'] = [
-				// 			'number' => $value,
-				// 		];
-				// }
-
-				public function mfa_sms_disable() {
-					$this->mfa_changes['sms'] = NULL;
+				public function mfa_sms_disable($id = NULL) {
+					$this->mfa_remove['sms'][] = $id;
 				}
 
 			//--------------------------------------------------
 			// TOTP
 
-				public function mfa_totp_enable() {
+				public function mfa_totp_setup($config) {
 
 					$new_secret = random_bytes(10);
 					$new_secret = base32::encode($new_secret);
 
-					$this->mfa_changes['totp'] = [
+					$this->mfa_add['totp'][] = [
+							'label'  => ($config['label'] ?? NULL),
 							'secret' => $new_secret,
 						];
 
 				}
 
-				public function mfa_totp_disable() {
-					$this->mfa_changes['totp'] = NULL;
+				public function mfa_totp_disable($id = NULL) {
+					$this->mfa_remove['totp'][] = $id;
 				}
 
 			//--------------------------------------------------
 			// PassKey (webauthn)
 
-				public function mfa_passkey_disable() {
-					$this->mfa_changes['passkey'] = NULL;
+				public function mfa_passkey_setup($config) {
+				}
+
+				public function mfa_passkey_disable($id = NULL) {
+					$this->mfa_remove['passkey'][] = $id;
 				}
 
 		//--------------------------------------------------
@@ -657,7 +660,7 @@
 
 					}
 
-					if (count($this->mfa_changes) > 0 || $this->details['password']) { // Password could be NULL or blank (if not required)
+					if (count($this->mfa_add) > 0 || count($this->mfa_remove) > 0 || $this->details['password']) { // Password could be NULL or blank (if not required)
 
 						$db = db_get();
 
@@ -681,11 +684,31 @@
 							exit_with_error('Cannot get the auth field from the database for user "' . $this->details['user_id'] . '"');
 						}
 
-						foreach ($this->mfa_changes as $mfa_field => $mfa_value) {
-							if ($mfa_value === NULL) {
-								unset($new_auth_config['mfa'][$mfa_field]);
+						foreach ($this->mfa_remove as $mfa_type => $remove_ids) { // By type (TOTP/SMS/PassKey); and REMOVE must happen before ADD (e.g. SMS number change, might remove all, then add new).
+							if (in_array(NULL, $remove_ids, true)) { // If NULL has been provided (i.e. a ID wasn't provided), then remove all.
+								unset($new_auth_config['mfa'][$mfa_type]);
 							} else {
-								$new_auth_config['mfa'][$mfa_field] = $mfa_value;
+								foreach (($new_auth_config['mfa'][$mfa_type] ?? []) as $k => $config) {
+									if (in_array($config['id'], $remove_ids)) {
+										unset($new_auth_config['mfa'][$mfa_type][$k]);
+									}
+								}
+								if (count($new_auth_config['mfa'][$mfa_type]) > 0) {
+									$new_auth_config['mfa'][$mfa_type] = array_values($new_auth_config['mfa'][$mfa_type]); // Reset array keys (explicitly not to be trusted, must use 'id' key).
+								} else {
+									unset($new_auth_config['mfa'][$mfa_type]);
+								}
+							}
+						}
+
+						foreach ($this->mfa_add as $mfa_type => $new_configs) { // By type (TOTP/SMS/PassKey)
+							if (!is_array($new_auth_config['mfa'][$mfa_type] ?? NULL)) {
+								$new_auth_config['mfa'][$mfa_type] = [];
+							}
+							$id = array_column(($new_auth_config[$mfa_type] ?? []), 'id');
+							$id = (count($id) == 0 ? 0 : min($id));
+							foreach ($new_configs as $new_config) {
+								$new_auth_config['mfa'][$mfa_type][] = array_merge(['id' => ++$id], $new_config);
 							}
 						}
 

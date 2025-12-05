@@ -156,6 +156,7 @@
 							'update'   => DB_PREFIX . 'user_auth_update',
 							'reset'    => DB_PREFIX . 'user_auth_reset',
 							'remember' => DB_PREFIX . 'user_auth_remember',
+							'mfa_sms'  => DB_PREFIX . 'user_auth_mfa_sms',
 						), $this->db_table);
 
 					$this->db_where_sql = array_merge(array(
@@ -873,11 +874,25 @@
 					$this->session_info_auth = auth::secret_parse($this->session_info_data['user_id'], $this->session_info_auth);
 				}
 				$return = [];
-				if (isset($this->session_info_auth['mfa']['sms'])) {
-					$return['sms'] = $this->session_info_auth['mfa']['sms']; // Just return values, e.g. 'db_field', 'number'
+				foreach (($this->session_info_auth['mfa']['sms'] ?? []) as $sms) {
+					$return['sms'][] = [
+							'id'          => $sms['id'],
+							'label'       => ($sms['label'] ?? NULL),
+							'number'      => ($sms['number'] ?? NULL),
+							// 'db_field' => ($sms['db_field'] ?? NULL),
+						];
 				}
-				if (isset($this->session_info_auth['mfa']['totp'])) {
-					$return['totp'] = [ // Do not return 'secret'
+				foreach (($this->session_info_auth['mfa']['totp'] ?? []) as $totp) { // NEVER return 'secret'
+					$return['totp'][] = [
+							'id'    => $sms['id'],
+							'label' => ($totp['label'] ?? NULL),
+						];
+				}
+				foreach (($this->session_info_auth['mfa']['passkey'] ?? []) as $totp) {
+					$return['passkey'][] = [
+							'id'    => $sms['id'],
+							'label' => ($totp['label'] ?? NULL),
+							// 'key' ... public key?
 						];
 				}
 				return $return;
@@ -1081,7 +1096,7 @@
 								'ph'  => '',   // Password Hash
 								'pu'  => NULL, // Password Updated
 								'ips' => [],   // IP's allowed to login from
-								'mfa' => NULL, // MFA: TOTP (Time-based One Time Password), or SMS, or PassKey.
+								'mfa' => [],   // MFA: TOTP (Time-based One Time Password), or SMS, or PassKey.
 							];
 
 					} else {
@@ -1090,12 +1105,12 @@
 							exit_with_error('The "auth" value for user "' . $user_id . '" is damaged', debug_dump($auth)); // If it's NULL, then it's probably due to failing to parse.
 						}
 
-						if (count($auth['ips']) > 0 && !in_array(config::get('request.ip'), $auth['ips'])) {
+						if (count($auth['ips'] ?? []) > 0 && !in_array(config::get('request.ip'), $auth['ips'])) {
 
 							$limit_ref = 'ip';
 							$limit_extra = $auth['ips'];
 
-						} else if ($auth['mfa'] !== NULL) { // Must run MFA check before checking their password quality.
+						} else if (count($auth['mfa'] ?? []) > 0) { // Must run MFA check before checking their password quality.
 
 							$limit_ref = 'mfa';
 							$limit_extra = NULL;
@@ -1890,7 +1905,7 @@
 							'ph'  => '',   // Password Hash
 							'pu'  => NULL, // Password Updated
 							'ips' => [],   // IP's allowed to login from
-							'mfa' => NULL, // MFA: TOTP (Time-based One Time Password), or SMS, or PassKey.
+							'mfa' => [],   // MFA: TOTP (Time-based One Time Password), or SMS, or PassKey.
 						], $secret_values, [
 							'v' => $version, // Version
 						]);
@@ -1917,7 +1932,7 @@
 						'ph'  => '',
 						'pu'  => time(),
 						'ips' => [],
-						'mfa' => NULL, // MFA: TOTP (Time-based One Time Password), or SMS, or PassKey.
+						'mfa' => [], // MFA: TOTP (Time-based One Time Password), or SMS, or PassKey.
 					), $secret_values);
 
 				unset($secret_values['totp']); // While setup, this was never used (stored under 'mfa')
