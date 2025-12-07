@@ -231,7 +231,7 @@
 					$this->mfa_add['sms'][] = [
 							'label'    => ($config['label'] ?? NULL),
 							'number'   => ($config['number'] ?? NULL),
-							// 'db_field' => ($config['db_field'] ?? NULL),
+							// 'db_field' => ($config['db_field'] ?? NULL), <-- Probably not be used, on number change it should be verified (e.g. 6 digit code sent to check).
 						];
 
 				}

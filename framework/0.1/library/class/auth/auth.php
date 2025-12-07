@@ -156,7 +156,7 @@
 							'update'   => DB_PREFIX . 'user_auth_update',
 							'reset'    => DB_PREFIX . 'user_auth_reset',
 							'remember' => DB_PREFIX . 'user_auth_remember',
-							'mfa_sms'  => DB_PREFIX . 'user_auth_mfa_sms',
+							'mfa'      => DB_PREFIX . 'user_auth_mfa',
 						), $this->db_table);
 
 					$this->db_where_sql = array_merge(array(
@@ -340,7 +340,7 @@
 						exit_with_error('Cannot call $auth->login_remember() without setting the $auth->remember_cookie_name');
 					}
 
-					if ($this->session_info_data['limit'] !== '') {
+					if (count($this->session_info_data['limits']) > 0) {
 						// Still allowed to be remembered... and when restoring, those limits must be re-checked/applied.
 					}
 
@@ -645,7 +645,7 @@
 										$this->session_info_data = [ // Should not contain the hashed 'token' or 'ip'
 												'id'             => $session_id,
 												'user_id'        => $row['user_id'],
-												'limit'          => $row['limit'],
+												'limits'         => array_filter(array_map('trim', explode(',', $row['limit']))),
 												'logout_token'   => $row['logout_token'],
 												'identification' => $row['identification'],
 												'last_used_new'  => $now,
@@ -760,7 +760,7 @@
 
 				}
 
-				if (($this->session_info_data) && ($this->session_info_available || $this->session_info_data['limit'] == '' || $this->session_info_data['limit'] == 'forced')) { // If the limit has been set, it will be for a limited session (e.g. missing MFA TOTP/SMS/PassKey), so you now need to call $auth->session_limited_get('mfa')
+				if (($this->session_info_data) && ($this->session_info_available || count($this->session_info_data['limits']) == 0 || (count($this->session_info_data['limits']) == 1 && in_array('forced', $this->session_info_data['limits'])))) { // If the limit has been set, it will be for a limited session (e.g. missing MFA TOTP/SMS/PassKey), so you now need to call $auth->session_info_unlock('mfa')
 
 					$this->session_info_available = true;
 
@@ -774,13 +774,13 @@
 
 			}
 
-			public function session_limited_get($limit) {
+			public function session_info_unlock($limit) {
 
 				if ($this->session_info_data === NULL) {
-					exit_with_error('Cannot call $auth->session_limited_get() before $auth->session_get()');
+					exit_with_error('Cannot call $auth->session_info_unlock() before $auth->session_get()');
 				}
 
-				if ($this->session_info_data && $this->session_info_data['limit'] === $limit) { // You need to know the limit, which you would have received from $auth_login->complete();
+				if ($this->session_info_data && in_array($limit, $this->session_info_data['limits'])) { // You need to know the limit, which you would have received from $auth_login->complete();
 
 					$this->session_info_available = true; // Can now use other $auth->session_*() functions.
 
@@ -791,6 +791,39 @@
 					return false;
 
 				}
+
+			}
+
+			public function session_limit_remove($limit) {
+
+				if ($this->session_info_data === NULL) {
+					exit_with_error('Cannot call $auth->session_info_unlock() before $auth->session_get()');
+				}
+
+				if ($this->session_info_data && ($key = array_search($limit, $this->session_info_data['limits'])) !== false) {
+
+					unset($this->session_info_data['limits'][$key]);
+
+					$db = $this->db_get();
+
+					list($db_session_table) = $this->db_table_get('session');
+
+					$sql = 'UPDATE
+								' . $db_session_table . ' AS s
+							SET
+								s.limit = ?
+							WHERE
+								s.id = ? AND
+								s.deleted = "0000-00-00 00:00:00"';
+
+					$parameters = [];
+					$parameters[] = implode(',', $this->session_info_data['limits']);
+					$parameters[] = intval($this->session_info_data['id']);
+
+					$db->query($sql, $parameters);
+
+				}
+
 			}
 
 			public function session_open() {
@@ -798,7 +831,7 @@
 			}
 
 			public function session_required($login_url, $config = []) {
-				if (!$this->session_info_available) { // There is no limit, or it was specified via $auth->session_limited_get().
+				if (!$this->session_info_available) { // There is no limit, or it was specified via $auth->session_info_unlock().
 
 					if (($config['dest_readable'] ?? true) === true) {
 						if (!($login_url instanceof url)) {
@@ -861,41 +894,6 @@
 				} else {
 					return $this->session_info_data['extra'][$field];
 				}
-			}
-
-			public function session_mfa_get() {
-				if (!$this->session_info_available) {
-					exit_with_error('Cannot call $auth->session_mfa_get() before $auth->session_get()');
-				}
-				if ($this->session_info_auth === NULL) {
-					exit_with_error('Cannot call $auth->session_mfa_get() with an invalid $auth->session_info_auth value');
-				}
-				if (!is_array($this->session_info_auth)) { // During normal session_get(), where most pages will not need this to be parsed.
-					$this->session_info_auth = auth::secret_parse($this->session_info_data['user_id'], $this->session_info_auth);
-				}
-				$return = [];
-				foreach (($this->session_info_auth['mfa']['sms'] ?? []) as $sms) {
-					$return['sms'][] = [
-							'id'          => $sms['id'],
-							'label'       => ($sms['label'] ?? NULL),
-							'number'      => ($sms['number'] ?? NULL),
-							// 'db_field' => ($sms['db_field'] ?? NULL),
-						];
-				}
-				foreach (($this->session_info_auth['mfa']['totp'] ?? []) as $totp) { // NEVER return 'secret'
-					$return['totp'][] = [
-							'id'    => $sms['id'],
-							'label' => ($totp['label'] ?? NULL),
-						];
-				}
-				foreach (($this->session_info_auth['mfa']['passkey'] ?? []) as $totp) {
-					$return['passkey'][] = [
-							'id'    => $sms['id'],
-							'label' => ($totp['label'] ?? NULL),
-							// 'key' ... public key?
-						];
-				}
-				return $return;
 			}
 
 			public function session_previous_get() {
@@ -1147,7 +1145,7 @@
 							'ip'            => config::get('request.ip'),
 							'browser'       => config::get('request.browser'),
 							'hash_time'     => floatval($this->hash_time), // There is a risk this shows who has shorter passwords... however, a 1 vs 72 character password takes the same amount of time with bcrypt; AND we use base64 encoded sha384, so they will all be 64 characters long anyway.
-							'limit'         => $limit_ref,
+							'limit'         => $limit_ref, // Single value for now, but could be a comma separated list.
 							'logout_token'  => $session_logout_token, // Different to csrf_token_get() as this token is typically printed on every page in a simple logout link (and its value may be exposed in a referrer header after logout).
 							'created'       => $now,
 							'last_used'     => $now,
@@ -1189,7 +1187,7 @@
 					$this->session_info_data = [
 							'id'             => $session_id,
 							'user_id'        => $user_id,
-							'limit'          => $limit_ref,
+							'limits'         => [$limit_ref],
 							'logout_token'   => $session_logout_token,
 							'identification' => $identification,
 							'last_used_new'  => $now,
@@ -1210,7 +1208,7 @@
 
 					if ($user_id) {
 
-// debug($this->session_info_data); // TODO: Skip if 'limit' is set to 'forced' (admin logged in), as this should NOT expire other sessions.
+// debug($this->session_info_data); // TODO: Skip if 'limits' is set to 'forced' (admin logged in), as this should NOT expire other sessions.
 
 						if ($this->session_concurrent === true) {
 							$this->expire('session', $user_id, ['session_id' => $session_id]);
@@ -1236,6 +1234,226 @@
 						cookie::delete($this->remember_cookie_name);
 					}
 
+			}
+
+		//--------------------------------------------------
+		// MFA
+
+			public function mfa_info_get() {
+				if (!$this->session_info_available) {
+					exit_with_error('Cannot call $auth->mfa_info_get() before $auth->session_get()');
+				}
+				if ($this->session_info_auth === NULL) {
+					exit_with_error('Cannot call $auth->mfa_info_get() with an invalid $auth->session_info_auth value');
+				}
+				if (!is_array($this->session_info_auth)) { // During normal session_get(), where most pages will not need this to be parsed.
+					$this->session_info_auth = auth::secret_parse($this->session_info_data['user_id'], $this->session_info_auth);
+				}
+				$return = [];
+				foreach (($this->session_info_auth['mfa']['sms'] ?? []) as $sms) {
+					$return['sms'][] = [
+							'id'          => $sms['id'],
+							'label'       => ($sms['label'] ?? NULL),
+							'number'      => ($sms['number'] ?? NULL),
+							// 'db_field' => ($sms['db_field'] ?? NULL),
+						];
+				}
+				foreach (($this->session_info_auth['mfa']['totp'] ?? []) as $totp) { // NEVER return 'secret'
+					$return['totp'][] = [
+							'id'    => $sms['id'],
+							'label' => ($totp['label'] ?? NULL),
+						];
+				}
+				foreach (($this->session_info_auth['mfa']['passkey'] ?? []) as $totp) {
+					$return['passkey'][] = [
+							'id'    => $sms['id'],
+							'label' => ($totp['label'] ?? NULL),
+							// 'key' ... public key?
+						];
+				}
+				return $return;
+			}
+
+			public function mfa_method_remove($mfa_type, $remove_id = NULL) {
+				$this->_mfa_method_update($mfa_type, ($remove_id === NULL ? 'all' : intval($remove_id)), NULL);
+			}
+
+			public function mfa_method_add($mfa_type, $new_config) {
+				$this->_mfa_method_update($mfa_type, NULL, $new_config);
+			}
+
+			public function mfa_method_replace($mfa_type, $new_config) {
+				$this->_mfa_method_update($mfa_type, 'all', $new_config);
+			}
+
+			private function _mfa_method_update($mfa_type, $remove_id, $new_config) {
+
+				$db = db_get();
+
+				list($current_user_id, $current_identification, $current_source) = $this->user_get();
+
+				list($db_main_table, $db_main_fields, $db_main_where_sql) = $this->db_table_get('main');
+
+				$sql = 'SELECT
+							m.' . $db->escape_field($db_main_fields['auth']) . ' AS auth
+						FROM
+							' . $db->escape_table($db_main_table) . ' AS m
+						WHERE
+							m.' . $db->escape_field($db_main_fields['id']) . ' = ? AND
+							' . $db_main_where_sql . ' AND
+							' . $this->db_where_sql['main_login'];
+
+				$parameters = [];
+				$parameters[] = intval($current_user_id);
+
+				if ($row = $db->fetch_row($sql, $parameters)) {
+					$new_auth_config = auth::secret_parse($current_user_id, $row['auth']); // Cannot use $auth_config from $auth->validate_login() as it does not include the password hash (the 'ph' value).
+					if (!is_array($new_auth_config)) {
+						exit_with_error('Invalid auth value from the database for user "' . $current_user_id . '"');
+					}
+				} else {
+					exit_with_error('Cannot get the auth field from the database for user "' . $current_user_id . '"');
+				}
+
+				if ($remove_id === 'all') { // NULL to remove all
+
+					unset($new_auth_config['mfa'][$mfa_type]);
+
+				} else if (is_int($remove_id)) { // Integer to remove
+
+					foreach (($new_auth_config['mfa'][$mfa_type] ?? []) as $k => $mfa_config) {
+						if ($mfa_config['id'] == $remove_id) {
+							unset($new_auth_config['mfa'][$mfa_type][$k]);
+						}
+					}
+
+					if (count($new_auth_config['mfa'][$mfa_type]) > 0) {
+						$new_auth_config['mfa'][$mfa_type] = array_values($new_auth_config['mfa'][$mfa_type]); // Reset array keys (explicitly not to be trusted, must use 'id' key).
+					} else {
+						unset($new_auth_config['mfa'][$mfa_type]);
+					}
+
+				}
+
+				if ($new_config) {
+
+					if (!is_array($new_auth_config['mfa'][$mfa_type] ?? NULL)) {
+						$new_auth_config['mfa'][$mfa_type] = [];
+					}
+
+					$id = array_column(($new_auth_config['mfa'][$mfa_type] ?? []), 'id');
+					$id = (count($id) == 0 ? 0 : min($id));
+
+					$new_auth_config['mfa'][$mfa_type][] = array_merge(['id' => ++$id], $new_config);
+
+				}
+
+				$new_auth_encoded = auth::secret_encode($current_user_id, $new_auth_config);
+
+				$sql = 'UPDATE
+							' . $db->escape_table($db_main_table) . ' AS m
+						SET
+							m.' . $db->escape_field($db_main_fields['auth']) . ' = ?
+						WHERE
+							m.' . $db->escape_field($db_main_fields['id']) . ' = ? AND
+							' . $db_main_where_sql . ' AND
+							' . $this->db_where_sql['main_login'];
+
+				$parameters = [];
+				$parameters[] = $new_auth_encoded;
+				$parameters[] = intval($current_user_id);
+
+				$db->query($sql, $parameters);
+
+			}
+
+			public function mfa_challenge_current() {
+
+				list($current_user_id, $current_identification, $current_source) = $this->user_get();
+
+				if ($current_source === 'set') {
+					exit_with_error('Cannot call $auth->mfa_challenge_current() with an auth setup via $auth->user_set()');
+				}
+
+				$db = db_get();
+
+				list($db_mfa_table) = $this->db_table_get('mfa');
+
+				$now = new timestamp();
+
+				$sql = 'SELECT
+							m.id,
+							m.created,
+							IF(m.session_pass != "", 1, 0) AS successful
+						FROM
+							' . $db_mfa_table . ' AS m
+						WHERE
+							m.user_id = ? AND
+							m.created > ? AND
+							m.deleted = "0000-00-00 00:00:00"
+						ORDER BY
+							m.created DESC
+						LIMIT
+							5';
+
+				$parameters = [];
+				$parameters[] = intval($current_user_id);
+				$parameters[] = $now->format('Y-m-d 00:00:00');
+
+				$last_mfa_created = NULL;
+				$last_mfa_id = NULL;
+				$count_unsuccessful = 0;
+				foreach ($db->fetch_all($sql, $parameters) as $row) {
+
+					if ($row['successful'] == 1) {
+						break;
+					}
+
+					$created = new timestamp($row['created'], 'db');
+
+					if ($last_mfa_created === NULL) {
+						$last_mfa_created = $created;
+						$last_mfa_id = $row['id'];
+					}
+
+					$count_unsuccessful++;
+
+				}
+
+				return [$last_mfa_id, $last_mfa_created, $count_unsuccessful];
+
+			}
+
+			public function mfa_challenge_init($extra_data = []) {
+
+				list($current_user_id, $current_identification, $current_source) = $this->user_get();
+
+				if ($current_source === 'set') {
+					exit_with_error('Cannot call $auth->mfa_challenge_init() with an auth setup via $auth->user_set()');
+				}
+
+				$db = db_get();
+
+				list($db_mfa_table) = $this->db_table_get('mfa');
+
+				$now = new timestamp();
+
+				$db->insert($db_mfa_table, array_merge($extra_data, [
+						'id'           => '',
+						'user_id'      => $current_user_id,
+						'session_pass' => '',
+						'session_used' => 0,
+						'created'      => $now,
+						'deleted'      => '0000-00-00 00:00:00',
+					]));
+
+				return $db->insert_id();
+
+			}
+
+			public function _mfa_challenge_complete($mfa_id) { // TODO: The unsafe version, used during 'force'
+				session::set('auth_mfa_id', $mfa_id);
+				session::set('auth_mfa_account', $this->user_id_get());
 			}
 
 		//--------------------------------------------------
