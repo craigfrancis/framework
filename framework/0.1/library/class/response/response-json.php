@@ -53,7 +53,6 @@
 
 				$json = json_encode($data, $options);
 
-
 				return parent::send($json);
 
 			}
