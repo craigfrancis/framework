@@ -44,7 +44,7 @@ If you want to use this feature yourself (e.g. images), there is the timestamp_u
 
 ## JavaScript code
 
-Sometimes you may need to set a JavaScript variable "inline", for example the current tax rate, however you don't really want to do this inline as its a potential [security issue](../../doc/security/strings/html-injection.md), and can break the default [CSP directives](../../doc/security/csp.md).
+Sometimes you may need to set a JavaScript variable "inline", for example the current tax rate, however you do not really want to do this inline as its a potential [security issue](../../doc/security/strings/html-injection.md), and can break the default [CSP directives](../../doc/security/csp.md).
 
 So instead just add:
 
@@ -72,7 +72,7 @@ To [minify](https://developer.yahoo.com/performance/rules.html#minify) the JavaS
 
 	$config['output.js_min'] = true;
 
-The result of this is cached, so shouldn't cause any performance issues (but may make debugging harder).
+The result of this is cached, so should not cause any performance issues (but may make debugging harder).
 
 ---
 
@@ -82,7 +82,7 @@ To minify the CSS by simply removing comments and most whitespace (keeping line 
 
 	$config['output.css_min'] = true;
 
-The result is cached, and shouldn't really make many changes to your CSS, but should reduce the file size a bit further.
+The result is cached, and should not really make many changes to your CSS, but should reduce the file size a bit further.
 
 ---
 
