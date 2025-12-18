@@ -41,6 +41,8 @@
 
 				$options = ($this->pretty_print ? JSON_PRETTY_PRINT : 0);
 
+				// Maybe add JSON_INVALID_UTF8_SUBSTITUTE?
+
 				if ($this->encode_html_characters) {
 					$options = ($options | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 						// While mime-type and nosniff headers should prevent this output being interpreted as HTML, if
