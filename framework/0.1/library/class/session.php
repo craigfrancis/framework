@@ -231,9 +231,17 @@
 
 						} else {
 
+							$debug_info = $_SESSION;
+							foreach ($debug_info as $key => $value) {
+								if (in_array($key, ['save_request_data', 'output.js_code', 'debug.output_data']) || str_ends_with($key, '_pass')) {
+									$debug_info[$key] = '[REMOVED]';
+								}
+							}
+							$debug_info = '"' . $session_key . '"' . "\n\n-----\n\n" . debug_dump($debug_info) . "\n\n-----\n\n" . debug_dump($_COOKIE);
+
 							session::destroy();
 
-							exit_with_error('Your session is not valid for this website', '"' . $session_key . '", ' . count($_SESSION));
+							exit_with_error('Your session is not valid for this website', $debug_info);
 
 						}
 
