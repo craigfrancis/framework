@@ -41,7 +41,8 @@
 
 				$options = ($this->pretty_print ? JSON_PRETTY_PRINT : 0);
 
-				// Maybe add JSON_INVALID_UTF8_SUBSTITUTE?
+				// Could add JSON_INVALID_UTF8_SUBSTITUTE, but json_encode() simply fails (return false) with invalid UTF-8;
+				// this flag silently substitutes the bad characters with \0xfffd, which can be fine if expecting bad data.
 
 				if ($this->encode_html_characters) {
 					$options = ($options | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
