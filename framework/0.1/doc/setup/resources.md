@@ -48,9 +48,16 @@ Sometimes you may need to set a JavaScript variable "inline", for example the cu
 
 So instead just add:
 
-	$response->meta_set('js_data', json_encode($x));
+	$response->meta_set('js_data', $x);
 
-And the JavaScript can get that variable via:
+And the JavaScript can get that value via:
+
+	my_data = document.querySelector('meta[name="js_data"]');
+	if (my_data) {
+		my_data = my_data.getAttribute('content');
+	}
+
+Or, if $x is an array, then:
 
 	my_data = document.querySelector('meta[name="js_data"]');
 	if (my_data) {

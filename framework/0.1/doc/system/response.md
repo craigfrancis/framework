@@ -62,7 +62,7 @@ To add some JavaScript or CSS ([details](../../doc/setup/resources.md)):
 
 To add meta tags, which are ideal for providing variables to JavaScript:
 
-	$response->meta_set('js_data', json_encode($x));
+	$response->meta_set('js_data', $x);
 
 Or just to add your own HTML to the page head ([avoid JavaScript though](../../doc/setup/resources.md)):
 

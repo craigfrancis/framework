@@ -18,9 +18,16 @@ Because the variable could still include a `</script>` tag, and the HTML parser 
 
 Instead you could use:
 
-	$response->meta_set('js_data', json_encode($x));
+	$response->meta_set('js_data', $x);
 
 And in your JavaScript, get the value with:
+
+	my_data = document.querySelector('meta[name="js_data"]');
+	if (my_data) {
+		my_data = my_data.getAttribute('content');
+	}
+
+Or, if $x is an array, then:
 
 	my_data = document.querySelector('meta[name="js_data"]');
 	if (my_data) {
