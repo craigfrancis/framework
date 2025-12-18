@@ -54,7 +54,7 @@
 
 				$json = json_encode($data, $options);
 
-				return parent::send($json);
+				return parent::send($json); // Parent sets CSP to 'none'; and calls http_system_headers().
 
 			}
 
