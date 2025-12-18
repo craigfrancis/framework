@@ -6,6 +6,7 @@
 		// Variables
 
 			private $pretty_print = false;
+			private $encode_html_characters = true;
 
 		//--------------------------------------------------
 		// Pretty print
@@ -38,7 +39,18 @@
 					$data = $this->content_get();
 				}
 
-				$json = json_encode($data, ($this->pretty_print ? JSON_PRETTY_PRINT : 0));
+				$options = ($this->pretty_print ? JSON_PRETTY_PRINT : 0);
+
+				if ($this->encode_html_characters) {
+					$options = ($options | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+						// While mime-type and nosniff headers should prevent this output being interpreted as HTML, if
+						// those headers aren't sent, this reduces the risk of a web browser using it as HTML; e.g.
+						//   json_encode(['output' => '<img src=x onerror=alert("XSS")>'], $options);
+						//   {"output":"\u003Cimg src=x onerror=alert(\u0022XSS\u0022)\u003E"}
+				}
+
+				$json = json_encode($data, $options);
+
 
 				return parent::send($json);
 
