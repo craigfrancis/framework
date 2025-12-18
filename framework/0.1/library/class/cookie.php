@@ -91,21 +91,21 @@
 				// The cookie name and value is passed though rawurlencode() later.
 				//
 				// if (strlen($variable) == 0) {
-				// 	exit_with_error('Cannot set a cookie with a blank name', json_encode($value) . "\n\n" . debug_dump($config));
+				// 	exit_with_error('Cannot set a cookie with a blank name', debug_dump($value) . "\n\n" . debug_dump($config));
 				// } else if (($char = strpbrk($variable, '=' . $invalid_characters)) !== false) {
-				// 	exit_with_error('Cookie name ' . json_encode($variable) . ' cannot contain ' . json_encode(substr($char, 0, 1)));
+				// 	exit_with_error('Cookie name "' . $variable . '" cannot contain "' . substr($char, 0, 1) . '"');
 				// }
 				//
 				// if ($value && (($char = strpbrk($value, $invalid_characters)) !== false)) {
-				// 	exit_with_error('Cookie value ' . json_encode($value) . ' cannot contain ' . json_encode(substr($char, 0, 1)));
+				// 	exit_with_error('Cookie value "' . $value . '" cannot contain "' . substr($char, 0, 1) . '"');
 				// }
 
 				if ($config['path'] && (($char = strpbrk($config['path'], $invalid_characters)) !== false)) {
-					exit_with_error('Cookie path ' . json_encode($config['path']) . ' cannot contain ' . json_encode(substr($char, 0, 1)));
+					exit_with_error('Cookie path "' . $config['path'] . '" cannot contain "' . substr($char, 0, 1) . '"');
 				}
 
 				if ($config['domain'] && (($char = strpbrk($config['domain'], $invalid_characters)) !== false)) {
-					exit_with_error('Cookie domain ' . json_encode($config['domain']) . ' cannot contain ' . json_encode(substr($char, 0, 1)));
+					exit_with_error('Cookie domain "' . $config['domain'] . '" cannot contain "' . substr($char, 0, 1) . '"');
 				}
 
 			//--------------------------------------------------
