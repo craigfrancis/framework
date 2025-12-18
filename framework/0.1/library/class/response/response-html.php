@@ -385,6 +385,9 @@
 		// Meta tags
 
 			public function meta_set($name, $content) {
+				if (is_array($content)) {
+					$content = json_encode($content, (JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)); // See `response_json` for details.
+				}
 				$this->meta[$name] = $content;
 			}
 
