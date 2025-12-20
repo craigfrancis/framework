@@ -56,6 +56,10 @@
 				$this->debug = $debug;
 			}
 
+			public function keep_alive_set($keep_alive) {
+				$this->connection->keep_alive_set($keep_alive);
+			}
+
 			public function timeout_set($seconds) {
 				$this->connection->timeout_set($seconds);
 			}
