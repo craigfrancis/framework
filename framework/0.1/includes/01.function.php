@@ -216,8 +216,8 @@
 
 		public function __construct($value) {
 			if (!str_starts_with(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'], FRAMEWORK_ROOT)) {
-				trigger_error('Only the framework can create a new html_safe_value()', E_USER_NOTICE);
-				// exit_with_error('Only the framework can create a new html_safe_value()');
+				trigger_error('Only the framework can create a new html_safe_value()', E_USER_ERROR);
+				exit();
 			}
 			$this->value = $value;
 		}
