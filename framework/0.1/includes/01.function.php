@@ -261,11 +261,13 @@
 		return str_replace(array("\r", "\n", "\0"), '', $text);
 	}
 
-	function safe_file_name($name, $allow_ext = false, $replace_character = '') {
+	function safe_file_name($name, $ext = false, $replace_character = '') {
 		$name = strval($name); // Not NULL
-		if ($allow_ext && preg_match('/^(.*[^\.].*)(\.[a-zA-Z0-9]+)$/', $name, $matches)) {
+		if ($ext === true && preg_match('/^(.*[^\.].*)(\.[a-zA-Z0-9]+)$/', $name, $matches)) {
 			$name = $matches[1];
-			$ext = $matches[2];
+			$ext = $matches[2]; // Includes the dot
+		} else if (is_string($ext) && preg_match('/^[a-zA-Z0-9]$/', $ext)) {
+			$ext = '.' . $ext;
 		} else {
 			$ext = '';
 		}
