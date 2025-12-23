@@ -119,7 +119,7 @@
 		}
 		if ($token != $hash && strlen($hash) > 64) { // Looks like it was hashed (if it wasn't then don't change anything).
 			$hash = base64_decode($hash);
-			if (($pos = strpos($hash, '-')) === 64) { // A sha256 hash is 64 characters long (hexadecimal representation of 256 bits), which is "good enough", as a 15 lapha-numeric random key will still take a few years to brute force (http://calc.opensecurityresearch.com/)
+			if (($pos = strpos($hash, '-')) === 64) { // A sha256 hash is 64 characters long (hexadecimal representation of 256 bits)
 				$hash_value = substr($hash, 0, $pos);
 				$hash_salt = substr($hash, ($pos + 1));
 				if (hash('sha256', $token . $hash_salt) == $hash_value) {
