@@ -113,29 +113,28 @@
 		return base64_encode(hash('sha256', $token . $salt) . '-' . $salt);
 	}
 
-	function csrf_challenge_check($hash, $salt = NULL, $token = NULL) { // CSRF hashing experiment... the token is hashed with the form action (URL), so if the token in the HTML is leaked (e.g. malicious JS), that token can only be used for forms on this page (failure will result in an error email, for now).
-		if ($token === NULL) {
-			$token = csrf_token_get();
+	function csrf_challenge_check($user_token, $salt = NULL, $check_token = NULL) { // CSRF hashing experiment... the token is hashed with the form action (URL), so if the token in the HTML is leaked (e.g. malicious JS), that token can only be used for forms on this page (failure will result in an error email, for now).
+		if ($check_token === NULL) {
+			$check_token = csrf_token_get();
 		}
-		if ($token != $hash && strlen($hash) > 64) { // Looks like it was hashed (if it wasn't then don't change anything).
-			$hash = base64_decode($hash);
-			if (($pos = strpos($hash, '-')) === 64) { // A sha256 hash is 64 characters long (hexadecimal representation of 256 bits)
-				$hash_value = substr($hash, 0, $pos);
-				$hash_salt = substr($hash, ($pos + 1));
-				if (hash('sha256', $token . $hash_salt) == $hash_value) {
-					$hash = $token;
-					if ($salt !== NULL && $hash_salt != $salt) {
-						if (config::get('form.csrf_hash_check', false) === true) {
-							report_add('CSRF match was valid, but the salt check failed (user asked to re-submit).' . "\n\n" . debug_dump($hash_salt) . "\n" . debug_dump($salt), 'error');
-							return false;
-						} else {
-							report_add('CSRF match was valid, but the salt check failed (no error shown to user, but please investigate).' . "\n\n" . debug_dump($hash_salt) . "\n" . debug_dump($salt));
-						}
+		if ($check_token !== $user_token && strlen($user_token) > 64) { // Looks like it was hashed (if it wasn't then don't change anything).
+			$user_token = base64_decode($user_token);
+			if (($pos = strpos($user_token, '-')) === 64) { // A sha256 hash is 64 characters long (hexadecimal representation of 256 bits)
+				$user_token_hash = substr($user_token, 0, $pos);
+				$user_token_salt = substr($user_token, ($pos + 1));
+				if (hash_equals(hash('sha256', $check_token . $user_token_salt), $user_token_hash)) {
+					if ($user_token_salt === $salt || $salt === NULL) { // Calling script might set $salt to NULL when it, the verifier (e.g. JS APIs), doesn't know the $salt (e.g. source form action), and is fine with just gating a valid hash.
+						return true;
 					}
+					// if (config::get('form.csrf_hash_check', true) === false) {
+					// 	report_add('CSRF match was valid, but the salt check failed (no error shown to user, but please investigate).' . "\n\n" . debug_dump($user_token_salt) . "\n" . debug_dump($salt));
+					// 	return true;
+					// }
+					// report_add('CSRF match was valid, but the salt check failed (user asked to re-submit).' . "\n\n" . debug_dump($user_token_salt) . "\n" . debug_dump($salt), 'error');
 				}
 			}
 		}
-		return ($hash == $token);
+		return ($user_token === $check_token);
 	}
 
 //--------------------------------------------------
