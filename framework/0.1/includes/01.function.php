@@ -271,11 +271,7 @@
 		} else {
 			$ext = '';
 		}
-		$file_name = preg_replace('/[^a-zA-Z0-9_\- ]/u', $replace_character, $name) . $ext;
-		if (extension_loaded('taint')) {
-			untaint($file_name);
-		}
-		return $file_name;
+		return preg_replace('/[^a-zA-Z0-9_\- ]/u', $replace_character, $name) . $ext;
 	}
 
 //--------------------------------------------------
