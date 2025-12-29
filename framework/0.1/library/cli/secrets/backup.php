@@ -180,7 +180,6 @@
 			// }
 
 
-
 // framework/0.1/library/cli/secrets.php [CLI Class]
 
 
@@ -232,7 +231,7 @@
 		//
 		// 			} else {
 		//
-		// 				$response_data = $this->api_call([
+		// 				$response_data = $this->_api_call([
 		// 						'action' => 'export',
 		// 						'export_key' => $export_key,
 		// 					]);
@@ -306,7 +305,7 @@
 		//
 		// 			} else {
 		//
-		// 				$response_data = $this->api_call([
+		// 				$response_data = $this->_api_call([
 		// 						'action'      => 'import',
 		// 						'import_key'  => $import_key,
 		// 						'import_data' => $import_data,
@@ -390,7 +389,7 @@
 		//
 		// 			} else {
 		//
-		// 				$response_data = $this->api_call([
+		// 				$response_data = $this->_api_call([
 		// 						'action' => 'backup_key',
 		// 					]);
 		//
@@ -412,43 +411,6 @@
 		// 		echo "\n";
 		// 		echo '  ' . $export_key . "\n";
 		// 		echo "\n";
-		//
-		// 	}
-		//
-		// 	private function api_call($request_data) {
-		//
-		// 		list($auth_id, $auth_value, $auth_path) = gateway::framework_api_auth_start('framework-secrets');
-		//
-		// 		$gateway_url = gateway_url('framework-secrets');
-		//
-		// 		$request_data['auth_id'] = $auth_id;
-		// 		$request_data['auth_value'] = $auth_value;
-		//
-		// 		$error = false;
-		//
-		// 		$connection = new connection();
-		// 		$connection->exit_on_error_set(false);
-		// 		$connection->post($gateway_url, $request_data);
-		//
-		// 		if (intval($connection->response_code_get()) !== 200) {
-		// 			$error = 'Cannot call the framework-secrets API' . "\n\n-----\n" . $connection->error_message_get() . "\n-----\n" . $connection->error_details_get() . "\n-----\n" . $connection->response_headers_get() . "\n\n" . $connection->response_data_get() . "\n-----";
-		// 		} else {
-		// 			$response_json = $connection->response_data_get();
-		// 			$response_data = json_decode($response_json, true);
-		// 			if (!is_array($response_data)) {
-		// 				$error = 'Invalid response' . "\n\n-----\n\n" . $response_json;
-		// 			} else if ($response_data['error'] !== false) {
-		// 				$error = $response_data['error']; // Only return the error
-		// 			}
-		// 		}
-		//
-		// 		gateway::framework_api_auth_end($auth_path);
-		//
-		// 		if ($error !== false) {
-		// 			return ['error' => $error];
-		// 		} else {
-		// 			return $response_data;
-		// 		}
 		//
 		// 	}
 		//
@@ -551,6 +513,29 @@
 		// 	debug($imported_secrets);
 		//
 		//--------------------------------------------------
+
+
+// framework/0.1/library/gateway/framework-secrets.php
+
+
+		// if ($action == 'backup_key') {
+		//
+		// 	$result = secrets::data_backup_key($key);
+		//
+		// } else if ($action == 'export') {
+		//
+		// 	$export_key = request('export_key', 'POST');
+		//
+		// 	$result = secrets::data_export($key, $export_key);
+		//
+		// } else if ($action == 'import') {
+		//
+		// 	$import_key = request('import_key', 'POST');
+		// 	$import_data = request('import_data', 'POST');
+		//
+		// 	$result = secrets::data_import($key, $import_key, $import_data);
+		//
+		// }
 
 
 ?>
