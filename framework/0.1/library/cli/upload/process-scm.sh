@@ -68,7 +68,6 @@
 		echo "  cd ${DST_PATH}";
 		echo "  ln -s ../path/to/framework/0.1/cli/run.sh cli";
 		echo "  ./cli --install";
-		echo "  ./cli --permissions";
 		echo;
 
 		remote_close;
