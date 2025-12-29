@@ -383,7 +383,7 @@
 										require_once(FRAMEWORK_ROOT . '/library/misc/origin.php');
 										$output = config::get('output.origin');
 										if ($output === NULL) {
-											exit_with_error('The URL origin cannot be determined, maybe set $config[\'output.domain\']', 'config::get(\'output.domain\') = ' . config::get('output.domain'));
+											exit_with_error('The URL Origin cannot be determined - maybe set $config[\'output.domain\'], or $config[\'request.domain\']');
 										}
 									}
 

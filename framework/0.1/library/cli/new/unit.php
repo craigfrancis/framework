@@ -90,7 +90,7 @@
 
 	$unit_test_url = $unit_info['gateway_url'];
 
-	if (config::get('output.domain') == '') { // Set in config with request.domain
+	if (config::get('output.domain') == '') { // This value can also come from 'request.domain'
 
 		echo 'Test via:' . "\n\n";
 		echo "\t" . $unit_test_url . "\n\n";

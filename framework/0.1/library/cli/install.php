@@ -225,7 +225,7 @@
 
 				if ($domain == '') {
 
-					echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Cannot clear OpCache without "output.domain" config.' . "\n";
+					echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Cannot clear OpCache without $config[\'output.domain\'], or $config[\'request.domain\'].' . "\n";
 
 				} else {
 
