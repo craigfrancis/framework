@@ -240,9 +240,6 @@
 
 					if ($opcache_connection->post($opcache_url, ['auth_id' => $auth_id, 'auth_value' => $auth_value])) {
 						$opcache_data = $opcache_connection->response_data_get();
-						if ($opcache_data !== 'Success') {
-							$opcache_error = $opcache_data;
-						}
 					} else {
 						$opcache_error = $opcache_connection->error_message_get();
 						$opcache_details = $opcache_connection->error_details_get();
