@@ -104,8 +104,6 @@
 		echo;
 		echo "Update framework:";
 
-			# If the project defined $secrets in their config.php, then secrets::setup() is run, and complains about 'Missing environment variable "PRIME_CONFIG_KEY"', which `cd` does not like.
-
 		remote_cmd "umask 0002 && cd \`${CLI_PATH} --config=FRAMEWORK_ROOT\` && git pull | awk '/^Already up-to-date/ {print \" \" \" \033[1;34m\" \$0 \"\033[0m\"; next} { print \" \" \" \" \$0; }'";
 
 	fi
