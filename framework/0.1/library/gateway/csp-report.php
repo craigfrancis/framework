@@ -46,6 +46,29 @@
 	}
 
 //--------------------------------------------------
+// Table check - done early so developer can load API
+// directly in browser to see the error message.
+
+	if (config::get('debug.level') > 0 && config::get('db.host') !== NULL && config::get('output.site_available') !== false) {
+
+		debug_require_db_table(DB_PREFIX . 'system_report_csp', '
+				CREATE TABLE [TABLE] (
+					document_uri varchar(80) NOT NULL,
+					blocked_uri varchar(80) NOT NULL,
+					violated_directive varchar(80) NOT NULL,
+					referrer tinytext NOT NULL,
+					original_policy text NOT NULL,
+					data_raw text NOT NULL,
+					ip tinytext NOT NULL,
+					browser tinytext NOT NULL,
+					created datetime NOT NULL,
+					updated datetime NOT NULL,
+					PRIMARY KEY (document_uri,blocked_uri,violated_directive)
+				);');
+
+	}
+
+//--------------------------------------------------
 // Ignored URIs
 
 	$ignore_uris = config::get('output.csp_report_ignore');
