@@ -266,7 +266,7 @@
 		if ($ext === true && preg_match('/^(.*[^\.].*)(\.[a-zA-Z0-9]+)$/', $name, $matches)) {
 			$name = $matches[1];
 			$ext = $matches[2]; // Includes the dot
-		} else if (is_string($ext) && preg_match('/^[a-zA-Z0-9]$/', $ext)) {
+		} else if (is_string($ext) && preg_match('/^[a-zA-Z0-9]+$/', $ext)) {
 			$ext = '.' . $ext;
 		} else {
 			$ext = '';
