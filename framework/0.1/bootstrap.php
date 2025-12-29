@@ -122,37 +122,32 @@
 						// Must be inside the try/catch, incase the
 						// database connection fails.
 
-					if (config::get('debug.level') > 0 && config::get('db.host') !== NULL && config::get('output.site_available') !== false) {
+						// This used to include:
+						// debug_require_db_table(DB_PREFIX . 'system_report', ...);
+						// But has been moved, as during site setup, when
+						// trying to use the CLI to setup the secrets, it would
+						// use the API, and this would in turn would try to connect
+						// to the database, but 'db.pass' is not available yet.
 
-						// $db = db_get();
-						//
-						// if (version_compare($db->version_get(), '5.7.5', '>=')) { // 5.6 does not detect functional dependencies (used everywhere) - http://mysqlserverteam.com/mysql-5-7-only_full_group_by-improved-recognizing-functional-dependencies-enabled-by-default/
-						//
-						// 	$db->query('SET sql_mode := CONCAT("ONLY_FULL_GROUP_BY,", @@sql_mode)');
-						//
-						// 	//--------------------------------------------------
-						// 	// Before disabling, read:
-						// 	//   https://rpbouman.blogspot.co.uk/2007/05/debunking-group-by-myths.html
-						// 	//
-						// 	// You can always use:
-						// 	//   ANY_VALUE()
-						// 	//--------------------------------------------------
-						//
-						// }
-
-						debug_require_db_table(DB_PREFIX . 'system_report', '
-								CREATE TABLE [TABLE] (
-									id int(11) NOT NULL auto_increment,
-									type tinytext NOT NULL,
-									created datetime NOT NULL,
-									message text NOT NULL,
-									request tinytext NOT NULL,
-									referrer tinytext NOT NULL,
-									ip tinytext NOT NULL,
-									PRIMARY KEY  (id)
-								);');
-
-					}
+					// if (config::get('debug.level') > 0 && config::get('db.host') !== NULL && config::get('output.site_available') !== false) {
+					//
+					// 	$db = db_get();
+					//
+					// 	if (version_compare($db->version_get(), '5.7.5', '>=')) { // 5.6 does not detect functional dependencies (used everywhere) - http://mysqlserverteam.com/mysql-5-7-only_full_group_by-improved-recognizing-functional-dependencies-enabled-by-default/
+					//
+					// 		$db->query('SET sql_mode := CONCAT("ONLY_FULL_GROUP_BY,", @@sql_mode)');
+					//
+					// 		//--------------------------------------------------
+					// 		// Before disabling, read:
+					// 		//   https://rpbouman.blogspot.co.uk/2007/05/debunking-group-by-myths.html
+					// 		//
+					// 		// You can always use:
+					// 		//   ANY_VALUE()
+					// 		//--------------------------------------------------
+					//
+					// 	}
+					//
+					// }
 
 				//--------------------------------------------------
 				// Controller and Routes

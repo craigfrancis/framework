@@ -123,6 +123,22 @@
 
 			if (config::get('db.host') !== NULL && config::get('db.error_connect') !== true) {
 
+				if (config::get('debug.level') > 0) {
+
+					debug_require_db_table(DB_PREFIX . 'system_report', '
+							CREATE TABLE [TABLE] (
+								id int(11) NOT NULL auto_increment,
+								type tinytext NOT NULL,
+								created datetime NOT NULL,
+								message text NOT NULL,
+								request tinytext NOT NULL,
+								referrer tinytext NOT NULL,
+								ip tinytext NOT NULL,
+								PRIMARY KEY  (id)
+							);');
+
+				}
+
 				$db = db_get();
 
 				$db->insert(DB_PREFIX . 'system_report', array(
