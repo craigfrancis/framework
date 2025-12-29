@@ -25,21 +25,6 @@
 	chmod 755 "./cli";
 
 #--------------------------------------------------
-# Check Secrets
-#--------------------------------------------------
-
-	if [[ -f "${DST_PATH}/upload/files/app/library/setup/secrets.json" ]]; then
-
-		echo;
-		echo 'Check Secrets...';
-
-		./cli --secrets=check | awk '{ print "    " $0;}';
-
-		echo -e "  \033[1;34mDone\033[0m";
-
-	fi
-
-#--------------------------------------------------
 # Checking
 #--------------------------------------------------
 
