@@ -587,7 +587,12 @@
 
 							} else {
 
-								$ca_bundle_path = config::get('connection.tls_ca_path', ini_get('openssl.cafile'));
+								$ca_bundle_path = config::array_get('connection.tls_domain_ca_path', $host, NULL);
+
+								if (!$ca_bundle_path) {
+									$ca_bundle_path = config::get('connection.tls_ca_path', ini_get('openssl.cafile'));
+								}
+
 								if (!$ca_bundle_path) { // NULL or false
 
 									$ca_bundle_paths = array(
