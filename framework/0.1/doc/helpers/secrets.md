@@ -49,7 +49,7 @@ This encryption key is provided to PHP as an environment variable.
 
 It can be setup via:
 
-    ./cli --secrets=init
+    ./cli --secrets=check
 
 It will ask for your sudo password to set the appropriate permissions.
 
@@ -71,7 +71,7 @@ To add to the `$secrets` array, e.g.
 
 Then re-run:
 
-    ./cli --secrets=init
+    ./cli --secrets=check
 
 The you will be asked for any missing values, which are encrypted, and written to a file in `/private/secrets/`.
 
@@ -144,7 +144,7 @@ TODO [secrets-keys] - Not complete yet... also, can the list of current key ID's
 
 2. Run the following to generate the first key:
 
-    ./cli --secrets=init
+    ./cli --secrets=check
 
 To rotate the key:
 

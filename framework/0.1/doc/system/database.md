@@ -11,9 +11,11 @@ First, you need to set the connection [config](../../doc/setup/config.md):
 
 	$secrets['db.pass'] = ['type' => 'value'];
 
-As the password is stored via the secrets helper, run:
+As the password is stored via the secrets helper, run *either* of these:
 
-	./cli --secrets=init
+	./cli --secrets=check
+
+	./cli --install
 
 You can get access to the database object though the helper function:
 

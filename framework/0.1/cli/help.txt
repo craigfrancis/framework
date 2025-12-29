@@ -11,7 +11,7 @@
  --config-encrypt   Encrypt a value, entered at the prompt.
 
  -s[=action]
- --secrets[=action] Secret init/add/remove/check/export/import.
+ --secrets[=action] Secret 'check', 'value-edit', etc.
 
  -g[=name]
  --gateway[=name]   Call the gateway "name", or list the gateways.

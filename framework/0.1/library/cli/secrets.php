@@ -289,7 +289,6 @@
 						}
 						echo "\n";
 						echo './cli --secrets=check' . "\n";
-						echo './cli --secrets=init' . "\n";
 						echo './cli --secrets=value-edit' . "\n";
 						echo './cli --secrets=value-edit,value.name' . "\n";
 						echo './cli --secrets=key-create' . "\n";
