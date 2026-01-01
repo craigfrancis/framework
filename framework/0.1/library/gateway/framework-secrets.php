@@ -31,40 +31,28 @@
 //--------------------------------------------------
 // Actions
 
-	if ($action == 'backup_key') {
+	if ($action == 'data_get') {
 
-		$result = secrets::data_backup_key($key);
+		$result = secrets::_data_get();
 
-	} else if ($action == 'export') {
+	} else if ($action == 'data_encode') {
 
-		$export_key = request('export_key', 'POST');
-
-		$result = secrets::data_export($key, $export_key);
-
-	} else if ($action == 'import') {
-
-		$import_key = request('import_key', 'POST');
-		$import_data = request('import_data', 'POST');
-
-		$result = secrets::data_import($key, $import_key, $import_data);
+		$result = secrets::_data_encode(request('value', 'POST'));
 
 	} else {
 
-		$result = secrets::data_value_update(
-				$key,
-				$action,
-				request('name', 'POST'),
-				request('type', 'POST'),
-				request('value', 'POST'),
-				request('key_index', 'POST')
-			);
+		$response->send(['error' => 'Unrecognised action: ' . debug_dump($action)]);
+		exit();
 
 	}
 
 //--------------------------------------------------
-// Return encrypted data
+// Return data
 
-	$response->send($result);
+	$response->send([
+			'error'  => false,
+			'result' => $result,
+		]);
 
 	exit();
 

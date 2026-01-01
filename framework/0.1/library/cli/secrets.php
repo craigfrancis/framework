@@ -5,7 +5,9 @@
 		//--------------------------------------------------
 		// Variables
 
-			protected $key_path = '/etc/prime-config-key';
+			protected $use_api = NULL;
+			protected $data_folder = NULL;
+			protected $current = NULL;
 
 		//--------------------------------------------------
 		// Setup
@@ -26,197 +28,98 @@
 					$action = array_shift($params);
 
 				//--------------------------------------------------
-				// If secrets helper is not used
-
-					$state = secrets::state();
-
-					if ($state === NULL) { // There are no secrets.
-						if ($action === 'check') {
-							return; // It's just a check, so simply end.
-						} else {
-							throw new error_exception('The secrets helper does not have any $secrets to work with.', $action);
-						}
-					}
-
-				//--------------------------------------------------
 				// Data folder
 
-					$data_folder = config::get('secrets.folder') . '/data';
+					$this->data_folder = config::get('secrets.folder') . '/data';
 
-					if (!is_dir($data_folder)) {
-						mkdir($data_folder, 0755);
-						if (!is_dir($data_folder)) {
-							throw new error_exception('Could not create a folder for the secrets data', $data_folder);
+					if (!is_dir($this->data_folder)) {
+						mkdir($this->data_folder, 0755);
+						if (!is_dir($this->data_folder)) {
+							throw new error_exception('Could not create a folder for the secrets data', $this->data_folder);
 						}
 					}
 
-					if (!is_writable($data_folder)) {
-						$account_owner = posix_getpwuid(fileowner($data_folder));
+					if (!is_writable($this->data_folder)) {
+						$account_owner = posix_getpwuid(fileowner($this->data_folder));
 						$account_process = posix_getpwuid(posix_geteuid());
-						throw new error_exception('The secrets data folder cannot be written to (check ownership).', $data_folder . "\n" . 'Current owner: ' . $account_owner['name'] . "\n" . 'Current process: ' . $account_process['name']);
+						throw new error_exception('The secrets data folder cannot be written to (check ownership).', $this->data_folder . "\n" . 'Current owner: ' . $account_owner['name'] . "\n" . 'Current process: ' . $account_process['name']);
 					}
 
 				//--------------------------------------------------
-				// Config key
+				// Current values
 
-					//--------------------------------------------------
-					// File exists
+					$used = secrets::used();
 
-						if (!is_file($this->key_path)) {
+					if ($used === false) {
 
-// TODO [secrets] - Creating /etc/prime-config-key
+						$this->current = false;
 
-// - If already root, do this automatically? or after a prompt?
-// - If not root, use the shell script, via $this->key_create(), $command->exec(), with sudo?
-// - Otherwise print contents to create file.
+					} else if ($used === true) {
 
-							echo "\n";
-							echo 'Missing key file: ' . $this->key_path . "\n";
-							echo "\n";
-							$this->key_example_print();
-							exit();
+						$this->use_api = false;
+						$this->current = secrets::_data_get();
 
+						if (!is_array($this->current)) {
+							throw new error_exception('Invalid current values from local loading of secrets data,', debug_dump($this->current));
 						}
 
-					//--------------------------------------------------
-					// Permission checks
+					} else if ($used === NULL) {
 
-						$config_key_owner = fileowner($this->key_path);
-						$config_key_group = filegroup($this->key_path);
-						$config_key_permissions = substr(sprintf('%o', fileperms($this->key_path)), -4);
+						$this->use_api = true;
+						$this->current = $this->_api_result_or_exit(['action' => 'data_get']);
 
-// TODO [secrets] - On 'stage', could something like 'framework-db-dump' work, so /etc/prime-config-key can be owned by root as well?
-
-						$permission_changes = [];
-						if ($config_key_owner != 0 && SERVER != 'stage') $permission_changes[] = 'chown 0 ' . $this->key_path;
-						if ($config_key_group != 0) $permission_changes[] = 'chgrp 0 ' . $this->key_path;
-						if ($config_key_permissions !== '0400') $permission_changes[] = 'chmod 0400 ' . $this->key_path;
-						if (count($permission_changes) > 0) {
-							echo "\n";
-							echo "\033[1;31m" . 'Warning:' . "\033[0m" . ' The config key file should use:' . "\n";
-							echo "\n";
-							foreach ($permission_changes as $permission_change) {
-								echo $permission_change . "\n";
-							}
-							echo "\n";
-							if (SERVER != 'stage') {
-								return;
-							}
+						if (!is_array($this->current) && $this->current !== false) {
+							throw new error_exception('Invalid current values from API loading of secrets data,', debug_dump($this->current)); // Shouldn't happen, as the API exits with an error if 'PRIME_CONFIG_KEY' isn't set.
 						}
 
-					//--------------------------------------------------
-					// Is loaded into Apache
+					} else {
 
-						if (is_dir('/usr/local/opt/httpd/bin')) {
-							$envvars_path = '/usr/local/opt/httpd/bin/envvars';
-						} else if (is_dir('/opt/homebrew/opt/httpd/bin')) {
-							$envvars_path = '/opt/homebrew/opt/httpd/bin/envvars';
-						} else {
-							$envvars_path = '/etc/apache2/envvars';
-						}
+						exit_with_error('Unrecognised secrets used response ' . debug_dump($used));
 
-						if (!is_file($envvars_path)) {
-							echo "\n";
-							echo 'Cannot find Apache envvars file: ' . $envvars_path . "\n";
-							echo "\n";
-							return;
-						}
+					}
 
-						$envvars_content = @file_get_contents($envvars_path);
-						$envvars_line = '. ' . $this->key_path;
-
-						if (strpos($envvars_content, $envvars_line) === false) {
-							echo "\n";
-							echo 'Missing config key file in Apache envvars file: ' . $envvars_path . "\n";
-							echo "\n";
-							echo '##########' . "\n";
-							echo $envvars_line . "\n";
-							echo '##########' . "\n";
-							echo "\n";
-							echo 'Your Apache config should also include:' . "\n";
-							echo "\n";
-							echo '  <VirtualHost>' . "\n";
-							echo '    ...' . "\n";
-							echo '    SetEnv PRIME_CONFIG_KEY ${PRIME_CONFIG_KEY}' . "\n";
-							echo '  </VirtualHost>' . "\n";
-							echo "\n";
-							return;
-						}
-
-					//--------------------------------------------------
-					// Attempt to get key value
-
-						// private $key_value = NULL;
-						//
-						// $this->key_value = trim(getenv('PRIME_CONFIG_KEY'));
-						//
-						// if (!$this->key_value) {
-						//
-						// 	if (is_readable($this->key_path)) {
-						//
-						// 		$this->key_value = $this->key_cleanup(file_get_contents($this->key_path));
-						//
-						// 	} else if (config::get('output.domain')) {
-						//
-						// 		$this->key_value = NULL; // Use the API
-						//
-						// 	} else {
-						//
-						// 		$this->key_value = ''; // Not available
-						//
-						// 	}
-						//
-						// }
-
-						//--------------------------------------------------
-						//
-						// 	if ($this->key_value || $this->key_value === NULL) {
-						//
-						// 		// The key value has been set, or is NULL (use the API)
-						//
-						// 	} else if ($action !== 'check') {
-						//
-						// 		echo "\n";
-						// 		echo 'Cannot access config key file ' . $this->key_path . "\n";
-						// 		echo "\n";
-						// 		echo 'Either:' . "\n";
-						// 		echo '1) Set $config[\'output.domain\']' . "\n";
-						// 		echo '2) Run via sudo' . "\n";
-						// 		echo '3) Enter the key' . "\n";
-						// 		echo "\n";
-						// 		echo 'Key: ';
-						// 		$this->key_value = $this->key_cleanup(fgets(STDIN));
-						//
-						// 		if ($this->key_value === '') {
-						// 			echo "\n";
-						// 			if (is_readable($this->key_path)) {
-						// 				echo 'Empty key file: ' . $this->key_path . "\n";
-						// 				echo "\n";
-						// 				$this->key_example_print();
-						// 			}
-						// 			exit();
-						// 		}
-						//
-						// 	}
-						//
-						//--------------------------------------------------
+					if (($this->current['file_resave'] ?? NULL) === true) { // At least one secret needs a cleanup; e.g. moving in-to or out-of the archive.
+						$this->_data_save();
+					}
 
 				//--------------------------------------------------
 				// Action
 
-					if ($action === 'check' || $action === 'init') {
+					if ($action === 'check') {
 
-						if (is_array($state)) { // Returned an array of missing values
-							foreach ($state as $missing_value_name => $missing_value_info) {
+						if ($this->current === false) {
+							return; // Secrets helper not used, so we're done.
+						}
 
-								if ($missing_value_info['type'] === 'key') {
+						foreach ($this->current['variables'] as $name => $info) {
+
+							if ($info['type'] === 'str') {
+
+								if (($this->current['data_encoded'][$name]['value'] ?? NULL) === NULL) {
+
+									$value = '';
+
+									do {
+										echo "\n";
+										echo 'Secret Value "' . $name . '": ';
+										$value = trim(fgets(STDIN));
+										echo "\n";
+									} while ($value == '');
+
+									$this->_data_str_update($name, $value);
+
+								}
+
+							} else if ($info['type'] === 'key') {
+
+								if (count($this->current['data_encoded'][$name]['keys'] ?? []) == 0) {
 
 									// TODO [secrets] - Allow the key to be provided (check 'key_type', as there is 'symmetric' and 'asymmetric')
 
 									// echo "\n";
 									// echo "\033[1;34m" . 'Note:' . "\033[0m" . ' Leave blank to generate a new symmetric key.' . "\n";
 									// echo "\n";
-									// echo 'Key Value "' . $missing_value_name . '": ';
+									// echo 'Key Value "' . $name . '": ';
 									//
 									// if ($value == '') {
 									// 	$value = encryption::key_symmetric_create();
@@ -226,23 +129,19 @@
 									// 	exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' Invalid key provided.' . "\n\n");
 									// }
 
-									secrets::data_key_add($missing_value_name);
-
-								} else if ($missing_value_info['type'] === 'value') {
-
-									echo "\n";
-									echo 'Secret Value "' . $missing_value_name . '": ';
-									$value = trim(fgets(STDIN));
-									echo "\n";
-
-									secrets::data_value_update($missing_value_name, $value);
+									$this->_data_key_add($name);
 
 								}
 
+							} else {
+
+								throw new error_exception('The secret type "' . $info['type'] . '" is unrecognised for "' . $name . '".');
+
 							}
+
 						}
 
-					} else if ($action === 'value-edit') {
+					} else if ($action === 'str-edit') {
 
 						$name = array_shift($params);
 
@@ -255,8 +154,8 @@
 						$variable = secrets::variable_get($name);
 						if (!$variable) {
 							exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' Secret "' . $name . '" does not exist.' . "\n\n");
-						} else if ($variable['type'] !== 'value') {
-							exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' Secret "' . $name . '" is not a "value" (' . $variable['type'] . ').' . "\n\n");
+						} else if ($variable['type'] !== 'str') {
+							exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' Secret "' . $name . '" is not a "str" (' . $variable['type'] . ').' . "\n\n");
 						}
 
 						echo "\n";
@@ -264,9 +163,26 @@
 						$value = trim(fgets(STDIN));
 						echo "\n";
 
-						secrets::data_value_update($name, $value);
+						$this->_data_str_update($name, $value);
 
 					} else if ($action === 'key-create') {
+
+						$name = array_shift($params);
+
+						if ($name == NULL) {
+							echo "\n";
+							echo 'Secret Name: ';
+							$name = trim(fgets(STDIN));
+						}
+
+						$variable = secrets::variable_get($name);
+						if (!$variable) {
+							exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' Secret "' . $name . '" does not exist.' . "\n\n");
+						} else if ($variable['type'] !== 'key') {
+							exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' Secret "' . $name . '" is not a "key" (' . $variable['type'] . ').' . "\n\n");
+						}
+
+						$this->_data_key_add($name);
 
 					} else if ($action === 'key-list') {
 
@@ -280,6 +196,10 @@
 
 					} else if ($action === 'backup-key') {
 
+					} else if ($action === 'test') {
+
+						require_once(FRAMEWORK_ROOT . '/library/tests/class-secrets.php');
+
 					} else {
 
 						if ($action) {
@@ -289,8 +209,8 @@
 						}
 						echo "\n";
 						echo './cli --secrets=check' . "\n";
-						echo './cli --secrets=value-edit' . "\n";
-						echo './cli --secrets=value-edit,value.name' . "\n";
+						echo './cli --secrets=str-edit' . "\n";
+						echo './cli --secrets=str-edit,value.name' . "\n";
 						echo './cli --secrets=key-create' . "\n";
 						echo './cli --secrets=key-create,key.name' . "\n";
 						echo './cli --secrets=key-list' . "\n";
@@ -301,6 +221,7 @@
 						echo './cli --secrets=import' . "\n";
 						echo './cli --secrets=rotate' . "\n";
 						echo './cli --secrets=backup-key' . "\n";
+						echo './cli --secrets=test' . "\n";
 						echo "\n";
 						exit();
 
@@ -309,53 +230,260 @@
 			}
 
 		//--------------------------------------------------
-		// Key
+		// Data
 
-			public function key_example_print() {
-				echo 'Try creating with the following line:' . "\n";
-				echo "\n";
-				echo '##########' . "\n";
-				echo $this->key_example();
-				echo '##########' . "\n";
+			private function _data_str_update($name, $value) {
+
+				if (!array_key_exists($name, $this->current['variables'])) {
+					throw new error_exception('Unknown variable "' . $name . '" when using $cli_secrets->_data_str_update().');
+				}
+
+				if ($this->current['variables'][$name]['type'] !== 'str') {
+					throw new error_exception('Cannot set a "' . $this->current['variables'][$name]['type'] . '" from $cli_secrets->_data_str_update(), it must be a "str"');
+				}
+
+				if ($value === NULL) {
+					throw new error_exception('Cannot set the secret str "' . $name . '" to NULL');
+				}
+
+				$old_value = ($this->current['data_encoded'][$name]['value'] ?? NULL);
+				if ($old_value !== NULL) {
+
+					$time = ($this->current['data_encoded'][$name]['edited'] ?? NULL);
+					if ($time === NULL) {
+						$time = ($this->current['data_encoded'][$name]['created'] ?? NULL);
+					}
+					if ($time === NULL) {
+						$time = new timestamp();
+						$time = $now->format('c');
+					}
+
+					$this->current['data_encoded'][$name]['history'][$time] = $old_value;
+
+				}
+
+				if ($this->use_api === true) {
+					$value_encoded = $this->_api_result_or_exit(['action' => 'data_encode', 'value' => $value]);
+				} else {
+					$value_encoded = secrets::_data_encode($value);
+				}
+
+				$this->current['data_encoded'][$name]['value'] = $value_encoded;
+				$this->current['data_encoded'][$name]['edited'] = NULL; // A new value will be added during save
+
+				$this->_data_save();
+
 			}
 
-			public function key_example() {
-				return 'export PRIME_CONFIG_KEY=' . encryption::key_symmetric_create();
+			private function _data_key_add($name, $key_secret = NULL, $key_public = NULL) {
+
+				if (!array_key_exists($name, $this->current['variables'])) {
+					throw new error_exception('Unknown variable "' . $name . '" when using $cli_secrets->_data_key_add().');
+				}
+
+				if ($this->current['variables'][$name]['type'] !== 'key') {
+					throw new error_exception('Cannot set a "' . $this->current['variables'][$name]['type'] . '" from $cli_secrets->_data_key_add(), it must be a "key"');
+				}
+
+				$add_key_type = $this->current['variables'][$name]['key_type'];
+
+				if ($add_key_type == 'asymmetric') {
+
+					if ($key_secret !== NULL || $key_public !== NULL) {
+						if ($key_secret === NULL) throw new error_exception('When setting asymmetric key "' . $name . '", both secret and public keys are required.');
+						if ($key_public === NULL) throw new error_exception('When setting asymmetric key "' . $name . '", both secret and public keys are required.');
+					} else {
+						list($key_public, $key_secret) = encryption::key_asymmetric_create();
+					}
+
+				} else if ($add_key_type == 'symmetric') {
+
+					if ($key_public !== NULL) {
+						throw new error_exception('When setting symmetric key "' . $name . '", the public key should not exist.');
+					}
+
+					if ($key_secret === NULL) {
+						$key_secret = encryption::key_symmetric_create();
+					}
+
+				} else {
+
+					throw new error_exception('The secret key type "' . $add_key_type . '" is unrecognised for "' . $name . '".');
+
+				}
+
+				if ($this->use_api === true) {
+					$key_secret_encoded = $this->_api_result_or_exit(['action' => 'data_encode', 'value' => $key_secret]);
+				} else {
+					$key_secret_encoded = secrets::_data_encode($key_secret);
+				}
+
+				$now = new timestamp();
+				$now = $now->format('c');
+
+				$this->current['data_encoded'][$name]['keys'][] = [
+						'key_type'   => $add_key_type,
+						'key_secret' => $key_secret_encoded,
+						'key_public' => $key_public, // Maybe encrypt?
+						'created'    => $now,
+					];
+
+				$this->current['data_encoded'][$name]['edited'] = NULL; // A new value will be added during save
+
+				$this->_data_save();
+
 			}
 
-			// private function key_create() {
-			//
-			// 	$new_key_value = encryption::key_symmetric_create();
-			// 	$new_key_identifier = encryption::key_identifier_get($new_key_value);
-			//
-			// 	$command = new command();
-			// 	$command->stdin_set($new_key_value);
-			// 	$command->exec('sudo -k', [
-			// 			FRAMEWORK_ROOT . '/library/cli/secrets/new-key.sh',
-			// 			$new_key_identifier,
-			// 			$this->key_path,
-			// 			1,
-			// 		]);
-			//
-			// 	debug($command->stdout_get());
-			//
-			// }
-			//
-			// private function key_cleanup($key) {
-			//
-			// 	if (($pos = strpos($key, '=')) !== false) { // Remove the export + name prefix
-			// 		$key = substr($key, ($pos + 1));
-			// 	}
-			//
-			// 	$key = trim($key);
-			//
-			// 	if ($key !== '' && !in_array(encryption::key_type_get($key), ['KS1', 'KS2'])) {
-			// 		exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' Unrecognised key type.' . "\n\n");
-			// 	}
-			//
-			// 	return $key;
-			//
-			// }
+			private function _data_save() {
+
+				$now = new DateTime(); // timestamp not found during setup
+				$now = $now->format('c');
+
+				$max_history = new DateTime('-3 months');
+
+				$store = [
+						'values' => [],
+						'archive' => [],
+					];
+
+				foreach ($this->current['archive'] as $name => $entries) {
+					foreach ($entries as $time => $entry) {
+						try {
+							$time = new DateTime($time);
+							if ($time > $max_history) {
+								$store['archive'][$name][$time->format('c')] = $entry;
+							}
+						} catch (exception $e) {
+						}
+					}
+				}
+				ksort($store['archive']);
+
+				foreach ($this->current['variables'] as $name => $info) {
+
+					$new = ['type' => $info['type']];
+
+					if ($info['type'] === 'str') {
+
+						if (($this->current['data_encoded'][$name]['value'] ?? NULL) === NULL) {
+							continue; // Not set yet, e.g. on first load where multiple values need to be set.
+						}
+
+						$new['value'] = $this->current['data_encoded'][$name]['value'];
+
+						if (count($this->current['data_encoded'][$name]['history'] ?? []) > 0) {
+							$new['history'] = [];
+							foreach ($this->current['data_encoded'][$name]['history'] as $time => $entry) {
+								try {
+									$time = new DateTime($time);
+									if ($time > $max_history) {
+										$new['history'][$time->format('c')] = $entry;
+									}
+								} catch (exception $e) {
+								}
+							}
+							if (count($new['history']) > 0) {
+								ksort($new['history']);
+							} else {
+								unset($new['history']);
+							}
+						}
+
+					} else if ($info['type'] === 'key') {
+
+						$new['keys'] = [];
+						foreach (($this->current['data_encoded'][$name]['keys'] ?? []) as $k) {
+							$new['keys'][] = [
+									'key_type'   => $k['key_type'],
+									'key_secret' => $k['key_secret'],
+									'key_public' => $k['key_public'],
+									'created'    => $k['created'],
+								];
+						}
+
+					} else {
+
+						throw new error_exception('The secret type "' . $info['type'] . '" is unrecognised for "' . $name . '".');
+
+					}
+
+					$new['created'] = ($this->current['data_encoded'][$name]['created'] ?? NULL);
+					$new['edited']  = ($this->current['data_encoded'][$name]['edited']  ?? NULL);
+
+					if ($new['created'] === NULL) $new['created'] = $now;
+					if ($new['edited']  === NULL) $new['edited']  = $now;
+
+					$store['values'][$name] = $new;
+
+				}
+
+				$data_path = $this->data_folder . '/' . safe_file_name($this->current['file_name'], 'json');
+
+				file_put_contents($data_path, json_encode($store, JSON_PRETTY_PRINT) . "\n");
+
+			}
+
+		//--------------------------------------------------
+		// Call API
+
+			private function _api_result_or_exit($request_data) {
+				$response = $this->_api_call($request_data);
+				if ($response['error'] !== false) {
+					exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response['error'] . "\n\n");
+				}
+				return $response['result'];
+			}
+
+			private function _api_call($request_data) {
+
+				$domain = config::get('output.domain');
+				if ($domain == '') {
+					return ['error' => 'CLI cannot use the Secrets helper directly - maybe set $config[\'output.domain\'] or $config[\'request.domain\'] to use the API.'];
+				}
+
+				list($auth_id, $auth_value, $auth_path) = gateway::framework_api_auth_start('framework-secrets');
+
+				$gateway_url = gateway_url('framework-secrets');
+
+				$request_data['auth_id'] = $auth_id;
+				$request_data['auth_value'] = $auth_value;
+
+				$error = false;
+
+				$connection = new connection();
+				$connection->exit_on_error_set(false);
+				$connection->post($gateway_url, $request_data);
+
+				if (intval($connection->response_code_get()) !== 200) {
+
+					$error = 'Cannot call the framework-secrets API' . "\n\n-----\n" . $connection->error_message_get() . "\n-----\n" . $connection->error_details_get() . "\n-----\n" . $connection->response_headers_get() . "\n\n" . $connection->response_data_get() . "\n-----";
+
+				} else {
+
+					$response_json = $connection->response_data_get();
+					$response_data = json_decode($response_json, true);
+
+					if (!is_array($response_data) || !isset($response_data['error'])) {
+
+						$error = 'Invalid response from API' . "\n\n-----\n\n" . $response_json;
+
+					} else if ($response_data['error'] !== false) {
+
+						$error = $response_data['error']; // Only return the error
+
+					}
+
+				}
+
+				gateway::framework_api_auth_end($auth_path);
+
+				if ($error !== false) {
+					return ['error' => $error];
+				} else {
+					return $response_data;
+				}
+
+			}
 
 		//--------------------------------------------------
 		// Backups
