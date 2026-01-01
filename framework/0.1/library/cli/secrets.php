@@ -33,7 +33,7 @@
 					$this->data_folder = config::get('secrets.folder') . '/data';
 
 					if (!is_dir($this->data_folder)) {
-						mkdir($this->data_folder, 0755);
+						mkdir($this->data_folder, 0755, true);
 						if (!is_dir($this->data_folder)) {
 							throw new error_exception('Could not create a folder for the secrets data', $this->data_folder);
 						}
