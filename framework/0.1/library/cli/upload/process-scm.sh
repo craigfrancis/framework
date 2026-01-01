@@ -115,8 +115,8 @@
 	echo;
 	echo 'Run install script...';
 
-	remote_cmd "${CLI_PATH} --install"     | awk '{ print "    " $0;}';
-	remote_cmd "${CLI_PATH} --clear-cache" | awk '{ print "    " $0;}';
+	sed 's/^/    /' < <( remote_cmd "${CLI_PATH} --install"     2>&1 );
+	sed 's/^/    /' < <( remote_cmd "${CLI_PATH} --clear-cache" 2>&1 );
 
 	echo -e "  \033[1;34mDone\033[0m";
 
