@@ -289,6 +289,7 @@
 
 						require_once(FRAMEWORK_ROOT . '/library/cli/install.php');
 						require_once(FRAMEWORK_ROOT . '/library/cli/permission.php');
+						require_once(FRAMEWORK_ROOT . '/library/cli/secrets.php');
 
 						install_run();
 						break;

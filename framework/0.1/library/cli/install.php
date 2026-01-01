@@ -49,6 +49,7 @@
 						'/logs/',
 						'/private/',
 						'/private/files/',
+						'/private/secrets/', // config::get('secrets.folder')
 						'/resources/',
 					));
 
@@ -215,6 +216,12 @@
 					file_put_contents($ignore_path, 'tmp' . "\n" . $ignore_content);
 				}
 			}
+
+		//--------------------------------------------------
+		// Check secrets
+
+			$cli_secrets = new cli_secrets();
+			$cli_secrets->run('check');
 
 		//--------------------------------------------------
 		// Setup watch script

@@ -897,18 +897,16 @@
 			//--------------------------------------------------
 			// Config
 
+				$secrets_used = (secrets::used() === true);
+
 				$config = [
 						'name'       => config::get('db.name'),
 						'host'       => config::get('db.host'),
 						'user'       => config::get('db.user'),
-						'pass'       => secrets::get('db.pass'),
+						'pass'       => ($secrets_used ? secrets::get('db.pass') : config::get_decrypted('db.pass')), // TODO [secrets-cleanup], where config::get_decrypted() can run config::get()
 						'persistent' => config::get('db.persistent'),
 						'ca_file'    => config::get('db.ca_file'),
 					];
-
-				if ($config['pass'] === NULL) {
-					$config['pass'] = config::get_decrypted('db.pass'); // TODO [secrets-cleanup], where this also effectively does config::get()
-				}
 
 				if ($this->connection != 'default') {
 					$connection = config::get_all('db.' . $this->connection);
@@ -918,10 +916,7 @@
 					}
 					$config = array_merge($config, $connection);
 					if ($config['pass'] === NULL) {
-						$config['pass'] = secrets::get('db.' . $this->connection . '.pass');
-					}
-					if ($config['pass'] === NULL) {
-						$config['pass'] = config::get_decrypted('db.' . $this->connection . '.pass'); // TODO [secrets-cleanup], where this also effectively does config::get()
+						$config['pass'] = ($secrets_used ? secrets::get('db.' . $this->connection . '.pass') : config::get_decrypted('db.' . $this->connection . '.pass')); // TODO [secrets-cleanup], see above.
 					}
 				}
 

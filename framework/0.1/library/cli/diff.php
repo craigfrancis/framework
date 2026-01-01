@@ -27,17 +27,18 @@
 
 					if (REQUEST_MODE == 'cli') {
 						$diff_via_api = true;
-						if (secrets::state() === true) {
-							$diff_via_api = false; // Should be able to access the database password, run locally.
-						}
-						try {
-							if (config::get_decrypted('db.pass') !== NULL) { // TODO [secrets-cleanup]
-								$diff_via_api = false; // Can access the password, run locally.
+						if (secrets::used() === true) { // Secrets have been setup (otherwise this would be false); and secrets can be accessed (otherwise this would be NULL)... so we should be able to get to the database password without using the API (i.e. run locally).
+							$diff_via_api = false;
+						} else {
+							try {
+								if (config::get_decrypted('db.pass') !== NULL) { // TODO [secrets-cleanup]
+									$diff_via_api = false; // Can access the password, run locally.
+								}
+							} catch (exception $e) {
 							}
-						} catch (exception $e) {
 						}
 					} else {
-						$diff_via_api = false;
+						$diff_via_api = false; // Not using CLI, so this is a web-request API "framework-db-diff"
 					}
 
 					if ($diff_via_api) {

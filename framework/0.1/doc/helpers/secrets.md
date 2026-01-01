@@ -65,7 +65,7 @@ Update your projects config file:
 
 To add to the `$secrets` array, e.g.
 
-    $secrets['db.pass'] = ['type' => 'value'];
+    $secrets['db.pass'] = ['type' => 'str'];
 
     $secrets['service.key'] = ['type' => 'key'];
 
@@ -182,7 +182,7 @@ TODO [secrets-keys]
 - [any manual steps? other websites?]
 
 - Replace key in "/etc/prime-config-key", with a mv to a backup file using the current timestamp?
-- Check `PRIME_CONFIG_KEY` has been updated (Apache restart? like "framework-opcache-clear"? check by passing hash, get back a pass/fail?)
+- Check `PRIME_CONFIG_KEY` has been updated?
 - Remove all old value files (if previous rotate failed there may be more than 1).
 - Update "backup.key-import"
 

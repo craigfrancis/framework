@@ -90,7 +90,7 @@
 
 	$config['db.prefix'] = 'tbl_';
 
-	// $secrets['db.pass'] = ['type' => 'value'];
+	// $secrets['db.pass'] = ['type' => 'str'];
 
 //--------------------------------------------------
 // Output

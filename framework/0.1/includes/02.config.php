@@ -587,6 +587,8 @@
 
 	secrets::setup($secrets);
 
+	unset($secrets);
+
 //--------------------------------------------------
 // Extra protection against XXE - not that anyone
 // should be using LIBXML_NOENT.
