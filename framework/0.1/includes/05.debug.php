@@ -123,32 +123,39 @@
 
 			if (config::get('db.host') !== NULL && config::get('db.error_connect') !== true) {
 
-				if (config::get('debug.level') > 0) {
+				try {
 
-					debug_require_db_table(DB_PREFIX . 'system_report', '
-							CREATE TABLE [TABLE] (
-								id int(11) NOT NULL auto_increment,
-								type tinytext NOT NULL,
-								created datetime NOT NULL,
-								message text NOT NULL,
-								request tinytext NOT NULL,
-								referrer tinytext NOT NULL,
-								ip tinytext NOT NULL,
-								PRIMARY KEY  (id)
-							);');
+					if (config::get('debug.level') > 0) {
 
+						debug_require_db_table(DB_PREFIX . 'system_report', '
+								CREATE TABLE [TABLE] (
+									id int(11) NOT NULL auto_increment,
+									type tinytext NOT NULL,
+									created datetime NOT NULL,
+									message text NOT NULL,
+									request tinytext NOT NULL,
+									referrer tinytext NOT NULL,
+									ip tinytext NOT NULL,
+									PRIMARY KEY  (id)
+								);');
+
+					}
+
+					$db = db_get();
+
+					$db->insert(DB_PREFIX . 'system_report', array(
+							'type'     => $type,
+							'created'  => new timestamp(),
+							'message'  => $message,
+							'request'  => config::get('request.url'),
+							'referrer' => config::get('request.referrer'),
+							'ip'       => config::get('request.ip'),
+						));
+
+				} catch (error_exception $e) {
+					// If the try/catch has already happened in bootstrap.php, we are in exit_with_error() without a new try/catch.
+					// But, if we are failing at this point, it's almost certainly a db connection issue, and we do not want an error loop, so ignore.
 				}
-
-				$db = db_get();
-
-				$db->insert(DB_PREFIX . 'system_report', array(
-						'type'     => $type,
-						'created'  => new timestamp(),
-						'message'  => $message,
-						'request'  => config::get('request.url'),
-						'referrer' => config::get('request.referrer'),
-						'ip'       => config::get('request.ip'),
-					));
 
 			}
 
