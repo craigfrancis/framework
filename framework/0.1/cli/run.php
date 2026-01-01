@@ -22,6 +22,7 @@
 			'diff::',
 			'reset::',
 			'upload:',
+			'clear-cache',
 			'confirm-server:',
 		);
 
@@ -343,6 +344,12 @@
 						require_once(FRAMEWORK_ROOT . '/library/cli/upload.php');
 
 						upload_run($option_value);
+						break;
+
+					case 'clear-cache':
+
+						require_once(FRAMEWORK_ROOT . '/library/cli/clear-cache.php');
+
 						break;
 
 					case 'confirm-server':
