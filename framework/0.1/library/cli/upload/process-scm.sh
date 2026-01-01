@@ -115,8 +115,10 @@
 	echo;
 	echo 'Run install script...';
 
-	sed 's/^/    /' < <( remote_cmd "${CLI_PATH} --install"     2>&1 );
-	sed 's/^/    /' < <( remote_cmd "${CLI_PATH} --clear-cache" 2>&1 );
+    # See "publish-run.sh" for why we can't use | awk '{ print "    " $0;}';
+
+	remote_cmd "${CLI_PATH} --install";
+	remote_cmd "${CLI_PATH} --clear-cache";
 
 	echo -e "  \033[1;34mDone\033[0m";
 

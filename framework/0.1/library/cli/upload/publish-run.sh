@@ -150,8 +150,16 @@
 	echo;
 	echo 'Run install script...';
 
-	./cli --install     | awk '{ print "    " $0;}';
-	./cli --clear-cache | awk '{ print "    " $0;}';
+    # Cannot currently use:
+    #    | awk '{ print "    " $0;}'
+    # As the install script can prompt for secrets
+    # Maybe use something like:
+    #  script -q -c "/path/to/command" /dev/null | sed 's/^/    /'
+    # Process substitution does not work (line buffering)
+    #  sed 's/^/    /' < <( /path/to/command 2>&1 );
+
+	./cli --install;
+	./cli --clear-cache;
 
 	echo -e "  \033[1;34mDone\033[0m";
 
