@@ -278,17 +278,6 @@
 
 			}
 
-			public static function _data_reload() {
-
-				if (!str_starts_with(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'], FRAMEWORK_ROOT)) {
-					trigger_error('Only the framework can use the secrets::_data_reload() method', E_USER_ERROR);
-					exit();
-				}
-
-				self::_data_load();
-
-			}
-
 			public static function _folder_get($sub_folder = NULL) {
 
 				if (!str_starts_with(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'], FRAMEWORK_ROOT)) {
