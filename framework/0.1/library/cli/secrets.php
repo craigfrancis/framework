@@ -128,7 +128,7 @@
 
 						}
 
-						if ($updates > 0) {
+						if ($updates > 0 && $used === true) {
 							secrets::_data_reload(); // If used during install, it might go on to run a project specific install script (which might use a secret, like the connecting to the database).
 						}
 
