@@ -72,6 +72,8 @@
 							return; // Secrets helper not used, so we're done.
 						}
 
+						$updates = 0;
+
 						foreach ($this->current['variables'] as $name => $info) {
 
 							if ($info['type'] === 'str') {
@@ -88,6 +90,8 @@
 									} while ($value == '');
 
 									$this->_data_str_update($name, $value);
+
+									$updates++;
 
 								}
 
@@ -112,6 +116,8 @@
 
 									$this->_data_key_add($name);
 
+									$updates++;
+
 								}
 
 							} else {
@@ -120,6 +126,10 @@
 
 							}
 
+						}
+
+						if ($updates > 0) {
+							secrets::_data_reload(); // If used during install, it might go on to run a project specific install script (which might use a secret, like the connecting to the database).
 						}
 
 					} else if ($action === 'str-edit') {
