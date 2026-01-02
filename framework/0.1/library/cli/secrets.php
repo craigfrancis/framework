@@ -404,7 +404,9 @@
 
 				if (is_writable($data_folder)) { // secrets::_folder_get() will try to create, but permissions might be an issue, so try again via API.
 
-					secrets::_data_write($data_text);
+					$data_path = $data_folder . '/' . safe_file_name($this->current['file_name'], 'json');
+
+					secrets::_data_write($data_text, $data_path);
 
 				} else {
 

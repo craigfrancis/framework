@@ -340,20 +340,22 @@
 				return encryption::encode($value, $obj->primary_key);
 			}
 
-			public static function _data_write($data_text) {
+			public static function _data_write($data_text, $data_path = NULL) {
 
 				if (!str_starts_with(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'], FRAMEWORK_ROOT)) {
 					trigger_error('Only the framework can use the secrets::_data_write() method', E_USER_ERROR);
 					exit();
 				}
 
-				$obj = secrets::instance_get();
-
-				if ($obj->data_encoded === NULL) {
-					self::_data_load();
+				if ($data_path === NULL) { // When using the API, get the trusted file_path from self::_data_load(); when on CLI we don't have PRIME_CONFIG_KEY, so this does not work.
+					$obj = secrets::instance_get();
+					if ($obj->data_encoded === NULL) {
+						self::_data_load();
+					}
+					$data_path = $obj->file_path;
 				}
-debug($obj->file_path);
-				$result = file_put_contents($obj->file_path, $data_text);
+
+				$result = file_put_contents($data_path, $data_text);
 
 				return ($result !== false);
 
