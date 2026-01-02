@@ -125,29 +125,6 @@
 
 			}
 
-			public static function folder_get($sub_folder = NULL) {
-
-				$folder_path = config::get('secrets.folder');
-
-				if (in_array($sub_folder, ['data'])) { // Could use 'export'/'import', and maybe 'backups'?
-
-					$folder_path .= '/' . $sub_folder;
-
-					if (!is_dir($folder_path)) {
-						@mkdir($folder_path, 0755, true);
-						if (is_dir($folder_path)) {
-							$ignore_path = $folder_path . '/.gitignore';
-							$ignore_content = '*' . "\n";
-							file_put_contents($ignore_path, $ignore_content);
-						}
-					}
-
-				}
-
-				return $folder_path;
-
-			}
-
 			private static function _data_load() {
 
 				//--------------------------------------------------
@@ -162,7 +139,7 @@
 				//--------------------------------------------------
 				// File
 
-					$data_folder        = secrets::folder_get('data');
+					$data_folder        = secrets::_folder_get('data');
 					$data_prefix        = safe_file_name(config::get('secrets.prefix', SERVER) . '-');
 					$data_prefix_length = strlen($data_prefix);
 					$data_suffix        = '.json';
@@ -301,6 +278,34 @@
 
 			}
 
+			public static function _folder_get($sub_folder = NULL) {
+
+				if (!str_starts_with(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'], FRAMEWORK_ROOT)) {
+					trigger_error('Only the framework can use the secrets::_folder_get() method', E_USER_ERROR);
+					exit();
+				}
+
+				$folder_path = config::get('secrets.folder');
+
+				if (in_array($sub_folder, ['data'])) { // Could use 'export'/'import', and maybe 'backups'?
+
+					$folder_path .= '/' . $sub_folder;
+
+					if (!is_dir($folder_path)) {
+						@mkdir($folder_path, 0755, true);
+						if (is_dir($folder_path)) {
+							$ignore_path = $folder_path . '/.gitignore';
+							$ignore_content = '*' . "\n";
+							file_put_contents($ignore_path, $ignore_content);
+						}
+					}
+
+				}
+
+				return $folder_path;
+
+			}
+
 			public static function _data_get() {
 
 				if (!str_starts_with(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'], FRAMEWORK_ROOT)) {
@@ -333,6 +338,25 @@
 			public static function _data_encode($value) {
 				$obj = secrets::instance_get();
 				return encryption::encode($value, $obj->primary_key);
+			}
+
+			public static function _data_write($data_text) {
+
+				if (!str_starts_with(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'], FRAMEWORK_ROOT)) {
+					trigger_error('Only the framework can use the secrets::_data_write() method', E_USER_ERROR);
+					exit();
+				}
+
+				$obj = secrets::instance_get();
+
+				if ($obj->data_encoded === NULL) {
+					self::_data_load();
+				}
+
+				$result = file_put_contents($obj->file_path, $data_text);
+
+				return ($result !== false);
+
 			}
 
 		//--------------------------------------------------

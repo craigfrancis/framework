@@ -39,11 +39,16 @@
 
 		$result = secrets::_data_encode(request('value', 'POST'));
 
-	} else if ($action == 'data_folder_create') {
+	} else if ($action == 'data_write') {
 
-		$data_folder = secrets::folder_get('data');
+		$data_folder = secrets::_folder_get('data'); // secrets::_folder_get() will try to create.
 
-		$result = is_dir($data_folder);
+		if (!is_dir($data_folder)) {
+			$response->send(['error' => 'Could not create a folder for the secrets data']);
+			exit();
+		}
+
+		$result = secrets::_data_write(request('data', 'POST'));
 
 	} else {
 

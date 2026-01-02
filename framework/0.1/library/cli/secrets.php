@@ -398,31 +398,29 @@
 
 				}
 
-				$data_folder = secrets::folder_get('data');
+				$data_folder = secrets::_folder_get('data');
 
-				if (!is_dir($data_folder)) { // secrets::folder_get() will try to create, but permissions might be an issue, so try again via API.
-					$result = $this->_api_result_or_exit(['action' => 'data_folder_create']);
-					if (!is_dir($data_folder)) {
-						throw new error_exception('Could not create a folder for the secrets data', $data_folder . "\n-----\n" . debug_dump($result));
-					}
+				$data_text = json_encode($store, JSON_PRETTY_PRINT) . "\n";
+
+				if (is_writable($data_folder)) { // secrets::_folder_get() will try to create, but permissions might be an issue, so try again via API.
+
+					secrets::_data_write($data_text);
+
+				} else {
+
+					$result = $this->_api_result_or_exit(['action' => 'data_write', 'data' => $data_text], $data_folder);
+
 				}
-
-				$data_path = $data_folder . '/' . safe_file_name($this->current['file_name'], 'json');
-
-				if (!is_writable($data_folder)) {
-				}
-
-				file_put_contents($data_path, json_encode($store, JSON_PRETTY_PRINT) . "\n");
 
 			}
 
 		//--------------------------------------------------
 		// Call API
 
-			private function _api_result_or_exit($request_data) {
+			private function _api_result_or_exit($request_data, $extra_error_info = NULL) {
 				$response = $this->_api_call($request_data);
 				if ($response['error'] !== false) {
-					exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response['error'] . "\n\n");
+					exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response['error'] . "\n\n" . ($extra_error_info ? '       ' . $extra_error_info . "\n\n" : ''));
 				}
 				return $response['result'];
 			}
