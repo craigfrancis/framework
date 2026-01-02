@@ -352,7 +352,7 @@
 				if ($obj->data_encoded === NULL) {
 					self::_data_load();
 				}
-
+debug($obj->file_path);
 				$result = file_put_contents($obj->file_path, $data_text);
 
 				return ($result !== false);
