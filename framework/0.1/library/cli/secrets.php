@@ -400,13 +400,10 @@
 
 				$data_folder = secrets::folder_get('data');
 
-				if (!is_dir($data_folder)) {
-					@mkdir($data_folder, 0755, true);
+				if (!is_dir($data_folder)) { // secrets::folder_get() will try to create, but permissions might be an issue, so try again via API.
+					$result = $this->_api_result_or_exit(['action' => 'data_folder_create']);
 					if (!is_dir($data_folder)) {
-						$result = $this->_api_result_or_exit(['action' => 'data_dir_create']);
-						if (!is_dir($data_folder)) {
-							throw new error_exception('Could not create a folder for the secrets data', $data_folder . "\n-----\n" . debug_dump($result));
-						}
+						throw new error_exception('Could not create a folder for the secrets data', $data_folder . "\n-----\n" . debug_dump($result));
 					}
 				}
 

@@ -126,11 +126,26 @@
 			}
 
 			public static function folder_get($sub_folder = NULL) {
-				$return = config::get('secrets.folder');
+
+				$folder_path = config::get('secrets.folder');
+
 				if (in_array($sub_folder, ['data'])) { // Could use 'export'/'import', and maybe 'backups'?
-					$return .= '/' . $sub_folder;
+
+					$folder_path .= '/' . $sub_folder;
+
+					if (!is_dir($folder_path)) {
+						@mkdir($folder_path, 0755, true);
+						if (is_dir($folder_path)) {
+							$ignore_path = $folder_path . '/.gitignore';
+							$ignore_content = '*' . "\n";
+							file_put_contents($ignore_path, $ignore_content);
+						}
+					}
+
 				}
-				return $return;
+
+				return $folder_path;
+
 			}
 
 			private static function _data_load() {

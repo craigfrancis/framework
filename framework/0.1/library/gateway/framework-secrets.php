@@ -39,15 +39,11 @@
 
 		$result = secrets::_data_encode(request('value', 'POST'));
 
-	} else if ($action == 'data_dir_create') {
+	} else if ($action == 'data_folder_create') {
 
 		$data_folder = secrets::folder_get('data');
 
 		$result = is_dir($data_folder);
-		if (!$result) {
-			@mkdir($data_folder, 0755, true);
-			$result = is_dir($data_folder);
-		}
 
 	} else {
 
