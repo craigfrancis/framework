@@ -125,6 +125,14 @@
 
 			}
 
+			public static function folder_get($sub_folder = NULL) {
+				$return = config::get('secrets.folder');
+				if (in_array($sub_folder, ['data'])) { // Could use 'export'/'import', and maybe 'backups'?
+					$return .= '/' . $sub_folder;
+				}
+				return $return;
+			}
+
 			private static function _data_load() {
 
 				//--------------------------------------------------
@@ -139,7 +147,7 @@
 				//--------------------------------------------------
 				// File
 
-					$data_folder        = config::get('secrets.folder') . '/data';
+					$data_folder        = secrets::folder_get('data');
 					$data_prefix        = safe_file_name(config::get('secrets.prefix', SERVER) . '-');
 					$data_prefix_length = strlen($data_prefix);
 					$data_suffix        = '.json';

@@ -6,7 +6,6 @@
 		// Variables
 
 			protected $use_api = NULL;
-			protected $data_folder = NULL;
 			protected $current = NULL;
 
 		//--------------------------------------------------
@@ -26,24 +25,6 @@
 					$params = explode(',', $params);
 
 					$action = array_shift($params);
-
-				//--------------------------------------------------
-				// Data folder
-
-					$this->data_folder = config::get('secrets.folder') . '/data';
-
-					if (!is_dir($this->data_folder)) {
-						mkdir($this->data_folder, 0755, true);
-						if (!is_dir($this->data_folder)) {
-							throw new error_exception('Could not create a folder for the secrets data', $this->data_folder);
-						}
-					}
-
-					if (!is_writable($this->data_folder)) {
-						$account_owner = posix_getpwuid(fileowner($this->data_folder));
-						$account_process = posix_getpwuid(posix_geteuid());
-						throw new error_exception('The secrets data folder cannot be written to (check ownership).', $this->data_folder . "\n" . 'Current owner: ' . $account_owner['name'] . "\n" . 'Current process: ' . $account_process['name']);
-					}
 
 				//--------------------------------------------------
 				// Current values
@@ -417,7 +398,22 @@
 
 				}
 
-				$data_path = $this->data_folder . '/' . safe_file_name($this->current['file_name'], 'json');
+				$data_folder = secrets::folder_get('data');
+
+				if (!is_dir($data_folder)) {
+					@mkdir($data_folder, 0755, true);
+					if (!is_dir($data_folder)) {
+						$result = $this->_api_result_or_exit(['action' => 'data_dir_create']);
+						if (!is_dir($data_folder)) {
+							throw new error_exception('Could not create a folder for the secrets data', $data_folder . "\n-----\n" . debug_dump($result));
+						}
+					}
+				}
+
+				$data_path = $data_folder . '/' . safe_file_name($this->current['file_name'], 'json');
+
+				if (!is_writable($data_folder)) {
+				}
 
 				file_put_contents($data_path, json_encode($store, JSON_PRETTY_PRINT) . "\n");
 
