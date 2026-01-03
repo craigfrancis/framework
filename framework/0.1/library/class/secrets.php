@@ -50,7 +50,7 @@
 					$encoded = ($obj->data_encoded[$name]['value'] ?? NULL);
 
 					if ($encoded === NULL) {
-						throw new error_exception('Cannot use secrets::get() when "' . $name . '" has not been set.', 'Try running the following on the command line:' . "\n\n" . './cli --secrets=check');
+						throw new error_exception('Cannot use secrets::get() when "' . $name . '" has not been set.', 'Try running the following on the command line:' . "\n\n" . './cli --secrets=check' . "\n\n-----\n\n" . debug_dump($obj->file_path) . "\n\n-----\n\n" . debug_dump($obj->variables) . "\n\n-----\n\n" . debug_dump($obj->data_encoded));
 					}
 
 					$obj->data_decoded[$name] = encryption::decode($encoded, $obj->primary_key);
