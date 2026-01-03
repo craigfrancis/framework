@@ -145,9 +145,11 @@ Abbreviations:
 				//--------------------------------------------------
 				// Config defaults
 
+					$config_profile = $this->file->config_get('profile');
+
 					$default_bucket = implode('-', [
 							$this->file->config_get('aws_prefix'),
-							$this->file->config_get('profile'),
+							$config_profile,
 							SERVER,
 						]);
 
@@ -167,18 +169,25 @@ Abbreviations:
 				//--------------------------------------------------
 				// Access details
 
-					$access_secret = NULL;
+					$access_secret_key = 'file.' . $config_profile . '.aws_access_secret';
+					$access_secret_value = NULL;
 
-					if ($this->file->config_exists('aws_access_secret')) {
+					if (secret::used() === true) {
+
+						$access_secret_value = secret::get($access_secret_key);
+
+					} else if ($this->file->config_exists('aws_access_secret')) { // TODO [secret-cleanup], where config::get_decrypted() can run config::get()
+
 						try {
-							$access_secret = config::value_decrypt($this->file->config_get('aws_access_secret')); // TODO [secret-keys]
+							$access_secret_value = config::value_decrypt($this->file->config_get('aws_access_secret')); // TODO [secret-keys]
 						} catch (exception $e) {
-							$access_secret = NULL;
+							$access_secret_value = NULL;
 						}
+
 					}
 
-					if (!$access_secret) {
-						throw new error_exception('The file_aws_s3 config must set "aws_access_secret", in an encrypted form.');
+					if (!$access_secret_value) {
+						throw new error_exception('The file_aws_s3 config must use $secret[\'' . $access_secret_key . '\'] = [\'type\' => \'str\'];');
 					}
 
 				//--------------------------------------------------
@@ -186,7 +195,7 @@ Abbreviations:
 
 					$this->connection = new connection_aws();
 					$this->connection->exit_on_error_set(false);
-					$this->connection->access_set($this->file->config_get('aws_access_id'), $access_secret);
+					$this->connection->access_set($this->file->config_get('aws_access_id'), $access_secret_value);
 					$this->connection->service_set('s3', $this->file->config_get('aws_region'), $this->file->config_get('aws_bucket'));
 
 			}

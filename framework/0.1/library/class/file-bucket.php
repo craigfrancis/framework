@@ -138,18 +138,25 @@ Abbreviations:
 				//--------------------------------------------------
 				// Access details
 
-					$access_secret = NULL;
+					$access_secret_key = 'file-bucket.aws_access_secret';
+					$access_secret_value = NULL;
 
-					if (isset($this->config['aws_access_secret'])) {
+					if (secret::used() === true) {
+
+						$access_secret_value = secret::get($access_secret_key);
+
+					} else if (isset($this->config['aws_access_secret'])) { // TODO [secret-cleanup], where config::get_decrypted() can run config::get()
+
 						try {
-							$access_secret = config::value_decrypt($this->config['aws_access_secret']); // TODO [secret-keys]
+							$access_secret_value = config::value_decrypt($this->config['aws_access_secret']); // TODO [secret-keys]
 						} catch (exception $e) {
-							$access_secret = NULL;
+							$access_secret_value = NULL;
 						}
+
 					}
 
-					if (!$access_secret) {
-						throw new error_exception('The file-bucket config must set "aws_access_secret", in an encrypted form.');
+					if (!$access_secret_value) {
+						throw new error_exception('The file-bucket config must use $secret[\'' . $access_secret_key . '\'] = [\'type\' => \'str\'];');
 					}
 
 				//--------------------------------------------------
@@ -158,7 +165,7 @@ Abbreviations:
 					$this->connection = new connection_aws();
 					$this->connection->exit_on_error_set(false);
 					$this->connection->timeout_set(10);
-					$this->connection->access_set($this->config['aws_access_id'], $access_secret);
+					$this->connection->access_set($this->config['aws_access_id'], $access_secret_value);
 					$this->connection->service_set('s3', $this->config['aws_region'], $this->config['name']);
 
 			}
