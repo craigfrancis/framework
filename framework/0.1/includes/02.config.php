@@ -541,7 +541,7 @@
 	//--------------------------------------------------
 	// Secret
 
-		config::set_default('secret.folder', PRIVATE_ROOT . '/secret');
+		config::set_default('secret.folder', PRIVATE_ROOT . '/secrets');
 
 	//--------------------------------------------------
 	// Cookie

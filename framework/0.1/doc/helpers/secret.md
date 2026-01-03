@@ -73,7 +73,7 @@ Then re-run:
 
     ./cli --secret=check
 
-The you will be asked for any missing values, which are encrypted, and written to a file in `/private/secret/`.
+The you will be asked for any missing values, which are encrypted, and written to a file in `/private/secrets/`.
 
 ---
 
@@ -206,7 +206,7 @@ This results in a file structure such as:
 
     400 /etc/prime-config-key
 
-    755 /www/.../private/secret/
-    755 /www/.../private/secret/data/
-    644 /www/.../private/secret/data/sha256-ec5770f0d969dd27
-    644 /www/.../private/secret/data/sha256-32e9bf1ce9aa0672
+    755 /www/.../private/secrets/
+    755 /www/.../private/secrets/data/
+    644 /www/.../private/secrets/data/sha256-ec5770f0d969dd27
+    644 /www/.../private/secrets/data/sha256-32e9bf1ce9aa0672

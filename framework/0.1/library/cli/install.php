@@ -49,7 +49,7 @@
 						'/logs/',
 						'/private/',
 						'/private/files/',
-						'/private/secret/', // config::get('secret.folder')
+						'/private/secrets/', // config::get('secret.folder')
 						'/resources/',
 					));
 
