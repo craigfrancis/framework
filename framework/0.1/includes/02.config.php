@@ -8,7 +8,7 @@
 
 		$config = [];
 		$config_encrypted = [];
-		$secrets = [];
+		$secret = [];
 
 	//--------------------------------------------------
 	// Request
@@ -287,7 +287,7 @@
 				}
 			}
 
-			public static function get_encrypted($value) { // TODO [secrets-cleanup] - Use secrets::get() or secrets::key_get() instead
+			public static function get_encrypted($value) { // TODO [secret-cleanup] - Use secret::get() or secret::key_get() instead
 				$key = getenv('PRIME_CONFIG_KEY');
 				if (!$key) {
 					throw new error_exception('Missing environment variable "PRIME_CONFIG_KEY"');
@@ -295,7 +295,7 @@
 				return encryption::encode($value, $key);
 			}
 
-			public static function get_decrypted($variable, $default = NULL) { // TODO [secrets-cleanup] - Use secrets::get() or secrets::key_get() instead
+			public static function get_decrypted($variable, $default = NULL) { // TODO [secret-cleanup] - Use secret::get() or secret::key_get() instead
 				$obj = config::instance_get();
 				if (array_key_exists($variable, $obj->store)) {
 					if (isset($obj->encrypted[$variable]) && $obj->encrypted[$variable]) {
@@ -308,7 +308,7 @@
 				}
 			}
 
-			public static function value_decrypt($value) { // TODO [secrets-cleanup] - Use secrets::get() or secrets::key_get() instead
+			public static function value_decrypt($value) { // TODO [secret-cleanup] - Use secret::get() or secret::key_get() instead
 				$key = getenv('PRIME_CONFIG_KEY');
 				if (!$key) {
 					throw new error_exception('Missing environment variable "PRIME_CONFIG_KEY"');
@@ -316,7 +316,7 @@
 				return encryption::decode($value, $key);
 			}
 
-			public static function _temp_decrypt_all() { // TODO [secrets-cleanup] Remove
+			public static function _temp_decrypt_all() { // TODO [secret-cleanup] Remove
 				$output = [];
 				$obj = config::instance_get();
 				foreach ($obj->encrypted as $name => $encrypted) {
@@ -426,7 +426,7 @@
 //--------------------------------------------------
 // Encrypted config, now we know the SERVER
 
-	if (isset($config_encrypted[SERVER]) && count($config_encrypted) > 0) { // TODO [secrets-cleanup] - Should be able to remove?
+	if (isset($config_encrypted[SERVER]) && count($config_encrypted) > 0) { // TODO [secret-cleanup] - Should be able to remove?
 		foreach ($config_encrypted[SERVER] as $name => $value) {
 			config::set($name, $value, true);
 		}
@@ -539,9 +539,9 @@
 		}
 
 	//--------------------------------------------------
-	// Secrets
+	// Secret
 
-		config::set_default('secrets.folder', PRIVATE_ROOT . '/secrets');
+		config::set_default('secret.folder', PRIVATE_ROOT . '/secret');
 
 	//--------------------------------------------------
 	// Cookie
@@ -598,13 +598,13 @@
 	setlocale(LC_ALL, str_replace('-', '_', config::get('output.lang')) . '.' . config::get('output.charset'));
 
 //--------------------------------------------------
-// Setup secrets
+// Secret helper
 
-	require_once(FRAMEWORK_ROOT . '/library/class/secrets.php');
+	require_once(FRAMEWORK_ROOT . '/library/class/secret.php');
 
-	secrets::setup($secrets);
+	secret::setup($secret);
 
-	unset($secrets);
+	unset($secret);
 
 //--------------------------------------------------
 // Extra protection against XXE - not that anyone

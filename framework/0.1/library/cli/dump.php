@@ -7,11 +7,11 @@
 
 		if (REQUEST_MODE == 'cli') {
 			$dump_via_api = true;
-			if (secrets::used() === true) { // Secrets have been setup (otherwise this would be false); and secrets can be accessed (otherwise this would be NULL)... so we should be able to get to the database password without using the API (i.e. run locally).
+			if (secret::used() === true) { // Secret helper has been setup (otherwise this would be false); and secret values can be accessed (otherwise this would be NULL)... so we should be able to get to the database password without using the API (i.e. run locally).
 				$dump_via_api = false;
 			} else {
 				try {
-					if (config::get_decrypted('db.pass') !== NULL) { // TODO [secrets-cleanup]
+					if (config::get_decrypted('db.pass') !== NULL) { // TODO [secret-cleanup]
 						$dump_via_api = false; // Can access the password, run locally.
 					}
 				} catch (exception $e) {

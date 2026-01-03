@@ -1614,7 +1614,7 @@
 
 			public function auth_encrypt() {
 
-// TODO [secrets-keys]
+// TODO [secret-keys]
 				if (!encryption::key_exists(auth::$secret_key)) {
 					encryption::key_symmetric_create(auth::$secret_key);
 				}
@@ -2095,7 +2095,7 @@
 
 				if ($secret != '') {
 
-// TODO [secrets-keys]
+// TODO [secret-keys]
 					if (!encryption::key_exists(auth::$secret_key)) {
 						encryption::key_symmetric_create(auth::$secret_key);
 					}
@@ -2164,7 +2164,7 @@
 
 				$secret = intval(auth::$secret_version) . '-' . json_encode($secret_values);
 
-// TODO [secrets-keys]
+// TODO [secret-keys]
 				if (!encryption::key_exists(auth::$secret_key)) {
 					encryption::key_symmetric_create(auth::$secret_key);
 				}

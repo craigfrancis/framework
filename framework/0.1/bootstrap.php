@@ -125,7 +125,7 @@
 						// This used to include:
 						// debug_require_db_table(DB_PREFIX . 'system_report', ...);
 						// But has been moved, as during site setup, when
-						// trying to use the CLI to setup the secrets, it would
+						// trying to use the CLI to setup the secret helper, it would
 						// use the API, and this would in turn would try to connect
 						// to the database, but 'db.pass' is not available yet.
 

@@ -142,7 +142,7 @@ Abbreviations:
 
 					if (isset($this->config['aws_access_secret'])) {
 						try {
-							$access_secret = config::value_decrypt($this->config['aws_access_secret']); // TODO [secrets-keys]
+							$access_secret = config::value_decrypt($this->config['aws_access_secret']); // TODO [secret-keys]
 						} catch (exception $e) {
 							$access_secret = NULL;
 						}
@@ -250,7 +250,7 @@ Abbreviations:
 							if (count($unprocessed_files_full) > 0) {
 
 								$info_key = $this->config['info_key'];
-								if (!encryption::key_exists($info_key)) { // TODO [secrets-keys]
+								if (!encryption::key_exists($info_key)) { // TODO [secret-keys]
 									throw new error_exception('Cannot find encryption key "' . $info_key . '"', encryption::key_path_get($info_key));
 								}
 
@@ -971,7 +971,7 @@ debug('Removed File: ' . $matches[1]);
 			private function _file_db_get($file_id, $offset = NULL, $limit = 100) {
 
 				$info_key = $this->config['info_key'];
-				if (!encryption::key_exists($info_key)) { // TODO [secrets-keys]
+				if (!encryption::key_exists($info_key)) { // TODO [secret-keys]
 					throw new error_exception('Cannot find encryption key "' . $info_key . '"', encryption::key_path_get($info_key));
 				}
 
@@ -1114,7 +1114,7 @@ debug('Removed File: ' . $matches[1]);
 				// Info key
 
 					$info_key = $this->config['info_key'];
-					if (!encryption::key_exists($info_key)) { // TODO [secrets-keys]
+					if (!encryption::key_exists($info_key)) { // TODO [secret-keys]
 						encryption::key_symmetric_create($info_key);
 					}
 

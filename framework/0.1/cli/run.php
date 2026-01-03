@@ -7,7 +7,7 @@
 			'h' => 'help',
 			'd::' => 'debug::', // Optional value
 			'c::' => 'config::', // Optional value
-			's::' => 'secrets::', // Optional value
+			's::' => 'secret::', // Optional value
 			'g::' => 'gateway::', // Optional value
 			'm' => 'maintenance',
 			'i' => 'install',
@@ -207,12 +207,12 @@
 						break;
 
 					case 's':
-					case 'secrets':
+					case 'secret':
 
-						require_once(FRAMEWORK_ROOT . '/library/cli/secrets.php');
+						require_once(FRAMEWORK_ROOT . '/library/cli/secret.php');
 
-						$cli_secrets = new cli_secrets();
-						$cli_secrets->run($option_value);
+						$cli_secret = new cli_secret();
+						$cli_secret->run($option_value);
 
 						break;
 
@@ -289,7 +289,7 @@
 
 						require_once(FRAMEWORK_ROOT . '/library/cli/install.php');
 						require_once(FRAMEWORK_ROOT . '/library/cli/permission.php');
-						require_once(FRAMEWORK_ROOT . '/library/cli/secrets.php');
+						require_once(FRAMEWORK_ROOT . '/library/cli/secret.php');
 
 						install_run();
 						break;

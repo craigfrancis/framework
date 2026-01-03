@@ -1,6 +1,6 @@
 <?php
 
-// framework/0.1/library/class/secrets.php [Main Class]
+// framework/0.1/library/class/secret.php [Main Class]
 
 		//--------------------------------------------------
 		// Backups
@@ -17,7 +17,7 @@
 			//
 			// }
 			//
-			// public static function data_export($key, $export_key_value) { // Return encrypted data for storage (might go via the 'framework-secrets' gateway)
+			// public static function data_export($key, $export_key_value) { // Return encrypted data for storage (might go via the 'framework-secret' gateway)
 			//
 			// 	//--------------------------------------------------
 			// 	// Check export key
@@ -180,7 +180,7 @@
 			// }
 
 
-// framework/0.1/library/cli/secrets.php [CLI Class]
+// framework/0.1/library/cli/secret.php [CLI Class]
 
 
 		// //--------------------------------------------------
@@ -204,7 +204,7 @@
 		// 				echo "\n";
 		// 				echo 'On your backup system, run:' . "\n";
 		// 				echo "\n";
-		// 				echo '  ./cli --secrets=backup-key' . "\n";
+		// 				echo '  ./cli --secret=backup-key' . "\n";
 		// 				echo "\n";
 		// 				echo 'Export Public Key: ';
 		// 				$export_key = trim(fgets(STDIN));
@@ -227,7 +227,7 @@
 		//
 		// 			if ($this->key_value) {
 		//
-		// 				$response_data = secrets::data_export($this->key_value, $export_key);
+		// 				$response_data = secret::data_export($this->key_value, $export_key);
 		//
 		// 			} else {
 		//
@@ -301,7 +301,7 @@
 		//
 		// 			if ($this->key_value) {
 		//
-		// 				$response_data = secrets::data_import($this->key_value, $import_key, $import_data);
+		// 				$response_data = secret::data_import($this->key_value, $import_key, $import_data);
 		//
 		// 			} else {
 		//
@@ -322,7 +322,7 @@
 		// 		//--------------------------------------------------
 		// 		// Variables
 		//
-		// 			// if (config::get('secrets.editable')) { // No Longer Used
+		// 			// if (config::get('secret.editable')) { // No Longer Used
 		//
 		// 				file_put_contents($this->variables_path, $response_data['variables']);
 		//
@@ -385,7 +385,7 @@
 		//
 		// 			if ($this->key_value) {
 		//
-		// 				$response_data = secrets::data_backup_key($this->key_value);
+		// 				$response_data = secret::data_backup_key($this->key_value);
 		//
 		// 			} else {
 		//
@@ -506,34 +506,34 @@
 		// 			'api_pass' => '54321',
 		// 		];
 		//
-		// 	$data = secrets_export($password, $secrets);
+		// 	$data = secret_export($password, $secrets);
 		//
-		// 	$imported_secrets = secrets_import($password, $data);
+		// 	$imported_secrets = secret_import($password, $data);
 		//
 		// 	debug($imported_secrets);
 		//
 		//--------------------------------------------------
 
 
-// framework/0.1/library/gateway/framework-secrets.php
+// framework/0.1/library/gateway/framework-secret.php
 
 
 		// if ($action == 'backup_key') {
 		//
-		// 	$result = secrets::data_backup_key($key);
+		// 	$result = secret::data_backup_key($key);
 		//
 		// } else if ($action == 'export') {
 		//
 		// 	$export_key = request('export_key', 'POST');
 		//
-		// 	$result = secrets::data_export($key, $export_key);
+		// 	$result = secret::data_export($key, $export_key);
 		//
 		// } else if ($action == 'import') {
 		//
 		// 	$import_key = request('import_key', 'POST');
 		// 	$import_data = request('import_data', 'POST');
 		//
-		// 	$result = secrets::data_import($key, $import_key, $import_data);
+		// 	$result = secret::data_import($key, $import_key, $import_data);
 		//
 		// }
 

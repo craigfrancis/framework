@@ -138,7 +138,7 @@ Set the [database config](../../doc/system/database.md):
 
 		$config['db.prefix'] = 'tbl_';
 
-		$secrets['db.pass'] = ['type' => 'str'];
+		$secret['db.pass'] = ['type' => 'str'];
 
 Then load the website.
 

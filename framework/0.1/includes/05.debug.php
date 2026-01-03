@@ -669,7 +669,7 @@
 
 		foreach ($config as $key => $value) {
 			if (!in_array($key, array('db.link', 'output.response', 'debug.time_init', 'debug.time_check', 'debug.time_query', 'debug.units'))) {
-				if ($key == 'debug.notes' || str_ends_with($key, '.pass') || str_ends_with($key, '.password') || str_ends_with($key, '.key')) { // e.g. 'db.pass', although these should use the 'secrets' helper.
+				if ($key == 'debug.notes' || str_ends_with($key, '.pass') || str_ends_with($key, '.password') || str_ends_with($key, '.key')) { // e.g. 'db.pass', although these should use the secret helper.
 					if ($value != $encrypted_mask) {
 						$value = '???';
 					}

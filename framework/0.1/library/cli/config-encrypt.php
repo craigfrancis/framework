@@ -1,6 +1,6 @@
 <?php
 
-// TODO [secrets-cleanup] - Should be able to remove?
+// TODO [secret-cleanup] - Should be able to remove?
 
 	echo "\n";
 

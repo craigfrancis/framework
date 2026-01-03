@@ -1,6 +1,6 @@
 <?php
 
-	class cli_secrets extends check {
+	class cli_secret extends check {
 
 		//--------------------------------------------------
 		// Variables
@@ -29,7 +29,7 @@
 				//--------------------------------------------------
 				// Current values
 
-					$used = secrets::used();
+					$used = secret::used();
 
 					if ($used === false) {
 
@@ -38,10 +38,10 @@
 					} else if ($used === true) {
 
 						$this->use_api = false;
-						$this->current = secrets::_data_get();
+						$this->current = secret::_data_get();
 
 						if (!is_array($this->current)) {
-							throw new error_exception('Invalid current values from local loading of secrets data,', debug_dump($this->current));
+							throw new error_exception('Invalid current values from local loading of secret data,', debug_dump($this->current));
 						}
 
 					} else if ($used === NULL) {
@@ -50,12 +50,12 @@
 						$this->current = $this->_api_result_or_exit(['action' => 'data_get']);
 
 						if (!is_array($this->current) && $this->current !== false) {
-							throw new error_exception('Invalid current values from API loading of secrets data,', debug_dump($this->current)); // Shouldn't happen, as the API exits with an error if 'PRIME_CONFIG_KEY' isn't set.
+							throw new error_exception('Invalid current values from API loading of secret data,', debug_dump($this->current)); // Shouldn't happen, as the API exits with an error if 'PRIME_CONFIG_KEY' isn't set.
 						}
 
 					} else {
 
-						exit_with_error('Unrecognised secrets used response ' . debug_dump($used));
+						exit_with_error('Unrecognised secret used response ' . debug_dump($used));
 
 					}
 
@@ -69,10 +69,10 @@
 					if ($action === 'check') {
 
 						if ($this->current === false) {
-							return; // Secrets helper not used, so we're done.
+							return; // Secret helper not used, so we're done.
 						}
 
-						$old_values = NULL; // TODO [secrets-cleanup] Remove
+						$old_values = NULL; // TODO [secret-cleanup] Remove
 
 						foreach ($this->current['variables'] as $name => $info) {
 
@@ -118,7 +118,7 @@
 
 								if (count($this->current['data_encoded'][$name]['keys'] ?? []) == 0) {
 
-									// TODO [secrets] - Allow the key to be provided (check 'key_type', as there is 'symmetric' and 'asymmetric')
+									// TODO [secret] - Allow the key to be provided (check 'key_type', as there is 'symmetric' and 'asymmetric')
 
 									// echo "\n";
 									// echo "\033[1;34m" . 'Note:' . "\033[0m" . ' Leave blank to generate a new symmetric key.' . "\n";
@@ -155,7 +155,7 @@
 							$name = trim(fgets(STDIN));
 						}
 
-						$variable = secrets::variable_get($name);
+						$variable = secret::variable_get($name);
 						if (!$variable) {
 							exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' Secret "' . $name . '" does not exist.' . "\n\n");
 						} else if ($variable['type'] !== 'str') {
@@ -179,7 +179,7 @@
 							$name = trim(fgets(STDIN));
 						}
 
-						$variable = secrets::variable_get($name);
+						$variable = secret::variable_get($name);
 						if (!$variable) {
 							exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' Secret "' . $name . '" does not exist.' . "\n\n");
 						} else if ($variable['type'] !== 'key') {
@@ -202,7 +202,7 @@
 
 					} else if ($action === 'test') {
 
-						require_once(FRAMEWORK_ROOT . '/library/tests/class-secrets.php');
+						require_once(FRAMEWORK_ROOT . '/library/tests/class-secret.php');
 
 					} else {
 
@@ -212,20 +212,20 @@
 							echo "\n\033[1;31m" . 'Error:' . "\033[0m" . ' An action needs to be specified:' . "\n";
 						}
 						echo "\n";
-						echo './cli --secrets=check' . "\n";
-						echo './cli --secrets=str-edit' . "\n";
-						echo './cli --secrets=str-edit,value.name' . "\n";
-						echo './cli --secrets=key-create' . "\n";
-						echo './cli --secrets=key-create,key.name' . "\n";
-						echo './cli --secrets=key-list' . "\n";
-						echo './cli --secrets=key-list,key.name' . "\n";
-						echo './cli --secrets=key-delete' . "\n";
-						echo './cli --secrets=key-delete,key.name' . "\n";
-						echo './cli --secrets=export' . "\n";
-						echo './cli --secrets=import' . "\n";
-						echo './cli --secrets=rotate' . "\n";
-						echo './cli --secrets=backup-key' . "\n";
-						echo './cli --secrets=test' . "\n";
+						echo './cli --secret=check' . "\n";
+						echo './cli --secret=str-edit' . "\n";
+						echo './cli --secret=str-edit,value.name' . "\n";
+						echo './cli --secret=key-create' . "\n";
+						echo './cli --secret=key-create,key.name' . "\n";
+						echo './cli --secret=key-list' . "\n";
+						echo './cli --secret=key-list,key.name' . "\n";
+						echo './cli --secret=key-delete' . "\n";
+						echo './cli --secret=key-delete,key.name' . "\n";
+						echo './cli --secret=export' . "\n";
+						echo './cli --secret=import' . "\n";
+						echo './cli --secret=rotate' . "\n";
+						echo './cli --secret=backup-key' . "\n";
+						echo './cli --secret=test' . "\n";
 						echo "\n";
 						exit();
 
@@ -239,11 +239,11 @@
 			private function _data_str_update($name, $value) {
 
 				if (!array_key_exists($name, $this->current['variables'])) {
-					throw new error_exception('Unknown variable "' . $name . '" when using $cli_secrets->_data_str_update().');
+					throw new error_exception('Unknown variable "' . $name . '" when using $cli_secret->_data_str_update().');
 				}
 
 				if ($this->current['variables'][$name]['type'] !== 'str') {
-					throw new error_exception('Cannot set a "' . $this->current['variables'][$name]['type'] . '" from $cli_secrets->_data_str_update(), it must be a "str"');
+					throw new error_exception('Cannot set a "' . $this->current['variables'][$name]['type'] . '" from $cli_secret->_data_str_update(), it must be a "str"');
 				}
 
 				if ($value === NULL) {
@@ -269,7 +269,7 @@
 				if ($this->use_api === true) {
 					$value_encoded = $this->_api_result_or_exit(['action' => 'data_encode', 'value' => $value]);
 				} else {
-					$value_encoded = secrets::_data_encode($value);
+					$value_encoded = secret::_data_encode($value);
 				}
 
 				$this->current['data_encoded'][$name]['value'] = $value_encoded;
@@ -282,11 +282,11 @@
 			private function _data_key_add($name, $key_secret = NULL, $key_public = NULL) {
 
 				if (!array_key_exists($name, $this->current['variables'])) {
-					throw new error_exception('Unknown variable "' . $name . '" when using $cli_secrets->_data_key_add().');
+					throw new error_exception('Unknown variable "' . $name . '" when using $cli_secret->_data_key_add().');
 				}
 
 				if ($this->current['variables'][$name]['type'] !== 'key') {
-					throw new error_exception('Cannot set a "' . $this->current['variables'][$name]['type'] . '" from $cli_secrets->_data_key_add(), it must be a "key"');
+					throw new error_exception('Cannot set a "' . $this->current['variables'][$name]['type'] . '" from $cli_secret->_data_key_add(), it must be a "key"');
 				}
 
 				$add_key_type = $this->current['variables'][$name]['key_type'];
@@ -319,7 +319,7 @@
 				if ($this->use_api === true) {
 					$key_secret_encoded = $this->_api_result_or_exit(['action' => 'data_encode', 'value' => $key_secret]);
 				} else {
-					$key_secret_encoded = secrets::_data_encode($key_secret);
+					$key_secret_encoded = secret::_data_encode($key_secret);
 				}
 
 				$now = new timestamp();
@@ -421,15 +421,15 @@
 
 				}
 
-				$data_folder = secrets::_folder_get('data');
+				$data_folder = secret::_folder_get('data');
 
 				$data_text = json_encode($store, JSON_PRETTY_PRINT) . "\n";
 
-				if (is_writable($data_folder)) { // secrets::_folder_get() will try to create, but permissions might be an issue, so try again via API.
+				if (is_writable($data_folder)) { // secret::_folder_get() will try to create, but permissions might be an issue, so try again via API.
 
 					$data_path = $data_folder . '/' . safe_file_name($this->current['file_name'], 'json');
 
-					secrets::_data_write($data_text, $data_path);
+					secret::_data_write($data_text, $data_path);
 
 				} else {
 
@@ -444,7 +444,7 @@
 
 			private function _api_result_or_exit($request_data, $extra_error_info = NULL) {
 
-				list($gateway_url, $response) = gateway::framework_api_auth_call('framework-secrets', $request_data);
+				list($gateway_url, $response) = gateway::framework_api_auth_call('framework-secret', $request_data);
 
 				if ($response['error'] !== false) {
 					exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response['error'] . "\n\n" . ($extra_error_info ? '       ' . $extra_error_info . "\n\n" : ''));
@@ -457,7 +457,7 @@
 		//--------------------------------------------------
 		// Backups
 
-			// TODO [secrets] - Look at /framework/0.1/library/cli/secrets/backup.php
+			// TODO [secret] - Look at /framework/0.1/library/cli/secret/backup.php
 
 	}
 

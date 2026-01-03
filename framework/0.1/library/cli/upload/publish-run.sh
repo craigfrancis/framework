@@ -152,7 +152,7 @@
 
     # Cannot currently use:
     #    | awk '{ print "    " $0;}'
-    # As the install script can prompt for secrets
+    # As the install script can prompt for secret values
     # Maybe use something like:
     #  script -q -c "/path/to/command" /dev/null | sed 's/^/    /'
     # Process substitution does not work (line buffering)

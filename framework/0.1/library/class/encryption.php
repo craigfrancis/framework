@@ -224,7 +224,7 @@
 		//--------------------------------------------------
 		// Get key
 
-// TODO [secrets-keys] - Move these functions to the secrets helper... e.g. secrets::key_get()
+// TODO [secret-keys] - Move these functions to the secret helper... e.g. secret::key_get()
 //
 // When using `encryption::key_symmetric_create('key-name')`, it creates the file '/private/keys/key-name', containing a JSON formatted list of keys (1, 2, 3, etc for key rotation).
 

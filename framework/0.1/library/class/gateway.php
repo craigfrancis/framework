@@ -150,7 +150,7 @@ report_add('Deprecated: Is anyone using /library/gateway/SERVER.ini ???', 'notic
 						'app' => APP_ROOT . '/gateway/',
 					);
 
-				$gateway_hide = array('framework-db-diff', 'framework-db-dump', 'framework-file', 'framework-install', 'framework-opcache-clear', 'framework-secrets', 'js-code', 'payment');
+				$gateway_hide = array('framework-db-diff', 'framework-db-dump', 'framework-file', 'framework-install', 'framework-opcache-clear', 'framework-secret', 'js-code', 'payment');
 
 				foreach ($gateway_dirs as $gateway_source => $gateway_dir) {
 					if ($handle = opendir($gateway_dir)) {

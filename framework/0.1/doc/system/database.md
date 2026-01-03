@@ -9,11 +9,11 @@ First, you need to set the connection [config](../../doc/setup/config.md):
 
 	$config['db.prefix'] = 'tbl_';
 
-	$secrets['db.pass'] = ['type' => 'str'];
+	$secret['db.pass'] = ['type' => 'str'];
 
-As the password is stored via the secrets helper, run *either* of these:
+As the password is stored via the secret helper, run *either* of these:
 
-	./cli --secrets=check
+	./cli --secret=check
 
 	./cli --install
 
@@ -31,7 +31,7 @@ If you need to connect to a different database, use the configuration:
 	$config['db.old.name'] = 's-company-project';
 	$config['db.old.user'] = 'stage';
 
-	$secrets['db.old.pass'] = ['type' => 'str'];
+	$secret['db.old.pass'] = ['type' => 'str'];
 
 Then access the database object via:
 

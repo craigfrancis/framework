@@ -9,10 +9,10 @@
 		// variables, and export/import encrypted backups.
 		//
 		// This class does all of the encryption work to
-		// keep the secrets safe.
+		// keep the secret values safe.
 		//--------------------------------------------------
 
-	class secrets extends check { // Not secrets_base(), as projects should not extend (can't think of a reason they should)
+	class secret extends check { // Not secret_base(), as projects should not extend (can't think of a reason they should)
 
 		//--------------------------------------------------
 		// Variables
@@ -30,15 +30,15 @@
 
 			public static function get($name) {
 
-				$obj = secrets::instance_get();
+				$obj = secret::instance_get();
 
 				if (!is_array($obj->variables) || !array_key_exists($name, $obj->variables)) {
-					throw new error_exception('Unknown secret "' . $name . '" when using secrets::get().');
+					throw new error_exception('Unknown secret "' . $name . '" when using secret::get().');
 				}
 
 				$type = ($obj->variables[$name]['type'] ?? NULL);
 				if ($type !== 'str') {
-					throw new error_exception('When using secrets::get(), it must be to get a secret the type "str"; not ' . debug_dump($type), 'i.e. $secrets[\'' . $name . '\'] = [\'type\' => \'str\']');
+					throw new error_exception('When using secret::get(), it must be to get a secret the type "str"; not ' . debug_dump($type), 'i.e. $secret[\'' . $name . '\'] = [\'type\' => \'str\']');
 				}
 
 				if ($obj->data_encoded === NULL) {
@@ -50,7 +50,7 @@
 					$encoded = ($obj->data_encoded[$name]['value'] ?? NULL);
 
 					if ($encoded === NULL) {
-						throw new error_exception('Cannot use secrets::get() when "' . $name . '" has not been set.', 'Try running the following on the command line:' . "\n\n" . './cli --secrets=check' . "\n\n-----\n\n" . debug_dump($obj->file_path) . "\n\n-----\n\n" . debug_dump($obj->variables) . "\n\n-----\n\n" . debug_dump($obj->data_encoded));
+						throw new error_exception('Cannot use secret::get() when "' . $name . '" has not been set.', 'Try running the following on the command line:' . "\n\n" . './cli --secret=check' . "\n\n-----\n\n" . debug_dump($obj->file_path) . "\n\n-----\n\n" . debug_dump($obj->variables) . "\n\n-----\n\n" . debug_dump($obj->data_encoded));
 					}
 
 					$obj->data_decoded[$name] = encryption::decode($encoded, $obj->primary_key);
@@ -63,7 +63,7 @@
 
 			public static function key_get($name, $key_index = NULL) {
 
-				// TODO [secrets] - Look at /framework/0.1/library/cli/secrets/key.php
+				// TODO [secret] - Look at /framework/0.1/library/cli/secret/key.php
 
 			}
 
@@ -71,12 +71,12 @@
 		// Variable support functions
 
 			public static function variable_exists($name) {
-				$obj = secrets::instance_get();
+				$obj = secret::instance_get();
 				return (array_key_exists($name, ($obj->variables ?? [])));
 			}
 
 			public static function variable_get($name) {
-				$obj = secrets::instance_get();
+				$obj = secret::instance_get();
 				$var = ($obj->variables[$name] ?? NULL);
 				if ($var) {
 					if ($obj->data_encoded === NULL) {
@@ -96,11 +96,11 @@
 		// Support functions
 
 			public static function used() {
-				$obj = secrets::instance_get();
+				$obj = secret::instance_get();
 				if (!is_array($obj->variables) || count($obj->variables) === 0) {
-					return false; // Secrets helper not used
+					return false; // Secret helper not used
 				} else if (!getenv('PRIME_CONFIG_KEY')) {
-					return NULL; // Secrets helper not available (i.e. we now secrets have been setup, but we cannot access the values)
+					return NULL; // Secret helper not available (i.e. we now secret values have been setup, but we cannot access the values)
 				} else {
 					return true;
 				}
@@ -108,14 +108,14 @@
 
 			public static function setup($variables) {
 
-				$obj = secrets::instance_get();
+				$obj = secret::instance_get();
 
 				if ($obj->variables !== NULL) {
-					throw new error_exception('Cannot call secrets::setup() multiple times.');
+					throw new error_exception('Cannot call secret::setup() multiple times.');
 				}
 
 				if (!is_array($variables)) {
-					throw new error_exception('Cannot call secrets::setup() without an array of variables.');
+					throw new error_exception('Cannot call secret::setup() without an array of variables.');
 				}
 
 				$obj->primary_key = getenv('PRIME_CONFIG_KEY');
@@ -130,7 +130,7 @@
 				//--------------------------------------------------
 				// Config
 
-					$obj = secrets::instance_get();
+					$obj = secret::instance_get();
 
 					if (!$obj->primary_key) {
 						throw new error_exception('Missing environment variable "PRIME_CONFIG_KEY"');
@@ -139,8 +139,8 @@
 				//--------------------------------------------------
 				// File
 
-					$data_folder        = secrets::_folder_get('data');
-					$data_prefix        = safe_file_name(config::get('secrets.prefix', SERVER) . '-');
+					$data_folder        = secret::_folder_get('data');
+					$data_prefix        = safe_file_name(config::get('secret.prefix', SERVER) . '-');
 					$data_prefix_length = strlen($data_prefix);
 					$data_suffix        = '.json';
 					$data_suffix_length = strlen($data_suffix);
@@ -281,11 +281,11 @@
 			public static function _folder_get($sub_folder = NULL) {
 
 				if (!str_starts_with(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'], FRAMEWORK_ROOT)) {
-					trigger_error('Only the framework can use the secrets::_folder_get() method', E_USER_ERROR);
+					trigger_error('Only the framework can use the secret::_folder_get() method', E_USER_ERROR);
 					exit();
 				}
 
-				$folder_path = config::get('secrets.folder');
+				$folder_path = config::get('secret.folder');
 
 				if (in_array($sub_folder, ['data'])) { // Could use 'export'/'import', and maybe 'backups'?
 
@@ -309,16 +309,16 @@
 			public static function _data_get() {
 
 				if (!str_starts_with(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'], FRAMEWORK_ROOT)) {
-					trigger_error('Only the framework can use the secrets::_data_get() method', E_USER_ERROR);
+					trigger_error('Only the framework can use the secret::_data_get() method', E_USER_ERROR);
 					exit();
 				}
 
-				$used = secrets::used();
+				$used = secret::used();
 				if ($used !== true) {
-					return $used; // Can return false (secrets helper not used) or NULL (secrets helper not available)
+					return $used; // Can return false (secret helper not used) or NULL (secret helper not available)
 				}
 
-				$obj = secrets::instance_get();
+				$obj = secret::instance_get();
 
 				if ($obj->data_encoded === NULL) {
 					self::_data_load();
@@ -336,19 +336,19 @@
 			}
 
 			public static function _data_encode($value) {
-				$obj = secrets::instance_get();
+				$obj = secret::instance_get();
 				return encryption::encode($value, $obj->primary_key);
 			}
 
 			public static function _data_write($data_text, $data_path = NULL) {
 
 				if (!str_starts_with(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'], FRAMEWORK_ROOT)) {
-					trigger_error('Only the framework can use the secrets::_data_write() method', E_USER_ERROR);
+					trigger_error('Only the framework can use the secret::_data_write() method', E_USER_ERROR);
 					exit();
 				}
 
 				if ($data_path === NULL) { // When using the API, get the trusted file_path from self::_data_load(); when on CLI we don't have PRIME_CONFIG_KEY, so this does not work.
-					$obj = secrets::instance_get();
+					$obj = secret::instance_get();
 					if ($obj->data_encoded === NULL) {
 						self::_data_load();
 					}
@@ -364,7 +364,7 @@
 		//--------------------------------------------------
 		// Backups
 
-			// TODO [secrets] - Look at /framework/0.1/library/cli/secrets/backup.php
+			// TODO [secret] - Look at /framework/0.1/library/cli/secret/backup.php
 
 		//--------------------------------------------------
 		// Singleton
@@ -372,7 +372,7 @@
 			private static function instance_get() {
 				static $instance = NULL;
 				if (!$instance) {
-					$instance = new secrets();
+					$instance = new secret();
 				}
 				return $instance;
 			}

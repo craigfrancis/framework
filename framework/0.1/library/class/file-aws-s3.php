@@ -171,7 +171,7 @@ Abbreviations:
 
 					if ($this->file->config_exists('aws_access_secret')) {
 						try {
-							$access_secret = config::value_decrypt($this->file->config_get('aws_access_secret')); // TODO [secrets-keys]
+							$access_secret = config::value_decrypt($this->file->config_get('aws_access_secret')); // TODO [secret-keys]
 						} catch (exception $e) {
 							$access_secret = NULL;
 						}
@@ -309,7 +309,7 @@ Abbreviations:
 			private function file_info_get($info, $file_id = NULL) {
 
 				$info_key = $this->file->config_get('aws_info_key');
-// TODO [secrets-keys]
+// TODO [secret-keys]
 				if (!encryption::key_exists($info_key)) {
 					throw new error_exception('Cannot find encryption key "' . $info_key . '"');
 				}
@@ -466,7 +466,7 @@ Abbreviations:
 				// Keys (x2)
 
 					$info_key = $this->file->config_get('aws_info_key');
-// TODO [secrets-keys]
+// TODO [secret-keys]
 					if (!encryption::key_exists($info_key)) {
 						encryption::key_symmetric_create($info_key);
 					}

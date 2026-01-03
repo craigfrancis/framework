@@ -49,7 +49,7 @@
 						'/logs/',
 						'/private/',
 						'/private/files/',
-						'/private/secrets/', // config::get('secrets.folder')
+						'/private/secret/', // config::get('secret.folder')
 						'/resources/',
 					));
 
@@ -218,10 +218,10 @@
 			}
 
 		//--------------------------------------------------
-		// Check secrets
+		// Check secret helper
 
-			$cli_secrets = new cli_secrets();
-			$cli_secrets->run('check');
+			$cli_secret = new cli_secret();
+			$cli_secret->run('check');
 
 		//--------------------------------------------------
 		// Setup watch script
@@ -306,7 +306,7 @@
 
 					} else if ($install_mode == 'http') { // To match REQUEST_MODE
 
-							// When using the Secrets Helper, the values might not be available to the CLI.
+							// When using the Secret Helper, the values might not be available to the CLI.
 							// Or, maybe files need to be created under the WebServer account.
 
 						$request_data = [];

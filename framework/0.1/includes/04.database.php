@@ -913,13 +913,13 @@
 			//--------------------------------------------------
 			// Config
 
-				$secrets_used = (secrets::used() === true);
+				$secret_used = (secret::used() === true);
 
 				$config = [
 						'name'       => config::get('db.name'),
 						'host'       => config::get('db.host'),
 						'user'       => config::get('db.user'),
-						'pass'       => ($secrets_used ? secrets::get('db.pass') : config::get_decrypted('db.pass')), // TODO [secrets-cleanup], where config::get_decrypted() can run config::get()
+						'pass'       => ($secret_used ? secret::get('db.pass') : config::get_decrypted('db.pass')), // TODO [secret-cleanup], where config::get_decrypted() can run config::get()
 						'persistent' => config::get('db.persistent'),
 						'ca_file'    => config::get('db.ca_file'),
 					];
@@ -932,7 +932,7 @@
 					}
 					$config = array_merge($config, $connection);
 					if ($config['pass'] === NULL) {
-						$config['pass'] = ($secrets_used ? secrets::get('db.' . $this->connection . '.pass') : config::get_decrypted('db.' . $this->connection . '.pass')); // TODO [secrets-cleanup], see above.
+						$config['pass'] = ($secret_used ? secret::get('db.' . $this->connection . '.pass') : config::get_decrypted('db.' . $this->connection . '.pass')); // TODO [secret-cleanup], see above.
 					}
 				}
 

@@ -4,28 +4,28 @@
 
 	public static function key_get($name, $key_index = NULL) {
 
-			// $pass = secrets::key_get('example.key', 'all');
-			// $pass = secrets::key_get('example.key', 1);
-			// $pass = secrets::key_get('example.key');
+			// $pass = secret::key_get('example.key', 'all');
+			// $pass = secret::key_get('example.key', 1);
+			// $pass = secret::key_get('example.key');
 
-		exit_with_error('Cannot return keys at the moment'); // TODO [secrets-keys] - Need to check how keys need to be stored, especially with symmetric vs asymmetric... ref $asymmetric_type
+		exit_with_error('Cannot return keys at the moment'); // TODO [secret-keys] - Need to check how keys need to be stored, especially with symmetric vs asymmetric... ref $asymmetric_type
 
-		// $obj = secrets::instance_get();
+		// $obj = secret::instance_get();
 		//
 		// if (!is_array($obj->variables) || !array_key_exists($name, $obj->variables)) {
-		// 	throw new error_exception('Unknown secret "' . $name . '" when using secrets::key_get().');
+		// 	throw new error_exception('Unknown secret "' . $name . '" when using secret::key_get().');
 		// }
 		//
 		// $type = ($obj->variables[$name]['type'] ?? NULL);
 		// if ($type !== 'key') {
-		// 	throw new error_exception('When using secrets::key_get(), it must be to get a secret the type "key"; not ' . debug_dump($type), 'i.e. $secrets[\'' . $name . '\'] = [\'type\' => \'key\']');
+		// 	throw new error_exception('When using secret::key_get(), it must be to get a secret the type "key"; not ' . debug_dump($type), 'i.e. $secret[\'' . $name . '\'] = [\'type\' => \'key\']');
 		// }
 		//
 		// $key_type = ($obj->variables[$name]['key_type'] ?? NULL);
 		// if ($key_type === NULL) {
 		// 	$key_type = 'symmetric';
 		// } else if ($key_type !== 'symmetric' && $key_type !== 'asymmetric') {
-		// 	throw new error_exception('The secrets::get() can only work return a secret with the type "key", not ' . debug_dump($key_type));
+		// 	throw new error_exception('The secret::get() can only work return a secret with the type "key", not ' . debug_dump($key_type));
 		// }
 		//
 		// if ($obj->data_encoded === NULL) {
@@ -102,7 +102,7 @@
 
 		if (!is_file($this->key_path)) {
 
-// TODO [secrets] - Creating /etc/prime-config-key
+// TODO [secret] - Creating /etc/prime-config-key
 
 // - If already root, do this automatically? or after a prompt?
 // - If not root, use the shell script, via $this->key_create(), $command->exec(), with sudo?
@@ -210,7 +210,7 @@
 			// 	$command = new command();
 			// 	$command->stdin_set($new_key_value);
 			// 	$command->exec('sudo -k', [
-			// 			FRAMEWORK_ROOT . '/library/cli/secrets/key-new.sh',
+			// 			FRAMEWORK_ROOT . '/library/cli/secret/key-new.sh',
 			// 			$new_key_identifier,
 			// 			$this->key_path,
 			// 			1,
