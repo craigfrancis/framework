@@ -72,19 +72,42 @@
 							return; // Secrets helper not used, so we're done.
 						}
 
+						$old_values = NULL; // TODO [secrets-cleanup] Remove
+
 						foreach ($this->current['variables'] as $name => $info) {
 
 							if ($info['type'] === 'str') {
 
 								if (($this->current['data_encoded'][$name]['value'] ?? NULL) === NULL) {
 
+									if ($old_values === NULL) {
+										$old_values = $this->_api_result_or_exit(['action' => 'old_values_get']);
+										if (count($old_values) > 0) {
+											echo "\n" . 'Old Values: ' . "\n";
+											foreach ($old_values as $old_name => $old_value) {
+												echo "\n" . '  ' . $old_name . "\n" . '    ' . $old_value . "\n";
+											}
+										}
+									}
+
 									$value = '';
 
 									do {
-										echo "\n";
-										echo 'Secret Value "' . $name . '": ';
-										$value = trim(fgets(STDIN));
-										echo "\n";
+										$old_value = ($old_values[$name] ?? NULL);
+										if ($old_value) {
+											echo "\n";
+											echo 'Secret Value "' . $name . '" [' . $old_value . ']: ';
+											$value = trim(fgets(STDIN));
+											echo "\n";
+											if ($value === '') {
+												$value = $old_value;
+											}
+										} else {
+											echo "\n";
+											echo 'Secret Value "' . $name . '": ';
+											$value = trim(fgets(STDIN));
+											echo "\n";
+										}
 									} while ($value == '');
 
 									$this->_data_str_update($name, $value);

@@ -316,6 +316,23 @@
 				return encryption::decode($value, $key);
 			}
 
+			public static function _temp_decrypt_all() { // TODO [secrets-cleanup] Remove
+				$output = [];
+				$obj = config::instance_get();
+				foreach ($obj->encrypted as $name => $encrypted) {
+					if ($encrypted) {
+						$value = $obj->store[$name];
+						try {
+							$decrypted = config::value_decrypt($value);
+						} catch (error_exception $e) {
+							$decrypted = 'Error: ' . $e->getMessage() . ' = ' . $value;
+						}
+						$output[$name] = $decrypted;
+					}
+				}
+				return $output;
+			}
+
 		//--------------------------------------------------
 		// Array support
 

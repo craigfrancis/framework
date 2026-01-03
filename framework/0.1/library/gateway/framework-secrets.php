@@ -48,6 +48,10 @@
 
 		$result = secrets::_data_write(request('data', 'POST'));
 
+	} else if ($action == 'old_values_get') { // TODO [secrets-cleanup] Remove
+
+		$result = config::_temp_decrypt_all();
+
 	} else {
 
 		$response->send(['error' => 'Unrecognised action: ' . debug_dump($action)]);
