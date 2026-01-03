@@ -134,7 +134,12 @@
 			return $sql;
 		}
 
-		public function query($sql, $parameters = NULL, $skip_flags = NULL) {
+		public function query($sql, $parameters = NULL, $identifiers = [], $skip_flags = NULL) {
+
+			if (!is_array($identifiers)) { // Backwards compatibility
+				$skip_flags = $identifiers;
+				$identifiers = [];
+			}
 
 			if (SERVER == 'stage' && !($skip_flags & self::SKIP_LITERAL_CHECK) && function_exists('is_literal') && !is_literal($sql)) {
 				foreach (debug_backtrace() as $called_from) {
@@ -154,12 +159,22 @@
 			}
 
 			if (!($skip_flags & self::SKIP_DEBUG) && function_exists('debug_database')) {
-				$this->result = debug_database($this, $sql, $parameters, $skip_flags);
+				$this->result = debug_database($this, $sql, $parameters, $identifiers, $skip_flags);
 				return $this->result;
 			}
 
 			if ($skip_flags & self::SKIP_CACHE) {
 				$sql = preg_replace('/^\W*SELECT/', '$0 SQL_NO_CACHE', $sql);
+			}
+
+			foreach ($identifiers as $identifier_name => $identifier_value) {
+				if (!preg_match('/^[a-z0-9_]+$/', strval($identifier_name))) {
+					throw new Exception('Invalid identifier name "' . $identifier_name . '"');
+				} else if (!preg_match('/^[a-z0-9_]+$/', $identifier_value)) {
+					throw new Exception('Invalid identifier value "' . $identifier_value . '"');
+				} else {
+					$sql = str_replace('{' . $identifier_name . '}', '`' . $identifier_value . '`', $sql);
+				}
 			}
 
 			$error = NULL;
@@ -486,6 +501,7 @@
 
 				$sql = 'SHOW FULL COLUMNS FROM ' . $table_sql;
 				$parameters = [];
+				$identifiers = []; // Maybe use for $table, but this does not work with the record_helper which will often be given the SQL-Quoted table table.
 
 				if ($field !== NULL) {
 					if (function_exists('is_literal') && is_literal($field) !== true) {
@@ -496,7 +512,7 @@
 
 				$details = [];
 
-				$result = $this->query($sql, $parameters, (db::SKIP_LITERAL_CHECK));
+				$result = $this->query($sql, $parameters, $identifiers, (db::SKIP_LITERAL_CHECK)); // Field passed as a STRING (not an identifier)
 
 				foreach ($this->fetch_all($result) as $row) {
 
@@ -668,7 +684,7 @@
 				}
 			}
 
-			return $this->query($sql, $parameters, self::SKIP_LITERAL_CHECK); // Accept non-literals to support 'SELECT * FROM table', modify some values, and then db->insert($copy)... otherwise use $db->query($sql, $parameters, (db::SKIP_LITERAL_CHECK));
+			return $this->query($sql, $parameters, self::SKIP_LITERAL_CHECK); // Accept non-literals to support 'SELECT * FROM table', modify some values, and then db->insert($copy)... otherwise use $db->query($sql, $parameters, [], (db::SKIP_LITERAL_CHECK));
 
 		}
 

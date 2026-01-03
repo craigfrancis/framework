@@ -795,7 +795,7 @@
 
 				$db = db_get();
 
-				$db->query('SHOW TABLES LIKE "' . $db->escape($table) . '"', NULL, (db::SKIP_DEBUG | db::SKIP_LITERAL_CHECK)); // Parameters are not supported in "SHOW TABLES" (MySQL 5.7)
+				$db->query('SHOW TABLES LIKE "' . $db->escape($table) . '"', [], [], (db::SKIP_DEBUG | db::SKIP_LITERAL_CHECK)); // Table passed as a STRING (not an identifier), but parameters are not supported in "SHOW TABLES" (MySQL 5.7)
 				if ($db->num_rows() == 0) {
 					if (php_sapi_name() == 'cli' || config::get('output.mime') == 'text/plain') {
 						exit('Missing table "' . $table . '":' . "\n\n" . str_replace('[TABLE]', $table, $sql) . "\n\n");
@@ -808,13 +808,13 @@
 
 			}
 
-			function debug_database($db, $sql, $parameters, $skip_flags) {
+			function debug_database($db, $sql, $parameters, $identifiers, $skip_flags) {
 
 				//--------------------------------------------------
 				// Skip if disabled debugging
 
 					if (config::get('debug.db') !== true) {
-						return $db->query($sql, $parameters, (db::SKIP_DEBUG | $skip_flags));
+						return $db->query($sql, $parameters, $identifiers, (db::SKIP_DEBUG | $skip_flags));
 					}
 
 				//--------------------------------------------------
@@ -1013,7 +1013,7 @@
 
 							foreach (config::get('debug.db_required_fields') as $required_field) {
 
-								$result = $db->query('SHOW COLUMNS FROM ' . $table[1] . ' LIKE "' . $required_field . '"', NULL, (db::SKIP_DEBUG | db::SKIP_LITERAL_CHECK | db::SKIP_ERROR_HANDLER));
+								$result = $db->query('SHOW COLUMNS FROM {table} LIKE "' . $required_field . '"', [], ['table' => $table[1]], (db::SKIP_DEBUG | db::SKIP_LITERAL_CHECK | db::SKIP_ERROR_HANDLER));
 
 								if ($result && $row = $db->fetch_row($result)) {
 
@@ -1089,7 +1089,7 @@
 
 					$time_start = hrtime(true);
 
-					$result = $db->query($sql, $parameters, (db::SKIP_DEBUG | $skip_flags));
+					$result = $db->query($sql, $parameters, $identifiers, (db::SKIP_DEBUG | $skip_flags));
 
 					$time_check = round(hrtime_diff($time_init, $time_start), 3);
 					$time_query = round(hrtime_diff($time_start), 3);
