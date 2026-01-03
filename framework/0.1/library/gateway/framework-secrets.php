@@ -5,16 +5,12 @@
 
 	$response = response_get('json');
 
-	$action = request('action', 'POST');
-
 //--------------------------------------------------
 // Auth
 
 	if (!gateway::framework_api_auth_check('framework-secrets')) {
-
 		$response->send(['error' => 'Invalid Auth']);
 		exit();
-
 	}
 
 //--------------------------------------------------
@@ -30,6 +26,8 @@
 
 //--------------------------------------------------
 // Actions
+
+	$action = request('action', 'POST');
 
 	if ($action == 'data_get') {
 

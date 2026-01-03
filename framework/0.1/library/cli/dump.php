@@ -5,20 +5,73 @@
 
 	function dump_run($mode = NULL) {
 
+		if (REQUEST_MODE == 'cli') {
+			$dump_via_api = true;
+			if (secrets::used() === true) { // Secrets have been setup (otherwise this would be false); and secrets can be accessed (otherwise this would be NULL)... so we should be able to get to the database password without using the API (i.e. run locally).
+				$dump_via_api = false;
+			} else {
+				try {
+					if (config::get_decrypted('db.pass') !== NULL) { // TODO [secrets-cleanup]
+						$dump_via_api = false; // Can access the password, run locally.
+					}
+				} catch (exception $e) {
+				}
+			}
+		} else {
+			$dump_via_api = false; // Not using CLI, so this is a web-request API "framework-db-dump"
+		}
+
+		if ($dump_via_api) {
+
+			$request_data = [];
+			if ($mode) {
+				$request_data['mode'] = json_encode($mode);
+			}
+
+			list($gateway_url, $response) = gateway::framework_api_auth_call('framework-db-dump', $request_data);
+
+			if ($response['error'] !== false) {
+				echo "\n";
+				echo 'Retrieving Dump:' . "\n";
+				echo '  ' . $gateway_url . "\n";
+				echo '  Error: ' . $response['error'] . "\n\n";
+				return;
+			}
+
+			$dump_data = ($response['result'] ?? NULL);
+
+		} else {
+
+			$dump_data = dump_get($mode);
+
+		}
+
 		$setup_folder = APP_ROOT . '/library/setup';
 		if (!is_dir($setup_folder)) {
 			mkdir($setup_folder);
 		}
 
 		if (!$mode || $mode == 'dir') {
-			file_put_contents(APP_ROOT . '/library/setup/dir.files.txt', implode("\n", dump_dir(FILE_ROOT)));
-			file_put_contents(APP_ROOT . '/library/setup/dir.private.txt', implode("\n", dump_dir(PRIVATE_ROOT)));
+			file_put_contents(APP_ROOT . '/library/setup/dir.files.txt', implode("\n", $dump_data['dir']['files']));
+			file_put_contents(APP_ROOT . '/library/setup/dir.private.txt', implode("\n", $dump_data['dir']['private']));
 		}
 
 		if (!$mode || $mode == 'db') {
-			file_put_contents(APP_ROOT . '/library/setup/database.txt', json_encode(dump_db(), JSON_PRETTY_PRINT));
+			file_put_contents(APP_ROOT . '/library/setup/database.txt', json_encode($dump_data['db'], JSON_PRETTY_PRINT));
 		}
 
+	}
+
+	function dump_get($mode = NULL) {
+		$dump_data = [];
+		if (!$mode || $mode == 'dir') {
+			$dump_data['dir']['files'] = dump_dir(FILE_ROOT);
+			$dump_data['dir']['private'] = dump_dir(PRIVATE_ROOT);
+		}
+		if (!$mode || $mode == 'db') {
+			$dump_data['db'] = dump_db();
+		}
+		return $dump_data;
 	}
 
 //--------------------------------------------------
@@ -72,7 +125,11 @@
 					continue;
 				}
 
-				$table_sql = $db->escape_table($table);
+				// $table_sql = $db->escape_table($table);
+				if (strpos($table, '`') !== false) {
+					exit_with_error('The table name "' . $table . '" cannot contain a backtick character');
+				}
+				$table_sql = '`' . $table . '`';
 
 				$tables[$table] = array(
 						'fields' => [],
@@ -87,9 +144,9 @@
 			//--------------------------------------------------
 			// Indexes
 
-				$sql = 'SHOW INDEX FROM ' . $table_sql;
+				$result = $db->query('SHOW INDEX FROM {table}', [], ['table' => $table]);
 
-				foreach ($db->fetch_all($sql) as $row) {
+				foreach ($db->fetch_all($result) as $row) {
 
 					$row = array_change_key_case($row, CASE_LOWER);
 

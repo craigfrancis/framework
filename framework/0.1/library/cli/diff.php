@@ -43,36 +43,21 @@
 
 					if ($diff_via_api) {
 
-						$domain = config::get('output.domain');
+						list($gateway_url, $response) = gateway::framework_api_auth_call('framework-db-diff');
 
-						if ($domain == '') {
+						if ($response['error'] !== false) {
 
-							echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Cannot run DB Diff without $config[\'output.domain\'], or $config[\'request.domain\'].' . "\n";
+							echo "\n";
+							echo 'Checking DB Diff:' . "\n";
+							echo '  ' . $gateway_url . "\n";
+							echo '  Error: ' . $response['error'] . "\n\n";
 
 						} else {
 
-							list($auth_id, $auth_value, $auth_path) = gateway::framework_api_auth_start('framework-db-diff');
-
-							$diff_url = gateway_url('framework-db-diff');
-
-							$diff_connection = new connection();
-							$diff_connection->exit_on_error_set(false);
-
-							if ($diff_connection->post($diff_url, ['auth_id' => $auth_id, 'auth_value' => $auth_value, 'upload' => ($upload ? 'true' : 'false')])) {
-
-								echo $diff_connection->response_data_get();
-
-							} else {
-
-								echo "\n";
-								echo 'Checking DB Diff:' . "\n";
-								echo '  Domain: ' . $domain . "\n";
-								echo '  URL: ' . $diff_url . "\n";
-								echo '  Error: ' . $diff_connection->error_message_get() . "\n\n";
-
+							$diff_result = ($response['result'] ?? NULL);
+							if ($diff_result) {
+								echo $diff_result;
 							}
-
-							gateway::framework_api_auth_end($auth_path);
 
 						}
 

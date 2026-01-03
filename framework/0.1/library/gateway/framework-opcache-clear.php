@@ -9,7 +9,8 @@
 // Auth
 
 	if (!gateway::framework_api_auth_check('framework-opcache-clear')) {
-		exit('Invalid Auth' . "\n");
+		$response->send(['error' => 'Invalid Auth']);
+		exit();
 	}
 
 //--------------------------------------------------
@@ -29,7 +30,7 @@
 // functions, but the WebServer does not.
 
 	$response->send([
-			'error'  => false,
+			'error' => false,
 		]);
 
 ?>

@@ -420,61 +420,14 @@
 		// Call API
 
 			private function _api_result_or_exit($request_data, $extra_error_info = NULL) {
-				$response = $this->_api_call($request_data);
+
+				list($gateway_url, $response) = gateway::framework_api_auth_call('framework-secrets', $request_data);
+
 				if ($response['error'] !== false) {
 					exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response['error'] . "\n\n" . ($extra_error_info ? '       ' . $extra_error_info . "\n\n" : ''));
 				}
+
 				return $response['result'];
-			}
-
-			private function _api_call($request_data) {
-
-				$domain = config::get('output.domain');
-				if ($domain == '') {
-					return ['error' => 'CLI cannot use the Secrets helper directly - maybe set $config[\'output.domain\'] or $config[\'request.domain\'] to use the API.'];
-				}
-
-				list($auth_id, $auth_value, $auth_path) = gateway::framework_api_auth_start('framework-secrets');
-
-				$gateway_url = gateway_url('framework-secrets');
-
-				$request_data['auth_id'] = $auth_id;
-				$request_data['auth_value'] = $auth_value;
-
-				$error = false;
-
-				$connection = new connection();
-				$connection->exit_on_error_set(false);
-				$connection->post($gateway_url, $request_data);
-
-				if (intval($connection->response_code_get()) !== 200) {
-
-					$error = 'Cannot call the framework-secrets API' . "\n\n-----\n" . $connection->error_message_get() . "\n-----\n" . $connection->error_details_get() . "\n-----\n" . $connection->response_headers_get() . "\n\n" . $connection->response_data_get() . "\n-----";
-
-				} else {
-
-					$response_json = $connection->response_data_get();
-					$response_data = json_decode($response_json, true);
-
-					if (!is_array($response_data) || !isset($response_data['error'])) {
-
-						$error = 'Invalid response from API' . "\n\n-----\n\n" . $response_json;
-
-					} else if ($response_data['error'] !== false) {
-
-						$error = $response_data['error']; // Only return the error
-
-					}
-
-				}
-
-				gateway::framework_api_auth_end($auth_path);
-
-				if ($error !== false) {
-					return ['error' => $error];
-				} else {
-					return $response_data;
-				}
 
 			}
 

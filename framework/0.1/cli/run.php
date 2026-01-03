@@ -351,6 +351,7 @@
 
 						require_once(FRAMEWORK_ROOT . '/library/cli/clear-cache.php');
 
+						clear_cache_run();
 						break;
 
 					case 'confirm-server':

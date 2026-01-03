@@ -150,7 +150,7 @@ report_add('Deprecated: Is anyone using /library/gateway/SERVER.ini ???', 'notic
 						'app' => APP_ROOT . '/gateway/',
 					);
 
-				$gateway_hide = array('framework-db-diff', 'framework-db-dump', 'framework-file', 'framework-opcache-clear', 'framework-secrets', 'js-code', 'payment');
+				$gateway_hide = array('framework-db-diff', 'framework-db-dump', 'framework-file', 'framework-install', 'framework-opcache-clear', 'framework-secrets', 'js-code', 'payment');
 
 				foreach ($gateway_dirs as $gateway_source => $gateway_dir) {
 					if ($handle = opendir($gateway_dir)) {
@@ -596,28 +596,59 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 		//--------------------------------------------------
 		// Temporary framework auth
 
-			public static function framework_api_auth_start($name) {
+			public static function framework_api_auth_call($name, $request_data = []) {
+
+				$gateway_url = gateway_url($name);
+
+				if (config::get('output.domain') == '') {
+					return [$gateway_url, ['error' => 'Cannot call the ' . $name . ' API without $config[\'output.domain\']; or $config[\'request.domain\'].']];
+				} else {
+					$gateway_url->scheme_set('https'); // If an error message needs to be shown.
+				}
 
 				$auth_value = random_key(40);
 
 				$root = (defined('UPLOAD_ROOT') ? UPLOAD_ROOT : ROOT);
 				if (is_writable($root)) { // Not writable if demo folder is owned by 'www-data' (for git-web), and the upload is going via the developer account.
-
 					$auth_path = $root . '/prime-api-' . safe_file_name($name) . '.key'; // Ideally not in /tmp/ because we don't want the 'www-data' account creating these files.
 					$auth_id = '';
-
 				} else {
-
 					$auth_id = random_key(20);
 					$auth_path = '/tmp/prime-api-' . safe_file_name($name) . '-' . safe_file_name($auth_id) . '.key'; // Cannot use sys_get_temp_dir(), as it changes on some systems depending on the process.
-
 				}
 
 				file_put_contents($auth_path, quick_hash_create($auth_value . $auth_path));
 
 				chmod($auth_path, octdec(644));
 
-				return [$auth_id, $auth_value, $auth_path];
+				$request_data['auth_id'] = $auth_id;
+				$request_data['auth_value'] = $auth_value;
+
+				$connection = new connection();
+				$connection->exit_on_error_set(false);
+				$connection->post($gateway_url, $request_data);
+
+				unlink($auth_path);
+				if (is_file($auth_path)) {
+					exit_with_error('Cannot delete auth key file', $auth_path);
+				}
+
+				if (intval($connection->response_code_get()) !== 200) {
+					return [$gateway_url, ['error' => 'Cannot call the ' . $name . ' API' . "\n\n-----\n\n" . $connection->error_info_get()]];
+				}
+
+				$response_json = $connection->response_data_get();
+				$response_data = json_decode($response_json, true);
+
+				if (!is_array($response_data) || !isset($response_data['error'])) {
+					return [$gateway_url, ['error' => 'Invalid response from the ' . $name . ' API' . "\n\n-----\n\n" . $response_json]];
+				}
+
+				if ($response_data['error'] !== false) {
+					return [$gateway_url, ['error' => $response_data['error']]]; // Only return the error
+				}
+
+				return [NULL, $response_data]; // No need to return the $gateway_url (only used for error messages)... $response_data is probably ['error' => false, 'result' => VALUE];
 
 			}
 
@@ -637,15 +668,6 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 				$auth_hash = trim(is_file($auth_path) ? file_get_contents($auth_path) : '');
 
 				return ($auth_hash != '' && quick_hash_verify(($auth_value . $auth_path), $auth_hash) === true);
-
-			}
-
-			public static function framework_api_auth_end($auth_path) {
-
-				unlink($auth_path);
-				if (is_file($auth_path)) {
-					exit_with_error('Cannot delete auth key file', $auth_path);
-				}
 
 			}
 

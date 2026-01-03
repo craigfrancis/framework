@@ -290,9 +290,45 @@
 		//--------------------------------------------------
 		// Run install scripts
 
+			$install_result = NULL;
+
 			$install_path = APP_ROOT . '/library/setup/install.php';
 			if (is_file($install_path)) {
-				script_run($install_path);
+				$install_modes = config::get('upload.install_mode', ['cli']);
+				if (!is_array($install_modes)) {
+					$install_modes = [$install_modes];
+				}
+				foreach ($install_modes as $install_mode) { // This allows each install method (CLI or HTTP) to return a value, and pass it to the next call; it can even support ['cli', 'http', 'cli'].
+
+					if ($install_mode == 'cli') {
+
+						$install_result = script_run($install_path, ['last_result' => $install_result]);
+
+					} else if ($install_mode == 'http') { // To match REQUEST_MODE
+
+							// When using the Secrets Helper, the values might not be available to the CLI.
+							// Or, maybe files need to be created under the WebServer account.
+
+						$request_data = [];
+						if ($install_result) {
+							$request_data['last_result'] = json_encode($install_result);
+						}
+
+						list($gateway_url, $response) = gateway::framework_api_auth_call('framework-install', $request_data);
+
+						if ($response['error'] !== false) {
+							exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response['error'] . "\n\n");
+						} else {
+							$install_result = ($response['result'] ?? NULL);
+						}
+
+					} else {
+
+						echo "\033[1;31m" . 'Error:' . "\033[0m" . ' Unrecognised value for \'upload.install_mode\' ' . debug_dump($install_mode) . "\n";
+
+					}
+
+				}
 			}
 
 			$install_path = APP_ROOT . '/library/setup/install.sh';
