@@ -607,15 +607,8 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 				}
 
 				$auth_value = random_key(40);
-
-				$root = (defined('UPLOAD_ROOT') ? UPLOAD_ROOT : ROOT);
-				if (is_writable($root)) { // Not writable if demo folder is owned by 'www-data' (for git-web), and the upload is going via the developer account.
-					$auth_path = $root . '/prime-api-' . safe_file_name($name) . '.key'; // Ideally not in /tmp/ because we don't want the 'www-data' account creating these files.
-					$auth_id = '';
-				} else {
-					$auth_id = random_key(20);
-					$auth_path = '/tmp/prime-api-' . safe_file_name($name) . '-' . safe_file_name($auth_id) . '.key'; // Cannot use sys_get_temp_dir(), as it changes on some systems depending on the process.
-				}
+				$auth_id = random_key(20);
+				$auth_path = '/tmp/prime-api-' . safe_file_name($name) . '-' . safe_file_name($auth_id) . '.key'; // Cannot use sys_get_temp_dir(), as it changes on some systems depending on the process.
 
 				file_put_contents($auth_path, quick_hash_create($auth_value . $auth_path));
 
@@ -656,14 +649,7 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 
 				$auth_id = request('auth_id', 'POST');
 				$auth_value = request('auth_value', 'POST');
-
-				$root = (defined('UPLOAD_ROOT') ? UPLOAD_ROOT : ROOT);
-
-				if ($auth_id == '') {
-					$auth_path = $root . '/prime-api-' . safe_file_name($name) . '.key';
-				} else {
-					$auth_path = '/tmp/prime-api-' . safe_file_name($name) . '-' . safe_file_name($auth_id) . '.key';
-				}
+				$auth_path = '/tmp/prime-api-' . safe_file_name($name) . '-' . safe_file_name($auth_id) . '.key';
 
 				$auth_hash = trim(is_file($auth_path) ? file_get_contents($auth_path) : '');
 
