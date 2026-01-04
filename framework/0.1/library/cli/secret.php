@@ -447,7 +447,7 @@
 				list($gateway_url, $response) = gateway::framework_api_auth_call('framework-secret', $request_data);
 
 				if ($response['error'] !== false) {
-					exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response['error'] . "\n\n" . ($extra_error_info ? '       ' . $extra_error_info . "\n\n" : ''));
+					exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' ' . $response['error'] . "\n" . '       ' . $gateway_url . "\n" . ($extra_error_info ? '       ' . $extra_error_info . "\n" : '') . "\n");
 				}
 
 				return $response['result'];
