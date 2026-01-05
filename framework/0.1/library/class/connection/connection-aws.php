@@ -24,10 +24,12 @@
 			public function service_set($service_ref, $service_region, $service_extra = NULL) {
 				$this->service_ref = $service_ref;
 				$this->service_region = $service_region;
-				if ($service_ref == 's3') {
+				if ($service_ref == 's3' && $service_extra !== NULL) {
 					$this->service_host = $service_extra . '.' . $service_ref . '-' . $service_region . '.amazonaws.com'; // e.g. 'bucket-name.s3-eu-west-1.amazonaws.com'
-				} else {
+				} else if ($service_region !== NULL) {
 					$this->service_host = $service_ref . '.' . $service_region . '.amazonaws.com'; // e.g. 'ec2.eu-west-1.amazonaws.com'
+				} else {
+					$this->service_host = $service_ref . '.amazonaws.com'; // e.g. 'iam.amazonaws.com'
 				}
 			}
 
@@ -65,6 +67,10 @@
 						ksort($url_query); // Must be in ascending order
 
 						$url_query = http_build_query($url_query, '', '&', PHP_QUERY_RFC3986); // Must use '%20' for spaces, not '+'
+
+							// When these is a single argument with no value, e.g. S3
+							//   GET /?policy
+							// Set the value to an empty string (this is required for the signing process).
 
 					//--------------------------------------------------
 					// Final
@@ -127,6 +133,8 @@
 						// https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
 						// https://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
 
+					$auth_region = ($this->service_region ?? 'us-east-1');
+
 					$canonical_request = implode("\n", [
 							$method,
 							$url_path,
@@ -138,7 +146,7 @@
 
 					$scope = implode('/', [
 							$request_date,
-							$this->service_region,
+							$auth_region,
 							$this->service_ref,
 							'aws4_request',
 						]);
@@ -152,7 +160,7 @@
 
 					$signing_key = 'AWS4' . $this->access_secret;
 					$signing_key = hash_hmac('sha256', $request_date, $signing_key, true);
-					$signing_key = hash_hmac('sha256', $this->service_region, $signing_key, true);
+					$signing_key = hash_hmac('sha256', $auth_region, $signing_key, true);
 					$signing_key = hash_hmac('sha256', $this->service_ref, $signing_key, true);
 					$signing_key = hash_hmac('sha256', 'aws4_request', $signing_key, true);
 
