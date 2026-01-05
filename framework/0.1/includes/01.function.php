@@ -123,7 +123,9 @@
 				$user_token_hash = substr($user_token, 0, $pos);
 				$user_token_salt = substr($user_token, ($pos + 1));
 				if (hash_equals(hash('sha256', $check_token . $user_token_salt), $user_token_hash)) {
-					if ($user_token_salt === $salt || $salt === NULL) { // Calling script might set $salt to NULL when it, the verifier (e.g. JS APIs), doesn't know the $salt (e.g. source form action), and is fine with just gating a valid hash.
+					if ($user_token_salt === strval($salt) || $salt === NULL) {
+							// The $salt could be a url() object, so force convert to a string.
+							// Also, the calling script (maybe a JS API) might set $salt to NULL if it doesn't know the $salt (e.g. source form action), and it's fine with just getting a valid hash.
 						return true;
 					}
 					// if (config::get('form.csrf_hash_check', true) === false) {
