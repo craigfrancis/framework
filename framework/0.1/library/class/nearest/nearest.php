@@ -335,7 +335,7 @@
 				//--------------------------------------------------
 				// Try Google
 
-					if (secret::variable_exists('nearest.gm_key')) {
+					if (secret::variable_get('nearest.gm_key') !== NULL) {
 						$google_maps_key = secret::get('nearest.gm_key'); // https://www.phpprime.com/doc/helpers/nearest/
 					} else {
 						$google_maps_key = config::get('nearest.gm_key');

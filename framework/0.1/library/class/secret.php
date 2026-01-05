@@ -68,31 +68,6 @@
 			}
 
 		//--------------------------------------------------
-		// Variable support functions
-
-			public static function variable_exists($name) {
-				$obj = secret::instance_get();
-				return (array_key_exists($name, ($obj->variables ?? [])));
-			}
-
-			public static function variable_get($name) {
-				$obj = secret::instance_get();
-				$var = ($obj->variables[$name] ?? NULL);
-				if ($var) {
-					if ($obj->data_encoded === NULL) {
-						self::_data_load();
-					}
-					return [ // Do not return 'value' or 'keys'
-							'type'    => $var['type'],
-							'created' => $obj->data_encoded[$name]['created'],
-							'edited'  => $obj->data_encoded[$name]['edited'],
-						];
-
-				}
-				return NULL;
-			}
-
-		//--------------------------------------------------
 		// Support functions
 
 			public static function used() {
@@ -123,6 +98,11 @@
 				$obj->data_encoded = NULL;
 				$obj->data_decoded = [];
 
+			}
+
+			public static function variable_get($name) {
+				$obj = secret::instance_get();
+				return ($obj->variables[$name] ?? NULL);
 			}
 
 			private static function _data_load() {
