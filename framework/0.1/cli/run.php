@@ -23,6 +23,7 @@
 			'reset::',
 			'upload:',
 			'clear-cache',
+			'file-bucket::',
 			'confirm-server:',
 		);
 
@@ -352,6 +353,13 @@
 						require_once(FRAMEWORK_ROOT . '/library/cli/clear-cache.php');
 
 						clear_cache_run();
+						break;
+
+					case 'file-bucket':
+
+						require_once(FRAMEWORK_ROOT . '/library/cli/file-bucket.php');
+
+						file_bucket_run($option_value);
 						break;
 
 					case 'confirm-server':
