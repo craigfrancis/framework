@@ -22,13 +22,11 @@
 			$config['db.name'] = 's-craig-framework';
 			$config['db.user'] = 'stage';
 
-			$config_encrypted[SERVER]['db.pass'] = 'ES2.0.8D1eK3Z224M5KsfZMrKTlGLeuDcy.dYfLBCDv6zjcA-UC';
-
 		//--------------------------------------------------
 		// Email
 
 			$config['email.from_email'] = 'noreply@phpprime.com';
-			$config['email.contact_us'] = array('craig@craigfrancis.co.uk');
+			$config['email.contact_us'] = ['craig@craigfrancis.co.uk'];
 
 		//--------------------------------------------------
 		// Gateway
@@ -57,16 +55,14 @@
 			$config['db.name'] = 'l-craig-framework';
 			$config['db.user'] = 'craig-framework';
 
-			$config_encrypted[SERVER]['db.pass'] = 'ES2.0.27OnC9YqYhgk0qV6QdrrQMvAnnlGQXA4B9y9QNdEewTVgnACwvjHuwRS7VnYBg.mgJT_fv0Gn6e7xG3';
-
 			$config['db.ca_file'] = '/etc/mysql/tls.pem';
 
 		//--------------------------------------------------
 		// Email
 
 			$config['email.from_email'] = 'noreply@phpprime.com';
-			$config['email.error'] = array('craig@craigfrancis.co.uk');
-			$config['email.contact_us'] = array('craig@craigfrancis.co.uk');
+			$config['email.error'] = ['craig@craigfrancis.co.uk'];
+			$config['email.contact_us'] = ['craig@craigfrancis.co.uk'];
 
 		//--------------------------------------------------
 		// General
@@ -97,7 +93,7 @@
 
 	$config['cookie.prefix'] = '__Host-'; // A `Secure` cookie, with no `Domain` attribute
 
-	$config['output.protocols'] = array('https');
+	$config['output.protocols'] = ['https'];
 
 	$config['output.framing'] = 'DENY'; // or SAMEORIGIN
 
@@ -109,15 +105,15 @@
 
 	$config['output.csp_enabled'] = true;
 	$config['output.csp_enforced'] = true;
-	$config['output.csp_directives'] = array(
-			'default-src'  => array("'none'"),
-			'base-uri'     => array("'none'"),
-			'connect-src'  => array("'self'"),
-			'form-action'  => array("'self'"),
-			'style-src'    => array("'self'"),
-			'img-src'      => array("'self'"),
-			'script-src'   => array("'self'"),
-		);
+	$config['output.csp_directives'] = [
+			'default-src'  => ["'none'"],
+			'base-uri'     => ["'none'"],
+			'connect-src'  => ["'self'"],
+			'form-action'  => ["'self'"],
+			'style-src'    => ["'self'"],
+			'img-src'      => ["'self'"],
+			'script-src'   => ["'self'"],
+		];
 
 	if ($config['output.tracking'] !== false) {
 		$config['output.csp_directives']['script-src'][] = 'https://www.google-analytics.com';
@@ -140,19 +136,18 @@
 //--------------------------------------------------
 // Pagination
 
-	// $config['paginator.elements'] = array('<ul class="pagination">', 'first', 'back', 'links', 'next', 'last', '</ul>', 'extra', "\n");
+	// $config['paginator.elements'] = ['<ul class="pagination">', 'first', 'back', 'links', 'next', 'last', '</ul>', 'extra', "\n"];
 	// $config['paginator.link_wrapper_element'] = 'li';
 
 //--------------------------------------------------
 // Files
 
-	$config['file.default.aws_prefix'] = 'icucpwwcyn';
-	$config['file.default.aws_region'] = 'eu-west-1';
-	$config['file.default.aws_access_id'] = 'AKIAQYSPEEVGLO5NRXRU';
-	$config['file.default.aws_local_max_age'] = '-1 day';
+	$config['file.default.aws_prefix']           = 'icucpwwcyn';
+	$config['file.default.aws_region']           = 'eu-west-1';
+	$config['file.default.aws_access_id']        = 'AKIAQYSPEEVGLO5NRXRU';
+	$config['file.default.aws_local_max_age']    = '-1 day';
 	// $config['file.default.aws_backup_folder'] = '/path/to/backup';
-
-	$config_encrypted['stage']['file.default.aws_access_secret'] = 'ES2.0.J2cP1os1q_vqRm8nXnZOpmiItIGXLtQoQVqlOLl3xWtoBpRE2rBeJe2afUnaT16dQSFEzbZ5erA.LeNSHpmgZ3RM-udn';
+	$secret['file.default.aws_access_secret']    = ['type' => 'str'];
 
 	$config['file.test-png.image_type'] = 'png';
 	$config['file.test-gif.image_type'] = 'gif';
