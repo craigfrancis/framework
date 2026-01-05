@@ -24,8 +24,6 @@
 
 			$config_encrypted[SERVER]['db.pass'] = 'ES2.0.8D1eK3Z224M5KsfZMrKTlGLeuDcy.dYfLBCDv6zjcA-UC';
 
-			$config['db.prefix'] = 'tpl_';
-
 		//--------------------------------------------------
 		// Email
 
@@ -62,7 +60,6 @@
 			$config_encrypted[SERVER]['db.pass'] = 'ES2.0.27OnC9YqYhgk0qV6QdrrQMvAnnlGQXA4B9y9QNdEewTVgnACwvjHuwRS7VnYBg.mgJT_fv0Gn6e7xG3';
 
 			$config['db.ca_file'] = '/etc/mysql/tls.pem';
-			$config['db.prefix'] = 'tpl_';
 
 		//--------------------------------------------------
 		// Email
@@ -77,6 +74,12 @@
 			$config['output.domain'] = 'www.phpprime.com';
 
 	}
+
+//--------------------------------------------------
+// General
+
+	$config['db.prefix'] = 'tpl_';
+	$secret['db.pass']   = ['type' => 'str'];
 
 //--------------------------------------------------
 // Output
