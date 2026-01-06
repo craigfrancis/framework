@@ -925,15 +925,25 @@
 					];
 
 				if ($this->connection != 'default') {
+
 					$connection = config::get_all('db.' . $this->connection);
-					if (isset($connection['pass'])) { // A value for this connection has been set, but should be encrypted
-						$connection['pass'] = NULL;
-						$config['pass'] = NULL;
+
+					if ($secret_used) { // TODO [secret-cleanup], see above.
+						if (secret::variable_get('db.' . $this->connection . '.pass') !== NULL) {
+							$connection['pass'] = secret::get('db.' . $this->connection . '.pass');
+						}
+						$config = array_merge($config, $connection);
+					} else {
+						if (isset($connection['pass'])) { // A value for this connection has been set, but should be encrypted
+							$connection['pass'] = NULL;
+							$config['pass'] = NULL;
+						}
+						$config = array_merge($config, $connection);
+						if ($config['pass'] === NULL) {
+							$config['pass'] = config::get_decrypted('db.' . $this->connection . '.pass');
+						}
 					}
-					$config = array_merge($config, $connection);
-					if ($config['pass'] === NULL) {
-						$config['pass'] = ($secret_used ? secret::get('db.' . $this->connection . '.pass') : config::get_decrypted('db.' . $this->connection . '.pass')); // TODO [secret-cleanup], see above.
-					}
+
 				}
 
 				if ($config['pass'] === NULL) {
