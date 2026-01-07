@@ -139,24 +139,14 @@ Abbreviations:
 				// Access details
 
 					$access_secret_key = 'file-bucket.aws_access_secret';
-					$access_secret_value = NULL;
-
-					if (secret::used() === true) {
-
-						$access_secret_value = secret::get($access_secret_key);
-
-					} else if (isset($this->config['aws_access_secret'])) { // TODO [secret-cleanup], where config::get_decrypted() can run config::get()
-
-						try {
-							$access_secret_value = config::value_decrypt($this->config['aws_access_secret']); // TODO [secret-keys]
-						} catch (exception $e) {
-							$access_secret_value = NULL;
-						}
-
-					}
+					$access_secret_value = secret::get($access_secret_key);
 
 					if (!$access_secret_value) {
-						throw new error_exception('The file-bucket config must use $secret[\'' . $access_secret_key . '\'] = [\'type\' => \'str\'];');
+						if (secret::variable_get($access_secret_key) === NULL) {
+							throw new error_exception('The file-bucket config must use $secret[\'' . $access_secret_key . '\'] = [\'type\' => \'str\'];');
+						} else {
+							throw new error_exception('The file-bucket config did not get a value for secret "' . $access_secret_key . '"');
+						}
 					}
 
 				//--------------------------------------------------
@@ -469,6 +459,8 @@ Abbreviations:
 								$to_download = array_reverse($to_download, true); // Download oldest files first (so it's resumable if the process does not complete).
 
 								$k = 0;
+
+								echo 'Downloading ' . count($to_download) . '...' . "\n";
 
 								foreach ($to_download as $file_id => $file) {
 
