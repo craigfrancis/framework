@@ -462,9 +462,16 @@ Abbreviations:
 
 								echo 'Downloading ' . count($to_download) . '...' . "\n";
 
+								$this->connection->keep_alive_set(true);
+
 								foreach ($to_download as $file_id => $file) {
 
-									$encrypted_content = $this->_file_download($file['info'], $file_id);
+									try {
+										$encrypted_content = $this->_file_download($file['info'], $file_id); // Attempt 1
+									} catch (error_exception $e) {
+										$this->connection->reset();
+										$encrypted_content = $this->_file_download($file['info'], $file_id); // Attempt 2, when Keep Alive connection fails.
+									}
 
 									file_put_contents($file['encrypted_path'], $encrypted_content);
 
