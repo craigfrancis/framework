@@ -43,8 +43,6 @@
 
 					$request_headers = $this->headers_get();
 
-					$this->reset();
-
 					if (!$this->access_id)   exit_with_error('Missing call to $connection_aws->access_set()');
 					if (!$this->service_ref) exit_with_error('Missing call to $connection_aws->service_set()');
 

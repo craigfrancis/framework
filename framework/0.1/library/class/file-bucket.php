@@ -1273,8 +1273,6 @@ debug('Removed File: ' . $matches[1]);
 				//--------------------------------------------------
 				// Extra headers
 
-					$this->connection->reset();
-
 					if (isset($request['acl'])) {
 
 						$this->connection->header_set('x-amz-acl', $request['acl']);
