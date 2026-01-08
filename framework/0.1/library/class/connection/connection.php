@@ -854,9 +854,14 @@ $chunk_log[] = 'End: ' . $byte;
 							$length_remaining = ($length - strlen($response_data));
 
 							if ($length_remaining <= 0 || feof($connection)) { // EOF check needed for HEAD requests, where Content-Length is specified, but no body exists.
-								break; // EOF may never come, especially on a keep-alive connection, or when the remote server is using the 'loading' helper.
+								break; // EOF may never come, especially on a Keep-Alive Connection, or when the remote server is using the 'loading' helper.
 							}
 
+						}
+
+						$length_remaining = ($length - strlen($response_data));
+						if ($length_remaining != 0) {
+							$error = 'Finished reading, but still have ' . $length_remaining . ' bytes remaining.';
 						}
 
 					} else if (count($response_headers_parsed) > 0) { // Keep going until EOF (good luck); and only when headers have been collected (if not, the connection probably timed out)
@@ -891,7 +896,12 @@ $chunk_log[] = 'End: ' . $byte;
 
 							$this->connections[$socket_host] = [$context, $connection];
 
-						} else { // Something went wrong, cannot keep using this connection.
+						} else {
+
+								// Something went wrong, cannot keep using this connection.
+
+								// Must not re-try within this function, only the code
+								// calling this function knows if it's safe to retry.
 
 							fclose($connection);
 
