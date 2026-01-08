@@ -398,7 +398,7 @@ Abbreviations:
 
 								do {
 
-									echo 'Check ' . $offset . ' to ' . $limit . "\n";
+									echo 'Check ' . $limit . ' from ' . $offset . "\n";
 
 									$files = $this->_file_db_get('processed', $offset, $limit);
 

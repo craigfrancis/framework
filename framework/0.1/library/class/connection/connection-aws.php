@@ -175,6 +175,8 @@
 				//--------------------------------------------------
 				// Headers (to send normally)
 
+					// echo "\n" . 'curl -v ' . $url_final . ' -H "content-type: ' . $headers_send['content-type'] . '" -H "date: ' . $headers_send['date'] . '"  -H "x-amz-content-sha256: ' . $headers_send['x-amz-content-sha256'] . '" -H "Authorization: ' . $headers_send['Authorization'] . '" --output delete.file' . "\n\n";
+
 					$this->headers_set($headers_send);
 
 				//--------------------------------------------------
