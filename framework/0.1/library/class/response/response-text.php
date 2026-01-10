@@ -5,7 +5,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $inline = false;
+			private $inline = true;
 			private $error_ref = false;
 			private $error_output = false;
 
