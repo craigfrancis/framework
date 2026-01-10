@@ -1628,11 +1628,7 @@
 
 		mime_set($config['mime']);
 
-		$filename_clean = str_replace(['/', '\\'], '', $config['name']); // Never allowed
-		$filename_ascii = safe_file_name($filename_clean, true, '_');
-		$filename_utf8  = ($filename_ascii == $filename_clean ? NULL : "UTF-8''" . rawurlencode($filename_clean));
-
-		header('Content-Disposition: ' . head($config['mode']) . '; filename="' . head($filename_ascii) . '"' . ($filename_utf8 ? '; filename*=' . head($filename_utf8) : ''));
+		header('Content-Disposition: ' . http_content_disposition($config['mode'], $config['name']));
 		header('Content-Length: ' . head($config['path'] ? filesize($config['path']) : strlen($config['content'])));
 
 		if ($config['csp'] !== false && config::get('output.csp_enabled') === true) {
@@ -1692,6 +1688,29 @@
 			echo $config['content'];
 
 		}
+
+	}
+
+	function http_content_disposition($mode, $file_name = NULL) {
+
+		$disposition = head($mode);
+
+		if ($file_name) {
+
+			$file_name_clean = str_replace(['/', '\\'], '', $file_name); // Never allowed
+			$file_name_ascii = safe_file_name($file_name_clean, true, '_');
+			$file_name_utf8  = ($file_name_ascii == $file_name_clean ? NULL : "UTF-8''" . rawurlencode($file_name_clean));
+
+			if ($file_name_ascii) {
+				$disposition .= '; filename="' . head($file_name_ascii) . '"';
+			}
+			if ($file_name_utf8) {
+				$disposition .= '; filename*=' . head($file_name_utf8);
+			}
+
+		}
+
+		return $disposition;
 
 	}
 

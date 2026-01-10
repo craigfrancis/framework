@@ -119,7 +119,7 @@
 					}
 
 					header('Content-Type: ' . head($this->mime_get()) . '; charset=' . head($this->charset_get()));
-					header('Content-Disposition: ' . head($mode) . '; filename="' . head($this->name_get()) . '"');
+					header('Content-Disposition: ' . http_content_disposition($mode, $this->name_get()));
 					header('Content-Length: ' . head($length));
 
 					if ($mode !== 'inline') {

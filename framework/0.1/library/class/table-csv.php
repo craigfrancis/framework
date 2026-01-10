@@ -145,11 +145,7 @@
 					$mode = 'attachment';
 				}
 
-				$file_name_clean = str_replace(['/', '\\'], '', $file_name); // Never allowed
-				$file_name_ascii = safe_file_name($file_name_clean, true, '_');
-				$file_name_utf8  = ($file_name_ascii == $file_name_clean ? NULL : "UTF-8''" . rawurlencode($file_name_clean));
-
-				header('Content-Disposition: ' . head($mode) . '; filename="' . head($file_name_ascii) . '"' . ($file_name_utf8 ? '; filename*=' . head($file_name_utf8) : ''));
+				header('Content-Disposition: ' . http_content_disposition($mode, $file_name));
 
 				if ($content !== NULL) {
 					header('Content-Length: ' . head(strlen($content))); // Does not work with gzip encoding enabled.

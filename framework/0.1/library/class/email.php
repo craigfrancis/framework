@@ -801,14 +801,9 @@
 
 						foreach ($this->attachments as $attachment) {
 
-							$filename_clean = str_replace(['/', '\\'], '', $attachment['name']); // Never allowed
-							$filename_ascii = iconv('UTF-8', 'ASCII//TRANSLIT', $filename_clean); // While safe_file_name will remove bad characters, this will do a better job of converting.
-							$filename_ascii = safe_file_name($filename_ascii, true, '_');
-							$filename_utf8  = ($filename_ascii == $filename_clean ? NULL : "UTF-8''" . rawurlencode($filename_clean)); // Does not really work for Gmail - https://issuetracker.google.com/issues/405140647
-
 							$content .= '--' . $this->boundaries[0] . "\n";
 							$content .= 'Content-Type: ' . head(addslashes($attachment['mime'])) . "\n";
-							$content .= 'Content-Disposition: attachment; filename="' . head(addslashes($filename_ascii)) . '"' . ($filename_utf8 ? '; filename*=' . head($filename_utf8) : '') . "\n";
+							$content .= 'Content-Disposition: ' . http_content_disposition('attachment', $attachment['name']) . "\n"; // Note: UTF-8 does not really work for Gmail - https://issuetracker.google.com/issues/405140647
 							$content .= 'Content-Transfer-Encoding: base64' . "\n";
 							$content .= 'X-Attachment-Id: ' . head(addslashes($attachment['id'])) . "\n";
 							$content .= '' . "\n";
