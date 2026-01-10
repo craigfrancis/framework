@@ -721,6 +721,18 @@ debug('Removed File: ' . $matches[1]);
 
 			}
 
+			public function file_aws_curl_get($file_id) {
+
+				$file = $this->_file_db_get($file_id);
+
+				$aws_url = $this->_aws_url($file['info']['eh']);
+
+				$connection = $this->connection->request_debug($aws_url, 'GET');
+
+				return command::exec_compose($connection['curl_c'], $connection['curl_p']);
+
+			}
+
 			public function file_exists($file_id) {
 
 				$file_id = intval($file_id);
@@ -1275,6 +1287,15 @@ debug('Removed File: ' . $matches[1]);
 
 			}
 
+			private function _aws_url($encrypted_hash) {
+				if ($this->config['aws_folders'] === true) {
+					$url = '/' . substr($encrypted_hash, 0, 2) . '/' . substr($encrypted_hash, 2); // Match unpacked (loose object) structure found in git.
+				} else {
+					$url = '/' . $encrypted_hash;
+				}
+				return url($url);
+			}
+
 			private function _aws_request($request) {
 
 				//--------------------------------------------------
@@ -1297,15 +1318,11 @@ debug('Removed File: ' . $matches[1]);
 				//--------------------------------------------------
 				// Request
 
-					if ($this->config['aws_folders'] === true) {
-						$url = '/' . substr($request['encrypted_hash'], 0, 2) . '/' . substr($request['encrypted_hash'], 2); // Match unpacked (loose object) structure found in git.
-					} else {
-						$url = '/' . $request['encrypted_hash'];
-					}
+					$url = $this->_aws_url($request['encrypted_hash']);
 
 					$start = hrtime(true);
 
-					$result = $this->connection->request(url($url), $request['method'], ($request['content'] ?? ''));
+					$result = $this->connection->request($url, $request['method'], ($request['content'] ?? ''));
 
 					if (function_exists('debug_log_time')) {
 						debug_log_time('AWS-' . $request['method'], round(hrtime_diff($start), 3));

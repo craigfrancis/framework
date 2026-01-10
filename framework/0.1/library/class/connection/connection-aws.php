@@ -37,6 +37,33 @@
 		// Signed request
 
 			public function request($url, $method = 'GET', $data = '') {
+				list($url_final, $headers_send) = $this->_request_setup($url, $method, $data);
+				$this->headers_set($headers_send);
+				return parent::request($url_final, $method, $data);
+			}
+
+			public function request_debug($url, $method = 'GET', $data = '') {
+				list($url_final, $headers_send) = $this->_request_setup($url, $method, $data);
+				$curl_c = 'curl -v ?';
+				$curl_p = [];
+				$curl_p[] = $url_final;
+				foreach ($headers_send as $header_name => $header_value) {
+					$curl_c .= ' -H ?';
+					$curl_p[] = preg_replace('/[^a-zA-Z0-9_\-]/', '', $header_name) . ': ' . head($header_value);
+						// https://www.rfc-editor.org/rfc/rfc9110#section-16.3.2.1-3
+						// While the field-name syntax is defined to allow any token character, in practice some implementations place limits on the characters they accept in field-names.
+						// To be interoperable, new field names SHOULD constrain themselves to alphanumeric characters, "-", and ".", and SHOULD begin with a letter.
+				}
+				$curl_c .= ' --output file.bin';
+				return [
+						'url'     => $url_final,
+						'headers' => $headers_send,
+						'curl_c'  => $curl_c, // command::exec_compose($debug['curl_c'], $debug['curl_p']),
+						'curl_p'  => $curl_p,
+					];
+			}
+
+			private function _request_setup($url, $method = 'GET', $data = '') {
 
 				//--------------------------------------------------
 				// Cleanup
@@ -173,16 +200,9 @@
 					$headers_send['Authorization'] = $authorisation;
 
 				//--------------------------------------------------
-				// Headers (to send normally)
+				// Return
 
-					// echo "\n" . 'curl -v ' . $url_final . ' -H "content-type: ' . $headers_send['content-type'] . '" -H "date: ' . $headers_send['date'] . '"  -H "x-amz-content-sha256: ' . $headers_send['x-amz-content-sha256'] . '" -H "Authorization: ' . $headers_send['Authorization'] . '" --output delete.file' . "\n\n";
-
-					$this->headers_set($headers_send);
-
-				//--------------------------------------------------
-				// Request
-
-					return parent::request($url_final, $method, $data);
+					return [$url_final, $headers_send];
 
 			}
 
