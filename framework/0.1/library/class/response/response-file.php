@@ -54,11 +54,12 @@
 		// Content type
 
 			public function mime_get() {
-				if ($this->mime === NULL && $this->path !== NULL) {
-					return http_mime_type($this->path);
-				}
 				if ($this->mime === NULL) {
-					return 'application/octet-stream';
+					if ($this->path !== NULL) {
+						return http_mime_type($this->path);
+					} else {
+						return 'application/octet-stream';
+					}
 				}
 				return $this->mime;
 			}
@@ -71,8 +72,12 @@
 			}
 
 			public function name_get() {
-				if ($this->name === NULL && $this->path !== NULL) {
-					return basename($this->path);
+				if ($this->name === NULL) {
+					if ($this->path !== NULL) {
+						return basename($this->path);
+					} else {
+						return 'untitled.bin';
+					}
 				}
 				return $this->name;
 			}

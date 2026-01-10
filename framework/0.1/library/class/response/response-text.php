@@ -99,22 +99,21 @@
 					$this->content = $this->setup_output . $this->content; // Just prepend to content.
 				}
 
+				$mode = ($this->inline_get() ? 'inline' : 'attachment');
+
+				$file_name = $this->name_get();
+				if ($file_name === NULL) {
+					$file_name = 'untitled.txt';
+				}
+
 				$length = strlen($this->content);
 
 				header('Content-Type: ' . head($this->mime_get()) . '; charset=' . head($this->charset_get()));
+				header('Content-Disposition: ' . http_content_disposition($mode, $file_name));
 				header('Content-Length: ' . head($length));
 
-				$file_name = $this->name_get();
-				if ($file_name !== NULL) {
-
-					$mode = ($this->inline_get() ? 'inline' : 'attachment');
-
-					header('Content-Disposition: ' . head($mode) . '; filename="' . head($file_name) . '"');
-
-					if ($mode !== 'inline') {
-						header('X-Download-Options: noopen');
-					}
-
+				if ($mode !== 'inline') {
+					header('X-Download-Options: noopen');
 				}
 
 				config::set('output.csp_directives', 'none'); // Text/CSS/JSON should not be rendered as HTML, so the CSP should be 'none'.

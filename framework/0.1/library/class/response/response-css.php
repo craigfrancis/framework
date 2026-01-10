@@ -9,6 +9,17 @@
 				return 'text/css';
 			}
 
+		//--------------------------------------------------
+		// File setup
+
+			public function name_get() {
+				$file_name = parent::name_get();
+				if ($file_name === NULL) {
+					$file_name = 'untitled.css';
+				}
+				return $file_name;
+			}
+
 	}
 
 ?>

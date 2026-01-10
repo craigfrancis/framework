@@ -23,6 +23,17 @@
 			}
 
 		//--------------------------------------------------
+		// File setup
+
+			public function name_get() {
+				$file_name = parent::name_get();
+				if ($file_name === NULL) {
+					$file_name = 'untitled.json';
+				}
+				return $file_name;
+			}
+
+		//--------------------------------------------------
 		// Send
 
 			public function send($content = NULL) {
