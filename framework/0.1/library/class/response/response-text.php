@@ -5,7 +5,7 @@
 		//--------------------------------------------------
 		// Variables
 
-			private $inline = true;
+			private $inline = NULL;
 			private $error_ref = false;
 			private $error_output = false;
 
@@ -99,16 +99,23 @@
 					$this->content = $this->setup_output . $this->content; // Just prepend to content.
 				}
 
-				$mode = ($this->inline_get() ? 'inline' : 'attachment');
-
+				$mime = $this->mime_get();
+				$inline = $this->inline_get();
 				$file_name = $this->name_get();
-				if ($file_name === NULL) {
-					$file_name = 'untitled.txt';
+
+				if ($mime === 'text/plain') {
+					if ($inline === NULL) $inline = true;
+					if ($file_name === NULL) $file_name = 'untitled.txt';
+				} else {
+					if ($inline === NULL) $inline = false;
+					if ($file_name === NULL) $file_name = 'untitled.bin';
 				}
+
+				$mode = ($inline ? 'inline' : 'attachment');
 
 				$length = strlen($this->content);
 
-				header('Content-Type: ' . head($this->mime_get()) . '; charset=' . head($this->charset_get()));
+				header('Content-Type: ' . head($mime) . '; charset=' . head($this->charset_get()));
 				header('Content-Disposition: ' . http_content_disposition($mode, $file_name));
 				header('Content-Length: ' . head($length));
 
