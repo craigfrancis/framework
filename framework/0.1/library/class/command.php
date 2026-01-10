@@ -122,6 +122,33 @@
 			return $this->exit_code;
 		}
 
+		static public function exec_compose($command, $parameters = []) {
+
+			if (function_exists('is_literal') && is_literal($command) !== true) {
+				exit_with_error('The command must be a literal', $command);
+			}
+
+			$offset = 0;
+			$k = 0;
+
+			while (($pos = strpos($command, '?', $offset)) !== false) {
+				if (!array_key_exists($k, $parameters)) {
+					throw new error_exception('Missing parameter "' . ($k + 1) . '"', $command . "\n\n" . debug_dump($parameters));
+				}
+				$parameter = escapeshellarg($parameters[$k]);
+				$command = substr($command, 0, $pos) . $parameter . substr($command, ($pos + 1));
+				$offset = ($pos + strlen($parameter));
+				$k++;
+			}
+
+			for ($l = count($parameters); $k < $l; $k++) {
+				$command .= ' ' . escapeshellarg($parameters[$k]);
+			}
+
+			return $command;
+
+		}
+
 		public function exec_start($command, $parameters = []) {
 
 			//--------------------------------------------------
@@ -170,28 +197,9 @@
 			// Command
 
 				if ($run_direct) {
-
 					$command = array_merge([$command], $parameters);
-
 				} else {
-
-					$offset = 0;
-					$k = 0;
-
-					while (($pos = strpos($command, '?', $offset)) !== false) {
-						if (!array_key_exists($k, $parameters)) {
-							throw new error_exception('Missing parameter "' . ($k + 1) . '"', $command . "\n\n" . debug_dump($parameters));
-						}
-						$parameter = escapeshellarg($parameters[$k]);
-						$command = substr($command, 0, $pos) . $parameter . substr($command, ($pos + 1));
-						$offset = ($pos + strlen($parameter));
-						$k++;
-					}
-
-					for ($l = count($parameters); $k < $l; $k++) {
-						$command .= ' ' . escapeshellarg($parameters[$k]);
-					}
-
+					$command = command::exec_compose($command, $parameters);
 				}
 
 			//--------------------------------------------------
