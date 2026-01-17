@@ -60,6 +60,10 @@
 				$this->connection->keep_alive_set($keep_alive);
 			}
 
+			public function keep_alive_reset() {
+				$this->connection->keep_alive_reset();
+			}
+
 			public function timeout_set($seconds) {
 				$this->connection->timeout_set($seconds);
 			}

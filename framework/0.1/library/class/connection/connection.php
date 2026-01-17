@@ -126,6 +126,13 @@
 				$this->request_keep_alive = $keep_alive;
 			}
 
+			public function keep_alive_reset() {
+				foreach ($this->connections as $connection) {
+					fclose($connection[1]); // [0] = context, [1] connection
+				}
+				$this->connections = [];
+			}
+
 			public function timeout_set($seconds) {
 				$this->request_timeout = $seconds;
 			}
