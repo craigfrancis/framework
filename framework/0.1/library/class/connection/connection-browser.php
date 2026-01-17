@@ -176,6 +176,18 @@
 				$this->connection->header_set($name, $value);
 			}
 
+			public function headers_set($headers) {
+				$this->connection->headers_set($headers);
+			}
+
+			public function header_get($name) {
+				return $this->connection->header_get($name);
+			}
+
+			public function headers_get() {
+				return $this->connection->headers_get();
+			}
+
 		//--------------------------------------------------
 		// Error handling
 
