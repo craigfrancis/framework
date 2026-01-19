@@ -1109,7 +1109,7 @@
 
 					if ($return_csv) {
 
-						$csv_length = (ftell($fp) - 1);
+						$csv_length = ftell($fp);
 
 						rewind($fp);
 
