@@ -1301,6 +1301,8 @@ debug('Removed File: ' . $matches[1]);
 				//--------------------------------------------------
 				// Extra headers
 
+					$this->connection->headers_set([]); // Reset headers - e.g. if a PUT happened earlier, and now it's a DELETE, the 'x-amz-server-side-encryption' header would be rejected by AWS.
+
 					if (isset($request['acl'])) {
 
 						$this->connection->header_set('x-amz-acl', $request['acl']);
