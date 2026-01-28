@@ -1442,7 +1442,7 @@
 
 			}
 
-			public function mfa_challenge_init($extra_data = []) {
+			public function mfa_challenge_init($mfa_type, $extra_data = []) {
 
 				list($current_user_id, $current_identification, $current_source) = $this->user_get();
 
@@ -1456,16 +1456,26 @@
 
 				$now = new timestamp();
 
+				if ($mfa_type === 'sms' || $mfa_type === 'email') {
+					$mfa_pass = random_int(100000, 999999);
+					$mfa_hash = quick_hash_create($mfa_pass);
+				} else {
+					$mfa_pass = NULL;
+					$mfa_hash = '';
+				}
+
 				$db->insert($db_mfa_table, array_merge($extra_data, [
-						'id'           => '',
-						'user_id'      => $current_user_id,
-						'session_pass' => '',
-						'session_used' => 0,
-						'created'      => $now,
-						'deleted'      => '0000-00-00 00:00:00',
+						'id'             => '',
+						'user_id'        => $current_user_id,
+						'challenge_type' => $mfa_type,
+						'challenge_pass' => $mfa_hash,
+						'session_pass'   => '',
+						'session_used'   => 0,
+						'created'        => $now,
+						'deleted'        => '0000-00-00 00:00:00',
 					]));
 
-				return $db->insert_id();
+				return [$db->insert_id(), $mfa_pass];
 
 			}
 
