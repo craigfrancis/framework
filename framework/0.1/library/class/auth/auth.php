@@ -1254,10 +1254,7 @@
 
 			public function mfa_info_parse($auth_value) {
 				if (!is_array($auth_value)) {
-					if ($this->user_id === NULL) {
-						exit_with_error('You must call $auth->user_set() before $auth->mfa_info_parse().');
-					}
-					$auth_value = auth::secret_parse($this->user_id, $auth_value);
+					$auth_value = auth::secret_parse($this->user_id_get(), $auth_value);
 				}
 				$return = [];
 				foreach (($auth_value['mfa']['sms'] ?? []) as $sms) {
