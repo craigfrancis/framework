@@ -68,7 +68,7 @@
 
 					$mfa_token = cookie::get('m');
 
-					if (($pos = strpos(strval($mfa_token), '-')) !== false) {
+					if ($mfa_token !== '-' && ($pos = strpos(strval($mfa_token), '-')) !== false) {
 
 						$mfa_id = intval(substr($mfa_token, 0, $pos));
 						$mfa_pass = substr($mfa_token, ($pos + 1));
