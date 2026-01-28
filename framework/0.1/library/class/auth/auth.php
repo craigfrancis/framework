@@ -1268,8 +1268,14 @@
 							// 'db_field' => ($sms['db_field'] ?? NULL),
 						];
 				}
-				// foreach (($auth_value['mfa']['email'] ?? []) as $sms) {
-				// }
+				foreach (($auth_value['mfa']['email'] ?? []) as $sms) {
+					$return['email'][] = [
+							'id'       => $sms['id'],
+							'label'    => ($sms['label'] ?? NULL),
+							'email'    => ($sms['email'] ?? NULL),
+							// 'db_field' => ($sms['db_field'] ?? NULL),
+						];
+				}
 				foreach (($auth_value['mfa']['totp'] ?? []) as $totp) { // NEVER return 'secret'
 					$return['totp'][] = [
 							'id'    => $sms['id'],
