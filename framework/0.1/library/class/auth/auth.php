@@ -1249,8 +1249,18 @@
 				if (!is_array($this->session_info_auth)) { // During normal session_get(), where most pages will not need this to be parsed.
 					$this->session_info_auth = auth::secret_parse($this->session_info_data['user_id'], $this->session_info_auth);
 				}
+				return $this->mfa_info_parse($this->session_info_auth);
+			}
+
+			public function mfa_info_parse($auth_value) {
+				if (!is_array($auth_value)) {
+					if ($this->user_id === NULL) {
+						exit_with_error('You must call $auth->user_set() before $auth->mfa_info_parse().');
+					}
+					$auth_value = auth::secret_parse($this->user_id, $auth_value);
+				}
 				$return = [];
-				foreach (($this->session_info_auth['mfa']['sms'] ?? []) as $sms) {
+				foreach (($auth_value['mfa']['sms'] ?? []) as $sms) {
 					$return['sms'][] = [
 							'id'          => $sms['id'],
 							'label'       => ($sms['label'] ?? NULL),
@@ -1258,13 +1268,15 @@
 							// 'db_field' => ($sms['db_field'] ?? NULL),
 						];
 				}
-				foreach (($this->session_info_auth['mfa']['totp'] ?? []) as $totp) { // NEVER return 'secret'
+				// foreach (($auth_value['mfa']['email'] ?? []) as $sms) {
+				// }
+				foreach (($auth_value['mfa']['totp'] ?? []) as $totp) { // NEVER return 'secret'
 					$return['totp'][] = [
 							'id'    => $sms['id'],
 							'label' => ($totp['label'] ?? NULL),
 						];
 				}
-				foreach (($this->session_info_auth['mfa']['passkey'] ?? []) as $totp) {
+				foreach (($auth_value['mfa']['passkey'] ?? []) as $totp) {
 					$return['passkey'][] = [
 							'id'    => $sms['id'],
 							'label' => ($totp['label'] ?? NULL),
