@@ -485,7 +485,7 @@
 		config::set_default('output.title_error', 'An error has occurred');
 		config::set_default('output.page_id', 'route');
 		config::set_default('output.framing', 'DENY');
-		config::set_default('output.integrity', false); // Set to true to be added automatically, or ['script', 'style'] so it's added to CSP "require-sri-for" as well.
+		config::set_default('output.integrity', false); // Set to true to be added automatically, or ['script', 'style'] so it's added to "Integrity-Policy" as well.
 		config::set_default('output.referrer_policy', 'strict-origin-when-cross-origin'); // Added in Chrome 61.0.3130.0
 
 		config::set_default('output.ct_enforced', false);

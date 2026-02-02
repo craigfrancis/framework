@@ -1883,7 +1883,6 @@
 					'enforced'  => config::get('output.csp_enforced', false),
 					'report'    => config::get('output.csp_report', false),
 					'framing'   => config::get('output.framing'),
-					'integrity' => config::get('output.integrity'),
 				], $config);
 
 			if ($config['enforced']) {
@@ -1900,11 +1899,6 @@
 					$csp['frame-ancestors'] = "'self'";
 				}
 			}
-
-			// Removed https://github.com/w3c/webappsec-subresource-integrity/pull/82 ... and in Chrome 85 http://crbug.com/618924
-			// if (is_array($config['integrity'])) {
-			// 	$csp['require-sri-for'] = implode(' ', $config['integrity']);
-			// }
 
 			if (isset($csp['trusted-types'])) {
 				$csp['require-trusted-types-for'] = "'script'";
@@ -2172,6 +2166,25 @@
 			// 	}
 			// 	header('Document-Policy: ' . head(implode(', ', $policies)));
 			// }
+
+		//--------------------------------------------------
+		// Integrity-Policy
+
+				// Used to be in CSP 'require-sri-for', but this has been removed https://github.com/w3c/webappsec-subresource-integrity/pull/82 ... and in Chrome 85 https://crbug.com/618924
+
+				// https://github.com/w3c/webappsec-subresource-integrity/pull/133
+
+				// For styles:
+				//   https://github.com/w3c/webappsec-subresource-integrity/pull/146
+				//   https://bugzilla.mozilla.org/show_bug.cgi?id=1960903
+				//     https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Experimental_features#integrity_policy_for_stylesheet_resources
+				//   https://issues.chromium.org/issues/430249444
+
+			$integrity = config::get('output.integrity');
+			if (is_array($integrity) && in_array('script', $integrity)) {
+				$integrity = ['script']; // Browsers only support script at the moment.
+				header('Integrity-Policy: blocked-destinations=(' . implode(' ', $integrity) . ')');
+			}
 
 		//--------------------------------------------------
 		// Content-Security-Policy
