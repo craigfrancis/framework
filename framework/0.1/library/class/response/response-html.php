@@ -979,6 +979,7 @@
 
 						if (substr($path, 0, 1) == '/' && !isset($file['attributes']['integrity']) && is_file(PUBLIC_ROOT . $path)) {
 							$files[$id]['attributes']['integrity'] = 'sha256-' . base64_encode(hash('sha256', file_get_contents(PUBLIC_ROOT . $path), true));
+							$files[$id]['attributes']['crossorigin'] = 'anonymous';
 						}
 
 					}
@@ -1484,14 +1485,14 @@
 						$css_path = FRAMEWORK_ROOT . '/library/view/debug.css';
 						$css_url = gateway_url('framework-file', filemtime($css_path) . '-debug.css');
 						$css_integrity = 'sha256-' . base64_encode(hash('sha256', file_get_contents($css_path), true));
-						$this->css_add($css_url, ['integrity' => $css_integrity]);
+						$this->css_add($css_url, ['integrity' => $css_integrity, 'crossorigin' => 'anonymous']);
 						$this->csp_source_add('style-src', $css_url);
 
 						$js_path = FRAMEWORK_ROOT . '/library/view/debug.js';
 						$js_url = gateway_url('framework-file', filemtime($js_path) . '-debug.js');
 						$js_integrity = 'sha256-' . base64_encode(hash('sha256', file_get_contents($js_path), true));
 						$js_api = gateway_url('debug', $debug_ref . '.json');
-						$this->js_add($js_url, ['async', 'integrity' => $js_integrity, 'data-api' => $js_api], 'head');
+						$this->js_add($js_url, ['async', 'integrity' => $js_integrity, 'crossorigin' => 'anonymous', 'data-api' => $js_api], 'head');
 						$this->csp_source_add('script-src', $js_url);
 						$this->csp_source_add('connect-src', $js_api);
 						if ($this->csp_sources_get('navigate-to') !== NULL) {

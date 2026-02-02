@@ -1160,7 +1160,7 @@
 						$css_integrity = 'sha256-' . base64_encode(hash('sha256', file_get_contents($css_path), true));
 
 						$response = response_get('html');
-						$response->css_add($css_url, ['integrity' => $css_integrity]);
+						$response->css_add($css_url, ['integrity' => $css_integrity, 'crossorigin' => 'anonymous']);
 						$response->csp_source_add('style-src', $css_url);
 						$response->template_path_set(FRAMEWORK_ROOT . '/library/template/blank.ctp');
 						$response->view_set_html($output_html);
