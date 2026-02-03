@@ -34,6 +34,15 @@
 			$config['gateway.maintenance'] = true;
 			$config['gateway.tester'] = true;
 
+		//--------------------------------------------------
+		// General
+
+			$config['output.domain'] = 'craig.framework.emma.devcf.com';
+
+			$config['connection.tls_domain_ca_path'] = [
+					$config['output.domain'] => '/etc/apache2-tls/devcf.crt',
+				];
+
 	} else if (str_starts_with(ROOT, '/mnt/www/demo/')) {
 
 		//--------------------------------------------------
