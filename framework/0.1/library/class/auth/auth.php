@@ -1108,7 +1108,7 @@
 							$limit_ref = 'ip';
 							$limit_extra = $auth['ips'];
 
-						} else if (count($auth['mfa'] ?? []) > 0) { // Must run MFA check before checking their password quality.
+						} else if ($this->mfa_available_get() && count($auth['mfa'] ?? []) > 0) { // Must run MFA check before checking their password quality.
 
 							$limit_ref = 'mfa';
 							$limit_extra = NULL;
@@ -1238,6 +1238,10 @@
 
 		//--------------------------------------------------
 		// MFA
+
+			public function mfa_available_get() {
+				return false;
+			}
 
 			public function mfa_info_get() {
 				if (!$this->session_info_available) {
