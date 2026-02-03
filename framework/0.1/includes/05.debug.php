@@ -553,14 +553,22 @@
 
 	if (PHP_INIT_ERROR) { // Add the init error to 'debug.errors' (email)
 
-		error_handler([
-				'number'      => PHP_INIT_ERROR['type'],
-				'string'      => PHP_INIT_ERROR['message'],
-				'file'        => PHP_INIT_ERROR['file'],
-				'line'        => PHP_INIT_ERROR['line'],
-				'log_display' => false, // Already handled by PHP
-				'log_file'    => false, // Already handled by PHP
-			]);
+		if (PHP_INIT_ERROR['message'] == 'Missing boundary in multipart/form-data POST data' && PHP_INIT_ERROR['file'] == 'Unknown' && PHP_INIT_ERROR['line'] == 0) {
+
+			// Ignore... invalid request from client (could be a connection error, or a bot).
+
+		} else {
+
+			error_handler([
+					'number'      => PHP_INIT_ERROR['type'],
+					'string'      => PHP_INIT_ERROR['message'],
+					'file'        => PHP_INIT_ERROR['file'],
+					'line'        => PHP_INIT_ERROR['line'],
+					'log_display' => false, // Already handled by PHP
+					'log_file'    => false, // Already handled by PHP
+				]);
+
+		}
 
 	}
 
