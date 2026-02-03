@@ -354,8 +354,11 @@
 				$uri = config::get('request.uri');
 				$url = http_url();
 
+				$start_diff = round((hrtime(true) - FRAMEWORK_START) / 1000000000);
+
 				$request_values_1 = [
 						'Sent'      => date($config['date_format']),
+						'Start'     => date($config['date_format'], (time() - $start_diff)) . ' (' . timestamp_to_human($start_diff, 2, true) . ')',
 						'Loaded'    => NULL,
 						'Website'   => config::get('output.origin'),
 						'Method'    => config::get('request.method'),
