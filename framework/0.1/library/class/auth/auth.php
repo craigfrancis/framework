@@ -25,7 +25,7 @@
 			protected $session_previous = NULL;
 
 			private $session_info_data = NULL; // Please use $auth->session_info_get();
-			private $session_info_auth = NULL;
+			private $session_info_auth = NULL; // Please use $auth->mfa_info_get();
 			private $session_info_available = false;
 			private $session_pass = NULL;
 
@@ -1243,23 +1243,25 @@
 				return false;
 			}
 
-			public function mfa_info_get() {
-				if (!$this->session_info_available) {
-					exit_with_error('Cannot call $auth->mfa_info_get() before $auth->session_get()');
-				}
-				if ($this->session_info_auth === NULL) {
-					exit_with_error('Cannot call $auth->mfa_info_get() with an invalid $auth->session_info_auth value');
-				}
-				if (!is_array($this->session_info_auth)) { // During normal session_get(), where most pages will not need this to be parsed.
-					$this->session_info_auth = auth::secret_parse($this->session_info_data['user_id'], $this->session_info_auth);
-				}
-				return $this->mfa_info_parse($this->session_info_auth);
-			}
+			public function mfa_info_get($auth_value = NULL, $user_id = NULL) {
 
-			public function mfa_info_parse($auth_value) {
-				if (!is_array($auth_value)) {
-					$auth_value = auth::secret_parse($this->user_id_get(), $auth_value);
+				if ($auth_value === NULL) {
+					if (!$this->session_info_available) {
+						exit_with_error('Cannot call $auth->mfa_info_get() without either - the "auth" value, or before using $auth->session_get()');
+					}
+					if ($this->session_info_auth === NULL) {
+						exit_with_error('Cannot call $auth->mfa_info_get() with an invalid $auth->session_info_auth value');
+					}
+					$auth_value = $this->session_info_auth; // The encrypted value... as a normal session_get(), for most pages, this will not need this to be parsed.
 				}
+
+				if (!is_array($auth_value)) {
+					if ($user_id === NULL) {
+						$user_id = $this->user_id_get();
+					}
+					$auth_value = auth::secret_parse($user_id, $auth_value);
+				}
+
 				$return = [];
 				foreach (($auth_value['mfa']['sms'] ?? []) as $sms) {
 					$return['sms'][] = [
@@ -1291,6 +1293,7 @@
 						];
 				}
 				return $return;
+
 			}
 
 			public function mfa_method_remove($mfa_type, $remove_id = NULL) {
