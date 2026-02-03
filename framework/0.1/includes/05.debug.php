@@ -553,7 +553,7 @@
 
 	if (PHP_INIT_ERROR) { // Add the init error to 'debug.errors' (email)
 
-		if (PHP_INIT_ERROR['message'] == 'Missing boundary in multipart/form-data POST data' && PHP_INIT_ERROR['file'] == 'Unknown' && PHP_INIT_ERROR['line'] == 0) {
+		if (PHP_INIT_ERROR['file'] == 'Unknown' && PHP_INIT_ERROR['line'] == 0 && in_array(PHP_INIT_ERROR['message'], ['Missing boundary in multipart/form-data POST data', 'File Upload Mime headers garbled'])) {
 
 			// Ignore... invalid request from client (could be a connection error, or a bot).
 
