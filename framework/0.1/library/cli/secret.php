@@ -433,7 +433,9 @@
 
 				} else {
 
-					$result = $this->_api_result_or_exit(['action' => 'data_write', 'data' => $data_text], $data_folder);
+					$account_process = posix_getpwuid(posix_geteuid());
+
+					$result = $this->_api_result_or_exit(['action' => 'data_write', 'data' => $data_text, 'cli_user' => $account_process['name']], $data_folder);
 
 				}
 

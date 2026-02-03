@@ -48,6 +48,13 @@
 
 		$result = secret::_data_write(request('data', 'POST'));
 
+		if ($result === false) {
+			$account_cli = request('cli_user', 'POST');
+			$account_process = posix_getpwuid(posix_geteuid());
+			$response->send(['error' => 'Could not write the secret data file; via user "' . ($account_cli ?? 'N/A') . '" (CLI) or "' . $account_process['name'] . '" (API)']);
+			exit();
+		}
+
 	} else if ($action == 'old_values_get') { // TODO [secret-cleanup] Remove
 
 		$result = config::_temp_decrypt_all();
