@@ -115,7 +115,7 @@
 								sm.run_start < ?';
 
 					$parameters = [];
-					$parameters[] = timestamp('-2 hours');
+					$parameters[] = new timestamp('-2 hours');
 
 					foreach ($db->fetch_all($sql, $parameters) as $row) {
 

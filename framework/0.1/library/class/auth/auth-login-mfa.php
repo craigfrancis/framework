@@ -92,7 +92,7 @@
 							$parameters = [];
 							$parameters[] = intval($mfa_id);
 							$parameters[] = intval($current_user_id);
-							$parameters[] = timestamp('-30 days');
+							$parameters[] = new timestamp('-30 days');
 
 							if (($row = $db->fetch_row($sql, $parameters)) && quick_hash_verify($mfa_pass, $row['session_pass'])) {
 

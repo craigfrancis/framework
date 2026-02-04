@@ -844,7 +844,7 @@ debug('Removed File: ' . $matches[1]);
 								f.deleted = "0000-00-00 00:00:00"';
 
 					$parameters = [];
-					$parameters[] = timestamp();
+					$parameters[] = new timestamp();
 					$parameters[] = intval($file_id);
 
 					$db->query($sql, $parameters);
