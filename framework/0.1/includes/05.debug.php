@@ -39,6 +39,11 @@
 			$response_ref .= str_pad($a, 4, '.', STR_PAD_LEFT); // 4 characters max = 999999 -> "0f423f" (hex) -> "D0I/" (base64)
 		}
 
+			// To reverse:
+			//   $ref = 'AhqwBhdvDFWQ';
+			//   $date = new timestamp('2000-01-05 12:00:00');
+			//   $time = $date->clone('-' . $date->format('w') . ' days, 00:00:00, +' . hexdec(bin2hex(base64_decode_rfc4648(substr($ref, 0, 4)))) . ' seconds');
+
 		log_value('ref', $response_ref); // A more compact uniqid (which uses hex encoding, and a full UNIX timestamp).
 
 		config::set('response.ref', $response_ref);
