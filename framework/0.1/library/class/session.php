@@ -241,7 +241,7 @@
 
 							session::destroy();
 
-							exit_with_error('Your session is not valid for this website', $debug_info);
+							throw new error_exception('Your session is not valid for this website', $debug_info);
 
 						}
 

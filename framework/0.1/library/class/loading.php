@@ -337,7 +337,15 @@
 								);
 						}
 
-						session::set($this->session_prefix . 'error', $error);
+						try {
+							session::set($this->session_prefix . 'error', $error);
+						} catch (error_exception $e) {
+							if ($message->getMessage() == 'Your session is not valid for this website') {
+								// Ignore, the session does not exist - e.g. loading timeout did $this->_cleanup(), and there has been a session::regenerate().
+							} else {
+								throw $e;
+							}
+						}
 
 						if ($this->lock) {
 							$this->lock->close();
