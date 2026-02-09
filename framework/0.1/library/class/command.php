@@ -10,8 +10,10 @@
 // 	// $command->stderr_file_set('/tmp/test-stderr', 'w');
 //
 // 	$exit_code = $command->exec('/path/to/command.sh --arg=?', [
-// 			'aaa',
-// 			'bbb',
+// 			'arg1',
+// 			'extra1',
+// 			'extra2',
+// 			'extra3',
 // 		]);
 //
 // 	debug($command->stderr_get());
@@ -135,7 +137,11 @@
 				if (!array_key_exists($k, $parameters)) {
 					throw new error_exception('Missing parameter "' . ($k + 1) . '"', $command . "\n\n" . debug_dump($parameters));
 				}
-				$parameter = escapeshellarg($parameters[$k]);
+				if (is_array($parameters[$k])) {
+					$parameter = implode(' ', array_map('escapeshellarg', $parameters[$k]));
+				} else {
+					$parameter = escapeshellarg($parameters[$k]);
+				}
 				$command = substr($command, 0, $pos) . $parameter . substr($command, ($pos + 1));
 				$offset = ($pos + strlen($parameter));
 				$k++;
