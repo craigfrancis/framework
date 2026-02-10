@@ -14,6 +14,8 @@
 			private $lock_data = NULL;
 			private $lock_path = NULL;
 			private $lock_fp = NULL;
+			private $lock_start = NULL;
+			private $lock_key = NULL;
 
 			private $time_out = 30;
 
@@ -108,6 +110,7 @@
 						fclose($this->lock_fp);
 
 						$this->lock_fp = NULL; // Has lost the lock, although the error below will follow this up.
+						$this->lock_start = NULL;
 
 					}
 
@@ -226,6 +229,8 @@
 				// Lock file
 
 					$this->lock_fp = fopen($this->lock_path, 'x+b'); // Returns false if file already exists
+					$this->lock_start = time();
+					$this->lock_key = random_key(20);
 
 					if ($this->lock_fp) {
 
@@ -244,6 +249,7 @@
 						if (!$valid) {
 							fclose($this->lock_fp);
 							$this->lock_fp = NULL;
+							$this->lock_start = NULL;
 						}
 
 					}
@@ -255,7 +261,12 @@
 						exit_with_error('Cannot create lock file', $this->lock_path);
 					}
 
-					$this->lock_data = array('expires' => ($this->time_out + time())); // Resets data, could be re-opening a new lock
+					$this->lock_data = [
+							'start'   => $this->lock_start,
+							'expires' => ($this->time_out + time()),
+							'key'     => $this->lock_key,
+							'pid'     => getmypid(),
+						]; // Resets data, could be re-opening a new lock
 
 					fwrite($this->lock_fp, json_encode($this->lock_data));
 
@@ -288,6 +299,7 @@
 					fclose($this->lock_fp);
 
 					$this->lock_fp = NULL;
+					$this->lock_start = NULL;
 
 				}
 
