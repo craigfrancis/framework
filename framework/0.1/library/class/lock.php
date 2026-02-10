@@ -228,6 +228,8 @@
 				//--------------------------------------------------
 				// Lock file
 
+// TODO: Maybe change all 5 instances of `LOCK_EX` with `(LOCK_EX | LOCK_NB)`
+
 					$this->lock_fp = fopen($this->lock_path, 'x+b'); // Returns false if file already exists
 					$this->lock_start = time();
 					$this->lock_key = random_key(20);
