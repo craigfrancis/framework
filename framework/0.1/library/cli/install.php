@@ -199,7 +199,7 @@
 				clearstatcache();
 
 				if (substr(sprintf('%o', fileperms($temp_folder)), -3) !== '777') {
-					echo "\n" . 'chmod 777 ' . escapeshellarg($temp_folder) . "\n";
+					echo "\n" . command::exec_compose('chmod 777', [$temp_folder]) . "\n";
 				}
 
 			}
