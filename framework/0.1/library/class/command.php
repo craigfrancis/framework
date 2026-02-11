@@ -39,6 +39,7 @@
 //   https://github.com/symfony/symfony/blob/master/src/Symfony/Component/Process/Process.php
 //
 // Intention to remove:
+//
 //   command_run()
 //   passthru()
 //   shell_exec()
@@ -47,6 +48,9 @@
 //   popen()
 //   proc_open() ... proc_get_status(), proc_terminate()
 //   pcntl_exec()
+//
+//   escapeshellcmd()
+//   escapeshellarg()
 //
 //--------------------------------------------------
 
