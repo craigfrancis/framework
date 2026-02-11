@@ -66,7 +66,8 @@
 		$dump_data = [];
 		if (!$mode || $mode == 'dir') {
 			$dump_data['dir']['files'] = dump_dir(FILE_ROOT);
-			$dump_data['dir']['private'] = dump_dir(PRIVATE_ROOT);
+			$dump_data['dir']['private'] = dump_dir(PRIVATE_ROOT, ['/tmp', '/tmp/*', '/cache/*', '/file-bucket/*', '/gpg/*']);
+				// The /tmp/ folder itself is excluded as the install script handles this specially, with mkdir($temp_folder, 0777);
 		}
 		if (!$mode || $mode == 'db') {
 			$dump_data['db'] = dump_db();
@@ -77,23 +78,37 @@
 //--------------------------------------------------
 // Dump directories
 
-	function dump_dir($folder_path) {
+	function dump_dir($folder_path, $exclude = []) {
 
 		while (substr($folder_path, -1) == '/') {
 			$folder_path = substr($folder_path, 0, -1);
 		}
 
+		$find_command_c = ['find ?'];
+		$find_command_p = [$folder_path];
+
+		$find_command_c[] = '-type d';
+		$find_command_c[] = '-mindepth 1'; // Ignore the root folder
+		$find_command_c[] = '-maxdepth 3'; // Don't go too far
+		$find_command_c[] = '! -path "*/.*"'; // Ignore hidden folders
+		foreach ($exclude as $exclude) {
+			$find_command_c[] = '! -path ?';
+			$find_command_p[] = $folder_path . $exclude;
+		}
+		$find_command_c[] = '-print0'; // Print (with NULL) after excluding paths
+
+		$command = new command();
+		$command->exec(implode(' ', $find_command_c), $find_command_p);
+
+		$find_stderr = $command->stderr_get();
+		$find_stdout = $command->stdout_get();
+
+		$folder_children = [];
 		$folder_path_length = strlen($folder_path);
 
-		$folder_listing = shell_exec('find ' . escapeshellarg($folder_path) . ' -mindepth 1 -type d ! -path "*/.*" 2>&1');
-		$folder_children = [];
-
-		foreach (explode("\n", strval($folder_listing)) as $path) {
+		foreach (explode("\0", $find_stdout) as $path) {
 			if (substr($path, 0, $folder_path_length) == $folder_path) {
-				$path = substr($path, ($folder_path_length + 1));
-				if ($path != 'tmp' && substr($path, 0, 4) != 'tmp/' && substr($path, 0, 6) != 'cache/' && substr($path, 0, 12) != 'file-bucket/') { // 'tmp' will be created anyway, and their contents don't need folders creating.
-					$folder_children[] = $path;
-				}
+				$folder_children[] = substr($path, ($folder_path_length + 1));
 			}
 		}
 
