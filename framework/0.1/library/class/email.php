@@ -37,7 +37,7 @@
 			protected $content_html = NULL;
 			protected $content_html_safe = true;
 			protected $default_style = NULL;
-			protected $default_bulk = true;
+			protected $default_bulk = NULL;
 			protected $boundaries = [];
 
 		//--------------------------------------------------
@@ -731,13 +731,44 @@
 
 					$additional_parameters = '-f ""'; // See $this->_build()
 
-				} else if ($this->return_path != NULL) {
+				} else {
 
-					$additional_parameters = '-f ' . escapeshellarg($this->return_path);
+					if ($this->return_path != NULL) {
+						$envelope_sender = $this->return_path;
+					} else if ($this->from_email != NULL) {
+						$envelope_sender = $this->from_email;
+					} else {
+						$envelope_sender = NULL;
+					}
 
-				} else if ($this->from_email != NULL) {
+						// Not using "\w", as a word is "an underscore or any character that is a letter or digit", but "may vary if locale-specific matching is taking place" (e.g. accented letters with fr_FR locale).
+						//   https://www.php.net/manual/en/regexp.reference.escape.php
+						//   https://pcre.org/current/doc/html/pcre2pattern.html
 
-					$additional_parameters = '-f ' . escapeshellarg($this->from_email);
+					if (preg_match('/^[a-z0-9\.\-]+@[a-z0-9\.\-]+$/i', $envelope_sender)) { // Must be very restricted, is_email() might be fine but is difficult to be sure, and filter_var($email, FILTER_VALIDATE_EMAIL) is far too relaxed.
+
+							// Because $additional_parameters (named extra_cmd in php-src) is passed though php_escape_shell_cmd(), aka escapeshellcmd(), it means escapeshellarg() does not work as intended.
+							//   https://github.com/php/php-src/blob/master/ext/standard/mail.c#L343
+							//
+							// $email = "a' b";
+							// echo escapeshellarg($email);
+							//
+							//   'a'\'' b'
+							//
+							// $param = '-f ' . escapeshellarg($email);
+							// echo escapeshellcmd($param);
+							//
+							//   -f 'a'\\'' b\'
+
+						$additional_parameters = '-f ' . $envelope_sender;
+
+					} else if ($envelope_sender != '') {
+
+						$additional_parameters = '-f ' . escapeshellarg($envelope_sender);
+
+						report_add('Deprecated: The "envelope sender" must be a simple, easy to validate, email address (' . $envelope_sender . ')', 'notice');
+
+					}
 
 				}
 
