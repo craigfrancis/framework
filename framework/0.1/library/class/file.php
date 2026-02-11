@@ -447,20 +447,33 @@
 			private function _image_optimise($image_path, $ext) {
 				if ($ext == 'jpg') {
 
-					foreach (array('/usr/bin/jpegtran', '/usr/local/bin/jpegtran') as $command_path) {
+					foreach (array('/usr/bin/jpegtran', '/usr/local/bin/jpegtran', '/opt/homebrew/bin/jpegtran') as $command_path) {
 						if (@is_executable($command_path)) {
-							shell_exec(escapeshellcmd($command_path) . ' -copy none -optimize -progressive -outfile ' . escapeshellarg($image_path) . ' ' . escapeshellarg($image_path));
+
+							$command = new command();
+							$command->exec($command_path . ' -copy none -optimize -progressive -outfile ? ?', [
+									$image_path,
+									$image_path,
+								]);
+
 							return;
+
 						}
 					}
 					trigger_error('Could not find path to jpegtran', E_USER_NOTICE);
 
 				} else if ($ext == 'png') {
 
-					foreach (array('/usr/bin/optipng', '/usr/local/bin/optipng') as $command_path) {
+					foreach (array('/usr/bin/optipng', '/usr/local/bin/optipng', '/opt/homebrew/bin/optipng') as $command_path) {
 						if (@is_executable($command_path)) {
-							shell_exec(escapeshellcmd($command_path) . ' ' . escapeshellarg($image_path));
+
+							$command = new command();
+							$command->exec($command_path, [
+									$image_path,
+								]);
+
 							return;
+
 						}
 					}
 					trigger_error('Could not find path to optipng', E_USER_NOTICE);
