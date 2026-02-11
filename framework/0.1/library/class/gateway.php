@@ -328,10 +328,21 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 
 						} else {
 
+							$error_output = '';
+
 							if ($k == 1 && is_file($error_script)) {
-								$error_output = "\n\n" . shell_exec(escapeshellcmd($error_script) . ' ' . escapeshellarg($host_domain) . ' ' . escapeshellarg($host_port));
-							} else {
-								$error_output = '';
+
+								$command = new command();
+								$command->exec($error_script, [
+										$host_domain,
+										$host_port,
+									]);
+
+								$error_output = $command->stdout_get();
+								if ($error_output != '') {
+									$error_output = "\n\n" . $error_output;
+								}
+
 							}
 
 							report_add('Connection issue on try ' . $k  . ' (' . $gateway_name . ')' . "\n\n" . $gateway_url . $error_output);
