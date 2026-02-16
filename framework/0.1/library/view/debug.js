@@ -318,12 +318,14 @@
 			time_text.appendChild(document.createTextNode(' - ' + debug_data.time));
 			debug_links.appendChild(time_text);
 
-			debug_wrapper = document.createElement('div');
-			debug_wrapper.setAttribute('id', 'debug_output');
+			debug_wrapper = document.getElementById('debug_output');
+			if (!debug_wrapper) {
+				debug_wrapper = document.createElement('div');
+				debug_wrapper.setAttribute('id', 'debug_output');
+				body.appendChild(debug_wrapper);
+			}
 			debug_wrapper.appendChild(debug_links);
 			debug_wrapper.appendChild(output);
-
-			body.appendChild(debug_wrapper);
 
 			// links['H'].click();
 
