@@ -778,6 +778,16 @@
 				return is_array($this->session_info_data); // Not NULL (hasn't used $auth->session_get()), or false (not logged in).
 			}
 
+			public function session_limited($limit = NULL) {
+				if ($this->session_open() !== true) {
+					exit_with_error('You must check $auth->session_open() returns true, before $auth->session_limited()');
+				}
+				if ($this->session_info_available === true) {
+					return false;
+				}
+				return ($limit === NULL || in_array($limit, $this->session_info_data['limits']));
+			}
+
 			public function session_limit_unlock($limit) { // A temporary unlock, so a particular action can be performed (e.g. MFA login)
 
 				if ($this->session_info_data === NULL) {
