@@ -38,7 +38,7 @@
 				//--------------------------------------------------
 				// Check if MFA limit is in place; and unlock if so.
 
-					if (!$this->auth->session_info_unlock('mfa')) {
+					if (!$this->auth->session_limit_unlock('mfa')) {
 						return false;
 					}
 

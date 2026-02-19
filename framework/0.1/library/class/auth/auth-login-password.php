@@ -58,7 +58,7 @@
 
 			public function active($config = []) {
 
-				debug($this->auth->session_info_unlock('password'));
+				debug($this->auth->session_limit_unlock('password'));
 
 // See auth_reset_change_base...
 

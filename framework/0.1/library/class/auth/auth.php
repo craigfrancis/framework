@@ -760,7 +760,7 @@
 
 				}
 
-				if (($this->session_info_data) && ($this->session_info_available || count($this->session_info_data['limits']) == 0 || (count($this->session_info_data['limits']) == 1 && in_array('forced', $this->session_info_data['limits'])))) { // If the limit has been set, it will be for a limited session (e.g. missing MFA TOTP/SMS/PassKey), so you now need to call $auth->session_info_unlock('mfa')
+				if (($this->session_info_data) && ($this->session_info_available || count($this->session_info_data['limits']) == 0 || (count($this->session_info_data['limits']) == 1 && in_array('forced', $this->session_info_data['limits'])))) { // If the limit has been set, it will be for a limited session (e.g. missing MFA TOTP/SMS/PassKey), so you now need to call $auth->session_limit_unlock('mfa')
 
 					$this->session_info_available = true;
 
@@ -774,10 +774,10 @@
 
 			}
 
-			public function session_info_unlock($limit) {
+			public function session_limit_unlock($limit) { // A temporary unlock, so a particular action can be performed (e.g. MFA login)
 
 				if ($this->session_info_data === NULL) {
-					exit_with_error('Cannot call $auth->session_info_unlock() before $auth->session_get()');
+					exit_with_error('Cannot call $auth->session_limit_unlock() before $auth->session_get()');
 				}
 
 				if ($this->session_info_data && in_array($limit, $this->session_info_data['limits'])) { // You need to know the limit, which you would have received from $auth_login->complete();
@@ -797,7 +797,7 @@
 			public function session_limit_remove($limit) {
 
 				if ($this->session_info_data === NULL) {
-					exit_with_error('Cannot call $auth->session_info_unlock() before $auth->session_get()');
+					exit_with_error('Cannot call $auth->session_limit_unlock() before $auth->session_get()');
 				}
 
 				if ($this->session_info_data && ($key = array_search($limit, $this->session_info_data['limits'])) !== false) {
@@ -831,7 +831,7 @@
 			}
 
 			public function session_required($login_url, $config = []) {
-				if (!$this->session_info_available) { // There is no limit, or it was specified via $auth->session_info_unlock().
+				if (!$this->session_info_available) { // There is no limit, or it was specified via $auth->session_limit_unlock().
 
 					if (($config['dest_readable'] ?? true) === true) {
 						if (!($login_url instanceof url)) {
