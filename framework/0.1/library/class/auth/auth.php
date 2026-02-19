@@ -251,7 +251,7 @@
 			}
 
 			public function user_selected() {
-				return ($this->user_id || $this->session_info_available);
+				return ($this->user_id || $this->session_info_available); // i.e. Either $auth->user_set() has been used... or we have an open session.
 			}
 
 			public function user_get() {
@@ -774,6 +774,10 @@
 
 			}
 
+			public function session_open() { // Just check to see if the session is open... but it can still be limited.
+				return is_array($this->session_info_data); // Not NULL (hasn't used $auth->session_get()), or false (not logged in).
+			}
+
 			public function session_limit_unlock($limit) { // A temporary unlock, so a particular action can be performed (e.g. MFA login)
 
 				if ($this->session_info_data === NULL) {
@@ -824,10 +828,6 @@
 
 				}
 
-			}
-
-			public function session_open() {
-				return is_array($this->session_info_data); // Not NULL (hasn't used $auth->session_get()), or false (not logged in).
 			}
 
 			public function session_required($login_url, $config = []) {
