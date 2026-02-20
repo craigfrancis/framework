@@ -43,7 +43,7 @@
 
 					if ($diff_via_api) {
 
-						list($gateway_url, $response) = gateway::framework_api_auth_call('framework-db-diff');
+						list($gateway_url, $response) = gateway::framework_api_auth_call('framework-db-diff', ['upload' => ($upload ? 'true' : NULL)]);
 
 						if ($response['error'] !== false) {
 
