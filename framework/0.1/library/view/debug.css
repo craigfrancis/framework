@@ -147,6 +147,10 @@
 		margin-left: 1em;
 	}
 
+	#debug_output .debug_notes .note.debug_sql .note_table td {
+		white-space: pre;
+	}
+
 	#debug_output .debug_notes .note.debug_sql .value,
 	#debug_output .debug_notes .note.debug_sql .note_time_quick {
 		color: #00F;
