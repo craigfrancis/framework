@@ -265,27 +265,28 @@
 				$this->headers[$name] = $value;
 			}
 
-			public function attachment_add($path, $mime, $name = NULL, $id = NULL) {
+			public function attachment_add($path, $mime, $name = NULL, $id = NULL, $info = NULL) {
 
 				if ($mime === NULL) $mime = http_mime_type($path);
 				if ($name === NULL) $name = basename($path);
 
-				$this->attachment_raw_add(file_get_contents($path), $mime, $name, $id);
+				$this->attachment_raw_add(file_get_contents($path), $mime, $name, $id, $info);
 
 			}
 
-			public function attachment_file_add($file, $id = NULL) {
-				$this->attachment_raw_add(file_get_contents($file->file_path_get()), $file->file_mime_get(), $file->file_name_get(), $id);
+			public function attachment_file_add($file, $id = NULL, $info = NULL) {
+				$this->attachment_raw_add(file_get_contents($file->file_path_get()), $file->file_mime_get(), $file->file_name_get(), $id, $info);
 			}
 
-			public function attachment_raw_add($content, $mime, $name = NULL, $id = NULL) {
+			public function attachment_raw_add($content, $mime, $name = NULL, $id = NULL, $info = NULL) {
 
-				$this->attachments[] = array(
+				$this->attachments[] = [
 						'content' => $content,
-						'mime' => $mime,
-						'name' => $name,
-						'id' => ($id !== NULL ? $id : (count($this->attachments) + 1)),
-					);
+						'mime'    => $mime,
+						'name'    => $name,
+						'id'      => ($id !== NULL ? $id : (count($this->attachments) + 1)),
+						'info'    => $info, // Not used internally, but a project might want to store extra info about an attachment (e.g. file id)
+					];
 
 			}
 
