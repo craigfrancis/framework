@@ -38,11 +38,7 @@
 			}
 
 		//--------------------------------------------------
-		// Add rows
-
-			public function rows_set($rows) {
-				$this->rows = $rows;
-			}
+		// Rows
 
 			public function row_add($row) {
 
@@ -66,6 +62,14 @@
 
 				}
 
+			}
+
+			public function rows_set($rows) {
+				$this->rows = $rows;
+			}
+
+			public function rows_get() {
+				return $this->rows;
 			}
 
 		//--------------------------------------------------
