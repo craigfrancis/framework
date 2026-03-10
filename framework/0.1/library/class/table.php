@@ -1146,28 +1146,36 @@
 				//--------------------------------------------------
 				// Debug mode
 
-					if ($mode === NULL && config::get('debug.level') > 0 && request('debug') !== 'false') {
-
-						$this->wrapper_class_set('table_debug_output');
-
-						$output_html = $this->html();
+					if ($mode === NULL && config::get('debug.level') > 0) {
 						if (config::get('request.method') == 'GET') {
-							$output_html .= '<p>Debug View | <a href="' . html(url(array('debug' => 'false'))) . '">Download CSV</a></p>';
+							$debug = (request('debug') !== 'false'); // With a GET request, show this debug mode by default (with link to actually download)
+						} else {
+							$debug = (request('debug') === 'true'); // With a POST request, the debug mode must be asked for.
 						}
+						if ($debug) {
 
-						$css_path = FRAMEWORK_ROOT . '/library/view/table.css';
-						$css_url = gateway_url('framework-file', filemtime($css_path) . '-table.css');
-						$css_integrity = 'sha256-' . base64_encode(hash('sha256', file_get_contents($css_path), true));
+							$this->wrapper_class_set('table_debug_output');
 
-						$response = response_get('html');
-						$response->css_add($css_url, ['integrity' => $css_integrity, 'crossorigin' => 'anonymous']);
-						$response->csp_source_add('style-src', $css_url);
-						$response->template_path_set(FRAMEWORK_ROOT . '/library/template/blank.ctp');
-						$response->view_set_html($output_html);
-						$response->send(); // So we can see the debug output.
+							$output_html = $this->html();
 
-						exit();
+							if (config::get('request.method') == 'GET') {
+								$output_html .= '<p>Debug View | <a href="' . html(url(array('debug' => 'false'))) . '">Download CSV</a></p>';
+							}
 
+							$css_path = FRAMEWORK_ROOT . '/library/view/table.css';
+							$css_url = gateway_url('framework-file', filemtime($css_path) . '-table.css');
+							$css_integrity = 'sha256-' . base64_encode(hash('sha256', file_get_contents($css_path), true));
+
+							$response = response_get('html');
+							$response->css_add($css_url, ['integrity' => $css_integrity, 'crossorigin' => 'anonymous']);
+							$response->csp_source_add('style-src', $css_url);
+							$response->template_path_set(FRAMEWORK_ROOT . '/library/template/blank.ctp');
+							$response->view_set_html($output_html);
+							$response->send(); // So we can see the debug output.
+
+							exit();
+
+						}
 					}
 
 				//--------------------------------------------------
