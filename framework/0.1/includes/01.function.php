@@ -265,10 +265,10 @@
 
 	function safe_file_name($name, $ext = false, $replace_character = '') {
 		$name = strval($name); // Not NULL
-		if ($ext === true && preg_match('/^(.*[^\.].*)(\.[a-zA-Z0-9]+)$/', $name, $matches)) {
+		if ($ext === true && preg_match('/^(.*)(\.[a-z0-9]+)$/i', $name, $matches)) { // True to allow the filename to include an extension
 			$name = $matches[1];
 			$ext = $matches[2]; // Includes the dot
-		} else if (is_string($ext) && preg_match('/^[a-zA-Z0-9]+$/', $ext)) {
+		} else if (is_string($ext) && preg_match('/^[a-z0-9]+$/i', $ext)) {
 			$ext = '.' . $ext;
 		} else {
 			$ext = '';
