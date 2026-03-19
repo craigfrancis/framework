@@ -3,6 +3,7 @@
 set -u;
 
 FILE="$0";
+export SRC_FILE=${FILE};
 export SRC_WD=`pwd -P`;
 
 cd `dirname "${FILE}"`;
