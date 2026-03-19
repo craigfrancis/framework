@@ -145,7 +145,7 @@
 
 						}
 
-					} else if ($action === 'str-edit') {
+					} else if ($action === 'get' || $action === 'str-edit') {
 
 						$name = array_shift($params);
 
@@ -162,10 +162,15 @@
 							exit("\n\033[1;31m" . 'Error:' . "\033[0m" . ' Secret "' . $name . '" is not a "str" (' . $variable['type'] . ').' . "\n\n");
 						}
 
-						echo "\n";
-						echo 'Secret Value "' . $name . '": ';
-						$value = trim(fgets(STDIN));
-						echo "\n";
+						if ($action === 'get') {
+							echo secret::get($name);
+							echo "\n";
+						} else {
+							echo "\n";
+							echo 'Secret Value "' . $name . '": ';
+							$value = trim(fgets(STDIN));
+							echo "\n";
+						}
 
 						$this->_data_str_update($name, $value);
 
@@ -213,6 +218,7 @@
 						}
 						echo "\n";
 						echo './cli --secret=check' . "\n";
+						echo './cli --secret=get' . "\n";
 						echo './cli --secret=str-edit' . "\n";
 						echo './cli --secret=str-edit,value.name' . "\n";
 						echo './cli --secret=key-create' . "\n";
