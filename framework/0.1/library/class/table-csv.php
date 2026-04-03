@@ -91,6 +91,22 @@
 
 			}
 
+			public function save_start($file_path) { // Writes directly to the disk, but one row at a time with $table_csv->row_add($row);
+
+				$this->direct_fp = fopen($file_path, 'w');
+
+				if (!$this->direct_fp) {
+					return false;
+				}
+
+				if ($this->charset_output === NULL || $this->charset_output === 'UTF-8') {
+					fputs($this->direct_fp, "\xEF\xBB\xBF");
+				}
+
+				return true;
+
+			}
+
 			public function download($file_name, $mode = NULL) {
 
 				$this->_download($file_name, $mode, $this->string());
