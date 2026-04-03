@@ -316,6 +316,10 @@
 
 		}
 
+		public function exec_time_get() {
+			return $this->time_total;
+		}
+
 	}
 
 ?>
