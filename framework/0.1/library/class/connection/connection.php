@@ -710,7 +710,7 @@ $start = hrtime(true);
 						return $this->error($error, $error_details);
 					}
 
-$chunk_timings[] = round(hrtime_diff($start), 4);
+$chunk_timings[] = 'Connect: ' . round(hrtime_diff($start), 4);
 $start = hrtime(true);
 
 				//--------------------------------------------------
@@ -763,15 +763,19 @@ $k++;
 
 					}
 
-$chunk_timings[] = round(hrtime_diff($start), 4);
+					if ($length === NULL && $chunked === false && preg_match('/^HTTP\/[0-9\.]+ 204 /im', $response_headers_plain, $matches)) { // 204 No Content
+						$length = 0;
+					}
+
+$chunk_timings[] = 'EndHeaders: ' . round(hrtime_diff($start), 4);
 $start = hrtime(true);
 
 $chunk_log = [];
 $chunk_log[] = $error_details;
-$chunk_log[] = $chunk_timings;
 $chunk_log[] = $k;
 $chunk_log[] = $response_headers_parsed;
 $chunk_log[] = $response_headers_plain;
+$chunk_log[] = $length;
 
 if ($chunked) {
 	$chunk_log[] = 'Chunked';
@@ -871,13 +875,16 @@ $chunk_log[] = 'End: ' . $byte;
 							$error = 'Finished reading, but still have ' . $length_remaining . ' bytes remaining.';
 						}
 
-					} else if (count($response_headers_parsed) > 0) { // Keep going until EOF (good luck); and only when headers have been collected (if not, the connection probably timed out)
+					} else if ($length !== 0 && count($response_headers_parsed) > 0) { // Keep going until EOF (good luck); and only when headers have been collected (if not, the connection probably timed out)
 
 						while (($line = @fgets($connection)) !== false) {
 							$response_data .= $line;
 						}
 
 					}
+
+$chunk_timings[] = 'EndBody: ' . round(hrtime_diff($start), 4);
+$start = hrtime(true);
 
 //--------------------------------------------------
 // Used to use this, due to IIS forgetting close_notify indicator (https://php.net/file).
@@ -955,6 +962,10 @@ $chunk_log[] = 'End: ' . $byte;
 						$debug .= '--------------------------------------------------' . "\n\n";
 						$debug .= 'Chunk Log:' . "\n\n";
 						$debug .= debug_dump($chunk_log) . "\n\n";
+
+						$debug .= '--------------------------------------------------' . "\n\n";
+						$debug .= 'Chunk Timings:' . "\n\n";
+						$debug .= debug_dump($chunk_timings) . "\n\n";
 
 						if ($chunk_error !== false) {
 							$debug .= '--------------------------------------------------' . "\n\n";
