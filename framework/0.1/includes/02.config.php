@@ -133,6 +133,7 @@
 				'interest-cohort'                    => [], // InterestCohortFeaturePolicy, "Topics" replaces the "obsolete FLoC code" - https://chromium.googlesource.com/chromium/src/+/9255aecd4114c0b3da4016f641316367112adb53
 				'join-ad-interest-group'             => [],
 				'keyboard-map'                       => [],
+				'language-model'                     => [], // For the JS API: LanguageModel (AI/LLM)
 				'language-detector'                  => [], // For the JS API: detector = await LanguageDetector.create(...)
 				'local-fonts'                        => [],
 				'local-network-access'               => [],
