@@ -86,8 +86,12 @@
 
 						$name = substr(human_to_ref($label), 0, 30); // Trim really long labels
 
-						if ($name == '' && !in_array($type, ['info', 'html'])) {
-							exit_with_error('Cannot have a field with no name.', $type);
+						if ($name == '') {
+							if (in_array($type, ['info', 'html'])) {
+								$name = $type;
+							} else {
+								exit_with_error('Cannot have a field with no name.', $type);
+							}
 						}
 
 						$k = 1;
