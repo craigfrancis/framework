@@ -19,7 +19,7 @@
 					'link'       => ['rel' => ['preload', 'prefetch', 'prerender', 'canonical', 'next'], 'as' => ['image', 'font', 'track', 'video', 'audio'], 'href' => 'url', 'fetchpriority' => ['high', 'low']],
 					'div'        => ['id' => 'ref', 'class' => 'ref', 'role' => 'text', 'title' => 'text', 'tabindex' => 'int', 'inert' => ['inert']],
 					'section'    => ['id' => 'ref', 'class' => 'ref', 'role' => 'text', 'title' => 'text', 'tabindex' => 'int', 'inert' => ['inert']],
-					'span'       => ['id' => 'ref', 'class' => 'ref', 'role' => 'text', 'title' => 'text', 'tabindex' => 'int'],
+					'span'       => ['id' => 'ref', 'class' => 'ref', 'role' => 'text', 'title' => 'text', 'tabindex' => 'int', 'aria-hidden' => ['true', 'false']],
 					'header'     => ['id' => 'ref', 'class' => 'ref'],
 					'nav'        => ['id' => 'ref', 'class' => 'ref'],
 					'main'       => ['id' => 'ref', 'class' => 'ref'],
