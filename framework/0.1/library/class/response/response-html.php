@@ -377,8 +377,12 @@
 		//--------------------------------------------------
 		// Link tags
 
-			public function link_set($rel, $value) {
-				$this->links[$rel] = $value;
+			public function link_set($rel, $value = NULL) {
+				if ($value == NULL) {
+					$this->links[] = $rel;
+				} else {
+					$this->links[$rel] = $value;
+				}
 			}
 
 		//--------------------------------------------------
