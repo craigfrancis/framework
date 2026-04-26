@@ -6,6 +6,7 @@
 		// Variables
 
 			protected $currency_char = '£';
+			protected $zero_show_currency = false;
 			protected $trim_decimal = false;
 
 		//--------------------------------------------------
@@ -28,6 +29,10 @@
 
 			public function currency_char_set($char) {
 				$this->currency_char = $char;
+			}
+
+			public function zero_show_currency_set($show) {
+				$this->zero_show_currency = ($show == true);
 			}
 
 			public function trim_decimal_set($trim) {
@@ -99,7 +104,15 @@
 				}
 
 				if (is_int($value) || is_float($value)) {
-					return format_currency($value, $this->currency_char, $decimal_places, $this->zero_to_blank);
+					if ($value == 0) {
+						if ($this->zero_show_currency) {
+							return $this->currency_char;
+						}
+						if ($this->zero_to_blank) {
+							return '';
+						}
+					}
+					return format_currency($value, $this->currency_char, $decimal_places);
 				} else {
 					return $value;
 				}
