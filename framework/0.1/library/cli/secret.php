@@ -170,9 +170,8 @@
 							echo 'Secret Value "' . $name . '": ';
 							$value = trim(fgets(STDIN));
 							echo "\n";
+							$this->_data_str_update($name, $value);
 						}
-
-						$this->_data_str_update($name, $value);
 
 					} else if ($action === 'key-create') {
 
