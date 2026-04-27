@@ -757,6 +757,7 @@ debug('Removed File: ' . $matches[1]);
 
 				}
 
+				$file['row']['hash'] = $file['info']['ph'];
 				$file['row']['path'] = $plain_path;
 
 				unset($file['row']['info']); // While it's encrypted, it shouldn't be needed.
