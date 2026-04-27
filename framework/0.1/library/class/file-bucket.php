@@ -201,15 +201,42 @@ Abbreviations:
 					}
 
 					$config = array_merge([
-							'full_cleanup'   => false,
-							'print_progress' => false,
-							'check_files'    => NULL,
+							'full_cleanup'     => false,
+							'print_progress'   => false,
+							'check_files'      => NULL,
+							'lock_name'        => 'file-bucket-cleanup',
+							'lock_time_out'    => (60*10),
+							'lock_retry_count' => 0,
+							'lock_retry_delay' => 1,
 						], $config);
 
 				//--------------------------------------------------
 				// New files
 
 					if ($this->config['backup_root'] === NULL) { // Not Backup Server
+
+						//--------------------------------------------------
+						// Cleanup lock
+
+							$lock = new lock($config['lock_name']);
+							$lock->time_out_set($config['lock_time_out']);
+
+							do {
+
+								$lock_opened = $lock->open();
+
+								if ($lock_opened === true) {
+									break;
+								}
+
+								usleep($config['lock_retry_delay'] * 1000000);
+
+							} while ((--$config['lock_retry_count']) >= 0);
+
+							if ($lock_opened !== true) {
+								throw new error_exception('Cannot open lock "' . $config['lock_name'] . '"');
+								return false;
+							}
 
 						//--------------------------------------------------
 						// Process new files
@@ -224,6 +251,7 @@ Abbreviations:
 								$file['path'] = $plain_path;
 
 								$partial_row = $file['row'];
+								$partial_row['hash'] = $file['info']['ph'];
 								$partial_row['path'] = $plain_path;
 								unset($partial_row['info']); // Possibly sensitive info (even if this value is still encrypted)... delete for now.
 
@@ -259,6 +287,10 @@ Abbreviations:
 									// New values, from `files_process()`
 
 										$new_values = ($new_values_all[$file_id] ?? []);
+
+										if ($new_values === false) { // If something went wrong with the processing of this file, try again later.
+											continue;
+										}
 
 									//--------------------------------------------------
 									// Upload...
@@ -382,6 +414,13 @@ Abbreviations:
 
 								}
 
+							}
+
+						//--------------------------------------------------
+						// Close cleanup lock
+
+							if ($lock) {
+								$lock->close();
 							}
 
 					} else { // Backup Server
@@ -642,6 +681,11 @@ debug('Removed File: ' . $matches[1]);
 							}
 
 					}
+
+				//--------------------------------------------------
+				// Success
+
+					return true;
 
 			}
 
