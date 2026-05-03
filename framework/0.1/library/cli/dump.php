@@ -66,7 +66,7 @@
 		$dump_data = [];
 		if (!$mode || $mode == 'dir') {
 			$dump_data['dir']['files'] = dump_dir(FILE_ROOT);
-			$dump_data['dir']['private'] = dump_dir(PRIVATE_ROOT, ['/tmp', '/tmp/*', '/cache/*', '/file-bucket/*', '/gpg/*']);
+			$dump_data['dir']['private'] = dump_dir(PRIVATE_ROOT, ['/tmp', '/tmp/*', '/cache/*', '/file-bucket/*', '/file-preview/*', '/gpg/*']);
 				// The /tmp/ folder itself is excluded as the install script handles this specially, with mkdir($temp_folder, 0777);
 		}
 		if (!$mode || $mode == 'db') {
