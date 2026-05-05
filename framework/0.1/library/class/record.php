@@ -182,7 +182,7 @@
 
 				$where_sql = $db->escape_field($this->config['where_field']) . ' = ?';
 
-				array_unshift($where_parameters, intval($id));
+				array_unshift($where_parameters, intval($id)); // $id must go first, as $where_parameters can provide values for $extra_sql
 
 				if ($this->config['deleted']) {
 					$where_sql .= ' AND deleted = deleted';
