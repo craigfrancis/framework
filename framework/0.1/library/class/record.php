@@ -44,6 +44,8 @@
 						'where_sql' => NULL,
 						'where_parameters' => [],
 
+						'auth_info' => [], // Provided to auth_check(), to provide additional data.
+
 						'log_table' => NULL,
 						'log_values' => [],
 
@@ -270,7 +272,7 @@ report_add('Deprecated: Use $record->field_name_add() now', 'notice');
 				}
 			}
 
-			protected function auth_check($method, $values) {
+			protected function auth_check($method, $values, $auth_info) {
 
 				// if ($method !== 'values_get' || $values === false) {
 				// 	return;
@@ -376,7 +378,7 @@ report_add('Deprecated: Use $record->field_name_add() now', 'notice');
 
 					}
 
-					$this->auth_check('values_get', $this->values);
+					$this->auth_check('values_get', $this->values, $this->config['auth_info']);
 
 				}
 				return $this->values;
