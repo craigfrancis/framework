@@ -22,7 +22,10 @@
 					$config = $this->config($config);
 				}
 
-				if ($this->authenticate($config) !== true) {
+				$auth_result = $this->authenticate($config);
+				if (is_array($auth_result) && count($auth_result) > 0) {
+					$config = array_merge($config, $auth_result);
+				} else if ($auth_result !== true) {
 					exit_with_error('Authentication failed for unit.', get_class($this));
 				}
 
