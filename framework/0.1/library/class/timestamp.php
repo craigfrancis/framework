@@ -133,6 +133,30 @@
 				}
 			}
 
+			static function parseNonUSA($input, $timezone = NULL) {
+
+					// If there is a numeric date, assume Non-USA format (e.g. d/m/Y, d-m-Y, d.m.Y); and convert that to ISO YYYY-MM-DD
+
+				$normalised = preg_replace_callback('/\b(\d{1,2})([.\/-])(\d{1,2})\2(\d{2,4})\b/',
+						function ($matches) {
+							$day   = intval($matches[1]);
+							$month = intval($matches[3]);
+							$year  = intval($matches[4]);
+							if ($year < 100) {
+								$year += ($year < 70 ? 2000 : 1900);
+							}
+							// if ($month > 12) { // Must be using a USA date format... should fail.
+							// 	return $matches[0];
+							// }
+							return sprintf('%04d-%02d-%02d', $year, $month, $day);
+						},
+						$input
+					);
+
+				return new timestamp($normalised, $timezone);
+
+			}
+
 			static function getDbTimezone() { // Match formatting of getTimezone
 				return config::get('timestamp.db_timezone', 'UTC');
 			}
