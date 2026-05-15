@@ -3,77 +3,11 @@
 /*--------------------------------------------------*/
 /* Setup
 
-Create a S3 bucket [bucket-name], try "l-" prefix for Live, followed by ~20 random lowercase characters.
+	Use one of these:
 
-In Permissions, ensure "Block all public access" is on.
+		/path/to/cli --file-bucket=check
 
-In IAM, create two policies:
-
-	s3-[bucket-name]-rw (ListBucket used to stop a 403 when checking for deleted files)
-
-	{
-		"Version": "2012-10-17",
-		"Statement": [
-			{
-				"Effect": "Allow",
-				"Action": [
-					"s3:ListBucket"
-				],
-				"Resource": [
-					"arn:aws:s3:::[bucket-name]"
-				]
-			},
-			{
-				"Effect": "Allow",
-				"Action": [
-					"s3:PutObject",
-					"s3:GetObject",
-					"s3:DeleteObject"
-				],
-				"Resource": [
-					"arn:aws:s3:::[bucket-name]/*"
-				]
-			}
-		]
-	}
-
-	s3-[bucket-name]-ro
-
-	{
-		"Version": "2012-10-17",
-		"Statement": [
-			{
-				"Effect": "Allow",
-				"Action": [
-					"s3:ListBucket"
-				],
-				"Resource": [
-					"arn:aws:s3:::[bucket-name]"
-				]
-			},
-			{
-				"Effect": "Allow",
-				"Action": [
-					"s3:GetObject"
-				],
-				"Resource": [
-					"arn:aws:s3:::[bucket-name]/*"
-				]
-			}
-		]
-	}
-
-In IAM, create two users, with "Programmatic access", and one of the "existing policies" (just created).
-
-Use the ReadWrite account when using this class normally.
-
-Install "aws" command line tools, and use the ReadOnly account to run:
-
-	aws s3 sync s3://[bucket-name] /path/to/backup
-
-	$file_bucket->cleanup(); // uses 'backup_root'
-
-The `aws sync` command does not use '--delete', the cleanup() method will delete the files using marker files (positive indicators).
+		. /etc/prime-config-key; su 'backup' -s /bin/bash -p -c '/path/to/cli --file-bucket=check'
 
 /*--------------------------------------------------
 

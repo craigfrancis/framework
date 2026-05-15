@@ -51,8 +51,12 @@
 			//--------------------------------------------------
 			// Access key details
 
-$access_key_id = NULL;
-$access_key_secret = NULL;
+// This is the access key details for your account (root, or an account which can make changes).
+
+// Future dev... see "Temporary AWS Access" below
+
+$root_access_id = NULL;
+$root_access_secret = NULL;
 exit('TODO');
 
 			//--------------------------------------------------
@@ -61,7 +65,7 @@ exit('TODO');
 				$connection = new connection_aws();
 				$connection->exit_on_error_set(false);
 				$connection->timeout_set(10);
-				$connection->access_set($access_key_id, $access_key_secret);
+				$connection->access_set($root_access_id, $root_access_secret);
 
 			//--------------------------------------------------
 			// Find or Create bucket
