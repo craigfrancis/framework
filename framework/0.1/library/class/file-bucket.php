@@ -202,6 +202,7 @@ Abbreviations:
 
 					$config = array_merge([
 							'full_cleanup'     => false,
+							'full_check'       => false, // Rarely needed, but if the 'processed' column is reset, it might be worth a run with 'full_check' set to true.
 							'print_progress'   => false,
 							'check_files'      => NULL,
 							'lock_name'        => 'file-bucket-cleanup',
@@ -430,8 +431,9 @@ Abbreviations:
 
 							if ($config['full_cleanup']) {
 
+								$max_limit = 100000;
+								$limit = ($config['full_check'] === true ? $max_limit : 100);
 								$offset = 0;
-								$limit = 100;
 
 								$to_download = [];
 
@@ -439,7 +441,7 @@ Abbreviations:
 
 									echo 'Check ' . $limit . ' from ' . $offset . "\n";
 
-									$files = $this->_file_db_get('processed', $offset, $limit);
+									$files = $this->_file_db_get(($config['full_check'] === true ? 'processed-created' : 'processed'), $offset, $limit);
 
 									$offset += $limit;
 
@@ -478,7 +480,11 @@ Abbreviations:
 
 									}
 
-									if ($found_files > 0 && $found_files < 10) {
+									if ($config['full_check'] === true) {
+
+										$continue = (count($files) > 0);
+
+									} else if ($found_files > 0 && $found_files < 10) {
 
 										$continue = true; // Just do a few more, just to be sure.
 										$limit = 10;
@@ -487,7 +493,7 @@ Abbreviations:
 
 										$continue = ($found_files == 0 && count($files) == $limit);
 
-										if ($limit < 100000) { // When starting with a new backup disk, it's too slow to keep checking 100 at a time.
+										if ($limit < $max_limit) { // When starting with a new backup disk, it's too slow to keep checking 100 at a time.
 											$limit = ($limit * 10);
 										}
 
@@ -1062,7 +1068,7 @@ debug('Removed File: ' . $matches[1]);
 						ORDER BY
 							f.id ASC';
 
-				} else if ($file_id === 'processed') {
+				} else if ($file_id === 'processed' || $file_id === 'processed-created') {
 
 						// Still get DELETED files that haven't exceeded the
 						// delay (ref backup server keeping a copy).
@@ -1076,10 +1082,18 @@ debug('Removed File: ' . $matches[1]);
 							(
 								f.deleted = "0000-00-00 00:00:00" OR
 								f.deleted >= ?
-							)
-						ORDER BY
-							f.processed DESC,
-							f.id DESC';
+							)';
+
+					if ($file_id === 'processed-created') {
+						$sql .= '
+							ORDER BY
+								f.id ASC';
+					} else {
+						$sql .= '
+							ORDER BY
+								f.processed DESC,
+								f.id DESC';
+					}
 
 					$parameters[] = new timestamp($this->config['delete_delay_file']);
 
