@@ -459,7 +459,7 @@ Abbreviations:
 
 												if ($found_files <= 10) {
 
-													$encrypted_hash = hash_file($this->config['file_hash'], $encrypted_path); // Might as well verify the last few files.
+													$encrypted_hash = hash_file($this->config['file_hash'], $encrypted_path); // Might as well verify a few files... in normal 'processed' mode, this would be the most recently uploaded; i.e. `f.processed DESC`
 
 													if (!hash_equals($encrypted_hash, $file['info']['eh'])) {
 														throw new error_exception('Hash check failed (end)', $encrypted_hash . "\n" . $file['info']['eh'] . "\n" . 'File ID: ' . $file_id);
@@ -484,14 +484,14 @@ Abbreviations:
 
 										$continue = (count($files) > 0);
 
-									} else if ($found_files > 0 && $found_files < 10) {
+									} else if ($found_files > 0 && $found_files < 10) { // Found at least 1 file (so we have caught up); but it would be good to have seen at least 10, so keep going.
 
-										$continue = true; // Just do a few more, just to be sure.
+										$continue = true;
 										$limit = 10;
 
-									} else {
+									} else { // Due to the previous condition, $found_files is either 0 or >= 10.
 
-										$continue = ($found_files == 0 && count($files) == $limit);
+										$continue = ($found_files == 0 && count($files) == $limit); // If it was 0 $found_files, and we have haven't run out of records to check, then $continue checking.
 
 										if ($limit < $max_limit) { // When starting with a new backup disk, it's too slow to keep checking 100 at a time.
 											$limit = ($limit * 10);
