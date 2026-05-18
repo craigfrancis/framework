@@ -97,10 +97,14 @@
 			}
 
 			public function cookie_set($name, $value, $domain = NULL, $path = '/') {
+				$this->cookie_raw_set($name, rawurlencode($value), $domain, $path);
+			}
+
+			public function cookie_raw_set($name, $value, $domain = NULL, $path = '/') {
 				if ($value === NULL) {
 					unset($this->cookies_raw[$domain][$path][$name]);
 				} else {
-					$this->cookies_raw[$domain][$path][$name] = rawurlencode($value);
+					$this->cookies_raw[$domain][$path][$name] = $value;
 				}
 			}
 
