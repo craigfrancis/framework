@@ -405,7 +405,11 @@
 						$query = '(//form)[' . $query . ']';
 					}
 
-					$form_node = $this->node_get($query);
+					if ($query instanceof DOMElement) {
+						$form_node = $query;
+					} else {
+						$form_node = $this->node_get($query);
+					}
 
 					if ($form_node === false) {
 
