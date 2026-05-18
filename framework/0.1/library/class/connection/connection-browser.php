@@ -633,7 +633,11 @@
 				$fields = [];
 				if ($this->form) {
 					foreach ($this->form['fields'] as $name => $info) {
-						if ($info['value'] !== NULL) { // Removed value, e.g. a checkbox
+						if ($info['type'] == 'input' && $info['input'] == 'image') {
+							// Not included by default, it's like a button, but would be given "name.x" and "name.y" values.
+						} else if ($info['value'] === NULL) {
+							// Removed value, e.g. a checkbox
+						} else {
 							$fields[$name] = $info['value'];
 						}
 					}
