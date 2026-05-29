@@ -638,6 +638,7 @@
 				//--------------------------------------------------
 				// Get config
 
+					$css_folder = config::get('output.css_folder', '/css');
 					$css_name = config::get('output.css_name');
 					$css_types = config::get('output.css_types');
 
@@ -682,7 +683,7 @@
 						$css_types[$css_type_name]['files'] = [];
 						$css_types[$css_type_name]['log'] = [];
 
-						$file = '/css/global/' . $css_type_name . '.css';
+						$file = $css_folder . '/global/' . $css_type_name . '.css';
 
 						if (is_file(ASSET_ROOT . $file)) {
 
@@ -697,7 +698,7 @@
 
 					}
 
-					$build_up_address = '/css/';
+					$build_up_address = $css_folder . '/';
 
 					if (is_string($this->error)) { // True is a generic error (e.g. form validation), whereas a string is an error page (e.g. 'page-not-found')
 						$route_array = array('error');
