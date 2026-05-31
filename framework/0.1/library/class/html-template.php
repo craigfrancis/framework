@@ -72,6 +72,7 @@
 					'img'        => ['id' => 'ref', 'class' => 'ref', 'src' => 'url-img', 'srcset' => 'text', 'sizes' => 'text', 'alt' => 'text', 'title' => 'text', 'width' => 'int', 'height' => 'int', 'fetchpriority' => ['high', 'low'], 'tabindex' => 'int'],
 					'time'       => ['id' => 'ref', 'class' => 'ref', 'datetime' => 'datetime'],
 					'data'       => ['id' => 'ref', 'class' => 'ref', 'value' => 'text'],
+					'label'      => ['id' => 'ref', 'class' => 'ref', 'for' => 'ref'],
 					'input'      => ['id' => 'ref', 'class' => 'ref', 'type' => ['submit', 'button'], 'name' => 'ref', 'value' => 'text'],
 					'br'         => [],
 
