@@ -64,7 +64,7 @@
 					'ins'        => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
 					'blockquote' => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
 					'q'          => ['id' => 'ref', 'class' => 'ref', 'cite' => 'url'],
-					'a'          => ['id' => 'ref', 'class' => 'ref', 'href' => 'url', 'target' => ['_blank'], 'rel' => ['noopener', 'noreferrer', 'nofollow'], 'hreflang' => 'text'],
+					'a'          => ['id' => 'ref', 'class' => 'ref', 'href' => 'url', 'target' => ['_blank'], 'rel' => ['noopener', 'noreferrer', 'nofollow'], 'hreflang' => 'text', 'filename' => 'text'],
 					'figure'     => ['id' => 'ref', 'class' => 'ref'],
 					'figcaption' => ['id' => 'ref', 'class' => 'ref'],
 					'picture'    => ['id' => 'ref', 'class' => 'ref'],
