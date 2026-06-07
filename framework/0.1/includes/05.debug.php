@@ -77,7 +77,7 @@
 				}
 
 				if (($fp = fopen($log_file, 'a')) !== false) {
-					fputcsv($fp, $log_values);
+					fputcsv($fp, $log_values, ',', '"', '');
 					fclose($fp);
 				}
 
@@ -478,9 +478,6 @@
 					case E_NOTICE:
 					case E_USER_NOTICE:
 						$error['type'] = 'Notice';
-						break;
-					case E_STRICT:
-						$error['type'] = 'Strict Standards';
 						break;
 					case E_DEPRECATED:
 					case E_USER_DEPRECATED:
