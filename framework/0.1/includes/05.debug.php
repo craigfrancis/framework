@@ -962,7 +962,7 @@
 							// keep the literal check here, as it implies
 							// any mistakes earlier are due to this query.
 
-						$result = $db->query('EXPLAIN ' . $sql, $parameters, (db::SKIP_DEBUG | db::SKIP_LITERAL_CHECK | db::SKIP_ERROR_HANDLER));
+						$result = $db->query('EXPLAIN ' . $sql, $parameters, [], (db::SKIP_DEBUG | db::SKIP_LITERAL_CHECK | db::SKIP_ERROR_HANDLER));
 
 						if ($result) {
 							$explain = $db->fetch_all($result);
