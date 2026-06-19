@@ -41,7 +41,7 @@
 			private $required_mark_html = NULL;
 			private $required_mark_position = 'left';
 			private $label_prefix_html = '';
-			private $label_suffix_html = ':';
+			private $label_suffix_html = '<span aria-hidden="true">:</span>';
 			private $label_override_function = NULL;
 			private $errors_html = [];
 			private $error_override_function = NULL;
@@ -544,9 +544,9 @@
 				if ($this->required_mark_html !== NULL) {
 					return $this->required_mark_html;
 				} else if (($required_mark_position === 'right') || ($required_mark_position === NULL && $this->required_mark_position === 'right')) {
-					return '&#xA0;<abbr class="required" title="Required" aria-label="Required">*</abbr>';
+					return '&#xA0;<abbr class="required" title="Required" aria-hidden="true">*</abbr>';
 				} else {
-					return '<abbr class="required" title="Required" aria-label="Required">*</abbr>&#xA0;';
+					return '<abbr class="required" title="Required" aria-hidden="true">*</abbr>&#xA0;'; // No longer using aria-label="Required", as screen readers now use the `required` attribute.
 				}
 			}
 
