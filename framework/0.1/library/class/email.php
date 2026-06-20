@@ -221,6 +221,19 @@
 
 			}
 
+			public function template_get_css() {
+
+				if ($this->template_path !== NULL) {
+					$template_file = $this->template_path . '/index.css';
+					if (is_file($template_file)) {
+						return "\t" . implode("\n\t", file($template_file, FILE_IGNORE_NEW_LINES)) . "\n";
+					}
+				}
+
+				return NULL;
+
+			}
+
 			public function from_set($email, $name = NULL) {
 				$this->from_email = $email;
 				$this->from_name = $name;
@@ -1049,6 +1062,15 @@
 					}
 
 				//--------------------------------------------------
+				// Styles
+
+					$content_css = $this->template_get_css();
+
+					if ($content_css) {
+						$content_css = "\t" . '<style>' . "\n" . $content_css . "\n\t" . '</style>' . "\n";
+					}
+
+				//--------------------------------------------------
 				// Subject
 
 					$subject = $this->subject_text;
@@ -1087,8 +1109,10 @@
 								}
 							}
 
+							$template_html .= $content_css; // In <head> for Google Mail
 							$template_html .= '</head>' . "\n";
 							$template_html .= '<body>' . "\n";
+							$template_html .= $content_css; // In <body> for Outlook
 
 							if ($this->default_style) {
 								$template_html .= '<div style="' . html($this->default_style) . '">' . "\n";
