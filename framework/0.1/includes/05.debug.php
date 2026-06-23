@@ -111,6 +111,7 @@
 					// config::array_push('debug.report_files', ['path' => '/path/to/file', 'name' => 'Example.csv', 'type' => 'text/plain']);
 
 				$email = new email();
+				$email->message_type_set($type); // 'error' or 'notice'
 				$email->default_style_set(NULL);
 				$email->subject_set('System ' . ucfirst($type) . ': ' . config::get('output.domain'));
 				$email->request_table_add($email_values, [

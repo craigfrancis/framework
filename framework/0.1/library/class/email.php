@@ -19,6 +19,7 @@
 			protected $reply_to_email = NULL;
 			protected $reply_to_name = NULL;
 			protected $return_path = NULL;
+			protected $message_type = NULL;
 			protected $message_id_prefix = NULL;
 			protected $headers = [];
 			protected $attachments = [];
@@ -268,6 +269,10 @@
 
 			public function return_path_set($email) {
 				$this->return_path = $email;
+			}
+
+			public function message_type_set($type) {
+				$this->message_type = $type;
 			}
 
 			public function message_id_prefix_set($prefix) {
@@ -683,6 +688,13 @@
 						$this->header_set('X-Recipients', json_encode($recipients));
 
 						$recipients = $email_testing;
+
+						if ($this->message_type === 'error') { // The one exception to all emails being sent to 'email.testing'
+							$error_email = config::get('email.error');
+							if ($error_email !== NULL) {
+								$recipients = $error_email;
+							}
+						}
 
 						foreach ($this->cc_emails as $cc_id => $cc_info) {
 							$this->cc_emails[$cc_id]['email'] = $email_testing;
