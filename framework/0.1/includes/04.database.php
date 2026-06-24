@@ -486,16 +486,17 @@
 			} else {
 
 				$table_sql = $item;
+				$table_cache = str_replace('`', '', $table_sql);
 
 				if ($field !== NULL) {
-					if (isset($this->structure_table_cache[$table_sql][$field])) {
-						return $this->structure_table_cache[$table_sql][$field];
-					} else if (isset($this->structure_field_cache[$table_sql][$field])) {
-						return $this->structure_field_cache[$table_sql][$field];
+					if (isset($this->structure_table_cache[$table_cache][$field])) {
+						return $this->structure_table_cache[$table_cache][$field];
+					} else if (isset($this->structure_field_cache[$table_cache][$field])) {
+						return $this->structure_field_cache[$table_cache][$field];
 					}
 				} else {
-					if (isset($this->structure_table_cache[$table_sql])) {
-						return $this->structure_table_cache[$table_sql];
+					if (isset($this->structure_table_cache[$table_cache])) {
+						return $this->structure_table_cache[$table_cache];
 					}
 				}
 
@@ -581,13 +582,13 @@
 						$this->_error('Cannot find field "' . $field . '" in table "' . $table_sql . '"');
 					}
 
-					$this->structure_field_cache[$table_sql][$field] = $details[$field];
+					$this->structure_field_cache[$table_cache][$field] = $details[$field];
 
 					return $details[$field];
 
 				} else {
 
-					$this->structure_table_cache[$table_sql] = $details;
+					$this->structure_table_cache[$table_cache] = $details;
 
 					return $details;
 
