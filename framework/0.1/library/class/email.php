@@ -689,19 +689,21 @@
 
 						$recipients = $email_testing;
 
-						if ($this->message_type === 'error') { // The one exception to all emails being sent to 'email.testing'
-							$error_email = config::get('email.error');
-							if ($error_email !== NULL) {
-								$recipients = $error_email;
+						if (is_string($this->message_type)) { // Normally this is just 'error' or 'notice' from report_add() or exit_with_error().
+							$exception = config::array_get('email.testing_exception', $this->message_type); // The only exception to all emails being sent to 'email.testing'.
+							if ($exception) {
+								$recipients = $exception;
 							}
 						}
 
+						$first_recipient = (is_array($recipients) ? reset($recipients) : $recipients);
+
 						foreach ($this->cc_emails as $cc_id => $cc_info) {
-							$this->cc_emails[$cc_id]['email'] = $email_testing;
+							$this->cc_emails[$cc_id]['email'] = $first_recipient;
 						}
 
 						foreach ($this->bcc_emails as $bcc_id => $bcc_info) {
-							$this->bcc_emails[$bcc_id]['email'] = $email_testing;
+							$this->bcc_emails[$bcc_id]['email'] = $first_recipient;
 						}
 
 					}
