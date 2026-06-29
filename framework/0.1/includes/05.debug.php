@@ -385,6 +385,7 @@
 			$email_values['Errors'] = implode("\n", $errors);
 
 			$email = new email();
+			$email->message_type_set('error');
 			$email->default_style_set(NULL);
 			$email->subject_set('System PHP Errors: ' . config::get('output.domain'));
 			$email->request_table_add($email_values, [
