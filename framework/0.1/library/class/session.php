@@ -169,7 +169,7 @@
 						$cache_limiter = config::get('session.cache_limiter', session_cache_limiter());
 						if ($cache_limiter == 'nocache') {
 							header('Expires: Sat, 01 Jan 2000 01:00:00 GMT');
-							header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
+							header('Cache-Control: no-store, no-cache, must-revalidate');
 							header('Pragma: no-cache');
 						} else {
 							report_add('When starting session, did not handle the cache_limiter "' . $cache_limiter . '"', 'error');
