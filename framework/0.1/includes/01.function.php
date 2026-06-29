@@ -1968,7 +1968,7 @@
 		} else {
 
 			if ($cache_control === NULL) {
-				$cache_control = (session::open() ? 'private' : 'public');
+				$cache_control = 'private'; // Used to check session::open(), and if false would be 'public', but probably safer to assume 'private' for all.
 			}
 			if ($expires > 0) {
 				$cache_control .= ', max-age=' . head($expires);
