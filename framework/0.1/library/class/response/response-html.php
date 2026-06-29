@@ -649,7 +649,7 @@
 
 					if ($css_name == '') {
 
-						$css_name = request('style', 'GET');
+						$css_name = strval(request('style', 'GET'));
 
 						if (isset($css_types[$css_name])) {
 
@@ -665,7 +665,7 @@
 
 						} else {
 
-							$css_name = cookie::get('style');
+							$css_name = strval(cookie::get('style'));
 
 						}
 
