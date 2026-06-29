@@ -169,7 +169,10 @@
 						$cache_limiter = config::get('session.cache_limiter', session_cache_limiter());
 						if ($cache_limiter == 'nocache') {
 							header('Expires: Sat, 01 Jan 2000 01:00:00 GMT');
-							header('Cache-Control: no-store, no-cache, must-revalidate');
+							header('Cache-Control: private, no-store, no-cache, must-revalidate');
+						} else if ($cache_limiter == 'private') { // Useful to keep the 'bfcache' working
+							header('Expires: Sat, 01 Jan 2000 01:00:00 GMT');
+							header('Cache-Control: private, no-cache');
 						} else {
 							report_add('When starting session, did not handle the cache_limiter "' . $cache_limiter . '"', 'error');
 						}
