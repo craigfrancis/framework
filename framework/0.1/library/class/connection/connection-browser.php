@@ -82,7 +82,6 @@
 				$this->connection->header_set('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
 				$this->connection->header_set('Accept-Language', 'en-GB,en-US;q=0.8,en;q=0.6');
 				$this->connection->header_set('Cache-Control', 'no-cache');
-				$this->connection->header_set('Pragma', 'no-cache');
 			}
 
 			public function encoding_accept_set($type, $decode = false) { // Currently supports gzip... maybe later deflate?

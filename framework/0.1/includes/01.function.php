@@ -1958,23 +1958,18 @@
 //--------------------------------------------------
 // Cache headers
 
-	function http_cache_headers($expires, $last_modified = NULL, $etag = NULL, $pragma = NULL, $immutable = false) {
+	function http_cache_headers($expires, $last_modified = NULL, $etag = NULL, $cache_control = NULL, $immutable = false) {
 
 		if ($expires <= 0 && $expires !== NULL) {
 
-			header('Pragma: no-cache');
 			header('Cache-Control: private, no-cache, no-store, must-revalidate');
 			header('Expires: Sat, 01 Jan 2000 01:00:00 GMT');
 
 		} else {
 
-			if ($pragma === NULL) {
-				$pragma = (session::open() ? 'private' : 'public');
+			if ($cache_control === NULL) {
+				$cache_control = (session::open() ? 'private' : 'public');
 			}
-
-			header('Pragma: ' . head($pragma)); // For HTTP/1.0 compatibility
-
-			$cache_control = $pragma;
 			if ($expires > 0) {
 				$cache_control .= ', max-age=' . head($expires);
 			}

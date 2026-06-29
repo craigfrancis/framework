@@ -132,7 +132,6 @@
 					}
 
 					header('Cache-Control:'); // IE6 does not like 'attachment' files on HTTPS (https://support.microsoft.com/kb/316431)
-					header('Pragma:');
 
 					if ($this->path !== NULL) {
 						readfile($this->path);
