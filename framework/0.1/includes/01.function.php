@@ -1300,8 +1300,9 @@
 		}
 
 		$config = array_merge(array(
-				'permanent' => false,
-				'exit' => true,
+				'permanent'      => false,
+				'exit'           => true,
+				'after_redirect' => config::get('output.after_redirect', []),
 			), $config);
 
 		if (!isset($config['code'])) {
@@ -1337,10 +1338,28 @@
 
 		header('Location: ' . head($url), true, $config['code']);
 
-		if ($config['exit'] === false) {
+		if ($config['exit'] === false || count($config['after_redirect']) > 0) {
+
 			http_connection_close($next_html);
+
+			foreach ($config['after_redirect'] as $entry) {
+				if (is_callable($entry)) {
+					$callback = $entry;
+					$args = [];
+				} else {
+					[$callback, $args] = $entry;
+				}
+				$callback(...$args);
+			}
+
+			if ($config['exit'] !== false) {
+				exit();
+			}
+
 		} else {
+
 			exit($next_html);
+
 		}
 
 	}
