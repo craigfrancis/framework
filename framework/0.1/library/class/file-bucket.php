@@ -46,6 +46,7 @@ Abbreviations:
 
 					$this->config = array_merge($this->config, [
 							'name'                => NULL,
+							'auto_cleanup'        => false, // true; or maybe an array... ['lock_retry_count' => 2, 'lock_retry_delay' => 5]
 							'local_max_age'       => '-30 days',
 							'delete_delay_file'   => '-6 months',
 							'delete_delay_backup' => '-1 year',
@@ -156,17 +157,18 @@ Abbreviations:
 							$lock = new lock($config['lock_name']);
 							$lock->time_out_set($config['lock_time_out']);
 
-							do {
+							$lock_attempts = (1 + max(0, intval($config['lock_retry_count'])));
+							$lock_opened = false;
 
+							while ($lock_attempts-- > 0) {
 								$lock_opened = $lock->open();
-
 								if ($lock_opened === true) {
 									break;
 								}
-
-								usleep($config['lock_retry_delay'] * 1000000);
-
-							} while ((--$config['lock_retry_count']) >= 0);
+								if ($lock_attempts > 0) {
+									usleep($config['lock_retry_delay'] * 1000000);
+								}
+							}
 
 							if ($lock_opened !== true) {
 								throw new error_exception('Cannot open lock "' . $config['lock_name'] . '"');
@@ -1193,6 +1195,18 @@ debug('Removed File: ' . $matches[1]);
 					$parameters[] = intval($file_id);
 
 					$db->query($sql, $parameters);
+
+				//--------------------------------------------------
+				// Auto cleanup
+
+					if ($this->config['auto_cleanup'] === true) {
+						$this->config['auto_cleanup'] = [];
+					}
+
+					if (is_array($this->config['auto_cleanup'])) {
+						config::array_set('output.after_redirect', 'file_bucket', [[$this, 'cleanup'], [$this->config['auto_cleanup']]]);
+						$this->config['auto_cleanup'] = NULL;
+					}
 
 				//--------------------------------------------------
 				// Return
