@@ -158,9 +158,11 @@ Abbreviations:
 							$lock->time_out_set($config['lock_time_out']);
 
 							$lock_attempts = (1 + max(0, intval($config['lock_retry_count'])));
+							$lock_try = 0;
 							$lock_opened = false;
 
 							while ($lock_attempts-- > 0) {
+								$lock_try++;
 								$lock_opened = $lock->open();
 								if ($lock_opened === true) {
 									break;
@@ -171,7 +173,7 @@ Abbreviations:
 							}
 
 							if ($lock_opened !== true) {
-								throw new error_exception('Cannot open lock "' . $config['lock_name'] . '"');
+								throw new error_exception('Cannot open lock "' . $config['lock_name'] . '" (after try ' . $lock_try . ')', 'Closed: ' . debug_dump(FRAMEWORK_END ?? NULL) . "\n" . 'Now: ' . number_format(debug_time_elapsed(), 3, '.', '') . "\n\n-----\n\n" . debug_dump($config));
 								return false;
 							}
 
