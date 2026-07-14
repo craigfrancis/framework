@@ -124,11 +124,13 @@
 
 			public function debug_info_get() {
 
+				clearstatcache(true, $this->lock_path);
+
 				$return = [
 						'type'        => $this->lock_type,
 						'ref'         => $this->lock_ref,
 						'path'        => $this->lock_path,
-						'exists'      => file_exists($this->lock_path),
+						'exists'      => is_file($this->lock_path),
 						'data_active' => $this->data_get(NULL, 'active'),
 						'data_file'   => $this->data_get(NULL, 'file'),
 						'time_out'    => $this->time_out,
