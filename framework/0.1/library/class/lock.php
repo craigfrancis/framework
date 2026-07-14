@@ -241,8 +241,6 @@
 				//--------------------------------------------------
 				// Lock file
 
-// TODO: Maybe change all 5 instances of `LOCK_EX` with `(LOCK_EX | LOCK_NB)`
-
 					$this->lock_fp = fopen($this->lock_path, 'x+b'); // Returns false if file already exists
 					$this->lock_start = time();
 					$this->lock_key = random_key(20);
@@ -251,7 +249,7 @@
 
 						$valid = true;
 
-						if (flock($this->lock_fp, LOCK_EX)) { // Waits for lock
+						if (flock($this->lock_fp, LOCK_EX)) { // Waits for lock... don't use (LOCK_EX | LOCK_NB), as the locks are removed shortly after, so the non-blocking version is not needed.
 							$info = fstat($this->lock_fp);
 							if ($info['nlink'] == 0) { // Number of hard links to the file
 								flock($this->lock_fp, LOCK_UN);
