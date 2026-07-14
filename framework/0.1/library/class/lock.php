@@ -210,16 +210,23 @@
 
 						$fp = fopen($this->lock_path, 'r');
 
-						if (flock($fp, LOCK_EX)) { // Waits for lock
+						if ($fp) {
 
-							$expires = $this->data_get('expires');
-							if ($expires !== NULL && $expires > time()) {
+							if (flock($fp, LOCK_EX)) { // Waits for lock
+
+								$expires = $this->data_get('expires');
+								if ($expires !== NULL && $expires > time()) {
+									flock($fp, LOCK_UN);
+									fclose($fp);
+									return false; // Not expired yet
+								}
+
+								unlink($this->lock_path); // Has expired
 								flock($fp, LOCK_UN);
-								return false; // Not expired yet
+
 							}
 
-							unlink($this->lock_path); // Has expired
-							flock($fp, LOCK_UN);
+							fclose($fp);
 
 						}
 
