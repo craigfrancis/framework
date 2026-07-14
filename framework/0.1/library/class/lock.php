@@ -60,17 +60,19 @@
 
 			public function data_get($field = NULL, $source = NULL) {
 
+				$data = [];
+
 				if (($source === NULL || $source == 'active') && (is_array($this->lock_data))) {
 
 					$data = $this->lock_data; // Don't check lock file, it may have been closed or lost (expired), but we still need the data.
 
-				} else if (($source === NULL || $source == 'file') && (is_file($this->lock_path))) {
+				} else if ($source === NULL || $source == 'file') {
 
-					$data = json_decode(file_get_contents($this->lock_path), true); // Read as an associative array
+					clearstatcache(true, $this->lock_path);
 
-				} else {
-
-					$data = [];
+					if (is_file($this->lock_path)) {
+						$data = json_decode(file_get_contents($this->lock_path), true); // Read as an associative array
+					}
 
 				}
 
@@ -205,6 +207,8 @@
 
 				//--------------------------------------------------
 				// Lock already exists
+
+					clearstatcache(true, $this->lock_path);
 
 					if (is_file($this->lock_path)) {
 
