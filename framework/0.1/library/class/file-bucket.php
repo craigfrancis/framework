@@ -173,7 +173,7 @@ Abbreviations:
 							}
 
 							if ($lock_opened !== true) {
-								throw new error_exception('Cannot open lock "' . $config['lock_name'] . '" (after try ' . $lock_try . ')', 'Closed: ' . debug_dump(FRAMEWORK_END ?? NULL) . "\n" . 'Now: ' . number_format(debug_time_elapsed(), 3, '.', '') . "\n\n-----\n\n" . debug_dump($config));
+								throw new error_exception('Cannot open lock "' . $config['lock_name'] . '" (after try ' . $lock_try . ')', 'Closed: ' . debug_dump(defined('FRAMEWORK_END') ? FRAMEWORK_END : NULL) . "\n" . 'Now: ' . number_format(debug_time_elapsed(), 3, '.', '') . "\n\n-----\n\n" . debug_dump($config));
 								return false;
 							}
 
