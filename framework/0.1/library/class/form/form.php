@@ -75,8 +75,8 @@
 				];
 
 			private $fetch_known = [
-					'dest' => ['audio', 'audioworklet', 'document', 'embed', 'empty', 'font', 'image', 'manifest', 'object', 'paintworklet', 'report', 'script', 'serviceworker', 'sharedworker', 'style', 'track', 'video', 'worker', 'xslt', 'nested-document'],
-					'mode' => ['cors', 'navigate', 'nested-navigate', 'no-cors', 'same-origin', 'websocket'],
+					'dest' => ['audio', 'audioworklet', 'document', 'embed', 'empty', 'fencedframe', 'font', 'frame', 'iframe', 'image', 'json', 'manifest', 'object', 'paintworklet', 'report', 'script', 'serviceworker', 'sharedworker', 'style', 'track', 'video', 'webidentity', 'worker', 'xslt'],
+					'mode' => ['cors', 'navigate', 'no-cors', 'same-origin', 'websocket'],
 					'site' => ['cross-site', 'same-origin', 'same-site', 'none'],
 					'user' => ['?0', '?1', '?F', '?T'], // In HTTP/1 headers, a boolean is indicated with a leading "?"
 				];
@@ -839,9 +839,12 @@
 		//--------------------------------------------------
 		// Fetch limits
 
-			public function fetch_allowed_nested() { // e.g. in an iframe.
-				$this->fetch_allowed_add('dest', 'nested-document');
-				$this->fetch_allowed_add('mode', 'nested-navigate');
+			public function fetch_allowed_nested() {
+				// $this->fetch_allowed_add('dest', 'nested-document');
+				// $this->fetch_allowed_add('mode', 'nested-navigate');
+				$this->fetch_allowed_add('dest', 'fencedframe');
+				$this->fetch_allowed_add('dest', 'frame');
+				$this->fetch_allowed_add('dest', 'iframe');
 			}
 
 			public function fetch_allowed_fetch() { // e.g. XMLHttpRequest, fetch(), navigator.sendBeacon(), <a download="">, <a ping="">, <link rel="prefetch">
