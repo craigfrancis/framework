@@ -216,11 +216,11 @@
 					$this->sort_name_set();
 				}
 
-				if (isset($this->sort_fields[$this->sort_request_id])) {
+				if ($this->sort_request_id !== NULL && isset($this->sort_fields[$this->sort_request_id])) {
 					return $this->sort_fields[$this->sort_request_id];
 				}
 
-				if (isset($this->sort_fields[$this->sort_preserved_id])) {
+				if ($this->sort_preserved_id !== NULL && isset($this->sort_fields[$this->sort_preserved_id])) {
 					return $this->sort_fields[$this->sort_preserved_id];
 				}
 
