@@ -63,13 +63,7 @@
 		//--------------------------------------------------
 		// Clone
 
-			function __call($method, $arguments) {
-				if ($method === 'clone') {
-					return call_user_func_array(array($this, '_clone'), $arguments);
-				}
-			}
-
-			public function _clone($parameters = []) { // TODO: Rename to "clone", and remove the "__call" method when Steve isn't using PHP5
+			public function clone($parameters = []) {
 				$clone = clone $this;
 				foreach ($parameters as $name => $value) {
 					$clone->param_set($name, $value);
