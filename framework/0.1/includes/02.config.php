@@ -83,7 +83,6 @@
 		$config['output.pp_directives'] = [
 
 				'accelerometer'                      => [],
-				'attribution-reporting'              => [],
 				'autoplay'                           => [],
 				'aria-notify'                        => ['self'],
 				'bluetooth'                          => [],
