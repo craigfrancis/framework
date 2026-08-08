@@ -297,7 +297,7 @@
 
 					if ($this->db_field_key) {
 						foreach ($db_values as $key) {
-							if (isset($this->option_values[$key])) {
+							if ($key !== NULL && array_key_exists($key, $this->option_values)) {
 								$values[] = $key;
 							}
 						}
