@@ -53,13 +53,6 @@
 					$config = array_merge($defaults, $config);
 
 				//--------------------------------------------------
-				// Kill old image
-
-					if ($this->image_ref) {
-						imagedestroy($this->image_ref);
-					}
-
-				//--------------------------------------------------
 				// Create
 
 					$this->image_ref = $this->_create_canvas($width, $height);
@@ -105,7 +98,6 @@
 					// $this->alpha_blend = false; // Don't want blending support for this new canvas, while copy over the transparent gif
 					// $new_image = $this->_create_canvas($this->image_width, $this->image_height);
 					// imagecopyresampled($new_image, $this->image_ref, 0, 0, 0, 0, $this->image_width, $this->image_height, $this->image_width, $this->image_height);
-					// imagedestroy($this->image_ref);
 					// $this->image_ref = $new_image;
 					// $this->alpha_blend_set($old_alpha_blend);
 
@@ -564,8 +556,6 @@
 					//--------------------------------------------------
 					// Store
 
-						imagedestroy($this->image_ref);
-
 						$this->image_ref = $new_image;
 						$this->image_width = $canvas_width;
 						$this->image_height = $canvas_height;
@@ -616,8 +606,6 @@
 
 					//--------------------------------------------------
 					// Store
-
-						imagedestroy($this->image_ref);
 
 						$this->image_ref = $new_image;
 						$this->image_width = imagesx($this->image_ref);
@@ -796,7 +784,7 @@
 
 								@chmod($file_path, octdec(config::get('file.default_permission', 666)));
 
-								imagedestroy($tile);
+								unset($tile);
 
 							}
 						}
@@ -804,7 +792,7 @@
 					//--------------------------------------------------
 					// Cleanup
 
-						imagedestroy($canvas);
+						unset($canvas);
 
 				}
 			}
@@ -814,7 +802,6 @@
 
 			public function destroy() {
 				if ($this->image_ref) {
-					imagedestroy($this->image_ref);
 					$this->image_ref = NULL;
 					$this->image_width = NULL;
 					$this->image_height = NULL;
