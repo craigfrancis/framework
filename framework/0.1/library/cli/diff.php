@@ -255,7 +255,7 @@
 		foreach ($b as $table => $b_table_info) {
 
 			if (!isset($a[$table])) {
-				if (DB_PREFIX == '' || !str_starts_with($table, DB_PREFIX)) {
+				if (DB_PREFIX == '' || str_starts_with($table, DB_PREFIX)) {
 					$details[$table][] = 'Table: Created in current database.';
 				}
 				continue;
