@@ -1037,10 +1037,14 @@
 
 					$content_text = str_replace('[SUBJECT]', $this->subject_text, $content_text);
 					$content_text = str_replace('[BODY]', $this->body_text, $content_text);
-					$content_text = str_replace('[URL]', strval($this->template_url), $content_text);
 
-					foreach ($this->template_values_text as $name => $value) {
-						$content_text = str_replace('[' . $name . ']', strval($value), $content_text);
+					if ($this->template_path !== NULL) {
+						if ($this->template_url !== NULL) {
+							$content_text = str_replace('[URL]', strval($this->template_url), $content_text);
+						}
+						foreach ($this->template_values_text as $name => $value) {
+							$content_text = str_replace('[' . $name . ']', strval($value), $content_text);
+						}
 					}
 
 				//--------------------------------------------------
@@ -1153,12 +1157,16 @@
 				// Variables
 
 					$content_html = str_replace('[SUBJECT]', html($subject), $content_html);
-					$content_html = str_replace('[URL]', html(strval($this->template_url)), $content_html);
 
-					foreach ($this->template_values_html as $name => $html) {
-						$content_html = str_replace('[' . $name . ']', $html, $content_html);
-						if (!($html instanceof html_template || $html instanceof html_safe_value) && (!function_exists('is_literal') || !is_literal($html))) {
-							$html_safe = false;
+					if ($this->template_path !== NULL) {
+						if ($this->template_url !== NULL) {
+							$content_html = str_replace('[URL]', html(strval($this->template_url)), $content_html);
+						}
+						foreach ($this->template_values_html as $name => $html) {
+							$content_html = str_replace('[' . $name . ']', $html, $content_html);
+							if (!($html instanceof html_template || $html instanceof html_safe_value) && (!function_exists('is_literal') || !is_literal($html))) {
+								$html_safe = false;
+							}
 						}
 					}
 
