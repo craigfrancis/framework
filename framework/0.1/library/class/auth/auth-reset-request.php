@@ -96,26 +96,18 @@
 				//--------------------------------------------------
 				// Values
 
-					if ($email !== NULL) {
+					if ($this->form === NULL && $email === NULL) {
+						exit_with_error('Cannot call $auth_reset_request->validate() without using any form fields, using $auth_reset_request->form_set(), or providing an email address.');
+					}
 
-						$this->form = NULL;
-
-					} else if ($this->form === NULL) {
-
-						exit_with_error('Cannot call $auth_reset_request->validate() without using any form fields, or providing an email address.');
-
-					} else if (!$this->form->valid()) { // Basic checks such as required fields, and CSRF
-
+					if ($this->form !== NULL && !$this->form->valid()) { // Basic checks such as required fields, and CSRF
 						return false;
+					}
 
-					} else {
-
-						if (isset($this->field_email)) {
-							$email = strval($this->field_email->value_get());
-						} else {
-							exit_with_error('You must call $auth_reset_request->field_email_get() before $auth_reset_request->validate().');
-						}
-
+					if (isset($this->field_email)) {
+						$email = strval($this->field_email->value_get());
+					} else if ($email === NULL) {
+						exit_with_error('You must call $auth_reset_request->field_email_get() before $auth_reset_request->validate(); or provide $email.');
 					}
 
 				//--------------------------------------------------
@@ -242,7 +234,7 @@
 					}
 
 					if (!is_array($this->details)) {
-						exit_with_error('The login details are not valid, so why has $auth_reset_request->complete() been called?');
+						exit_with_error('The auth reset request details are not valid, so why has $auth_reset_request->complete() been called?');
 					}
 
 					if ($config['form']) {

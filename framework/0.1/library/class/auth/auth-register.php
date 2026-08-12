@@ -160,6 +160,10 @@
 
 					if ($identification !== NULL) {
 
+						if ($this->form !== NULL) {
+							report_add('Deprecated: Is anyone setting $auth_register->form and then providing $identification', 'notice'); // See [NOTE:1]
+						}
+
 						$this->form = NULL;
 
 					} else if ($this->form === NULL) {

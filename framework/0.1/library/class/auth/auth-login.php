@@ -83,6 +83,25 @@
 
 					if ($identification !== NULL) {
 
+						if ($this->form !== NULL) {
+
+							report_add('Deprecated: Is anyone setting $auth_login->form and then providing $identification', 'notice'); // [TODO][NOTE:1] ... if not, then maybe it should be an exit_with_error()?
+
+							// The original problem happened with:
+							//    $auth_reset_request = new auth_reset_request($auth);
+							//    $auth_reset_request->form_set($form);
+							//    $auth_reset_request->validate($auth_values['email']);
+							// As the validate() method would `$auth_reset_request->form = NULL`, and return an array of errors (not adding the errors on to the form).
+							// Now auth_reset_request() has been updated to work in a different way, maybe auth_register() and auth_update() should do the same... and the others use exit_with_error()?
+							// That said, auth_register() and auth_update() don't always use $this->form->error_add(), they might need to use:
+							//    if ($this->field_identification) {
+							//      $this->field_identification->error_add($error);
+							//    } else {
+							//      $this->form->error_add($error);
+							//    }
+
+						}
+
 						$this->form = NULL;
 
 					} else if ($this->form === NULL) {
