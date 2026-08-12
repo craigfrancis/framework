@@ -135,6 +135,8 @@
 				'language-detector'                  => [], // For the JS API: detector = await LanguageDetector.create(...)
 				'local-fonts'                        => [],
 				'local-network-access'               => [],
+				'local-network'                      => [],
+				'loopback-network'                   => [],
 				'magnetometer'                       => [],
 				'microphone'                         => [],
 				'midi'                               => [],
