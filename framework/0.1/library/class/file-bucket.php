@@ -942,8 +942,8 @@ debug('Removed File: ' . $matches[1]);
 					if ($folder) {
 						if (!is_dir($path)) {
 							if ($this->config['backup_root'] !== NULL) {
-								if (REQUEST_MODE == 'cli') {
-									@mkdir($path, 0750, true);
+								if (REQUEST_MODE == 'cli' && !mkdir($path, 0750, true)) {
+									throw new error_exception('Cannot create directory', $path . "\n" . 'umask = ' . sprintf('%03o', umask()));
 								}
 							} else {
 								@mkdir($path, 0777, true); // Most installs will write as the "apache" user, which is a problem if the normal user account can't edit/delete these files.
