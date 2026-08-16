@@ -530,7 +530,7 @@
 					$options = NULL;
 					$fraction = NULL;
 
-					if ($type == 'int' || $type == 'tinyint' || $type == 'smallint' || $type == 'mediumint' || $type == 'bigint' || $type == 'char' || $type == 'binary' || $type == 'varchar' || $type == 'varbinary') {
+					if ($type == 'int' || $type == 'tinyint' || $type == 'smallint' || $type == 'mediumint' || $type == 'bigint' || $type == 'char' || $type == 'binary' || $type == 'varchar' || $type == 'varbinary' || $type == 'bit') {
 						$length = $info;
 					} else if ($type == 'decimal') {
 						$pos = strpos($info, ','); // e.g. decimal(10,2) ... 10 = maximum number of digits (precision); 2 = number of digits to the right of the decimal point
