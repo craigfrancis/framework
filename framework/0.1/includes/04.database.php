@@ -528,12 +528,14 @@
 
 					$null = ($row['Null'] == 'YES');
 					$options = NULL;
+					$fraction = NULL;
 
 					if ($type == 'int' || $type == 'tinyint' || $type == 'smallint' || $type == 'mediumint' || $type == 'bigint' || $type == 'char' || $type == 'binary' || $type == 'varchar' || $type == 'varbinary') {
 						$length = $info;
 					} else if ($type == 'decimal') {
-						$pos = strpos($info, ',');
-						$length = substr($info, 0, $pos); // e.g. decimal(10,2) = precision 10
+						$pos = strpos($info, ','); // e.g. decimal(10,2) ... 10 = maximum number of digits (precision); 2 = number of digits to the right of the decimal point
+						$length = substr($info, 0, $pos);
+						$fraction = substr($info, ($pos + 1));
 					} else if ($type == 'tinytext' || $type == 'tinyblob') {
 						$length = 255;
 					} else if ($type == 'text' || $type == 'blob') {
@@ -546,14 +548,17 @@
 						$length = 10;
 					} else if ($type == 'datetime') {
 						$length = 19;
+						$fraction = $info; // e.g. "datetime(3)" for "0000-00-00 00:00:00.000"
 					} else if ($type == 'time') {
 						$length = 8;
+						$fraction = $info; // e.g. "time(3)" for "00:00:00.000"
 					} else if ($type == 'year') {
 						$length = 4;
 					} else if ($type == 'bool') {
 						$length = 1;
 					} else if ($type == 'timestamp') {
 						$length = 19;
+						$fraction = $info; // e.g. "timestamp(3)" for "0000-00-00 00:00:00.000"
 					} else if ($type == 'float' || $type == 'double') {
 						$length = NULL; // Not really applicable
 					} else if ($type == 'enum' || $type == 'set') {
@@ -563,16 +568,17 @@
 						$this->_error('Unknown type "' . $row['Type'] . '" for field "' . $row['Field'] . '"');
 					}
 
-					$details[$row['Field']] = array(
-							'type' => $type,
-							'length' => $length,
-							'collation' => $row['Collation'],
-							'null' => $null,
-							'default' => $row['Default'],
-							'extra' => $row['Extra'],
-							'options' => $options,
+					$details[$row['Field']] = [
+							'type'       => $type,
+							'length'     => $length,
+							'fraction'   => $fraction,
+							'collation'  => $row['Collation'],
+							'null'       => $null,
+							'default'    => $row['Default'],
+							'extra'      => $row['Extra'],
+							'options'    => $options,
 							'definition' => $row['Type'] . ($null ? ' NULL' : ' NOT NULL') . ($row['Default'] ? ' DEFAULT "' . $this->escape($row['Default']) . '"' : '') . ($row['Extra'] ? ' ' . $row['Extra'] : ''),
-						);
+						];
 
 				}
 
