@@ -70,9 +70,15 @@
 							// Save
 
 								if ($action_edit) {
+
 									$form->db_save();
+
 								} else {
+
+									$record->value_set('created_by', ACCOUNT_ID);
+
 									$item_id = $form->db_insert();
+
 								}
 
 							//--------------------------------------------------
