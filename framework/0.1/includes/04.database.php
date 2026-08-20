@@ -756,14 +756,19 @@
 				if ($set_sql !== '') {
 					$set_sql .= ',';
 				}
-				$set_sql .= $this->escape_field($field_name) . ' = ?';
+				$set_sql .= $this->_escape_field_non_literal($field_name) . ' = ?';
 				$set_parameters[] = $field_value;
 			}
 			$parameters = array_merge($set_parameters, $parameters);
 
+			if (function_exists('is_literal')) {
+				if (is_literal($table_sql) !== true) exit_with_error('The table_sql string "' . $table_sql . '" must be a literal');
+				if (is_literal($where_sql) !== true) exit_with_error('The table_sql string "' . $where_sql . '" must be a literal');
+			}
+
 			$sql = 'UPDATE ' . $table_sql . ' SET ' . $set_sql . ' WHERE ' . $where_sql;
 
-			return $this->query($sql, $parameters);
+			return $this->query($sql, $parameters, self::SKIP_LITERAL_CHECK); // Accept non-literals to support 'SELECT * FROM table', modify some values (note the field names are non-literals), and then db->update().
 
 		}
 
