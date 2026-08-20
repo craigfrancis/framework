@@ -659,6 +659,10 @@
 				}
 			}
 
+			if (function_exists('is_literal') && is_literal($table_sql) !== true) {
+				exit_with_error('The table_sql string "' . $table_sql . '" must be a literal');
+			}
+
 			$sql = 'INSERT INTO ' . $table_sql . ' (' . $fields_sql . ') VALUES (' . $values_sql . ')';
 
 			if ($on_duplicate !== NULL) {
@@ -691,7 +695,7 @@
 				}
 			}
 
-			return $this->query($sql, $parameters, self::SKIP_LITERAL_CHECK); // Accept non-literals to support 'SELECT * FROM table', modify some values, and then db->insert($copy)... otherwise use $db->query($sql, $parameters, [], (db::SKIP_LITERAL_CHECK));
+			return $this->query($sql, $parameters, self::SKIP_LITERAL_CHECK); // Accept non-literals to support 'SELECT * FROM table', modify some values, and then db->insert($copy).
 
 		}
 
