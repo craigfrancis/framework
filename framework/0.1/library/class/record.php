@@ -292,6 +292,12 @@ report_add('Deprecated: Use $record->field_name_add() now', 'notice');
 
 			}
 
+			protected function deleted_error_send($error_config) {
+
+				error_send('deleted', $error_config);
+
+			}
+
 			public function values_get() {
 				if ($this->values === NULL) {
 
@@ -366,7 +372,9 @@ report_add('Deprecated: Use $record->field_name_add() now', 'notice');
 								$error_config = array_merge($error_config, $this->config['deleted']);
 							}
 
-							error_send('deleted', $error_config);
+							$this->deleted_error_send($error_config);
+
+							exit();
 
 						} else {
 
