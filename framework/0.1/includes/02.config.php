@@ -147,8 +147,6 @@
 				'publickey-credentials-get'          => [],
 				'screen-wake-lock'                   => [],
 				'serial'                             => [],
-				'shared-storage'                     => [],
-				'shared-storage-select-url'          => [],
 				'storage-access'                     => [],
 				'summarizer'                         => [], // For the JS API: summarizer = await Summarizer.create(...)
 				'translator'                         => [], // For the JS API: translator = await Translator.create(...)
