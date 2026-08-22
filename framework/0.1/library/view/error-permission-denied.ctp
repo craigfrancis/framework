@@ -8,7 +8,7 @@
 			$message = 'You cannot access this ' . (isset($type) ? $type : 'item') . '.';
 		}
 
-		$message_html = html($message);
+		$message_html = to_safe_html($message);
 
 	}
 
