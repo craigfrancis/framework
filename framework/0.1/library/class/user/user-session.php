@@ -31,7 +31,7 @@
 
 		public function length_set($length) {
 			if (!$this->use_cookies && (ini_get('session.gc_maxlifetime') / $length) < 0.5) { // Default server gc lifetime is 24 minutes (over 50% of 30 minutes)
-				exit_with_error('Session max lifetime is too short for user session length, perhaps use cookies instead?');
+				exit_with_error('Session max lifetime is too short for user session length, perhaps use cookies instead?', debug_dump(ini_get('session.gc_maxlifetime')) . ' / ' . debug_dump($length));
 			}
 			$this->length = $length;
 		}
