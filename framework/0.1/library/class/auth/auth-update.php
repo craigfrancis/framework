@@ -169,14 +169,20 @@
 
 				$this->form = $form;
 
-				$this->field_password_old = $this->auth->_field_password_get($form, array_merge(array(
-						'label' => $this->auth->text_get('password_old_label'),
-						'name' => 'password',
+				if ($this->password_old_check === 'only-on-change') {
+					$config['required'] = false;
+					$config['required_mark'] = true;
+				} else {
+					$config['required'] = true;
+				}
+
+				$this->field_password_old = $this->auth->_field_password_get($form, array_merge([
+						'label'      => $this->auth->text_get('password_old_label'),
+						'name'       => 'password',
 						'min_length' => 1, // Field is simply required (supporting old/short passwords).
-					), $config, array(
-						'required' => true,
+					], $config, [
 						'autocomplete' => 'current-password',
-					)));
+					]));
 
 				return $this->field_password_old;
 
@@ -428,11 +434,19 @@
 
 						$auth_config = NULL;
 
-						if (array_key_exists('password_old', $values)) {
+						if ($this->password_old_check === 'only-on-change' && ($values['password_old'] ?? '') === '' && ($values['password_new_1'] ?? '') === '') {
+
+							// If 'password_old' and 'password_new_1' are not provided, allow old password check to be bypassed.
+
+						} else if (array_key_exists('password_old', $values)) {
 
 							$old_password = $values['password_old'];
 
-							$result = $this->auth->validate_login(NULL, $old_password);
+							if ($old_password === '') {
+								$result = 'failure_password';
+							} else {
+								$result = $this->auth->validate_login(NULL, $old_password);
+							}
 
 							if ($result === 'failure_identification') {
 
@@ -488,29 +502,33 @@
 							$password_1 = $values['password_new_1'];
 							$password_2 = $values['password_new_2'];
 
-							$result = $this->auth->validate_password($password_1);
+							if ($password_1 !== '') { // Won't be NULL
 
-							$min_length = $this->auth->password_min_length_get();
+								$result = $this->auth->validate_password($password_1);
 
-							if ($password_1 != '' && strlen($password_1) < $min_length) { // When the field is not 'required', the min length is not checked by the form helper.
+								$min_length = $this->auth->password_min_length_get();
 
-								$errors['password_new_1'] = str_replace('XXX', $min_length, $this->auth->text_get('password_new_min_length'));
+								if (strlen($password_1) < $min_length) { // When the field is not 'required', the min length is not checked by the form helper.
 
-							} else if (is_string($result)) { // Custom (project specific) error message
+									$errors['password_new_1'] = str_replace('XXX', $min_length, $this->auth->text_get('password_new_min_length'));
 
-								$errors['password_new_1'] = $this->auth->text_get($result);
+								} else if (is_string($result)) { // Custom (project specific) error message
 
-							} else if ($result !== true) {
+									$errors['password_new_1'] = $this->auth->text_get($result);
 
-								exit_with_error('Invalid response from $auth->validate_password()', $result);
+								} else if ($result !== true) {
 
-							} else if ($password_2 !== NULL && $password_1 !== $password_2) {
+									exit_with_error('Invalid response from $auth->validate_password()', $result);
 
-								$errors['password_new_2'] = $this->auth->text_get('failure_password_repeat');
+								} else if ($password_2 !== NULL && $password_1 !== $password_2) {
 
-							} else {
+									$errors['password_new_2'] = $this->auth->text_get('failure_password_repeat');
 
-								$password_new = $password_1;
+								} else {
+
+									$password_new = $password_1;
+
+								}
 
 							}
 

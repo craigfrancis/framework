@@ -2090,6 +2090,10 @@
 					$field->min_length_set($this->text_get('password_min_length'), $config['min_length']);
 				}
 
+				if ($config['required_mark'] ?? false) {
+					$field->required_mark_set($config['required_mark']);
+				}
+
 				return $field;
 
 			}
