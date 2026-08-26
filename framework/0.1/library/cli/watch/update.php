@@ -103,7 +103,7 @@
 					if (preg_match('/[ \t]*:root *{([^}]*)}\s/i', $file_contents, $root_match)) { // Replace "var(--name)" with values defined in ":root { ... }"
 						$match_all = true;
 						foreach (array_map('trim', explode("\n", $root_match[1])) as $line) {
-							if (preg_match('/(--[a-z\-]+) *: *([^;]+);/', $line, $line_match)) {
+							if (preg_match('/(--[a-z0-9\-]+) *: *([^;]+);/', $line, $line_match)) {
 								$file_contents = str_replace('var(' . $line_match[1] . ')', $line_match[2], $file_contents);
 							} else if ($line != '') {
 								$match_all = false;
