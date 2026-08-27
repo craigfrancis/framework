@@ -444,9 +444,12 @@
 			}
 
 			public function logout_url_get($logout_url = NULL) { // If not set, assume they are looking at the logout page (and just need the logout token).
+				if (!($logout_url instanceof url)) {
+					$logout_url = url($logout_url); // Ensures that token can be applied, and this function returns a url() object.
+				}
 				$token = $this->logout_token_get();
 				if ($token) {
-					$logout_url = url($logout_url, array('token' => $token));
+					$logout_url->param_set('token', $token);
 				}
 				return $logout_url; // Always link to the provided logout url, do not return NULL when not logged in (so users always go to the logout page, even if it shows an error).
 			}
