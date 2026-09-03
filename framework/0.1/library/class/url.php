@@ -293,6 +293,13 @@
 					$current_path = config::get('request.path');
 
 				//--------------------------------------------------
+				// Fragment only URL
+
+						// e.g. url('#example'), where the path should not be added.
+
+					$fragment_only_url = ($this->path_data === NULL && $this->fragment !== NULL && $scheme_set === false);
+
+				//--------------------------------------------------
 				// If path is relative to current_path
 
 					if ($scheme_http && isset($this->path_data['path']) && substr($this->path_data['path'], 0, 1) != '/') {
@@ -304,7 +311,7 @@
 				//--------------------------------------------------
 				// No url data provided.
 
-					if (!is_array($this->path_data)) {
+					if (!is_array($this->path_data) && !$fragment_only_url) {
 						if ($scheme_http) {
 
 							$this->path_data = array(
@@ -434,45 +441,49 @@
 
 						if ($scheme_http) {
 
-							if (isset($this->path_data['path'])) {
-								$path = $this->path_data['path'];
-							} else if (!isset($this->path_data['host'])) {
-								$path = $current_path;
-							} else {
-								$path = '/';
-							}
+							if (!$fragment_only_url) {
 
-							$path_new = path_to_array($path);
-
-							if ($format == 'relative') {
-
-								$k = 0; // Folders in common
-								$j = 0; // Folders to work backwards from
-
-								foreach (path_to_array($current_path) as $folder) {
-									if (($j > 0) || (!isset($path_new[$k]) || $folder != $path_new[$k])) {
-										$j++;
-									} else {
-										$k++;
-									}
-								}
-
-								if ($j > 0) {
-									$output .= str_repeat('../', $j);
+								if (isset($this->path_data['path'])) {
+									$path = $this->path_data['path'];
+								} else if (!isset($this->path_data['host'])) {
+									$path = $current_path;
 								} else {
-									$output .= './';
+									$path = '/';
 								}
 
-								$output .= implode('/', array_splice($path_new, $k));
+								$path_new = path_to_array($path);
 
-							} else {
+								if ($format == 'relative') {
 
-								$output .= '/' . implode('/', $path_new);
+									$k = 0; // Folders in common
+									$j = 0; // Folders to work backwards from
 
-							}
+									foreach (path_to_array($current_path) as $folder) {
+										if (($j > 0) || (!isset($path_new[$k]) || $folder != $path_new[$k])) {
+											$j++;
+										} else {
+											$k++;
+										}
+									}
 
-							if (substr($path, -1) == '/' && substr($output, -1) != '/') { // Output could be '../'
-								$output .= '/';
+									if ($j > 0) {
+										$output .= str_repeat('../', $j);
+									} else {
+										$output .= './';
+									}
+
+									$output .= implode('/', array_splice($path_new, $k));
+
+								} else {
+
+									$output .= '/' . implode('/', $path_new);
+
+								}
+
+								if (substr($path, -1) == '/' && substr($output, -1) != '/') { // Output could be '../'
+									$output .= '/';
+								}
+
 							}
 
 						} else if ($scheme == 'tel') {
