@@ -381,6 +381,18 @@
 										}
 									}
 
+								//--------------------------------------------------
+								// User
+
+									if (isset($this->path_data['user'])) {
+										$origin = parse_url($output); // Origin
+										$output = $origin['scheme'] . '://' . rawurlencode($this->path_data['user']);
+										if (isset($this->path_data['pass'])) {
+											$output .= ':' . rawurlencode($this->path_data['pass']);
+										}
+										$output .= '@' . $origin['host'] . (isset($origin['port']) ? ':' . $origin['port'] : '');
+									}
+
 							} else {
 
 								//--------------------------------------------------
