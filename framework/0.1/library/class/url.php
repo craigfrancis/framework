@@ -404,9 +404,9 @@
 								// User
 
 									if (isset($this->path_data['user'])) {
-										$output .= $this->path_data['user'];
+										$output .= rawurlencode($this->path_data['user']);
 										if (isset($this->path_data['pass'])) {
-											$output .= ':' . $this->path_data['pass'];
+											$output .= ':' . rawurlencode($this->path_data['pass']);
 										}
 										$output .= '@';
 									}
