@@ -15,9 +15,9 @@
 	echo 'Basic:' . "\n";
 	echo '  ' . url() . "\n";
 	echo '  ' . url('') . "\n";
-	echo '  ' . url('#testing') . "\n";
 	echo '  ' . url('thank-you/') . "\n";
 	echo '  ' . url('./thank-you/') . "\n";
+	echo '  ' . url('./thank-you/#testing') . "\n";
 	echo '  ' . url('./') . "\n";
 	echo '  ' . url('/') . "\n";
 	echo '  ' . url('../news/') . "\n";
@@ -50,6 +50,30 @@
 	$url->format_set('absolute');
 	echo '  ' . $url . "\n";
 	$url->format_set('full');
+	echo '  ' . $url . "\n";
+
+	echo "\n";
+	echo 'Fragments:' . "\n";
+	echo '  ' . url('#fragment1') . "\n";
+	echo '  ' . url('./#fragment2') . "\n";
+	echo '  ' . url('/path/#fragment3') . "\n";
+	$url = url('#fragment4');
+	$url->path_set('./');
+	echo '  ' . $url . "\n";
+	$url = url('#fragment5');
+	$url->param_set('a', 'b');
+	echo '  ' . $url . "\n";
+	$url = url('#fragment6');
+	$url->host_set(config::get('output.domain'));
+	echo '  ' . $url . "\n";
+	$url = url('#fragment7');
+	$url->host_set('example.com');
+	echo '  ' . $url . "\n";
+	$url = url('#fragment8');
+	$url->scheme_set('https');
+	echo '  ' . $url . "\n";
+	$url = url('#fragment9');
+	$url->auth_set('user', 'pass');
 	echo '  ' . $url . "\n";
 
 	echo "\n";
