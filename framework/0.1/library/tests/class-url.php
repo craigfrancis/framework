@@ -66,16 +66,19 @@
 	$url = url('#fragment6');
 	$url->param_set('a', 'b');
 	echo '  ' . $url . "\n";
-	$url = url('#fragment7');
-	$url->host_set(config::get('output.domain'));
+	$url = url(['id' => 123]);
+	$url->fragment_set('fragment7');
 	echo '  ' . $url . "\n";
 	$url = url('#fragment8');
-	$url->host_set('example.com');
+	$url->host_set(config::get('output.domain'));
 	echo '  ' . $url . "\n";
 	$url = url('#fragment9');
-	$url->scheme_set('https');
+	$url->host_set('example.com');
 	echo '  ' . $url . "\n";
 	$url = url('#fragment10');
+	$url->scheme_set('https');
+	echo '  ' . $url . "\n";
+	$url = url('#fragment11');
 	$url->auth_set('user', 'pass');
 	echo '  ' . $url . "\n";
 

@@ -297,7 +297,7 @@
 
 						// e.g. url('#example'), where the path should not be added.
 
-					$fragment_only_url = ($this->path_data === NULL && $this->fragment !== NULL && $scheme_set === false);
+					$fragment_only_url = ($this->path_data === NULL && count($this->parameters) == 0 && $this->fragment !== NULL && $this->format === NULL && $scheme_set === false);
 
 				//--------------------------------------------------
 				// If path is relative to current_path
