@@ -73,7 +73,7 @@
 					'time'       => ['id' => 'ref', 'class' => 'ref', 'datetime' => 'datetime'],
 					'data'       => ['id' => 'ref', 'class' => 'ref', 'value' => 'text'],
 					'label'      => ['id' => 'ref', 'class' => 'ref', 'for' => 'ref'],
-					'input'      => ['id' => 'ref', 'class' => 'ref', 'type' => ['submit', 'button'], 'name' => 'ref', 'value' => 'text'],
+					'input'      => ['id' => 'ref', 'class' => 'ref', 'type' => ['submit', 'button'], 'name' => 'ref', 'value' => 'text', 'checked' => ['checked']],
 					'br'         => [],
 
 				];
