@@ -136,22 +136,29 @@
 					$this->current_month = $now->format('n');
 
 				//--------------------------------------------------
-				// Selected
+				// Focus range
 
 					$year = intval($year);
 					$month = intval($month);
 
-					if ($year == 0) $year = $this->current_year;
-					if ($month == 0) $month = $this->current_month;
+					if (($year > 0) && ($month > 0 && $month <= 12)) {
+						$this->focus_start = new timestamp($year . '-' . $month . '-01');
+					} else {
+						$this->focus_start = NULL;
+					}
+
+					if ($this->focus_start === NULL || $this->focus_start->null()) {
+
+						$year = $this->current_year;
+						$month = $this->current_month;
+
+						$this->focus_start = new timestamp($year . '-' . $month . '-01');
+
+					}
 
 					$this->selected_year = $year;
 					$this->selected_week = NULL;
 					$this->selected_month = $month;
-
-				//--------------------------------------------------
-				// Focus range
-
-					$this->focus_start = new timestamp($this->selected_year . '-' . $this->selected_month . '-01');
 
 					$this->focus_end = $this->focus_start->clone('+1 month');
 
@@ -175,22 +182,29 @@
 					$this->current_month = NULL;
 
 				//--------------------------------------------------
-				// Selected
+				// Focus range
 
 					$year = intval($year);
 					$week = intval($week);
 
-					if ($year == 0) $year = $this->current_year;
-					if ($week == 0) $week = $this->current_week;
+					if (($year > 0) && ($week > 0 && $week <= 53)) {
+						$this->focus_start = new timestamp($year . 'W' . str_pad($week, 2, '0', STR_PAD_LEFT) . '-1');
+					} else {
+						$this->focus_start = NULL;
+					}
+
+					if ($this->focus_start === NULL || $this->focus_start->null()) {
+
+						$year = $this->current_year;
+						$week = $this->current_week;
+
+						$this->focus_start = new timestamp($year . 'W' . str_pad($week, 2, '0', STR_PAD_LEFT) . '-1');
+
+					}
 
 					$this->selected_year = $year;
 					$this->selected_week = $week;
 					$this->selected_month = NULL;
-
-				//--------------------------------------------------
-				// Focus range
-
-					$this->focus_start = new timestamp($this->selected_year . 'W' . str_pad($this->selected_week, 2, '0', STR_PAD_LEFT) . '-1');
 
 					$this->focus_end = $this->focus_start->clone('+1 week');
 
