@@ -118,6 +118,7 @@
 				'cross-origin-isolated'              => ['self'],
 				'deferred-fetch'                     => [],
 				'deferred-fetch-minimal'             => [],
+				'digital-credentials-create'         => [],
 				'digital-credentials-get'            => [],
 				'display-capture'                    => [],
 				'encrypted-media'                    => [],
@@ -136,6 +137,7 @@
 				'local-network'                      => [],
 				'loopback-network'                   => [],
 				'magnetometer'                       => [],
+				'media-playback-while-not-visible'   => [],
 				'microphone'                         => [],
 				'midi'                               => [],
 				'on-device-speech-recognition'       => [],
@@ -147,6 +149,7 @@
 				'publickey-credentials-get'          => [],
 				'screen-wake-lock'                   => [],
 				'serial'                             => [],
+				'speaker-selection'                  => [],
 				'storage-access'                     => [],
 				'summarizer'                         => [], // For the JS API: summarizer = await Summarizer.create(...)
 				'translator'                         => [], // For the JS API: translator = await Translator.create(...)
