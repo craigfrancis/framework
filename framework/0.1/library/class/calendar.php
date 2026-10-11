@@ -41,21 +41,23 @@
 
 					$now = new timestamp();
 
-					$default_config = array(
-							'mode' => 'range', // range, week, or month
-							'nav' => true, // Customisable?
-							'select_year' => request('year'),
-							'select_week' => request('week'),
-							'select_month' => request('month'),
-							'select_preserve' => false,
+					$default_config = [
+							'mode'                 => 'range', // range, week, or month
+							'nav'                  => true, // Customisable?
+							'select_year'          => request('year'),
+							'select_week'          => request('week'),
+							'select_month'         => request('month'),
+							'select_preserve'      => false,
 							'select_preserve_name' => 'calendar_selection',
-							'range_start' => '-1 week',
-							'range_end' => '+2 weeks',
-							'base_url' => NULL,
-							'select_year_start' => ($now->format('Y') - 1),
-							'select_year_end' => ($now->format('Y') + 3),
-							'day_format' => NULL,
-						);
+							'range_start'          => '-1 week',
+							'range_end'            => '+2 weeks',
+							'base_url'             => NULL,
+							'select_year_start'    => ($now->format('Y') - 1),
+							'select_year_end'      => ($now->format('Y') + 3),
+							'day_format'           => NULL,
+							'table_class'          => NULL,
+							'table_caption'        => NULL,
+						];
 
 					$default_config = array_merge($default_config, $this->config, config::get_all('paginator'));
 
@@ -482,7 +484,14 @@
 					} else {
 
 						$html = '
-							<table>
+							<table' . ($this->config['table_class'] ? ' class="' . html($this->config['table_class']) . '"' : '') . '>';
+
+						if ($this->config['table_caption']) {
+							$html .= '
+								<caption>' . html($this->config['table_caption']) . '</caption>';
+						}
+
+						$html .= '
 								<thead>
 									<tr>';
 
