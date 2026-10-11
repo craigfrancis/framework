@@ -335,62 +335,66 @@
 				//--------------------------------------------------
 				// Try Google
 
-					if (secret::variable_get('nearest.gm_key') !== NULL) {
-						$google_maps_key = secret::get('nearest.gm_key'); // https://www.phpprime.com/doc/helpers/nearest/
-					} else {
-						$google_maps_key = config::get('nearest.gm_key');
-					}
+					if ($latitude === NULL) {
 
-					if ($latitude === NULL && $google_maps_key !== NULL) {
+						$google_maps_key = config::get('nearest.gm_key'); // Could set to `false` to disable use
 
-						//--------------------------------------------------
-						// Ask
+						if ($google_maps_key === NULL && secret::variable_get('nearest.gm_key') !== NULL) {
+							$google_maps_key = secret::get('nearest.gm_key'); // https://www.phpprime.com/doc/helpers/nearest/
+						}
 
-							$start = hrtime(true);
+						if ($google_maps_key !== NULL && $google_maps_key !== false) {
 
-							$contents = file_get_contents(url('https://maps.google.com/maps/api/geocode/xml', array(
-									'address' => $search_query,
-									'sensor' => 'false',
-									'components' => 'country:' . $country,
-									'region' => $country,
-									'key' => ($google_maps_key === '' ? NULL : $google_maps_key),
-								)));
+							//--------------------------------------------------
+							// Ask
 
-							if ($slow) {
-								usleep(200000); // 200ms, to keep Google happy (limited to 5 requests per second, or 2500 per day).
-							}
+								$start = hrtime(true);
 
-							$time = round(hrtime_diff($start), 3);
+								$contents = file_get_contents(url('https://maps.google.com/maps/api/geocode/xml', array(
+										'address' => $search_query,
+										'sensor' => 'false',
+										'components' => 'country:' . $country,
+										'region' => $country,
+										'key' => ($google_maps_key === '' ? NULL : $google_maps_key),
+									)));
 
-						//--------------------------------------------------
-						// Extract
-
-							$result = simplexml_load_string($contents);
-
-							if (isset($result->status) && isset($result->result) && $result->status == 'OK') {
-								if (strval($result->result->type) == 'country') {
-									// A query containing a component filter will only return the geocoding results that match the filter. If no matches are found, the geocoder will return a result that matches the filter itself.
-								} else {
-									$latitude = floatval($result->result->geometry->location->lat);
-									$longitude = floatval($result->result->geometry->location->lng);
-									$accuracy = ($result->result->geometry->location_type == 'ROOFTOP' ? 5 : 4);
+								if ($slow) {
+									usleep(200000); // 200ms, to keep Google happy (limited to 5 requests per second, or 2500 per day).
 								}
-							}
 
-							if (function_exists('debug_note') && ($result->error_message ?? '') != '') {
-								debug_note('Google Maps Geocode: "' . $result->error_message . '"');
-							}
+								$time = round(hrtime_diff($start), 3);
 
-						//--------------------------------------------------
-						// Log
+							//--------------------------------------------------
+							// Extract
 
-							if (function_exists('debug_note')) {
-								debug_note('Google Maps Geocode: "' . $search_query . '" = ' . ($latitude ? $latitude . ', ' . $longitude : 'N/A') . ' (' . $time . ($slow ? ' - slowed by 200ms' : '') . ')');
-							}
+								$result = simplexml_load_string($contents);
 
-							if (function_exists('debug_log_time')) {
-								debug_log_time('GEO', $time);
-							}
+								if (isset($result->status) && isset($result->result) && $result->status == 'OK') {
+									if (strval($result->result->type) == 'country') {
+										// A query containing a component filter will only return the geocoding results that match the filter. If no matches are found, the geocoder will return a result that matches the filter itself.
+									} else {
+										$latitude = floatval($result->result->geometry->location->lat);
+										$longitude = floatval($result->result->geometry->location->lng);
+										$accuracy = ($result->result->geometry->location_type == 'ROOFTOP' ? 5 : 4);
+									}
+								}
+
+								if (function_exists('debug_note') && ($result->error_message ?? '') != '') {
+									debug_note('Google Maps Geocode: "' . $result->error_message . '"');
+								}
+
+							//--------------------------------------------------
+							// Log
+
+								if (function_exists('debug_note')) {
+									debug_note('Google Maps Geocode: "' . $search_query . '" = ' . ($latitude ? $latitude . ', ' . $longitude : 'N/A') . ' (' . $time . ($slow ? ' - slowed by 200ms' : '') . ')');
+								}
+
+								if (function_exists('debug_log_time')) {
+									debug_log_time('GEO', $time);
+								}
+
+						}
 
 					}
 
