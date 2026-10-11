@@ -35,6 +35,8 @@
 
 			set_time_limit(30); // Don't time out
 
+			setup_run();
+
 		//--------------------------------------------------
 		// Table info
 

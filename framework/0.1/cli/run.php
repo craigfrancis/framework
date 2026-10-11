@@ -334,6 +334,11 @@
 
 					case 'reset':
 
+						if ($setup_include === NULL) {
+							config::set('route.setup_include', true);
+						}
+						require(FRAMEWORK_ROOT . '/includes/08.setup.php'); // Not "require_once", as was already required by "/cli/run.php"
+
 						require_once(FRAMEWORK_ROOT . '/library/cli/permission.php');
 						require_once(FRAMEWORK_ROOT . '/library/cli/reset.php');
 
