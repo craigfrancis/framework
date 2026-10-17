@@ -38,7 +38,7 @@
 				//--------------------------------------------------
 				// Default config
 
-					$default_config = array(
+					$default_config = [
 							'time_out'          => (5 * 60),
 							'refresh_initial'   => 1, // Used during $loading->start()
 							'refresh_frequency' => 2, // Used during $loading->check()
@@ -51,7 +51,7 @@
 							'lock_ref'          => NULL,
 							'csp_directives'    => NULL,
 							'css_path'          => '/a/css/global/loading.css',
-						);
+						];
 
 					$default_config = array_merge($default_config, config::get_all('loading.default'));
 
@@ -226,11 +226,11 @@
 						return false;
 					}
 
-					$this->lock->data_set(array(
-							'time_start' => $time,
+					$this->lock->data_set([
+							'time_start'  => $time,
 							'time_update' => $time,
-							'variables' => $variables,
-						));
+							'variables'   => $variables,
+						]);
 
 				} else {
 
@@ -253,7 +253,7 @@
 
 				$this->_send($time, $time, $variables, true);
 
-				register_shutdown_function(array($this, 'shutdown'));
+				register_shutdown_function([$this, 'shutdown']);
 
 				return true;
 
@@ -267,10 +267,10 @@
 
 						if ($this->lock->check()) { // Don't use open, if we have lost the lock we need to stop
 
-							$this->lock->data_set(array(
+							$this->lock->data_set([
 									'time_update' => time(),
-									'variables' => $variables,
-								));
+									'variables'   => $variables,
+								]);
 
 							return true;
 
@@ -332,9 +332,9 @@
 
 						$error = config::get('output.error');
 						if (!is_array($error)) {
-							$error = array(
+							$error = [
 									'message' => 'Stopped script execution without calling $loading->done().',
-								);
+								];
 						}
 
 						try {
