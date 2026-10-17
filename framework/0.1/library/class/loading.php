@@ -210,11 +210,26 @@
 
 			}
 
+			public function variable_get($name, $default = NULL) {
+				$variables = $this->variables_get();
+				return ($variables[$name] ?? $default);
+			}
+
+			public function variables_get() {
+				if ($this->lock) {
+					return $this->lock->data_get('variables');
+				} else {
+					return session::get($this->session_prefix . 'variables');
+				}
+			}
+
 			public function start($variables) {
 
 				if ($this->disabled) {
 					return true; // Pretend this was successful
 				}
+
+				$variables = $this->_variables_update($variables);
 
 				$time = time(); // All the same
 
@@ -267,6 +282,8 @@
 
 						if ($this->lock->check()) { // Don't use open, if we have lost the lock we need to stop
 
+							$variables = $this->_variables_update($variables, $this->lock->data_get('variables'));
+
 							$this->lock->data_set([
 									'time_update' => time(),
 									'variables'   => $variables,
@@ -277,6 +294,8 @@
 						}
 
 					} else {
+
+						$variables = $this->_variables_update($variables, session::get($this->session_prefix . 'variables'));
 
 						session::set($this->session_prefix . 'time_update', time());
 						session::set($this->session_prefix . 'variables', $variables);
@@ -352,6 +371,20 @@
 						}
 
 					}
+
+			}
+
+			private function _variables_update($variables, $existing = NULL) {
+
+				if (!is_array($variables)) {
+					$variables = ['message' => strval($variables)];
+				}
+
+				if (is_array($existing)) {
+					$variables = array_merge($existing, $variables);
+				}
+
+				return $variables;
 
 			}
 
