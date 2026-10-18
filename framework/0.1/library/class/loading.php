@@ -101,7 +101,7 @@
 			}
 
 			public function template_test() {
-				exit($this->_template_get_html());
+				exit($this->_template_get_html(url()));
 			}
 
 		//--------------------------------------------------
@@ -458,10 +458,6 @@
 				//--------------------------------------------------
 				// Refresh URL
 
-					if ($refresh_url === NULL) {
-						$refresh_url = url();
-					}
-
 					$contents_html = str_replace('[URL]', html($refresh_url), $contents_html);
 
 				//--------------------------------------------------
@@ -525,6 +521,11 @@
 				// Loading contents
 
 					$refresh_url = $this->config['refresh_url'];
+
+					if ($refresh_url === NULL) {
+						$refresh_url = url();
+					}
+
 					$refresh_header = ($start ? $this->config['refresh_initial'] : $this->config['refresh_frequency']) . '; url=' . $refresh_url;
 
 					$contents_html = $this->_template_get_html($refresh_url, $refresh_header);
