@@ -93,7 +93,28 @@
 			}
 
 			public function time_out_set($time_out) {
-				$this->lock->time_out_set($time_out);
+				if ($this->running) {
+					if ($this->lock) {
+						if ($this->lock->check()) { // Don't use open, if we have lost the lock we cannot update
+							$this->_time_out_update($time_out);
+							$this->lock->data_set(['time_expires' => (time() + $time_out)]);
+						}
+					} else {
+						$this->_time_out_update($time_out);
+						session::set($this->session_prefix . 'time_expires', (time() + $time_out));
+						session::close();
+					}
+				} else {
+					$this->config['time_out'] = $time_out; // Used by start()
+				}
+			}
+
+			private function _time_out_update($time_out) {
+				if ($this->lock) {
+					$this->lock->time_out_set($time_out);
+				} else {
+					set_time_limit($time_out);
+				}
 			}
 
 			public function refresh_url_set($url) {
@@ -118,15 +139,17 @@
 
 							// $this->lock->check() - Can't really test as the other thread has the lock.
 
-							$time_start  = $this->lock->data_get('time_start');
-							$time_update = $this->lock->data_get('time_update');
-							$variables   = $this->lock->data_get('variables');
+							$time_start   = $this->lock->data_get('time_start');
+							$time_update  = $this->lock->data_get('time_update');
+							$time_expires = $this->lock->data_get('time_expires');
+							$variables    = $this->lock->data_get('variables');
 
 						} else {
 
-							$time_start  = session::get($this->session_prefix . 'time_start');
-							$time_update = session::get($this->session_prefix . 'time_update');
-							$variables   = session::get($this->session_prefix . 'variables');
+							$time_start   = session::get($this->session_prefix . 'time_start');
+							$time_update  = session::get($this->session_prefix . 'time_update');
+							$time_expires = session::get($this->session_prefix . 'time_expires');
+							$variables    = session::get($this->session_prefix . 'variables');
 
 						}
 
@@ -163,9 +186,9 @@
 
 						$time_start = intval($time_start);
 
-						if (($time_start == 0) || (($time_start + $this->config['time_out']) < time())) {
-							if ($time_start != 0) {
-								report_add('Lock Timeout (' . $time_start . ' + ' . $this->config['time_out'] .' < ' . time() . ')', 'notice');
+						if ($time_start == 0 || $time_expires < time()) {
+							if ($time_start != 0 && function_exists('report_add')) {
+								report_add('Lock Timeout (' . $time_expires . ' < ' . time() . ')' . "\n\n-----\n\n" . debug_dump($time_start) . "\n\n-----\n\n" . debug_dump($this->config), 'notice');
 							}
 							$this->_cleanup();
 							return $variables;
@@ -227,26 +250,30 @@
 
 				$time = time(); // All the same
 
-				if ($this->lock) {
+				$expires = ($this->config['time_out'] + $time);
 
-					$this->lock->time_out_set($this->config['time_out']);
+				if ($this->lock) {
 
 					if (!$this->lock->open()) {
 						return false;
 					}
 
+					$this->_time_out_update($this->config['time_out']);
+
 					$this->lock->data_set([
-							'time_start'  => $time,
-							'time_update' => $time,
-							'variables'   => $variables,
+							'time_start'   => $time,
+							'time_update'  => $time,
+							'time_expires' => $expires,
+							'variables'    => $variables,
 						]);
 
 				} else {
 
-					set_time_limit($this->config['time_out']);
+					$this->_time_out_update($this->config['time_out']);
 
 					session::set($this->session_prefix . 'time_start', $time);
 					session::set($this->session_prefix . 'time_update', $time);
+					session::set($this->session_prefix . 'time_expires', $expires);
 					session::set($this->session_prefix . 'variables', $variables);
 
 				}
@@ -389,6 +416,7 @@
 				session::delete($this->session_prefix . 'started');
 				session::delete($this->session_prefix . 'time_start');
 				session::delete($this->session_prefix . 'time_update');
+				session::delete($this->session_prefix . 'time_expires');
 				session::delete($this->session_prefix . 'variables');
 				session::delete($this->session_prefix . 'done_url');
 				session::delete($this->session_prefix . 'error');
