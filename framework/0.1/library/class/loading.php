@@ -197,17 +197,11 @@
 			}
 
 			public function locked() {
-
 				if ($this->lock) {
-
 					return $this->lock->locked();
-
 				} else {
-
-					exit_with_error('Cannot check if the loading session is locked, when it does not use a lock.');
-
+					exit_with_error('Cannot check $loading->locked(), when it does not use a lock.');
 				}
-
 			}
 
 			public function variable_get($name, $default = NULL) {
