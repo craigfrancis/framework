@@ -243,6 +243,9 @@
 			public function start($variables) {
 
 				if ($this->disabled) {
+					if ($this->config['time_out'] > 0) {
+						set_time_limit($this->config['time_out']);
+					}
 					return true; // Pretend this was successful
 				}
 
