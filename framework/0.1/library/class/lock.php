@@ -155,7 +155,7 @@
 			}
 
 			public function _debug_dump() {
-				return $this->debug_info_get();
+				return debug_dump($this->debug_info_get());
 			}
 
 		//--------------------------------------------------
