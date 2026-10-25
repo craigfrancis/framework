@@ -173,7 +173,9 @@
 					}
 
 				//--------------------------------------------------
-				// Quick db check, incase lock file has been deleted
+				// Quick db check, incase lock file has been deleted,
+				// or a run was completed in the future (Summer to
+				// Winter clock change).
 
 					$sql = 'SELECT
 								1
@@ -181,7 +183,7 @@
 								' . DB_PREFIX . 'system_maintenance AS sm
 							WHERE
 								sm.run_end = "0000-00-00 00:00:00" OR
-								sm.run_end = ?';
+								sm.run_end >= ?';
 
 					$parameters = [];
 					$parameters[] = $now;
