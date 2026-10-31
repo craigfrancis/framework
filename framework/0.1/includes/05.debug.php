@@ -526,7 +526,10 @@ if (str_contains($error['string'], 'open_basedir')) {
 
 					config::array_push('debug.errors', $error_message);
 
-config::array_push('debug.errors', json_encode(array_merge($error, ['error_reporting' => error_reporting(), 'xdebug' => var_export(ini_get('xdebug.scream'))])));
+config::array_push('debug.errors', json_encode(array_merge($error, ['error_reporting' => error_reporting(), 'xdebug' => debug_dump(ini_get('xdebug.scream'))])));
+var_dump($error);
+var_dump(error_reporting());
+var_dump(ini_get('xdebug.scream'));
 
 					if ($error['number'] === E_DEPRECATED && preg_match('/Passing null to parameter #.* of type .* is deprecated/', $error['string'])) {
 

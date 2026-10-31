@@ -63,6 +63,7 @@
 
 set_error_handler(static fn($no, $str) => str_contains($str, 'open_basedir restriction in effect'));
 try {
+	var_dump('Check');
 	$ok = is_file($prime_config_key) && is_readable($prime_config_key);
 	var_dump($ok);
 } finally {
