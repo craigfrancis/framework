@@ -420,7 +420,6 @@
 					'string'      => '',
 					'file'        => '',
 					'line'        => 0,
-					'context'     => NULL,
 					'log_display' => ini_get('display_errors'),
 					'log_file'    => ini_get('log_errors'),
 					'log_email'   => ini_get('log_errors'),
@@ -550,14 +549,13 @@ config::array_push('debug.errors', json_encode(array_merge($error, ['error_repor
 
 	}
 
-	set_error_handler(function($err_no, $err_str = '', $err_file = '', $err_line = 0, $err_context = NULL) {
+	set_error_handler(function($err_no, $err_str = '', $err_file = '', $err_line = 0) {
 
 			error_handler([
 					'number'  => $err_no,
 					'string'  => $err_str,
 					'file'    => $err_file,
 					'line'    => $err_line,
-					'context' => $err_context,
 				]);
 
 		});
