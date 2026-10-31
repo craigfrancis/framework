@@ -250,22 +250,24 @@
 			}
 
 		//--------------------------------------------------
-		// Remove hidden info
+		// Hidden Info
 
 			if ($contact_email != '' || config::get('debug.level') == 0) { // If there is an email address, don't show the hidden info (e.g. on live).
+
 				$hidden_info = '';
+				$hidden_html = '';
 				$output_buffer_html = '';
-			}
 
-		//--------------------------------------------------
-		// Hidden HTML
+			} else {
 
-			$hidden_html = text_to_html($hidden_info);
+				$hidden_html = "\n\n\n" . text_to_html($hidden_info) . "\n\n\n";
 
-			$hidden_html = preg_replace('/(You have an error in your SQL syntax; .+) near &apos;(.+?)&apos; at line [0-9]+(.*)\2/ims', '\1.\3<strong>\2</strong>', $hidden_html);
+				$hidden_html = preg_replace('/(You have an error in your SQL syntax; .+) near &apos;(.+?)&apos; at line [0-9]+(.*)\2/ims', '\1.\3<strong>\2</strong>', $hidden_html);
 
-			if ($output_buffer_html != '') {
-				$hidden_html .= "\n\n\n" . '<hr />' . "\n\n\n" . $output_buffer_html;
+				if ($output_buffer_html != '') {
+					$hidden_html .= '<hr />' . "\n\n\n" . $output_buffer_html . "\n\n\n";
+				}
+
 			}
 
 		//--------------------------------------------------
@@ -350,16 +352,10 @@
 								<h1>System Error</h1>
 								<p>' . text_to_html($message) . '</p>';
 
-						if ($hidden_info != '') {
+						if ($hidden_html != '') {
 							echo '
 								<hr />
-								<div>' . text_to_html($hidden_info) . '</div>'; // Don't use <pre>, SQL can have very long lines.
-						}
-
-						if ($output_buffer_html != '') {
-							echo '
-								<hr />
-								' . $output_buffer_html;
+								<div>' . $hidden_html . "\t\t\t\t\t\t\t\t" . '</div>'; // Don't use <pre>, SQL can have very long lines.
 						}
 
 						echo '
