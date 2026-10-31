@@ -425,17 +425,11 @@
 					'log_email'   => ini_get('log_errors'),
 				], $error);
 
-if (str_contains($error['string'], 'open_basedir')) {
-    $src = @file($error['file']);
-    error_log('SRC: ' . trim($src[$error['line'] - 1] ?? '?'));
-    error_log(print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 8), true));
-}
-
 		//--------------------------------------------------
 		// If disabled
 
 			if (!(error_reporting() & $error['number'])) { // No longer 0 for the @ operator in PHP 8 https://www.php.net/manual/en/migration80.incompatible.php#:~:text=The%20%40%20operator%20will%20no%20longer%20silence
-				return;
+				return false;
 			}
 
 		//--------------------------------------------------
@@ -525,11 +519,6 @@ if (str_contains($error['string'], 'open_basedir')) {
 				if ($error['log_email']) {
 
 					config::array_push('debug.errors', $error_message);
-
-config::array_push('debug.errors', json_encode(array_merge($error, ['error_reporting' => error_reporting(), 'xdebug' => debug_dump(ini_get('xdebug.scream'))])));
-var_dump($error);
-var_dump(error_reporting());
-var_dump(ini_get('xdebug.scream'));
 
 					if ($error['number'] === E_DEPRECATED && preg_match('/Passing null to parameter #.* of type .* is deprecated/', $error['string'])) {
 

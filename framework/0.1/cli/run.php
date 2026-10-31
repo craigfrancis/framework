@@ -63,16 +63,12 @@
 
 set_error_handler(static fn($no, $str) => str_contains($str, 'open_basedir restriction in effect'));
 try {
-	var_dump('Check');
-	$ok = is_file($prime_config_key) && is_readable($prime_config_key);
-	var_dump($ok);
+	$ok = (is_file($prime_config_key) && is_readable($prime_config_key));
 } finally {
-	var_dump('Nope');
 	restore_error_handler();
 }
 
-
-		if (@is_file($prime_config_key) && is_readable($prime_config_key) && preg_match('/PRIME_CONFIG_KEY=.+/', file_get_contents($prime_config_key), $matches)) { // Using @ on is_file() to ignore errors from "open_basedir".
+		if ($ok && is_file($prime_config_key) && is_readable($prime_config_key) && preg_match('/PRIME_CONFIG_KEY=.+/', file_get_contents($prime_config_key), $matches)) { // Using @ on is_file() to ignore errors from "open_basedir".
 			putenv($matches[0]);
 		}
 	}
