@@ -521,6 +521,8 @@
 
 					config::array_push('debug.errors', $error_message);
 
+config::array_push('debug.errors', json_encode(array_merge($error, ['error_reporting' => error_reporting()])));
+
 					if ($error['number'] === E_DEPRECATED && preg_match('/Passing null to parameter #.* of type .* is deprecated/', $error['string'])) {
 
 						// The stupid NULL coercion problem in PHP 8.1
