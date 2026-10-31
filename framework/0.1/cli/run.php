@@ -61,14 +61,11 @@
 	if (!getenv('PRIME_CONFIG_KEY')) { // Attempt to get key if not already set, but don't worry if it fails.
 		$prime_config_key = '/etc/prime-config-key';
 
-// set_error_handler(static fn($no, $str) => str_contains($str, 'open_basedir restriction in effect'));
-// try {
-// 	$ok = (is_file($prime_config_key) && is_readable($prime_config_key));
-// } finally {
-// 	restore_error_handler();
-// }
+set_error_handler(static fn($no, $str) => str_contains($str, 'open_basedir restriction in effect'));
+$ok = (is_file($prime_config_key) && is_readable($prime_config_key));
+restore_error_handler();
 
-		if (@is_file($prime_config_key) && is_readable($prime_config_key) && preg_match('/PRIME_CONFIG_KEY=.+/', file_get_contents($prime_config_key), $matches)) { // Using @ on is_file() to ignore errors from "open_basedir".
+		if ($ok && is_file($prime_config_key) && is_readable($prime_config_key) && preg_match('/PRIME_CONFIG_KEY=.+/', file_get_contents($prime_config_key), $matches)) { // Using @ on is_file() to ignore errors from "open_basedir".
 			putenv($matches[0]);
 		}
 	}
