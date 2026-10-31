@@ -719,7 +719,7 @@
 				return $this->connection->response_header_get($field);
 			}
 
-			public function response_header_get_all($field) {
+			public function response_header_get_all() {
 				return $this->connection->response_header_get_all();
 			}
 
