@@ -425,6 +425,12 @@
 					'log_email'   => ini_get('log_errors'),
 				], $error);
 
+if (str_contains($error['string'], 'open_basedir')) {
+    $src = @file($error['file']);
+    error_log('SRC: ' . trim($src[$error['line'] - 1] ?? '?'));
+    error_log(print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 8), true));
+}
+
 		//--------------------------------------------------
 		// If disabled
 
