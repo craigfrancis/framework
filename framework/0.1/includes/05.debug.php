@@ -222,11 +222,7 @@
 		//--------------------------------------------------
 		// Clear output buffer
 
-			$output_buffer_html = ob_get_clean_all();
-
-			if (!in_array(config::get('output.mime'), ['text/html', 'application/xhtml+xml'])) {
-				$output_buffer_html = html($output_buffer_html);
-			}
+			$output_buffer = ob_get_clean_all();
 
 		//--------------------------------------------------
 		// Config
@@ -249,6 +245,11 @@
 				$email_report .= $hidden_info;
 			}
 
+			if ($output_buffer != '') {
+				$email_report .= "\n\n--------------------------------------------------\n\n";
+				$email_report .= $output_buffer;
+			}
+
 		//--------------------------------------------------
 		// Hidden Info
 
@@ -256,7 +257,6 @@
 
 				$hidden_info = ''; // If there is an email address, don't show the hidden info (e.g. on live).
 				$hidden_html = '';
-				$output_buffer_html = '';
 
 			} else {
 
@@ -264,8 +264,9 @@
 
 				$hidden_html = preg_replace('/(You have an error in your SQL syntax; .+) near &apos;(.+?)&apos; at line [0-9]+(.*)\2/ims', '\1.\3<strong>\2</strong>', $hidden_html);
 
-				if ($output_buffer_html != '') {
-					$hidden_html .= '<hr />' . "\n\n\n" . $output_buffer_html . "\n\n\n";
+				if ($output_buffer != '') {
+					$hidden_info .= "\n\n\n" . $output_buffer;
+					$hidden_html .= '<hr />' . "\n\n\n" . (in_array(config::get('output.mime'), ['text/html', 'application/xhtml+xml']) ? $output_buffer : html($output_buffer)) . "\n\n\n";
 				}
 
 			}
@@ -312,10 +313,6 @@
 
 					if ($hidden_info != '') {
 						echo $hidden_info . "\n\n";
-					}
-
-					if ($output_buffer_html != '') {
-						echo $output_buffer_html . "\n\n";
 					}
 
 					echo '--------------------------------------------------' . "\n\n";
