@@ -252,9 +252,9 @@
 		//--------------------------------------------------
 		// Hidden Info
 
-			if ($contact_email != '' || config::get('debug.level') == 0) { // If there is an email address, don't show the hidden info (e.g. on live).
+			if ($contact_email != '' || config::get('debug.level') == 0) {
 
-				$hidden_info = '';
+				$hidden_info = ''; // If there is an email address, don't show the hidden info (e.g. on live).
 				$hidden_html = '';
 				$output_buffer_html = '';
 
