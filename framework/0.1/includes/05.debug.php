@@ -549,10 +549,6 @@
 
 	set_error_handler(function($err_no, $err_str = '', $err_file = '', $err_line = 0) {
 
-			if (!(error_reporting() & $err_no)) {
-				return false; // suppressed by @ (or error_reporting), let PHP's default handling apply
-			}
-
 			error_handler([
 					'number'  => $err_no,
 					'string'  => $err_str,
