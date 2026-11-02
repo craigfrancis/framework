@@ -123,6 +123,7 @@
 				'digital-credentials-get'            => [],
 				'display-capture'                    => [],
 				'encrypted-media'                    => [],
+				'focus-without-user-activation'      => [],
 				'fullscreen'                         => [],
 				'gamepad'                            => [], // RestrictGamepadAccess
 				'geolocation'                        => [],
