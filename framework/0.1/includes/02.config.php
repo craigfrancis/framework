@@ -61,14 +61,15 @@
 
 		$config['output.tracking'] = NULL;
 
-		if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) {
+		if (($_SERVER['HTTP_SEC_GPC'] ?? 0) == 1 || ($_SERVER['HTTP_DNT'] ?? 0) == 1) {
 
 			$config['output.tracking'] = false;
 
 		} else if (function_exists('getallheaders')) {
 
 			foreach (getallheaders() as $name => $value) {
-				if (strtolower($name) == 'dnt' && $value == 1) {
+				$name = strtolower($name);
+				if (($name == 'sec-gpc' || $name == 'dnt') && $value == 1) {
 					$config['output.tracking'] = false;
 				}
 			}
