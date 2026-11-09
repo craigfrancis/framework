@@ -156,6 +156,7 @@
 				'summarizer'                         => [], // For the JS API: summarizer = await Summarizer.create(...)
 				'translator'                         => [], // For the JS API: translator = await Translator.create(...)
 				'usb'                                => [],
+				'web-app-installation'               => [],
 				'window-management'                  => [],
 				'xr-spatial-tracking'                => [],
 
