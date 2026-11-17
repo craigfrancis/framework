@@ -699,18 +699,6 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 		//--------------------------------------------------
 		// Return values to client
 
-			protected function return_array($data) {
-report_add('Deprecated: $api->return_array() ... just call mime_set(), then exit with http_build_query()', 'notice');
-				mime_set('application/x-www-form-urlencoded');
-				exit(http_build_query($data));
-			}
-
-			protected function return_xml($xml) {
-report_add('Deprecated: $api->return_xml() ... just call mime_set(), then exit with the XML', 'notice');
-				mime_set('application/xml');
-				exit($xml);
-			}
-
 			protected function return_json($output) {
 
 				mime_set('application/json');
