@@ -2157,6 +2157,35 @@
 			}
 
 		//--------------------------------------------------
+		// Connection-Allowlist
+
+			if (config::get('output.connection_allowlist_enabled') === true) {
+
+				if (config::get('output.connection_allowlist_enforced', false) === true) {
+					$header = 'Connection-Allowlist';
+				} else {
+					$header = 'Connection-Allowlist-Report-Only';
+				}
+
+				$patterns = config::get('output.connection_allowlist_patterns');
+				$header .= ': (' . head(implode(' ', $patterns)) . ')';
+
+				$redirect = config::get('output.connection_allowlist_redirect');
+				if ($redirect != 'allow') { // The spec suggests other tokens might exist in the future, ref forward-compatibility https://w3c.github.io/connection-allowlists/#redirects
+					$redirect = 'block';
+				}
+				$header .= '; redirects=' . head($redirect);
+
+				if (config::get('output.connection_allowlist_report') === true) {
+					$header .= '; report-to=' . head($report_endpoint_name);
+					$report_endpoint_send = true;
+				}
+
+				header($header);
+
+			}
+
+		//--------------------------------------------------
 		// Reporting-Endpoints
 
 			if ($report_endpoint_send) {

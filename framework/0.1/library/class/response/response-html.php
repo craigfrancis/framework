@@ -396,6 +396,33 @@
 			}
 
 		//--------------------------------------------------
+		// Connection-Allowlist
+
+			public function connection_allowlist_add($patterns) {
+
+				if ($this->headers_sent) {
+					exit_with_error('Cannot add to the Connection-Allowlist (header already sent).');
+				}
+
+				if (!is_array($patterns)) {
+					$patterns = array($patterns);
+				}
+
+				config::set('output.connection_allowlist_patterns', array_merge((config::get('output.connection_allowlist_patterns') ?? []), $patterns));
+
+			}
+
+			public function connection_allowlist_redirect($allow = true) {
+
+				if ($this->headers_sent) {
+					exit_with_error('Cannot allow redirects for Connection-Allowlist (header already sent).');
+				}
+
+				config::set('output.connection_allowlist_redirect', ($allow === true ? 'allow' : NULL));
+
+			}
+
+		//--------------------------------------------------
 		// CSP
 
 			public function csp_source_add($directive, $sources) {

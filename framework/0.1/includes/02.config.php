@@ -471,6 +471,11 @@
 		config::set_default('output.integrity', false); // Set to true to be added automatically, or ['script', 'style'] so it's added to "Integrity-Policy" as well.
 		config::set_default('output.referrer_policy', 'strict-origin-when-cross-origin'); // Added in Chrome 61.0.3130.0
 
+		config::set_default('output.connection_allowlist_enabled', false);
+		config::set_default('output.connection_allowlist_enforced', (SERVER == 'stage'));
+		config::set_default('output.connection_allowlist_report', false);
+		config::set_default('output.connection_allowlist_patterns', ['response-origin']);
+
 		config::set_default('output.csp_enabled', true);
 		config::set_default('output.csp_enforced', (SERVER == 'stage'));
 		config::set_default('output.csp_report', false);
