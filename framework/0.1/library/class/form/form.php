@@ -853,11 +853,6 @@
 				$this->fetch_allowed_add('mode', 'no-cors'); // navigator.sendBeacon
 			}
 
-			public function fetch_allowed_cors() {
-				report_add('Deprecated: $form->fetch_allowed_cors(), either set manually, or use $form->fetch_allowed_fetch() which is more likely what you need.', 'notice');
-				$this->fetch_allowed_add('mode', 'cors');
-			}
-
 			public function fetch_allowed_add($field, $value) {
 				$this->fetch_allowed_set($field, array_merge($this->fetch_allowed[$field], [$value]));
 			}
