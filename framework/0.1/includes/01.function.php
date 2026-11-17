@@ -1919,6 +1919,11 @@
 				}
 			}
 
+			$trusted_types = config::get('output.js_trusted_types');
+			if (is_array($trusted_types)) {
+				$csp['trusted-types'] = $trusted_types;
+			}
+
 			if (isset($csp['trusted-types'])) {
 				$csp['require-trusted-types-for'] = "'script'";
 			}
@@ -2142,23 +2147,12 @@
 
 			if (config::get('output.csp_enabled') === true) {
 
-				$csp = config::get('output.csp_directives');
-
-				if (is_array($csp)) {
-
-					$trusted_types = config::get('output.js_trusted_types'); // Final version might not go in CSP header.
-					if (is_array($trusted_types)) {
-						$csp['trusted-types'] = $trusted_types;
-					}
-
-				}
-
 				if (config::get('output.csp_report') === true) {
 					config::set('output.csp_report', $report_endpoint_name);
 					$report_endpoint_send = true;
 				}
 
-				http_csp_header($csp);
+				http_csp_header(config::get('output.csp_directives'));
 
 			}
 
