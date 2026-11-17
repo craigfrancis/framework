@@ -622,15 +622,6 @@
 		}
 
 		public function insert($table_sql, $values, $on_duplicate = NULL, $on_duplicate_parameters = []) {
-			$this->_insert($table_sql, $values, $on_duplicate, $on_duplicate_parameters);
-		}
-
-		public function insert_delayed($table_sql, $values, $on_duplicate = NULL, $on_duplicate_parameters = []) {
-			trigger_error('The use of $db->insert_delayed() is deprecated, as INSERT DELAYED is not supported in MySQL 5.7', E_USER_NOTICE);
-			$this->_insert($table_sql, $values, $on_duplicate, $on_duplicate_parameters);
-		}
-
-		private function _insert($table_sql, $values, $on_duplicate = NULL, $on_duplicate_parameters = []) {
 
 			$parameters = [];
 
