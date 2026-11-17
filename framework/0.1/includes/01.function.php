@@ -2171,8 +2171,8 @@
 				$header .= ': (' . head(implode(' ', $patterns)) . ')';
 
 				$redirect = config::get('output.connection_allowlist_redirect');
-				if ($redirect != 'allow') { // The spec suggests other tokens might exist in the future, ref forward-compatibility https://w3c.github.io/connection-allowlists/#redirects
-					$redirect = 'block';
+				if ($redirect != 'block') { // The spec suggests other tokens might exist in the future, ref forward-compatibility https://w3c.github.io/connection-allowlists/#redirects
+					$redirect = 'allow'; // Almost certainly needed (unfortunately), as a typical <form> will POST and then do a 302 redirect on success (or 200 with errors).
 				}
 				$header .= '; redirects=' . head($redirect);
 
