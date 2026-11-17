@@ -234,11 +234,6 @@
 			// 	}
 			// }
 
-			public function _fields_add($field) { // DO NOT USE, was only for the form helper, but other use-cases have been found.
-report_add('Deprecated: Use $record->field_name_add() now', 'notice');
-				$this->config['fields'][] = $field;
-			}
-
 		//--------------------------------------------------
 		// Fields
 
