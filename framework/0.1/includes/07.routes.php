@@ -151,41 +151,6 @@
 		}
 
 	//--------------------------------------------------
-	// Origin-Policy
-
-		if (str_starts_with($route_path, '/.well-known/origin-policy')) {
-			$policy_path = PUBLIC_ROOT . '/origin-policy.json';
-			if (is_file($policy_path)) {
-
-				$request_suffix = substr($route_path, 26);
-				$current_suffix = '/policy-' . filemtime($policy_path);
-				if ($request_suffix != $current_suffix) {
-					redirect('/.well-known/origin-policy' . $current_suffix, 302); // "Servers MUST respond to a GET request to /.well-known/origin-policy with a 302 redirect whose Location header points to the origin's current Origin Policy Manifest"
-				}
-
-				http_cache_headers((60*60*24*365), filemtime($policy_path));
-				header('Content-Type: application/json; charset=' . head(config::get('output.charset')));
-				readfile($policy_path);
-
-			} else {
-
-				error_send('page-not-found'); // "..., or with a 404 response if no such policy is available."
-
-				// $headers = [];
-				// $headers[] = ['name' => 'X-Content-Type-Options', 'value' => 'nosniff', 'type' => 'baseline'];
-				// if (($output_referrer_policy = config::get('output.referrer_policy')) != '') {
-				// 	$headers[] = ['name' => 'Referrer-Policy', 'value' => config::get('output.referrer_policy'), 'type' => 'fallback'];
-				// }
-				// if (https_only()) {
-				// 	$headers[] = ['name' => 'Strict-Transport-Security', 'value' => 'max-age=31536000; includeSubDomains', 'type' => 'baseline'];
-				// }
-				// exit(json_encode(['headers' => $headers]));
-
-			}
-			exit();
-		}
-
-	//--------------------------------------------------
 	// Don't allow:
 	// - missing slash at the end... to reduce the
 	//   possibility of duplicate content issues.

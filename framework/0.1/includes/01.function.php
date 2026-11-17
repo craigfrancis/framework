@@ -2052,28 +2052,6 @@
 			}
 
 		//--------------------------------------------------
-		// Origin policy
-
-				// Not ready yet in Chrome 76.0.3791.0
-				// - The header format has changed from "Sec-Origin-Policy: policy-1" to "Sec-Origin-Policy: policy=policy-1"
-				// - The request is not shown in the developer tools Network tab.
-				// - If the server responds with a 302 redirect, it's treated as a failure (red screen).
-				// - The response is not stored, so the request is always "Sec-Origin-Policy: 0".
-				// - The JSON file format is changing, currently: {"content-security-policy": [{"policy": "default-src 'none'"}]}
-
-			if (isset($_SERVER['HTTP_SEC_ORIGIN_POLICY'])) {
-				$policy_path = PUBLIC_ROOT . '/origin-policy.json';
-				if (is_file($policy_path)) {
-					// $policy = 'policy-' . filemtime($policy_path);
-					$policy = 0; // Ensure it remains disabled for now.
-				} else {
-					$policy = 0;
-				}
-				header('Sec-Origin-Policy: policy=' . head($policy));
-				header('Vary: sec-origin-policy');
-			}
-
-		//--------------------------------------------------
 		// Referrer policy
 
 			if (($output_referrer_policy = config::get('output.referrer_policy')) != '') { // Not NULL or blank.
