@@ -429,40 +429,40 @@
 			}
 
 		//--------------------------------------------------
-		// Policy sources
-
-			public function fp_source_add($directive, $sources) {
-				$this->_source_add('output.fp_directives', 'Feature-Policy', $directive, $sources);
-			}
+		// Permissions-Policy
 
 			public function pp_source_add($directive, $sources) {
-				$this->_source_add('output.pp_directives', 'Permissions-Policy', $directive, $sources);
-			}
-
-			public function dp_source_add($directive, $sources) {
-				$this->_source_add('output.dp_directives', 'Document-Policy', $directive, $sources);
-			}
-
-			public function _source_add($config_name, $display_name, $directive, $sources) {
 
 				if ($this->headers_sent) {
-					exit_with_error('Cannot add to the "' . $directive . '" ' . $display_name . ' (header already sent).');
+					exit_with_error('Cannot add to the "' . $directive . '" Permissions-Policy (header already sent).');
 				}
 
 				if (!is_array($sources)) {
 					$sources = [$sources];
 				}
 
-				$new_values = config::get($config_name);
+				$new_values = config::get('output.pp_directives');
 
 				if (!isset($new_values[$directive])) {
-					exit_with_error('Unrecognised "' . $directive . '" ' . $display_name . '.');
+					exit_with_error('Unrecognised "' . $directive . '" Permissions-Policy.');
 				}
 
 				$new_values[$directive] = array_merge($new_values[$directive], $sources);
 
-				config::set($config_name, $new_values);
+				config::set('output.pp_directives', $new_values);
 
+			}
+
+			public function fp_source_add($directive, $sources) {
+				report_add('Deprecated: Is anyone using fp_source_add() for Feature-Policy?', 'notice');
+			}
+
+			public function dp_source_add($directive, $sources) {
+				report_add('Deprecated: Is anyone using dp_source_add() for Document-Policy?', 'notice');
+			}
+
+			public function _source_add($config_name, $display_name, $directive, $sources) {
+				report_add('Deprecated: Is anyone using _source_add() for Permissions-Policy?', 'notice');
 			}
 
 		//--------------------------------------------------

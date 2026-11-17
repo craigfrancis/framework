@@ -2171,17 +2171,6 @@
 			}
 
 		//--------------------------------------------------
-		// Document-Policy
-
-			// if (config::get('output.dp_enabled') === true) {
-			// 	$policies = [];
-			// 	foreach (config::get('output.dp_directives') as $directive => $value) {
-			// 		$policies[] = $directive . '=' . $value;
-			// 	}
-			// 	header('Document-Policy: ' . head(implode(', ', $policies)));
-			// }
-
-		//--------------------------------------------------
 		// Integrity-Policy
 
 				// Used to be in CSP 'require-sri-for', but this has been removed https://github.com/w3c/webappsec-subresource-integrity/pull/82 ... and in Chrome 85 https://crbug.com/618924

@@ -182,24 +182,6 @@
 			];
 
 	//--------------------------------------------------
-	// Default document policy
-
-		// $config['output.dp_directives'] = [
-		// 		'document-domain'                => '?0',
-		// 		'document-write'                 => '?0',
-		// 		'font-display-late-swap'         => '?0',
-		// 		'force-load-at-top'              => '?0',
-		// 		'js-profiling'                   => '?0',
-		// 		'layout-animations'              => '?0',
-		// 		'lossless-images-max-bpp'        => '0',
-		// 		'lossless-images-strict-max-bpp' => '0',
-		// 		'lossy-images-max-bpp'           => '0',
-		// 		'oversized-images'               => '0',
-		// 		'sync-script'                    => '?0',
-		// 		'unsized-media'                  => '?0',
-		// 	];
-
-	//--------------------------------------------------
 	// App config
 
 		$include_path = APP_ROOT . '/library/setup/config.php';
