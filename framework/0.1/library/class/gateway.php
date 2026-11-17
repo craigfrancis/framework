@@ -153,53 +153,6 @@
 		//--------------------------------------------------
 		// Client support
 
-			function string_get($gateway_name, $data = NULL) {
-report_add('Deprecated: $gateway->string_get()', 'notice');
-
-				//--------------------------------------------------
-				// Call
-
-					$this->_client_get($gateway_name, $data);
-
-				//--------------------------------------------------
-				// Return
-
-					return $this->response_data;
-
-			}
-
-			function array_get($gateway_name, $data = NULL) {
-report_add('Deprecated: $gateway->array_get()', 'notice');
-
-				//--------------------------------------------------
-				// Call
-
-					$this->_client_get($gateway_name, $data);
-
-				//--------------------------------------------------
-				// Parse
-
-					if ($this->response_mime != 'application/x-www-form-urlencoded') {
-						exit_with_error('Did not return valid data from "' . $gateway_name . '"', $this->response_data);
-					}
-
-					parse_str($this->response_data, $this->response_data);
-
-					if (ini_get('magic_quotes_gpc')) {
-						$this->response_data = strip_slashes_deep($this->response_data);
-					}
-
-					if (!is_array($this->response_data)) {
-						exit_with_error('Did not return array data from "' . $gateway_name . '"', $this->response_data);
-					}
-
-				//--------------------------------------------------
-				// Return
-
-					return $this->response_data;
-
-			}
-
 			private function _client_get($gateway_name, $data = NULL, $connection_test = false) {
 report_add('Deprecated: $gateway->_client_get() ... intention is to replace all of this', 'notice');
 
