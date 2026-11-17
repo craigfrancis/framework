@@ -35,11 +35,6 @@
 
 			}
 
-			public function check_domain_set($check_domain) {
-				report_add('Deprecated: The email field check_domain_set() is being re-named to domain_check_set()', 'notice');
-				$this->domain_check_set($check_domain);
-			}
-
 			public function multiple_set($multiple) {
 				$this->multiple = $multiple;
 			}
