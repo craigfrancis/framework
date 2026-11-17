@@ -151,6 +151,96 @@
 			}
 
 		//--------------------------------------------------
+		// Running of an api (server support)
+
+			public function run($api, $version = 1, $sub_path = NULL) {
+
+				//--------------------------------------------------
+				// Config
+
+					ini_set('memory_limit', '1024M');
+
+					config::set('output.gateway', $api);
+
+				//--------------------------------------------------
+				// Run API
+
+					$api = new api($api, $version, $sub_path, $this);
+					return $api->run_wrapper();
+
+			}
+
+			public function index() {
+
+				//--------------------------------------------------
+				// Gateways
+
+					$gateway_urls = $this->get_all();
+
+				//--------------------------------------------------
+				// Run setup
+
+					setup_run();
+
+				//--------------------------------------------------
+				// Response
+
+					$html = '
+						<h1>Gateways</h1>';
+
+					if (isset($gateway_urls['maintenance'])) {
+						$gateway_url = $gateway_urls['maintenance'];
+						$html .= '
+							<p><a href="' . html($gateway_url) . '">Maintenance</a></p>';
+					}
+
+					$html .= '
+						<ul>';
+
+					foreach ($gateway_urls as $gateway_name => $gateway_url) {
+						if ($gateway_name == 'maintenance') {
+							continue;
+						}
+						$html .= '
+								<li><a href="' . html($gateway_url) . '">' . html($gateway_name) . '</a></li>';
+					}
+
+					$html .= '
+						</ul>';
+
+					$response = response_get('html');
+					$response->title_set('Gateways');
+					$response->view_add_html($html);
+					$response->send();
+
+			}
+
+		//--------------------------------------------------
+		// Config
+
+			private function _config_get($type, $key, $default = NULL) {
+				if (isset($this->config[$type][$key])) {
+					return $this->config[$type][$key];
+				} else if ($default !== NULL) {
+					return $default;
+				} else {
+					exit_with_error('Cannot return "' . $key . '" from the "' . $type . '"');
+				}
+			}
+
+			private function _gateway_config($gateway_name, $detail, $default = NULL) {
+				return $this->_config_get('gateways', $gateway_name . '-' . $detail, $default);
+			}
+
+			private function _host_config($host, $detail, $default = NULL) {
+				return $this->_config_get('hosts', $host . '-' . $detail, $default);
+			}
+
+			private function _client_config($client, $detail, $default = NULL) {
+				return $this->_config_get('clients', $client . '-' . $detail, $default);
+			}
+
+		//--------------------------------------------------
 		// Client support
 
 			private function _client_get($gateway_name, $data = NULL, $connection_test = false) {
@@ -405,96 +495,6 @@ report_add('Deprecated: $gateway->_client_get() ... intention is to replace all 
 
 					}
 
-			}
-
-		//--------------------------------------------------
-		// Running of an api (server support)
-
-			public function run($api, $version = 1, $sub_path = NULL) {
-
-				//--------------------------------------------------
-				// Config
-
-					ini_set('memory_limit', '1024M');
-
-					config::set('output.gateway', $api);
-
-				//--------------------------------------------------
-				// Run API
-
-					$api = new api($api, $version, $sub_path, $this);
-					return $api->run_wrapper();
-
-			}
-
-			public function index() {
-
-				//--------------------------------------------------
-				// Gateways
-
-					$gateway_urls = $this->get_all();
-
-				//--------------------------------------------------
-				// Run setup
-
-					setup_run();
-
-				//--------------------------------------------------
-				// Response
-
-					$html = '
-						<h1>Gateways</h1>';
-
-					if (isset($gateway_urls['maintenance'])) {
-						$gateway_url = $gateway_urls['maintenance'];
-						$html .= '
-							<p><a href="' . html($gateway_url) . '">Maintenance</a></p>';
-					}
-
-					$html .= '
-						<ul>';
-
-					foreach ($gateway_urls as $gateway_name => $gateway_url) {
-						if ($gateway_name == 'maintenance') {
-							continue;
-						}
-						$html .= '
-								<li><a href="' . html($gateway_url) . '">' . html($gateway_name) . '</a></li>';
-					}
-
-					$html .= '
-						</ul>';
-
-					$response = response_get('html');
-					$response->title_set('Gateways');
-					$response->view_add_html($html);
-					$response->send();
-
-			}
-
-		//--------------------------------------------------
-		// Config
-
-			private function _config_get($type, $key, $default = NULL) {
-				if (isset($this->config[$type][$key])) {
-					return $this->config[$type][$key];
-				} else if ($default !== NULL) {
-					return $default;
-				} else {
-					exit_with_error('Cannot return "' . $key . '" from the "' . $type . '"');
-				}
-			}
-
-			private function _gateway_config($gateway_name, $detail, $default = NULL) {
-				return $this->_config_get('gateways', $gateway_name . '-' . $detail, $default);
-			}
-
-			private function _host_config($host, $detail, $default = NULL) {
-				return $this->_config_get('hosts', $host . '-' . $detail, $default);
-			}
-
-			private function _client_config($client, $detail, $default = NULL) {
-				return $this->_config_get('clients', $client . '-' . $detail, $default);
 			}
 
 		//--------------------------------------------------
