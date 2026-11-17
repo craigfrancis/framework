@@ -2068,14 +2068,6 @@
 			}
 
 		//--------------------------------------------------
-		// Strict transport security... should be set in
-		// web server, for other resources (e.g. images).
-
-			// if (https_only()) {
-			// 	header('Strict-Transport-Security: max-age=31536000; includeSubDomains'); // HTTPS only (1 year)
-			// }
-
-		//--------------------------------------------------
 		// Permissions-Policy
 
 			if (config::get('output.pp_enabled') === true) {
