@@ -1900,7 +1900,7 @@
 
 			$config = array_merge([
 					'enforced'  => config::get('output.csp_enforced', false),
-					'report'    => config::get('output.csp_report', false),
+					'report'    => config::get('output.csp_report', NULL),
 					'framing'   => config::get('output.framing'),
 				], $config);
 
@@ -1923,11 +1923,8 @@
 				$csp['require-trusted-types-for'] = "'script'";
 			}
 
-			if ($config['report'] && !array_key_exists('report-uri', $csp)) { // isset returns false for NULL
-				if ($config['report'] === true) {
-					$config['report'] = gateway_url('csp-report');
-				}
-				$csp['report-uri'] = $config['report'];
+			if (is_string($config['report']) && strlen($config['report']) > 0 && !array_key_exists('report-to', $csp)) {
+				$csp['report-to'] = $config['report'];
 			}
 
 		//--------------------------------------------------
@@ -2052,6 +2049,12 @@
 			}
 
 		//--------------------------------------------------
+		// Reporting-Endpoints
+
+			$report_endpoint_send = false;
+			$report_endpoint_name = 'browser-report';
+
+		//--------------------------------------------------
 		// Referrer policy
 
 			if (($output_referrer_policy = config::get('output.referrer_policy')) != '') { // Not NULL or blank.
@@ -2096,7 +2099,14 @@
 					}
 				}
 
-				header('Permissions-Policy: ' . head(implode(', ', $policies)));
+				$header = 'Permissions-Policy: ' . head(implode(', ', $policies));
+
+				if (config::get('output.pp_report') === true) {
+					$header .= '; report-to=' . head($report_endpoint_name);
+					$report_endpoint_send = true;
+				}
+
+				header($header);
 
 			}
 
@@ -2115,8 +2125,16 @@
 
 			$integrity = config::get('output.integrity');
 			if (is_array($integrity) && in_array('script', $integrity)) {
-				$integrity = ['script']; // Browsers only support script at the moment.
-				header('Integrity-Policy: blocked-destinations=(' . implode(' ', $integrity) . ')');
+
+				$header = 'Integrity-Policy: blocked-destinations=(script)'; // Browsers only support script at the moment.
+
+				if (config::get('output.integrity_report') === true) {
+					$header .= '; endpoints=(' . head($report_endpoint_name) . ')';
+					$report_endpoint_send = true;
+				}
+
+				header($header);
+
 			}
 
 		//--------------------------------------------------
@@ -2135,8 +2153,22 @@
 
 				}
 
+				if (config::get('output.csp_report') === true) {
+					config::set('output.csp_report', $report_endpoint_name);
+					$report_endpoint_send = true;
+				}
+
 				http_csp_header($csp);
 
+			}
+
+		//--------------------------------------------------
+		// Reporting-Endpoints
+
+			if ($report_endpoint_send) {
+				$report_endpoint_url = gateway_url($report_endpoint_name);
+				$report_endpoint_url->format_set('full');
+				header('Reporting-Endpoints: ' . head($report_endpoint_name) . '="' . head($report_endpoint_url) . '"');
 			}
 
 	}
