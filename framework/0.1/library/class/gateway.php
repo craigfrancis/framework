@@ -878,38 +878,6 @@ report_add('Deprecated: $api->client_verify() ... will be replaced with somethin
 			}
 
 		//--------------------------------------------------
-		// Data
-
-			protected function data($name) {
-report_add('Deprecated: $api->data() ... just use request(), or read from "php://input"', 'notice');
-
-				//--------------------------------------------------
-				// Get data supplied to gateway... typically XML
-
-					if ($name !== NULL) {
-
-						$data = request($name);
-
-					} else {
-
-						$data = '';
-
-						$fd = fopen('php://input', 'r');
-						while (!feof($fd)) {
-							$data .= fread($fd, 1024);
-						}
-						fclose($fd);
-
-					}
-
-				//--------------------------------------------------
-				// Return
-
-					return $data;
-
-			}
-
-		//--------------------------------------------------
 		// Run
 
 			public function run() {
