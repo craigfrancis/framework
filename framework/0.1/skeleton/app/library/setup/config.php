@@ -103,13 +103,38 @@
 //--------------------------------------------------
 // Security
 
-	// $config['cookie.prefix'] = '__Host-'; // A `Secure` cookie, with no `Domain` attribute
-
 	$config['session.key'] = ''; // Just needs to be unique, not really a secret.
+
+	$config['session.cache_limiter'] = 'private'; // The default 'nocache' breaks the bfcache.
+
+	$config['form.csrf_hash_check'] = true;
+
+	$config['form.csrf_passive_checks'] = ['fetch']; // 'cookie' added after login.
+
+	$config['request.fetch_allowed'] = [
+			'dest' => ['document', 'iframe', 'empty'],
+			'mode' => ['navigate', 'no-cors', 'cors'],
+		];
+
+	if (SERVER !== 'backup') { // Backup server uses a non-standard port.
+		$config['cookie.prefix'] = '__Host-'; // A `Secure` cookie, with no `Domain` attribute
+	}
 
 	$config['output.protocols'] = ['http', 'https']; // If this only contains 'https', then https_only() returns true, and cookies get marked as "Secure"
 
 	$config['output.framing'] = 'DENY'; // SAMEORIGIN or ALLOW
+
+	$config['output.pp_enabled'] = true;
+	$config['output.pp_directives'] = array_merge($config['output.pp_directives'], [
+			'picture-in-picture' => [],
+			'sync-xhr'           => [],
+			'unload'             => [],
+		]);
+
+	$config['output.connection_allowlist_patterns'] = ['response-origin', '"mailto:*"', '"tel:*"'];
+	$config['output.connection_allowlist_enabled'] = true;
+	$config['output.connection_allowlist_enforced'] = true;
+	// $config['output.connection_allowlist_report'] = false;
 
 	$config['output.csp_enabled'] = true;
 	$config['output.csp_enforced'] = true;
