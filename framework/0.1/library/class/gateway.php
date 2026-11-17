@@ -105,30 +105,6 @@
 		// Setup
 
 			public function __construct() {
-
-				//--------------------------------------------------
-				// Parse the config
-
-					$include_path = APP_ROOT . '/library/gateway/default.ini';
-					if (is_file($include_path)) {
-report_add('Deprecated: Is anyone using /library/gateway/default.ini ???', 'notice');
-						$this->config = parse_ini_file($include_path, true);
-					}
-
-					$include_path = APP_ROOT . '/library/gateway/' . config::get('gateway.server') . '.ini';
-					if (is_file($include_path)) {
-report_add('Deprecated: Is anyone using /library/gateway/SERVER.ini ???', 'notice');
-						$config_extra = parse_ini_file($include_path, true);
-						foreach ($config_extra as $section => $values) {
-							if (is_array($values)) {
-								foreach ($values as $key => $value) {
-									$this->config[$section][$key] = $value;
-								}
-							}
-						}
-
-					}
-
 			}
 
 			function exit_on_error_set($exit_on_error = NULL) {
