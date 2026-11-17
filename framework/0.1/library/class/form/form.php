@@ -134,7 +134,6 @@
 
 						if (in_array('nested', $fetch_allowed)) $this->fetch_allowed_nested();
 						if (in_array('fetch',  $fetch_allowed)) $this->fetch_allowed_fetch();
-						if (in_array('cors',   $fetch_allowed)) $this->fetch_allowed_cors(); // Deprecated
 
 					} else if ($fetch_allowed === false) {
 
