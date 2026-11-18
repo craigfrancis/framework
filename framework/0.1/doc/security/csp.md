@@ -15,7 +15,6 @@ To customise the directives, start with something like:
 
 	$config['output.csp_directives'] = [
 			'default-src'  => ["'none'"], // Ideal default
-			// 'navigate-to'  => ["'self'"],
 			'form-action'  => ["'self'"],
 			'style-src'    => ["'self'"],
 			'img-src'      => ["'self'"],

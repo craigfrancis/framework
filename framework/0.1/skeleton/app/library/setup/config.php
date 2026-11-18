@@ -142,7 +142,6 @@
 			'default-src'  => ["'none'"],
 			'base-uri'     => ["'none'"],
 			'manifest-src' => ["'self'"],
-			// 'navigate-to'  => ["'self'"],
 			'form-action'  => ["'self'"],
 			'img-src'      => ['/a/img/', 'data:'],
 			'style-src'    => ['/a/css/'],
