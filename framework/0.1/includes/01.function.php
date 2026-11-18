@@ -2176,6 +2176,12 @@
 				}
 				$header .= '; redirects=' . head($redirect);
 
+				$redirect = config::get('output.connection_allowlist_webrtc');
+				if ($redirect != 'allow') {
+					$redirect = 'block';
+				}
+				$header .= '; webrtc=' . head($redirect);
+
 				if (config::get('output.connection_allowlist_report') === true) {
 					$header .= '; report-to=' . head($report_endpoint_name);
 					$report_endpoint_send = true;
