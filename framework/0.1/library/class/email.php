@@ -37,6 +37,7 @@
 			protected $content_text = NULL;
 			protected $content_html = NULL;
 			protected $content_html_safe = true;
+			protected $content_css = NULL;
 			protected $default_style = NULL;
 			protected $default_bulk = NULL;
 			protected $boundaries = [];
@@ -586,6 +587,13 @@
 				// $this->content_html_safe = ($html instanceof html_template || $html instanceof html_safe_value || (function_exists('is_literal') && is_literal($html)));
 			}
 
+			public function content_css_set($css) {
+				$this->content_css = $css;
+				if (function_exists('is_literal') && is_literal($css) !== true) {
+					exit_with_error('The content CSS must be a literal');
+				}
+			}
+
 		//--------------------------------------------------
 		// Send
 
@@ -1082,7 +1090,11 @@
 				//--------------------------------------------------
 				// Styles
 
-					$content_css = $this->template_get_css();
+					if ($this->content_css) {
+						$content_css = $this->content_css;
+					} else {
+						$content_css = $this->template_get_css();
+					}
 
 					if ($content_css) {
 						$content_css = "\t" . '<style>' . "\n" . $content_css . "\n\t" . '</style>' . "\n";
