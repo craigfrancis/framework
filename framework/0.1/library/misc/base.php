@@ -42,6 +42,7 @@ class response_html extends response_html_base {}
 class response_css extends response_css_base {}
 class response_file extends response_file_base {}
 class response_json extends response_json_base {}
+class calendar_event extends calendar_event_base {}
 class connection extends connection_base {}
 class connection_aws extends connection_aws_base {}
 class connection_browser extends connection_browser_base {}
