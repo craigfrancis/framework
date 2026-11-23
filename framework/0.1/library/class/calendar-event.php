@@ -101,9 +101,9 @@
 
 				$urls['google'] = [ // https://developers.google.com/workspace/calendar/api/concepts/inviting-attendees-to-events
 					'name' => 'Google',
-					'url' => url('https://calendar.google.com/calendar/u/0/r/eventedit', [
-							'dates'    => $this->config['start_utc']->format('Ymd\THis\Z') . '/' . $this->config['end_utc']->format('Ymd\THis\Z'),
+					'url' => url('https://calendar.google.com/calendar/r/eventedit', [
 							'action'   => 'TEMPLATE',
+							'dates'    => $this->config['start_utc']->format('Ymd\THis\Z') . '/' . $this->config['end_utc']->format('Ymd\THis\Z'),
 							'text'     => $this->config['summary'],
 							'location' => $this->config['location'],
 							'details'  => $this->config['description'],
@@ -113,6 +113,7 @@
 				$urls['ms365'] = [ // https://interactiondesignfoundation.github.io/add-event-to-calendar-docs/services/outlook-web.html
 					'name' => 'Microsoft-365',
 					'url'  => url('https://outlook.office.com/calendar/0/deeplink/compose', [
+							'path'     => '/calendar/action/compose',
 							'rru'      => 'addevent',
 							'startdt'  => $this->config['start_utc']->format('Y-m-d\TH:i:s\Z'),
 							'enddt'    => $this->config['end_utc']->format('Y-m-d\TH:i:s\Z'),
@@ -125,6 +126,7 @@
 				$urls['outlook'] = [
 					'name' => 'Outlook',
 					'url' => url('https://outlook.live.com/calendar/0/deeplink/compose', [
+							'path'     => '/calendar/action/compose',
 							'rru'      => 'addevent',
 							'startdt'  => $this->config['start_utc']->format('Y-m-d\TH:i:s\Z'),
 							'enddt'    => $this->config['end_utc']->format('Y-m-d\TH:i:s\Z'),
@@ -139,8 +141,8 @@
 					'url'  => url('https://calendar.yahoo.com/', [
 							'v'      => '60',
 							'TITLE'  => ($this->config['summary'] ?? ''), // Required
-							'ST'     => $this->config['start']->format('Y-m-d\TH:i:s'), // Local time, and no support for timezones.
-							'ET'     => $this->config['end']->format('Y-m-d\TH:i:s'),
+							'ST'     => $this->config['start']->format('Ymd\THis'), // Local time, and no support for timezones.
+							'ET'     => $this->config['end']->format('Ymd\THis'),
 							'DESC'   => $this->config['description'],
 							'in_loc' => $this->config['location'],
 						]),
